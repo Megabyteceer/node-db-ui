@@ -1,0 +1,7 @@
+{
+	"javascript.suggest.paths": true,
+	"files.exclude": {
+		"**/cert/**": true,
+		"**/nginx-1.20.1/**": true
+	}
+}
