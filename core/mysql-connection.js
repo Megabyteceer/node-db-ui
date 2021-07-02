@@ -1,18 +1,20 @@
 const mysql = require('mysql2');
 const performance = require('perf_hooks').performance;
-const connection = mysql.createConnection({user: 'unfo.pro', database: 'distrib_db', host:'127.0.0.1', password: 'zBjgZW2s'});
+const connection = mysql.createConnection({
+	user: process.env.DB_USER,
+	database: process.env.DB_NAME,
+	host: process.env.DB_HOST,
+	password: process.env.DB_PASS
+});
+const {getCurrentStack} = require("../www/both-side-utils");
 
-const mysqlExec = (query, userSession = ADMIN_USER_SESSION) => {
+
+const mysqlExec = (query, userSession) => {
 	/// #if DEBUG
-	let preparedError;
-	try{
-		throw new Error();
-	} catch (er) {
-		preparedError = er;
-	}
+	let preparedError = new Error();
 
 	let SQL = {timeElapsed_ms: performance.now(), SQL : query, stack: getCurrentStack()};
-	if(userSession.debug) {
+	if(userSession && userSession.debug) {
 		if(!userSession.debug.SQLs) {
 			userSession.debug.SQLs = [];
 		}
@@ -37,28 +39,6 @@ const mysqlExec = (query, userSession = ADMIN_USER_SESSION) => {
 		});
 	});
 };
-
-
-const roles = {
-	1:true,
-	3:true,
-	cacheKey: "1,2,3"
-};
-
-const lang = {id: 'en', prefix:''};
-
-const ADMIN_USER_SESSION = {
-	id:1,
-	name:'admin',
-	avatar: '0',
-	email:"admin",
-	orgs:{1:""},
-	orgId: 1,
-	org: "",
-	roles,
-	lang,
-	cacheKey: roles.cacheKey + '|' + lang.prefix
-}
 
 if (!String.prototype.replaceAll) {
 	const expCache = new Map();
@@ -101,4 +81,4 @@ async function mysqlInsertedID(userSession) {
 }
 
 
-module.exports = {mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback, mysqlInsertedID, ADMIN_USER_SESSION};
+module.exports = {mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback, mysqlInsertedID};

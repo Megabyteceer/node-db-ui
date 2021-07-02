@@ -1,5 +1,5 @@
 const {getNodeDesc, getEventHandler} = require('./desc-node.js');
-const {mysqlExec, ADMIN_USER_SESSION} = require("./mysql-connection");
+const {mysqlExec} = require("./mysql-connection");
 
 const EMPTY_RATING = {all:0};
 /*
@@ -256,6 +256,8 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 		} else {
 			throw new Error('Access denied 3.');
 		}
+	} else {
+		wheresBegin.push('1');
 	}
 
 	selQ.push.apply(selQ, wheresBegin);
@@ -371,13 +373,17 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 	const node = getNodeDesc(nodeId, userSession);
 
-	const recordData = getRecords(nodeId, 4, recId, userSession);
+	const recordData = await getRecords(nodeId, 4, recId, userSession);
 	if(!recordData.isDel) {
 		throw new Error('Deletion access is denied');
 	}
 	
-	let handler = getEventHandler(nodeId, 'delete');
-	handler && handler(recordData);
+	let h = getEventHandler(nodeId, 'delete');
+	let r = h && h(recordData, userSession);
+	if(r && r.then) {
+		await r;
+	}
+	
 
 	await mysqlExec("UPDATE " + node.tableName + " SET status=0 WHERE id=" + recId + " LIMIT 1", userSession);
 	return 1;

@@ -1,5 +1,3 @@
-const {ADMIN_USER_SESSION} = require("../core/mysql-connection");
-
 if(typeof global === 'undefined') {
 	global = window;
 }
@@ -12,36 +10,39 @@ global.assert = (condition, errorTxt) => {
 }
 /// #endif
 
-global.isUserHaveRole = (userSession, roleId) => {
-	return userSession.roles[roleId];
+const isUserHaveRole = (userSession, roleId) => {
+	return userSession.userRoles[roleId];
 }
 
-global.shouldBeAuthorized = (userSession) => {
-	if(!userSession || userSession === ADMIN_USER_SESSION || isUserHaveRole(userSession, GUEST_ROLE_ID)) {
+const shouldBeAuthorized = (userSession) => {
+	if(!userSession || userSession.__temporaryServerSideSession || isUserHaveRole(userSession, GUEST_ROLE_ID)) {
 		throw new Error("operation permitted for authorized user only");
 	}
 }
 
-global.isAdmin = (userSession) => {
+const idToImgURL = (imgId, holder) => {
+	if(imgId){
+		return 'images/uploads/' + imgId.substring(0, 2) + '/' + imgId.substring(2) + '.jpg';
+	}
+	return 'images/placeholder_' + holder + '.png';
+}
+
+const isAdmin = (userSession) => {
 	return isUserHaveRole(userSession, ADMIN_ROLE_ID);
 }
 
-global.getCurrentStack = () => {
-	try{
-		throw new Error();
-	} catch (er) {
-		let a = er.stack.split('\n');
-		a.splice(0, 3);
-		return a;
-	}
+const getCurrentStack = () => {
+	let a = new Error().stack.split('\n');
+	a.splice(0, 3);
+	return a;
 }
 
 global.L = () => {
-	return arguments.join(' ');
+	return Array.from(arguments).join(' ');
 }
 
 global.notificationOut = (userSession, text) => {
-	if(userSession === ADMIN_USER_SESSION) {
+	if(userSession.is) {
 		console.log(text);
 	} else {
 		if(!userSession.notifications) {
@@ -88,3 +89,5 @@ global.PREVS_EDIT_ORG = 32;
 global.PREVS_EDIT_ALL = 64;
 global.PREVS_DELETE = 128;
 global.PREVS_PUBLISH = 256;
+
+module.exports = {isUserHaveRole, shouldBeAuthorized, isAdmin, getCurrentStack};

@@ -1,9 +1,15 @@
-const {mysqlExec, ADMIN_USER_SESSION} = require("./mysql-connection");
+const {mysqlExec} = require("./mysql-connection");
 const fs = require('fs');
 const path = require("path");
+const {isUserHaveRole} = require("../www/both-side-utils");
+const auth = require("./auth");
 
 let nodes;
 let nodesById;
+let langs;
+
+const ADMIN_USER_SESSION = {};
+const GUEST_USER_SESSION = {};
 
 const clientSideNodes = new Map();
 const nodesTreeCache = new Map();
@@ -12,54 +18,38 @@ const eventsHandlers = new Map();
 
 function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION) {
 	assert(!isNaN(nodeId), 'nodeId expected');
-	
 	if(!clientSideNodes.has(userSession.cacheKey)) {
-		clientSideNodes.set(userSession.cacheKey, new Map());
-	}
-	const userCache = clientSideNodes.get(userSession.cacheKey);
-
-
-	if(!userCache.has(nodeId)) {
 		const srcNode = nodesById.get(nodeId);
+		let prevs;
 
-		//TODO: prepare node for clientSide
-		// check access to node
-		//filter fields
-
-
-		userCache.set(nodeId, srcNode);
-
+		if(srcNode && (prevs = getUserAccessToNode(srcNode, userSession))) {
+			let landQ = userSession.lang.prefix;
+			const ret = {
+				id: srcNode.id,
+				singleName: srcNode["singleName" + landQ],
+				prevs,
+				reverse: srcNode.reverse,
+				creationName: srcNode["creationName" + landQ],
+				matchName: srcNode["name" + landQ],
+				description: srcNode["description" + landQ],
+				isDoc: srcNode.isDoc,
+				staticLink: srcNode.staticLink,
+				tableName: srcNode.tableName,
+				parentf: srcNode._nodesID,
+				draftable: srcNode.draftable,
+				icon: srcNode.icon,
+				recPerPage: srcNode.recPerPage,
+				defaultFilterId: srcNode.defaultFilterId,
+				fields: srcNode.fields,
+				filters: srcNode.filters,
+				sortFieldName: srcNode.sortFieldName
+			}
+			clientSideNodes.set(nodeId, ret);
+		} else {
+			throw new Error("Access to node " + nodeId + " is denied");
+		}
 	}
-	return userCache.get(nodeId);
-
-	
-/*
-	let landQ;
-	if(userSession && userSession.lang.id) {
-		landQ = userSession.lang.id;
-	} else {
-		landQ = '';
-	}
-		/*
-	$ret = array(
-		'prevs' => $prevs,
-		'id' => $nodeId,
-		'singleName' => $pag["singleName" + landQ + ""],
-		'reverse' => $pag['reverse'],
-		'creationName' => $pag["creationName" + landQ + ""],
-		'matchName' => $pag["name" + landQ + ""],
-		'description' => $pag["description" + landQ + ""],
-		'isDoc' => $isDoc,
-		'staticLink' => $pag['staticLink'],
-		'tableName' => $pag['tableName'],
-		'parentf' => $pag['_nodesID'],
-		'draftable' => $pag['draftable'],
-		'icon' => $pag['icon'],
-		'recPerPage' => $pag['recPerPage'],
-		'sortFieldName' => 'createdOn'
-	);*/
-
-	odeData.canCreate = true; // TODO:
+	return clientSideNodes.get(nodeId);
 }
 
 function getUserAccessToNode(node, userSession) {
@@ -108,6 +98,10 @@ async function initNodesData() { // load whole nodes data in to memory
 		nodeData.sortFieldName = 'createdOn';
 		
 		let rolesToAccess = await mysqlExec("SELECT roleId, prevs FROM _rolePrevs WHERE nodeID = 0 OR nodeID = " + nodeData.id);
+		
+		/// #if DEBUG
+		nodeData.__preventToStringify = nodeData; // circular structure to fail when try to stringify
+		/// #endif
 
 		nodeData.rolesToAccess = rolesToAccess;
 		nodeData.prevs = 65535;
@@ -154,8 +148,17 @@ async function initNodesData() { // load whole nodes data in to memory
 			}
 		}
 	}
+
+	langs = await mysqlExec("SELECT id, name, code FROM _languages WHERE id <> 0");
+	for(let l of langs) {
+		l.prefix = l.code ? ('_' + l.code) : '';
+	}
 	clientSideNodes.clear();
 	nodesTreeCache.clear();
+}
+
+function getLangs() {
+	return langs;
 }
 
 function getEventHandler(nodeId, eventName) {
@@ -164,4 +167,4 @@ function getEventHandler(nodeId, eventName) {
 	}
 }
 
-module.exports = {getNodeDesc, initNodesData, getNodesTree, getEventHandler};
+module.exports = {getNodeDesc, initNodesData, getNodesTree, getEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION};

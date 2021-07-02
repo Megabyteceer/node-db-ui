@@ -1,8 +1,9 @@
-const {getEventHandler, getNodeDesc} = require("./desc-node");
+const {isAdmin} = require("../www/both-side-utils");
+const {getEventHandler, getNodeDesc, ADMIN_USER_SESSION} = require("./desc-node");
 const {getRecords} = require("./get-records");
 const {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit, mysqlInsertedID} = require("./mysql-connection");
 
-async function submitRecord(nodeId, data, recId = false, userSession) {
+async function submitRecord(nodeId, data, recId = false, userSession = ADMIN_USER_SESSION) {
 	
 	let node = getNodeDesc(nodeId);
 	let currentData;
@@ -114,10 +115,16 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		
 		if(recId !== false) {
 			let h = getEventHandler(nodeId, 'update');
-			h && h(currentData, data);
+			let r = h && h(currentData, data, userSession);
+			if(r && r.then) {
+				await r;
+			}
 		} else {
 			let h = getEventHandler(nodeId, 'pre');
-			h && h(data);
+			let r = h && h(data, userSession);
+			if(r && r.then) {
+				await r;
+			}
 		}
 		let needProcess_n2m;
 		for(let f of node.fields) {
@@ -229,7 +236,10 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 			recId = await mysqlInsertedID(userSession);
 			data.id = recId;
 			let h = getEventHandler(nodeId, 'post');
-			h && h(data);
+			let r = h && h(data, userSession);
+			if(r && r.then) {
+				await r;
+			}
 		}
 		
 		if(needProcess_n2m){
