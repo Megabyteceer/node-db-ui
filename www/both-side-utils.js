@@ -22,7 +22,7 @@ const shouldBeAuthorized = (userSession) => {
 
 const idToImgURL = (imgId, holder) => {
 	if(imgId){
-		return 'images/uploads/' + imgId.substring(0, 2) + '/' + imgId.substring(2) + '.jpg';
+		return 'images/uploads/' + imgId;
 	}
 	return 'images/placeholder_' + holder + '.png';
 }
@@ -90,4 +90,4 @@ global.PREVS_EDIT_ALL = 64;
 global.PREVS_DELETE = 128;
 global.PREVS_PUBLISH = 256;
 
-module.exports = {isUserHaveRole, shouldBeAuthorized, isAdmin, getCurrentStack};
+module.exports = {isUserHaveRole, shouldBeAuthorized, isAdmin, getCurrentStack, idToImgURL};

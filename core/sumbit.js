@@ -1,4 +1,6 @@
-const {isAdmin} = require("../www/both-side-utils");
+const fs = require('fs');
+const path = require('path');
+const {isAdmin, idToImgURL} = require("../www/both-side-utils");
 const {getEventHandler, getNodeDesc, ADMIN_USER_SESSION} = require("./desc-node");
 const {getRecords} = require("./get-records");
 const {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit, mysqlInsertedID} = require("./mysql-connection");
@@ -13,6 +15,7 @@ async function submitRecord(nodeId, data, recId = false, userSession = ADMIN_USE
 	
 	const tableName = node.tableName;
 	const prevs = node.prevs;
+	let filesToDelete;
 	
 	if(node.draftable) {
 		if((prevs & PREVS_PUBLISH) === 0) {
@@ -169,12 +172,16 @@ async function submitRecord(nodeId, data, recId = false, userSession = ADMIN_USE
 							delete userSession.uploaded[fieldVal];
 						}
 						//continue to process as a text field
+					case FIELD_12_PICTURE:
+						if(currentData[fieldName]) {
+							debugger;
+							filesToDelete = filesToDelete || [];
+							filesToDelete.push(idToImgURL(currentData[fieldName]));
+						}
 					case FIELD_1_TEXT:
 					case FIELD_9_EMAIL:
 					case FIELD_10_PASSWORD:
 					case FIELD_13_KEYWORDS:
-					case FIELD_12_PICTURE:
-					
 						if(f.maxlen && (fieldVal.length > f.maxlen)) {
 							throw new Error("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxlen);
 						}
@@ -279,7 +286,12 @@ async function submitRecord(nodeId, data, recId = false, userSession = ADMIN_USE
 		}
 		
 		await mysqlCommit(userSession);
-		
+		if(filesToDelete) {
+			debugger;
+			for(let f of filesToDelete) {
+				fs.unlink(path.join(__dirname, f),()=>{});
+			}
+		}
 		return recId;
 		
 	} catch (er) {

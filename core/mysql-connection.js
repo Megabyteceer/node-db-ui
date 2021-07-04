@@ -56,9 +56,10 @@ if (!String.prototype.replaceAll) {
 let mysqlTransactStarted = false;
 
 async function mysqlStartTransaction(userSession) {
+	const ret = mysqlExec("START TRANSACTION;", userSession);
 	assert(!mysqlTransactStarted, "transaction already started");
 	mysqlTransactStarted = true;
-	return mysqlExec("START TRANSACTION;", userSession);
+	return ret;
 }
 
 async function mysqlCommit(userSession) {

@@ -1,4 +1,4 @@
-const {mysqlExec} = require("./mysql-connection");
+const {mysqlExec, mysqlStartTransaction} = require("./mysql-connection");
 const crypto = require('crypto');
 const {shouldBeAuthorized} = require("../www/both-side-utils");
 const {getLangs, GUEST_USER_SESSION} = require("./desc-node");
@@ -25,6 +25,9 @@ function createSession(userSession, sessionToken) {
 //TODO: clear autdated sessions
 
 async function startSession(sessionToken) {
+	if(!sessionToken) {
+		return Promise.resolve(GUEST_USER_SESSION);
+	}
 	if(!sessions.has(sessionToken)) {
 		throw new Error('session expired')
 	}
@@ -55,22 +58,78 @@ function finishSession(sessionToken) {
 }
 
 function killSession(userSession) {
-	userSession.id = 0;
 	sessions.delete(userSession.sessionToken);
+	sessionsByUserId.delete(userSession.id);
+	userSession.id = 0;
+}
+
+function getServerHref() {
+	return process.env.SERVER_NAME;
+}
+
+async function registerUser(reqData) {
+
+	const r_name = process.env.REQUIRE_NAME;
+	const r_company = process.env.REQUIRE_COMPANY;
+
+	const login = reqData.login_username;
+	const password = reqData.login_password;
+	const password_r = reqData.password_r;
+	const company = r_company ? reqData.company : '';
+	const name = r_name ? reqData.name : '';
+
+	if (password !== password_r) {
+		throw new Error('PASS_NOT_SAME');
+	} else {
+		
+		let pgs = await mysqlExec("SELECT id FROM _users WHERE _users.status=1 AND email='" + login + "' LIMIT 1");
+		if (pgs.length > 0) {
+			throw new Error('EMAIL_ALREADY');
+		} else {
+			
+			let actKey = crypto.randomBytes(24).toString('base64');
+			
+			let href = getServerHref() + '?activate_user&key=' + actKey;
+			
+			require_once('core/mail_utf8.php');
+			mail_utf8(login, L('CONFIRM_EMAIL_SUBJ'), L('CONFIRM_EMAIL', APP_TITLE) + href);
+			
+			await mysqlExec("INSERT INTO `_users` (status, `name`, `PASS`, `email`, `company`, `activation`) VALUES (2,'" + name + "','" + (await getPasswordHash(password)) + "','" + login + "','" + company + "','" + actKey + "');");
+			
+			return L('EMAIL_SENDED', login);
+		}
+	}
+}
+
+async function activateUser(key) {
+	if(key) {
+		let user = await mysqlExec("SELECT id, pass, company, email FROM _users WHERE status = 2 AND activation='" + key + "' LIMIT 1");
+		user = user[0];
+		if (user) {
+			let userID = user.id;
+			//create company for new user
+			await mysqlExec("INSERT INTO `_organ` (`name`, `status`, `_usersID`) VALUES ('" + user.company + "', '1', " + userID + ")");
+			let orgId = await mysqlInsertedID("SELECT id FROM _organ WHERE _usersID = " + userID);
+			orgId = orgId[0].id;
+			await mysqlExec("UPDATE _users SET status=1, activation='', _organID=" + orgId + ", _usersID = " + userID + " WHERE id=" + userID);
+			await mysqlExec("UPDATE _organ SET _organID=" + orgId + " WHERE id=" + orgId);
+			return authorizeUserByID(userID);
+		}
+	}
+	throw new Error('REG_EXPIRED');
 }
 
 async function resetPassword(key) {
 	if(key) {
 		let user = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND activation='" + key + "' AND reset_time > DATE_ADD(CURDATE(), INTERVAL -1 DAY)  LIMIT 1");
 		user = user[0];
-			
 		if (user) {
 			let userID = user.id;
-			//await mysqlExec("UPDATE _users SET activation='' WHERE id='" + userID + "'");
+			await mysqlExec("UPDATE _users SET activation='' WHERE id='" + userID + "'");
 			return authorizeUserByID(userID);
 		}
 	}
-	throw new Error(L('RECOVERY_EXPIRED'));
+	throw new Error('RECOVERY_EXPIRED');
 }
 
 function getPasswordHash(password, salt) {
@@ -96,7 +155,7 @@ async function login(username, password) {
 		let blocked = user.blocked;
 		
 		if(blocked > 0) {
-			throw new Error(L('USER_BLOCKED', blocked));
+			throw new Error('USER_BLOCKED', blocked);
 		} else {
 			
 			let mistakes = user.mistakes;
@@ -109,13 +168,13 @@ async function login(username, password) {
 				} else {
 					await mysqlExec("UPDATE _users SET mistakes=(mistakes-1) WHERE id='" + userID + "'");
 				}
-				throw new Error(L('WRONG_PASS'));
+				throw new Error('WRONG_PASS');
 			}
 
 			return authorizeUserByID(userID);
 		}
 	}
-	throw new Error(L('WRONG_PASS'));
+	throw new Error('WRONG_PASS');
 }
 
 async function authorizeUserByID(userID, isItServerSideRole, sessionToken) {
@@ -228,4 +287,4 @@ async function setMultiLang(enable, userSession) {
 	return 1;
 }
 
-module.exports = {setCurrentOrg, setMultiLang, login, authorizeUserByID, resetPassword, startSession, finishSession, killSession, getPasswordHash, createSession};
+module.exports = {setCurrentOrg, setMultiLang, login, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref};

@@ -1,4 +1,4 @@
-const {setCurrentOrg, setMultiLang, login, resetPassword} = require('./auth.js');
+const {setCurrentOrg, setMultiLang, login, resetPassword, registerUser, activateUser} = require('./auth.js');
 const {getNodeDesc, getNodesTree} = require('./desc-node.js');
 const {getRecords, deleteRecord} = require('./get-records.js');
 const {submitRecord} = require('./sumbit.js');
@@ -38,15 +38,18 @@ const api = {
 	"api/uploadImage.php":(reqData, userSession, res) => {
 		uploadImage(reqData, userSession).then(res);
 	},
+	"register.php":(reqData, userSession, res) => {
+		registerUser(reqData).then(res);
+	},
 	"login.php":(reqData, userSession, res) => {
 		login(reqData.login_username, reqData.login_password).then(res);
 	},
 	"reset.php":(reqData, userSession, res) => {
 		resetPassword(reqData.key).then(res);
+	},
+	"activate.php":(reqData, userSession, res) => {
+		activateUser(reqData.key).then(res);
 	}
 };
-
-api['login.php'].allowAnonymousRequest = true;
-api['reset.php'].allowAnonymousRequest = true;
 
 module.exports = api;

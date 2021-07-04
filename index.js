@@ -63,45 +63,48 @@ server.on('request', (req, res) => {
 					//TODO: escape strings include nested https://stackoverflow.com/a/31567092/3283159
 					let userSession;
 					const onResult = (result, error) => {
-						res.writeHead(200, {
+						const resHeaders = {
 							'content-type': 'application/json'
-						});
+						};
+						
+						
 						let ret = {result, error};
 						/// #if DEBUG
+						resHeaders['Access-Control-Allow-Origin'] = '*';
 						if(!userSession.__temporaryServerSideSession) {
 							ret.debug = userSession.debug;
 							delete userSession.debug;
 							ret.debug.timeElapsed_ms = performance.now() - startTime;
 						}
 						/// #endif
+						
+						res.writeHead(200, resHeaders);
+
 						if(userSession.hasOwnProperty('notifications')) {
 							ret.notifications = userSession.notifications;
 							delete userSession.notifications;
 						}
 						res.end(JSON.stringify(ret));
 					}
-					if(handler.allowAnonymousRequest) {
-						userSession = GUEST_USER_SESSION;
-						handler(body, GUEST_USER_SESSION, onResult);
-					} else {
-						startSession(body.sessionToken).then((session) => {
-							userSession = session;
-							/// #if DEBUG
-							if(!userSession.__temporaryServerSideSession) {
-								session.debug = {requestTime: new Date(), stack:[]};
-							}
-							/// #endif
-							handler(body, session, onResult);
-						})
-						.catch((error) => {
-							console.log(error.stack);
-							onResult(undefined, error.message);
-						})
-						//*/
-						.finally(() => {
-							finishSession(body.sessionToken);	
-						});
-					}
+
+					startSession(body.sessionToken).then((session) => {
+						userSession = session;
+						/// #if DEBUG
+						if(!userSession.__temporaryServerSideSession) {
+							session.debug = {requestTime: new Date(), stack:[]};
+						}
+						/// #endif
+						handler(body, session, onResult);
+					})
+					.catch((error) => {
+						console.log(error.stack);
+						onResult(undefined, error.message);
+					})
+					//*/
+					.finally(() => {
+						finishSession(body.sessionToken);	
+					});
+					
 				} catch(er) {
 					res.writeHead(500);
 					res.end('{"error":"error"}');
