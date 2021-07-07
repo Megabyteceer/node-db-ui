@@ -1,3 +1,4 @@
+"use strict";
 const mysql = require('mysql2');
 const performance = require('perf_hooks').performance;
 const connection = mysql.createConnection({
@@ -9,16 +10,16 @@ const connection = mysql.createConnection({
 const {getCurrentStack} = require("../www/both-side-utils");
 
 
-const mysqlExec = (query, userSession) => {
+const mysqlExec = (query) => {
 	/// #if DEBUG
 	let preparedError = new Error();
 
 	let SQL = {timeElapsed_ms: performance.now(), SQL : query, stack: getCurrentStack()};
-	if(userSession && userSession.debug) {
-		if(!userSession.debug.SQLs) {
-			userSession.debug.SQLs = [];
+	if(process.debug) {
+		if(!process.debug.SQLs) {
+			process.debug.SQLs = [];
 		}
-		userSession.debug.SQLs.push(SQL)
+		process.debug.SQLs.push(SQL)
 	}
 	/// #endif
 	

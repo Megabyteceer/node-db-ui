@@ -1,15 +1,37 @@
+"use strict";
 const fs = require('fs');
 const path = require('path');
 
 const sharp = require("sharp");
-const {idToImgURL} = require('../www/both-side-utils');
 const {getNodeDesc} = require("./desc-node");
 
-const UPLOADS_PATH = path.join(__dirname, '../www/images/uploads');
+const UPLOADS_IMAGES_PATH = path.join(__dirname, '../www/images/uploads');
+const UPLOADS_FILES_PATH = path.join(__dirname, '../www/uploads/file');
 
 const getRadomPattern = () => {
 	return Math.floor(Math.random() * 900000000000000 + 100000000000000);
 }
+
+const getNewFileDir = () => {
+	return new Promise((resolve, reject) => {
+		const generateId = (err) => {
+			if(err) {
+				reject(err);
+			}
+			let folder = getRadomPattern();
+			fs.access(path.join(UPLOADS_FILES_PATH, id), fs.constants.F_OK, (err) => {
+				if(err) {
+					resolve(id);
+				} else {
+					generateId();
+				}
+			});
+		}
+		generateId();
+	});
+}
+
+
 
 const getNewImageID = (originalFileName) => {
 	return new Promise((resolve, reject) => {
@@ -25,8 +47,7 @@ const getNewImageID = (originalFileName) => {
 			}
 			let id = folder + '/' + getRadomPattern() + '.' + ext;
 
-
-			fs.access(path.join(UPLOADS_PATH, id), fs.constants.F_OK, (err) => {
+			fs.access(path.join(UPLOADS_IMAGES_PATH, id), fs.constants.F_OK, (err) => {
 				if(err) {
 					resolve(id);
 				} else {
@@ -34,7 +55,7 @@ const getNewImageID = (originalFileName) => {
 				}
 			});
 		}
-		let folderName = path.join(UPLOADS_PATH, folder);
+		let folderName = path.join(UPLOADS_IMAGES_PATH, folder);
 		fs.access(folderName, fs.constants.F_OK, (err) => {
 			if(err) {
 				fs.mkdir(folderName, generateId);
@@ -45,13 +66,45 @@ const getNewImageID = (originalFileName) => {
 	});
 }
 
-async function uploadImage(reqData, userSession) {
 
+let allowedUpload;
+
+async function uploadFile(reqData, userSession) {
+	if(reqData.name.indexOf('..') >= 0) {
+		throw new Error(L('UPL_ERROW_WFN'));
+	}
+	const field = getFieldForUpload(reqData, userSession);
+	if(!allowedUpload) {
+		allowedUpload = RegExp('/\.(' + process.env.ALLOWED_UPLOADS + ')$/i');
+	}
+	if(!allowedUpload.test(reqData.name)) {
+		throw new Error(L('FILE_TYPE_NA', reqData.name));
+	}
+	const newFileName = (await getNewFileDir()) + reqData.name;
+	
+	return new Promise((resolve, reject) => {
+		fs.writeFile(path.join(UPLOADS_FILES_PATH, newFileName), reqData.fileContent, (err) => {
+			if(err) {
+				reject(err);
+			}
+			userSession.uploaded[reqData.fid] = newFileName;
+			resolve(newFileName);
+		});
+	});
+}
+
+const getFieldForUpload = (reqData, userSession) => {
 	const node = getNodeDesc(parseInt(reqData.nid), userSession);
 	const field = node.fields.find(f => f.id === parseInt(reqData.fid));
 	if(!field) {
 		throw new Error("field " + reqData.fid + " access denied");
 	}
+	return field;
+}
+
+async function uploadImage(reqData, userSession) {
+
+	const field = getFieldForUpload(reqData, userSession);
 
 	let img = await sharp(reqData.fileContent);
 	let meta = await img.metadata();
@@ -107,15 +160,14 @@ async function uploadImage(reqData, userSession) {
 	}
 
 	let newFileNameID = await getNewImageID('tmp.jpg');
-	let newFileName = idToImgURL(newFileNameID, false);
+	let newFileName = idToImgURLServer(newFileNameID);
 	
 	if(!userSession.uploaded) {
 		userSession.uploaded = {};
 	}
-	
 
 	return new Promise((resolve, reject) => {
-		img.toFile(path.join(__dirname, '../www', newFileName), (err, info) => {
+		img.toFile(newFileName, (err, info) => {
 			if(err) {
 				reject(err);
 			}
@@ -125,5 +177,9 @@ async function uploadImage(reqData, userSession) {
 	});
 }
 
-module.exports = {uploadImage};
+const idToImgURLServer = (imgId) => {
+	assert(imgId, "idToImgURLServer called for empty imageId");
+	return path.join(UPLOADS_IMAGES_PATH, imgId);
+}
 
+module.exports = {uploadImage, uploadFile, UPLOADS_FILES_PATH, idToImgURLServer};

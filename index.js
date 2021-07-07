@@ -1,3 +1,4 @@
+"use strict";
 require('dotenv').config()
 const http = require('http');
 const api = require ('./core/api.js');
@@ -67,15 +68,12 @@ server.on('request', (req, res) => {
 							'content-type': 'application/json'
 						};
 						
-						
 						let ret = {result, error};
 						/// #if DEBUG
 						resHeaders['Access-Control-Allow-Origin'] = '*';
-						if(!userSession.__temporaryServerSideSession) {
-							ret.debug = userSession.debug;
-							delete userSession.debug;
-							ret.debug.timeElapsed_ms = performance.now() - startTime;
-						}
+						ret.debug = process.debug;
+						delete process.debug;
+						ret.debug.timeElapsed_ms = performance.now() - startTime;
 						/// #endif
 						
 						res.writeHead(200, resHeaders);
@@ -86,14 +84,11 @@ server.on('request', (req, res) => {
 						}
 						res.end(JSON.stringify(ret));
 					}
-
+					/// #if DEBUG
+					process.debug = {requestTime: new Date(), stack:[]};
+					/// #endif
 					startSession(body.sessionToken).then((session) => {
 						userSession = session;
-						/// #if DEBUG
-						if(!userSession.__temporaryServerSideSession) {
-							session.debug = {requestTime: new Date(), stack:[]};
-						}
-						/// #endif
 						handler(body, session, onResult);
 					})
 					.catch((error) => {
@@ -105,9 +100,14 @@ server.on('request', (req, res) => {
 						finishSession(body.sessionToken);	
 					});
 					
-				} catch(er) {
+				} catch(error) {
 					res.writeHead(500);
+					/// #if DEBUG
+					res.end(JSON.stringify({error}));
+					/*
+					/// #endif
 					res.end('{"error":"error"}');
+					//*/
 				}
 			});
 		} else {
@@ -121,7 +121,11 @@ server.on('request', (req, res) => {
 });
 
 initNodesData().then(async function () {
-	Object.assign(ADMIN_USER_SESSION, await authorizeUserByID(1, true));
+	Object.assign(ADMIN_USER_SESSION, await authorizeUserByID(1, true
+	/// #if DEBUG
+	, "dev-admin-session-token"
+	/// #endif
+	));
 	assert(isUserHaveRole(ADMIN_USER_SESSION, ADMIN_ROLE_ID), "User with id 1 expected to be admin.");
 	Object.assign(GUEST_USER_SESSION, await authorizeUserByID(2, true));
 	assert(isUserHaveRole(GUEST_USER_SESSION, GUEST_ROLE_ID), "User with id 2 expected to be guest.");

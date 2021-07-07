@@ -1,3 +1,5 @@
+"use strict";
+
 if(typeof global === 'undefined') {
 	global = window;
 }
@@ -18,13 +20,6 @@ const shouldBeAuthorized = (userSession) => {
 	if(!userSession || userSession.__temporaryServerSideSession || isUserHaveRole(userSession, GUEST_ROLE_ID)) {
 		throw new Error("operation permitted for authorized user only");
 	}
-}
-
-const idToImgURL = (imgId, holder) => {
-	if(imgId){
-		return 'images/uploads/' + imgId;
-	}
-	return 'images/placeholder_' + holder + '.png';
 }
 
 const isAdmin = (userSession) => {
@@ -90,4 +85,4 @@ global.PREVS_EDIT_ALL = 64;
 global.PREVS_DELETE = 128;
 global.PREVS_PUBLISH = 256;
 
-module.exports = {isUserHaveRole, shouldBeAuthorized, isAdmin, getCurrentStack, idToImgURL};
+module.exports = {isUserHaveRole, shouldBeAuthorized, isAdmin, getCurrentStack};

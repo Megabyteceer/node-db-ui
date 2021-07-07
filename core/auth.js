@@ -1,8 +1,9 @@
+"use strict";
 const {mysqlExec, mysqlStartTransaction} = require("./mysql-connection");
 const crypto = require('crypto');
 const {shouldBeAuthorized} = require("../www/both-side-utils");
 const {getLangs, GUEST_USER_SESSION} = require("./desc-node");
-
+const path = require("path");
 
 const sessions = new Map();
 const sessionsByUserId = new Map();
@@ -24,6 +25,20 @@ function createSession(userSession, sessionToken) {
 
 //TODO: clear autdated sessions
 
+const SESSION_START_REATTEMPT_DELAY = 1000;
+const SESSION_START_MAINTAIN_REATTEMPT_DELAY = 5000;
+
+let maintainMode = 0;
+
+function setMainTainMode(val) {
+	if(val) {
+		maintainMode++;
+	} else {
+		maintainMode--;
+		assert(maintainMode >= 0, "Maintain mode disable attempt when it was not enabled.");
+	}
+}
+
 async function startSession(sessionToken) {
 	if(!sessionToken) {
 		return Promise.resolve(GUEST_USER_SESSION);
@@ -32,13 +47,13 @@ async function startSession(sessionToken) {
 		throw new Error('session expired')
 	}
 	const userSession = sessions.get(sessionToken);
-	if(!userSession.hasOwnProperty('_isStarted')) {
+	if(!userSession.hasOwnProperty('_isStarted') && !maintainMode) {
 		userSession._isStarted = true;
 		return Promise.resolve(userSession);
 	}
 	return new Promise((resolve, rejects) => {
 		let i = setInterval(() => {
-			if(!userSession.hasOwnProperty('_isStarted')) {
+			if(!userSession.hasOwnProperty('_isStarted') && !maintainMode) {
 				clearInterval(i);
 				if(userSession.id === 0) {
 					rejects(new Error('session expired'));
@@ -46,7 +61,7 @@ async function startSession(sessionToken) {
 				userSession._isStarted = true;
 				resolve(userSession);
 			}
-		}, 500);
+		}, maintainMode ? SESSION_START_MAINTAIN_REATTEMPT_DELAY : SESSION_START_REATTEMPT_DELAY);
 	});
 }
 
@@ -86,16 +101,10 @@ async function registerUser(reqData) {
 		if (pgs.length > 0) {
 			throw new Error('EMAIL_ALREADY');
 		} else {
-			
 			let actKey = crypto.randomBytes(24).toString('base64');
-			
 			let href = getServerHref() + '?activate_user&key=' + actKey;
-			
-			require_once('core/mail_utf8.php');
-			mail_utf8(login, L('CONFIRM_EMAIL_SUBJ'), L('CONFIRM_EMAIL', APP_TITLE) + href);
-			
 			await mysqlExec("INSERT INTO `_users` (status, `name`, `PASS`, `email`, `company`, `activation`) VALUES (2,'" + name + "','" + (await getPasswordHash(password)) + "','" + login + "','" + company + "','" + actKey + "');");
-			
+			await mail_utf8(login, L('CONFIRM_EMAIL_SUBJ'), L('CONFIRM_EMAIL', APP_TITLE) + href);
 			return L('EMAIL_SENDED', login);
 		}
 	}
@@ -214,7 +223,7 @@ async function authorizeUserByID(userID, isItServerSideRole, sessionToken) {
 		userRoles[USER_ROLE_ID] = 1;
 		cacheKeyGenerator = [USER_ROLE_ID]
 	}
-	for(role of roles) {
+	for(let role of roles) {
 		cacheKeyGenerator.push(role._rolesID);
 		userRoles[role._rolesID] = 1;
 	}
@@ -246,8 +255,13 @@ async function authorizeUserByID(userID, isItServerSideRole, sessionToken) {
 	}
 	createSession(userSession, sessionToken);
 	if(isItServerSideRole) {
+	/// #if DEBUG
+
+	/*
+	/// #endif
 		userSession.__temporaryServerSideSession = true
 		Object.freeze(userSession);
+	//*/
 	} else {
 		await setMultiLang(pag.multilangEnabled, userSession);
 	}
@@ -287,4 +301,30 @@ async function setMultiLang(enable, userSession) {
 	return 1;
 }
 
-module.exports = {setCurrentOrg, setMultiLang, login, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref};
+let transporter;
+async function mail_utf8(email, subject, text) {
+	return new Promise((resolve, rejects) => {
+		if(process.env.DEBUG) {
+			return;
+		}
+		if(!transporter) {
+			require("nodemailer").createTransport({
+				sendmail: true,
+				newline: 'unix',
+				path: '/usr/sbin/sendmail'
+			})
+		}
+		transporter.sendMail({
+			from: process.env.EMAIL_FROM,
+			to: email,
+			subject,
+			text
+		}, (err) => {if(err) {
+			rejects(err);	
+		} else {
+			resolve();
+		}});
+	});
+}
+
+module.exports = {setCurrentOrg, setMultiLang, login, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode};

@@ -1,12 +1,14 @@
+"use strict";
 const {mysqlExec} = require("./mysql-connection");
 const fs = require('fs');
 const path = require("path");
 const {isUserHaveRole} = require("../www/both-side-utils");
-const auth = require("./auth");
+
 
 let nodes;
 let nodesById;
 let langs;
+let eventsHandlers;
 
 const ADMIN_USER_SESSION = {};
 const GUEST_USER_SESSION = {};
@@ -14,7 +16,7 @@ const GUEST_USER_SESSION = {};
 const clientSideNodes = new Map();
 const nodesTreeCache = new Map();
 
-const eventsHandlers = new Map();
+
 
 function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION) {
 	assert(!isNaN(nodeId), 'nodeId expected');
@@ -87,14 +89,29 @@ function getNodesTree(userSession) { // get nodes tree visible to user
 	return nodesTreeCache.get(cacheKey);
 }
 
+async function reInitNodesData() {
+	const {setMainTainMode} = require("./auth");
+	setMainTainMode(true);
+	await initNodesData();
+	setMainTainMode(false);
+}
+
 async function initNodesData() { // load whole nodes data in to memory
+	let nodes_new;
+	let nodesById_new;
+	let langs_new;
+	let eventsHandlers_new = new Map();
 
-	nodesById = new Map();
+	nodesById_new = new Map();
+	/// #if DEBUG
+	await mysqlExec('-- ======== NODES RELOADING STARTED ===================================================================================================================== --');
+	/// #endif
+
 	let query = "SELECT * FROM _nodes WHERE status=1";
-	nodes = await mysqlExec(query);
+	nodes_new = await mysqlExec(query);
 
-	for(nodeData of nodes) {
-		nodesById.set(nodeData.id, nodeData);
+	for(let nodeData of nodes_new) {
+		nodesById_new.set(nodeData.id, nodeData);
 		nodeData.sortFieldName = 'createdOn';
 		
 		let rolesToAccess = await mysqlExec("SELECT roleId, prevs FROM _rolePrevs WHERE nodeID = 0 OR nodeID = " + nodeData.id);
@@ -144,15 +161,20 @@ async function initNodesData() { // load whole nodes data in to memory
 			let moduleFileName = path.join(__dirname, '../events/' + nodeData.tableName + '.js');
 			if(fs.existsSync(moduleFileName)) {
 				let handler = require(moduleFileName);
-				eventsHandlers.set(nodeData.id, handler);
+				eventsHandlers_new.set(nodeData.id, handler);
 			}
 		}
 	}
 
-	langs = await mysqlExec("SELECT id, name, code FROM _languages WHERE id <> 0");
-	for(let l of langs) {
+	langs_new = await mysqlExec("SELECT id, name, code FROM _languages WHERE id <> 0");
+	for(let l of langs_new) {
 		l.prefix = l.code ? ('_' + l.code) : '';
 	}
+
+	nodes = nodes_new;
+	nodesById = nodesById_new;
+	langs = langs_new;
+	eventsHandlers = eventsHandlers_new;
 	clientSideNodes.clear();
 	nodesTreeCache.clear();
 }
@@ -167,4 +189,4 @@ function getEventHandler(nodeId, eventName) {
 	}
 }
 
-module.exports = {getNodeDesc, initNodesData, getNodesTree, getEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION};
+module.exports = {getNodeDesc, initNodesData, getNodesTree, getEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION, reInitNodesData};

@@ -1,8 +1,10 @@
+"use strict";
+const {nodePrevs} = require('./admin/node-prevs.js');
 const {setCurrentOrg, setMultiLang, login, resetPassword, registerUser, activateUser} = require('./auth.js');
 const {getNodeDesc, getNodesTree} = require('./desc-node.js');
 const {getRecords, deleteRecord} = require('./get-records.js');
 const {submitRecord} = require('./sumbit.js');
-const {uploadImage} = require('./upload-image.js');
+const {uploadImage, uploadFile} = require('./upload.js');
 
 const api = {
 	"api/":(reqData, userSession, res) => {
@@ -38,6 +40,9 @@ const api = {
 	"api/uploadImage.php":(reqData, userSession, res) => {
 		uploadImage(reqData, userSession).then(res);
 	},
+	"api/uploadFile.php":(reqData, userSession, res) => {
+		uploadFile(reqData, userSession).then(res);
+	},
 	"register.php":(reqData, userSession, res) => {
 		registerUser(reqData).then(res);
 	},
@@ -49,6 +54,9 @@ const api = {
 	},
 	"activate.php":(reqData, userSession, res) => {
 		activateUser(reqData.key).then(res);
+	},
+	"admin/nodePrevs.php":(reqData, userSession, res) => {
+		nodePrevs(reqData, userSession).then(res);
 	}
 };
 

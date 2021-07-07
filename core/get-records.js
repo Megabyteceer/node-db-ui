@@ -1,3 +1,4 @@
+"use strict";
 const {getNodeDesc, getEventHandler} = require('./desc-node.js');
 const {mysqlExec} = require("./mysql-connection");
 

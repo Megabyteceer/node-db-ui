@@ -1,9 +1,11 @@
+"use strict";
 const fs = require('fs');
 const path = require('path');
-const {isAdmin, idToImgURL} = require("../www/both-side-utils");
+const {isAdmin} = require("../www/both-side-utils");
 const {getEventHandler, getNodeDesc, ADMIN_USER_SESSION} = require("./desc-node");
 const {getRecords} = require("./get-records");
 const {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit, mysqlInsertedID} = require("./mysql-connection");
+const {UPLOADS_FILES_PATH, idToImgURLServer} = require('./upload');
 
 async function submitRecord(nodeId, data, recId = false, userSession = ADMIN_USER_SESSION) {
 	
@@ -115,6 +117,22 @@ async function submitRecord(nodeId, data, recId = false, userSession = ADMIN_USE
 				leastOneTablesFieldUpdated = true;
 			}
 		}
+
+		let realDataBefore;
+		if(currentData) {
+			for(let f of node.fields) { // save filenames to delete updated files later
+				let fieldName = f.fieldName;
+				if (!f.nostore && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
+					let fieldType = f.fieldType;
+					if((fieldType === FIELD_12_PICTURE) || (fieldType === FIELD_21_FILE)) {
+						if(realDataBefore) {
+							realDataBefore = {};
+						}
+						realDataBefore[fieldName] = currentData[fieldName];
+					}
+				}
+			}
+		}
 		
 		if(recId !== false) {
 			let h = getEventHandler(nodeId, 'update');
@@ -166,18 +184,34 @@ async function submitRecord(nodeId, data, recId = false, userSession = ADMIN_USE
 						break;
 					
 					case FIELD_21_FILE:
+						
+						//continue to process as uploaded image
+					case FIELD_12_PICTURE:
 						if(fieldVal && (!userSession.uploaded || !userSession.uploaded[fieldVal])) {
 							throw new Error("Error. Couldn't link uploaded file to the record.");
 						} else {
 							delete userSession.uploaded[fieldVal];
 						}
-						//continue to process as a text field
-					case FIELD_12_PICTURE:
-						if(currentData[fieldName]) {
+						if(currentData && realDataBefore[fieldName]) {
+							if(realDataBefore[fieldName] !== fieldVal) {
+								if(!filesToDelete) {
+									filesToDelete = [];
+								}
+								if (fieldType === FIELD_12_PICTURE) {
+									filesToDelete.push(idToImgURLServer(currentData[fieldName]));
+								} else {
+									filesToDelete.push(path.join(UPLOADS_FILES_PATH, currentData[fieldName]));
+								}
+							}
+						}
+
+
+						if(realDataBefore && realDataBefore[fieldName]) {
 							debugger;
 							filesToDelete = filesToDelete || [];
-							filesToDelete.push(idToImgURL(currentData[fieldName]));
+							
 						}
+						//continue to process as text
 					case FIELD_1_TEXT:
 					case FIELD_9_EMAIL:
 					case FIELD_10_PASSWORD:
