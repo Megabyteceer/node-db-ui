@@ -1,5 +1,5 @@
 "use strict";
-const {nodePrevs} = require('./admin/node-prevs.js');
+const {nodePrevs, getClientEventHandler} = require('./admin/admin.js');
 const {setCurrentOrg, setMultiLang, login, resetPassword, registerUser, activateUser} = require('./auth.js');
 const {getNodeDesc, getNodesTree} = require('./desc-node.js');
 const {getRecords, deleteRecord} = require('./get-records.js');
@@ -57,6 +57,9 @@ const api = {
 	},
 	"admin/nodePrevs.php":(reqData, userSession, res) => {
 		nodePrevs(reqData, userSession).then(res);
+	},
+	"admin/getEventHandler.php":(reqData, userSession, res) => {
+		getClientEventHandler(reqData, userSession).then(res);
 	}
 };
 
