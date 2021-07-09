@@ -32,10 +32,6 @@ const getCurrentStack = () => {
 	return a;
 }
 
-global.L = () => {
-	return Array.from(arguments).join(' ');
-}
-
 global.notificationOut = (userSession, text) => {
 	if(userSession.is) {
 		console.log(text);

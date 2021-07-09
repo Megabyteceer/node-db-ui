@@ -2,12 +2,13 @@
 require('dotenv').config()
 const http = require('http');
 const api = require ('./core/api.js');
-const {startSession, authorizeUserByID, finishSession, createSession} = require ('./core/auth');
+const {startSession, authorizeUserByID, finishSession, createSession} = require ('./core/auth.js');
 const {initNodesData, ADMIN_USER_SESSION, GUEST_USER_SESSION} = require('./core/desc-node.js');
 const server = http.createServer();
 const performance = require('perf_hooks').performance;
 const multipart = require('parse-multipart-data');
-const {isUserHaveRole} = require("./www/both-side-utils");
+const {isUserHaveRole} = require("./www/both-side-utils.js");
+require ('./core/locale.js');
 
 server.on('request', (req, res) => {
 	if(req.method === 'POST') {

@@ -275,6 +275,7 @@ function getLang(langId) {
 			return l;
 		}
 	}
+	return ls[0];
 }
 
 async function setCurrentOrg(organID, userSession, updateInBd) {
@@ -293,7 +294,7 @@ async function setCurrentOrg(organID, userSession, updateInBd) {
 async function setMultiLang(enable, userSession) {
 	shouldBeAuthorized(userSession);
 	if(enable && defined('ENABLE_MULTILANG')) {
-		userSession.langs = getLangs();
+		userSession.langs = getLangs(); //TODO: just flag if its enabled
 	} else {
 		delete userSession.langs;
 	}
