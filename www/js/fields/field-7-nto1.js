@@ -29,16 +29,16 @@ registerFieldClass(FIELD_7_Nto1, fieldMixins, fieldLookupMixins, {
 		this.state = {filters:this.generateDefaultFiltersByProps(this.props), value:val};
 	}
 
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.editIt) {//edit item in extended n2m list
+	componentDidUpdate() {
+		if (this.props.editIt) {//edit item in extended n2m list
 			if(!this.state.expanded){
 				this.setState({expanded:true});
 			}
-			this.toggleCreateDialogue(nextProps.editIt);
+			this.toggleCreateDialogue(props.editIt);
 		}
 		
 		if (this.props.filters) {
-			if(!this.state.filters){
+			if(!this.state.filters) {
 				this.state.filters = {};
 			}
 			for (var k in this.props.filters) {

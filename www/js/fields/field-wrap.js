@@ -111,13 +111,13 @@ export default class FieldWrap extends React.Component {
 		this.state = {};
 		this.hidden = props.hidden;
 		props.form.fieldsRefs[props.field.fieldName] = this;
-		this.componentWillReceiveProps(props);
+		this.componentDidUpdate()
 	}
-	
-	componentWillReceiveProps(nextProps) {
-		this.hidden = nextProps.hidden;
+
+	componentDidUpdate() {
+		this.hidden = this.props.hidden;
 		//this.currentValue = nextProps.initialValue;
-		this.fieldDisabled |= nextProps.fieldDisabled;
+		this.fieldDisabled |= this.props.fieldDisabled;
 	}
 
 	hideTooltip() {

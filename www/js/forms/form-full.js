@@ -4,6 +4,8 @@ import constants from "../custom/consts.js";
 import FieldWrap from "../fields/field-wrap.js";
 import {iAdmin} from "../user.js";
 import {consoleLog, L, renderIcon} from "../utils.js";
+import BaseForm from "./form-mixins.js";
+import FormTab from "./form-tab.js";
 
 var style = {
 	marginBottom:7
@@ -62,14 +64,15 @@ function callForEachField(fildRefs, data, functionName, onComplete){
 }
 
 
-export default class FormFull extends React.Component {
+export default class FormFull extends BaseForm {
 	constructor (props) {
 		super(props);
 		this.currentData = Object.assign({}, props.filters, props.initialData);
-		this.resetFieldsProperties();
+		this.componentDidUpdate();
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentDidUpdate() {
+		super.componentDidUpdate();
 		if (nextProps.initialData.id !== this.props.initialData.id) {
 			this.replaceState({});
 			this.resetFieldsProperties(true);

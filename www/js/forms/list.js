@@ -60,7 +60,7 @@ export default class List extends BaseForm {
 
 	constructor(props) {
 		super(props);
-		this.filters =Object.assign({}, props.filters);
+		this.filters = Object.assign({}, props.filters);
 		this.state.node = props.node;
 		this.state.data = props.initialData;
 	}
@@ -71,12 +71,12 @@ export default class List extends BaseForm {
 		this.onShow();
 	}
 
-	componentWillReceiveProps(newProps) {
-		super.componentWillReceiveProps(newProps);
-		this.filters = Object.assign({}, newProps.filters);
+	componentDidUpdate() {
+		super.componentDidUpdate();
+		this.filters = Object.assign({}, this.props.filters);
 		this.setSearchInputValue(this.filters.s);
-		this.state.node = newProps.node;
-		this.state.data = newProps.initialData;
+		this.state.node = this.props.node;
+		this.state.data = this.props.initialData;
 		this.onShow();
 	}
 

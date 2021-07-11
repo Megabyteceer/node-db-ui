@@ -69,7 +69,8 @@ export default class AdminRoleprevsForm extends BaseForm {
 		super(props);
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentDidUpdate(props, state) {
+		super.componentDidUpdate(props, state);
 		this.onShow();
 	}
 

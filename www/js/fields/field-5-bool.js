@@ -8,8 +8,8 @@ export default class CheckBox extends React.Component {
 		this.state = {value:this.props.defaultValue};
 	}
 
-	componentWillReceiveProps(nextProps) {
-		this.setState({value:nextProps.defaultValue});
+	componentDidUpdate() {
+		this.setState({value: this.props.defaultValue});
 	}
 	
 	render() {

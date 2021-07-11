@@ -57,9 +57,9 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 			} else if(fieldType === FIELD_14_NtoM) {//n2m
 				let tblTmpName = 't' + f.id;
 				if(f.icon) {
-					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name,'␞',", f.icon, ") SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, ".id=", tblTmpName, ".id AND ", fieldName, ".", tableName, ".id=",tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
+					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name,'␞',", f.icon, ") SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, ".id=",tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
 				} else {
-					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name) SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, "." ,selectFieldName, ".id=", tblTmpName, ".id AND ", fieldName, ".", tableName, ".id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
+					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name) SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, "." ,selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
 				}
 			} else if(fieldType === FIELD_7_Nto1) {//n21
 				if(f.icon) {
@@ -297,21 +297,22 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 					const fieldType = f.fieldType;
 					if(fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) { //n2m,12n
 						const fieldName = f.fieldName;
-						
-						let a = pag.fieldName.split('␞');
-						let val = array();
-						let i = 1;
-						let l = a.length;
-						while (i < l) {
-							if(f.icon) {
-								val.push({id:a[i-1], name:a[i], icon: a[i+1]});
-								i += 3;
-							} else {
-								val.push({id:a[i-1], name:a[i]});
-								i += 2;
+						if(pag[fieldName]) {
+							let a = pag[fieldName].split('␞');
+							let val = array();
+							let i = 1;
+							let l = a.length;
+							while (i < l) {
+								if(f.icon) {
+									val.push({id:a[i-1], name:a[i], icon: a[i+1]});
+									i += 3;
+								} else {
+									val.push({id:a[i-1], name:a[i]});
+									i += 2;
+								}
 							}
+							pag[fieldName] = val;
 						}
-						pag[fieldName] = val;
 					} else if(fieldType === FIELD_7_Nto1) { //n21
 						const fieldName = f.fieldName;
 						if(pag[fieldName]) {

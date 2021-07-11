@@ -11,8 +11,8 @@ export default class BaseForm extends React.Component {
 		}
 	}
 
-	componentWillReceiveProps(newProps) {
-		this.filters = Object.assign({}, newProps.filters);
+	componentDidUpdate() {
+		this.filters = Object.assign({}, this.props.filters);
 	}
 
 	changeFilter(name, v, refresh) {
