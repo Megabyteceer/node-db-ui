@@ -1,0 +1,11 @@
+{
+	"/// #if DEBUG": {
+		"scope": "javascript",
+		"prefix": "///",
+		"body": [
+			"/// #if DEBUG\n\n\n/// #endif"
+		],
+		"description": "Debug build only code block."
+	}
+}
+

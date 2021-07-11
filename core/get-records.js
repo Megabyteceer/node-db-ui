@@ -187,7 +187,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 					fw = fs.replaceAll('@userid', userSession.id);
 					fw = fs.replaceAll('@orgid', userSession.orgId);
 					if(fw.indexOf('@') >= 0) {
-						for(k in filterFields) {
+						for(let k in filterFields) {
 							fw.replaceAll('@' + k, filterFields[k]);
 						}
 					}
@@ -294,9 +294,9 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 			//TODO: move it to client side?
 			for(let f of node.fields) {
 				if(!f.nostore && (f.show & viewMask)) {
-					fieldType = f.fieldType;
+					const fieldType = f.fieldType;
 					if(fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) { //n2m,12n
-						fieldName = f.fieldName;
+						const fieldName = f.fieldName;
 						
 						let a = pag.fieldName.split('␞');
 						let val = array();
@@ -313,7 +313,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 						}
 						pag[fieldName] = val;
 					} else if(fieldType === FIELD_7_Nto1) { //n21
-						fieldName = f.fieldName;
+						const fieldName = f.fieldName;
 						if(pag[fieldName]) {
 							let a = pag[fieldName].split('␞');
 							if(f.icon) {
@@ -363,9 +363,9 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 		if(items.length) {
 			return items[0];
 		} else {
-			//DEBUG
+			/// #if DEBUG
 			throw new Error("Record not found. nodeId:" + nodeId + ", viewMask: " + viewMask + ", recId: " + recId);
-			//ENDDEBUG
+			/// #endif
 			throw new Error('Record not found.');
 		}
 	}

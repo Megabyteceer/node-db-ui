@@ -1,4 +1,6 @@
-"use strict";
+import {iAdmin} from "../user";
+import {L} from "../utils";
+
 var formsEventsOnLoad = {};
 var formsEventsOnSave = {};
 
@@ -6,7 +8,7 @@ var formsEventsOnSave = {};
 
 	formsEventsOnLoad[4] = function(){//form4onloadBegin_hkasdhwdc
 if(this.rec_update) {
-  this.disableField('isdoc');
+  this.disableField('isDoc');
   this.disableField('tableName');
   this.hideField('createdby_field');
   this.hideField('createdon_field');
@@ -20,7 +22,7 @@ if(this.rec_creation){
   this.hideField('_fieldsID');
 }
 
-this.addLookupFilters('_nodesID','isdoc',0);
+this.addLookupFilters('_nodesID','isDoc',0);
 this.addLookupFilters('_fieldsID', {node_fields_linker: this.rec_ID, forSearch: 1});
 
 	}//form4onloadEnd_hkasdhwdc
@@ -28,7 +30,7 @@ this.addLookupFilters('_fieldsID', {node_fields_linker: this.rec_ID, forSearch: 
 
 	formsEventsOnSave[4] = function(){//form4onsaveBegin_hkasdhwdc
 
-if (!this.fieldValue("isdoc")) {
+if (!this.fieldValue("isDoc")) {
   var v = this.fieldValue("name");
   var v2 = this.fieldValue("singleName");
  if(v &&  !v2)
@@ -74,7 +76,7 @@ if(!iAdmin()) {
 var myname= this.fieldValue('name');
 
 
-if (!userHaveRole(1)) {
+if (!isUserHaveRole(1)) {
 	this.disableField('email');
 }
 
@@ -136,7 +138,7 @@ if (curentUserData.id == this.fieldValue('id')) {
   if(nLang != pLang){
       this.onSaveCallback = function() {
         myPromt(L('RESTARTNOW'), function (){
-          location = __corePath+'login.php'; 
+          location = 'login.php'; 
         });
       };
   }
@@ -200,8 +202,8 @@ if (this.rec_update) {
 	this.disableField("clientOnly");
 }
 
-this.addLookupFilters('node_fields_linker', {isdoc: '1'});
-this.addLookupFilters('nodeRef', {isdoc: '1'});
+this.addLookupFilters('node_fields_linker', {isDoc: 1});
+this.addLookupFilters('nodeRef', {isDoc: 1});
 this.hideField("prior");
 this.hideField("show");
 
@@ -262,7 +264,7 @@ if(this.fieldValue("fieldType")==FIELD_12_PICTURE) {
 
 if (!this.fieldValue('maxlen')) {
 	this.setFieldValue('maxlen',0);
-	if((fieldType == FIELD_1_TEXT) || (fieldType == FIELD_2_INT) || (fieldType == FIELD_3_MONEY) || (fieldType == FIELD_9_EMAIL) || (fieldType == FIELD_10_PASSWORD) || (fieldType == FIELD_13_KEYWORDS) || (fieldType == FIELD_12_PICTURE))  {
+	if((fieldType === FIELD_1_TEXT) || (fieldType == FIELD_2_INT) || (fieldType == FIELD_3_MONEY) || (fieldType == FIELD_9_EMAIL) || (fieldType == FIELD_10_PASSWORD) || (fieldType == FIELD_13_KEYWORDS) || (fieldType == FIELD_12_PICTURE))  {
 		this.fieldAlert('maxlen', L('REQUIRED_FLD'));
 	}
 }
@@ -299,7 +301,7 @@ if(this.rec_update){
 }
 this.disableField('help');
 
-if (!userHaveRole(0) && !userHaveRole(4)) {
+if (!isUserHaveRole(0) && !isUserHaveRole(4)) {
   $('#rec_header').parent().parent().hide();
   this.hideField('help');
   this.hideField('name');

@@ -1,4 +1,5 @@
-"use strict";
+import {L} from "../utils";
+
 var fieldsEvents={};
 
 (function() {
@@ -40,7 +41,7 @@ if(this.fieldValue("fieldType")==FIELD_6_ENUM){
  this.hideField('enum')
 }
 
-if(this.fieldValue("fieldType")==FIELD_1_TEXT || this.fieldValue("fieldType")==FIELD_19_RICHEDITOR){
+if(this.fieldValue("fieldType") === FIELD_1_TEXT || this.fieldValue("fieldType")==FIELD_19_RICHEDITOR){
  this.showField('multilang');
 } else {
  this.hideField('multilang');
@@ -110,7 +111,7 @@ this.setFieldValue("show", shv);
 	
 	
 	fieldsEvents[30] = function() {//field30onchangebegin_cswhggft
-if (this.fieldValue("isdoc") == 1) {
+if (this.fieldValue("isDoc")) {
   this.showField("tableName");
   this.showField("creationName");
   if (this.hasField('creationName_en')) {

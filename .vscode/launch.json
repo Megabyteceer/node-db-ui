@@ -13,18 +13,6 @@
 			],
 			"runtimeArgs": ["--trace-warnings"],
 			"program": "${workspaceFolder}\\index.js"
-		},
-		{
-			"type": "pwa-chrome",
-			"request": "launch",
-			"name": "Client",
-			"webRoot": "${workspaceRoot}",
-            "outFiles": [],
-            "sourceMaps": false,
-            "vueComponentPaths": [],
-            "pauseForSourceMap": true,
-            "enableContentValidation": false,
-            "runtimeArgs": ["https://node-db-ui.com/"]
 		}
 	]
 }

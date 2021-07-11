@@ -1,7 +1,8 @@
-"use strict";
+
 
 if(typeof global === 'undefined') {
-	global = window;
+	
+	window.global = window;
 }
 
 /// #if DEBUG
@@ -12,21 +13,24 @@ global.assert = (condition, errorTxt) => {
 }
 /// #endif
 
-const isUserHaveRole = (userSession, roleId) => {
-	return userSession.userRoles[roleId];
-}
-
-const shouldBeAuthorized = (userSession) => {
-	if(!userSession || userSession.__temporaryServerSideSession || isUserHaveRole(userSession, GUEST_ROLE_ID)) {
+global.shouldBeAuthorized = (userSession) => {
+	if(!userSession || userSession.__temporaryServerSideSession || isUserHaveRole(GUEST_ROLE_ID, userSession)) {
 		throw new Error("operation permitted for authorized user only");
 	}
 }
 
-const isAdmin = (userSession) => {
-	return isUserHaveRole(userSession, ADMIN_ROLE_ID);
+global.isAdmin = (userSession) => {
+	return isUserHaveRole(ADMIN_ROLE_ID, userSession);
 }
 
-const getCurrentStack = () => {
+global.isUserHaveRole = (roleId, userSession) => {
+	if(!userSession && typeof(curentUserData) !== 'undefined') {
+		userSession = curentUserData;
+	}
+	return userSession && userSession.userRoles[roleId];
+}
+
+global.getCurrentStack = () => {
 	let a = new Error().stack.split('\n');
 	a.splice(0, 3);
 	return a;
@@ -81,4 +85,6 @@ global.PREVS_EDIT_ALL = 64;
 global.PREVS_DELETE = 128;
 global.PREVS_PUBLISH = 256;
 
-module.exports = {isUserHaveRole, shouldBeAuthorized, isAdmin, getCurrentStack};
+if(typeof module !== 'undefined') {
+	module.exports = {isUserHaveRole, shouldBeAuthorized, isAdmin, getCurrentStack};
+}

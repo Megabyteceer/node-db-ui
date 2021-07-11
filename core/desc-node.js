@@ -56,8 +56,8 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION) {
 
 function getUserAccessToNode(node, userSession) {
 	let ret = 0;
-	for(role of node.rolesToAccess) {
-		if(isUserHaveRole(userSession, role.roleId)) {
+	for(let role of node.rolesToAccess) {
+		if(isUserHaveRole(role.roleId, userSession)) {
 			ret |= role.prevs;
 		}
 	}

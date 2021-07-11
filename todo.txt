@@ -1,9 +1,23 @@
-admin utils
+
+migrate to modules import completly
+
 
 хендлеры событий
+
+
+separate server side and client side isUserHaveRole
+
+cleanup bind(this) replace with => functions
+
+find all Boolean fields and cleanup related code to non text values
 
 Проверть если файл слишком большой сразу после выбора
 
 Переводы. Стандартные - в коде, кастомные в бд. И грузить их в памать. Гет ланг. Метод возвращающий кастомные переводы.
 
 Юзеру поле языка с 0 по умолчанию. Язык стстемы.
+
+
+Maintenance mode ansver immideatelly with special code and client will resend request later.Count current requests in progress. And stop after zero only.
+
+remove "use strict" from client

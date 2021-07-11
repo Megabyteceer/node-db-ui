@@ -77,6 +77,10 @@ server.on('request', (req, res) => {
 						ret.debug.timeElapsed_ms = performance.now() - startTime;
 						/// #endif
 						
+						if(isUserHaveRole(GUEST_ROLE_ID, userSession)) {
+							ret.isGuest = true;
+						}
+
 						res.writeHead(200, resHeaders);
 
 						if(userSession.hasOwnProperty('notifications')) {
@@ -127,9 +131,9 @@ initNodesData().then(async function () {
 	, "dev-admin-session-token"
 	/// #endif
 	));
-	assert(isUserHaveRole(ADMIN_USER_SESSION, ADMIN_ROLE_ID), "User with id 1 expected to be admin.");
+	assert(isUserHaveRole(ADMIN_ROLE_ID, ADMIN_USER_SESSION), "User with id 1 expected to be admin.");
 	Object.assign(GUEST_USER_SESSION, await authorizeUserByID(2, true));
-	assert(isUserHaveRole(GUEST_USER_SESSION, GUEST_ROLE_ID), "User with id 2 expected to be guest.");
+	assert(isUserHaveRole(GUEST_ROLE_ID, GUEST_USER_SESSION), "User with id 2 expected to be guest.");
 	/// #if DEBUG
 	await authorizeUserByID(3, undefined, "dev-user-session-token");
 	/// #endif
