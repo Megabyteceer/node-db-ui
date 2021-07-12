@@ -2,8 +2,8 @@ import {L, renderIcon, submitData} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
-registerFieldClass(FIELD_21_FILE, {
-	mixins fieldMixins
+registerFieldClass(FIELD_21_FILE, class TextField extends fieldMixins {
+
 	setValue(val) {
 		
 	}
@@ -129,5 +129,4 @@ export default class FileFormBody extends React.Component {
 			select
 		);
 	}
-
 }

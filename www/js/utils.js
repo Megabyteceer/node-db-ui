@@ -740,9 +740,7 @@ function getData(url, params, callback, onError, callStack, noLoadingIndicator) 
 			}
 		}
 	})
-/// #if DEBUG
-/*
-/// #endif
+
 	.catch(function(error) {
 		var roi = __requestsOrder.indexOf(requestRecord);
 		/// #if DEBUG
@@ -759,7 +757,7 @@ function getData(url, params, callback, onError, callStack, noLoadingIndicator) 
 		}
 		myAlert(L('CHECK_CONNECTION'), false, true);
 	})
-//*/
+
 	.finally(function(){
 		while (__requestsOrder.length > 0 && __requestsOrder[0].hasOwnProperty('result')) {
 			var rr = __requestsOrder.shift();
@@ -852,7 +850,7 @@ function createRecord(nodeId, parameters){
 	}
 	getNode (nodeId, function(node) {
 		var emptyData = {};
-		if((node.draftable==='1') && (node.prevs & PREVS_PUBLISH)){ //access to publish records
+		if(node.draftable && (node.prevs & PREVS_PUBLISH)){ //access to publish records
 			emptyData.isPub = 1;
 		}
 
@@ -1194,5 +1192,11 @@ export {
 	goToPageByHash,
 	consoleLog,
 	consoleDir,
-	sp
+	sp,
+	innerDatetimeFormat,
+	toReadableDate,
+	toReadableTime,
+	toReadableDatetime,
+	updateHashLocation,
+	goBack
 }

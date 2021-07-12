@@ -9,7 +9,7 @@ var readOnlyFieldProperties={
 		fontSize:'120%'
 	}
 };
-var readOnlyCompactFieldProperties=null;
+var readOnlyCompactFieldProperties = null;
 
 var notCompactInputStyle = {
 	width:'100%',
@@ -50,7 +50,6 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 		var value = this.state.value;
 		var field = this.props.field;
 		
-		
 		if (typeof(value) !== 'string') {
 			if(value === null || value === undefined){
 				value = '';
@@ -68,11 +67,8 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 			}
 		}
 		
-		
 		if (this.props.isEdit) {
-			
 			var s;
-			
 			if (this.props.isCompact) {
 				if (field.maxlen > 600) {
 					s = notCompactMiddleInputStyle;
@@ -91,7 +87,6 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 				}
 			}
 			
-			
 			var inputsProps = {
 				style:s,
 				defaultValue:value,
@@ -105,19 +100,17 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 				}.bind(this)
 			};
 			
-			
-			
 			if (field.maxlen > 200) {
 				return ReactDOM.textarea(inputsProps);
 			} else {
 				return ReactDOM.input(inputsProps);
 			}
-			
 		} else {
-			return ReactDOM.span(this.props.isCompact?readOnlyCompactFieldProperties:readOnlyFieldProperties,
+			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
 				value
 			);
 		}
 	}
 });
 
+export {readOnlyCompactFieldProperties, readOnlyFieldProperties}

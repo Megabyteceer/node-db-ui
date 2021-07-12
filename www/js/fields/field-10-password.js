@@ -1,18 +1,18 @@
 import {registerFieldClass} from "../utils.js";
+import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import fieldMixins from "./field-mixins.js";
 
+registerFieldClass(FIELD_10_PASSWORD, class TextField extends fieldMixins {
 
-registerFieldClass(10, {
-	mixins:[fieldMixins],
-	setValue: function(val) {
+	setValue(val) {
 		this.refToInput.value = val;
 		this.state.value = val;
-	},
-	render: function() {
+	}
+
+	render() {
 		
 		var value = this.state.value;
 		var field = this.props.field;
-		
 		
 		if (this.props.isEdit) {
 			
@@ -31,14 +31,12 @@ registerFieldClass(10, {
 				}.bind(this)
 			};
 			
-			
 			return ReactDOM.input(inputsProps);
 			
 		} else {
-			return ReactDOM.span(this.props.isCompact?readOnlyCompactFieldProperties:readOnlyFieldProperties,
+			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
 				'********'
 			);
 		}
 	}
 });
-

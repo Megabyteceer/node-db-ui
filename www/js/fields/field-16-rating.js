@@ -1,7 +1,6 @@
-import {L} from "../utils";
+import {L} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
-
 
 var starStyle = {
 	color:'#F54223',
@@ -9,15 +8,14 @@ var starStyle = {
 	marginRight:0
 }
 
-registerFieldClass(FIELD_16_RATING, {
-	mixins:[fieldMixins],
-	setValue: function(val) {
+registerFieldClass(FIELD_16_RATING, class TextField extends fieldMixins {
+
+	setValue(val) {
 		this.refToInput.value = val;
 		this.state.value = val;
-	},
-	render: function() {
-		
-		
+	}
+
+	render() {
 		if(this.state.value.all === 0){
 			return ReactDOM.span(null,
 				L('NORATES')

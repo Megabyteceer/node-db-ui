@@ -1,5 +1,5 @@
-import {iAdmin} from "../user";
-import {L} from "../utils";
+import {iAdmin} from "../user.js";
+import {L} from "../utils.js";
 
 var formsEventsOnLoad = {};
 var formsEventsOnSave = {};
@@ -351,3 +351,5 @@ if(this.rec_update){
 	//insertNewhandlersHere_adsqw09
 	
 })();
+
+export {formsEventsOnLoad, formsEventsOnSave};

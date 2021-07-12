@@ -3,7 +3,7 @@
 import constants from "../custom/consts.js";
 import LeftBar from "../left-bar.js";
 import {iAdmin} from "../user.js";
-import {L, renderIcon, sp} from "../utils.js";
+import {L, renderIcon, sp, updateHashLocation} from "../utils.js";
 import FormItem from "./form-item.js";
 import BaseForm from "./form-mixins.js";
 

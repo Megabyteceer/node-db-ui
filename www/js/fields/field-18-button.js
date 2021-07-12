@@ -3,16 +3,18 @@ import {renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
-registerFieldClass(FIELD_18_BUTTON, {
-	mixins:[fieldMixins],
-	setValue: function(val) {
-	},
-	onClick:function() {
+registerFieldClass(FIELD_18_BUTTON, class TextField extends fieldMixins {
+
+	setValue(val) {
+	}
+
+	onClick() {
 		if (fieldsEvents.hasOwnProperty(this.props.field.id)) {
 			eventProcessingMixins.processFormEvent.call(this.props.form, fieldsEvents[this.props.field.id], true);
 		}
-	},
-	render: function() {
+	}
+
+	render() {
 
 		var field = this.props.field;
 

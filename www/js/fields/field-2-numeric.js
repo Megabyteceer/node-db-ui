@@ -1,19 +1,22 @@
 import {registerFieldClass} from "../utils.js";
+import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import fieldMixins from "./field-mixins.js";
 
-registerFieldClass(FIELD_2_INT, class FIELD_2_INT extends fieldMixins{
-	mixins:[fieldMixins],
-	setValue: function(val) {
+registerFieldClass(FIELD_2_INT, class NumericField extends fieldMixins {
+
+	setValue(val) {
 		this.refToInput.value = val;
 		this.state.value = val;
-	},
-	decodeValue: function(val) {
+	}
+
+	static decodeValue(val) {
 		if(val){
 			return parseInt(val);
 		}
 		return val;
-	},
-	render:function() {
+	}
+
+	render() {
 		
 		var value = this.state.value;
 		var field = this.props.field;
@@ -44,7 +47,7 @@ registerFieldClass(FIELD_2_INT, class FIELD_2_INT extends fieldMixins{
 			
 			return ReactDOM.input(inputsProps);
 		} else {
-			return ReactDOM.span(this.props.isCompact?readOnlyCompactFieldProperties:readOnlyFieldProperties, value.toString());
+			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties, value.toString());
 		}
 		
 	}

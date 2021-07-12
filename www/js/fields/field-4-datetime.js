@@ -1,6 +1,8 @@
-import {L} from "../utils";
+import moment from "./../lib/moment/dist/moment.js";
+import {innerDatetimeFormat, L, toReadableDatetime} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
+import {readOnlyCompactFieldProperties} from "./field-1-text-default.js";
 
 function isSameDay(val, d) {
 	if(!d || !val) return false;
@@ -135,7 +137,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 		
 	}
 
-	decodeDateValue (val) {
+	static decodeValue (val) {
 		//TODO: check if its necessery yet
 		if(val) {
 			if (val === '0000-00-00 00:00:00') {
@@ -146,7 +148,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 		return new moment();
 	}
 
-	encodeValue(val) {
+	static encodeValue(val) {
 		if (!val) {
 			return('0000-00-00 00:00:00');
 		}
@@ -240,9 +242,11 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 				ReactDOM.div({style:{display:'inline-block', width:'60%'}}, React.createElement(Datetime, inputsProps2))
 			);
 		} else {
-			return ReactDOM.span( this.props.isCompact?readOnlyCompactFieldProperties:readOnlyFieldProperties,
+			return ReactDOM.span( this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyCompactFieldProperties,
 				toReadableDatetime(value)
 			)
 		}
 	}
 });
+
+export {dateFieldMixins};

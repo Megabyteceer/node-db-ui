@@ -176,7 +176,7 @@ class BarItem extends React.Component {
 
 				itemBody = ReactDOM.div({onClick:this.closeMenuIfNeed, className:'lb-item'+(item.tabId?" lb-item-"+item.tabId:undefined), style:{overflow:'hidden', width:collapsed?33:undefined}},
 					adminControl,
-					ReactDOM.div({style:(item.isDoc)?innerItemStyle:groupStyle, className:'clickable'+(!item.isDoc ? ' clickable-top' : ''), onClick:function(event) {
+					ReactDOM.div({style:(item.isDoc)?innerItemStyle:groupStyle, className:'clickable'+(!item.isDoc ? ' clickable-top' : ''), onClick:(event) => {
 						if (item.isDoc) {
 							if(item.id === false){
 								setFormFilter('tab', item.tab);
@@ -206,7 +206,6 @@ class BarItem extends React.Component {
 				} else {
 					href = loactionToHash(item.id, item.recId, item.filters, item.editable);
 				}
-				
 				
 				return ReactDOM.a({href: href},
 					itemBody
@@ -258,7 +257,7 @@ export default class LeftBar extends React.Component {
 			var rootItem;
 			var items = {};
 			
-			data.some(function(i){
+			data.some((i) => {
 				items[i.id] = i;
 				if(i.id === 2){
 					rootItem = i;

@@ -1,6 +1,7 @@
 import {L, renderIcon, sp} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
+import fieldLookupMixins from "./field-lookup-mixins.js";
 
 var dropListStyle = {
 	position:'absolute',
@@ -16,7 +17,7 @@ var dropListStyle = {
 	marginBottom: 400
 }
 
-registerFieldClass(FIELD_7_Nto1, fieldMixins, fieldLookupMixins, {
+registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 
 	constructor (props) {
 		super(props);
@@ -121,7 +122,7 @@ registerFieldClass(FIELD_7_Nto1, fieldMixins, fieldLookupMixins, {
 		}
 	}
 
-	encodeValue(val) {
+	static encodeValue(val) {
 
 		if (val && val.hasOwnProperty('id')){
 			return val.id;
@@ -212,11 +213,10 @@ registerFieldClass(FIELD_7_Nto1, fieldMixins, fieldLookupMixins, {
 				list
 			)
 		} else {
-			return ReactDOM.span(this.props.isCompact?readOnlyCompactFieldProperties:readOnlyFieldProperties,
+			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
 				iconPic, value.name
 			)
 		}
 		
 	}
-}
-
+});

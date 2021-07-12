@@ -94,17 +94,17 @@ export default class DebugPanel extends React.Component {
 
 	deployClick(ev) {
 		sp(ev);
-		myPromt(L('DEPLOY_TO', DEPLOY_TO), function() {
+		myPromt(L('DEPLOY_TO', DEPLOY_TO), () => {
 
-			getData('test_uyas87dq8qwdqw/test.php', function(data) {
+			getData('test_uyas87dq8qwdqw/test.php', (data) => {
 				if (data === 'ok') {
 
-					getData('/deploy/api/deploy.php', {commitmessage: 'no message'}, function(deployData) {
-						getData('test_uyas87dq8qwdqw/test.php', {remote: true}, undefined, function(data){
+					getData('/deploy/api/deploy.php', {commitmessage: 'no message'}, (deployData) => {
+						getData('test_uyas87dq8qwdqw/test.php', {remote: true}, undefined, (data) => {
 							if (data==='ok') {
 									
 									myAlert(ReactDOM.span(renderIcon('thumbs-up'), 'Changes aplied to ',
-									ReactDOM.a({href:DEPLOY_TO, target:'_blank', onClick:function(ev){ev.stopPropagation();}},
+									ReactDOM.a({href:DEPLOY_TO, target:'_blank', onClick:(ev) => {ev.stopPropagation();}},
 										DEPLOY_TO
 									),
 									ReactDOM.br(), JSON.stringify(deployData)), true);
@@ -138,9 +138,9 @@ export default class DebugPanel extends React.Component {
 			deployBtn = ReactDOM.a({className:'clickable admin-controll', title:L('DEPLOY'), onClick:this.deployClick, style:{float:'right'}},
 				renderIcon('upload')
 			);
-			cacheClearBtn = ReactDOM.a({className:'clickable admin-controll', title:L('CLEAR_CACHE'), onClick:function(ev) {
+			cacheClearBtn = ReactDOM.a({className:'clickable admin-controll', title:L('CLEAR_CACHE'), onClick:(ev) => {
 				sp(ev);
-				getData('admin/cache_info.php', {clear:1, json: 1}, undefined, function(){});
+				getData('admin/cache_info.php', {clear:1, json: 1}, undefined, () => {});
 			}, style:{float:'right'}},
 				renderIcon('refresh')
 			)
@@ -151,19 +151,19 @@ export default class DebugPanel extends React.Component {
 		} else {
 			if (this.state.expanded) {
 				
-				var items = debugInfo.map(function(i, iKey) {
+				var items = debugInfo.map((i, iKey) => {
 					
 					var entryBody;
 					
 					
 					if(i.hasOwnProperty('SQLs')) {
 						
-						entryBody = i.SQLs.map(function(SQL,key) {
+						entryBody = i.SQLs.map((SQL,key) => {
 								
 								return ReactDOM.div({key:key},
 									
 									ReactDOM.div({style:{fontSize:'140%',margin:'6px'}},
-										ReactDOM.a({className:'clickable', onClick:function(){
+										ReactDOM.a({className:'clickable', onClick:() => {
 											i.SQLs.splice(key,1);
 											self.forceUpdate();
 											
@@ -172,7 +172,7 @@ export default class DebugPanel extends React.Component {
 										SQL.SQL
 									),
 									ReactDOM.div({style:{fontWeight:'bold', color:(SQL.timeElapsed_ms>14)?'#550':'#070'}}, 'time (ms): '+(SQL.timeElapsed_ms || -99999).toFixed(4)),
-									SQL.stack.map(function(i, key){
+									SQL.stack.map((i, key) => {
 										return ReactDOM.p({key:key, style:{marginLeft:'40px'}}, i);
 									})
 									
@@ -187,7 +187,7 @@ export default class DebugPanel extends React.Component {
 					
 					var stackBody;
 					if (i.hasOwnProperty('stack')) {
-						stackBody = i.stack.map(function(i, key) {
+						stackBody = i.stack.map((i, key) => {
 							return ReactDOM.p({key:key, style:{marginLeft:'40px'}}, i);
 						});
 					} else {
@@ -196,7 +196,7 @@ export default class DebugPanel extends React.Component {
 					
 					return ReactDOM.div({style:itemStyle, key:i.id},
 							
-							ReactDOM.a({className:'clickable', onClick:function(){
+							ReactDOM.a({className:'clickable', onClick:() => {
 										debugInfo.splice(iKey,1);
 										self.forceUpdate();
 									}}, renderIcon('trash')),
@@ -244,7 +244,7 @@ export default class DebugPanel extends React.Component {
 							ReactDOM.br(),
 							'requests '+debugInfo.length,
 							ReactDOM.br(),
-							'SQL '+debugInfo.reduce(function(pc,i){
+							'SQL '+debugInfo.reduce((pc,i) => {
 								if(i.hasOwnProperty('SQLs')){
 									pc += i.SQLs.length;
 								}

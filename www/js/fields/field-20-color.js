@@ -8,7 +8,7 @@ var intToColor=function(i) {
 
 var _idCounter=0;
 
-registerFieldClass(FIELD_20_COLOR, fieldMixins, {
+registerFieldClass(FIELD_20_COLOR, class TextField extends fieldMixins {
 
 	constructor (props) {
 		super(props);
@@ -63,4 +63,4 @@ registerFieldClass(FIELD_20_COLOR, fieldMixins, {
 		}
 		
 	}
-}
+});

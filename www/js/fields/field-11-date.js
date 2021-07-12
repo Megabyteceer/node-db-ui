@@ -1,10 +1,10 @@
-import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {innerDatetimeFormat, registerFieldClass} from "../utils.js";
+import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
+import {dateFieldMixins} from "./field-4-datetime.js";
 
-registerFieldClass(FIELD_11_DATE, {
+registerFieldClass(FIELD_11_DATE, class TextField extends dateFieldMixins {
 
-	mixins:[fieldMixins, dateFieldMixins],
-	setValue: function(val) {
+	setValue(val) {
 		if (val) {
 			if (typeof val === 'string') {
 				val = new moment(val);
@@ -23,29 +23,30 @@ registerFieldClass(FIELD_11_DATE, {
 		this.refToInput.setState(props);
 		this.state.value = val;
 		this.props.wrapper.valueListener(val, false, this);
-	},
-	decodeValue: function(val) {
+	}
+
+	static decodeValue(val) {
 		if (val === '0000-00-00 00:00:00') {
 			return null;
 		}
 		return new moment(val, innerDatetimeFormat);
-	},
+	}
 	
-	encodeValue: function(val) {
+	static encodeValue(val) {
 		if (!val) {
 			return('0000-00-00 00:00:00');
 		}
 		return val.format(innerDatetimeFormat);
-	},
-	focusOverride:function(){
+	}
+
+	focusOverride() {
 		this.refToInput.refs.inputInstance.focus();
-	},
-	render:function() {
+	}
+
+	render() {
 		
 		var field = this.props.field;
-		
 		var value = toReadableDate(this.state.value);
-		
 		if (this.props.isEdit) {
 			var inputsProps = {
 				closeOnSelect:true,
@@ -70,7 +71,7 @@ registerFieldClass(FIELD_11_DATE, {
 			);
 			
 		} else {
-			return ReactDOM.span(this.props.isCompact?readOnlyCompactFieldProperties:readOnlyFieldProperties,
+			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
 				value
 			)
 		}

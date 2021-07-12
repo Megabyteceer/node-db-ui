@@ -37,14 +37,14 @@ export default class Notify extends React.Component {
 		if (content) {
 			stack.push({content:content, id:id});
 		}
-		setTimeout(function() {
+		setTimeout(() => {
 			this.hideById(id);
 		}.bind(this), 10000);
 		this.forceUpdate();
 	}
 
 	hideById(id) {
-		stack = stack.filter(function(i){
+		stack = stack.filter((i) => {
 			return i.id !== id;
 		});
 		this.forceUpdate();
@@ -53,15 +53,15 @@ export default class Notify extends React.Component {
 	render() {
 		if (stack.length > 0) {
 			return ReactDOM.div({style:style},
-				stack.map(function(m) {
-					return ReactDOM.div({key:m.id, style:blockStyle, className:'fade-in', onClick:function() {
+				stack.map((m) => {
+					return ReactDOM.div({key:m.id, style:blockStyle, className:'fade-in', onClick:() => {
 								this.hideById(m.id);
-							}.bind(this)},
-							m.content.split('\n').map(function(l,i){
+							}},
+							m.content.split('\n').map((l,i) => {
 								return ReactDOM.div({key:i}, l)
 							})
 					);
-				}.bind(this))
+				})
 			);
 		} else {
 			return ReactDOM.span();

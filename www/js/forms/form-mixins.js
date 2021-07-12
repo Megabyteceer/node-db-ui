@@ -1,3 +1,4 @@
+import {goBack} from "../utils.js";
 
 
 export default class BaseForm extends React.Component {
@@ -9,6 +10,7 @@ export default class BaseForm extends React.Component {
 		if(!this.hasOwnProperty('fieldsRefs')) {
 			this.fieldsRefs = {};
 		}
+		this.cancelClick = this.cancelClick.bind(this);
 	}
 
 	componentDidUpdate() {

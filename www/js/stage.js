@@ -59,7 +59,7 @@ class Stage extends React.Component {
 	}
 
 	_setFormData(node, data, recId, filters, editable) {
-		consoleLog('set form data ('+new Date()+')');
+		consoleLog('set form data');
 		if (typeof(node) !== 'undefined') {
 			//this.state = null
 			this.setState({node:node, data:data, recId:recId, filters:filters, editable:editable});
@@ -132,4 +132,4 @@ class Stage extends React.Component {
 	}
 }
 
-export {Stage, FormLoaderCog}
+export {Stage, FormLoaderCog, defaultButtonStyle, dangerButtonStyle, successButtonStyle}

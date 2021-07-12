@@ -2,7 +2,6 @@ import {L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
-
 var idCounter = 0;
 
 var listeners = {};
@@ -13,14 +12,13 @@ window.addEventListener('message', function(e){
 	}
 });
 
+registerFieldClass(FIELD_19_RICHEDITOR, class TextField extends fieldMixins {
 
-
-registerFieldClass(FIELD_19_RICHEDITOR, {
-	mixins:[fieldMixins],
-	getSummernote: function() {
+	getSummernote() {
 		return this.refs.viewport.contentWindow;
-	},
-	componentDidMount:function() {
+	}
+
+	componentDidMount() {
 		this.iframeId = idCounter++;
 		var field = this.props.field;
 		var w = Math.floor(field.maxlen/1000);
@@ -51,15 +49,17 @@ registerFieldClass(FIELD_19_RICHEDITOR, {
 				s.postMessage({options:options, value:this.state.value},'*');
 			}
 		}.bind(this);
-	},
-	componentWillUnmount:function() {
+	}
+
+	componentWillUnmount() {
 		delete(listeners[this.iframeId]);
 		if (this.interval) {
 			clearInterval(this.interval);
 			delete(this.interval);
 		}
-	},
-	getMessageIfInvalid: function(callback) {
+	}
+
+	getMessageIfInvalid(callback) {
 		if (this.state.value) {
 			var val = this.state.value;
 			if (val.length > 4000000) {
@@ -67,8 +67,9 @@ registerFieldClass(FIELD_19_RICHEDITOR, {
 			}
 		}
 		callback(false);
-	},
-	setValue: function(val, sendToEditor) {
+	}
+
+	setValue(val, sendToEditor) {
 		if ($('<div>'+val+'</div>').text() === '') {
 			val = '';
 		}
@@ -79,8 +80,9 @@ registerFieldClass(FIELD_19_RICHEDITOR, {
 			}
 			this.state.value = val;
 		}
-	},
-	render:function() {
+	}
+
+	render() {
 		var field = this.props.field;
 
 		var w = Math.floor(field.maxlen/1000)+230;

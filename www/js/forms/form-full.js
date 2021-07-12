@@ -1,9 +1,13 @@
 
 
 import constants from "../custom/consts.js";
+import fieldsEvents from "../events/fields_events.js";
+import {formsEventsOnLoad, formsEventsOnSave} from "../events/forms_events.js";
 import FieldWrap from "../fields/field-wrap.js";
+import LeftBar from "../left-bar.js";
+import {defaultButtonStyle} from "../stage.js";
 import {iAdmin} from "../user.js";
-import {consoleLog, L, renderIcon} from "../utils.js";
+import {consoleLog, goBack, L, renderIcon} from "../utils.js";
 import BaseForm from "./form-mixins.js";
 import FormTab from "./form-tab.js";
 
@@ -19,8 +23,13 @@ function tryBackup() {
 	}
 }
 window.addEventListener('unload', tryBackup);
-setInterval(tryBackup, 15000);
 
+/*
+setInterval(tryBackup, 15000);
+*/// #if DEBUG
+
+
+/// #endif
 function callForEachField(fildRefs, data, functionName, onComplete){
 	var isInvalidForm = false;
 	var callbacksCount = 0;
@@ -68,16 +77,25 @@ export default class FormFull extends BaseForm {
 	constructor (props) {
 		super(props);
 		this.currentData = Object.assign({}, props.filters, props.initialData);
-		this.componentDidUpdate();
+		this.resetFieldsProperties();
+		this.backupCurrentDataIfNeed = this.backupCurrentDataIfNeed.bind(this);
+	}
+	
+	componentDidUpdate() {
+		if(this.needCallOnload){
+			this.recoveryBackupIfNeed();
+			this.onShow();
+			delete(this.needCallOnload);
+		}
 	}
 
-	componentDidUpdate() {
-		super.componentDidUpdate();
+	getDerivedStateFromProps (nextProps, prevState) {
+
 		if (nextProps.initialData.id !== this.props.initialData.id) {
 			this.replaceState({});
 			this.resetFieldsProperties(true);
 		}
-		setTimeout(function(){
+		setTimeout(() => {
 			this.callOnTabShowEvent(nextProps.filters.tab);
 			this.timeout = null;
 		}.bind(this), 0);
@@ -373,14 +391,6 @@ export default class FormFull extends BaseForm {
 		this.recoveryBackupIfNeed();
 		this.onShow();
 		backupCallback = this.backupCurrentDataIfNeed;
-	}
-
-	componentDidUpdate() {
-		if(this.needCallOnload){
-			this.recoveryBackupIfNeed();
-			this.onShow();
-			delete(this.needCallOnload);
-		}
 	}
 
 	recoveryBackupIfNeed() {
@@ -779,7 +789,7 @@ export default class FormFull extends BaseForm {
 		
 
 			if (this.props.editable) {
-				if ((node.draftable!=='1') || !isMainTab || this.disableDrafting || (data.id && !data.isPub) || !(node.prevs & PREVS_PUBLISH)) {
+				if (!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isPub) || !(node.prevs & PREVS_PUBLISH)) {
 					saveButton = ReactDOM.button({className:'clickable clickable-edit save-btn', style:successButtonStyle, onClick:this.saveClick, title:L('SAVE')}, this.isSlave()?renderIcon('check'):renderIcon('floppy-o'), this.isSlave()?'':L('SAVE'));
 				} else {
 					if(data.status === '1'){

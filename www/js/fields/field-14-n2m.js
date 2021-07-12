@@ -1,6 +1,6 @@
 import {L, renderIcon, sp} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import fieldLookupMixins from "./field-lookup-mixins.js";
 
 var keyCounter=0;
 var dragItem;
@@ -9,9 +9,7 @@ var dragListenersInited;
 
 var refs=[];
 
-registerFieldClass(FIELD_14_NtoM, , {
-
-	mixins fieldMixins, fieldLookupMixins
+registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 
 	constructor (props) {
 		super(props);
@@ -25,11 +23,13 @@ registerFieldClass(FIELD_14_NtoM, , {
 		if(!n2mValuesEqual(val, this.state.value)) {
 			this.setState({value:val});
 		}
-	},
-	extendEditor:function() {
+	}
+
+	extendEditor() {
 		this.setState({extendedEditor:true});
-	},
-	valueListener:function(newVal, withBounceDelay, sender) {
+	}
+
+	valueListener(newVal, withBounceDelay, sender) {
 		if (sender.props.isNew) {
 			this.state.value.splice(sender.props.pos,0,newVal);
 			this.forceUpdate();
@@ -41,11 +41,13 @@ registerFieldClass(FIELD_14_NtoM, , {
 				this.props.wrapper.valueListener(this.state.value, false, this);
 			}
 		}
-	},
-	isDividerItem: function(v, field) {
+	}
+
+	isDividerItem(v, field) {
 		return this.state.extendedEditor && v && (v[field.icon] === '111111');
-	},
-	dragStart:function(item){
+	}
+
+	dragStart(item) {
 		if (!dragListenersInited) {
 			$(document).on('mouseup',function(){
 				if (dragItem) {
@@ -95,8 +97,9 @@ registerFieldClass(FIELD_14_NtoM, , {
 		dragList = this;
 		dragItem = item;
 		this.forceUpdate();
-	},
-	deleteItemByIndex:function(i) {
+	}
+
+	deleteItemByIndex(i) {
 		if (this.beforeRemoveChecking) {
 			this.beforeRemoveChecking(function(){
 				this.state.value.splice(i,1);
@@ -107,8 +110,9 @@ registerFieldClass(FIELD_14_NtoM, , {
 			this.state.value.splice(i,1);
 			this.forceUpdate();
 		}
-	},
-	renderItem:function (field, v, i, isEdit) {
+	}
+
+	renderItem(field, v, i, isEdit) {
 		
 		var isDrag = (dragItem === v);
 		var buttons;
@@ -216,9 +220,6 @@ registerFieldClass(FIELD_14_NtoM, , {
 				key='emp'+keyCounter;
 				keyCounter++;
 			}
-			
-			
-			
 
 			var body = ReactDOM.div({key:key, ref:v?function(ref){refs[UID(v)]=ref;}:undefined, style:{padding:'2px 20px', borderBottom:borderBottom, outline:isDrag?'3px solid #0d5':undefined}},
 				ReactDOM.div({style:{width:'70%', display:'inline-block'}},
@@ -241,10 +242,9 @@ registerFieldClass(FIELD_14_NtoM, , {
 		} else {
 			return undefined;
 		}
-	
-	
-	},
-	render:function() {
+	}
+
+	render() {
 		if (!this.state.value) {
 			this.state.value = [];
 		}
@@ -277,4 +277,4 @@ registerFieldClass(FIELD_14_NtoM, , {
 		);
 		
 	}
-}
+});

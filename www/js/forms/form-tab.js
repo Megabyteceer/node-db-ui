@@ -1,4 +1,5 @@
 export default class FormTab extends React.Component {
+	
 	constructor (props) {
 		super(props);
 		this.state ={visible: this.props.visible};

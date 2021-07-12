@@ -55,7 +55,7 @@ renderItemsButtons = function(node, data, refreshFunction, formItem, editButtonF
 	} else {
 		
 		var itemName;
-		if((node.draftable!=='0') && (data.status !== '1')){
+		if(node.draftable && (data.status !== '1')){
 			itemName=' '+L('TEMPLATE');
 		} else {
 			itemName='';
@@ -164,7 +164,7 @@ export default class FormItem extends BaseForm {
 		}
 		
 		var itemProps;
-		if((this.props.node.draftable!=='0') && (data.status !== '1')){
+		if(this.props.node.draftable && (data.status !== '1')){
 			itemProps = {style:{background:'#eee', opacity:1}}
 		} else {
 			itemProps = {};

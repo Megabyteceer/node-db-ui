@@ -1,4 +1,4 @@
-import {L} from "../utils";
+import {L} from "../utils.js";
 
 var fieldsEvents={};
 
@@ -226,3 +226,5 @@ this.check12nFieldName();
 	}//field253onchangeend_wqdggft
 	//insertNewhandlersHere_adsqw09
 })();
+
+export default fieldsEvents;

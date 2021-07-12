@@ -1,4 +1,5 @@
 
+import fieldsEvents from "../events/fields_events.js";
 import {L, renderIcon, sp} from "../utils.js";
 
 
@@ -7,10 +8,11 @@ var showedFieldId;
 
 class FieldAdmin extends React.Component {
 	constructor(props) {
-	super(props);
-	this.state = {show: showedFieldId===this.props.field.id};
-	},
-	show:function(){
+		super(props);
+		this.state = {show: showedFieldId===this.props.field.id};
+	}
+
+	show() {
 		if(this.timeout){
 			clearTimeout(this.timeout);
 			delete(this.timeout);
@@ -19,16 +21,19 @@ class FieldAdmin extends React.Component {
 			
 			this.setState({show:true});
 		}
-	},
-	hide:function(){
+	}
+
+	hide() {
 		if(this.state.show){
 			this.setState({show:false});
 		}
-	},
-	toggleLock:function(){
+	}
+
+	toggleLock() {
 		this.setState({locked:!this.state.locked});
-	},
-	render:function() {
+	}
+
+	render() {
 		
 		var field = this.props.field;
 		var node = field.node;
@@ -132,6 +137,5 @@ class FieldAdmin extends React.Component {
 			),
 			body
 		)
-		
 	}
 }

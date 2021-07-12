@@ -58,7 +58,7 @@ export default class Modal extends React.Component {
 			/// #endif
 			modalStack.pop();
 		} else {
-			modalStack = modalStack.filter(function(m){
+			modalStack = modalStack.filter((m) => {
 				return m.id !== idTohide;
 			});
 		}
@@ -68,20 +68,20 @@ export default class Modal extends React.Component {
 	render() {
 		if (modalStack.length > 0) {
 			return ReactDOM.div(null,
-				modalStack.map(function(m) {
+				modalStack.map((m) => {
 					
 					var bs = Object.assign({cursor: m.noDiscardByBackdrop?'default':'pointer'}, backdropStyle);
 					
-					return ReactDOM.div({key:m.id, style:bs, className:'fade-in', onClick:function(){
+					return ReactDOM.div({key:m.id, style:bs, className:'fade-in', onClick:() => {
 								if(!m.noDiscardByBackdrop){
 									this.hide();
 								}
-							}.bind(this)},
+							}},
 							ReactDOM.div({style:style, onClick:sp},
 							m.content
 						)
 					);
-				}.bind(this))
+				})
 			);
 		} else {
 			return ReactDOM.span();

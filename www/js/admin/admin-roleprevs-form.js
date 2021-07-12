@@ -126,7 +126,7 @@ export default class AdminRoleprevsForm extends BaseForm {
 					React.createElement(PrevsEditor, {bitsCount:1, baseBit:PREVS_CREATE, item:i}),
 					React.createElement(PrevsEditor, {bitsCount:3, baseBit:PREVS_EDIT_OWN, item:i}),
 					React.createElement(PrevsEditor, {bitsCount:1, baseBit:PREVS_DELETE, item:i}),
-					(node.draftable!=='0')?React.createElement(PrevsEditor, {bitsCount:1, baseBit:PREVS_PUBLISH, item:i}):undefined
+					node.draftable ? React.createElement(PrevsEditor, {bitsCount:1, baseBit:PREVS_PUBLISH, item:i}):undefined
 				)
 			});
 			
@@ -144,7 +144,7 @@ export default class AdminRoleprevsForm extends BaseForm {
 							ReactDOM.th(null,L('CREATE')),
 							ReactDOM.th(null,L('EDIT')),
 							ReactDOM.th(null,L('DELETE')),
-							(node.draftable!=='0')?ReactDOM.th(null,L('PUBLISH')):undefined
+							node.draftable ? ReactDOM.th(null,L('PUBLISH')) : undefined
 						)
 					),
 					ReactDOM.tbody(null,

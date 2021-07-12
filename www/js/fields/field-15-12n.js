@@ -1,10 +1,8 @@
 import {L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import fieldLookupMixins from "./field-lookup-mixins.js";
 
-registerFieldClass(FIELD_15_1toN, {
-
-	mixins fieldMixins, fieldLookupMixins
+registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 
 	constructor (props) {
 		super(props);
@@ -152,4 +150,4 @@ registerFieldClass(FIELD_15_1toN, {
 		}
 		return body;
 	}
-}
+});

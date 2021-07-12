@@ -1,5 +1,5 @@
 import constants from "../custom/consts.js";
-import {L, renderIcon} from "../utils.js";
+import {idToImgURL, L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
@@ -21,28 +21,32 @@ $.fn.serializefiles = function() {
 	return formData;
 };
 
-registerFieldClass(FIELD_12_PICTURE, {
-	mixins: [fieldMixins],
-	setValue: function(val) {
+registerFieldClass(FIELD_12_PICTURE, class TextField extends fieldMixins {
+
+	setValue(val) {
 		
-	},
-	isEmpty:function(){
+	}
+
+	isEmpty() {
 		//for checkingIfIsEmpty
 		return this.refs.cropperBody.refs.fileInput.value;
-	},
-	focusOverride:function() {
+	}
+
+	focusOverride() {
 		this.refs.cropperBody.refs.selectButton.focus();
-	},
-	beforeSave:function(callback){
+	}
+
+	beforeSave(callback) {
 		this.refs.cropperBody.save(callback);
-	},
-	render:function() {
+	}
+
+	render() {
 		var field = this.props.field;
 		
 		var imgUrl = idToImgURL(this.props.initialValue, this.props.field.fieldName);
 		
 		if (this.props.isEdit) {
-			return React.createElement(CroperFieldBody, {field:field, ref: 'cropperBody', parent:this, imageRenderer:this.props.form.imageRenderer, form:this.props.form, currentPicUrl:imgUrl, isCompact:this.props.isCompact});
+			return React.createElement(CropperFieldBody, {field:field, ref: 'cropperBody', parent:this, imageRenderer:this.props.form.imageRenderer, form:this.props.form, currentPicUrl:imgUrl, isCompact:this.props.isCompact});
 		} else if(this.props.isCompact) {
 			return ReactDOM.img({src:imgUrl, style:{borderRadius:'3px', maxHeight:this.props.form.props.parentForm?'30px':'60px', width: 'auto'}})
 		} else {
@@ -50,8 +54,8 @@ registerFieldClass(FIELD_12_PICTURE, {
 		}
 	}
 });
-	
-class CroperFieldBody extends React.Component {
+
+class CropperFieldBody extends React.Component {
 
 	constructor (props) {
 		super(props);

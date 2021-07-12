@@ -26,7 +26,6 @@ export default class CheckBox extends React.Component {
 		);
 	}
 }
-	
 
 var style = {
 	cursor:'pointer',
@@ -60,20 +59,22 @@ var checkStyle = {
 }
 
 
+registerFieldClass(FIELD_5_BOOL, class BooleanField extends fieldMixins {
 
-registerFieldClass(FIELD_5_BOOL, {
-	mixins:[fieldMixins],
-	setValue: function(val) {
+	setValue(val) {
 		val = (val !== '0') && Boolean(val);
 		this.setState({value:val});
-	},
-	decodeValue: function(val){
+	}
+
+	static decodeValue(val) {
 		return val === '1';
-	},
-	encodeValue: function(val) {
+	}
+
+	static encodeValue(val) {
 		return val?'1':'0';
-	},
-	render:function() {
+	}
+
+	render() {
 		
 		var value = this.state.value;
 		var field = this.props.field;

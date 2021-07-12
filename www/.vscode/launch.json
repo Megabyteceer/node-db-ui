@@ -14,7 +14,9 @@
             "sourceMaps": false,
             "vueComponentPaths": [],
             "enableContentValidation": false,
-            "url": "https://node-db-ui.com:1443/"
+			"pauseForSourceMap": true,
+            "url": "https://node-db-ui.com:1443/#n/82/r/1",
+			"userDataDir": "C:\\tmp\\userdir"
 		}
 	]
 }
