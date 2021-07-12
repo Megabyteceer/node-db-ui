@@ -64,10 +64,10 @@ class FieldAdmin extends React.Component {
 			body = ReactDOM.div({
 					ref:keepInWindow,
 					style:{position:'absolute', textAlign:'left', zIndex:4+zAdd,fontSize:'70%', display:'inline-block', verticalAlign:'top', marginTop:'-5px', marginLeft:10, color:'#800', padding:'10px', borderRadius:'5px', background:'#fee', border:'1px solid #ebb'},
-					onClick:function(){clearTimeout(this.timeout); delete(this.timeout); showedFieldId=this.props.field.id }.bind(this),
-					onMouseLeave:function(){
+					onClick:() => {clearTimeout(this.timeout); delete(this.timeout); showedFieldId=this.props.field.id },
+					onMouseLeave:() => {
 							this.hide()
-						}.bind(this)},
+						}},
 				L('FLD_SETTINGS'),
 				ReactDOM.b({style:{fontSize:'130%'}},
 					field.fieldName
@@ -76,15 +76,15 @@ class FieldAdmin extends React.Component {
 					field.name+ '; type: '+field.fieldType+'; id: '+field.id + '; len:' + field.maxlen
 				),
 				ReactDOM.div({style:{marginTop:'5px', textAlign:'center', whiteSpace:'nowrap'}},
-					ReactDOM.button({className:'clickable toolbtn', style:{border:border, background:'#944',color:'#fcc', paddingLeft:'6px', paddingRight:'6px'}, onClick:function(){
+					ReactDOM.button({className:'clickable toolbtn', style:{border:border, background:'#944',color:'#fcc', paddingLeft:'6px', paddingRight:'6px'}, onClick:() => {
 								
 								admin_editSource('onchange', node, field);
 								
-							}.bind(this)
+							}
 						},
 						'onChange...'
 					),
-					ReactDOM.button({className:'clickable toolbtn', style:{background:'#944',color:'#fcc'}, onClick:function(){
+					ReactDOM.button({className:'clickable toolbtn', style:{background:'#944',color:'#fcc'}, onClick:() => {
 								var i = field.index;
 								if(i > 0){
 									admin.moveField(i, form, node, -1);
@@ -93,7 +93,7 @@ class FieldAdmin extends React.Component {
 						},
 						renderIcon('arrow-up')
 					),
-					ReactDOM.button({className:'clickable toolbtn', style:{background:'#944',color:'#fcc'}, onClick:function(){
+					ReactDOM.button({className:'clickable toolbtn', style:{background:'#944',color:'#fcc'}, onClick:() => {
 								var i = field.index;
 								if(i < (node.fields.length-1)) {
 									admin.moveField(i, form, node, +1);
@@ -102,36 +102,36 @@ class FieldAdmin extends React.Component {
 						},
 						renderIcon('arrow-down')
 					),
-					ReactDOM.button({className:'clickable toolbtn', style:{background:'#944',color:'#fcc'}, onClick:function(){
+					ReactDOM.button({className:'clickable toolbtn', style:{background:'#944',color:'#fcc'}, onClick:() => {
 								
-								getNodeData(6, field.id, function(data){
+								getNodeData(6, field.id, (data) => {
 									admin.popup(loactionToHash(6, 'new', {prior:data.prior, node_fields_linker:{id:node.id,name:node.singleName}}, true),900,true);
 								});
-							}.bind(this)
+							}
 						},
 						renderIcon('plus')
 					),
-					ReactDOM.button({onClick:function(){
+					ReactDOM.button({onClick:() => {
 							admin.popup(loactionToHash(6, field.id, undefined, true),900,true);
-						}.bind(this), className:'clickable toolbtn', style:{background:'#944',color:'#fcc'}},
+						}, className:'clickable toolbtn', style:{background:'#944',color:'#fcc'}},
 						renderIcon('wrench')
 					),
-					ReactDOM.span({style:{position:'absolute', right:5, top:5}, className:'clickable', onClick:this.toggleLock},
+					ReactDOM.span({style:{position:'absolute', right:5, top:5}, className:'clickable', onClick: this.toggleLock},
 						renderIcon(this.state.locked?'lock':'unlock')
 					
 					)
 				),
 				extendedInfo,
-				ReactDOM.button({onClick:function(){
+				ReactDOM.button({onClick:() => {
 					admin.debug(form.getField(field.fieldName) || form);
-				}.bind(this), className:'clickable toolbtn', style:{background:'#944',color:'#fcc'}, title:'log field to console'},
+				}, className:'clickable toolbtn', style:{background:'#944',color:'#fcc'}, title:'log field to console'},
 					renderIcon('info')
 				)
 			);
 		}
 		
-		return ReactDOM.span({ref:keepInWindow,className:'admin-controll', style:{position:'absolute', zIndex:(bodyVisible?4:3)+zAdd, transform:'translate('+this.props.x+'px, 0)'}, onClick:function(e){sp(e);}},
-			ReactDOM.span({ref:keepInWindow,style:{border:border, display:'inline-block',position:'absolute', zIndex:2+zAdd, verticalAlign:'top', padding:'6px', background:'#944', transform:'scale(0.5)', borderRadius:'5px', color:'#fdd'},
+		return ReactDOM.span({ref:keepInWindow, className: 'admin-controll', style:{position: 'absolute', zIndex:(bodyVisible?4:3)+zAdd, transform:'translate('+this.props.x+'px, 0)'}, onClick: sp}},
+			ReactDOM.span({ref:keepInWindow, style: {border:border, display: 'inline-block', position: 'absolute', zIndex:2+zAdd, verticalAlign:'top', padding:'6px', background:'#944', transform:'scale(0.5)', borderRadius:'5px', color:'#fdd'},
 			className:'halfvisible', onMouseEnter:this.show},
 				renderIcon('wrench')
 			),

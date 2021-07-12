@@ -31,9 +31,9 @@ registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 				title:field.name,
 				readOnly :this.props.fieldDisabled,
 				ref:this.refGetter,
-				onChange:function(val) {
+				onChange:(val) => {
 					this.props.wrapper.valueListener(val, false, this);
-				}.bind(this),
+				},
 				options:field.enum
 			};
 			/*

@@ -1,3 +1,4 @@
+import constants from "../custom/consts.js";
 import {L, renderIcon, sp} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
@@ -96,14 +97,14 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			backupCreationData(this.props.field.nodeRef, Object.assign(curBackup,defaultCreationData), backupPrefix);
 		}
 		this.clearLeaveTimout();
-		this.setState({creationOpened:!this.state.creationOpened, backupPrefix:backupPrefix, dataToEdit:undefined, itemIdToEdit:itemIdToEdit});
+		this.setState({creationOpened: !this.state.creationOpened, backupPrefix: backupPrefix, dataToEdit: undefined, itemIdToEdit: itemIdToEdit});
 		if(typeof itemIdToEdit !== 'undefined'){
-			getNodeData(this.props.field.nodeRef, itemIdToEdit, function(data) {
-				getNode(this.props.field.nodeRef, function(node){
+			getNodeData(this.props.field.nodeRef, itemIdToEdit, (data) => {
+				getNode(this.props.field.nodeRef, (node) => {
 					this.saveNodeDataAndFilters(node);
-					this.setState({dataToEdit:data, itemIdToEdit:undefined});
-				}.bind(this));
-			}.bind(this), undefined, true);
+					this.setState({dataToEdit: data, itemIdToEdit: undefined});
+				});
+			}, undefined, true);
 		} else {
 			this.setState({dataToEdit:{}});
 		}
@@ -172,15 +173,14 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			}
 			
 			if (field.requirement !== '1' && !this.props.isN2M) {
-				clearBtn = ReactDOM.div({style:{display:'inline-block',borderRadius:'3px', backgroundColor: constants.DELETE_COLOR, color:'#fff'}, title:L('CLEAR'), className:'clickable clickable-del', onClick:function(e){
+				clearBtn = ReactDOM.div({style:{display:'inline-block',borderRadius:'3px', backgroundColor: constants.DELETE_COLOR, color:'#fff'}, title:L('CLEAR'), className:'clickable clickable-del', onClick:(e) => {
 							sp(e);
 							this.valueChoosed({id:0,name:''}, false, true);
 							if (this.state.expanded) {
 								this.toggleList();
 							}
-						}.bind(this)
+						}
 					},
-				
 					renderIcon('times')
 				)
 				var mrg = -56;

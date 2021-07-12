@@ -8,7 +8,7 @@ var curentUserData;
 
 function setUserOrg(orgId) {
 	if (curentUserData.orgId !== orgId) {
-		getData('api/setCurrentOrg.php', {orgId}, function() {
+		getData('api/setCurrentOrg.php', {orgId}, () => {
 			User.instance.refreshUser();
 		});
 	}
@@ -52,10 +52,10 @@ export default class User extends React.Component {
 	}
 	
 	refreshUser() {
-		getData('api/getMe.php', undefined, function(data) {
+		getData('api/getMe.php', undefined, (data) => {
 			data.lang.code = data.lang.code || 'en';
 			moment.locale(data.lang.code);
-			loadJS('/locales/' + data.lang.code + '/lang.js' , function() {
+			loadJS('/locales/' + data.lang.code + '/lang.js' , () => {
 				this.setState(data);
 				
 				window.curentUserData = data;
@@ -66,21 +66,20 @@ export default class User extends React.Component {
 					isFirstCall = false;
 					goToPageByHash();
 				}
-			}.bind(this))
-			
-		}.bind(this))
+			})
+		})
 	}
 	
 	changeOrg(value) {
 		clearForm();
-		setTimeout(function() {
+		setTimeout(() => {
 			setUserOrg(value);
 			showForm(14);
 		}, 10);
 	}
 	
 	toggleMultilang() {
-		getData('api/toggleMultilang.php', undefined, function() {
+		getData('api/toggleMultilang.php', undefined, () => {
 			window.location.reload();
 		});
 		

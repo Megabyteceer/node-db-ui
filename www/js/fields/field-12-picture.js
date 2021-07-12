@@ -4,18 +4,18 @@ import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
 
-$.fn.serializefiles = function() {
+$.fn.serializefiles = () =>  {
 	var obj = $(this);
 	/* ADD FILE TO PARAM AJAX */
 	var formData = new FormData();
-	$.each($(obj).find("input[type='file']"), function(i, tag) {
-		$.each($(tag)[0].files, function(i, file) {
+	$.each($(obj).find("input[type='file']"), (i, tag) => {
+		$.each($(tag)[0].files, (i, file) => {
 			formData.append(tag.name, file);
 		});
 	});
 	formData.append('sessionToken', 'dev-user-session-token');
 	var params = $(obj).serializeArray();
-	$.each(params, function (i, val) {
+	$.each(params, (i, val) => {
 		formData.append(val.name, val.value);
 	});
 	return formData;
@@ -138,12 +138,12 @@ class CropperFieldBody extends React.Component {
 				return;
 			}
 			var reader = new FileReader();
-			reader.onload = function () {
+			reader.onload = () => {
 				_this.setState({waiting:0, src: reader.result, cropResult:false });
 				
 				var selectedImage = new Image(); 
 
-				selectedImage.onload = function(){
+				selectedImage.onload = () => {
 					
 					
 					
@@ -172,7 +172,9 @@ class CropperFieldBody extends React.Component {
 								preview: '.img-preview',
 								guides: false,
 								src: reader.result,
-								ref: function(ref){this.cropper = ref}.bind(this),
+								ref: (ref) =>{
+									this.cropper = ref;
+								},
 								crop: this._crop
 							}),
 							ReactDOM.div({style:{marginTop:'12px', textAlign:'center'}},
@@ -195,11 +197,11 @@ class CropperFieldBody extends React.Component {
 						), 1,0,1);
 					}
 				
-				}.bind(this);
+				};
 
 				selectedImage.src = reader.result;
 				
-			}.bind(this);
+			};
 		
 
 			this.setState({waiting:1});
@@ -249,17 +251,17 @@ class CropperFieldBody extends React.Component {
 					preview = this.props.imageRenderer(imgSrc, this.props.form);
 					
 				} else {
-					preview =  ReactDOM.img( {ref:'img', style: { borderRadius:'5px',width: w/2, height:h/2 }, src: imgSrc, className:'clickable', onClick:function(){
+					preview =  ReactDOM.img( {ref:'img', style: { borderRadius:'5px',width: w/2, height:h/2 }, src: imgSrc, className:'clickable', onClick:() => {
 						this.refs.fileInput.value = null;
 						this.refs.fileInput.click();
-					}.bind(this) });
+					} });
 				}
 				
 				select = ReactDOM.div(null, 
-					ReactDOM.button({style:{background: constants.PUBLISH_COLOR, fontSize:'80%', padding: '5px 20px 6px 20px'},ref:'selectButton', className:'clickable clickable-edit', onClick:function(){
+					ReactDOM.button({style:{background: constants.PUBLISH_COLOR, fontSize:'80%', padding: '5px 20px 6px 20px'},ref:'selectButton', className:'clickable clickable-edit', onClick:() => {
 							this.refs.fileInput.value = null;
 							this.refs.fileInput.click();
-						}.bind(this)}, renderIcon('folder-open'),
+						}}, renderIcon('folder-open'),
 						L('SELECT_IMG')
 					),
 					clrBtn

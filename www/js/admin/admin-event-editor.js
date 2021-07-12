@@ -107,7 +107,7 @@ function javascriptHint(cm){
 	if (token.string.charAt(0) ==='"' || token.string.charAt(0) ==="'") {
 		flt = token.string.replace("'", '').replace('"','');
 		
-		list = node.fields.map(function(f){
+		list = node.fields.map((f) => {
 			return '"' + f.fieldName + '"';
 		})
 		
@@ -129,7 +129,7 @@ function javascriptHint(cm){
 	if(list && flt){
 		flt = flt.toLowerCase();
 		
-		list = list.filter(function(s){
+		list = list.filter((s) => {
 			return s.toLowerCase().indexOf(flt) >= 0;
 		});
 	}
@@ -151,9 +151,9 @@ class AdminEventEditor extends React.Component {
 
 	componentDidMount() {
 		
-		getData('admin/getEventHandler.php', this.getPostData(), function(data){
+		getData('admin/getEventHandler.php', this.getPostData(), (data) => {
 			this.setState({src:data});
-		}.bind(this));
+		});
 	}
 
 	saveClick() {
@@ -161,7 +161,7 @@ class AdminEventEditor extends React.Component {
 		if(this.state.src !== this.textareaRef.value){
 			let data = this.getPostData();
 			data.src = this.textareaRef.value;
-			submitData('admin/getEventHandler.php', data, function() {
+			submitData('admin/getEventHandler.php', data, () =>  {
 				window.location.reload();
 			});
 		} else {
@@ -180,7 +180,7 @@ class AdminEventEditor extends React.Component {
 				highlightSelectionMatches: {showToken: /\w/, annotateScrollbar: true},
 				extraKeys: {
 					//"Ctrl-Space": "autocomplete",
-					"Ctrl-D": function (instance) {
+					"Ctrl-D": (instance) => {
 						
 						if (!instance.doc.somethingSelected()) {
 							
@@ -199,16 +199,16 @@ class AdminEventEditor extends React.Component {
 						}
 						return false;
 					},
-					"Ctrl-S": function (instance) {
+					"Ctrl-S": (instance) => {
 						this.saveClick();
 						return false;
-					}.bind(this),
+					},
 					
 					"Esc": modal.hide
 				}
 			});
 			this.editor.setSize('900px','500px');
-			this.editor.on("keyup", function(editor, event) {
+			this.editor.on("keyup", (editor, event) => {
 				if(!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
 					CodeMirror.commands.autocomplete(editor, null, { completeSingle: false });
 				}
@@ -223,7 +223,7 @@ class AdminEventEditor extends React.Component {
 			return ReactDOM.div();
 		}
 		
-		var fields = this.props.node.fields.map(function(f, i){
+		var fields = this.props.node.fields.map((f, i) => {
 			
 			var extName;
 			if(f.name){

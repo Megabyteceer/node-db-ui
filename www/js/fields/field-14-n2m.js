@@ -1,4 +1,4 @@
-import {L, renderIcon, sp} from "../utils.js";
+import {getClassForField, L, renderIcon, sp} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
 
@@ -49,15 +49,15 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 
 	dragStart(item) {
 		if (!dragListenersInited) {
-			$(document).on('mouseup',function(){
+			$(document).on('mouseup',() => {
 				if (dragItem) {
 					dragItem = undefined;
 					dragList.forceUpdate();
 					dragList = undefined;
 				}
 			});
-			$(document).on('mousemove',function(event){
-				if (dragList) {
+			$(document).on('mousemove', (event) => {
+				if(dragList) {
 					dragItem;
 					var y = event.clientY;
 					if (y < 100) {
@@ -69,7 +69,7 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 					var closestD = 1000000;
 					var closestItem = undefined;
 					
-					dragList.state.value.some(function(i){
+					dragList.state.value.some((i) => {
 						var el = ReactDOM.findDOMNode(refs[UID(i)]);
 						var ey = el.getBoundingClientRect();
 						ey = (ey.top+ey.bottom)/2;
@@ -90,8 +90,6 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 					}
 				}
 			});
-			
-			
 			dragListenersInited = true;
 		}
 		dragList = this;
@@ -101,11 +99,11 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 
 	deleteItemByIndex(i) {
 		if (this.beforeRemoveChecking) {
-			this.beforeRemoveChecking(function(){
+			this.beforeRemoveChecking(() => {
 				this.state.value.splice(i,1);
 				this.forceUpdate();
 				
-			}.bind(this), this.state.value[i], this);
+			}, this.state.value[i], this);
 		} else {
 			this.state.value.splice(i,1);
 			this.forceUpdate();
@@ -131,7 +129,7 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 					
 					buttons = ReactDOM.div({style:{width:'30%', display:'inline-block', verticalAlign:'middle', textAlign:'right'}},
 						additionalButtonsN2M,
-						/*ReactDOM.button({style:{background: constants.EDIT_COLOR, color:'#fff'}, title:L('MOVE_UP'), className:'clickable toolbtn', onClick:function(){
+						/*ReactDOM.button({style:{background: constants.EDIT_COLOR, color:'#fff'}, title:L('MOVE_UP'), className:'clickable toolbtn', onClick:() => {
 								
 								if (i > 0) {
 									var t = this.state.value[i];
@@ -139,10 +137,10 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 									this.state.value[i-1] = t;
 									this.forceUpdate();
 								}
-							}.bind(this)},
+							}},
 							renderIcon('arrow-up')
 						),
-						ReactDOM.button({style:{background: constants.EDIT_COLOR, color:'#fff'}, title:L('MOVE_DOWN'), className:'clickable toolbtn', onClick:function(){
+						ReactDOM.button({style:{background: constants.EDIT_COLOR, color:'#fff'}, title:L('MOVE_DOWN'), className:'clickable toolbtn', onClick:() => {
 								if(i < (this.state.value.length-1)){
 									var t = this.state.value[i];
 									this.state.value[i] = this.state.value[i+1];
@@ -150,49 +148,48 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 									this.forceUpdate();
 								}
 								
-							}.bind(this)},
+							}},
 							renderIcon('arrow-down')
 						),*/
-						ReactDOM.button({style:{background: constants.EDIT_COLOR, color:'#fff'}, title:L('EDIT'), className:'clickable clickable-edit toolbtn', onClick:function(){
+						ReactDOM.button({style:{background: constants.EDIT_COLOR, color:'#fff'}, title:L('EDIT'), className:'clickable clickable-edit toolbtn', onClick:() => {
 								this.uidToEdit = UID(this.state.value[i]);
 								this.forceUpdate();
-							}.bind(this)},
+							}},
 							renderIcon('pencil')
 						),
-						ReactDOM.button({style:{background: constants.DELETE_COLOR, color:'#fff'}, title:L('LIST_REMOVE'), className:'clickable clickable-del toolbtn', onClick:function(){
+						ReactDOM.button({style:{background: constants.DELETE_COLOR, color:'#fff'}, title:L('LIST_REMOVE'), className:'clickable clickable-del toolbtn', onClick:() => {
 								this.deleteItemByIndex(i);
 								
-							}.bind(this)},
+							}},
 							renderIcon('times')
 						),
-						ReactDOM.div({style:{color:'#bbb', fontSize:'140%', verticalAlign:'middle', display:'inline-block'}, className:isDrag?'drag':'draggable', onMouseDown:function(e){sp(e);this.dragStart(v)}.bind(this)}, renderIcon('reorder'))
+						ReactDOM.div({style:{color:'#bbb', fontSize:'140%', verticalAlign:'middle', display:'inline-block'}, className:isDrag?'drag':'draggable', onMouseDown:(e) => {
+							sp(e);
+							this.dragStart(v);
+						}}, renderIcon('reorder'))
 					)
 				} else {
-					
-					
-					
 					/*buttons = ReactDOM.div({style:{width:'20%', display:'inline-block', fontSize:'50%', verticalAlign:'middle', textAlign:'left'}, className:'halfvisible'},
-						ReactDOM.button({style:{background:'#0a7', color:'#fff'}, title:L('ADD_DIVIDER'), className:'clickable toolbtn', onClick:function(){
+						ReactDOM.button({style:{background:'#0a7', color:'#fff'}, title:L('ADD_DIVIDER'), className:'clickable toolbtn', onClick:() => {
 								this.state.value.splice(i,0,{id:'0', name:L('NEW_GROUP')});
 								this.forceUpdate();
-							}.bind(this)},
+							}},
 							renderIcon('plus'), L('DIVIDER')
 						)
 					)*/
-					
 				}
 			} else if(v) {
 				buttons = ReactDOM.div({style:{width:'30%', display:'inline-block', fontSize:'60%', verticalAlign:'middle', textAlign:'left'}, className:'halfvisible'},
 					additionalButtonsN2M,
-					ReactDOM.button({style:{background:constants.EDIT_COLOR, color:'#fff'}, title:L('EDIT'), className:'clickable clickable-edit toolbtn', onClick:function(){
+					ReactDOM.button({style:{background:constants.EDIT_COLOR, color:'#fff'}, title:L('EDIT'), className:'clickable clickable-edit toolbtn', onClick:() => {
 							this.uidToEdit = UID(this.state.value[i]);
 							this.forceUpdate();
-						}.bind(this)},
+						}},
 						renderIcon('pencil')
 					),
-					ReactDOM.button({style:{background:constants.DELETE_COLOR, color:'#fff'}, title:L('LIST_REMOVE'), className:'clickable clickable-del toolbtn', onClick:function(){
+					ReactDOM.button({style:{background:constants.DELETE_COLOR, color:'#fff'}, title:L('LIST_REMOVE'), className:'clickable clickable-del toolbtn', onClick:() => {
 							this.deleteItemByIndex(i);
-						}.bind(this)},
+						}},
 						renderIcon('times')
 					)
 				)
@@ -221,13 +218,13 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 				keyCounter++;
 			}
 
-			var body = ReactDOM.div({key:key, ref:v?function(ref){refs[UID(v)]=ref;}:undefined, style:{padding:'2px 20px', borderBottom:borderBottom, outline:isDrag?'3px solid #0d5':undefined}},
+			var body = ReactDOM.div({key:key, ref:v?(ref) => {refs[UID(v)] = ref;}:undefined, style:{padding:'2px 20px', borderBottom:borderBottom, outline:isDrag?'3px solid #0d5':undefined}},
 				ReactDOM.div({style:{width:'70%', display:'inline-block'}},
-					React.createElement(getClassForField(FIELD_7_Nto1), {field:field,preventCreateButton:this.state.preventCreateButton, editIt:editIt, hideIcon:this.isDividerItem(v, field), pos:i, isEdit:isEdit, isN2M:true, filters:this.state.filters, noBorder:true, ref:function(ref){
+					React.createElement(getClassForField(FIELD_7_Nto1), {field:field,preventCreateButton:this.state.preventCreateButton, editIt:editIt, hideIcon:this.isDividerItem(v, field), pos: i, isEdit, isN2M: true, filters: this.state.filters, noBorder: true, ref:(ref) => {
 						if (ref) {
 							ref.setLookupFilter({'exludeIDs':this.exludeIDs || this.state.filters.exludeIDs});
 						}
-					}.bind(this), isNew:isNew, wrapper:this, initialValue:v, isCompact:this.props.isCompact, fieldDisabled:this.props.fieldDisabled})
+					}, isNew:isNew, wrapper:this, initialValue:v, isCompact:this.props.isCompact, fieldDisabled:this.props.fieldDisabled})
 				),
 				buttons
 			);
@@ -253,21 +250,21 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 		
 		var exludeIDs = [];
 		
-		value.map(function(v,i) {
+		for(let v of value) {
 			if(v && v.id){
 				exludeIDs.push(v.id);
 			}
-		});
+		}
 		
 		this.exludeIDs = exludeIDs.length?exludeIDs.join(','):undefined;
 		
 		var lines = [];
-		value.map(function(v,i) {
+		value.forEach((v, i) => {
 			if(i !== 0 && this.isDividerItem(v, field)){
 				lines.push(this.renderItem(field, null, i, this.props.isEdit));
 			}
 			lines.push(this.renderItem(field, v, i, this.props.isEdit));
-		}.bind(this));
+		});
 		
 		lines.push(this.renderItem(field, null, lines.length, this.props.isEdit));
 		

@@ -1,6 +1,6 @@
 import {initDictionary} from "../../js/utils.js";
 
-(function(){
+(() => {
 	initDictionary({
 
 'NO_TRANSLATION':'Не найден перевод для ключа "%"',

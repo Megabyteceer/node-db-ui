@@ -3,6 +3,7 @@
 import constants from "./custom/consts.js";
 import FormFull from "./forms/form-full.js";
 import List from "./forms/list.js";
+import LeftBar from "./left-bar.js";
 import {consoleLog, isLitePage, renderIcon} from "./utils.js";
 
 var defaultButtonStyle = {
@@ -82,9 +83,9 @@ class Stage extends React.Component {
 	}
 
 	loadCustomClass() {
-		loadJS('js/custom/'+this.state.customClass.toLowerCase()+'.js', function(){
+		loadJS('js/custom/'+this.state.customClass.toLowerCase()+'.js', () => {
 			this.forceUpdate();
-		}.bind(this));
+		});
 	}
 
 	render() {
@@ -96,9 +97,9 @@ class Stage extends React.Component {
 			
 			if (this.state.customClass) {
 				if (!window[this.state.customClass]) {
-					setTimeout(function(){
+					setTimeout(() => {
 						this.loadCustomClass();
-					}.bind(this),1);
+					}, 1);
 				} else {
 					return React.createElement(window[this.state.customClass], this.state.props);
 				}

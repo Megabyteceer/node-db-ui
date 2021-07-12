@@ -5,11 +5,11 @@ import {consoleDir, isLitePage} from "../utils.js";
 
 var admin = {};
 
-(function() {
-	admin.moveField = function(fIndex, form, node, direction) {
+(() =>  {
+	admin.moveField = (fIndex, form, node, direction) => {
 		var fieldIndex;
 		var j = 0;
-		var fields = node.fields.filter(function(f, i){
+		var fields = node.fields.filter((f, i) => {
 			if (i == fIndex) {
 				fieldIndex = j;
 			}
@@ -114,8 +114,8 @@ var admin = {};
 			return;
 		}
 		
-		getNodeData(6, group1[0].id, function(field1){
-			getNodeData(6, group2[0].id, function(field2){
+		getNodeData(6, group1[0].id, (field1) => {
+			getNodeData(6, group2[0].id, (field2) => {
 				var prior = Math.min(field1.prior,field2.prior);
 				if (direction < 0) {
 					group1 = group1.concat(group2);
@@ -123,33 +123,31 @@ var admin = {};
 					group1 = group2.concat(group1);
 				}
 				
-				
-				group1.map(function(f){
+				for(let f of group1) {
 					f.prior = prior;
 					prior++;
-				});
+				}
 
 				var callsCount = group1.length;
 				
-				
-				group1.map(function(f){
-					submitRecord(6, {prior:f.prior}, f.id, function(){
+				for(let f of group1) {
+					submitRecord(6, {prior:f.prior}, f.id, () => {
 						callsCount--;
-						if(callsCount === 0){
-							getNode(node.id, function(){
+						if(callsCount === 0) {
+							getNode(node.id, () => {
 								refreshForm();
 							}, true);
 						}
 					})
-				});
+				}
 			});
 		});
 	}
 	
-	admin.exchangeNodes = function(node1, node2){
+	admin.exchangeNodes = (node1, node2) => {
 		if (node1 &&node2) {
-			submitRecord(4, {prior:node1.prior}, node2.id, function(){
-				submitRecord(4, {prior:node2.prior}, node1.id, function(){
+			submitRecord(4, {prior:node1.prior}, node2.id, () => {
+				submitRecord(4, {prior:node2.prior}, node1.id, () => {
 					LeftBar.instance.reloadLeftBar();
 				})
 			});
@@ -161,7 +159,7 @@ var admin = {};
 	function debugInfoGetter(){
 		consoleDir(this);
 	}
-	admin.debug = function(obj) {
+	admin.debug = (obj) => {
 		debugInfoGetter.call(obj);
 	}
 	
@@ -178,7 +176,7 @@ var admin = {};
 	
 	var adminOn = !isLitePage();
 	
-	admin.toggleAdminUI = function(){
+	admin.toggleAdminUI = () => {
 		if(adminOn) {
 			styleSheet.insertRule('.admin-controll{display:none;}', 0);
 		} else {

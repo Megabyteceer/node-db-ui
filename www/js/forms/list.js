@@ -25,7 +25,7 @@ var headerStyleNum = {
 	padding:'10px 15px'
 };
 
-var sortByOrder = function(a,b) {
+const sortByOrder = (a,b) => {
 	return a.order - b.order;
 }
 
@@ -48,8 +48,8 @@ function createPageButton(self, page, isActive) {
 			page+1
 		);
 	}
-	return ReactDOM.button({key:page,className:'clickable',style:{background:'#fff',color:'#555', margin:0, borderRadius:0},onClick:function(){
-			self.changeFilter('p', page, true);
+	return ReactDOM.button({key:page,className:'clickable',style:{background:'#fff',color:'#555', margin:0, borderRadius:0},onClick:() => {
+		self.changeFilter('p', page, true);
 		}
 	},
 		page+1
@@ -82,7 +82,7 @@ export default class List extends BaseForm {
 
 	higlightResults() {
 		if ((this.filters && this.filters.s) || this.prevHiglightedTerm) {
-			var c = $('.list-body', ReactDOM.findDOMNode(this.refs.self));
+			var c = $('.list-body', ReactDOM.findDOMNode(this.refs.this));
 
 			var src_str = c.html();
 			if (src_str) {
@@ -98,12 +98,10 @@ export default class List extends BaseForm {
 					term = term.replace(/(\s+)/,"(<[^>]+>)*$1(<[^>]+>)*");
 					var pattern = new RegExp("("+term+")", "gi");
 
-					src_str = src_str.split('>').map(function(s){
-
+					src_str = src_str.split('>').map((s) => {
 						var b = s.split('<');
 						b[0] = b[0].replace(pattern, "<mark>$1</mark>");
 						return b.join('<')
-
 					}).join('>');
 				}
 				c.html(src_str)
@@ -124,12 +122,12 @@ export default class List extends BaseForm {
 		if (!this.state.data) {
 			setTimeout(this.refreshData, 1);
 		} else if(!this.props.node) {
-			getNode(this.props.nodeId, function(node){
+			getNode(this.props.nodeId, (node) => {
 				this.setState({node:node});
 				if(this.props.parentForm) {
 					this.props.parentForm.savedNode = node;
 				}
-			}.bind(this));
+			});
 		}
 
 		if (!this.isSlave() && !this.props.noSetHash) {
@@ -158,7 +156,7 @@ export default class List extends BaseForm {
 				this.filters.p = '*';
 			}
 
-			getNodeData(nodeIdToFetch, undefined, function(data) {
+			getNodeData(nodeIdToFetch, undefined, (data) => {
 
 				if (this.unmounted) {
 					return;
@@ -171,13 +169,13 @@ export default class List extends BaseForm {
 				}
 
 				if (!this.props.node) {
-					getNode(this.props.nodeId, function(node){
+					getNode(this.props.nodeId, (node) => {
 						if (this.isSlave()) {
 							this.props.parentForm.saveNodeDataAndFilters(node, data, this.filters);
 						}
 						this.setState({data:data, node:node});
 						this.scrollIfNeed();
-					}.bind(this));
+					});
 				} else {
 					if (this.isSlave()) {
 						this.props.parentForm.saveNodeDataAndFilters(this.props.node, data, this.filters);
@@ -185,7 +183,7 @@ export default class List extends BaseForm {
 					this.setState({data:data});
 					this.scrollIfNeed();
 				}
-			}.bind(this), this.filters, this.props.editable, this.props.isLookup, this.isCustomListRenering());
+			}, this.filters, this.props.editable, this.props.isLookup, this.isCustomListRenering());
 		}
 	}
 
@@ -198,7 +196,7 @@ export default class List extends BaseForm {
 	changeSearch(event) {
 		var val = event.target.value;
 		this.clearSearchInterval();
-		this.searchTimeout = setTimeout(function(){
+		this.searchTimeout = setTimeout(() => {
 			delete(this.searchTimeout);
 			if (this.changeFilter('s', val)) {
 				if(this.filters.p !== '*') {
@@ -206,7 +204,7 @@ export default class List extends BaseForm {
 				}
 				this.refreshData();
 			}
-		}.bind(this), 500);
+		}, 500);
 	}
 
 	clearSearchInterval() {
@@ -274,7 +272,7 @@ export default class List extends BaseForm {
 
 
 			for (var i = 0; i < data.items.length; i++) {
-				(function() {
+				(() =>  {
 					var itemNum = i;
 					var item = data.items[i];
 
@@ -288,19 +286,19 @@ export default class List extends BaseForm {
 						);
 						var btns = [];
 						
-						btns.push(ReactDOM.button({className:'clickable clickable-del toolbtn', title:L('DELETE'), key:'b'+UID(item), style:{color:'#fff', background: constants.DELETE_COLOR}, onClick:function(){
+						btns.push(ReactDOM.button({className:'clickable clickable-del toolbtn', title:L('DELETE'), key:'b'+UID(item), style:{color:'#fff', background: constants.DELETE_COLOR}, onClick:() => {
 							
-							var deleteItem = function() {
+							var deleteItem = () =>  {
 
 								item.__deleted_901d123f=true;
 								this.forceUpdate();
-							}.bind(this);
+							};
 							if (item.hasOwnProperty('id') && !this.state.noPromptDelete) {
 								deleteRecord(item.name, node.id, 0, undefined, false, deleteItem);
 							} else {
 								deleteItem();
 							}
-						}.bind(this)
+						}
 						}, renderIcon('times')));
 
 						if (sorting) {
@@ -329,11 +327,11 @@ export default class List extends BaseForm {
 
 
 							if (_uidM1!==false) {
-								(function(){
+								(() => {
 									var uid = UID(data.items[itemNum]);
 									var itemNumM1 = _itemNumM1;
 									var uidM1 = _uidM1;
-									btns.push(ReactDOM.button({className:'clickable toolbtn', title:L('MOVE_UP'), key:'bu'+UID(item), style:{ color:'#fff', background: constants.EDIT_COLOR}, onClick:function(){
+									btns.push(ReactDOM.button({className:'clickable toolbtn', title:L('MOVE_UP'), key:'bu'+UID(item), style:{ color:'#fff', background: constants.EDIT_COLOR}, onClick:() => {
 										var t = data.items[itemNum];
 										data.items[itemNum] = data.items[itemNumM1];
 										data.items[itemNumM1] = t;
@@ -343,18 +341,18 @@ export default class List extends BaseForm {
 										this.subformsRefs[uidM1].saveForm();
 										this.forceUpdate();
 
-									}.bind(this)
+									}
 									}, renderIcon('arrow-up')));
-								}.bind(this))();
+								})();
 							}
 							if (_uidP1!==false) {
 
-								(function(){
+								(() => {
 									var uid = UID(data.items[itemNum]);
 									var itemNumP1 = _itemNumP1;
 									var uidP1 = _uidP1;
 								
-									btns.push(ReactDOM.button({className:'clickable toolbtn', title:L('MOVE_DOWN'), key:'bd'+UID(item), style:{color:'#fff', background: constants.EDIT_COLOR}, onClick:function(){
+									btns.push(ReactDOM.button({className:'clickable toolbtn', title:L('MOVE_DOWN'), key:'bd'+UID(item), style:{color:'#fff', background: constants.EDIT_COLOR}, onClick:() => {
 										var t = data.items[itemNum];
 										data.items[itemNum] = data.items[itemNumP1];
 										data.items[itemNumP1] = t;
@@ -365,9 +363,9 @@ export default class List extends BaseForm {
 										this.subformsRefs[uidP1].saveForm();
 										this.forceUpdate();
 
-									}.bind(this)
+									}
 									}, renderIcon('arrow-down')));
-								}.bind(this))();
+								})();
 							}
 						}
 
@@ -381,7 +379,7 @@ export default class List extends BaseForm {
 
 
 					}
-				}.bind(this))()
+				})()
 
 			}
 		}
@@ -395,7 +393,7 @@ export default class List extends BaseForm {
 		var createBtn;
 		if(node.canCreate) {
 			createBtn = ReactDOM.div(null,
-				ReactDOM.button({style:{background: constants.CREATE_COLOR}, title:L('ADD', (node.creationName||node.singleName)), className:'clickable clickable-neg toolbtn', onClick:function(){data.items.push({}); this.forceUpdate();}.bind(this)},
+				ReactDOM.button({style:{background: constants.CREATE_COLOR}, title:L('ADD', (node.creationName||node.singleName)), className:'clickable clickable-neg toolbtn', onClick:() => {data.items.push({}); this.forceUpdate();}},
 					renderIcon('plus')
 				)
 			);
@@ -439,15 +437,15 @@ export default class List extends BaseForm {
 				if(this.isSlave()){
 
 
-					createButton = ReactDOM.button({style:{padding:'5px 15px', background: constants.CREATE_COLOR}, className:'clickable clickable-neg', onClick:function(){this.props.parentForm.toggleCreateDialogue();}.bind(this)},
+					createButton = ReactDOM.button({style:{padding:'5px 15px', background: constants.CREATE_COLOR}, className:'clickable clickable-neg', onClick:() => {this.props.parentForm.toggleCreateDialogue();}},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName||node.singleName)
 					);
 					if (node.id === 21) {
 						createButton = ReactDOM.span(null,
-							ReactDOM.button({style:{padding:'5px 15px', background: constants.CREATE_COLOR}, className:'clickable clickable-neg', onClick:function(){this.props.parentForm.toggleCreateDialogue(undefined, {isGroupDivider:0})}.bind(this)},
+							ReactDOM.button({style:{padding:'5px 15px', background: constants.CREATE_COLOR}, className:'clickable clickable-neg', onClick:() => {this.props.parentForm.toggleCreateDialogue(undefined, {isGroupDivider:0})}},
 								renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName||node.singleName)
 							),
-							ReactDOM.button({style:{padding:'5px 15px', background: constants.CREATE_COLOR}, className:'clickable clickable-neg', onClick:function(){this.props.parentForm.toggleCreateDialogue(undefined, {isGroupDivider:1});}.bind(this)},
+							ReactDOM.button({style:{padding:'5px 15px', background: constants.CREATE_COLOR}, className:'clickable clickable-neg', onClick:() => {this.props.parentForm.toggleCreateDialogue(undefined, {isGroupDivider:1});}},
 								renderIcon('plus'), ' ' + L('CREATE_DELIMITER')
 							)
 						);
@@ -455,7 +453,7 @@ export default class List extends BaseForm {
 					}
 
 				} else {
-					createButton = ReactDOM.button({style:{background: constants.CREATE_COLOR,color:'#fff', padding:'15px 40px'}, className:'clickable clickable-neg', onClick:function(){createRecord(node.id, filters);}.bind(this)},
+					createButton = ReactDOM.button({style:{background: constants.CREATE_COLOR,color:'#fff', padding:'15px 40px'}, className:'clickable clickable-neg', onClick:() => {createRecord(node.id, filters);}},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName||node.singleName)
 					);
 				}
@@ -465,11 +463,11 @@ export default class List extends BaseForm {
 
 			if (!this.props.hideSearch && !this.state.hideSearch && (this.filters.s || data.items.length > 2)){
 				searchPanel = ReactDOM.div({style:{display:'block', border:'1px solid #a8a8a8', marginTop:'10px', borderRadius:'6px'}},
-					ReactDOM.input({ref:function(input){this.searchInput = input}.bind(this), style:{width:'200px', borderRadius:'6px', verticalAlign:'middle', padding:'2px 8px', border:'none', borderRight:'1px solid #a8a8a8', borderTopRightRadius:0, borderBottomRightRadius:0}, placeholder:L('SEARCH_LIST'), onChange:this.changeSearch, defaultValue:this.filters.s}),
-					ReactDOM.a({className:'clickable', style:{color:'#ccc', verticalAlign:'middle', fontSize:'120%'}, onClick:function(e){
+					ReactDOM.input({ref:(input) => {this.searchInput = input;}, style:{width:'200px', borderRadius:'6px', verticalAlign:'middle', padding:'2px 8px', border:'none', borderRight:'1px solid #a8a8a8', borderTopRightRadius:0, borderBottomRightRadius:0}, placeholder:L('SEARCH_LIST'), onChange:this.changeSearch, defaultValue:this.filters.s}),
+					ReactDOM.a({className:'clickable', style:{color:'#ccc', verticalAlign:'middle', fontSize:'120%'}, onClick:(e) => {
 							this.clearSearch();
 							sp(e);
-						}.bind(this)},
+						}},
 						renderIcon('times')
 					)
 				)
@@ -501,7 +499,7 @@ export default class List extends BaseForm {
 
 				var tableHeader = [];
 
-				node.fields.some(function(field) {
+				node.fields.some((field) => {
 
 
 					var fieldAdmin;
@@ -511,14 +509,14 @@ export default class List extends BaseForm {
 
 					var rowHeader;
 					if(field.forSearch === '1'){
-											rowHeader = ReactDOM.span({className:'clickable', style:{color:(filters.o===field.fieldName)?'#259':''}, onClick:function(){
+											rowHeader = ReactDOM.span({className:'clickable', style:{color:(filters.o===field.fieldName)?'#259':''}, onClick:() => {
 													if(filters.o===field.fieldName){
 															this.changeFilter('r', filters.r?undefined:1, true);
 													} else {
 															this.changeFilter('o', field.fieldName, true);
 													}
 
-												}.bind(this)
+												}
 											},
 												field.name,
 												renderIcon((!filters.r && (filters.o===field.fieldName))?'caret-up':'caret-down')
@@ -535,7 +533,7 @@ export default class List extends BaseForm {
 							rowHeader
 						));
 					}
-				}.bind(this));
+				});
 				tableHeader.push(ReactDOM.td({key:'holder', style:headerStyle}, ' '));
 
 
@@ -549,9 +547,9 @@ export default class List extends BaseForm {
 
 				var hideControlls = this.props.hideControlls||this.state.hideControlls || (this.props.filters && this.props.filters.hideControlls);
 
-				var lines = data.items.map(function(item){
-					return React.createElement(FormItem,{key:Math.random()+'_'+item.id, disableDrafting:this.props.disableDrafting, noPreviewButton:this.props.noPreviewButton, onClick:this.props.onItemClick?function(){this.props.onItemClick(item)}.bind(this):undefined, parentForm:this.props.parentForm, additionalButtons:additionalButtons, hideControlls:hideControlls, isLookup:this.props.isLookup, list:this, node:node, initialData:item});
-				}.bind(this));
+				var lines = data.items.map((item) => {
+					return React.createElement(FormItem,{key:Math.random()+'_'+item.id, disableDrafting:this.props.disableDrafting, noPreviewButton:this.props.noPreviewButton, onClick:this.props.onItemClick?() => {this.props.onItemClick(item)}:undefined, parentForm:this.props.parentForm, additionalButtons:additionalButtons, hideControlls:hideControlls, isLookup:this.props.isLookup, list:this, node:node, initialData:item});
+				});
 
 				body = ReactDOM.table({style:{width:'100%'}},
 					ReactDOM.thead(null, ReactDOM.tr(null, tableHeader)),
@@ -654,7 +652,7 @@ export default class List extends BaseForm {
 			}
 		}
 
-		return ReactDOM.div({style:style, ref:'self'},
+		return ReactDOM.div({style:style, ref:'this'},
 			nodeAdmin,
 			title,
 			header,

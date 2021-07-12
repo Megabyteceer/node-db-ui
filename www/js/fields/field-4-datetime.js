@@ -53,9 +53,9 @@ class dateFieldMixins extends fieldMixins {
 
 	validateDate(val, doFix) {
 		if (this.state.allowedDays) {
-			var isValid = this.state.allowedDays.some(function(d){
+			var isValid = this.state.allowedDays.some((d) => {
 				return isSameDay(val, d);
-			}.bind(this));
+			});
 			
 			if (!isValid && (doFix===true)) {
 				this.setDatePart(this.state.allowedDays[0]);
@@ -182,11 +182,11 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 				mask:'dd:dd',
 				onFocus:this.focused,
 				isValidDate:this.state.focused?this.validateDate:undefined,
-				ref:function(ref){
+				ref:(ref) => {
 					this.timeRef = ref;
 					this.refGetter(ref)
-				}.bind(this),
-				onChange:function(val) {
+				},
+				onChange:(val) => {
 					if (val._isAMomentObject) {
 						var concatedVal;
 						var value = this.state.value;
@@ -203,7 +203,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 						this.props.wrapper.valueListener(concatedVal, true, this);
 					}
 					
-				}.bind(this)
+				}
 			};
 			
 			var inputsProps2 = {
@@ -216,10 +216,10 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 				timeFormat:false,
 				onFocus:this.focused,
 				title:L('N_DATE', field.name),
-				ref:function(ref) {
+				ref:(ref) => {
 					this.dateRef = ref;
-					}.bind(this),
-				onChange:function(val) {
+					},
+				onChange:(val) => {
 					if (val._isAMomentObject) {
 						var concatedVal;
 						var value = this.state.value;
@@ -234,7 +234,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 						this.setValue(concatedVal);
 						this.props.wrapper.valueListener(concatedVal, true, this);
 					}
-				}.bind(this)
+				}
 			};
 			return ReactDOM.div({title:(this.props.isCompact?field.name:''),style:{display:'inline-block'}},
 				ReactDOM.div({style:{display:'inline-block', width:'35%'}}, React.createElement(Datetime, inputsProps1)),

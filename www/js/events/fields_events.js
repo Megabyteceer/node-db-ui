@@ -2,8 +2,7 @@ import {L} from "../utils.js";
 
 var fieldsEvents={};
 
-(function() {
-	
+
 		
 	fieldsEvents[20] = function() {//field20onchangebegin_cswhggft
 if(this.fieldValue("fieldType")==FIELD_8_STATICTEXT){
@@ -207,8 +206,6 @@ if (this.fieldValue("vis_reflist")){
 this.setFieldValue("show", shv);
 	}//field318onchangeend_wqdggft
 
-
-
 	fieldsEvents[357] = function() {//field357onchangebegin_cswhggft
 var shv = this.fieldValue("show");
 
@@ -225,6 +222,6 @@ this.setFieldValue("show", shv);
 this.check12nFieldName();
 	}//field253onchangeend_wqdggft
 	//insertNewhandlersHere_adsqw09
-})();
+
 
 export default fieldsEvents;

@@ -1,7 +1,10 @@
 
-remove self = this
-
 хендлеры событий
+
+getData
+postData move to promises
+
+replace callsCount
 
 
 separate server side and client side isUserHaveRole

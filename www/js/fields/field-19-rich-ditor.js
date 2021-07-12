@@ -5,7 +5,7 @@ import fieldMixins from "./field-mixins.js";
 var idCounter = 0;
 
 var listeners = {};
-window.addEventListener('message', function(e){
+window.addEventListener('message', (e) => {
 	var data = e.data;
 	if (listeners.hasOwnProperty(data.id)) {
 		listeners[data.id](data);
@@ -34,7 +34,7 @@ registerFieldClass(FIELD_19_RICHEDITOR, class TextField extends fieldMixins {
 			lang:'ru-RU'
 		};
 
-		listeners[this.iframeId] = function(data) {
+		listeners[this.iframeId] = (data) => {
 
 			if (!this.summerNoteIsInited) {
 				this.summerNoteIsInited = true;
@@ -48,7 +48,7 @@ registerFieldClass(FIELD_19_RICHEDITOR, class TextField extends fieldMixins {
 			} else {
 				s.postMessage({options:options, value:this.state.value},'*');
 			}
-		}.bind(this);
+		};
 	}
 
 	componentWillUnmount() {

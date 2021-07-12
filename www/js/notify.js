@@ -39,7 +39,7 @@ export default class Notify extends React.Component {
 		}
 		setTimeout(() => {
 			this.hideById(id);
-		}.bind(this), 10000);
+		}, 10000);
 		this.forceUpdate();
 	}
 

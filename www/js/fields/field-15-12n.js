@@ -48,9 +48,9 @@ registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 		}
 		this.setState({creationOpened:!this.state.creationOpened, backupPrefix:backupPrefix, dataToEdit:undefined, itemIdToEdit:itemIdToEdit});
 		if(typeof itemIdToEdit !== 'undefined'){
-			getNodeData(this.props.field.nodeRef, itemIdToEdit, function(data) {
+			getNodeData(this.props.field.nodeRef, itemIdToEdit, (data) => {
 				this.setState({dataToEdit:data, itemIdToEdit:undefined});
-			}.bind(this), undefined, true);
+			}, undefined, true);
 		}
 	}
 
@@ -62,7 +62,7 @@ registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 		if (this.state.inlineEditing) {
 			var allValid = true;
 			var callbacksCount = 1;
-			var onSubformValidated = function(isValid) {
+			var onSubformValidated = (isValid) => {
 				if(!isValid){
 					allValid = false;
 				}
@@ -71,7 +71,7 @@ registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 					callback(allValid ? false : L('INVALID_DATA_LIST'));
 				}
 			}
-			this.refs.inlineList.getSubforms().some(function(subForm){
+			this.refs.inlineList.getSubforms().some((subForm) => {
 				callbacksCount++;
 				subForm.validate(onSubformValidated);
 			});
@@ -94,12 +94,12 @@ registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 			var field = this.props.field;
 			
 			
-			var handleCallbackCountingInvalid = function () {
+			const handleCallbackCountingInvalid = () => {
 				invalidSave = true;
 				processSubForms();
 			}
 			//saving one by one for keep order.
-			var processSubForms = function(){
+			var processSubForms = () => {
 				if (subForms.length > 0) {
 					var form = subForms.shift();
 					
@@ -122,7 +122,7 @@ registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 				} else {
 					callback(undefined, invalidSave);
 				}
-			}.bind(this);
+			};
 			processSubForms();
 		} else {
 			callback();

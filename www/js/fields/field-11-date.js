@@ -59,12 +59,12 @@ registerFieldClass(FIELD_11_DATE, class TextField extends dateFieldMixins {
 				isValidDate:this.state.focused?this.validateDate:undefined,
 				timeFormat:false,
 				ref:this.refGetter,
-				onChange:function(val) {
+				onChange:(val) => {
 					if(!val._isAMomentObject){
 						val = null;
 					}
 					this.props.wrapper.valueListener(val, true, this);
-				}.bind(this)
+				}
 			};
 			return ReactDOM.div({title:(this.props.isCompact?field.name:''), style:this.props.isCompact?compactInputStyle:notCompactInputStyle},
 				React.createElement(Datetime, inputsProps)

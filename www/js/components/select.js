@@ -61,18 +61,14 @@ export default class Select extends React.Component {
 		var options;
 		if (this.state.expanded) {
 			options = ReactDOM.div({style:{position:'absolute', marginTop:-2, zIndex:2, background:this.props.disabled?undefined:'#fff',color:'#333', border:'1px solid #ddd', boxShadow:'0px 2px 5px 0px rgba(0,0,0,0.26)'}},
-			
-				Object.keys(this.props.options).map(function(k){
-					
-						return ReactDOM.div({style:optionStyle, className:this.props.disabled?'unclickable disabled':'clickable', key:k, title:this.props.options[k], onClick:function(){
-							
+				Object.keys(this.props.options).map((k) => {
+						return ReactDOM.div({style:optionStyle, className: this.props.disabled ? 'unclickable disabled':'clickable', key:k, title:this.props.options[k], onClick:() => {
 							this.setValue(k);
 							this.toggle();
-							
-						}.bind(this)
-					},this.props.options[k] );
-					
-				}.bind(this))
+						}
+					},
+					this.props.options[k] );
+				})
 			)
 		}
 		

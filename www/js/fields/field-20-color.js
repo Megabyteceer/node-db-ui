@@ -1,10 +1,10 @@
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
-var intToColor=function(i) {
+var intToColor = (i) => {
 	var ret = 'rgba('+(i&255)+','+((i>>8)&255)+','+((i>>16)&255)+','+(((i>>24)&255)/255.0).toFixed(2)+')';
 	return ret;
-}
+};
 
 var _idCounter=0;
 

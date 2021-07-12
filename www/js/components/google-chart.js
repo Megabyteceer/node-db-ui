@@ -1,18 +1,17 @@
 import {renderIcon} from "../utils.js";
 
-
 var chartLoaded = false;
 var all = [];
 var idCunter=0;
 
-var init = function(){
+var init = () => {
 	if(typeof(google) !=='undefined'){
 		google.charts.load('current', {packages: ['corechart', 'line'], language:'ru'});
-		google.charts.setOnLoadCallback(function(){
+		google.charts.setOnLoadCallback(() => {
 			chartLoaded = true;
-			all.map(function(c){
+			for(let c of all) {
 				c.forceUpdate();
-			});
+			}
 		});
 	} else {
 		setTimeout(init, 500);
@@ -40,24 +39,18 @@ class GoogleChart extends React.Component {
 		}
 		all.splice(all.indexOf(this), 1);
 	}
-
-
 	
-	setData:function(v) {
+	setData(v) {
 		this.setState({data:v});
-	},
+	}
 	
-	render:function() {
-
+	render() {
 		if (chartLoaded) {
-			
-			return ReactDOM.div({id:this.chartId, className:'chart-body', ref:function(ref){
-				
+			return ReactDOM.div({id:this.chartId, className:'chart-body', ref:(ref) => {
 				var d = new google.visualization.DataTable();
-				
-				this.props.columns.map(function(c){
+				for(let c of this.props.columns.array) {
 					d.addColumn(c[0],c[1]);
-				})
+				}
 
 				d.addRows(this.props.rows);
 				
@@ -65,26 +58,12 @@ class GoogleChart extends React.Component {
 					var f = new google.visualization.NumberFormat(this.props.formatter);
 					f.format(d, 1);
 				}
-				
-				
 				if(!this.chart){
 					this.chart = new google.visualization.LineChart(document.getElementById(this.chartId));
 				}
-				
-				
-				
 				this.chart.draw(d, this.props.options);
-				
-				
-				
-				
-				
-				
-			}.bind(this)
-				
+			}
 			});
-			
-			
 		} else return renderIcon('cog fa-spin');
 	}
 }

@@ -8,8 +8,9 @@ export default class CheckBox extends React.Component {
 		this.state = {value:this.props.defaultValue};
 	}
 
-	componentDidUpdate() {
-		this.setState({value: this.props.defaultValue});
+	static getDerivedStateFromProps(props, state) {
+		state.value = props.defaultValue;
+		return state;
 	}
 	
 	render() {
@@ -17,10 +18,10 @@ export default class CheckBox extends React.Component {
 		if (this.state && this.state.value) {
 			check = ReactDOM.span({style:checkStyle}, renderIcon('check'));
 		}
-		return ReactDOM.span({style:this.props.disable?styleDisabled:style, title:this.props.title, onClick:function() {
+		return ReactDOM.span({style:this.props.disable?styleDisabled:style, title:this.props.title, onClick:() =>  {
 					this.props.onClick(!this.state.value);
 					this.setState({value:!this.state.value});
-				}.bind(this)
+				}
 			},
 			check
 		);
@@ -87,10 +88,10 @@ registerFieldClass(FIELD_5_BOOL, class BooleanField extends fieldMixins {
 				disable:this.props.fieldDisabled,
 				title:this.props.isCompact?field.name:'',
 				defaultValue: value,
-				onClick:function(val) {
+				onClick:(val) => {
 					this.setValue(val);
 					this.props.wrapper.valueListener(val, false, this);
-				}.bind(this)
+				}
 			});
 
 				

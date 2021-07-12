@@ -208,7 +208,7 @@ export default class FieldWrap extends React.Component {
 			callback(true);
 		} else {
 
-			this.fieldRef.getMessageIfInvalid(function(invalidMessage) {
+			this.fieldRef.getMessageIfInvalid((invalidMessage) => {
 				if (!invalidMessage) {
 					this.fieldAlert();
 					callback(true);
@@ -216,7 +216,7 @@ export default class FieldWrap extends React.Component {
 					this.fieldAlert(invalidMessage, false, focusIfInvalid);
 					callback(false);
 				}
-			}.bind(this));
+			});
 		}
 	}
 
@@ -302,10 +302,10 @@ export default class FieldWrap extends React.Component {
 		this.currentValue = newVal;
 		if (withBounceDelay) {
 			this.clearChangeTimout();
-			this.ChangeTimeout = setTimeout(function(){
+			this.ChangeTimeout = setTimeout(() => {
 				delete(this.ChangeTimeout);
 				this.sendCurrentValueToForm();
-			}.bind(this), 600);
+			}, 600);
 		} else {
 			this.sendCurrentValueToForm();
 		}
@@ -318,17 +318,17 @@ export default class FieldWrap extends React.Component {
 		var domId = 'fc-'+field.id;
 
 		var fprops = {
-				field:field,
-				wrapper:this,
-				form:this.props.form,
-				initialValue:this.props.initialValue,
-				isCompact:this.props.isCompact,
-				isEdit:this.props.isEdit,
-				fieldDisabled:this.fieldDisabled,
-				additionalButtons:this.state.additionalButtons||this.props.additionalButtons,
-				ref:function(fieldRef){
-					this.fieldRef=fieldRef
-				}.bind(this)
+			field:field,
+			wrapper:this,
+			form:this.props.form,
+			initialValue:this.props.initialValue,
+			isCompact:this.props.isCompact,
+			isEdit:this.props.isEdit,
+			fieldDisabled:this.fieldDisabled,
+			additionalButtons:this.state.additionalButtons||this.props.additionalButtons,
+			ref:(fieldRef) => {
+				this.fieldRef = fieldRef;
+			}
 		};
 		
 		var fieldTypedBody = React.createElement(getClassForField(field.fieldType),	fprops);
@@ -363,15 +363,15 @@ export default class FieldWrap extends React.Component {
 
 			return ReactDOM.span({style:{width:this.props.isTable?undefined:'30%',display:(this.hidden && !this.props.form.showAllDebug)?'none':'inline-block', verticalAlign:'middle'},
 				className:domId,
-				onFocus:function() {
+				onFocus:() =>  {
 
 					this.setState({showtooltip:true});
 
 
-				}.bind(this),
-				onBlur:function(){
+				},
+				onBlur:() => {
 						this.setState({showtooltip:false});
-					}.bind(this),
+					},
 				},
 				fieldTypedBody,
 				fieldCustomBody,

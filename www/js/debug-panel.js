@@ -127,11 +127,8 @@ export default class DebugPanel extends React.Component {
 	}
 
 	render() {
-		var self = this;
-		
 		var body;
-		
-		
+
 		var deployBtn;
 		var cacheClearBtn;
 		if(iAdmin()){
@@ -165,7 +162,7 @@ export default class DebugPanel extends React.Component {
 									ReactDOM.div({style:{fontSize:'140%',margin:'6px'}},
 										ReactDOM.a({className:'clickable', onClick:() => {
 											i.SQLs.splice(key,1);
-											self.forceUpdate();
+											this.forceUpdate();
 											
 										}}, renderIcon('trash')),
 										
@@ -198,7 +195,7 @@ export default class DebugPanel extends React.Component {
 							
 							ReactDOM.a({className:'clickable', onClick:() => {
 										debugInfo.splice(iKey,1);
-										self.forceUpdate();
+										this.forceUpdate();
 									}}, renderIcon('trash')),
 								ReactDOM.span({style:{fontSize:'160%',color:'#445'}}, i.request+': '),
 								
@@ -213,7 +210,7 @@ export default class DebugPanel extends React.Component {
 				
 				body = ReactDOM.div(null,
 				
-					ReactDOM.div({style:backdropStyle, onClick:self.hide}),
+					ReactDOM.div({style:backdropStyle, onClick:this.hide}),
 
 					ReactDOM.div({style:style},
 

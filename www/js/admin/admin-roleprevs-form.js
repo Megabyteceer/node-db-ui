@@ -8,11 +8,10 @@ function check() {
 
 class PrevsEditor extends React.Component {
 	render() {
-		var self = this;
 		var body;
-		var item = self.props.item;
+		var item = this.props.item;
 		
-		var mask = (Math.pow(2,self.props.bitsCount)-1)*self.props.baseBit;
+		var mask = (Math.pow(2,this.props.bitsCount)-1)*this.props.baseBit;
 		
 		var curVal = (item.prevs & mask);
 		
@@ -21,11 +20,11 @@ class PrevsEditor extends React.Component {
 		if(curVal === 0){
 			body = ReactDOM.span({style:{color:'#ccc'}}, renderIcon('ban'));
 			title = L('ADM_NA');
-		} else if(self.props.bitsCount === 1){
+		} else if(this.props.bitsCount === 1){
 			body = ReactDOM.span({style:{color:'#3a3'}}, check());
 			title = L('ADM_A');
 		} else {
-			switch (curVal/self.props.baseBit) {
+			switch (curVal/this.props.baseBit) {
 				case 1:
 					body = ReactDOM.span({style:{color:'#3a3'}}, check());
 					title = L('ADM_A_OWN');
@@ -43,19 +42,19 @@ class PrevsEditor extends React.Component {
 					title = L('ADM_A_FULL');
 					break;
 				default:
-					body = 'props: '+ (curVal/self.props.baseBit);
+					body = 'props: '+ (curVal/this.props.baseBit);
 					break;
 			}
 		}
 		
-		return ReactDOM.td({className:'clickable', title:title, style:{width:140}, onClick:function() {
+		return ReactDOM.td({className:'clickable', title:title, style:{width:140}, onClick:() =>  {
 				curVal*=2;
-				curVal+=self.props.baseBit;
+				curVal+=this.props.baseBit;
 				if((curVal & mask)!== curVal){
 					curVal = 0;
 				}
 				item.prevs = ((item.prevs&(65535^mask)) | curVal);
-				self.forceUpdate();
+				this.forceUpdate();
 			}},
 			body
 		)
@@ -79,33 +78,32 @@ export default class AdminRoleprevsForm extends BaseForm {
 	}
 
 	onShow() {
-		var self = this;
-		getNode(self.props.recId, function(node) {
-			getData('admin/nodePrevs.php', {nodeId :self.props.recId}, function(data) {
-				var lines=data.prevs.map(function(i) {
+		getNode(this.props.recId, (node) => {
+			getData('admin/nodePrevs.php', {nodeId :this.props.recId}, (data) => {
+				var lines=data.prevs.map((i) => {
 					if( !i.prevs) {
 						i.prevs = 0;
 					}
 				});
 				
-				self.initData = Object.assign(true, {}, data);
-				self.setState({node:node, data:data});
+				this.initData = Object.assign(true, {}, data);
+				this.setState({node:node, data:data});
 			});
 		});
 	}
 
 	saveClick() {
 		if (JSON.stringify(this.initData) !== JSON.stringify(this.state.data)) {
-			var submit = function(toChild) {
-				submitData('core/admin/nodePrevs.php?nodeId=' + this.props.recId + (toChild ? '&toChild' : ''), this.state.data, function() {
+			var submit = (toChild) => {
+				submitData('core/admin/nodePrevs.php?nodeId=' + this.props.recId + (toChild ? '&toChild' : ''), this.state.data, () =>  {
 					this.cancelClick();
-				}.bind(this));
-			}.bind(this);
+				});
+			};
 			
 			if(this.state.data.isDoc) {
 				submit();
 			} else {
-				myPromt(L('APPLY_CHILD'), function(){submit();}, L('TO_THIS'), function(){submit(true);}, L('TO_ALL'), 'check', 'check');
+				myPromt(L('APPLY_CHILD'), () => {submit();}, L('TO_THIS'), () => {submit(true);}, L('TO_ALL'), 'check', 'check');
 			}
 			
 		} else {
@@ -119,7 +117,7 @@ export default class AdminRoleprevsForm extends BaseForm {
 			var data = this.state.data;
 			var node = this.state.node;
 			
-			var lines=data.prevs.map(function(i) {
+			var lines = data.prevs.map((i) => {
 				return ReactDOM.tr({key:i.id, style:{paddingBottom:10, paddingTop:10, height:40}},
 					ReactDOM.td({style:{textAlign:'right', verticalAlign:'middle', paddingRight:20, width:250}}, i.name),
 					React.createElement(PrevsEditor, {bitsCount:3, baseBit:PREVS_VIEW_OWN, item:i}),

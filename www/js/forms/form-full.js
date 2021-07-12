@@ -5,7 +5,7 @@ import fieldsEvents from "../events/fields_events.js";
 import {formsEventsOnLoad, formsEventsOnSave} from "../events/forms_events.js";
 import FieldWrap from "../fields/field-wrap.js";
 import LeftBar from "../left-bar.js";
-import {defaultButtonStyle} from "../stage.js";
+import {defaultButtonStyle, successButtonStyle} from "../stage.js";
 import {iAdmin} from "../user.js";
 import {consoleLog, goBack, L, renderIcon} from "../utils.js";
 import BaseForm from "./form-mixins.js";
@@ -38,10 +38,10 @@ function callForEachField(fildRefs, data, functionName, onComplete){
 		var f = fildRefs[k];
 		
 		callbacksCount++;
-		(function(){
+		(() => {
 			var imgFieldName = f.props.field.fieldName;
 			
-			f[functionName](function(newValue, isInvalid){
+			f[functionName]((newValue, isInvalid) => {
 				if(typeof newValue !== 'undefined') {
 					data[imgFieldName] = newValue;
 				}
@@ -89,16 +89,16 @@ export default class FormFull extends BaseForm {
 		}
 	}
 
-	getDerivedStateFromProps (nextProps, prevState) {
+	static UNSAFE_componentWillReceiveProps(nextProps) {
 
-		if (nextProps.initialData.id !== this.props.initialData.id) {
+		if (nextProps.initialData.id !== nextProps.initialData.id) {
 			this.replaceState({});
 			this.resetFieldsProperties(true);
 		}
 		setTimeout(() => {
 			this.callOnTabShowEvent(nextProps.filters.tab);
 			this.timeout = null;
-		}.bind(this), 0);
+		}, 0);
 
 		if ((this.currentData.id !== nextProps.initialData.id) || (this.props.node !== nextProps.node) || (this.props.editable !== nextProps.editable)) {
 			
@@ -123,7 +123,7 @@ export default class FormFull extends BaseForm {
 	saveForm(callback, callbackInvalid) {
 		if(this.props.editable){
 			if(!callback){
-				callback = function(){};
+				callback = () => {};
 			}
 			this.saveClick('keepStatus', callback, callbackInvalid);
 		}
@@ -453,7 +453,7 @@ export default class FormFull extends BaseForm {
 		
 		var formIsValid = true;
 		var callbacksCount = 1; //one fake call
-		var onFieldValidated = function(isValid) {
+		var onFieldValidated = (isValid) => {
 			if (!isValid) {
 				formIsValid = false;
 			}
@@ -509,7 +509,7 @@ export default class FormFull extends BaseForm {
 			}
 		}
 		
-		this.validate(function(formIsValid) {
+		this.validate((formIsValid) => {
 			if (formIsValid) {
 
 				for (var k in this.fieldsRefs) {
@@ -560,49 +560,48 @@ export default class FormFull extends BaseForm {
 					callbackInvalid();
 				}
 			}
-		}.bind(this));
+		});
 	}
 
 	saveClickInner(data, callback) {
-		callForEachField(this.fieldsRefs, data, 'beforeSave', function(isInvalid){
+		callForEachField(this.fieldsRefs, data, 'beforeSave', (isInvalid) => {
 			if (!isInvalid) {
 				this.saveClickInner2(data, callback);
 			}
-		}.bind(this));
+		});
 	}
 
 	saveClickInner2 (data, callback) {
-		var self = this;
 		if (Object.keys(data).length > 0) {
-			submitRecord(self.props.node.id, data, self.props.initialData?self.props.initialData.id:undefined, function(recId) {
-				if (!self.currentData.hasOwnProperty('id')) {
-					self.currentData.id = recId;
-					self.props.initialData.id = recId;
+			submitRecord(this.props.node.id, data, this.props.initialData?this.props.initialData.id:undefined, (recId) => {
+				if (!this.currentData.hasOwnProperty('id')) {
+					this.currentData.id = recId;
+					this.props.initialData.id = recId;
 				}
 				
 				//renew current data
-				self.currentData = Object.assign(true, self.currentData, data);
+				this.currentData = Object.assign(true, this.currentData, data);
 				//renew initial data;
 				for (var k in data) {
 					var val = data[k];
 					if (typeof val === 'object') {
 						if ($.isEmptyObject(val)) {
-							self.props.initialData[k] = undefined;
+							this.props.initialData[k] = undefined;
 						} else if (val._isAMomentObject) {
-							self.props.initialData[k] = val.clone();
+							this.props.initialData[k] = val.clone();
 						} else if(Array.isArray(val)) {
-							self.props.initialData[k] = val.concat();
+							this.props.initialData[k] = val.concat();
 						} else {
-							self.props.initialData[k] = Object.assign(true, {}, val);
+							this.props.initialData[k] = Object.assign(true, {}, val);
 						}
 					} else {
-						self.props.initialData[k] = val;
+						this.props.initialData[k] = val;
 					}
 				}
 				
 				this.didSave(data, callback);
 
-			}.bind(this));
+			});
 		} else {
 			this.didSave(data, callback);
 		}
@@ -614,21 +613,20 @@ export default class FormFull extends BaseForm {
 			this.props.onSave();
 			return;
 		}
-		var self = this;
-		callForEachField(self.fieldsRefs, data, 'afterSave', function(isInvalid){
+		callForEachField(this.fieldsRefs, data, 'afterSave', (isInvalid) => {
 			if(!isInvalid){
-				self.rec_ID = self.currentData.id;
-				self.deteleBackup();
+				this.rec_ID = this.currentData.id;
+				this.deteleBackup();
 				if (callback) {
 					callback();
-				} else if (self.onSaveCallback) {
+				} else if (this.onSaveCallback) {
 					
-					self.onSaveCallback(callback);
+					this.onSaveCallback(callback);
 				} else {
-					if (self.isSlave()) {
-						self.props.parentForm.valueChoosed(self.currentData, true);
+					if (this.isSlave()) {
+						this.props.parentForm.valueChoosed(this.currentData, true);
 					} else {
-						self.cancelClick();
+						this.cancelClick();
 					}
 				}
 			}
@@ -738,7 +736,7 @@ export default class FormFull extends BaseForm {
 		var isMainTab = (!this.filters.tab || (tabs[0].props.field.fieldName === this.filters.tab));
 		
 		if(this.props.isCompact){
-			fields.sort(function(a,b){
+			fields.sort((a,b) => {
 				
 				var alow = (a.props.field.fieldType === FIELD_15_1toN || a.props.field.fieldType === FIELD_14_NtoM || a.props.field.fieldType === FIELD_5_BOOL);
 				var blow = (b.props.field.fieldType === FIELD_15_1toN || b.props.field.fieldType === FIELD_14_NtoM || b.props.field.fieldType === FIELD_5_BOOL);
@@ -775,15 +773,15 @@ export default class FormFull extends BaseForm {
 		var nodeAdmin;
 		if(!this.props.inlineEditable){
 			if (data.isDel && isMainTab) {
-				deleteButton = ReactDOM.button({className:'clickable clickable-neg', style:dangerButtonStyle, onClick:function(){
-						deleteRecord(data.name, node.id, data.id, function() {
+				deleteButton = ReactDOM.button({className:'clickable clickable-neg', style:dangerButtonStyle, onClick:() => {
+						deleteRecord(data.name, node.id, data.id, () =>  {
 							if(this.isSlave()){
 								this.props.parentForm.valueChoosed();
 							} else {
 								goBack(true);
 							}
-						}.bind(this));
-					}.bind(this), title:L('DELETE')}, renderIcon('trash'), this.isSlave()?'':L('DELETE'));
+						});
+					}, title:L('DELETE')}, renderIcon('trash'), this.isSlave()?'':L('DELETE'));
 			}
 			
 		
@@ -793,10 +791,10 @@ export default class FormFull extends BaseForm {
 					saveButton = ReactDOM.button({className:'clickable clickable-edit save-btn', style:successButtonStyle, onClick:this.saveClick, title:L('SAVE')}, this.isSlave()?renderIcon('check'):renderIcon('floppy-o'), this.isSlave()?'':L('SAVE'));
 				} else {
 					if(data.status === '1'){
-						draftButton = ReactDOM.button({className:'clickable clickable-cancel', style:defaultButtonStyle, onClick:function(){this.saveClick(true)}.bind(this), title:L('UNPUBLISH')}, L('UNPUBLISH'));
+						draftButton = ReactDOM.button({className:'clickable clickable-cancel', style:defaultButtonStyle, onClick:() => {this.saveClick(true)}, title:L('UNPUBLISH')}, L('UNPUBLISH'));
 						saveButton = ReactDOM.button({className:'clickable  clickable-edit save-btn', style:successButtonStyle, onClick:this.saveClick}, L('SAVE'));
 					} else {
-						draftButton = ReactDOM.button({className:'clickable clickable-cancel', style:defaultButtonStyle, onClick:function(){this.saveClick(true)}.bind(this), title:L('SAVE_TEMPLATE')}, L('SAVE_TEMPLATE'));
+						draftButton = ReactDOM.button({className:'clickable clickable-cancel', style:defaultButtonStyle, onClick:() => {this.saveClick(true)}, title:L('SAVE_TEMPLATE')}, L('SAVE_TEMPLATE'));
 						saveButton = ReactDOM.button({className:'clickable clickable-edit save-btn', style:successButtonStyle, onClick:this.saveClick, title:L('PUBLISH')}, L('PUBLISH'));
 						
 					}

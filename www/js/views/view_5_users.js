@@ -1,6 +1,6 @@
 import {renderIcon} from "../utils.js";
 
-(function() {
+(() =>  {
 	
 	var style = {
 		position:'relative',
@@ -23,13 +23,12 @@ import {renderIcon} from "../utils.js";
 	}
 	
 	
-	registerListRenderer(5, function(){
+	registerListRenderer(5, () => {
 		
 		var node = this.state.node;
 		var data = this.state.data;
-		var filters = this.filters;
-		
-		return data.items.map(function(item){
+
+		return data.items.map((item) => {
 			
 			var imgUrl = idToImgURL(item.avatar, 'avatar');
 			var phone;
@@ -59,7 +58,7 @@ import {renderIcon} from "../utils.js";
 					renderItemsButtons(node, item, this.refreshData)
 				)
 			);
-		}.bind(this));
+		});
 		
 	});
 

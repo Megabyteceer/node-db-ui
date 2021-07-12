@@ -40,9 +40,9 @@ registerFieldClass(FIELD_2_INT, class NumericField extends fieldMixins {
 				placeholder:field.name,
 				readOnly :this.props.fieldDisabled,
 				ref:this.refGetter,
-				onChange:function() {
+				onChange:() =>  {
 					this.props.wrapper.valueListener(parseInt(this.refToInput.value), true, this);
-				}.bind(this)
+				}
 			};
 			
 			return ReactDOM.input(inputsProps);

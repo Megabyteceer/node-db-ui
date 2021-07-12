@@ -99,10 +99,10 @@ export default class FileFormBody extends React.Component {
 			);
 		}
 
-		select = ReactDOM.button({style:{background: constants.PUBLISH_COLOR, fontSize:'80%', marginLeft:10, padding: '5px 20px 6px 20px'},ref:'selectButton', className:'clickable clickable-edit', onClick:function(){
+		select = ReactDOM.button({style:{background: constants.PUBLISH_COLOR, fontSize:'80%', marginLeft:10, padding: '5px 20px 6px 20px'},ref:'selectButton', className:'clickable clickable-edit', onClick:() => {
 				this.refs.fileInput.value = null;
 				this.refs.fileInput.click();
-			}.bind(this)}, renderIcon('folder-open'),
+			}}, renderIcon('folder-open'),
 			L('FILE_SELECT', getReadableUploadSize())
 		);
 

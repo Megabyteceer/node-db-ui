@@ -1,6 +1,6 @@
 import constants from "./custom/consts.js";
 import {iAdmin} from "./user.js";
-import {getData, isLitePage, loactionToHash, renderIcon, sp} from "./utils.js";
+import {getData, isLitePage, loactionToHash, renderIcon, setFormFilter, sp} from "./utils.js";
 
 let collapsed;
 
@@ -187,8 +187,7 @@ class BarItem extends React.Component {
 							sp(event);
 						}
 						
-					}.bind(this)
-					},
+					}},
 						itemsIcon,
 						collapsed?undefined:item.name,
 						collapsed?undefined:caret

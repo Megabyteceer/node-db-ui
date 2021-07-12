@@ -55,7 +55,7 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 				value = '';
 			} else {
 				
-				setTimeout(function(){
+				setTimeout(() => {
 					console.error('non string value for field '+field.name+' with default type');
 					//debugError('non string value for field '+field.name+' with default type');
 				},1);
@@ -95,9 +95,9 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 				placeholder:field.name+(field.lang?(' ('+field.lang+')'):''),
 				readOnly :this.props.fieldDisabled,
 				ref:this.refGetter,
-				onChange:function() {
+				onChange:() =>  {
 					this.props.wrapper.valueListener(this.refToInput.value, true, this);
-				}.bind(this)
+				}
 			};
 			
 			if (field.maxlen > 200) {
@@ -113,4 +113,4 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 	}
 });
 
-export {readOnlyCompactFieldProperties, readOnlyFieldProperties}
+export {readOnlyCompactFieldProperties, readOnlyFieldProperties, compactInputStyle, notCompactInputStyle}

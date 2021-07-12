@@ -99,10 +99,10 @@ export default class Search extends React.Component {
 		this.clearTimeout();
 		if (this.refs.input.value.length>2) {
 			this.setState({queryInProgress:true});
-			getData('/custom/api/search.php', {s : this.refs.input.value}, function(data){
+			getData('/custom/api/search.php', {s : this.refs.input.value}, (data) => {
 				this.setState({queryInProgress:false, data:data});
 				
-			}.bind(this));
+			});
 		}
 	}
 
@@ -127,7 +127,7 @@ export default class Search extends React.Component {
 				
 					
 				results = ReactDOM.div({style:resultsStyle},
-					this.state.data.map(function(i){
+					this.state.data.map((i) => {
 						
 						var img;
 						if(i.img){
@@ -137,51 +137,49 @@ export default class Search extends React.Component {
 						
 						
 						
-						return ReactDOM.span({style:itemStyle, className:'clickable', href:'#', key:i.click, onClick: function(ev){ sp(ev);
+						return ReactDOM.span({style:itemStyle, className:'clickable', href:'#', key:i.click, onClick: (ev) => {
+							sp(ev);
 							this.setState({data:undefined});
 							this.refs.input.value = '';
 							eval(i.click);
-						}.bind(this)},
+						}},
 							img,
 							ReactDOM.h5(null, i.name),
-							i.desc.split('<br>').map(function(i,k){
-								
+							i.desc.split('<br>').map((i,k) => {
 								return ReactDOM.p({key:k},i);
-								
 							})
-					
 						)
-					}.bind(this))
+					})
 				)
 			} else {
 				results = ReactDOM.div({style:resultsStyle},
 					ReactDOM.div({style:{padding:'10px 20px', textAlign:'center'}},
 						'No results for request "'+this.refs.input.value+'".'
-						)
+					)
 				)
 			}
 		}
 
 		return ReactDOM.span({style:style,
-			onMouseLeave:function(){
+			onMouseLeave:() => {
 				this.clearHideTimeout();
-				this.hiddingTimeout = setTimeout(function(){
+				this.hiddingTimeout = setTimeout(() => {
 					this.setState({hidden:true})
-				}.bind(this),800);
-			}.bind(this),
-			onMouseEnter:function(){
+				},800);
+			},
+			onMouseEnter:() => {
 				this.clearHideTimeout();
 				this.setState({hidden:false})
-			}.bind(this)
+			}
 		}, 
 			waitIcon,
 			ReactDOM.span({style:labelStyle}, 'Search: '),
 			ReactDOM.input(inputsProps),
-			ReactDOM.span({style:clearBtnStyle, className:'clickable clickable-top', onClick:function(){
+			ReactDOM.span({style:clearBtnStyle, className:'clickable clickable-top', onClick:() => {
 				this.setState({data:undefined})
 				this.refs.input.value = '';
 				
-			}.bind(this)}, renderIcon('times')),
+			}}, renderIcon('times')),
 			results
 		);
 		

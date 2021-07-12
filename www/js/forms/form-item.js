@@ -3,8 +3,6 @@ import FieldWrap from "../fields/field-wrap.js";
 import {L, loactionToHash, renderIcon, sp} from "../utils.js";
 import BaseForm from "./form-mixins.js";
 
-var renderItemsButtons;
-
 var rowStyle = {
 	borderBottom:'1px solid #ddd',
 	padding:'0 15px',
@@ -30,7 +28,7 @@ var rowStyleNum = {
 }
 
 
-function publishClick(draft, node, data, refreshFunction) {
+const publishClick = (draft, node, data, refreshFunction) => {
 	if(draft) {
 		draftRecord(node.id, data.id, refreshFunction);
 	} else {
@@ -38,12 +36,12 @@ function publishClick(draft, node, data, refreshFunction) {
 	}
 }
 
-renderItemsButtons = function(node, data, refreshFunction, formItem, editButtonFilters) {
+const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFilters) => {
 	if (formItem && formItem.props.isLookup) {
 		if(data.hasOwnProperty('isEd')){
 			
 			buttons=[
-				ReactDOM.button({key:2, style:{background: constants.EDIT_COLOR},className:'clickable clickable-edit toolbtn', title:L('EDIT'), onMouseDown:function(e) {
+				ReactDOM.button({key:2, style:{background: constants.EDIT_COLOR},className:'clickable clickable-edit toolbtn', title:L('EDIT'), onMouseDown:(e) => {
 						sp(e);
 						formItem.props.parentForm.toggleCreateDialogue(data.id)
 					}},
@@ -65,13 +63,13 @@ renderItemsButtons = function(node, data, refreshFunction, formItem, editButtonF
 		if (data.hasOwnProperty('isPub') && (!formItem || !formItem.props.disableDrafting)) {
 			if (data.status == 1) {
 				buttons.push(
-					ReactDOM.button({key:1,style:{background: constants.PUBLISH_COLOR},className:'clickable clickable-edit toolbtn', title:L('UNPUBLISH'), onClick:function(){publishClick(true,node, data, refreshFunction)}},
+					ReactDOM.button({key:1,style:{background: constants.PUBLISH_COLOR},className:'clickable clickable-edit toolbtn', title:L('UNPUBLISH'), onClick:() => {publishClick(true,node, data, refreshFunction)}},
 						renderIcon('eye')
 					)
 				)
 			} else {
 				buttons.push(
-					ReactDOM.button({key:1,style:{background: constants.UNPUBLISH_COLOR},className:'clickable clickable-del toolbtn', title:L('PUBLISH'), onClick:function(){publishClick(false, node, data, refreshFunction)}},
+					ReactDOM.button({key:1,style:{background: constants.UNPUBLISH_COLOR},className:'clickable clickable-del toolbtn', title:L('PUBLISH'), onClick:() => {publishClick(false, node, data, refreshFunction)}},
 						renderIcon('eye-slash')
 					)
 				)
@@ -81,8 +79,8 @@ renderItemsButtons = function(node, data, refreshFunction, formItem, editButtonF
 			if (data.hasOwnProperty('isEd')) {
 				if (!formItem || !formItem.props.list || !formItem.props.list.state.noEditButton) {
 					buttons.push(
-						ReactDOM.a({key:2,href:loactionToHash(node.id, data.id, editButtonFilters, true), onClick:function(e){
-									if(formItem && formItem.props.parentForm){
+						ReactDOM.a({key:2,href:loactionToHash(node.id, data.id, editButtonFilters, true), onClick: (e) => {
+									if(formItem && formItem.props.parentForm) {
 										sp(e);
 										formItem.props.parentForm.toggleCreateDialogue(data.id)
 									}
@@ -108,8 +106,8 @@ renderItemsButtons = function(node, data, refreshFunction, formItem, editButtonF
 		}
 		if(data.hasOwnProperty('isDel')){
 			buttons.push(
-				ReactDOM.button({key:3,style:{background: constants.DELETE_COLOR},className:'clickable clickable-del toolbtn', title:L('DELETE')+itemName, onClick:function(){
-					deleteRecord(data.name, node.id, data.id, function() {
+				ReactDOM.button({key:3,style:{background: constants.DELETE_COLOR},className:'clickable clickable-del toolbtn', title:L('DELETE')+itemName, onClick:() => {
+					deleteRecord(data.name, node.id, data.id, () =>  {
 						if (formItem && formItem.props.parentForm) {
 							formItem.props.parentForm.valueChoosed();
 						} else {
@@ -175,7 +173,7 @@ export default class FormItem extends BaseForm {
 			
 			itemProps.title = L('SELECT');
 			itemProps.className += ' clickable';
-			itemProps.onClick = function(){this.props.parentForm.valueChoosed(data)}.bind(this);
+			itemProps.onClick = () => {this.props.parentForm.valueChoosed(data)};
 		} else {
 			if(this.props.onClick){
 				itemProps.className='clickable';

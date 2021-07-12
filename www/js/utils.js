@@ -29,7 +29,9 @@ function myAlert(txt, isSucess, autoHide, noDiscardByBackdrop) {
 		var modalId = modal.show(ReactDOM.div({style:style},txt), noDiscardByBackdrop);
 	
 		if (autoHide) {
-			setTimeout(function(){modal.hide(modalId)}, 1100);
+			setTimeout(() => {
+				modal.hide(modalId);
+			}, 1100);
 		}
 	}
 
@@ -44,9 +46,6 @@ function myPromt(txt, onYes, yesLabel, onNo, noLabel, yesIcon, noIcon, discardBy
 	}
 
 	var noButton;
-	if (!onNo) {
-		onNo = function(){};
-	}
 
 	if (!noLabel) {
 		noLabel = L('CANCEL');
@@ -56,19 +55,24 @@ function myPromt(txt, onYes, yesLabel, onNo, noLabel, yesIcon, noIcon, discardBy
 		noIcon = 'times';
 	}
 
-	noButton = ReactDOM.button({style:{background:'#f84c4c', padding:'10px 45px 10px 40px'}, onClick:function(){modal.hide();onNo();}, className:'clickable clickable-neg'}, renderIcon(noIcon), ' ', noLabel);
-
+	noButton = ReactDOM.button({style:{background:'#f84c4c', padding:'10px 45px 10px 40px'}, onClick:() => {
+		modal.hide();
+		if(onNo) {
+			onNo();
+		}
+	}, className:'clickable clickable-neg'}, renderIcon(noIcon), ' ', noLabel);
 
 	var body = ReactDOM.span({style:{minWidth:'700px', display:'inline-block', background:'#F7F7F7', color:'#000', border:'3px solid #F7F7F7', padding:'30px'}},
 		txt,
 		ReactDOM.div({style:{marginTop:'30px'}},
 			noButton,
-			ReactDOM.button({style:{background:'#A8A9AD', padding:'10px 55px 10px 40px'}, onClick:function(){modal.hide();onYes();}, className:'clickable clickable-cancel'}, renderIcon(yesIcon), ' ', yesLabel)
+			ReactDOM.button({style:{background:'#A8A9AD', padding:'10px 55px 10px 40px'}, onClick:() => {
+				modal.hide();
+				onYes();
+			}, className:'clickable clickable-cancel'}, renderIcon(yesIcon), ' ', yesLabel)
 		)
 	);
-
 	modal.show(body, !discardByOutsideClick);
-
 }
 
 function debugError(txt) {
@@ -156,7 +160,7 @@ function handleAdditionalData(data, url) {
 		delete(data.debug);
 	}
 	if (data.hasOwnProperty('notifications')) {
-		data.notifications.some(function(n){
+		data.notifications.some((n) => {
 			Notify.add(n);
 		});
 	}
@@ -376,7 +380,7 @@ function updateHashLocation(filters) {
 		hashUpdateTimeout = false;
 	}
 
-	hashUpdateTimeout = setTimeout(function(){
+	hashUpdateTimeout = setTimeout(() => {
 		hashUpdateTimeout = false;
 
 		if (!filters) {
@@ -401,7 +405,7 @@ function updateHashLocation(filters) {
 }
 
 
-$(window).on('hashchange', function() {
+$(window).on('hashchange', () => {
 	isHistoryChanging = true;
 	goToPageByHash();
 });
@@ -423,7 +427,7 @@ function showForm(nodeId, recId, filters, editable) {
 		if (recId === 'new') {
 			createRecord(nodeId, filters);
 		} else {
-			getNodeData(nodeId, recId, function(data) {
+			getNodeData(nodeId, recId, (data) => {
 				setFormData(nodeId, data, recId, filters, editable);
 
 			}, (!recId && recId!==0)?filters:undefined, editable, false, isPresentListRenderer(nodeId))
@@ -447,7 +451,7 @@ function setFormData(nodeId, data, recId, filters, editable) {
 	currentFormParameters.editable = editable;
 	updateHashLocation();
 
-	getNode(nodeId, function(node) {
+	getNode(nodeId, (node) => {
 		Stage.instance._setFormData(node, data, recId, filters, editable);
 		oneFormShowed = true;
 	});
@@ -463,11 +467,13 @@ function setFormFilter(name, val) {
 var nodes = {};
 var nodesRequested = {};
 
-function waitForNode(nodeId, callback){
+function waitForNode(nodeId, callback) {
 	if (nodes.hasOwnProperty(nodeId)) {
 		callback(nodes[nodeId]);
 	} else {
-		setTimeout(function(){waitForNode(nodeId,callback)}, 50);
+		setTimeout(() => {
+			waitForNode(nodeId, callback);
+		}, 50);
 	}
 }
 
@@ -489,14 +495,14 @@ function getNode(nodeId, callback, forceRefresh, callStack) {
 			waitForNode(nodeId, callback);
 		} else {
 			nodesRequested[nodeId] = true;
-			getData('api/descNode.php?', {nodeId}, function(data) {
+			getData('api/descNode.php?', {nodeId}, (data) => {
 				
 				normalizeNode(data);
 
 				nodes[nodeId] = data;
 
 				callback(data);
-			}, function(data, url,callStack){
+			}, (data, url,callStack) => {
 				delete(nodesRequested[nodeId]);
 				handleError(data, url,callStack);
 			},callStack);
@@ -506,8 +512,8 @@ function getNode(nodeId, callback, forceRefresh, callStack) {
 
 function normalizeNode(node) {
 	node.fieldsById = [];
-	if(node.fields){
-		node.fields.map(function(f,i){
+	if(node.fields) {
+		node.fields.forEach((f, i) => {
 			f.index = i;
 			f.node = node;
 			node.fieldsById[f.id] = f;
@@ -557,7 +563,7 @@ function getNodeData(nodeId, recId, callback, filters, editable, isForRefList, i
 		Object.assign(params, filters);
 	}
 
-	return getData('api/', params, function(data) {
+	return getData('api/', params, (data) => {
 		
 		if(data.hasOwnProperty('node')) {
 			if (nodes[nodeId]) {
@@ -568,7 +574,7 @@ function getNodeData(nodeId, recId, callback, filters, editable, isForRefList, i
 			delete(data.node);
 		}
 
-		waitForNode(nodeId, function(node){
+		waitForNode(nodeId, (node) => {
 			data = data.data;
 			if (data) {
 				if (data.hasOwnProperty('items')) {
@@ -583,7 +589,7 @@ function getNodeData(nodeId, recId, callback, filters, editable, isForRefList, i
 		});
 
 
-	}, function(data, url, callStack){
+	}, (data, url, callStack) => {
 		if (onError) {
 			onError();
 		}
@@ -657,7 +663,7 @@ function submitRecord(nodeId, data, recId, callback, onError) {
 	if (typeof(recId) !== 'undefined') {
 		url += '&recId=' + recId;
 	}
-	getNode(nodeId, function(node) {
+	getNode(nodeId, (node) => {
 		submitData(url, encodeData(data, node), callback, undefined, onError);
 	});
 
@@ -715,10 +721,9 @@ function getData(url, params, callback, onError, callStack, noLoadingIndicator) 
 		headers,
 		body: JSON.stringify(params)
 	})
-	.then(function(res){
-
+	.then((res) =>{
 		return res.json();
-	}).then(function(data) {
+	}).then((data) => {
 		handleAdditionalData(data, url);
 		if (isAuthNeed(data)) {
 			redirect('login.php?ret='+encodeURIComponent(location.pathname.replace('/','')+location.hash))
@@ -741,7 +746,7 @@ function getData(url, params, callback, onError, callStack, noLoadingIndicator) 
 		}
 	})
 
-	.catch(function(error) {
+	.catch((error) => {
 		var roi = __requestsOrder.indexOf(requestRecord);
 		/// #if DEBUG
 			if(roi < 0) {
@@ -758,7 +763,7 @@ function getData(url, params, callback, onError, callStack, noLoadingIndicator) 
 		myAlert(L('CHECK_CONNECTION'), false, true);
 	})
 
-	.finally(function(){
+	.finally(() => {
 		while (__requestsOrder.length > 0 && __requestsOrder[0].hasOwnProperty('result')) {
 			var rr = __requestsOrder.shift();
 			rr.callback(rr.result);
@@ -796,7 +801,7 @@ function submitData(url, dataToSend, callback, noProcessData, onError){
 	  processData: false,
 	  contentType: false
 	} )
-	.done(function(data){
+	.done((data) => {
 		dataDidModifed();
 		handleAdditionalData(data, url);
 		if (isAuthNeed(data)) {
@@ -807,7 +812,7 @@ function submitData(url, dataToSend, callback, noProcessData, onError){
 			handleError(data, url,JSON.stringify(dataToSend)+';\n'+callStack);
 		}
 	})
-	.fail (function(r, error) {
+	.fail ((r, error) => {
 		if (onError) {
 			onError(error);
 		}
@@ -815,7 +820,7 @@ function submitData(url, dataToSend, callback, noProcessData, onError){
 		myAlert(error);
 		consoleDir(error);
 	})
-	.always(function(){
+	.always(() => {
 		LoadingIndicator.instance.hide();
 	})
 }
@@ -826,16 +831,16 @@ function deleteRecord(name, nodeId, recId, callback, noPromt, onYes) {
 		if(onYes){
 			onYes();
 		} else {
-			submitData('api/delete.php?nodeId=' + nodeId + '&recId=' + recId, {}, function(){
+			submitData('api/delete.php?nodeId=' + nodeId + '&recId=' + recId, {}, () => {
 				dataDidModifed();
 				callback();
 			});
 		}
 	} else {
 
-		getNode (nodeId, function(node) {
+		getNode (nodeId, (node) => {
 			
-			myPromt(L('SURE_DELETE',(node.creationName||node.singleName))+' "'+name+'"?', function(){}, L('CANCEL'), function(){
+			myPromt(L('SURE_DELETE',(node.creationName||node.singleName))+' "'+name+'"?', () => {}, L('CANCEL'), () => {
 				deleteRecord(null, nodeId, recId, callback, true, onYes);
 			}, L('DELETE'), 'caret-left', 'times', true);
 		});
@@ -848,7 +853,7 @@ function createRecord(nodeId, parameters){
 	if(!parameters){
 		parameters = {};
 	}
-	getNode (nodeId, function(node) {
+	getNode (nodeId, (node) => {
 		var emptyData = {};
 		if(node.draftable && (node.prevs & PREVS_PUBLISH)){ //access to publish records
 			emptyData.isPub = 1;
@@ -1020,10 +1025,10 @@ function popup(url, W = 900, reloadParentIfSomethingUpdated) { //new window
 		return;
 	}
 	if(reloadParentIfSomethingUpdated) {
-		popUp.reloadParentIfSomethingUpdated_qwi012d = function() {
+		popUp.reloadParentIfSomethingUpdated_qwi012d = () =>  {
 			dataDidModifedInChildren = true;
 		}
-		var intr = setInterval(function() {
+		var intr = setInterval(() =>  {
 			if (popUp.closed) {
 				if (dataDidModifedInChildren) {
 					location.reload();
@@ -1057,7 +1062,7 @@ function loadJS(name, callback) {
 
     LoadingIndicator.instance.show();
     var script = document.createElement('script');
-    script.onload = function() {
+    script.onload = () =>  {
         LoadingIndicator.instance.hide();
         loadedScripts[name].some((f) => {f()});
 
@@ -1072,7 +1077,7 @@ function loadJS(name, callback) {
 }
 
 //TODO: uncomment
-//setInterval(function(){
+//setInterval(() => {
 
 	//if(window.location.href.indexOf('#n/28/f/p/*/formTitle')>0 || window.location.href.indexOf('#n/73/f/event_consultations_linker')>0){
 	//	refreshForm();
@@ -1088,7 +1093,7 @@ function strip_tags (input) {
 	var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi
 	var commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi
 
-	return input.replace(commentsAndPhpTags, '').replace(tags, function ($0, $1) {
+	return input.replace(commentsAndPhpTags, '').replace(tags, ($0, $1) => {
 		return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : ''
 	})
 }
@@ -1133,7 +1138,7 @@ function submitErrorReport(name, stack) {
 		submitRecord(81, {
 			name:name+' ('+window.location.href+')',
 			stack:stack.substring(0,3999)
-		}, undefined, function(){});
+		}, undefined, () => {});
 	}
 
 }
@@ -1198,5 +1203,6 @@ export {
 	toReadableTime,
 	toReadableDatetime,
 	updateHashLocation,
-	goBack
+	goBack,
+	setFormFilter
 }
