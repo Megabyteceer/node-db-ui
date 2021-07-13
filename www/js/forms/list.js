@@ -71,12 +71,13 @@ export default class List extends BaseForm {
 		this.onShow();
 	}
 
-	componentDidUpdate() {
-		super.componentDidUpdate();
-		this.filters = Object.assign({}, this.props.filters);
+	UNSAFE_componentWillReceiveProps(newProps) {
+		super.UNSAFE_componentWillReceiveProps(newProps);
+		consoleLog('LIST receive props');
+		this.filters = $.extend({}, newProps.filters);
 		this.setSearchInputValue(this.filters.s);
-		this.state.node = this.props.node;
-		this.state.data = this.props.initialData;
+		this.state.node = newProps.node;
+		this.state.data = newProps.initialData;
 		this.onShow();
 	}
 

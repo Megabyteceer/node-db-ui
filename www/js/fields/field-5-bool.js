@@ -8,9 +8,8 @@ export default class CheckBox extends React.Component {
 		this.state = {value:this.props.defaultValue};
 	}
 
-	static getDerivedStateFromProps(props, state) {
-		state.value = props.defaultValue;
-		return state;
+	UNSAFE_componentWillReceiveProps(nextProps) {
+		this.setState({value: nextProps.defaultValue});
 	}
 	
 	render() {

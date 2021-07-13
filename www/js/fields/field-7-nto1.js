@@ -31,16 +31,16 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 		this.state = {filters:this.generateDefaultFiltersByProps(this.props), value:val};
 	}
 
-	componentDidUpdate() {
-		if (this.props.editIt) {//edit item in extended n2m list
+	UNSAFE_componentWillReceiveProps(nextProps) {
+		if (nextProps.editIt) {//edit item in extended n2m list
 			if(!this.state.expanded){
 				this.setState({expanded:true});
 			}
-			this.toggleCreateDialogue(props.editIt);
+			this.toggleCreateDialogue(nextProps.editIt);
 		}
 		
 		if (this.props.filters) {
-			if(!this.state.filters) {
+			if(!this.state.filters){
 				this.state.filters = {};
 			}
 			for (var k in this.props.filters) {

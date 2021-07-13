@@ -16,6 +16,7 @@ export default class eventProcessingMixins extends BaseForm {
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
+		super.UNSAFE_componentWillReceiveProps(nextProps);
 		if (nextProps.initialData.id !== this.props.initialData.id) {
 			this.replaceState({});
 			this.resetFieldsProperties(true);

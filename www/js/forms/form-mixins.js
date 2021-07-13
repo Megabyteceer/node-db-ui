@@ -13,8 +13,8 @@ export default class BaseForm extends React.Component {
 		this.cancelClick = this.cancelClick.bind(this);
 	}
 
-	componentDidUpdate() {
-		this.filters = Object.assign({}, this.props.filters);
+	UNSAFE_componentWillReceiveProps(newProps) {
+		this.filters = $.extend({}, newProps.filters);
 	}
 
 	changeFilter(name, v, refresh) {

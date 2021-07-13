@@ -5,8 +5,8 @@ export default class FormTab extends React.Component {
 		this.state ={visible: this.props.visible};
 	}
 
-	componentDidUpdate() {
-		this.state.visible = this.props.visible;
+	UNSAFE_componentWillReceiveProps(nextProps) {
+		this.state.visible = nextProps.visible;
 	}
 
 	show(val) {

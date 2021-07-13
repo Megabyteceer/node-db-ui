@@ -64,16 +64,13 @@ class PrevsEditor extends React.Component {
 
 export default class AdminRoleprevsForm extends BaseForm {
 
-	constructor(props) {
-		super(props);
-	}
-
 	componentDidUpdate(props, state) {
 		super.componentDidUpdate(props, state);
 		this.onShow();
 	}
 
-	componentDidMount() {
+	UNSAFE_componentWillReceiveProps(nextProps) {
+		super.UNSAFE_componentWillReceiveProps(newProps);
 		this.onShow();
 	}
 
