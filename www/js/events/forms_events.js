@@ -1,5 +1,5 @@
 import {iAdmin} from "../user.js";
-import {L} from "../utils.js";
+import {getNodeData, L} from "../utils.js";
 
 var formsEventsOnLoad = {};
 var formsEventsOnSave = {};
@@ -101,6 +101,7 @@ if (this.rec_update) {
 	this.header = 'Edit user\'s profile ' + myname;
 	this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
 	this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
+	this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
 }
 
 if (this.rec_creation) {
@@ -111,6 +112,7 @@ if (this.rec_creation) {
 	this.header = ( 'Registration:');
 	this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
 	this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
+	this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
 }
 	}//form5onloadEnd_hkasdhwdc
 	formsEventsOnSave[5] = function() {//form5onsaveBegin_hkasdhwdc

@@ -1,5 +1,6 @@
 import constants from "../custom/consts.js";
-import {idToImgURL, L, renderIcon} from "../utils.js";
+import User from "../user.js";
+import {checkFileSize, idToImgURL, L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
@@ -13,7 +14,7 @@ $.fn.serializefiles = () =>  {
 			formData.append(tag.name, file);
 		});
 	});
-	formData.append('sessionToken', 'dev-user-session-token');
+	formData.append('sessionToken', User.sessionToken);
 	var params = $(obj).serializeArray();
 	$.each(params, (i, val) => {
 		formData.append(val.name, val.value);
@@ -70,7 +71,7 @@ class CropperFieldBody extends React.Component {
 			src:null
 		});
 		this.refs.fileInput.value = '';
-		modal.hide();
+		Modal.instance.hide();
 		this.props.parent.props.wrapper.hideTooltip();
 	}
 
@@ -99,7 +100,7 @@ class CropperFieldBody extends React.Component {
 				cropResult: this.cropper.getCroppedCanvas().toDataURL(),
 				src:null
 			});
-			modal.hide();
+			Modal.instance.hide();
 			this.props.parent.props.wrapper.hideTooltip();
 		}
 	}

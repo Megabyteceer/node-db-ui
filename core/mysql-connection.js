@@ -55,30 +55,47 @@ if (!String.prototype.replaceAll) {
 }
 
 let mysqlTransactStarted = false;
+const transactionsqueq = [];
 
-async function mysqlStartTransaction(userSession) {
-	const ret = mysqlExec("START TRANSACTION;", userSession);
-	assert(!mysqlTransactStarted, "transaction already started");
+function waitPrevTransactionFinish() {
+	return new Promise((resolve) => {
+		transactionsqueq.push(resolve);
+	});
+}
+
+async function mysqlStartTransaction() {
+	if(mysqlTransactStarted) {
+		await waitPrevTransactionFinish();
+	}
+	const ret = mysqlExec("START TRANSACTION;");
 	mysqlTransactStarted = true;
 	return ret;
 }
 
-async function mysqlCommit(userSession) {
+function nextTrasnsaction() {
+	if(transactionsqueq.length) {
+		transactionsqueq.shift()();
+	}
+}
+
+async function mysqlCommit() {
 	assert(mysqlTransactStarted, "transaction is not started");
-	await mysqlExec("COMMIT;", userSession);
+	await mysqlExec("COMMIT;");
 	mysqlTransactStarted = false;
+	nextTrasnsaction();
 }
 
 async function mysqlRollback() {
 	if(mysqlTransactStarted) {
-		await mysqlExec("ROLLBACK;", userSession);
+		await mysqlExec("ROLLBACK;");
 		mysqlTransactStarted = false;
+		nextTrasnsaction();
 	}
 }
 
 async function mysqlInsertedID(userSession) {
 	assert(mysqlTransactStarted, "transaction is not started");
-	let ret = await mysqlExec("SELECT LAST_INSERT_ID()", userSession);
+	let ret = await mysqlExec("SELECT LAST_INSERT_ID()");
 	return ret[0]['LAST_INSERT_ID()'];
 }
 

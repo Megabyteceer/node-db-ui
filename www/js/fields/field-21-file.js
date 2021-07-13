@@ -46,7 +46,7 @@ export default class FileFormBody extends React.Component {
 			file:null
 		});
 		this.refs.fileInput.value = '';
-		modal.hide();
+		Modal.instance.hide();
 		this.props.parent.props.wrapper.hideTooltip();
 	}
 

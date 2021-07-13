@@ -1,8 +1,5 @@
 import {sp} from "./utils.js";
 
-var modal;
-
-
 var style = {
 	marginTop:'90px',
 	display:'inline-block',
@@ -30,7 +27,7 @@ var idCounter = 0;
 
 export default class Modal extends React.Component {
 	componentDidMount(){
-		modal = this;
+		Modal.instance = this;
 	}
 
 	show(content, noDiscardByBackdrop) {

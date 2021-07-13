@@ -1,4 +1,4 @@
-import {L, renderIcon} from "../utils.js";
+import {L, renderIcon, submitData} from "../utils.js";
 
 var node;
 	
@@ -165,7 +165,7 @@ class AdminEventEditor extends React.Component {
 				window.location.reload();
 			});
 		} else {
-			modal.hide();
+			Modal.instance.hide();
 		}
 	}
 
@@ -204,7 +204,7 @@ class AdminEventEditor extends React.Component {
 						return false;
 					},
 					
-					"Esc": modal.hide
+					"Esc": Modal.instance.hide
 				}
 			});
 			this.editor.setSize('900px','500px');
@@ -244,8 +244,8 @@ class AdminEventEditor extends React.Component {
 				ReactDOM.textarea({ref:this.getTextareaRef, style:{minWidth:'1000px', minHeight:'4	00px'}, defaultValue:this.state.src})
 			),
 			ReactDOM.div({style:{textAlign:'center'}},
-				ReactDOM.button({className:'clickable', style:defaultButtonStyle, onClick:modal.hide}, renderIcon('times'), L('CANCEL')),
-				ReactDOM.button({className:'clickable', style:successButtonStyle, onClick:this.saveClick}, renderIcon('floppy-o'), L('SAVE'))
+				ReactDOM.button({className:'clickable', style:defaultButtonStyle, onClick: Modal.instance.hide}, renderIcon('times'), L('CANCEL')),
+				ReactDOM.button({className:'clickable', style:successButtonStyle, onClick: this.saveClick}, renderIcon('floppy-o'), L('SAVE'))
 				
 			),
 			ReactDOM.hr(),

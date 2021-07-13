@@ -1,6 +1,6 @@
 import BaseForm from "../forms/form-mixins.js";
 import {iAdmin} from "../user.js";
-import {L, renderIcon} from "../utils.js";
+import {L, renderIcon, submitData} from "../utils.js";
 
 function check() {
 	return ReactDOM.span({style:{marginLeft:-12, marginRight:-12}}, renderIcon('check'));
@@ -92,7 +92,9 @@ export default class AdminRoleprevsForm extends BaseForm {
 	saveClick() {
 		if (JSON.stringify(this.initData) !== JSON.stringify(this.state.data)) {
 			var submit = (toChild) => {
-				submitData('core/admin/nodePrevs.php?nodeId=' + this.props.recId + (toChild ? '&toChild' : ''), this.state.data, () =>  {
+				this.state.data.nodeId = this.props.recId;
+				this.state.data.toChild = this.props.toChild;
+				submitData('core/admin/nodePrevs.php', this.state.data, () =>  {
 					this.cancelClick();
 				});
 			};

@@ -1,5 +1,5 @@
 import constants from "../custom/consts.js";
-import {L, renderIcon, sp} from "../utils.js";
+import {getNodeData, L, renderIcon, sp} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
@@ -29,6 +29,8 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			this.props.wrapper.valueListener(val, false, this);
 		}
 		this.state = {filters:this.generateDefaultFiltersByProps(this.props), value:val};
+		this.clearLeaveTimeout = this.clearLeaveTimeout.bind(this);
+		this.onMouseLeave = this.onMouseLeave.bind(this);
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
@@ -52,7 +54,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 	}
 
 	componentWillUnmount(){
-		this.clearLeaveTimout();
+		this.clearLeaveTimeout();
 	}
 
 	toggleList() {
@@ -96,7 +98,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			var curBackup = getBackupData(this.props.field.nodeRef, backupPrefix);
 			backupCreationData(this.props.field.nodeRef, Object.assign(curBackup,defaultCreationData), backupPrefix);
 		}
-		this.clearLeaveTimout();
+		this.clearLeaveTimeout();
 		this.setState({creationOpened: !this.state.creationOpened, backupPrefix: backupPrefix, dataToEdit: undefined, itemIdToEdit: itemIdToEdit});
 		if(typeof itemIdToEdit !== 'undefined'){
 			getNodeData(this.props.field.nodeRef, itemIdToEdit, (data) => {
@@ -116,7 +118,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 		}
 	}
 
-	clearLeaveTimout(){
+	clearLeaveTimeout(){
 		if(this.leaveTimout){
 			clearTimeout(this.leaveTimout);
 			delete (this.leaveTimout);
@@ -199,7 +201,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			
 			
 			
-			return ReactDOM.div({onMouseLeave:this.onMouseLeave, onMouseEnter:this.clearLeaveTimout},
+			return ReactDOM.div({onMouseLeave: this.onMouseLeave, onMouseEnter: this.clearLeaveTimeout},
 				ReactDOM.div({style:{border:this.props.noBorder?'0':'1px solid #aaa', whiteSpace:'nowrap', cursor:this.props.fieldDisabled?'default':'pointer',  borderRadius:3, padding:2}, className:this.props.fieldDisabled?'unclickable disabled':'clickable', title:this.props.isCompact?field.name:L('SELECT'), onClick:this.toggleList},
 					ReactDOM.span({style:{display:'inline-block',verticalAlign:'middle',textOverflow: 'ellipsis', width:'100%',whiteSpace:'nowrap',overflow: 'hidden',paddingLeft:8,paddingRight:54,marginRight:mrg}},
 						iconPic,

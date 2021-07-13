@@ -11,12 +11,14 @@ import "../both-side-utils.js";
 import LoadingIndicator from "./loading-indicator.js";
 import DebugPanel from "./debug-panel.js";
 import {isPresentListRenderer} from "./forms/list.js";
+import User from "./user.js";
+import Modal from "./modal.js";
 
 const headers = new Headers();
 headers.append("Content-Type", "application/json");
 
 function myAlert(txt, isSucess, autoHide, noDiscardByBackdrop) {
-	if (!modal) {
+	if (!Modal.instance) {
 		alert(txt);
 	} else {
 		var style;
@@ -26,11 +28,11 @@ function myAlert(txt, isSucess, autoHide, noDiscardByBackdrop) {
 			style = {display:'inline-block', background: constants.ERROR_ALERT_BG, color:'#a00', border:'1px solid #922', padding:'30px', borderRadius:4};
 		}
 	
-		var modalId = modal.show(ReactDOM.div({style:style},txt), noDiscardByBackdrop);
+		var modalId = Modal.instance.show(ReactDOM.div({style:style},txt), noDiscardByBackdrop);
 	
 		if (autoHide) {
 			setTimeout(() => {
-				modal.hide(modalId);
+				Modal.instance.hide(modalId);
 			}, 1100);
 		}
 	}
@@ -56,7 +58,7 @@ function myPromt(txt, onYes, yesLabel, onNo, noLabel, yesIcon, noIcon, discardBy
 	}
 
 	noButton = ReactDOM.button({style:{background:'#f84c4c', padding:'10px 45px 10px 40px'}, onClick:() => {
-		modal.hide();
+		Modal.instance.hide();
 		if(onNo) {
 			onNo();
 		}
@@ -67,12 +69,12 @@ function myPromt(txt, onYes, yesLabel, onNo, noLabel, yesIcon, noIcon, discardBy
 		ReactDOM.div({style:{marginTop:'30px'}},
 			noButton,
 			ReactDOM.button({style:{background:'#A8A9AD', padding:'10px 55px 10px 40px'}, onClick:() => {
-				modal.hide();
+				Modal.instance.hide();
 				onYes();
 			}, className:'clickable clickable-cancel'}, renderIcon(yesIcon), ' ', yesLabel)
 		)
 	);
-	modal.show(body, !discardByOutsideClick);
+	Modal.instance.show(body, !discardByOutsideClick);
 }
 
 function debugError(txt) {
@@ -324,7 +326,12 @@ function goToPageByHash() {
 				case 'f':
 					filters = {};
 					while (hash.length) {
-						filters[hash.shift()] = decodeURIComponent(hash.shift());
+						let val = decodeURIComponent(hash.shift());
+						let numVal = parseInt(val); // return numeric values to filter
+						if(val == numVal) {
+							val = numVal;
+						}
+						filters[hash.shift()] = val;
 					}
 					break;
 				default:
@@ -352,7 +359,7 @@ function goBack(isAfterDelete) {
 		if(window.location.href.indexOf('#n/28/f/p/*/formTitle')>0){
 			refreshForm();
 		} else {
-		///	window.close();
+			window.close();
 		}
 	} else if (!isAfterDelete && window.history.length) {
 		isHistoryChanging = true;
@@ -655,16 +662,11 @@ function addMixins(Class, mixins) {
 }
 
 function submitRecord(nodeId, data, recId, callback, onError) {
-
 	if (Object.keys(data).length === 0) {
 		throw 'Tried to submit emty object';
 	}
-	var url = 'api/submit.php?nodeId='+nodeId;
-	if (typeof(recId) !== 'undefined') {
-		url += '&recId=' + recId;
-	}
 	getNode(nodeId, (node) => {
-		submitData(url, encodeData(data, node), callback, undefined, onError);
+		submitData('api/submit.php', {nodeId, recId, data: encodeData(data, node)}, callback, undefined, onError);
 	});
 
 }
@@ -701,7 +703,7 @@ function getData(url, params, callback, onError, callStack, noLoadingIndicator) 
 	if(!params) {
 		params = {};
 	}
-	params.sessionToken = "dev-user-session-token";
+	params.sessionToken = User.sessionToken;
 
 	__requestsOrder.push(requestRecord);
 
@@ -745,7 +747,9 @@ function getData(url, params, callback, onError, callStack, noLoadingIndicator) 
 			}
 		}
 	})
-
+	/// #if DEBUG
+	/*
+	/// #endif
 	.catch((error) => {
 		var roi = __requestsOrder.indexOf(requestRecord);
 		/// #if DEBUG
@@ -762,7 +766,7 @@ function getData(url, params, callback, onError, callStack, noLoadingIndicator) 
 		}
 		myAlert(L('CHECK_CONNECTION'), false, true);
 	})
-
+	//*/
 	.finally(() => {
 		while (__requestsOrder.length > 0 && __requestsOrder[0].hasOwnProperty('result')) {
 			var rr = __requestsOrder.shift();
@@ -788,20 +792,23 @@ function isAuthNeed(data) {
 function submitData(url, dataToSend, callback, noProcessData, onError){
 	LoadingIndicator.instance.show();
 
+	dataToSend.sessionToken = User.sessionToken;
+
 	if (!noProcessData) {
 		dataToSend = JSON.stringify(dataToSend);
 	}
 
 	var callStack = new Error('submitData called from: ').stack;
-	
-	$.ajax( {
-	  url: __corePath + url,
-	  type: 'POST',
-	  data: dataToSend,
-	  processData: false,
-	  contentType: false
-	} )
-	.done((data) => {
+
+	fetch(__corePath + url, {
+		method: 'POST',
+		headers,
+		body: dataToSend
+	})
+	.then((res) =>{
+		return res.json();
+	})
+	.then((data) => {
 		dataDidModifed();
 		handleAdditionalData(data, url);
 		if (isAuthNeed(data)) {
@@ -812,7 +819,10 @@ function submitData(url, dataToSend, callback, noProcessData, onError){
 			handleError(data, url,JSON.stringify(dataToSend)+';\n'+callStack);
 		}
 	})
-	.fail ((r, error) => {
+	/// #if DEBUG
+	/*
+	/// #endif
+	.catch((r, error) => {
 		if (onError) {
 			onError(error);
 		}
@@ -820,7 +830,8 @@ function submitData(url, dataToSend, callback, noProcessData, onError){
 		myAlert(error);
 		consoleDir(error);
 	})
-	.always(() => {
+	//*/
+	.finally(() => {
 		LoadingIndicator.instance.hide();
 	})
 }
@@ -831,7 +842,7 @@ function deleteRecord(name, nodeId, recId, callback, noPromt, onYes) {
 		if(onYes){
 			onYes();
 		} else {
-			submitData('api/delete.php?nodeId=' + nodeId + '&recId=' + recId, {}, () => {
+			submitData('api/delete.php', {nodeId, recId}, () => {
 				dataDidModifed();
 				callback();
 			});
@@ -1188,6 +1199,7 @@ export {
 	createRecord,
 	deleteRecord,
 	submitData,
+	submitRecord,
 	draftRecord,
 	publishRecord,
 	idToImgURL,
@@ -1204,5 +1216,6 @@ export {
 	toReadableDatetime,
 	updateHashLocation,
 	goBack,
-	setFormFilter
+	setFormFilter,
+	getNodeData
 }

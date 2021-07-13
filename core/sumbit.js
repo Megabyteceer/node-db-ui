@@ -7,12 +7,12 @@ const {getRecords} = require("./get-records");
 const {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit, mysqlInsertedID} = require("./mysql-connection");
 const {UPLOADS_FILES_PATH, idToImgURLServer} = require('./upload');
 
-async function submitRecord(nodeId, data, recId = false, userSession = ADMIN_USER_SESSION) {
+async function submitRecord(nodeId, data, recId = false, userSession) {
 	
 	let node = getNodeDesc(nodeId);
 	let currentData;
 	if(recId !== false) {
-		currentData = await getRecords(nodeId, PREVS_EDIT_OWN, recId, false);
+		currentData = await getRecords(nodeId, PREVS_ANY, recId, userSession);
 	}
 	
 	const tableName = node.tableName;
@@ -80,8 +80,9 @@ async function submitRecord(nodeId, data, recId = false, userSession = ADMIN_USE
 		}
 	}
 
-	await mysqlStartTransaction(userSession);
-
+	if(userSession) {
+		await mysqlStartTransaction();
+	}
 	try	{
 
 		let insQ;
@@ -270,7 +271,7 @@ async function submitRecord(nodeId, data, recId = false, userSession = ADMIN_USE
 		}
 		
 		if(leastOneTablesFieldUpdated) {
-			await mysqlExec(insQ.join(''), userSession);
+			await mysqlExec(insQ.join(''));
 		}
 		
 		if(recId === false) {
@@ -318,8 +319,9 @@ async function submitRecord(nodeId, data, recId = false, userSession = ADMIN_USE
 				}
 			}
 		}
-		
-		await mysqlCommit(userSession);
+		if(userSession) {
+			await mysqlCommit();
+		}
 		if(filesToDelete) {
 			debugger;
 			for(let f of filesToDelete) {
@@ -329,7 +331,9 @@ async function submitRecord(nodeId, data, recId = false, userSession = ADMIN_USE
 		return recId;
 		
 	} catch (er) {
-		mysqlRollback(userSession);
+		if(userSession) {
+			mysqlRollback();
+		}
 		throw er;
 	}
 }

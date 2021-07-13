@@ -148,4 +148,6 @@ export default class User extends React.Component {
 	}
 }
 
+User.sessionToken = "dev-user-session-token";
+
 export {iAdmin};

@@ -35,7 +35,7 @@ const api = {
 		res({data: getNodeDesc(reqData.nodeId, userSession)});
 	},
 	"api/submit.php":(reqData, userSession, res) => {
-		submitRecord(reqData.nodeId, reqData, reqData.recId, userSession).then(res);
+		submitRecord(reqData.nodeId, reqData.data, reqData.recId, userSession).then(res);
 	},
 	"api/uploadImage.php":(reqData, userSession, res) => {
 		uploadImage(reqData, userSession).then(res);

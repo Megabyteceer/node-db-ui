@@ -3,7 +3,7 @@
 import constants from "../custom/consts.js";
 import LeftBar from "../left-bar.js";
 import {iAdmin} from "../user.js";
-import {L, renderIcon, sp, updateHashLocation} from "../utils.js";
+import {getNodeData, L, renderIcon, sp, updateHashLocation} from "../utils.js";
 import FormItem from "./form-item.js";
 import BaseForm from "./form-mixins.js";
 
@@ -616,7 +616,7 @@ export default class List extends BaseForm {
 		}
 
 		if(paginator.length > 1){
-			paginator = ReactDOM.div({style:{paddingTop:'10px'}},
+			paginator = ReactDOM.div({style:{paddingTop:'10px', marginLeft: 15, display: 'inline-block'}},
 				paginator
 			)
 		} else {
@@ -630,10 +630,9 @@ export default class List extends BaseForm {
 			footerText += L('SEARCH_RESULTS', this.filters.s);
 		}
 
-		if(data.items.length > 0 && data.items.length<data.total) {
+		if(data.items.length > 0 && data.items.length < data.total) {
 			footer = ReactDOM.div({style:{marginTop:this.isSlave()?5:30, fontSize:'75%'}},
 				footerText,
-				ReactDOM.br(),
 				paginator
 			)
 		} else {
@@ -657,6 +656,7 @@ export default class List extends BaseForm {
 			nodeAdmin,
 			title,
 			header,
+			footer,
 			body,
 			footer
 		);

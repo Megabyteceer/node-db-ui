@@ -2,7 +2,7 @@
 import FieldWrap from "../fields/field-wrap.js";
 import {defaultButtonStyle, successButtonStyle} from "../stage.js";
 import {iAdmin} from "../user.js";
-import {consoleLog, goBack, L, renderIcon} from "../utils.js";
+import {consoleLog, goBack, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord} from "../utils.js";
 import FormTab from "./form-tab.js";
 import eventProcessingMixins from "./event-processing-mixins.js";
 import constants from "../custom/consts.js";
@@ -41,7 +41,7 @@ function callForEachField(fildRefs, data, functionName, onComplete) {
 				callbacksCount--;
 				if (waitingForCallbacks) {
 					if (callbacksCount === 0) {
-						modal.hide();
+						Modal.instance.hide();
 						onComplete(isInvalid);
 					}
 				} else {
@@ -70,6 +70,7 @@ export default class FormFull extends eventProcessingMixins {
 	constructor(props) {
 		super(props);
 		this.currentData = Object.assign({}, props.filters, props.initialData);
+		this.saveClick = this.saveClick.bind(this);
 	}
 
 	componentDidMount() {
@@ -225,7 +226,6 @@ export default class FormFull extends eventProcessingMixins {
 				for (var k in this.fieldsRefs) {
 					var fieldRef = this.fieldsRefs[k];
 					var field = fieldRef.props.field;
-					var fieldIsValid = true;
 					
 					var val = this.currentData[field.fieldName];
 

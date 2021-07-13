@@ -1,4 +1,4 @@
-import {L, renderIcon} from "../utils.js";
+import {getNodeData, L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
 

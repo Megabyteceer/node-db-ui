@@ -1,5 +1,5 @@
 "use strict";
-const {getNodeDesc, getEventHandler} = require('./desc-node.js');
+const {getNodeDesc, getEventHandler, ADMIN_USER_SESSION} = require('./desc-node.js');
 const {mysqlExec} = require("./mysql-connection");
 
 const EMPTY_RATING = {all:0};
@@ -57,7 +57,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 			} else if(fieldType === FIELD_14_NtoM) {//n2m
 				let tblTmpName = 't' + f.id;
 				if(f.icon) {
-					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name,'␞',", f.icon, ") SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, ".id=",tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
+					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name,'␞',", f.icon, ") SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=",tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
 				} else {
 					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name) SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, "." ,selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
 				}
@@ -265,7 +265,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 	selQ.push.apply(selQ, wheres);
 	selQ.push.apply(selQ, ordering);
 
-	let items = await mysqlExec(selQ.join(''), userSession);
+	let items = await mysqlExec(selQ.join(''));
 
 	for(let pag of items) {
 
@@ -318,9 +318,9 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 						if(pag[fieldName]) {
 							let a = pag[fieldName].split('␞');
 							if(f.icon) {
-								pag[fieldName] = {id:a[0], name:a[1], icon: a[2]};
+								pag[fieldName] = {id:parseInt(a[0]), name:a[1], icon: a[2]};
 							} else {
-								pag[fieldName] = {id:a[0], name:a[1]};
+								pag[fieldName] = {id:parseInt(a[0]), name:a[1]};
 							}
 						} else {
 							pag[fieldName] = {id:0, name: 'deleted record.'};
@@ -358,7 +358,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 		const countQ = ['SELECT COUNT(*)'];
 		countQ.push.apply(countQ, wheresBegin);
 		countQ.push.apply(countQ, wheres);
-		let total = await mysqlExec(countQ.join(''), userSession);
+		let total = await mysqlExec(countQ.join(''));
 		return {items, total: total[0]['COUNT(*)']};
 	} else {
 		if(items.length) {
@@ -387,7 +387,7 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 	}
 	
 
-	await mysqlExec("UPDATE " + node.tableName + " SET status=0 WHERE id=" + recId + " LIMIT 1", userSession);
+	await mysqlExec("UPDATE " + node.tableName + " SET status=0 WHERE id=" + recId + " LIMIT 1");
 	return 1;
 }
 

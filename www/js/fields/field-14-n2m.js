@@ -171,7 +171,7 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 				} else {
 					/*buttons = ReactDOM.div({style:{width:'20%', display:'inline-block', fontSize:'50%', verticalAlign:'middle', textAlign:'left'}, className:'halfvisible'},
 						ReactDOM.button({style:{background:'#0a7', color:'#fff'}, title:L('ADD_DIVIDER'), className:'clickable toolbtn', onClick:() => {
-								this.state.value.splice(i,0,{id:'0', name:L('NEW_GROUP')});
+								this.state.value.splice(i,0,{id:0, name:L('NEW_GROUP')});
 								this.forceUpdate();
 							}},
 							renderIcon('plus'), L('DIVIDER')

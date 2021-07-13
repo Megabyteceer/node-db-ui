@@ -84,6 +84,7 @@ global.PREVS_EDIT_ORG = 32;
 global.PREVS_EDIT_ALL = 64;
 global.PREVS_DELETE = 128;
 global.PREVS_PUBLISH = 256;
+global.PREVS_ANY = 65535;
 
 if(typeof module !== 'undefined') {
 	module.exports = {isUserHaveRole, shouldBeAuthorized, isAdmin, getCurrentStack};

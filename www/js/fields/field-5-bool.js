@@ -19,7 +19,6 @@ export default class CheckBox extends React.Component {
 		}
 		return ReactDOM.span({style:this.props.disable?styleDisabled:style, title:this.props.title, onClick:() =>  {
 					this.props.onClick(!this.state.value);
-					this.setState({value:!this.state.value});
 				}
 			},
 			check

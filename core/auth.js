@@ -1,5 +1,5 @@
 "use strict";
-const {mysqlExec, mysqlStartTransaction} = require("./mysql-connection");
+const {mysqlExec} = require("./mysql-connection");
 const crypto = require('crypto');
 const {shouldBeAuthorized} = require("../www/both-side-utils");
 const {getLangs, GUEST_USER_SESSION} = require("./desc-node");
