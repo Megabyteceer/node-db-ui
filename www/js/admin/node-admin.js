@@ -7,7 +7,7 @@ import {getNodeData, L, renderIcon, sp} from "../utils.js";
 var showedNodeId;
 
 
-class NodeAdmin extends React.Component({
+class NodeAdmin extends React.Component {
 	constructor(props) {
 		super(props);
 		
@@ -29,11 +29,11 @@ class NodeAdmin extends React.Component({
 		}
 	}
 
-	componentWillUnmount () {
+	componentWillUnmount() {
 		showedNodeId = -1
 	}
 	
-	show:() => {
+	show() {
 		if(this.timeout){
 			clearTimeout(this.timeout);
 			delete(this.timeout);
@@ -42,19 +42,22 @@ class NodeAdmin extends React.Component({
 			
 			this.setState({show:true});
 		}
-	},
-	hide:() => {
+	}
+
+	hide() {
 		if(this.state.show){
 			this.setState({show:false});
 		}
-	},
-	toggleAllFields:() => {
+	}
+	toggleAllFields() {
 		this.setState({allFieldsVisible:!this.state.allFieldsVisible});
-	},
-	toggleLock:() => {
+	}
+
+	toggleLock() {
 		this.setState({locked:!this.state.locked});
-	},
-	render:() =>  {
+	}
+
+	render() {
 		
 		
 		var node;
@@ -168,7 +171,7 @@ class NodeAdmin extends React.Component({
 									admin.popup(loactionToHash(4, 'new', {prior:data.prior, _nodesID:{id:data.id,name:data.name}}, true),900,true);
 								});
 								
-							}.bind(this)
+							}
 						},
 						renderIcon('plus')
 					),
@@ -194,14 +197,12 @@ class NodeAdmin extends React.Component({
 										}
 									}
 								}, {_nodesID:item.parent});
-							
-							}.bind(this)
+							}
 						},
 						renderIcon('arrow-up')
 					)
 				)
 			}
-			
 			
 			body = ReactDOM.div({
 					ref:keepInWindow,

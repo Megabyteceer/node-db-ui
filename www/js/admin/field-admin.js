@@ -130,7 +130,7 @@ class FieldAdmin extends React.Component {
 			);
 		}
 		
-		return ReactDOM.span({ref:keepInWindow, className: 'admin-controll', style:{position: 'absolute', zIndex:(bodyVisible?4:3)+zAdd, transform:'translate('+this.props.x+'px, 0)'}, onClick: sp}},
+		return ReactDOM.span({ref:keepInWindow, className: 'admin-controll', style:{position: 'absolute', zIndex:(bodyVisible?4:3)+zAdd, transform:'translate('+this.props.x+'px, 0)'}, onClick: sp},
 			ReactDOM.span({ref:keepInWindow, style: {border:border, display: 'inline-block', position: 'absolute', zIndex:2+zAdd, verticalAlign:'top', padding:'6px', background:'#944', transform:'scale(0.5)', borderRadius:'5px', color:'#fdd'},
 			className:'halfvisible', onMouseEnter:this.show},
 				renderIcon('wrench')
