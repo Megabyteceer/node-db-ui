@@ -5,7 +5,7 @@ import fieldMixins from "./field-mixins.js";
 registerFieldClass(FIELD_21_FILE, class TextField extends fieldMixins {
 
 	setValue(val) {
-		
+
 	}
 
 	isEmpty() {
@@ -23,27 +23,27 @@ registerFieldClass(FIELD_21_FILE, class TextField extends fieldMixins {
 
 	render() {
 		var field = this.props.field;
-		
+
 		var fileName = this.props.initialValue;
 
-		if (this.props.isEdit) {
-			return React.createElement(FileFormBody, {field:field, ref: 'fileFormBody', accept:this.state.accept, wrapper:this.props.wrapper, parent:this, form:this.props.form, currentFileName:fileName, isCompact:this.props.isCompact});
+		if(this.props.isEdit) {
+			return React.createElement(FileFormBody, {field: field, ref: 'fileFormBody', accept: this.state.accept, wrapper: this.props.wrapper, parent: this, form: this.props.form, currentFileName: fileName, isCompact: this.props.isCompact});
 		}
-		return ReactDOM.a({style:{color:'#227', fontWeight:'bold'}, href:fileName, download:true}, fileName ? (fileName.split('/').pop()) : undefined);
-		
+		return ReactDOM.a({style: {color: '#227', fontWeight: 'bold'}, href: fileName, download: true}, fileName ? (fileName.split('/').pop()) : undefined);
+
 	}
 });
-	
+
 export default class FileFormBody extends React.Component {
 
-	constructor (props) {
+	constructor(props) {
 		super(props);
 		this.state = {};
 	}
-	
+
 	_cancel() {
 		this.setState({
-			file:null
+			file: null
 		});
 		this.refs.fileInput.value = '';
 		Modal.instance.hide();
@@ -51,7 +51,7 @@ export default class FileFormBody extends React.Component {
 	}
 
 	save(callback) {
-		if (this.state.file) {
+		if(this.state.file) {
 			submitData('api/uploadFile.php', $(ReactDOM.findDOMNode(this.refs.form)).serializefiles(), callback, true);
 		} else {
 			callback(undefined);
@@ -63,65 +63,67 @@ export default class FileFormBody extends React.Component {
 
 		e.preventDefault();
 		var files = undefined;
-		if (e.dataTransfer) {
+		if(e.dataTransfer) {
 			files = e.dataTransfer.files;
-		} else if (e.target) {
+		} else if(e.target) {
 			files = e.target.files;
 		}
-		if (checkFileSize(files[0])) {
+		if(checkFileSize(files[0])) {
 			return;
-		} 
-		this.setState({file:files[0]});
-		
+		}
+		this.setState({file: files[0]});
+
 		this.props.wrapper.valueListener(files[0], true, this);
 	}
 
 	render() {
-		
+
 		var field = this.props.field;
-		
+
 		var curFile;
 		var selFile
 		var select;
 		var preview;
-		
-		if (this.props.currentFileName) {
-			curFile = 
-				ReactDOM.a({href:this.props.currentFileName, target:'_blank',style:{fontSize:'70%', color:'#00a'}},
+
+		if(this.props.currentFileName) {
+			curFile =
+				ReactDOM.a({href: this.props.currentFileName, target: '_blank', style: {fontSize: '70%', color: '#00a'}},
 					L('DOWNLOAD')
 				);
-			
+
 		}
-		
-		if (this.state.file) {
-			selFile = ReactDOM.span({style:{fontSize:'70%', color:'#999', marginLeft:10}},
+
+		if(this.state.file) {
+			selFile = ReactDOM.span({style: {fontSize: '70%', color: '#999', marginLeft: 10}},
 				L('FILE_SELECTED', this.state.file.name)
 			);
 		}
 
-		select = ReactDOM.button({style:{background: constants.PUBLISH_COLOR, fontSize:'80%', marginLeft:10, padding: '5px 20px 6px 20px'},ref:'selectButton', className:'clickable clickable-edit', onClick:() => {
+		select = ReactDOM.button({
+			style: {background: constants.PUBLISH_COLOR, fontSize: '80%', marginLeft: 10, padding: '5px 20px 6px 20px'}, ref: 'selectButton', className: 'clickable clickable-edit', onClick: () => {
 				this.refs.fileInput.value = null;
 				this.refs.fileInput.click();
-			}}, renderIcon('folder-open'),
+			}
+		}, renderIcon('folder-open'),
 			L('FILE_SELECT', getReadableUploadSize())
 		);
 
-		var recIdField,nodeIdField;
-		if (this.props.form.currentData && this.props.form.currentData.id) {
-			recIdField = ReactDOM.input( {name:"recId", style:{display:'none'}, defaultValue:this.props.form.currentData.id});
-			nodeIdField = ReactDOM.input( {name:"nodeId", style:{display:'none'}, defaultValue:this.props.form.props.node.id});
+		var recIdField, nodeIdField;
+		if(this.props.form.currentData && this.props.form.currentData.id) {
+			recIdField = ReactDOM.input({name: "recId", style: {display: 'none'}, defaultValue: this.props.form.currentData.id});
+			nodeIdField = ReactDOM.input({name: "nodeId", style: {display: 'none'}, defaultValue: this.props.form.props.node.id});
 		}
-		
 
-		var form = ReactDOM.form({ref:'form', encType:"multipart/form-data", style:{display:'none'}},
-			ReactDOM.input( {name:"all files", ref:'fileInput', type: 'file', accept:this.props.accept, onChange: this._onChange }),
-			ReactDOM.input( {name:"MAX_FILE_SIZE", defaultValue:30000000}),
-			ReactDOM.input( {name:"fid", defaultValue:field.id}),
-			ReactDOM.input( {name:"nid", defaultValue:field.node.id}),
+
+		var form = ReactDOM.form({ref: 'form', encType: "multipart/form-data", style: {display: 'none'}},
+			ReactDOM.input({name: "all files", ref: 'fileInput', type: 'file', accept: this.props.accept, onChange: this._onChange}),
+			ReactDOM.input({name: "MAX_FILE_SIZE", defaultValue: 30000000}),
+			ReactDOM.input({name: "fid", defaultValue: field.id}),
+			ReactDOM.input({name: "nid", defaultValue: field.node.id}),
 			recIdField,
 			nodeIdField
 		);
-		
+
 		return ReactDOM.div(null,
 			curFile,
 			selFile,

@@ -1,20 +1,28 @@
 import moment from "./../lib/moment/dist/moment.js";
-import {innerDatetimeFormat, L, toReadableDatetime} from "../utils.js";
-import {registerFieldClass} from "../utils.js";
+import {
+	innerDatetimeFormat,
+	L,
+	toReadableDatetime
+} from "../utils.js";
+import {
+	registerFieldClass
+} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
-import {readOnlyCompactFieldProperties} from "./field-1-text-default.js";
+import {
+	readOnlyCompactFieldProperties
+} from "./field-1-text-default.js";
 
 function isSameDay(val, d) {
 	if(!d || !val) return false;
 	return d.date() === val.date() && d.month() === val.month() && d.year() === val.year();
-	
+
 };
 
 class dateFieldMixins extends fieldMixins {
 
-	setMin (moment) {
+	setMin(moment) {
 		this.state.minDate = moment;
-		if (moment && (this.state.focused)) {
+		if(moment && (this.state.focused)) {
 			if(!this.state.value) {
 				this.setValue(moment);
 				this.props.wrapper.valueListener(moment, true, this);
@@ -26,7 +34,7 @@ class dateFieldMixins extends fieldMixins {
 
 	setMax(moment) {
 		this.state.maxDate = moment;
-		if (moment  && (this.state.focused)) {
+		if(moment && (this.state.focused)) {
 			if(!this.state.value) {
 				this.setValue(moment);
 				this.props.wrapper.valueListener(moment, true, this);
@@ -41,7 +49,7 @@ class dateFieldMixins extends fieldMixins {
 	}
 
 	setDatePart(moment) {
-		if (this.state.value && !this.validateDate(this.state.value)) {
+		if(this.state.value && !this.validateDate(this.state.value)) {
 			var nv = this.state.value.clone();
 			nv.year(moment.year());
 			nv.month(moment.month());
@@ -52,22 +60,22 @@ class dateFieldMixins extends fieldMixins {
 	}
 
 	validateDate(val, doFix) {
-		if (this.state.allowedDays) {
+		if(this.state.allowedDays) {
 			var isValid = this.state.allowedDays.some((d) => {
 				return isSameDay(val, d);
 			});
-			
-			if (!isValid && (doFix===true)) {
+
+			if(!isValid && (doFix === true)) {
 				this.setDatePart(this.state.allowedDays[0]);
 				this.props.wrapper.valueListener(this.state.value, true, this);
 				return true;
 			}
 			return isValid;
 		}
-		
-		if (this.state.minDate) {
-			if(!val || !val.clone().startOf('day').isSameOrAfter(this.state.minDate.clone().startOf('day'))){
-				if (doFix===true) {
+
+		if(this.state.minDate) {
+			if(!val || !val.clone().startOf('day').isSameOrAfter(this.state.minDate.clone().startOf('day'))) {
+				if(doFix === true) {
 					this.setValue(this.state.minDate);
 					this.props.wrapper.valueListener(this.state.value, true, this);
 					return true;
@@ -75,10 +83,10 @@ class dateFieldMixins extends fieldMixins {
 				return false;
 			}
 		}
-		
-		if (this.state.maxDate) {
-			if (!val || !val.clone().startOf('day').isSameOrBefore(this.state.maxDate.clone().startOf('day'))) {
-				if (doFix===true) {
+
+		if(this.state.maxDate) {
+			if(!val || !val.clone().startOf('day').isSameOrBefore(this.state.maxDate.clone().startOf('day'))) {
+				if(doFix === true) {
 					this.setValue(this.state.maxDate);
 					this.props.wrapper.valueListener(this.state.value, true, this);
 					return true
@@ -86,61 +94,63 @@ class dateFieldMixins extends fieldMixins {
 				return false;
 			}
 		}
-		
-		if (!val) {
-			if (doFix === true) {
+
+		if(!val) {
+			if(doFix === true) {
 				val = new moment();
 				this.setValue(val);
 			} else {
 				return false;
 			}
 		}
-		
-		
+
+
 		return true;
 	}
 
 	focused() {
-		this.setState({focused:true});
+		this.setState({
+			focused: true
+		});
 		this.enforceToValid();
 	}
 }
 
 registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins {
 
-	setValue (val) {
-					
-		if (val) {
-			if (typeof val === 'string') {
+	setValue(val) {
+
+		if(val) {
+			if(typeof val === 'string') {
 				val = new moment(val);
 			} else {
 				val = val.clone();
 			}
 		}
-		
+
 		var props = {
-			inputValue:toReadableDate(val),
-			selectedDate:val,
+			inputValue: toReadableDate(val),
+			selectedDate: val,
 		}
-		if (val) {
+		if(val) {
 			props.viewDate = val.clone().startOf("day");
-			
+
 		}
 		this.dateRef.setState(props);
 		this.timeRef.setState({
-			inputValue:toReadableTime(val),
-			selectedDate:val,
+			inputValue: toReadableTime(val),
+			selectedDate: val,
 		});
-		
+
 		this.state.value = val;
 		this.props.wrapper.valueListener(val, false, this);
-		
+
 	}
 
-	static decodeValue (val) {
+	static decodeValue(val) {
 		//TODO: check if its necessery yet
 		if(val) {
-			if (val === '0000-00-00 00:00:00') {
+			if(val === '0000-00-00 00:00:00') {
 				return null;
 			}
 			return new moment(val, innerDatetimeFormat);
@@ -149,8 +159,8 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 	}
 
 	static encodeValue(val) {
-		if (!val) {
-			return('0000-00-00 00:00:00');
+		if(!val) {
+			return ('0000-00-00 00:00:00');
 		}
 		return val.format(innerDatetimeFormat);
 	}
@@ -160,37 +170,37 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 	}
 
 	render() {
-		
+
 		var field = this.props.field;
-		
+
 		var value = this.state.value;
-		
-		if (value && isNaN(value.year())) {
+
+		if(value && isNaN(value.year())) {
 			value = undefined;
 		}
-		
-		if (this.props.isEdit) {
-			
+
+		if(this.props.isEdit) {
+
 			var inputsProps1 = {
-				closeOnSelect:true,
-				defaultValue:value,
-				placeholder:L('TIME'),
-				readOnly :this.props.fieldDisabled,
-				dateFormat:false,
-				timeFormat:readableTimeFormat,
-				title:L('N_TIME', field.name),
-				mask:'dd:dd',
-				onFocus:this.focused,
-				isValidDate:this.state.focused?this.validateDate:undefined,
-				ref:(ref) => {
+				closeOnSelect: true,
+				defaultValue: value,
+				placeholder: L('TIME'),
+				readOnly: this.props.fieldDisabled,
+				dateFormat: false,
+				timeFormat: readableTimeFormat,
+				title: L('N_TIME', field.name),
+				mask: 'dd:dd',
+				onFocus: this.focused,
+				isValidDate: this.state.focused ? this.validateDate : undefined,
+				ref: (ref) => {
 					this.timeRef = ref;
 					this.refGetter(ref)
 				},
-				onChange:(val) => {
-					if (val._isAMomentObject) {
+				onChange: (val) => {
+					if(val._isAMomentObject) {
 						var concatedVal;
 						var value = this.state.value;
-						if(value){
+						if(value) {
 							concatedVal = value.clone();
 							concatedVal.hour(val.hour());
 							concatedVal.minute(val.minute());
@@ -198,32 +208,32 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 						} else {
 							concatedVal = val;
 						}
-						
+
 						this.setValue(concatedVal);
 						this.props.wrapper.valueListener(concatedVal, true, this);
 					}
-					
+
 				}
 			};
-			
+
 			var inputsProps2 = {
-				closeOnSelect:true,
-				defaultValue:value,
-				placeholder:L('DATE'),
-				readOnly :this.props.fieldDisabled,
-				dateFormat:readableDateFormat,
-				isValidDate:this.state.focused?this.validateDate:undefined,
-				timeFormat:false,
-				onFocus:this.focused,
-				title:L('N_DATE', field.name),
-				ref:(ref) => {
+				closeOnSelect: true,
+				defaultValue: value,
+				placeholder: L('DATE'),
+				readOnly: this.props.fieldDisabled,
+				dateFormat: readableDateFormat,
+				isValidDate: this.state.focused ? this.validateDate : undefined,
+				timeFormat: false,
+				onFocus: this.focused,
+				title: L('N_DATE', field.name),
+				ref: (ref) => {
 					this.dateRef = ref;
-					},
-				onChange:(val) => {
-					if (val._isAMomentObject) {
+				},
+				onChange: (val) => {
+					if(val._isAMomentObject) {
 						var concatedVal;
 						var value = this.state.value;
-						if(value){
+						if(value) {
 							concatedVal = value.clone();
 							concatedVal.year(val.year());
 							concatedVal.dayOfYear(val.dayOfYear());
@@ -236,17 +246,39 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 					}
 				}
 			};
-			return ReactDOM.div({title:(this.props.isCompact?field.name:''),style:{display:'inline-block'}},
-				ReactDOM.div({style:{display:'inline-block', width:'35%'}}, React.createElement(Datetime, inputsProps1)),
-				ReactDOM.div({style:{display:'inline-block', width:'5%'}}),
-				ReactDOM.div({style:{display:'inline-block', width:'60%'}}, React.createElement(Datetime, inputsProps2))
+			return ReactDOM.div({
+				title: (this.props.isCompact ? field.name : ''),
+				style: {
+					display: 'inline-block'
+				}
+			},
+				ReactDOM.div({
+					style: {
+						display: 'inline-block',
+						width: '35%'
+					}
+				}, React.createElement(Datetime, inputsProps1)),
+				ReactDOM.div({
+					style: {
+						display: 'inline-block',
+						width: '5%'
+					}
+				}),
+				ReactDOM.div({
+					style: {
+						display: 'inline-block',
+						width: '60%'
+					}
+				}, React.createElement(Datetime, inputsProps2))
 			);
 		} else {
-			return ReactDOM.span( this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyCompactFieldProperties,
+			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyCompactFieldProperties,
 				toReadableDatetime(value)
 			)
 		}
 	}
 });
 
-export {dateFieldMixins};
+export {
+	dateFieldMixins
+};

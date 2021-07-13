@@ -1,7 +1,7 @@
 
 
 if(typeof global === 'undefined') {
-	
+
 	window.global = window;
 }
 
@@ -24,7 +24,7 @@ global.isAdmin = (userSession) => {
 }
 
 global.isUserHaveRole = (roleId, userSession) => {
-	if(!userSession && typeof(curentUserData) !== 'undefined') {
+	if(!userSession && typeof (curentUserData) !== 'undefined') {
 		userSession = curentUserData;
 	}
 	return userSession && userSession.userRoles[roleId];

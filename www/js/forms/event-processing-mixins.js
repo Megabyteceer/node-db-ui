@@ -17,9 +17,10 @@ export default class eventProcessingMixins extends BaseForm {
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		super.UNSAFE_componentWillReceiveProps(nextProps);
-		if (nextProps.initialData.id !== this.props.initialData.id) {
-			this.replaceState({});
+		if(nextProps.initialData.id !== this.props.initialData.id) {
+			this.state = {};
 			this.resetFieldsProperties(true);
+			this.forceUpdate();
 		}
 		setTimeout(() => {
 			this.callOnTabShowEvent(nextProps.filters.tab);
@@ -31,14 +32,14 @@ export default class eventProcessingMixins extends BaseForm {
 		this.hiddenFields = {};
 		this.disabledFields = {};
 		this.currentTabName = -1;
-		delete(this.onSaveCallback);
+		delete (this.onSaveCallback);
 		this.needCallOnload = needCallOnload;
 	}
 
 	saveForm(callback, callbackInvalid) {
-		if(this.props.editable){
-			if(!callback){
-				callback = () => {};
+		if(this.props.editable) {
+			if(!callback) {
+				callback = () => { };
 			}
 			this.saveClick('keepStatus', callback, callbackInvalid);
 		}
@@ -49,19 +50,19 @@ export default class eventProcessingMixins extends BaseForm {
 			this.currentTabName = tabNameToShow;
 			var field;
 			var flds = this.props.node.fields;
-			for (var k in flds) {
+			for(var k in flds) {
 				var f = flds[k];
-				if (this.isVisibleField(f)) {
-					if ((f.fieldType === FIELD_17_TAB) && (f.maxlen === 0)) {//tab
-						if ((tabNameToShow === f.fieldName) || !tabNameToShow) {
+				if(this.isVisibleField(f)) {
+					if((f.fieldType === FIELD_17_TAB) && (f.maxlen === 0)) {//tab
+						if((tabNameToShow === f.fieldName) || !tabNameToShow) {
 							field = f;
 							break;
 						}
 					}
 				}
 			}
-			
-			if (field && fieldsEvents.hasOwnProperty(field.id)) {
+
+			if(field && fieldsEvents.hasOwnProperty(field.id)) {
 				this.processFormEvent(fieldsEvents[field.id], false, false);
 			}
 		}
@@ -75,7 +76,7 @@ export default class eventProcessingMixins extends BaseForm {
 		if(this.hasField(fieldName)) {
 			return this.fieldsRefs[fieldName];
 		} else {
-			consoleLog('Unknown field: '+fieldName);
+			consoleLog('Unknown field: ' + fieldName);
 		}
 	}
 
@@ -85,112 +86,112 @@ export default class eventProcessingMixins extends BaseForm {
 
 	hideField(fieldName) {
 		var f = this.getField(fieldName);
-		if(f && (this.hiddenFields[fieldName] !== 1)){
+		if(f && (this.hiddenFields[fieldName] !== 1)) {
 			this.hiddenFields[fieldName] = 1;
 			f.hide();
 		}
 	}
 
 	showField(fieldName) {
-		if(this.hiddenFields[fieldName] === 1){
-			delete(this.hiddenFields[fieldName]);
+		if(this.hiddenFields[fieldName] === 1) {
+			delete (this.hiddenFields[fieldName]);
 			this.getField(fieldName).show();
 		}
 	}
 
 	hideFooter() {
-		this.setState({footerHidden:true});
+		this.setState({footerHidden: true});
 	}
 
 	showFooter() {
-		this.setState({footerHidden:false});
+		this.setState({footerHidden: false});
 	}
 
 	disableField(fieldName) {
-		if(this.disabledFields[fieldName] !== 1){
+		if(this.disabledFields[fieldName] !== 1) {
 			this.disabledFields[fieldName] = 1;
 			var f = this.getField(fieldName);
-			if (!f) {
-				throw new Error('unknown field "'+fieldName+'"');
+			if(!f) {
+				throw new Error('unknown field "' + fieldName + '"');
 			}
 			f.disable();
 		}
 	}
 
 	enableField(fieldName) {
-		if(this.disabledFields[fieldName] === 1){
-			delete(this.disabledFields[fieldName]);
+		if(this.disabledFields[fieldName] === 1) {
+			delete (this.disabledFields[fieldName]);
 			this.getField(fieldName).enable();
 		}
 	}
 
 	addLookupFilters(fieldName, filtersObjOrName, val) {
-		this.getField(fieldName).setLookupFilter(filtersObjOrName,val);
+		this.getField(fieldName).setLookupFilter(filtersObjOrName, val);
 	}
 
 	focusField(fieldName) {
-		
+
 		this.getField(fieldName).focus();
 	}
 
 	onShow() {
-//DEBUG
-		consoleLog('onLoad '+this.props.node.tableName);
-//ENDDEBUG
+		//DEBUG
+		consoleLog('onLoad ' + this.props.node.tableName);
+		//ENDDEBUG
 		this.header = '';
 		this.currentTabName = -1;
 		this.hiddenFields = {};
 		this.disabledFields = {};
-		
-		if (formsEventsOnLoad.hasOwnProperty(this.props.node.id)) {
+
+		if(formsEventsOnLoad.hasOwnProperty(this.props.node.id)) {
 			this.processFormEvent(formsEventsOnLoad[this.props.node.id], false);
 		}
-		
+
 		this.refreshLeftBar();
 
-		for (var k in this.fieldsRefs) {
+		for(var k in this.fieldsRefs) {
 			var f = this.fieldsRefs[k];
-			
-			if (f.props.field.fieldType!==FIELD_18_BUTTON && f.props.field.fieldType!==FIELD_17_TAB) { //is not button
-				if (fieldsEvents.hasOwnProperty(f.props.field.id)) {
+
+			if(f.props.field.fieldType !== FIELD_18_BUTTON && f.props.field.fieldType !== FIELD_17_TAB) { //is not button
+				if(fieldsEvents.hasOwnProperty(f.props.field.id)) {
 					this.processFormEvent(fieldsEvents[f.props.field.id], false);
 				}
 			}
 		}
-	
+
 		var hdr = this.header;
-		if (this.state.header !== hdr) {
-			this.setState({header:hdr});
+		if(this.state.header !== hdr) {
+			this.setState({header: hdr});
 		}
-		
-		if (this.props.filters && this.props.filters.tab) {
+
+		if(this.props.filters && this.props.filters.tab) {
 			this.callOnTabShowEvent(this.props.filters.tab);
 		}
-		
+
 	}
 
 	refreshLeftBar() {
-		if(!this.isSlave()){
-			if ((typeof(this.currentData) !== 'array') && this.currentData.id && !this.showAllTabs) {
+		if(!this.isSlave()) {
+			if((typeof (this.currentData) !== 'array') && this.currentData.id && !this.showAllTabs) {
 				var items = [this.currentData.name || L('NEW', this.props.node.singleName)];
 				var isDefault = true;
 				var fields = this.props.node.fields
-				for (var k in fields) {
+				for(var k in fields) {
 					var f = fields[k];
-					
-					if ((f.fieldType === FIELD_17_TAB) && (f.maxlen === 0)) {//tab
-						
-						if (this.isVisibleField(f)) {
-							
-							items.push({icon:f.icon, subheader:(f.fieldName.indexOf('header_')===0), name:f.name, field:f, form:this, id:false, isDoc: 1, isDefault:isDefault, tabId:f.id, tab:f.fieldName});
+
+					if((f.fieldType === FIELD_17_TAB) && (f.maxlen === 0)) {//tab
+
+						if(this.isVisibleField(f)) {
+
+							items.push({icon: f.icon, subheader: (f.fieldName.indexOf('header_') === 0), name: f.name, field: f, form: this, id: false, isDoc: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName});
 							isDefault = false;
-							
+
 						}
-						
+
 					}
-					
+
 				}
-			
+
 				LeftBar.instance.setLeftBar(items);
 			} else {
 				LeftBar.instance.setLeftBar();
@@ -199,24 +200,24 @@ export default class eventProcessingMixins extends BaseForm {
 	}
 
 	setFieldValue(fieldName, val, isUserAction) {
-		
+
 		var f = this.getField(fieldName);
-		
+
 		if(this.currentData[fieldName] !== val) {
-			if (!isUserAction) {
+			if(!isUserAction) {
 				f.setValue(val);
 			}
 			var prev_value = this.currentData[fieldName];
 			this.currentData[fieldName] = val;
-			
-			if (f && fieldsEvents.hasOwnProperty(f.props.field.id)) {
+
+			if(f && fieldsEvents.hasOwnProperty(f.props.field.id)) {
 				this.processFormEvent(fieldsEvents[f.props.field.id], isUserAction, prev_value);
 			}
-//DEBUG
-			consoleLog('onChange '+fieldName+'; '+prev_value+' -> '+val);
-//ENDDEBUG				
-			
-			if (fieldName === 'name') {
+			//DEBUG
+			consoleLog('onChange ' + fieldName + '; ' + prev_value + ' -> ' + val);
+			//ENDDEBUG				
+
+			if(fieldName === 'name') {
 				this.refreshLeftBar();
 			}
 		}
@@ -238,66 +239,66 @@ export default class eventProcessingMixins extends BaseForm {
 	}
 
 	onSave() {
-//DEBUG
-		consoleLog('onSave '+this.props.node.tableName);
-//ENDDEBUG			
-		
-		for(var k in this.props.node.fields){
-			if (this.hasField(k)) {//hide all alerts
+		//DEBUG
+		consoleLog('onSave ' + this.props.node.tableName);
+		//ENDDEBUG			
+
+		for(var k in this.props.node.fields) {
+			if(this.hasField(k)) {//hide all alerts
 				this.fieldAlert(this.props.node.fields[k].fieldName);
 			}
 		}
-		
+
 		this.invalidAlertInOnSaveHandler = false;
-		if (formsEventsOnSave.hasOwnProperty(this.props.node.id)) {
+		if(formsEventsOnSave.hasOwnProperty(this.props.node.id)) {
 			var onSaveRes = this.processFormEvent(formsEventsOnSave[this.props.node.id], false);
-			if (onSaveRes) {
+			if(onSaveRes) {
 				//debugError('onSave event handler returned true. Saving operation was canceled.');
 			}
-			return  onSaveRes || this.invalidAlertInOnSaveHandler;
+			return onSaveRes || this.invalidAlertInOnSaveHandler;
 		}
 		return false;
 	}
 
 	fieldAlert(fieldName, text, isSuccess, focus) {
-		
+
 		var f = this.getField(fieldName);
-		if (f && f.props.parentCompactAreaName) {
+		if(f && f.props.parentCompactAreaName) {
 			f = this.getField(f.props.parentCompactAreaName);
 		}
-		if (f) {
+		if(f) {
 			f.fieldAlert(text, isSuccess, focus);
-			
-			if(text && !isSuccess && !this.invalidAlertInOnSaveHandler){
+
+			if(text && !isSuccess && !this.invalidAlertInOnSaveHandler) {
 				this.getField(fieldName).focus();
 			}
-			
-			if(!isSuccess){
+
+			if(!isSuccess) {
 				this.invalidAlertInOnSaveHandler = true;
 			}
-			
-			
+
+
 		}
 	}
 
 	processFormEvent(handler, isUserAction, prev_val) {
-		
+
 		this.prev_value = prev_val;
-		
+
 		this.rec_ID = this.props.initialData.id || 'new';
 		this.rec_update = this.props.editable;
 
-		
+
 		if(this.rec_update) {
 			this.rec_creation = !this.props.initialData.hasOwnProperty('id');
-			if(this.rec_creation){
+			if(this.rec_creation) {
 				this.rec_update = false;
 			}
 		}
-		
+
 		this.isUserEdit = isUserAction;
-		
+
 		return handler.call(this);
-		
+
 	}
 }

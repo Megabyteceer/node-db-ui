@@ -24,7 +24,7 @@ window.HOME_NODE = 5;
 window.ALLOWED_UPLOADS = '';
 window.MAX_FILESIZE_TO_UPLOAD = 10;
 window.document.title =
-window.appTitle = '';
+	window.appTitle = '';
 window.DEBUG = true;
 
 //TODO: fill vars on server getMe
@@ -33,7 +33,7 @@ window.DEBUG = true;
 window.DEPLOY_TO = '';
 
 
-if (!window.DEBUG) { throw "DEBUG directives nadnt cutted of in PRODUCTION mode"};
+if(!window.DEBUG) {throw "DEBUG directives nadnt cutted of in PRODUCTION mode"};
 
 
 /*

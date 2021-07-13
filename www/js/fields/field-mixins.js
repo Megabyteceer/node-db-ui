@@ -1,17 +1,17 @@
 
 export default class fieldMixins extends React.Component {
 
-	constructor (props) {
+	constructor(props) {
 		super(props);
 		this.state = {value: props.initialValue};
 		this.refGetter = this.refGetter.bind(this);
 	}
 
 	focus() {
-		if(this.focusOverride){
+		if(this.focusOverride) {
 			this.focusOverride();
 		} else {
-			if(this.refToInput){
+			if(this.refToInput) {
 				scrollToVisible(this.refToInput);
 				ReactDOM.findDOMNode(this.refToInput).focus();
 			}

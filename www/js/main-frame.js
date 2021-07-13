@@ -7,45 +7,45 @@ import {Stage} from "./stage.js";
 import TopBar from "./top-bar.js";
 
 var style = {
-	width:'100%'
+	width: '100%'
 }
 
-var subStyle= {
+var subStyle = {
 	//minHeight:'600px',
-	background:'#fff'
+	background: '#fff'
 }
 
-var footerStyle={
-	color:'#ccc',
-	padding:'50px',
-	fontSize:'80%',
-	textAlign:'center'
+var footerStyle = {
+	color: '#ccc',
+	padding: '50px',
+	fontSize: '80%',
+	textAlign: 'center'
 	//,marginBottom:500
 }
 
 class MainFrame extends React.Component {
 	render() {
 		var debug = React.createElement(DebugPanel);
-		return ReactDOM.div({style:style},
+		return ReactDOM.div({style: style},
 			React.createElement(TopBar),
-			ReactDOM.div({style:subStyle},
-				ReactDOM.table({style:{width:'100%'}},
+			ReactDOM.div({style: subStyle},
+				ReactDOM.table({style: {width: '100%'}},
 					ReactDOM.tbody(null,
 						ReactDOM.tr(null,
 							React.createElement(LeftBar),
-							ReactDOM.td({style:{verticalAlign:'top'}},
+							ReactDOM.td({style: {verticalAlign: 'top'}},
 								React.createElement(Stage)
 							)
 						)
 					)
 				)
 			),
-			ReactDOM.div({style:footerStyle}, appTitle),
+			ReactDOM.div({style: footerStyle}, appTitle),
 			React.createElement(Modal),
 			React.createElement(Notify),
 			debug,
 			React.createElement(LoadingIndicator)
-			
+
 		);
 	}
 }

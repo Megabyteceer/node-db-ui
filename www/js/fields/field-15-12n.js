@@ -4,18 +4,18 @@ import fieldLookupMixins from "./field-lookup-mixins.js";
 
 registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 
-	constructor (props) {
+	constructor(props) {
 		super(props);
-		if (!props.form.props.initialData.id) {
-			this.savedData = {items:[]};
+		if(!props.form.props.initialData.id) {
+			this.savedData = {items: []};
 		}
 		var filters = this.generateDefaultFiltersByProps(props);
 		this.state = {filters};
 	}
 
 	setValue(val) {
-		if (this.state.inlineEditing) {
-			this.savedData = {items:val};
+		if(this.state.inlineEditing) {
+			this.savedData = {items: val};
 			this.forceUpdate();
 		}
 	}
@@ -23,10 +23,10 @@ registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 	getBackupData() {
 		var ret = [];
 		var i;
-		if (this.state.inlineEditing) {
+		if(this.state.inlineEditing) {
 			var field = this.props.field;
 			var subForms = this.refs.inlineList.getSubforms();
-			for (i = 0; i<subForms.length; i++) {
+			for(i = 0; i < subForms.length; i++) {
 				var form = subForms[i];
 				form.prepareToBackup();
 				var initialData = form.props.initialData;
@@ -37,33 +37,33 @@ registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 	}
 
 	valueChoosed() {
-		this.saveNodeDataAndFilters(this.savedNode,undefined, this.savedFilters);
-		this.setState({creationOpened:false});
+		this.saveNodeDataAndFilters(this.savedNode, undefined, this.savedFilters);
+		this.setState({creationOpened: false});
 	}
 
 	toggleCreateDialogue(itemIdToEdit, defaultCreationData, backupPrefix) {
-		if (defaultCreationData) {
+		if(defaultCreationData) {
 			var curBackup = getBackupData(this.props.field.nodeRef, backupPrefix);
-			backupCreationData(this.props.field.nodeRef, Object.assign(curBackup,defaultCreationData), backupPrefix);
+			backupCreationData(this.props.field.nodeRef, Object.assign(curBackup, defaultCreationData), backupPrefix);
 		}
-		this.setState({creationOpened:!this.state.creationOpened, backupPrefix:backupPrefix, dataToEdit:undefined, itemIdToEdit:itemIdToEdit});
-		if(typeof itemIdToEdit !== 'undefined'){
+		this.setState({creationOpened: !this.state.creationOpened, backupPrefix: backupPrefix, dataToEdit: undefined, itemIdToEdit: itemIdToEdit});
+		if(typeof itemIdToEdit !== 'undefined') {
 			getNodeData(this.props.field.nodeRef, itemIdToEdit, (data) => {
-				this.setState({dataToEdit:data, itemIdToEdit:undefined});
+				this.setState({dataToEdit: data, itemIdToEdit: undefined});
 			}, undefined, true);
 		}
 	}
 
 	inlineEditable() {
-		this.setState({inlineEditing:true});
+		this.setState({inlineEditing: true});
 	}
 
 	getMessageIfInvalid(callback) {
-		if (this.state.inlineEditing) {
+		if(this.state.inlineEditing) {
 			var allValid = true;
 			var callbacksCount = 1;
 			var onSubformValidated = (isValid) => {
-				if(!isValid){
+				if(!isValid) {
 					allValid = false;
 				}
 				callbacksCount--;
@@ -77,7 +77,7 @@ registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 			});
 			onSubformValidated(true);
 		}
-		else if (this.state.creationOpened) {
+		else if(this.state.creationOpened) {
 			callback(L("SAVE_SUB_FIRST"));
 		} else {
 			callback(false);
@@ -85,40 +85,40 @@ registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 	}
 
 	afterSave(callback) {
-		
-		if (this.state.inlineEditing) {
-			
-			
+
+		if(this.state.inlineEditing) {
+
+
 			var invalidSave = false;
 			var subForms = this.refs.inlineList.getSubforms(true);
 			var field = this.props.field;
-			
-			
+
+
 			const handleCallbackCountingInvalid = () => {
 				invalidSave = true;
 				processSubForms();
 			}
 			//saving one by one for keep order.
 			var processSubForms = () => {
-				if (subForms.length > 0) {
+				if(subForms.length > 0) {
 					var form = subForms.shift();
-					
+
 					var initialData = form.props.initialData;
-				
-					if (initialData.hasOwnProperty('__deleted_901d123f')) {
-						if (initialData.hasOwnProperty('id')) {
+
+					if(initialData.hasOwnProperty('__deleted_901d123f')) {
+						if(initialData.hasOwnProperty('id')) {
 							deleteRecord('', field.nodeRef, initialData.id, processSubForms, true);
 						}
 					} else {
-						var ln = field.fieldName+'_linker';
-						if (!initialData.hasOwnProperty(ln) || initialData[ln] === 'new') {
-							form.currentData[ln] = {id:this.props.form.currentData.id};
+						var ln = field.fieldName + '_linker';
+						if(!initialData.hasOwnProperty(ln) || initialData[ln] === 'new') {
+							form.currentData[ln] = {id: this.props.form.currentData.id};
 						}
 						form.saveForm(processSubForms, handleCallbackCountingInvalid);
 					}
-					
-					
-					
+
+
+
 				} else {
 					callback(undefined, invalidSave);
 				}
@@ -133,19 +133,19 @@ registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 
 		var field = this.props.field;
 		var body;
-		if (this.state.creationOpened) {
-			if (this.state.itemIdToEdit) {
-				body = ReactDOM.div({style:{textAlign:'center', color:'#ccc', padding:'5px'}},
+		if(this.state.creationOpened) {
+			if(this.state.itemIdToEdit) {
+				body = ReactDOM.div({style: {textAlign: 'center', color: '#ccc', padding: '5px'}},
 					renderIcon('cog fa-spin fa-2x')
 				);
 			} else {
-				body = React.createElement(FormFull, {node:this.savedNode, backupPrefix:this.state.backupPrefix, initialData:this.state.dataToEdit||{}, parentForm:this, isLookup:true, filters:this.state.filters, editable:true});
+				body = React.createElement(FormFull, {node: this.savedNode, backupPrefix: this.state.backupPrefix, initialData: this.state.dataToEdit || {}, parentForm: this, isLookup: true, filters: this.state.filters, editable: true});
 			}
-			
+
 		} else {
 			var isParentRecordCreation = !this.props.form.props.initialData.hasOwnProperty('id');
-			body = ReactDOM.div(null ,
-				React.createElement(List, {ref:'inlineList', hideControlls:this.state.hideControlls, noPreviewButton:this.state.noPreviewButton||this.props.noPreviewButton, disableDrafting:this.state.disableDrafting, additionalButtons:this.state.additionalButtons||this.props.additionalButtons, node:this.savedNode, omitHeader:this.state.creationOpened, initialData:this.savedData, preventCreateButton:isParentRecordCreation || this.state.preventCreateButton, editable:this.state.inlineEditing, nodeId:field.nodeRef, parentForm:this, filters:this.savedFilters||this.state.filters})
+			body = ReactDOM.div(null,
+				React.createElement(List, {ref: 'inlineList', hideControlls: this.state.hideControlls, noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton, disableDrafting: this.state.disableDrafting, additionalButtons: this.state.additionalButtons || this.props.additionalButtons, node: this.savedNode, omitHeader: this.state.creationOpened, initialData: this.savedData, preventCreateButton: isParentRecordCreation || this.state.preventCreateButton, editable: this.state.inlineEditing, nodeId: field.nodeRef, parentForm: this, filters: this.savedFilters || this.state.filters})
 			);
 		}
 		return body;

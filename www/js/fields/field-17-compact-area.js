@@ -7,7 +7,7 @@ registerFieldClass(FIELD_17_TAB, class TextField extends fieldMixins {
 	}
 
 	render() {
-		return ReactDOM.div({style:{minHeight:38}},
+		return ReactDOM.div({style: {minHeight: 38}},
 			this.props.wrapper.props.subFields
 		);
 	}
