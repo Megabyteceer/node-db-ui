@@ -12,11 +12,15 @@
             "outFiles": [],
 			"disableNetworkCache": true,
             "sourceMaps": false,
+			"skipFiles": [
+				"<node_internals>/**",
+				"**/lib/**"
+			],
             "vueComponentPaths": [],
             "enableContentValidation": false,
 			"pauseForSourceMap": true,
 			"cleanUp": false,
-            "url": "https://node-db-ui.com:1443/#n/5/r/3/e",
+            "url": "https://node-db-ui.com:1443/#n/82/r/1",
 			"userDataDir": "C:\\tmp\\userdir"
 		}
 	]

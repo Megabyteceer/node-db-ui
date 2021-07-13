@@ -16,49 +16,49 @@ const api = {
 			res(ret);
 		});
 	},
-	"api/getMe.php":(reqData, userSession, res) => {
+	"api/getMe":(reqData, userSession, res) => {
 		res(userSession);
 	},
-	"api/getNodes.php":(reqData, userSession, res) => {
+	"api/getNodes":(reqData, userSession, res) => {
 		res(getNodesTree(userSession));
 	},
-	"api/delete.php":(reqData, userSession, res) => {
+	"api/delete":(reqData, userSession, res) => {
 		deleteRecord(reqData.nodeId, reqData.recId, userSession).then(res);
 	},
-	"api/setCurrentOrg.php":(reqData, userSession, res) => {
+	"api/setCurrentOrg":(reqData, userSession, res) => {
 		setCurrentOrg(reqData.orgId, userSession, true).then(res);
 	},
-	"api/toggleMultilang.php":(reqData, userSession, res) => {
+	"api/toggleMultilang":(reqData, userSession, res) => {
 		setMultiLang(!userSession.langs, userSession).then(res);
 	},
-	"api/descNode.php":(reqData, userSession, res) => {
+	"api/descNode":(reqData, userSession, res) => {
 		res({data: getNodeDesc(reqData.nodeId, userSession)});
 	},
-	"api/submit.php":(reqData, userSession, res) => {
+	"api/submit":(reqData, userSession, res) => {
 		submitRecord(reqData.nodeId, reqData.data, reqData.recId, userSession).then(res);
 	},
-	"api/uploadImage.php":(reqData, userSession, res) => {
+	"api/uploadImage":(reqData, userSession, res) => {
 		uploadImage(reqData, userSession).then(res);
 	},
-	"api/uploadFile.php":(reqData, userSession, res) => {
+	"api/uploadFile":(reqData, userSession, res) => {
 		uploadFile(reqData, userSession).then(res);
 	},
-	"register.php":(reqData, userSession, res) => {
+	"register":(reqData, userSession, res) => {
 		registerUser(reqData).then(res);
 	},
-	"login.php":(reqData, userSession, res) => {
+	"login":(reqData, userSession, res) => {
 		login(reqData.login_username, reqData.login_password).then(res);
 	},
-	"reset.php":(reqData, userSession, res) => {
+	"reset":(reqData, userSession, res) => {
 		resetPassword(reqData.key).then(res);
 	},
-	"activate.php":(reqData, userSession, res) => {
+	"activate":(reqData, userSession, res) => {
 		activateUser(reqData.key).then(res);
 	},
-	"admin/nodePrevs.php":(reqData, userSession, res) => {
+	"admin/nodePrevs":(reqData, userSession, res) => {
 		nodePrevs(reqData, userSession).then(res);
 	},
-	"admin/getEventHandler.php":(reqData, userSession, res) => {
+	"admin/getEventHandler":(reqData, userSession, res) => {
 		getClientEventHandler(reqData, userSession).then(res);
 	}
 };

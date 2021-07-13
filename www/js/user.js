@@ -8,7 +8,7 @@ var curentUserData;
 
 function setUserOrg(orgId) {
 	if(curentUserData.orgId !== orgId) {
-		getData('api/setCurrentOrg.php', {orgId}, () => {
+		getData('api/setCurrentOrg', {orgId}, () => {
 			User.instance.refreshUser();
 		});
 	}
@@ -52,7 +52,7 @@ export default class User extends React.Component {
 	}
 
 	refreshUser() {
-		getData('api/getMe.php', undefined, (data) => {
+		getData('api/getMe', undefined, (data) => {
 			data.lang.code = data.lang.code || 'en';
 			moment.locale(data.lang.code);
 			loadJS('/locales/' + data.lang.code + '/lang.js', () => {
@@ -79,7 +79,7 @@ export default class User extends React.Component {
 	}
 
 	toggleMultilang() {
-		getData('api/toggleMultilang.php', undefined, () => {
+		getData('api/toggleMultilang', undefined, () => {
 			window.location.reload();
 		});
 
@@ -121,14 +121,14 @@ export default class User extends React.Component {
 
 			var btn1, btn2;
 			if(this.state.id === 2) {
-				btn2 = ReactDOM.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px'}, href: 'login.php', title: L('LOGIN'), className: 'clickable clickable-top'},
+				btn2 = ReactDOM.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px'}, href: 'login', title: L('LOGIN'), className: 'clickable clickable-top'},
 					renderIcon('sign-in fa-2x')
 				)
 			} else {
 				btn1 = ReactDOM.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px', marginLeft: '20px', width: '50px'}, href: loactionToHash(5, this.state.id, undefined, true), title: L('USER_PROFILE'), className: 'clickable clickable-top'},
 					renderIcon('user fa-2x')
 				);
-				btn2 = ReactDOM.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px'}, href: 'login.php', title: L('LOGOUT'), className: 'clickable clickable-top'},
+				btn2 = ReactDOM.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px'}, href: 'login', title: L('LOGOUT'), className: 'clickable clickable-top'},
 					renderIcon('sign-out fa-2x')
 				);
 			}

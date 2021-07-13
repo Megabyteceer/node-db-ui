@@ -165,7 +165,7 @@ class AdminEventEditor extends React.Component {
 
 	componentDidMount() {
 
-		getData('admin/getEventHandler.php', this.getPostData(), (data) => {
+		getData('admin/getEventHandler', this.getPostData(), (data) => {
 			this.setState({
 				src: data
 			});
@@ -177,7 +177,7 @@ class AdminEventEditor extends React.Component {
 		if(this.state.src !== this.textareaRef.value) {
 			let data = this.getPostData();
 			data.src = this.textareaRef.value;
-			submitData('admin/getEventHandler.php', data, () => {
+			submitData('admin/getEventHandler', data, () => {
 				window.location.reload();
 			});
 		} else {

@@ -52,7 +52,7 @@ export default class FileFormBody extends React.Component {
 
 	save(callback) {
 		if(this.state.file) {
-			submitData('api/uploadFile.php', $(ReactDOM.findDOMNode(this.refs.form)).serializefiles(), callback, true);
+			submitData('api/uploadFile', $(ReactDOM.findDOMNode(this.refs.form)).serializefiles(), callback, true);
 		} else {
 			callback(undefined);
 		}

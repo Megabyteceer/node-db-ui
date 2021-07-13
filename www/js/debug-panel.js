@@ -1,5 +1,5 @@
 import {iAdmin} from "./user.js";
-import {isLitePage, L, renderIcon, sp} from "./utils.js";
+import {isLitePage, L, renderIcon, sp, strip_tags} from "./utils.js";
 
 var style = {
 	position: 'fixed',
@@ -54,6 +54,8 @@ export default class DebugPanel extends React.Component {
 		this.state = {expanded: false};
 		DebugPanel.instance = this;
 		this.clear = this.clear.bind(this);
+		this.show = this.show.bind(this);
+		this.hide = this.hide.bind(this);
 	}
 
 	show() {
@@ -96,11 +98,11 @@ export default class DebugPanel extends React.Component {
 		sp(ev);
 		myPromt(L('DEPLOY_TO', DEPLOY_TO), () => {
 
-			getData('test_uyas87dq8qwdqw/test.php', (data) => {
+			getData('test_uyas87dq8qwdqw/test', (data) => {
 				if(data === 'ok') {
 
-					getData('/deploy/api/deploy.php', {commitmessage: 'no message'}, (deployData) => {
-						getData('test_uyas87dq8qwdqw/test.php', {remote: true}, undefined, (data) => {
+					getData('/deploy/api/deploy', {commitmessage: 'no message'}, (deployData) => {
+						getData('test_uyas87dq8qwdqw/test', {remote: true}, undefined, (data) => {
 							if(data === 'ok') {
 
 								myAlert(ReactDOM.span(renderIcon('thumbs-up'), 'Changes aplied to ',
@@ -138,7 +140,7 @@ export default class DebugPanel extends React.Component {
 			cacheClearBtn = ReactDOM.a({
 				className: 'clickable admin-controll', title: L('CLEAR_CACHE'), onClick: (ev) => {
 					sp(ev);
-					getData('admin/cache_info.php', {clear: 1, json: 1}, undefined, () => { });
+					getData('admin/cache_info', {clear: 1, json: 1}, undefined, () => { });
 				}, style: {float: 'right'}
 			},
 				renderIcon('refresh')

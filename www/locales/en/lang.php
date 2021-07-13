@@ -40,7 +40,7 @@ $A = array(
 'RECOVERY_EXPIRED'=>'Recovery link has expired.',
 'RESET_EML_HEADER'=>'Password reset request %.',
 'RESET_EML_BODY'=>'Please go to link to reset your password: %',
-'RESET_MESSAGE'=>'Lilnk for passwor reset was sended to e-mail. <a href="/login.php">Login.</a>',
+'RESET_MESSAGE'=>'Lilnk for passwor reset was sended to e-mail. <a href="/login">Login.</a>',
 'RESET_ERROR'=>'e-mail % is not registred.',
 'PASS_RESET_HEADER'=>'Password reser',
 'EMAIL_TO_RESET'=>'Enter e-mail to reset password',
@@ -51,7 +51,7 @@ $A = array(
 'CONFIRM_EMAIL'=>'Please confirm your registration in %
 Link for confirmation: ',
 'CONFIRM_EMAIL_SUBJ'=>'Registration confirmation',
-'EMAIL_SENDED'=>'We sended confirmation link to e-mail %. <a href="/login.php">Login.</a>',
+'EMAIL_SENDED'=>'We sended confirmation link to e-mail %. <a href="/login">Login.</a>',
 'USER_NAME'=>'Name',
 'USER_EMAIL'=>'E-mail',
 'USER_COMPANY'=>'Company',

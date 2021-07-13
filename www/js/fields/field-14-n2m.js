@@ -1,4 +1,4 @@
-import {getClassForField, L, renderIcon, sp} from "../utils.js";
+import {getClassForField, L, n2mValuesEqual, renderIcon, sp} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
 

@@ -255,7 +255,7 @@ export default class LeftBar extends React.Component {
 	}
 
 	reloadLeftBar() {
-		getData('api/getNodes.php', undefined, (data) => {
+		getData('api/getNodes', undefined, (data) => {
 
 			var rootItem;
 			var items = {};

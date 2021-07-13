@@ -506,7 +506,7 @@ function getNode(nodeId, callback, forceRefresh, callStack) {
 			waitForNode(nodeId, callback);
 		} else {
 			nodesRequested[nodeId] = true;
-			getData('api/descNode.php?', {nodeId}, (data) => {
+			getData('api/descNode', {nodeId}, (data) => {
 
 				normalizeNode(data);
 
@@ -670,7 +670,7 @@ function submitRecord(nodeId, data, recId, callback, onError) {
 		throw 'Tried to submit emty object';
 	}
 	getNode(nodeId, (node) => {
-		submitData('api/submit.php', {nodeId, recId, data: encodeData(data, node)}, callback, undefined, onError);
+		submitData('api/submit', {nodeId, recId, data: encodeData(data, node)}, callback, undefined, onError);
 	});
 
 }
@@ -732,7 +732,9 @@ function getData(url, params, callback, onError, callStack, noLoadingIndicator) 
 		}).then((data) => {
 			handleAdditionalData(data, url);
 			if(isAuthNeed(data)) {
-				redirect('login.php?ret=' + encodeURIComponent(location.pathname.replace('/', '') + location.hash))
+
+				authHerePopup
+
 			} else if(data.hasOwnProperty('result')) {
 				requestRecord.result = data.result;
 			} else {
@@ -816,7 +818,7 @@ function submitData(url, dataToSend, callback, noProcessData, onError) {
 			dataDidModifed();
 			handleAdditionalData(data, url);
 			if(isAuthNeed(data)) {
-				redirect('login.php?ret=' + encodeURIComponent(location.pathname.replace('/', '') + location.hash))
+				authHerePopup
 			} else if(data.hasOwnProperty('result')) {
 				callback(data.result);
 			} else {
@@ -846,7 +848,7 @@ function deleteRecord(name, nodeId, recId, callback, noPromt, onYes) {
 		if(onYes) {
 			onYes();
 		} else {
-			submitData('api/delete.php', {nodeId, recId}, () => {
+			submitData('api/delete', {nodeId, recId}, () => {
 				dataDidModifed();
 				callback();
 			});

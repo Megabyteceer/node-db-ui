@@ -149,7 +149,7 @@ formsEventsOnSave[5] = function () { //form5onsaveBegin_hkasdhwdc
 		if(nLang != pLang) {
 			this.onSaveCallback = () => {
 				myPromt(L('RESTARTNOW'), () => {
-					location = 'login.php';
+					location = 'login';
 				});
 			};
 		}

@@ -116,7 +116,7 @@ class CropperFieldBody extends React.Component {
 
 	save(callback) {
 		if(this.state.cropResult) {
-			submitData('api/uploadImage.php', $(ReactDOM.findDOMNode(this.refs.form)).serializefiles(), callback, true);
+			submitData('api/uploadImage', $(ReactDOM.findDOMNode(this.refs.form)).serializefiles(), callback, true);
 		} else if(this.state.cleared) {
 			callback('0');
 		} else {

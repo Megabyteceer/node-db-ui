@@ -122,7 +122,7 @@ export default class AdminRoleprevsForm extends BaseForm {
 
 	onShow() {
 		getNode(this.props.recId, (node) => {
-			getData('admin/nodePrevs.php', {
+			getData('admin/nodePrevs', {
 				nodeId: this.props.recId
 			}, (data) => {
 				var lines = data.prevs.map((i) => {
@@ -145,7 +145,7 @@ export default class AdminRoleprevsForm extends BaseForm {
 			var submit = (toChild) => {
 				this.state.data.nodeId = this.props.recId;
 				this.state.data.toChild = this.props.toChild;
-				submitData('core/admin/nodePrevs.php', this.state.data, () => {
+				submitData('core/admin/nodePrevs', this.state.data, () => {
 					this.cancelClick();
 				});
 			};

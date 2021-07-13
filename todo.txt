@@ -23,3 +23,5 @@ separate server side and client side isUserHaveRole
 Maintenance mode ansver immideatelly with special code and client will resend request later.Count current requests in progress. And stop after zero only.
 
 проверить сессии на глючность
+
+убрать <a href="/login

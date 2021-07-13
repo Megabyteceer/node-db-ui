@@ -127,7 +127,9 @@ export default class FieldWrap extends React.Component {
 
 	componentWillUnmount() {
 		this.forceBouncingTimeout();
-		delete this.props.form.fieldsRefs[this.props.field.fieldName];
+		if(this.props.form.fieldsRefs[this.props.field.fieldName] === this) {
+			delete this.props.form.fieldsRefs[this.props.field.fieldName];
+		}
 	}
 
 	isEmpty() {
