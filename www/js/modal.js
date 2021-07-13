@@ -70,7 +70,7 @@ export default class Modal extends React.Component {
 			return ReactDOM.div(null,
 				modalStack.map((m) => {
 					
-					var bs = Object.assign({cursor: m.noDiscardByBackdrop?'default':'pointer'}, backdropStyle);
+					var bs = Object.assign({cursor: m.noDiscardByBackdrop ? 'default' : 'pointer'}, backdropStyle);
 					
 					return ReactDOM.div({key:m.id, style:bs, className:'fade-in', onClick:() => {
 								if(!m.noDiscardByBackdrop){

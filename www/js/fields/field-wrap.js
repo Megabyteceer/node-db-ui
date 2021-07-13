@@ -71,7 +71,7 @@ class FieldLabel extends React.Component {
 	render() {
 		var field = this.props.field;
 		var star;
-		if (this.props.isEdit && field.requirement === '1') {
+		if (this.props.isEdit && field.requirement) {
 			star = ReactDOM.span({style:{color:'red', fontSize:'60%', verticalAlign:'top'}},'*');
 		} else {
 			star = '';

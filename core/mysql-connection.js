@@ -31,7 +31,7 @@ const mysqlExec = (query) => {
 				
 				/// #endif
 				debugger;
-				reject(preparedError, er, query);
+				reject(er, preparedError, query);
 			}
 			/// #if DEBUG
 			SQL.timeElapsed_ms = performance.now() - SQL.timeElapsed_ms;

@@ -76,7 +76,7 @@ class Stage extends React.Component {
 		if(this.state.filters[name] !== val){
 			this.state.filters[name] = val;
 			this.forceUpdate();
-			if (name==='tab') {
+			if (name === 'tab') {
 				LeftBar.instance.refreshLeftBarActive();
 			}
 		}

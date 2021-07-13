@@ -508,7 +508,7 @@ export default class List extends BaseForm {
 					}
 
 					var rowHeader;
-					if(field.forSearch === '1'){
+					if(field.forSearch === 1){
 											rowHeader = ReactDOM.span({className:'clickable', style:{color:(filters.o===field.fieldName)?'#259':''}, onClick:() => {
 													if(filters.o===field.fieldName){
 															this.changeFilter('r', filters.r?undefined:1, true);

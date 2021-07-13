@@ -105,7 +105,7 @@ class NodeAdmin extends React.Component({
 								renderIcon((f.show&4)?'eye':'eye-slash halfvisible'),
 								renderIcon((f.show&8)?'eye':'eye-slash halfvisible'),
 							
-								renderIcon((f.forSearch==='1')?'search-plus':'search halfvisible')
+								renderIcon((f.forSearch)?'search-plus':'search halfvisible')
 								
 							)
 						)

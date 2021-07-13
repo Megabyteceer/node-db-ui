@@ -314,10 +314,7 @@ export default class LeftBar extends React.Component {
 		if (LeftBar.collapsable) {
 			staticLines.unshift(ReactDOM.div({key:'toggle-collapsing', style:{paddingTop:5, paddingBottom:5}, onClick:this.toggleCollapse, className:'clickable'}, renderIcon('bars')));
 		}
-		
-		
-		
-		
+
 		if(!hasInactiveItems){
 			return ReactDOM.td({style:{width: LeftBar.collapsable ? 33 : 300}});
 		} else {

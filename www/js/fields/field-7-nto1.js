@@ -172,7 +172,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 				);
 			}
 			
-			if (field.requirement !== '1' && !this.props.isN2M) {
+			if (!field.requirement && !this.props.isN2M) {
 				clearBtn = ReactDOM.div({style:{display:'inline-block',borderRadius:'3px', backgroundColor: constants.DELETE_COLOR, color:'#fff'}, title:L('CLEAR'), className:'clickable clickable-del', onClick:(e) => {
 							sp(e);
 							this.valueChoosed({id:0,name:''}, false, true);

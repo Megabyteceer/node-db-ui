@@ -53,7 +53,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 	} else {
 		
 		var itemName;
-		if(node.draftable && (data.status !== '1')){
+		if(node.draftable && (data.status !== 1)){
 			itemName=' '+L('TEMPLATE');
 		} else {
 			itemName='';
@@ -162,7 +162,7 @@ export default class FormItem extends BaseForm {
 		}
 		
 		var itemProps;
-		if(this.props.node.draftable && (data.status !== '1')){
+		if(this.props.node.draftable && (data.status !== 1)){
 			itemProps = {style:{background:'#eee', opacity:1}}
 		} else {
 			itemProps = {};

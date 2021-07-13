@@ -63,16 +63,16 @@ var checkStyle = {
 registerFieldClass(FIELD_5_BOOL, class BooleanField extends fieldMixins {
 
 	setValue(val) {
-		val = (val !== '0') && Boolean(val);
+		val = (val !== 0) && Boolean(val);
 		this.setState({value:val});
 	}
 
 	static decodeValue(val) {
-		return val === '1';
+		return Boolean(val);
 	}
 
 	static encodeValue(val) {
-		return val?'1':'0';
+		return val ? 1 : 0;
 	}
 
 	render() {
