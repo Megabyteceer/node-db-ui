@@ -1224,5 +1224,6 @@ export {
 	goBack,
 	setFormFilter,
 	getNodeData,
-	getNode
+	getNode,
+	myPromt
 }

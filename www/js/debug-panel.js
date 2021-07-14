@@ -1,9 +1,9 @@
 import {iAdmin} from "./user.js";
-import {isLitePage, L, renderIcon, sp, strip_tags} from "./utils.js";
+import {isLitePage, L, myPromt, renderIcon, sp, strip_tags} from "./utils.js";
 
-var style = {
+var adminPanelStyle = {
 	position: 'fixed',
-	top: '10px',
+	top: '100px',
 	right: 0,
 	background: '#a44',
 	border: '2px solid #fff',
@@ -220,7 +220,7 @@ export default class DebugPanel extends React.Component {
 
 					ReactDOM.div({style: backdropStyle, onClick: this.hide}),
 
-					ReactDOM.div({style: style},
+					ReactDOM.div({style: adminPanelStyle},
 
 
 						ReactDOM.a({className: 'clickable admin-controll', title: L('CLEAR_DEBUG'), onClick: this.clear, style: {float: 'right'}},
@@ -240,7 +240,7 @@ export default class DebugPanel extends React.Component {
 				if(isLitePage()) {
 					body = ReactDOM.span();
 				} else {
-					body = ReactDOM.div({style: style, className: 'clickable admin-controll', onClick: this.show},
+					body = ReactDOM.div({style: adminPanelStyle, className: 'clickable admin-controll', onClick: this.show},
 						ReactDOM.a({className: 'clickable', onClick: this.clear, style: {float: 'right'}},
 							renderIcon('trash')
 						),

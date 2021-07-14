@@ -1,3 +1,5 @@
+import FieldAdmin from "../admin/field-admin.js";
+
 export default class FormTab extends React.Component {
 
 	constructor(props) {

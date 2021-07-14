@@ -1,16 +1,17 @@
 import fieldsEvents from "../events/fields_events.js";
-import {getNodeData, L, renderIcon, sp} from "../utils.js";
-
+import {getNodeData, keepInWindow, L, renderIcon, sp} from "../utils.js";
 
 var showedFieldId;
 
-
-class FieldAdmin extends React.Component {
+export default class FieldAdmin extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			show: showedFieldId === this.props.field.id
 		};
+		this.show = this.show.bind(this);
+		this.hide = this.hide.bind(this);
+		this.toggleLock = this.toggleLock.bind(this);
 	}
 
 	show() {
@@ -105,7 +106,7 @@ class FieldAdmin extends React.Component {
 					field.fieldName
 				),
 				ReactDOM.div(null,
-					field.name + '; type: ' + field.fieldType + '; id: ' + field.id + '; len:' + field.maxlen
+					'type: ' + field.fieldType + '; id: ' + field.id + '; len:' + field.maxlen
 				),
 				ReactDOM.div({
 					style: {

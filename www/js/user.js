@@ -4,6 +4,7 @@ import moment from "./lib/moment/dist/moment.js";
 import constants from "./custom/consts.js";
 import {getData, goToPageByHash, L, loactionToHash, loadJS, renderIcon, sp} from "./utils.js";
 import Select from "./components/select.js";
+import admin from "./admin/admin-utils.js";
 
 var curentUserData;
 
@@ -16,7 +17,7 @@ function setUserOrg(orgId) {
 }
 
 function iAdmin() {
-	return isUserHaveRole(ADMIN_ROLE_ID) && (typeof (admin) !== 'undefined');
+	return isUserHaveRole(ADMIN_ROLE_ID);
 }
 
 var style = {

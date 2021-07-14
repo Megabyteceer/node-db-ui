@@ -1,3 +1,5 @@
+import FieldAdmin from "./admin/field-admin.js";
+import NodeAdmin from "./admin/node-admin.js";
 import constants from "./custom/consts.js";
 import {iAdmin} from "./user.js";
 import {getData, isLitePage, loactionToHash, renderIcon, setFormFilter, sp} from "./utils.js";

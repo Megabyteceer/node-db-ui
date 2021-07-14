@@ -1,6 +1,7 @@
 import BaseForm from "../forms/form-mixins.js";
 import {iAdmin} from "../user.js";
-import {getNode, L, renderIcon, submitData} from "../utils.js";
+import {getNode, L, myPromt, renderIcon, submitData} from "../utils.js";
+import NodeAdmin from "./node-admin.js";
 
 function check() {
 	return ReactDOM.span({

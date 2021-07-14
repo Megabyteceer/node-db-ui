@@ -1,5 +1,5 @@
 import {iAdmin} from "../user.js";
-import {getNodeData, L} from "../utils.js";
+import {getNodeData, L, myPromt} from "../utils.js";
 
 var formsEventsOnLoad = {};
 var formsEventsOnSave = {};

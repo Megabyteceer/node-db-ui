@@ -1,9 +1,10 @@
 import {formsEventsOnLoad, formsEventsOnSave} from "../events/forms_events.js";
-import {getNode, getNodeData, L, renderIcon, sp} from "../utils.js";
+import {getNode, getNodeData, keepInWindow, L, renderIcon, sp} from "../utils.js";
+import FieldAdmin from "./field-admin.js";
 
 var showedNodeId;
 
-class NodeAdmin extends React.Component {
+export default class NodeAdmin extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -27,6 +28,10 @@ class NodeAdmin extends React.Component {
 				show: showedNodeId === this.props.menuItem.id
 			};
 		}
+		this.show = this.show.bind(this);
+		this.hide = this.hide.bind(this);
+		this.toggleLock = this.toggleLock.bind(this);
+		this.toggleAllFields = this.toggleAllFields.bind(this);
 	}
 
 	componentWillUnmount() {
@@ -53,6 +58,7 @@ class NodeAdmin extends React.Component {
 			});
 		}
 	}
+
 	toggleAllFields() {
 		this.setState({
 			allFieldsVisible: !this.state.allFieldsVisible
@@ -348,10 +354,10 @@ class NodeAdmin extends React.Component {
 						fontSize: '130%'
 					}
 				},
-					node.tableName || item.name
+					node.tableName
 				),
 				ReactDOM.span(null,
-					'; (' + (node ? node.matchName : item.name) + '); id: ' + nodeId
+					'; (' + (node.matchName || item.name) + '); id: ' + nodeId
 				),
 				ReactDOM.div({
 					style: {

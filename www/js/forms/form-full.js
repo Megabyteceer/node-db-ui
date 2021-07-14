@@ -6,6 +6,7 @@ import {consoleLog, goBack, L, n2mValuesEqual, removeBackup, renderIcon, submitR
 import FormTab from "./form-tab.js";
 import eventProcessingMixins from "./event-processing-mixins.js";
 import constants from "../custom/consts.js";
+import NodeAdmin from "../admin/node-admin.js";
 
 var style = {
 	marginBottom: 7
@@ -125,7 +126,7 @@ export default class FormFull extends eventProcessingMixins {
 		if((this.currentData.id !== nextProps.initialData.id) || (this.props.node !== nextProps.node) || (this.props.editable !== nextProps.editable)) {
 
 			this.backupCurrentDataIfNeed();
-			
+
 			this.needCallOnload = true;
 			this.showAllTabs = false;
 			this.currentData = Object.assign({}, nextProps.filters, nextProps.initialData);

@@ -39,6 +39,9 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 		this.clearLeaveTimeout = this.clearLeaveTimeout.bind(this);
 		this.onMouseLeave = this.onMouseLeave.bind(this);
 		this.toggleList = this.toggleList.bind(this);
+		this.valueChoosed = this.valueChoosed.bind(this);
+		this.toggleCreateDialogue = this.toggleCreateDialogue.bind(this);
+		this.setValue = this.setValue.bind(this);
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
