@@ -1,18 +1,7 @@
-import {
-	formsEventsOnLoad,
-	formsEventsOnSave
-} from "../events/forms_events.js";
-import {
-	getNodeData,
-	L,
-	renderIcon,
-	sp
-} from "../utils.js";
-
-
+import {formsEventsOnLoad, formsEventsOnSave} from "../events/forms_events.js";
+import {getNode, getNodeData, L, renderIcon, sp} from "../utils.js";
 
 var showedNodeId;
-
 
 class NodeAdmin extends React.Component {
 	constructor(props) {

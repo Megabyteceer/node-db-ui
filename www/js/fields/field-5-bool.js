@@ -1,10 +1,5 @@
-import {
-	L,
-	renderIcon
-} from "../utils.js";
-import {
-	registerFieldClass
-} from "../utils.js";
+import {L, renderIcon} from "../utils.js";
+import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
 export default class CheckBox extends React.Component {

@@ -1,10 +1,5 @@
 import fieldsEvents from "../events/fields_events.js";
-import {
-	getNodeData,
-	L,
-	renderIcon,
-	sp
-} from "../utils.js";
+import {getNodeData, L, renderIcon, sp} from "../utils.js";
 
 
 var showedFieldId;

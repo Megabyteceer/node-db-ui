@@ -1,16 +1,8 @@
 import moment from "./../lib/moment/dist/moment.js";
-import {
-	innerDatetimeFormat,
-	L,
-	toReadableDatetime
-} from "../utils.js";
-import {
-	registerFieldClass
-} from "../utils.js";
+import {innerDatetimeFormat, L, toReadableDatetime} from "../utils.js";
+import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
-import {
-	readOnlyCompactFieldProperties
-} from "./field-1-text-default.js";
+import {readOnlyCompactFieldProperties} from "./field-1-text-default.js";
 
 function isSameDay(val, d) {
 	if(!d || !val) return false;

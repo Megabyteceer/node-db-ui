@@ -1,10 +1,5 @@
 import LeftBar from "../left-bar.js";
-import {
-	consoleDir,
-	getNodeData,
-	isLitePage,
-	submitRecord
-} from "../utils.js";
+import {consoleDir, getNode, getNodeData, isLitePage, submitRecord} from "../utils.js";
 
 var admin = {};
 

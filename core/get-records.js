@@ -299,7 +299,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 						const fieldName = f.fieldName;
 						if(pag[fieldName]) {
 							let a = pag[fieldName].split('␞');
-							let val = array();
+							let val = [];
 							let i = 1;
 							let l = a.length;
 							while (i < l) {

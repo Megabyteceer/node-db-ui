@@ -1,6 +1,4 @@
-import {
-	L
-} from "../utils.js";
+import {L} from "../utils.js";
 
 var fieldsEvents = {};
 

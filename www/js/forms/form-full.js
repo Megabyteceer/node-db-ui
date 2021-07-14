@@ -1,6 +1,6 @@
 
 import FieldWrap from "../fields/field-wrap.js";
-import {defaultButtonStyle, successButtonStyle} from "../stage.js";
+import {dangerButtonStyle, defaultButtonStyle, successButtonStyle} from "../stage.js";
 import {iAdmin} from "../user.js";
 import {consoleLog, goBack, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord} from "../utils.js";
 import FormTab from "./form-tab.js";
@@ -125,13 +125,11 @@ export default class FormFull extends eventProcessingMixins {
 		if((this.currentData.id !== nextProps.initialData.id) || (this.props.node !== nextProps.node) || (this.props.editable !== nextProps.editable)) {
 
 			this.backupCurrentDataIfNeed();
-
+			
 			this.needCallOnload = true;
 			this.showAllTabs = false;
 			this.currentData = Object.assign({}, nextProps.filters, nextProps.initialData);
-
 			this.resendDataToFields();
-
 		}
 	}
 

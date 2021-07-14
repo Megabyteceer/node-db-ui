@@ -1,6 +1,4 @@
-import {
-	registerFieldClass
-} from "../utils.js";
+import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
 registerFieldClass(FIELD_8_STATICTEXT, class TextField extends fieldMixins {

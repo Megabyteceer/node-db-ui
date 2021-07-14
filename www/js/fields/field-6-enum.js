@@ -1,10 +1,6 @@
-import {
-	registerFieldClass
-} from "../utils.js";
-import {
-	readOnlyCompactFieldProperties,
-	readOnlyFieldProperties
-} from "./field-1-text-default.js";
+import Select from "../components/select.js";
+import {registerFieldClass} from "../utils.js";
+import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import fieldMixins from "./field-mixins.js";
 /*
 var optionStyle = {

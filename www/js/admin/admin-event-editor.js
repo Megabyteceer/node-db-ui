@@ -1,8 +1,4 @@
-import {
-	L,
-	renderIcon,
-	submitData
-} from "../utils.js";
+import {L, renderIcon, submitData} from "../utils.js";
 
 var node;
 

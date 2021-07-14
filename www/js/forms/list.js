@@ -3,7 +3,7 @@
 import constants from "../custom/consts.js";
 import LeftBar from "../left-bar.js";
 import {iAdmin} from "../user.js";
-import {getNodeData, L, renderIcon, sp, updateHashLocation} from "../utils.js";
+import {getNode, getNodeData, L, renderIcon, scrollToVisible, sp, updateHashLocation} from "../utils.js";
 import FormItem from "./form-item.js";
 import BaseForm from "./form-mixins.js";
 
@@ -64,6 +64,7 @@ export default class List extends BaseForm {
 		this.filters = Object.assign({}, props.filters);
 		this.state.node = props.node;
 		this.state.data = props.initialData;
+		this.refreshData = this.refreshData.bind(this);
 	}
 
 	componentDidMount() {

@@ -1223,5 +1223,6 @@ export {
 	updateHashLocation,
 	goBack,
 	setFormFilter,
-	getNodeData
+	getNodeData,
+	getNode
 }

@@ -1,7 +1,4 @@
-import {
-	consoleDir,
-	registerFieldClass
-} from "../utils.js";
+import {consoleDir, registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
 var readOnlyFieldProperties = {

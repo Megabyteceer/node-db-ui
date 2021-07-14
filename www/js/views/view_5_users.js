@@ -1,4 +1,4 @@
-import {renderIcon} from "../utils.js";
+import {idToImgURL, renderIcon} from "../utils.js";
 
 (() => {
 

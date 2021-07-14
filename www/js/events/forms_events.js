@@ -1,10 +1,5 @@
-import {
-	iAdmin
-} from "../user.js";
-import {
-	getNodeData,
-	L
-} from "../utils.js";
+import {iAdmin} from "../user.js";
+import {getNodeData, L} from "../utils.js";
 
 var formsEventsOnLoad = {};
 var formsEventsOnSave = {};

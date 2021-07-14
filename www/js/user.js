@@ -3,6 +3,7 @@
 import moment from "./lib/moment/dist/moment.js";
 import constants from "./custom/consts.js";
 import {getData, goToPageByHash, L, loactionToHash, loadJS, renderIcon, sp} from "./utils.js";
+import Select from "./components/select.js";
 
 var curentUserData;
 
@@ -148,6 +149,6 @@ export default class User extends React.Component {
 	}
 }
 
-User.sessionToken = "dev-user-session-token";
+User.sessionToken = "dev-admin-session-token";
 
 export {iAdmin};

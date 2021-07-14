@@ -1,17 +1,8 @@
 import constants from "../custom/consts.js";
-import {
-	getNodeData,
-	L,
-	renderIcon,
-	sp
-} from "../utils.js";
-import {
-	registerFieldClass
-} from "../utils.js";
-import {
-	readOnlyCompactFieldProperties,
-	readOnlyFieldProperties
-} from "./field-1-text-default.js";
+import List from "../forms/list.js";
+import {getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp} from "../utils.js";
+import {registerFieldClass} from "../utils.js";
+import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
 
 var dropListStyle = {
@@ -47,6 +38,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 		};
 		this.clearLeaveTimeout = this.clearLeaveTimeout.bind(this);
 		this.onMouseLeave = this.onMouseLeave.bind(this);
+		this.toggleList = this.toggleList.bind(this);
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {

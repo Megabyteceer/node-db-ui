@@ -1,6 +1,4 @@
-import {
-	renderIcon
-} from "../utils.js";
+import {renderIcon} from "../utils.js";
 
 var style = {
 	position: 'relative',

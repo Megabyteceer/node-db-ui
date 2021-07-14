@@ -1,14 +1,6 @@
-import {
-	innerDatetimeFormat,
-	registerFieldClass
-} from "../utils.js";
-import {
-	readOnlyCompactFieldProperties,
-	readOnlyFieldProperties
-} from "./field-1-text-default.js";
-import {
-	dateFieldMixins
-} from "./field-4-datetime.js";
+import {innerDatetimeFormat, registerFieldClass} from "../utils.js";
+import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
+import {dateFieldMixins} from "./field-4-datetime.js";
 
 registerFieldClass(FIELD_11_DATE, class TextField extends dateFieldMixins {
 
