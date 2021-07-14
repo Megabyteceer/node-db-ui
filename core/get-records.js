@@ -12,7 +12,7 @@ const EMPTY_RATING = {all:0};
 *									special fields:
 										['p'] = 5; - page of records to retrevie;
 										['n'] = 5; - number of records per page;
-										['exludeIDs'] = '3,5,64,5,45'; - exclude records with these IDs;
+										['exludeIDs'] = [3,5,64,5,45]; - exclude records with these IDs;
 										['onlyIDs'] = '3,5,64,5,45'; - filter by IDs;
 										['o'] = fieldName for order;
 										['r'] = reverse order;
@@ -162,7 +162,8 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 
 
 		if(filterFields.exludeIDs) {
-			wheres.push('AND(', tableName, '.id NOT IN (', filterFields.exludeIDs, '))');
+			assert (filterFields.exludeIDs.length > 0, "Empty array for 'exludeIDs' received.");
+			wheres.push('AND(', tableName, '.id NOT IN (', filterFields.exludeIDs.join() , '))');
 		}
 		if(filterFields.onlyIDs) {
 			wheres.push('AND(', tableName, '.id IN (', filterFields.onlyIDs, '))');

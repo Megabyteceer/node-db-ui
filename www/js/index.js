@@ -6,19 +6,21 @@ function appendCSS(src) {
 	document.head.appendChild(s);
 }
 
-import('./lib/jquery/dist/jquery.js');
-import('./utils.js');
-
-/// #if DEBUG
-import('./lib/react/umd/react.development.js');
-import('./lib/react-dom/umd/react-dom.development.js');
-
-
-
 appendCSS('js/lib/codemirror/lib/codemirror.css');
 appendCSS('js/lib/codemirror/addon/search/matchesonscrollbar.css');
 appendCSS('js/lib/codemirror/addon/scroll/simplescrollbars.css');
 appendCSS('js/lib/codemirror/addon/hint/show-hint.css');
 
-import('./entry.js');
-
+Promise.all([
+	import('./lib/jquery/dist/jquery.js'),
+	/// #if DEBUG
+	import('./lib/react/umd/react.development.js'),
+	import('./lib/react-dom/umd/react-dom.development.js')
+	/*
+	/// #endif
+	import('./lib/react/umd/react.production.min.js'),
+	import('./lib/react-dom/umd/react-dom.production.min.js')
+	//*/
+]).then(() => {
+	import('./entry.js');
+});

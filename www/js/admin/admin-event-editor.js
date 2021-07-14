@@ -1,4 +1,5 @@
-import {L, renderIcon, submitData} from "../utils.js";
+import Modal from "../modal.js";
+import {L, myAlert, renderIcon, submitData} from "../utils.js";
 
 var node;
 

@@ -25,3 +25,5 @@ Maintenance mode ansver immideatelly with special code and client will resend re
 проверить сессии на глючность
 
 убрать <a href="/login
+
+crop падает на прозрачной области. когда кроп больше картинки

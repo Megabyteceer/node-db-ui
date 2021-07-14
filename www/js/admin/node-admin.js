@@ -21,7 +21,7 @@ export default class NodeAdmin extends React.Component {
 				this.state = {};
 			}
 			this.state = {
-				show: showedNodeId === this.props.form.props.node.id
+				show: this.props.form.props.node && (showedNodeId === this.props.form.props.node.id)
 			};
 		} else {
 			this.state = {

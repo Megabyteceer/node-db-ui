@@ -2,10 +2,10 @@
 export default class fieldLookupMixins extends React.Component {
 
 	componentDidUpdate() {
-		/*if(!this.state.filters){
-			this.setState({filters:this.generateDefaultFiltersByProps(props)});
+		if(!this.state.filters) {
+			this.setState({filters: this.generateDefaultFiltersByProps(this.props)});
 			this.saveNodeDataAndFilters();
-		}*/
+		}
 	}
 
 	generateDefaultFiltersByProps(props) {

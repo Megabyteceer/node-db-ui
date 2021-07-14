@@ -1,9 +1,25 @@
 import constants from "../custom/consts.js";
 import User from "../user.js";
-import {checkFileSize, idToImgURL, L, renderIcon} from "../utils.js";
+import {checkFileSize, idToImgURL, L, myAlert, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
+import Cropper from "../lib/cropperjs/dist/cropper.esm.js";
+import Modal from "../modal.js";
 
+window.exports = {};
+window.require = function (name) {
+	if(name === 'react') {
+		return React;
+	}
+	if(name === 'cropperjs') {
+		return Cropper;
+	}
+	throw new Error('unknown module required');
+}
+let ReactCropper;
+import("../lib/react-cropper/dist/react-cropper.umd.js").then((m) => {
+	ReactCropper = window.exports.default;
+});
 
 $.fn.serializefiles = () => {
 	var obj = $(this);
@@ -30,15 +46,15 @@ registerFieldClass(FIELD_12_PICTURE, class TextField extends fieldMixins {
 
 	isEmpty() {
 		//for checkingIfIsEmpty
-		return this.refs.cropperBody.refs.fileInput.value;
+		return this.cropperBody.references.fileInput.value;
 	}
 
 	focusOverride() {
-		this.refs.cropperBody.refs.selectButton.focus();
+		this.cropperBody.references.selectButton.focus();
 	}
 
 	beforeSave(callback) {
-		this.refs.cropperBody.save(callback);
+		this.cropperBody.save(callback);
 	}
 
 	render() {
@@ -47,7 +63,7 @@ registerFieldClass(FIELD_12_PICTURE, class TextField extends fieldMixins {
 		var imgUrl = idToImgURL(this.props.initialValue, this.props.field.fieldName);
 
 		if(this.props.isEdit) {
-			return React.createElement(CropperFieldBody, {field: field, ref: 'cropperBody', parent: this, imageRenderer: this.props.form.imageRenderer, form: this.props.form, currentPicUrl: imgUrl, isCompact: this.props.isCompact});
+			return React.createElement(CropperFieldBody, {field: field, ref: (r) => {this.cropperBody = r;}, parent: this, imageRenderer: this.props.form.imageRenderer, form: this.props.form, currentPicUrl: imgUrl, isCompact: this.props.isCompact});
 		} else if(this.props.isCompact) {
 			return ReactDOM.img({src: imgUrl, style: {borderRadius: '3px', maxHeight: this.props.form.props.parentForm ? '30px' : '60px', width: 'auto'}})
 		} else {
@@ -64,13 +80,19 @@ class CropperFieldBody extends React.Component {
 			src: '',
 			cropResult: null
 		};
+		this.references = {};
+		this._onChange = this._onChange.bind(this);
+		this._cancel = this._cancel.bind(this);
+		this._cropImage = this._cropImage.bind(this);
+		this.clear = this.clear.bind(this);
+		this.save = this.save.bind(this);
 	}
 
 	_cancel() {
 		this.setState({
 			src: null
 		});
-		this.refs.fileInput.value = '';
+		this.references.fileInput.value = '';
 		Modal.instance.hide();
 		this.props.parent.props.wrapper.hideTooltip();
 	}
@@ -85,19 +107,19 @@ class CropperFieldBody extends React.Component {
 
 
 		} else {
-			if(typeof this.cropper.getCroppedCanvas() === 'undefined') {
+			if(typeof this.cropper.cropper.getCroppedCanvas() === 'undefined') {
 				return;
 			}
 
-			var bounds = this.cropper.getData();
-			this.refs.w.value = bounds.width;
-			this.refs.h.value = bounds.height;
-			this.refs.x.value = bounds.x;
-			this.refs.y.value = bounds.y;
+			var bounds = this.cropper.cropper.getData();
+			this.references.w.value = bounds.width;
+			this.references.h.value = bounds.height;
+			this.references.x.value = bounds.x;
+			this.references.y.value = bounds.y;
 
 			this.setState({
 				cleared: false,
-				cropResult: this.cropper.getCroppedCanvas().toDataURL(),
+				cropResult: this.cropper.cropper.getCroppedCanvas().toDataURL(),
 				src: null
 			});
 			Modal.instance.hide();
@@ -111,12 +133,12 @@ class CropperFieldBody extends React.Component {
 			cropResult: null,
 			src: ''
 		});
-		this.refs.fileInput.value = '';
+		this.references.fileInput.value = '';
 	}
 
 	save(callback) {
 		if(this.state.cropResult) {
-			submitData('api/uploadImage', $(ReactDOM.findDOMNode(this.refs.form)).serializefiles(), callback, true);
+			submitData('api/uploadImage', $(ReactDOM.findDOMNode(this.references.form)).serializefiles(), callback, true);
 		} else if(this.state.cleared) {
 			callback('0');
 		} else {
@@ -253,18 +275,18 @@ class CropperFieldBody extends React.Component {
 
 				} else {
 					preview = ReactDOM.img({
-						ref: 'img', style: {borderRadius: '5px', width: w / 2, height: h / 2}, src: imgSrc, className: 'clickable', onClick: () => {
-							this.refs.fileInput.value = null;
-							this.refs.fileInput.click();
+						ref: (r) => {this.references.img = r;}, style: {borderRadius: '5px', width: w / 2, height: h / 2}, src: imgSrc, className: 'clickable', onClick: () => {
+							this.references.fileInput.value = null;
+							this.references.fileInput.click();
 						}
 					});
 				}
 
 				select = ReactDOM.div(null,
 					ReactDOM.button({
-						style: {background: constants.PUBLISH_COLOR, fontSize: '80%', padding: '5px 20px 6px 20px'}, ref: 'selectButton', className: 'clickable clickable-edit', onClick: () => {
-							this.refs.fileInput.value = null;
-							this.refs.fileInput.click();
+						style: {background: constants.PUBLISH_COLOR, fontSize: '80%', padding: '5px 20px 6px 20px'}, ref: (r) => {this.references.selectButton = r;}, className: 'clickable clickable-edit', onClick: () => {
+							this.references.fileInput.value = null;
+							this.references.fileInput.click();
 						}
 					}, renderIcon('folder-open'),
 						L('SELECT_IMG')
@@ -274,15 +296,15 @@ class CropperFieldBody extends React.Component {
 			}
 		}
 
-		var form = ReactDOM.form({ref: 'form', encType: "multipart/form-data", style: {display: 'none'}},
-			ReactDOM.input({name: "picture", ref: 'fileInput', type: 'file', accept: "image/*", onChange: this._onChange}),
+		var form = ReactDOM.form({ref: (r) => {this.references.form = r;}, encType: "multipart/form-data", style: {display: 'none'}},
+			ReactDOM.input({name: "picture", ref: (r) => {this.references.fileInput = r;}, type: 'file', accept: "image/*", onChange: this._onChange}),
 			ReactDOM.input({name: "MAX_FILE_SIZE", defaultValue: 3000000}),
 			ReactDOM.input({name: "fid", defaultValue: field.id}),
 			ReactDOM.input({name: "nid", defaultValue: field.node.id}),
-			ReactDOM.input({name: "w", ref: 'w'}),
-			ReactDOM.input({name: "h", ref: 'h'}),
-			ReactDOM.input({name: "x", ref: 'x'}),
-			ReactDOM.input({name: "y", ref: 'y'})
+			ReactDOM.input({name: "w", ref: (r) => {this.references.w = r;}}),
+			ReactDOM.input({name: "h", ref: (r) => {this.references.h = r;}}),
+			ReactDOM.input({name: "x", ref: (r) => {this.references.x = r;}}),
+			ReactDOM.input({name: "y", ref: (r) => {this.references.y = r;}})
 		);
 
 		return ReactDOM.div(null,

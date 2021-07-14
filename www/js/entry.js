@@ -22,7 +22,7 @@ import "./fields/field-21-file.js";
 window.ENABLE_MULTILANG = false;
 window.HOME_NODE = 5;
 window.ALLOWED_UPLOADS = '';
-window.MAX_FILESIZE_TO_UPLOAD = 10;
+window.MAX_FILESIZE_TO_UPLOAD = 3000000;
 window.document.title =
 	window.appTitle = '';
 window.DEBUG = true;

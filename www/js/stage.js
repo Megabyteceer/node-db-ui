@@ -4,7 +4,7 @@ import constants from "./custom/consts.js";
 import FormFull from "./forms/form-full.js";
 import List from "./forms/list.js";
 import LeftBar from "./left-bar.js";
-import {consoleLog, isLitePage, renderIcon} from "./utils.js";
+import {consoleLog, isLitePage, myAlert, renderIcon} from "./utils.js";
 
 var defaultButtonStyle = {
 	background: '#ddd',

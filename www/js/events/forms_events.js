@@ -84,7 +84,7 @@ formsEventsOnLoad[5] = function () { //form5onloadBegin_hkasdhwdc
 
 	if(this.rec_update || this.rec_creation) {
 		this.addLookupFilters('_userroles', {
-			exludeIDs: '2,3'
+			exludeIDs: [2, 3]
 		});
 		this.hideField('public_phone');
 		this.hideField('public_vk');

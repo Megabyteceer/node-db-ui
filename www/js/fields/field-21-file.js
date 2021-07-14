@@ -1,3 +1,4 @@
+import Modal from "../modal.js";
 import {L, renderIcon, submitData} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";

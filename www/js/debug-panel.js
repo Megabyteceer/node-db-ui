@@ -1,5 +1,5 @@
 import {iAdmin} from "./user.js";
-import {isLitePage, L, myPromt, renderIcon, sp, strip_tags} from "./utils.js";
+import {isLitePage, L, myAlert, myPromt, renderIcon, sp, strip_tags} from "./utils.js";
 
 var adminPanelStyle = {
 	position: 'fixed',

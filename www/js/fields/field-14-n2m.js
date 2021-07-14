@@ -261,23 +261,18 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 		var value = this.state.value;
 		var field = this.props.field;
 
-		var exludeIDs = [];
-
-		if(this.state.filters.exludeIDs) {
-			for(let id of this.state.filters.exludeIDs.split(',')) {
-				if(id) {
-					exludeIDs.push(id);
-				}
-			}
-		}
+		var exludeIDs = this.state.filters.exludeIDs ? this.state.filters.exludeIDs.slice() : undefined;
 
 		for(let v of value) {
 			if(v && v.id) {
+				if(!exludeIDs) {
+					exludeIDs = [];
+				}
 				exludeIDs.push(v.id);
 			}
 		}
 
-		this.exludeIDs = exludeIDs.length ? exludeIDs.join(',') : undefined;
+		this.exludeIDs = exludeIDs;
 
 		var lines = [];
 		value.forEach((v, i) => {

@@ -26,6 +26,15 @@ var modalStack = [];
 var idCounter = 0;
 
 export default class Modal extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.show = this.show.bind(this);
+		this.hide = this.hide.bind(this);
+
+
+	}
+
 	componentDidMount() {
 		Modal.instance = this;
 	}

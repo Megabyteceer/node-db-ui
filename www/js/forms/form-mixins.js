@@ -4,7 +4,6 @@ import {goBack} from "../utils.js";
 export default class BaseForm extends React.Component {
 
 	constructor(props) {
-		assert(props.node.id, "Wrong node");
 		super(props);
 		this.state = {};
 		this.filters = Object.assign({}, this.props.filters);
