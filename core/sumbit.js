@@ -126,7 +126,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 				if (!f.nostore && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
 					let fieldType = f.fieldType;
 					if((fieldType === FIELD_12_PICTURE) || (fieldType === FIELD_21_FILE)) {
-						if(realDataBefore) {
+						if(!realDataBefore) {
 							realDataBefore = {};
 						}
 						realDataBefore[fieldName] = currentData[fieldName];
@@ -188,30 +188,26 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 						
 						//continue to process as uploaded image
 					case FIELD_12_PICTURE:
-						if(fieldVal && (!userSession.uploaded || !userSession.uploaded[fieldVal])) {
-							throw new Error("Error. Couldn't link uploaded file to the record.");
-						} else {
-							delete userSession.uploaded[fieldVal];
+						if(fieldVal) {
+							if(userSession.uploaded && (userSession.uploaded[f.id] === fieldVal)) {
+								delete userSession.uploaded[fieldVal];
+							} else {
+								throw new Error("Error. Couldn't link uploaded file to the record.");
+							}
 						}
-						if(currentData && realDataBefore[fieldName]) {
+						if(realDataBefore && realDataBefore[fieldName]) {
 							if(realDataBefore[fieldName] !== fieldVal) {
 								if(!filesToDelete) {
 									filesToDelete = [];
 								}
 								if (fieldType === FIELD_12_PICTURE) {
-									filesToDelete.push(idToImgURLServer(currentData[fieldName]));
+									filesToDelete.push(idToImgURLServer(realDataBefore[fieldName]));
 								} else {
-									filesToDelete.push(path.join(UPLOADS_FILES_PATH, currentData[fieldName]));
+									filesToDelete.push(path.join(UPLOADS_FILES_PATH, realDataBefore[fieldName]));
 								}
 							}
 						}
 
-
-						if(realDataBefore && realDataBefore[fieldName]) {
-							debugger;
-							filesToDelete = filesToDelete || [];
-							
-						}
 						//continue to process as text
 					case FIELD_1_TEXT:
 					case FIELD_9_EMAIL:
@@ -297,20 +293,19 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 						
 						if(fieldVal.length) {
 							//add new n2m links
-							n2miQ = ['INSERT INTO `', fieldName, '` (`', tableName, 'id`, `', f.selectFieldName, "id`) VALUES'"];
+							const n2miQ = ['INSERT INTO `', fieldName, '` (`', tableName, 'id`, `', f.selectFieldName, "id`) VALUES"];
 							
 							let isNotFirst = false;
-							for(let v of fieldVal) {
+							for(let id of fieldVal) { // TODO: send ids only
 								if(isNotFirst) {
 									n2miQ.push(',');
 								}
-								let id = v.id;
 								
 								if(!isAdmin(userSession) && id) {
 									getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to refered item
 								}
 								
-								n2miQ.push("(", recId, id, ")");
+								n2miQ.push("(", recId, ',', id, ")");
 								isNotFirst = true;
 							}
 							await mysqlExec(n2miQ.join(''));
@@ -323,9 +318,8 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 			await mysqlCommit();
 		}
 		if(filesToDelete) {
-			debugger;
 			for(let f of filesToDelete) {
-				fs.unlink(path.join(__dirname, f),()=>{});
+				fs.unlink(f, ()=>{});
 			}
 		}
 		return recId;

@@ -1,5 +1,5 @@
 import Modal from "../modal.js";
-import {L, renderIcon, submitData} from "../utils.js";
+import {L, renderIcon, serializeForm, submitData} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
@@ -53,7 +53,7 @@ export default class FileFormBody extends React.Component {
 
 	save(callback) {
 		if(this.state.file) {
-			submitData('api/uploadFile', $(ReactDOM.findDOMNode(this.refs.form)).serializefiles(), callback, true);
+			submitData('api/uploadFile', serializeForm(ReactDOM.findDOMNode(this.refs.form)), callback, true);
 		} else {
 			callback(undefined);
 		}

@@ -232,7 +232,7 @@ export default class FormFull extends eventProcessingMixins {
 					if(!field.clientOnly) {
 						if((field.fieldType === FIELD_14_NtoM)) {
 							if(!n2mValuesEqual(this.props.initialData[field.fieldName], val)) {
-								data[field.fieldName] = val;
+								data[field.fieldName] = val.map(v => v.id);
 							}
 						} else if((field.fieldType === FIELD_7_Nto1)) {
 

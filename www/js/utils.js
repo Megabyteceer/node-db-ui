@@ -14,8 +14,8 @@ import {isPresentListRenderer} from "./forms/list.js";
 import User from "./user.js";
 import Modal from "./modal.js";
 
-const headers = new Headers();
-headers.append("Content-Type", "application/json");
+const headersJSON = new Headers();
+headersJSON.append("Content-Type", "application/json");
 
 function myAlert(txt, isSucess, autoHide, noDiscardByBackdrop) {
 	if(!Modal.instance) {
@@ -163,7 +163,7 @@ function handleAdditionalData(data, url) {
 		data.debug.request = url;
 		DebugPanel.instance.addEntry(data.debug);
 		/// #endif
-		delete (data.debug);
+		delete data.debug;
 	}
 	if(data.hasOwnProperty('notifications')) {
 		data.notifications.some((n) => {
@@ -724,7 +724,7 @@ function getData(url, params, callback, onError, callStack, noLoadingIndicator) 
 
 	fetch(__corePath + url, {
 		method: 'POST',
-		headers,
+		headers: headersJSON,
 		body: JSON.stringify(params)
 	})
 		.then((res) => {
@@ -795,22 +795,40 @@ function isAuthNeed(data) {
 	return (data.isGuest && window.isUserHaveRole && isUserHaveRole(3)) || (data.error && (data.error.message === 'auth'));
 }
 
+function serializeForm(form) {
+	var obj = $(form);
+	/* ADD FILE TO PARAM AJAX */
+	var formData = new FormData();
+	$.each($(obj).find("input[type='file']"), (i, tag) => {
+		$.each($(tag)[0].files, (i, file) => {
+			formData.append(tag.name, file);
+		});
+	});
+	formData.append('sessionToken', User.sessionToken);
+	var params = $(obj).serializeArray();
+	$.each(params, (i, val) => {
+		formData.append(val.name, val.value);
+	});
+	return formData;
+}
+
 function submitData(url, dataToSend, callback, noProcessData, onError) {
 	LoadingIndicator.instance.show();
 
-	dataToSend.sessionToken = User.sessionToken;
-
 	if(!noProcessData) {
+		dataToSend.sessionToken = User.sessionToken;
 		dataToSend = JSON.stringify(dataToSend);
 	}
 
 	var callStack = new Error('submitData called from: ').stack;
-
-	fetch(__corePath + url, {
+	let options = {
 		method: 'POST',
-		headers,
 		body: dataToSend
-	})
+	}
+	if(!noProcessData) {
+		options.headers = headersJSON;
+	}
+	fetch(__corePath + url, options)
 		.then((res) => {
 			return res.json();
 		})
@@ -1227,5 +1245,6 @@ export {
 	getNode,
 	myPromt,
 	UID,
-	myAlert
+	myAlert,
+	serializeForm
 }

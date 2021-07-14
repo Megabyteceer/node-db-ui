@@ -207,7 +207,7 @@ export default class FieldWrap extends React.Component {
 	}
 
 	checkValidityBeforeSave(focusIfInvalid, callback) {
-		if(!this.fieldRef || !this.fieldRef.hasOwnProperty('getMessageIfInvalid')) {
+		if(!this.fieldRef || !this.fieldRef.getMessageIfInvalid) {
 			callback(true);
 		} else {
 
@@ -224,7 +224,7 @@ export default class FieldWrap extends React.Component {
 	}
 
 	beforeSave(callback) {
-		if(this.fieldRef.hasOwnProperty('beforeSave')) {
+		if(this.fieldRef.beforeSave) {
 			this.fieldRef.beforeSave(callback);
 		} else {
 			callback();
@@ -232,7 +232,7 @@ export default class FieldWrap extends React.Component {
 	}
 
 	afterSave(callback) {
-		if(this.fieldRef.hasOwnProperty('afterSave')) {
+		if(this.fieldRef.afterSave) {
 			this.fieldRef.afterSave(callback);
 		} else {
 			callback();

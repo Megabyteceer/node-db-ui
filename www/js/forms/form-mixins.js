@@ -7,9 +7,7 @@ export default class BaseForm extends React.Component {
 		super(props);
 		this.state = {};
 		this.filters = Object.assign({}, this.props.filters);
-		if(!this.hasOwnProperty('fieldsRefs')) {
-			this.fieldsRefs = {};
-		}
+		this.fieldsRefs = {};
 		this.cancelClick = this.cancelClick.bind(this);
 	}
 

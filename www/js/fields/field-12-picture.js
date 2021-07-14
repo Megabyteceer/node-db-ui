@@ -1,6 +1,6 @@
 import constants from "../custom/consts.js";
 import User from "../user.js";
-import {checkFileSize, idToImgURL, L, myAlert, renderIcon} from "../utils.js";
+import {checkFileSize, idToImgURL, L, myAlert, renderIcon, serializeForm, submitData} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 import Cropper from "../lib/cropperjs/dist/cropper.esm.js";
@@ -20,23 +20,6 @@ let ReactCropper;
 import("../lib/react-cropper/dist/react-cropper.umd.js").then((m) => {
 	ReactCropper = window.exports.default;
 });
-
-$.fn.serializefiles = () => {
-	var obj = $(this);
-	/* ADD FILE TO PARAM AJAX */
-	var formData = new FormData();
-	$.each($(obj).find("input[type='file']"), (i, tag) => {
-		$.each($(tag)[0].files, (i, file) => {
-			formData.append(tag.name, file);
-		});
-	});
-	formData.append('sessionToken', User.sessionToken);
-	var params = $(obj).serializeArray();
-	$.each(params, (i, val) => {
-		formData.append(val.name, val.value);
-	});
-	return formData;
-};
 
 registerFieldClass(FIELD_12_PICTURE, class TextField extends fieldMixins {
 
@@ -138,7 +121,8 @@ class CropperFieldBody extends React.Component {
 
 	save(callback) {
 		if(this.state.cropResult) {
-			submitData('api/uploadImage', $(ReactDOM.findDOMNode(this.references.form)).serializefiles(), callback, true);
+			let form = ReactDOM.findDOMNode(this.references.form);
+			submitData('api/uploadImage', serializeForm(form), callback, true);
 		} else if(this.state.cleared) {
 			callback('0');
 		} else {

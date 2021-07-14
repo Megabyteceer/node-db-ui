@@ -138,7 +138,7 @@ formsEventsOnSave[5] = function () { //form5onsaveBegin_hkasdhwdc
 		if(pLang && pLang.hasOwnProperty('id')) {
 			pLang = pLang.id;
 		}
-		if(pLang && nLang.hasOwnProperty('id')) {
+		if(nLang && nLang.hasOwnProperty('id')) {
 			nLang = nLang.id;
 		}
 		if(nLang != pLang) {

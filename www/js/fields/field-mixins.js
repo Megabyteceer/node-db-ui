@@ -4,7 +4,11 @@ export default class fieldMixins extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {value: props.initialValue};
+		let value = props.initialValue;
+		if(Array.isArray(value)) {
+			value = value.slice();
+		}
+		this.state = {value};
 		this.refGetter = this.refGetter.bind(this);
 	}
 

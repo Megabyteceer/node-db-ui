@@ -14,7 +14,7 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 
 	constructor(props) {
 		super(props);
-		this.state = {filters: this.generateDefaultFiltersByProps(this.props)};
+		this.state.filters = this.generateDefaultFiltersByProps(this.props);
 	}
 
 	setValue(val) {
@@ -99,16 +99,9 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 	}
 
 	deleteItemByIndex(i) {
-		if(this.beforeRemoveChecking) {
-			this.beforeRemoveChecking(() => {
-				this.state.value.splice(i, 1);
-				this.forceUpdate();
-
-			}, this.state.value[i], this);
-		} else {
-			this.state.value.splice(i, 1);
-			this.forceUpdate();
-		}
+		this.state.value.splice(i, 1);
+		this.props.wrapper.valueListener(this.state.value, false, this);
+		this.forceUpdate();
 	}
 
 	renderItem(field, v, i, isEdit) {

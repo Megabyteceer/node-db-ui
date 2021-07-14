@@ -24,6 +24,7 @@ const mysqlExec = (query) => {
 	/// #endif
 	
 	return new Promise((resolve, reject) => {
+		
 		connection.query(query, (er, rows) => {
 			if(er) {
 				/// #if DEBUG

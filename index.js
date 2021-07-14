@@ -34,8 +34,10 @@ server.on('request', (req, res) => {
 			});
 			req.on('end', () => {
 				try {
-
+					/// #if DEBUG
 					let startTime = performance.now();
+					/// #endif
+					
 					
 					if(isMultipart) {
 						let boundary = multipart.getBoundary(req.headers['content-type']);

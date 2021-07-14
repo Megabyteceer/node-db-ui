@@ -1,5 +1,6 @@
+import fieldMixins from "./field-mixins.js";
 
-export default class fieldLookupMixins extends React.Component {
+export default class fieldLookupMixins extends fieldMixins {
 
 	componentDidUpdate() {
 		if(!this.state.filters) {
