@@ -1,4 +1,5 @@
-import {getClassForField, L, n2mValuesEqual, renderIcon, sp} from "../utils.js";
+import constants from "../custom/consts.js";
+import {getClassForField, L, n2mValuesEqual, renderIcon, sp, UID} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
 
@@ -261,6 +262,14 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 		var field = this.props.field;
 
 		var exludeIDs = [];
+
+		if(this.state.filters.exludeIDs) {
+			for(let id of this.state.filters.exludeIDs.split(',')) {
+				if(id) {
+					exludeIDs.push(id);
+				}
+			}
+		}
 
 		for(let v of value) {
 			if(v && v.id) {
