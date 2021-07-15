@@ -16,9 +16,8 @@ var style = {
 var backupCallback;
 
 function tryBackup() {
-	//TODO :  uncomment
 	if(backupCallback) {
-		//backupCallback();
+		backupCallback();
 	}
 }
 
@@ -79,7 +78,7 @@ export default class FormFull extends eventProcessingMixins {
 		super.componentDidMount(); // TODO merge base class
 		this.recoveryBackupIfNeed();
 		this.onShow();
-		backupCallback = this.backupCurrentDataIfNeed;
+		backupCallback = this.backupCurrentDataIfNeed.bind(this);
 	}
 
 	componentDidUpdate() {

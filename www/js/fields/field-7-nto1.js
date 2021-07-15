@@ -146,7 +146,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 
 	onMouseLeave() {
 		if(this.state.expanded && !this.state.creationOpened) {
-			this.leaveTimout = setTimeout(this.toggleList, 400);
+			this.leaveTimout = setTimeout(() => {this.toggleList();}, 400);
 		}
 	}
 

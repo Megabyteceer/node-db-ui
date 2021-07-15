@@ -333,7 +333,6 @@ export default class NodeAdmin extends React.Component {
 					display: 'inline-block',
 					verticalAlign: 'top',
 					marginTop: '-5px',
-					marginLeft: -240,
 					color: '#800',
 					padding: '10px',
 					borderRadius: '5px',

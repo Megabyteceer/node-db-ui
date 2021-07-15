@@ -90,7 +90,7 @@ export default class Search extends React.Component {
 
 	onChange() {
 		this.clearTimeout();
-		this.timeout = setTimeout(this.doSearch, 400);
+		this.timeout = setTimeout(() => {this.doSearch();}, 400);
 	}
 
 	doSearch() {

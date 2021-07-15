@@ -1,14 +1,14 @@
 "use strict";
 require('dotenv').config()
 const http = require('http');
-const api = require ('./core/api.js');
-const {startSession, authorizeUserByID, finishSession, createSession} = require ('./core/auth.js');
+const api = require('./core/api.js');
+const {startSession, authorizeUserByID, finishSession, createSession} = require('./core/auth.js');
 const {initNodesData, ADMIN_USER_SESSION, GUEST_USER_SESSION} = require('./core/desc-node.js');
 const server = http.createServer();
 const performance = require('perf_hooks').performance;
 const multipart = require('parse-multipart-data');
 const {isUserHaveRole} = require("./www/both-side-utils.js");
-require ('./core/locale.js');
+require('./core/locale.js');
 
 server.on('request', (req, res) => {
 	if(req.method === 'POST') {
@@ -37,8 +37,8 @@ server.on('request', (req, res) => {
 					/// #if DEBUG
 					let startTime = performance.now();
 					/// #endif
-					
-					
+
+
 					if(isMultipart) {
 						let boundary = multipart.getBoundary(req.headers['content-type']);
 						if(Array.isArray(body)) {
@@ -64,21 +64,27 @@ server.on('request', (req, res) => {
 						}
 						body = JSON.parse(body);
 					}
+					/// #if DEBUG
+					console.log(req.url);
+					console.dir(body);
+					/// #endif
 					mysql_real_escape_object(body);
 					let userSession;
 					const onResult = (result, error) => {
 						const resHeaders = {
 							'content-type': 'application/json'
 						};
-						
+
 						let ret = {result, error};
 						/// #if DEBUG
 						resHeaders['Access-Control-Allow-Origin'] = '*';
-						ret.debug = process.debug;
-						delete process.debug;
-						ret.debug.timeElapsed_ms = performance.now() - startTime;
+						if(process.debug) {
+							ret.debug = process.debug;
+							delete process.debug;
+							ret.debug.timeElapsed_ms = performance.now() - startTime;
+						}
 						/// #endif
-						
+
 						if(isUserHaveRole(GUEST_ROLE_ID, userSession)) {
 							ret.isGuest = true;
 						}
@@ -92,21 +98,21 @@ server.on('request', (req, res) => {
 						res.end(JSON.stringify(ret));
 					}
 					/// #if DEBUG
-					process.debug = {requestTime: new Date(), stack:[]};
+					process.debug = {requestTime: new Date(), stack: []};
 					/// #endif
 					startSession(body.sessionToken).then((session) => {
 						userSession = session;
 						handler(body, session, onResult);
 					})
-					.catch((error) => {
-						console.log(error.stack);
-						onResult(undefined, error.message);
-					})
-					//*/
-					.finally(() => {
-						finishSession(body.sessionToken);	
-					});
-					
+						.catch((error) => {
+							console.log(error.stack);
+							onResult(undefined, error.message);
+						})
+						//*/
+						.finally(() => {
+							finishSession(body.sessionToken);
+						});
+
 				} catch(error) {
 					res.writeHead(500);
 					/// #if DEBUG
@@ -127,11 +133,11 @@ server.on('request', (req, res) => {
 	}
 });
 
-initNodesData().then(async function () {
+initNodesData().then(async function() {
 	Object.assign(ADMIN_USER_SESSION, await authorizeUserByID(1, true
-	/// #if DEBUG
-	, "dev-admin-session-token"
-	/// #endif
+		/// #if DEBUG
+		, "dev-admin-session-token"
+		/// #endif
 	));
 	assert(isUserHaveRole(ADMIN_ROLE_ID, ADMIN_USER_SESSION), "User with id 1 expected to be admin.");
 	Object.assign(GUEST_USER_SESSION, await authorizeUserByID(2, true));
@@ -139,7 +145,7 @@ initNodesData().then(async function () {
 	/// #if DEBUG
 	await authorizeUserByID(3, undefined, "dev-user-session-token");
 	/// #endif
-	
+
 	server.listen(7778);
 	console.log('HTTPS listen 7778...');
 });
@@ -160,28 +166,28 @@ const mysql_real_escape_object = (o) => {
 }
 
 const mysql_real_escape_string = (str) => {
-    return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
-        switch (char) {
-            case "\0":
-                return "\\0";
-            case "\x08":
-                return "\\b";
-            case "\x09":
-                return "\\t";
-            case "\x1a":
-                return "\\z";
-            case "\n":
-                return "\\n";
-            case "\r":
-                return "\\r";
-            case "\"":
-            case "'":
-            case "\\":
-            case "%":
-                return "\\"+char; // prepends a backslash to backslash, percent,
-                                  // and double/single quotes
-            default:
-                return char;
-        }
-    });
+	return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function(char) {
+		switch(char) {
+			case "\0":
+				return "\\0";
+			case "\x08":
+				return "\\b";
+			case "\x09":
+				return "\\t";
+			case "\x1a":
+				return "\\z";
+			case "\n":
+				return "\\n";
+			case "\r":
+				return "\\r";
+			case "\"":
+			case "'":
+			case "\\":
+			case "%":
+				return "\\" + char; // prepends a backslash to backslash, percent,
+			// and double/single quotes
+			default:
+				return char;
+		}
+	});
 }

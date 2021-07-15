@@ -1,5 +1,5 @@
 import fieldsEvents from "../events/fields_events.js";
-import {getNodeData, keepInWindow, L, renderIcon, sp} from "../utils.js";
+import {getNodeData, keepInWindow, L, loactionToHash, renderIcon, sp} from "../utils.js";
 import {admin_editSource} from "./admin-event-editor.js";
 import admin from "./admin-utils.js";
 
@@ -245,8 +245,7 @@ export default class FieldAdmin extends React.Component {
 					zIndex: 2 + zAdd,
 					verticalAlign: 'top',
 					padding: '6px',
-					transform: 'scale(0.5)',
-					color: '#fdd'
+					color: '#00000040'
 				},
 				className: 'halfvisible',
 				onMouseEnter: this.show

@@ -1,3 +1,4 @@
+const {reloadMetadataSchedule} = require("../core/desc-node.js");
 const {getRecords} = require("../core/get-records.js");
 const {createFieldInTable} = require("./_fields.js");
 

@@ -3,6 +3,7 @@ const {mysqlExec} = require("../core/mysql-connection");
 const {isAdmin} = require("../www/both-side-utils");
 const crypto = require('crypto');
 const {shouldBeAdmin} = require("../core/admin/admin.js");
+const {reloadMetadataSchedule} = require("../core/desc-node.js");
 
 module.exports = {
 

@@ -127,7 +127,7 @@ export default class List extends BaseForm {
 
 	onShow() {
 		if(!this.state.data) {
-			setTimeout(this.refreshData, 1);
+			setTimeout(() => {this.refreshData();}, 1);
 		} else if(!this.props.node) {
 			getNode(this.props.nodeId, (node) => {
 				this.setState({node: node});

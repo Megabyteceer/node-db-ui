@@ -245,9 +245,9 @@ class AdminEventEditor extends React.Component {
 			this.editor.setSize('900px', '500px');
 			this.editor.on("keyup", (editor, event) => {
 				if(!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
-					window.CodeMirror.commands.autocomplete(editor, null, {
+					/*window.CodeMirror.commands.autocomplete(editor, null, {
 						completeSingle: false
-					});
+					});*/ //TODO:
 				}
 			});
 

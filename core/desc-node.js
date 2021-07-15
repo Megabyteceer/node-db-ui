@@ -114,6 +114,7 @@ function reloadMetadataSchedule() {
 }
 
 function attemptToreloadMetadataSchedule() {
+	const {usersSessionsStartedCount} = require("./auth");
 	if(usersSessionsStartedCount() === 0) {
 		reInitNodesData().then(() => {
 			const {setMainTainMode} = require("./auth");

@@ -330,12 +330,13 @@ function goToPageByHash() {
 				case 'f':
 					filters = {};
 					while(hash.length) {
+						let key = hash.shift();
 						let val = decodeURIComponent(hash.shift());
 						let numVal = parseInt(val); // return numeric values to filter
 						if(val == numVal) {
 							val = numVal;
 						}
-						filters[hash.shift()] = val;
+						filters[key] = val;
 					}
 					break;
 				default:
@@ -1246,5 +1247,7 @@ export {
 	myPromt,
 	UID,
 	myAlert,
-	serializeForm
+	serializeForm,
+	readableTimeFormat,
+	readableDateFormat
 }

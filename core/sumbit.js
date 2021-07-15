@@ -8,22 +8,22 @@ const {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit} = require("
 const {UPLOADS_FILES_PATH, idToImgURLServer} = require('./upload');
 
 async function submitRecord(nodeId, data, recId = false, userSession) {
-	
+
 	let node = getNodeDesc(nodeId);
 	let currentData;
 	if(recId !== false) {
 		currentData = await getRecords(nodeId, PREVS_ANY, recId, userSession);
 	}
-	
+
 	const tableName = node.tableName;
 	const prevs = node.prevs;
 	let filesToDelete;
-	
+
 	if(node.draftable) {
 		if((prevs & PREVS_PUBLISH) === 0) {
 			if(recId !== false) {
 				if(currentData.status !== 1) {
-					data.status = 2; 
+					data.status = 2;
 				}
 			} else {
 				data.status = 2;
@@ -37,33 +37,33 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 	} else {
 		data.status = 1;
 	}
-	
+
 	if(recId !== false) {
 		if(!currentData.isEd) {
-			throw new Error('Update access denied.');	
+			throw new Error('Update access denied.');
 		}
 	} else {
 		if(!node.canCreate) {
 			throw new Error('Creation access denied: ' + node.id);
 		}
 	}
-	
+
 	//check if required fields is filled, and hidden fields is unfilled
 	for(let f of node.fields) {
 		let fieldName = f.fieldName;
-		
-		if((f.show & 1) === 0){
+
+		if((f.show & 1) === 0) {
 			if(data.hasOwnProperty(fieldName)) {
 				throw new Error('Field ' + f['fieldName'] + ' hidden for update, but present in request.');
 			}
 		} else if(!f.nostore) {
-			
+
 			if(f.requirement) {
-				if(!data.hasOwnProperty(fieldName)) {
+				if(!data.hasOwnProperty(fieldName) && !currentData.hasOwnProperty(fieldName)) {
 					throw new Error("Required field '" + fieldName + "' is empty.");
 				}
 			}
-			
+
 			if(data.hasOwnProperty(fieldName) && f.uniqu) {
 
 				let query = ["SELECT id FROM ", tableName, " WHERE ", fieldName, " ='", data[fieldName], "'"];
@@ -83,7 +83,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 	if(userSession) {
 		await mysqlStartTransaction();
 	}
-	try	{
+	try {
 
 		let insQ;
 
@@ -97,7 +97,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		let noNeedComma = true;
 
 		let leastOneTablesFieldUpdated = false;
-		
+
 		if(recId === false) {
 			if(data.hasOwnProperty('_usersID')) {
 				assert(isAdmin(userSession) || userSession.id === data._usersID, "wrong _usersID detected");
@@ -123,7 +123,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		if(currentData) {
 			for(let f of node.fields) { // save filenames to delete updated files later
 				let fieldName = f.fieldName;
-				if (!f.nostore && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
+				if(!f.nostore && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
 					let fieldType = f.fieldType;
 					if((fieldType === FIELD_12_PICTURE) || (fieldType === FIELD_21_FILE)) {
 						if(!realDataBefore) {
@@ -134,7 +134,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 				}
 			}
 		}
-		
+
 		if(recId !== false) {
 			let h = getEventHandler(nodeId, 'update');
 			let r = h && h(currentData, data, userSession);
@@ -150,21 +150,21 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		}
 		let needProcess_n2m;
 		for(let f of node.fields) {
-			
+
 			let fieldName = f.fieldName;
-			
+
 			/// #if DEBUG
 			if(f.clientOnly && data.hasOwnProperty('fieldName')) {
 				notificationOut(userSession, L('CLIENT_ONLY_ON_SERVER', fieldName));
 			}
 			/// #endif
-			
+
 			if(!f.nostore && data.hasOwnProperty(fieldName)) {
-				
+
 				let fieldType = f.fieldType;
-				
+
 				let fieldVal = data[fieldName];
-				
+
 				if(fieldType === FIELD_14_NtoM) {
 					//will process later
 					needProcess_n2m = 1;
@@ -178,82 +178,82 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 					noNeedComma = false;
 					insQ.push("`", fieldName, "`=");
 
-					switch (fieldType) {
-					
-					case FIELD_5_BOOL:
-						insQ.push(fieldVal);
-						break;
-					
-					case FIELD_21_FILE:
-						
+					switch(fieldType) {
+
+						case FIELD_5_BOOL:
+							insQ.push(fieldVal);
+							break;
+
+						case FIELD_21_FILE:
+
 						//continue to process as uploaded image
-					case FIELD_12_PICTURE:
-						if(fieldVal) {
-							if(userSession.uploaded && (userSession.uploaded[f.id] === fieldVal)) {
-								delete userSession.uploaded[fieldVal];
-							} else {
-								throw new Error("Error. Couldn't link uploaded file to the record.");
-							}
-						}
-						if(realDataBefore && realDataBefore[fieldName]) {
-							if(realDataBefore[fieldName] !== fieldVal) {
-								if(!filesToDelete) {
-									filesToDelete = [];
-								}
-								if (fieldType === FIELD_12_PICTURE) {
-									filesToDelete.push(idToImgURLServer(realDataBefore[fieldName]));
+						case FIELD_12_PICTURE:
+							if(fieldVal) {
+								if(userSession.uploaded && (userSession.uploaded[f.id] === fieldVal)) {
+									delete userSession.uploaded[fieldVal];
 								} else {
-									filesToDelete.push(path.join(UPLOADS_FILES_PATH, realDataBefore[fieldName]));
+									throw new Error("Error. Couldn't link uploaded file to the record.");
 								}
 							}
-						}
+							if(realDataBefore && realDataBefore[fieldName]) {
+								if(realDataBefore[fieldName] !== fieldVal) {
+									if(!filesToDelete) {
+										filesToDelete = [];
+									}
+									if(fieldType === FIELD_12_PICTURE) {
+										filesToDelete.push(idToImgURLServer(realDataBefore[fieldName]));
+									} else {
+										filesToDelete.push(path.join(UPLOADS_FILES_PATH, realDataBefore[fieldName]));
+									}
+								}
+							}
 
 						//continue to process as text
-					case FIELD_1_TEXT:
-					case FIELD_9_EMAIL:
-					case FIELD_10_PASSWORD:
-					case FIELD_13_KEYWORDS:
-						if(f.maxlen && (fieldVal.length > f.maxlen)) {
-							throw new Error("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxlen);
-						}
-						insQ.push("'", fieldVal, "'");
-						break;
+						case FIELD_1_TEXT:
+						case FIELD_9_EMAIL:
+						case FIELD_10_PASSWORD:
+						case FIELD_13_KEYWORDS:
+							if(f.maxlen && (fieldVal.length > f.maxlen)) {
+								throw new Error("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxlen);
+							}
+							insQ.push("'", fieldVal, "'");
+							break;
 
-					case FIELD_19_RICHEDITOR:
-						if(fieldVal.length > 16000000) {
-							throw new Error("Value length for field '" + fieldName + "' (" + tableName + ") is longer that 16000000");
-						}
-						insQ.push("'", fieldVal, "'");
-						break;
-					case FIELD_17_TAB:
-						break;
-					
-					case FIELD_7_Nto1:
-						if(!isAdmin(userSession) && fieldVal) {
-							getRecords(f.nodeRef, 8, fieldVal, userSession); //check if you have read access to refered item
-						}
-						insQ.push(fieldVal);
-						break;
-					case FIELD_4_DATETIME:
-					case FIELD_11_DATE:
-						insQ.push("'",fieldVal,"'");
-						break;
-					default:
-					
-						if(typeof fieldVal !== Number || isNaN(fieldVal)) {
-							throw new Error("Value for field " + fieldName + " (" + tableName + ") expected as numeric.");
-						}
-						if(f.maxlen && fieldVal.toString().length > f.maxlen) {
-							throw new Error("Value -length for field '" + fieldName + "' (" + tableName + ") is longer that " + f.maxlen);
-						}
-						insQ.push(fieldVal);
-						break;
+						case FIELD_19_RICHEDITOR:
+							if(fieldVal.length > 16000000) {
+								throw new Error("Value length for field '" + fieldName + "' (" + tableName + ") is longer that 16000000");
+							}
+							insQ.push("'", fieldVal, "'");
+							break;
+						case FIELD_17_TAB:
+							break;
+
+						case FIELD_7_Nto1:
+							if(!isAdmin(userSession) && fieldVal) {
+								getRecords(f.nodeRef, 8, fieldVal, userSession); //check if you have read access to refered item
+							}
+							insQ.push(fieldVal);
+							break;
+						case FIELD_4_DATETIME:
+						case FIELD_11_DATE:
+							insQ.push("'", fieldVal, "'");
+							break;
+						default:
+
+							if((typeof fieldVal !== 'number') || isNaN(fieldVal)) {
+								throw new Error("Value for field " + fieldName + " (" + tableName + ") expected as numeric.");
+							}
+							if(f.maxlen && fieldVal.toString().length > f.maxlen) {
+								throw new Error("Value -length for field '" + fieldName + "' (" + tableName + ") is longer that " + f.maxlen);
+							}
+							insQ.push(fieldVal);
+							break;
 					}
 				}
 			}
 		}
-		
-		
+
+
 		if(data.hasOwnProperty('status')) {
 			if(!noNeedComma) {
 				insQ.push(",");
@@ -261,7 +261,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 			leastOneTablesFieldUpdated = true;
 			insQ.push(' status=', data.status);
 		}
-		
+
 		if(recId !== false) {
 			insQ.push(" WHERE id=", recId, " LIMIT 1");
 		}
@@ -274,7 +274,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 			throw new Error('No fields updated in sumbitRecord.');
 		}
 		/// #endif
-		
+
 		if(recId === false) {
 			recId = qResult.insertId;
 			data.id = recId;
@@ -284,32 +284,32 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 				await r;
 			}
 		}
-		
-		if(needProcess_n2m){
+
+		if(needProcess_n2m) {
 			for(let f of node.fields) {
-			
+
 				if(f.fieldType === FIELD_14_NtoM) {
 					let fieldName = f.fieldName;
-					if(data.hasOwnProperty(fieldName)){
-					
+					if(data.hasOwnProperty(fieldName)) {
+
 						//clear all n2m links
 						await mysqlExec("DELETE FROM `" + fieldName + "` WHERE `" + tableName + "id` = " + recId);
 						let fieldVal = data[fieldName];
-						
+
 						if(fieldVal.length) {
 							//add new n2m links
 							const n2miQ = ['INSERT INTO `', fieldName, '` (`', tableName, 'id`, `', f.selectFieldName, "id`) VALUES"];
-							
+
 							let isNotFirst = false;
 							for(let id of fieldVal) {
 								if(isNotFirst) {
 									n2miQ.push(',');
 								}
-								
+
 								if(!isAdmin(userSession) && id) {
 									getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to refered item
 								}
-								
+
 								n2miQ.push("(", recId, ',', id, ")");
 								isNotFirst = true;
 							}
@@ -324,12 +324,12 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		}
 		if(filesToDelete) {
 			for(let f of filesToDelete) {
-				fs.unlink(f, ()=>{});
+				fs.unlink(f, () => { });
 			}
 		}
 		return recId;
-		
-	} catch (er) {
+
+	} catch(er) {
 		if(userSession) {
 			mysqlRollback();
 		}

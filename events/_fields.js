@@ -2,13 +2,12 @@
 const {mysqlExec} = require("../core/mysql-connection");
 const {shouldBeAdmin} = require("../core/admin/admin.js");
 const {mustBeUnset} = require("../core/auth.js");
-const {getLangs} = require("../core/desc-node.js");
+const {getLangs, reloadMetadataSchedule, getNodeDesc} = require("../core/desc-node.js");
 
 module.exports = {
 	createFieldInTable,
 
 	pre: async function(data, userSession) {
-		debugger;
 		shouldBeAdmin(userSession);
 
 		if(data.multilang) {
@@ -26,10 +25,11 @@ module.exports = {
 		if(data.enum) {
 			data.nodeRef = data.enum;
 		}
+
+		createFieldInTable(data);
 	},
 
 	post: async function(data, userSession) {
-		debugger;
 		shouldBeAdmin(userSession);
 
 		const fieldType = data.fieldType;
@@ -56,7 +56,7 @@ module.exports = {
 	},
 
 	update: async function(currentData, newData, userSession) {
-		debugger;
+
 		shouldBeAdmin(userSession);
 
 		if(currentData.id === 9 && newData.hasOwnProperty('maxlen')) {
@@ -71,7 +71,7 @@ module.exports = {
 			newData.nodeRef = newData.enum;
 		}
 
-		if(currentData.nostore == 0) {
+		if(!currentData.nostore) {
 
 			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxlen')) {
 
@@ -180,7 +180,7 @@ async function createFieldInTable(data) {
 	const nodeId = data.node_fields_linker;
 
 	// prepare space for field
-	await mysqlExec("UPDATE _fields SET prior=prior+20 WHERE (node_fields_linker =" + nodID + ") AND (prior >" + prior + ")");
+	await mysqlExec("UPDATE _fields SET prior=prior+20 WHERE (node_fields_linker =" + nodeId + ") AND (prior >" + data.prior + ")");
 
 	data.prior += 10;
 

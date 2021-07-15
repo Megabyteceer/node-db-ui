@@ -44,6 +44,11 @@ var labelStyle = {
 
 
 class FieldHelp extends React.Component {
+	constructor(props) {
+		super(props);
+		this.mouseOut = this.mouseOut.bind(this);
+		this.mouseOver = this.mouseOver.bind(this);
+	}
 
 	mouseOut() {
 		this.setState({hovered: false});
@@ -263,9 +268,9 @@ export default class FieldWrap extends React.Component {
 			setFormFilter('tab', this.props.parentTabName);
 		}
 		if(this.fieldRef.focusOverride) {
-			setTimeout(this.fieldRef.focusOverride, 1);
+			setTimeout(() => {this.fieldRef.focusOverride();}, 1);
 		} else {
-			setTimeout(this.fieldRef.focus, 1);
+			setTimeout(() => {this.fieldRef.focus();}, 1);
 		}
 	}
 

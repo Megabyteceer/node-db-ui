@@ -24,7 +24,7 @@ import {initDictionary} from "../../js/utils.js";
 		'CONTENT': 'Содержимое',
 		'FLD_DESC': 'Описание поля',
 		'PASSWORDS_NOT_M': 'Пароли не совпадают',
-		'FLD_EXISTS': 'Поле с таким именем уже существует.',
+		'FLD_EXISTS': 'Поле с таким именем уже существует в этом документе.',
 		'FLD_CORRECT': 'Имя доступно.',
 		'MULTILANG': 'Мультиязычность',
 		'LOGIN': 'Вход',

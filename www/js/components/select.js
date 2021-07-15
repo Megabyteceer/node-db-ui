@@ -21,6 +21,8 @@ export default class Select extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
+		this.toggle = this.toggle.bind(this);
+		this.toggle = this.toggle.bind(this);
 	}
 
 	toggle() {
