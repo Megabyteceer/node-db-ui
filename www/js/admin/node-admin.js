@@ -1,5 +1,7 @@
 import {formsEventsOnLoad, formsEventsOnSave} from "../events/forms_events.js";
-import {getNode, getNodeData, keepInWindow, L, renderIcon, sp} from "../utils.js";
+import {getNode, getNodeData, keepInWindow, L, loactionToHash, renderIcon, sp} from "../utils.js";
+import {admin_editSource} from "./admin-event-editor.js";
+import admin from "./admin-utils.js";
 import FieldAdmin from "./field-admin.js";
 
 var showedNodeId;
@@ -92,10 +94,10 @@ export default class NodeAdmin extends React.Component {
 		var borderOnSave;
 		var borderOnLoad;
 		if(formsEventsOnSave.hasOwnProperty(nodeId)) {
-			borderOnSave = "2px solid #040";
+			borderOnSave = "2px solid #00840088";
 		}
 		if(formsEventsOnLoad.hasOwnProperty(nodeId)) {
-			borderOnLoad = "2px solid #040";
+			borderOnLoad = "2px solid #00840088";
 		}
 
 
@@ -444,9 +446,8 @@ export default class NodeAdmin extends React.Component {
 					zIndex: 2,
 					verticalAlign: 'top',
 					padding: '6px',
-					background: '#944',
 					borderRadius: '5px',
-					color: '#fdd'
+					color: '#0000004'
 				},
 				className: 'halfvisible',
 				onMouseEnter: this.show

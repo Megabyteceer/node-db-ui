@@ -5,7 +5,7 @@ import NodeAdmin from "../admin/node-admin.js";
 import constants from "../custom/consts.js";
 import LeftBar from "../left-bar.js";
 import {iAdmin} from "../user.js";
-import {consoleLog, getNode, getNodeData, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation} from "../utils.js";
+import {consoleLog, createRecord, getNode, getNodeData, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation} from "../utils.js";
 import FormItem from "./form-item.js";
 import BaseForm from "./form-mixins.js";
 
@@ -67,6 +67,7 @@ export default class List extends BaseForm {
 		this.state.node = props.node;
 		this.state.data = props.initialData;
 		this.refreshData = this.refreshData.bind(this);
+		this.changeSearch = this.changeSearch.bind(this);
 	}
 
 	componentDidMount() {
@@ -87,6 +88,7 @@ export default class List extends BaseForm {
 
 	higlightResults() {
 		if((this.filters && this.filters.s) || this.prevHiglightedTerm) {
+			/* //TODO fix search highlight
 			var c = $('.list-body', ReactDOM.findDOMNode(this.refs.this));
 
 			var src_str = c.html();
@@ -115,7 +117,7 @@ export default class List extends BaseForm {
 
 			} else {
 				this.prevHiglightedTerm = false;
-			}
+			}*/
 		}
 	}
 

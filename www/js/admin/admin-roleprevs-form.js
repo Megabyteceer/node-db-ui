@@ -1,6 +1,7 @@
 import BaseForm from "../forms/form-mixins.js";
+import {defaultButtonStyle, successButtonStyle} from "../stage.js";
 import {iAdmin} from "../user.js";
-import {getNode, L, myPromt, renderIcon, submitData} from "../utils.js";
+import {getData, getNode, L, myPromt, renderIcon, submitData} from "../utils.js";
 import NodeAdmin from "./node-admin.js";
 
 function check() {

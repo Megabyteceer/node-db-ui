@@ -5,7 +5,7 @@ var formsEventsOnLoad = {};
 var formsEventsOnSave = {};
 
 
-formsEventsOnLoad[4] = function () { //form4onloadBegin_hkasdhwdc
+formsEventsOnLoad[4] = function () { //form4onloadBegin_JS89DW72SISA887QKJ32IUSL
 	if(this.rec_update) {
 		this.disableField('isDoc');
 		this.disableField('tableName');
@@ -27,10 +27,10 @@ formsEventsOnLoad[4] = function () { //form4onloadBegin_hkasdhwdc
 		forSearch: 1
 	});
 
-} //form4onloadEnd_hkasdhwdc
+} //form4onloadEnd_JS89DW72SISA887QKJ32IUSL
 
 
-formsEventsOnSave[4] = function () { //form4onsaveBegin_hkasdhwdc
+formsEventsOnSave[4] = function () { //form4onsaveBegin_JS89DW72SISA887QKJ32IUSL
 
 	if(!this.fieldValue("isDoc")) {
 		var v = this.fieldValue("name");
@@ -41,12 +41,12 @@ formsEventsOnSave[4] = function () { //form4onsaveBegin_hkasdhwdc
 			this.setFieldValue("name", v2);
 	}
 
-} //form4onsaveEnd_hkasdhwdc
+} //form4onsaveEnd_JS89DW72SISA887QKJ32IUSL
 
 
 
 
-formsEventsOnLoad[5] = function () { //form5onloadBegin_hkasdhwdc
+formsEventsOnLoad[5] = function () { //form5onloadBegin_JS89DW72SISA887QKJ32IUSL
 
 	const isHiddenField = (fn) => {
 		if(this.fieldValue(fn) === 'hidden_91d2g7') {
@@ -119,8 +119,8 @@ formsEventsOnLoad[5] = function () { //form5onloadBegin_hkasdhwdc
 		this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
 		this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
 	}
-} //form5onloadEnd_hkasdhwdc
-formsEventsOnSave[5] = function () { //form5onsaveBegin_hkasdhwdc
+} //form5onloadEnd_JS89DW72SISA887QKJ32IUSL
+formsEventsOnSave[5] = function () { //form5onsaveBegin_JS89DW72SISA887QKJ32IUSL
 	var pass = this.fieldValue('PASS');
 
 	if(pass.length < 6) {
@@ -149,11 +149,11 @@ formsEventsOnSave[5] = function () { //form5onsaveBegin_hkasdhwdc
 			};
 		}
 	}
-} //form5onsaveEnd_hkasdhwdc
+} //form5onsaveEnd_JS89DW72SISA887QKJ32IUSL
 
 
 
-formsEventsOnLoad[6] = function () { //form6onloadBegin_hkasdhwdc
+formsEventsOnLoad[6] = function () { //form6onloadBegin_JS89DW72SISA887QKJ32IUSL
 	if(this.rec_creation) {
 		if(this.fieldValue("show") == "") {
 			this.setFieldValue("show", 5);
@@ -271,8 +271,8 @@ formsEventsOnLoad[6] = function () { //form6onloadBegin_hkasdhwdc
 		}
 	};
 
-} //form6onloadEnd_hkasdhwdc
-formsEventsOnSave[6] = function () { //form6onsaveBegin_hkasdhwdc
+} //form6onloadEnd_JS89DW72SISA887QKJ32IUSL
+formsEventsOnSave[6] = function () { //form6onsaveBegin_JS89DW72SISA887QKJ32IUSL
 	var fieldType = this.fieldValue("fieldType");
 
 
@@ -308,9 +308,9 @@ formsEventsOnSave[6] = function () { //form6onsaveBegin_hkasdhwdc
 	if(this.nameIsBad) {
 		this.fieldAlert('fieldName', L('FLD_EXISTS'));
 	}
-} //form6onsaveEnd_hkasdhwdc
+} //form6onsaveEnd_JS89DW72SISA887QKJ32IUSL
 
-formsEventsOnLoad[13] = function () { //form13onloadBegin_hkasdhwdc
+formsEventsOnLoad[13] = function () { //form13onloadBegin_JS89DW72SISA887QKJ32IUSL
 	if(this.rec_update) {
 		this.disableField('title');
 		this.hideField('title');
@@ -324,36 +324,36 @@ formsEventsOnLoad[13] = function () { //form13onloadBegin_hkasdhwdc
 		this.hideField('help');
 		this.hideField('name');
 	}
-} //form13onloadEnd_hkasdhwdc
+} //form13onloadEnd_JS89DW72SISA887QKJ32IUSL
 
-formsEventsOnLoad[8] = function () { //form8onloadBegin_hkasdhwdc
+formsEventsOnLoad[8] = function () { //form8onloadBegin_JS89DW72SISA887QKJ32IUSL
 	if((this.rec_ID == 2) || (this.rec_ID == 3)) {
 		this.hideField('_userroles');
 	}
 
-} //form8onloadEnd_hkasdhwdc
+} //form8onloadEnd_JS89DW72SISA887QKJ32IUSL
 
-formsEventsOnLoad[15] = function () { //form15onloadBegin_hkasdhwdc
+formsEventsOnLoad[15] = function () { //form15onloadBegin_JS89DW72SISA887QKJ32IUSL
 	this.getField("values").inlineEditable();
-} //form15onloadEnd_hkasdhwdc
+} //form15onloadEnd_JS89DW72SISA887QKJ32IUSL
 
-formsEventsOnLoad[85] = function () { //form85onloadBegin_hkasdhwdc
+formsEventsOnLoad[85] = function () { //form85onloadBegin_JS89DW72SISA887QKJ32IUSL
 	this.hideField("data");
 	this.hideField("preview");
 	this.hideFooter();
 
 	this.focusField("name");
-} //form85onloadEnd_hkasdhwdc
+} //form85onloadEnd_JS89DW72SISA887QKJ32IUSL
 
-formsEventsOnLoad[12] = function () { //form12onloadBegin_hkasdhwdc
+formsEventsOnLoad[12] = function () { //form12onloadBegin_JS89DW72SISA887QKJ32IUSL
 	if(this.rec_update) {
 		this.disableField("code");
 	}
-} //form12onloadEnd_hkasdhwdc
+} //form12onloadEnd_JS89DW72SISA887QKJ32IUSL
 
-formsEventsOnLoad[82] = function () { //form82onloadBegin_hkasdhwdc
+formsEventsOnLoad[82] = function () { //form82onloadBegin_JS89DW72SISA887QKJ32IUSL
 	//this.getField('subMessages').inlineEditable();
-} //form82onloadEnd_hkasdhwdc
+} //form82onloadEnd_JS89DW72SISA887QKJ32IUSL
 //insertNewhandlersHere_adsqw09
 
 export {

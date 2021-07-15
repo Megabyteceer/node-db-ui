@@ -1,5 +1,7 @@
 {
 	"javascript.suggest.paths": true,
+	"editor.formatOnSave": true,
+	"javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
 	"files.exclude": {
 		"**/www/**": true,
 		"**/cert/**": true,

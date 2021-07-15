@@ -49,7 +49,7 @@ import {initDictionary} from "../../js/utils.js";
 		'TO_CONTINUE': 'чтобы продолжить работу...',
 		'TO_START': 'чтобы начать работу...',
 		'LIST_EMPTY': 'Список пуст.',
-		'SHOWED_LIST': 'показано: % из %',
+		'SHOWED_LIST': '% из %',
 		'SEARCH_RESULTS': ' (результаты поиска по запросу "%")',
 		'EDIT': 'Редактировать',
 		'TEMPLATE': 'черновик',

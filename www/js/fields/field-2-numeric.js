@@ -1,5 +1,5 @@
 import {registerFieldClass} from "../utils.js";
-import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
+import {compactInputStyle, notCompactInputStyle, readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import fieldMixins from "./field-mixins.js";
 
 registerFieldClass(FIELD_2_INT, class NumericField extends fieldMixins {

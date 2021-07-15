@@ -4,7 +4,7 @@ const path = require('path');
 const {isAdmin} = require("../www/both-side-utils");
 const {getEventHandler, getNodeDesc, ADMIN_USER_SESSION} = require("./desc-node");
 const {getRecords} = require("./get-records");
-const {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit, mysqlInsertedID} = require("./mysql-connection");
+const {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit} = require("./mysql-connection");
 const {UPLOADS_FILES_PATH, idToImgURLServer} = require('./upload');
 
 async function submitRecord(nodeId, data, recId = false, userSession) {
@@ -265,13 +265,18 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		if(recId !== false) {
 			insQ.push(" WHERE id=", recId, " LIMIT 1");
 		}
-		
+		let qResult;
 		if(leastOneTablesFieldUpdated) {
-			await mysqlExec(insQ.join(''));
+			qResult = (await mysqlExec(insQ.join('')));
 		}
+		/// #if DEBUG
+		else {
+			throw new Error('No fields updated in sumbitRecord.');
+		}
+		/// #endif
 		
 		if(recId === false) {
-			recId = await mysqlInsertedID(userSession);
+			recId = qResult.insertId;
 			data.id = recId;
 			let h = getEventHandler(nodeId, 'post');
 			let r = h && h(data, userSession);
@@ -296,7 +301,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 							const n2miQ = ['INSERT INTO `', fieldName, '` (`', tableName, 'id`, `', f.selectFieldName, "id`) VALUES"];
 							
 							let isNotFirst = false;
-							for(let id of fieldVal) { // TODO: send ids only
+							for(let id of fieldVal) {
 								if(isNotFirst) {
 									n2miQ.push(',');
 								}

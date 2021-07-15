@@ -32,7 +32,7 @@ const api = {
 		setMultiLang(!userSession.langs, userSession).then(res);
 	},
 	"api/descNode":(reqData, userSession, res) => {
-		res({data: getNodeDesc(reqData.nodeId, userSession)});
+		res(getNodeDesc(reqData.nodeId, userSession));
 	},
 	"api/submit":(reqData, userSession, res) => {
 		submitRecord(reqData.nodeId, reqData.data, reqData.recId, userSession).then(res);

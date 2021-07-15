@@ -1,6 +1,6 @@
 import constants from "../custom/consts.js";
 import FieldWrap from "../fields/field-wrap.js";
-import {L, loactionToHash, renderIcon, sp} from "../utils.js";
+import {deleteRecord, L, loactionToHash, renderIcon, sp} from "../utils.js";
 import BaseForm from "./form-mixins.js";
 
 var rowStyle = {

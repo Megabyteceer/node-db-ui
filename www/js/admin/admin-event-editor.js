@@ -1,5 +1,9 @@
 import Modal from "../modal.js";
-import {L, myAlert, renderIcon, submitData} from "../utils.js";
+import {getData, L, myAlert, renderIcon, submitData} from "../utils.js";
+/// #if DEBUG
+import '../lib/codemirror/lib/codemirror.js';
+import {defaultButtonStyle, successButtonStyle} from "../stage.js";
+/// #endif
 
 var node;
 
@@ -144,20 +148,29 @@ function javascriptHint(cm) {
 
 	if(list) {
 		return {
-			from: CodeMirror.Pos(cur.line, from),
-			to: CodeMirror.Pos(cur.line, to),
+			from: window.CodeMirror.Pos(cur.line, from),
+			to: window.CodeMirror.Pos(cur.line, to),
 			list: list
 		};
 	}
 
 }
-CodeMirror.registerHelper("hint", "javascript", javascriptHint);
 
+window.CodeMirror.registerHelper("hint", "javascript", javascriptHint);
 
 class AdminEventEditor extends React.Component {
 
+	constructor(props) {
+		super(props);
+		this.getTextareaRef = this.getTextareaRef.bind(this);
+	}
+
 	getPostData() {
-		return '?type=' + this.props.type + '&handler=' + this.props.handler + '&itemId=' + this.props.itemId;
+		return {
+			type: this.props.type,
+			handler: this.props.handler,
+			itemId: this.props.itemId
+		}
 	}
 
 	componentDidMount() {
@@ -186,7 +199,7 @@ class AdminEventEditor extends React.Component {
 		if(ref) {
 			var ta = ReactDOM.findDOMNode(ref);
 			this.textareaRef = ref;
-			this.editor = CodeMirror.fromTextArea(ta, {
+			this.editor = window.CodeMirror.fromTextArea(ta, {
 				lineNumbers: true,
 				matchBrackets: true,
 				autofocus: true,
@@ -232,7 +245,7 @@ class AdminEventEditor extends React.Component {
 			this.editor.setSize('900px', '500px');
 			this.editor.on("keyup", (editor, event) => {
 				if(!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
-					CodeMirror.commands.autocomplete(editor, null, {
+					window.CodeMirror.commands.autocomplete(editor, null, {
 						completeSingle: false
 					});
 				}

@@ -11,7 +11,8 @@ var style = {
 	boxShadow: '5px 0px 6px -3px #aaa',
 	paddingTop: '10px',
 	minHeight: '600px',
-	verticalAlign: 'top'
+	verticalAlign: 'top',
+	overflowX: 'hidden'
 };
 
 var itemStyle = {

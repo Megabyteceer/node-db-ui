@@ -1,5 +1,7 @@
 import fieldsEvents from "../events/fields_events.js";
 import {getNodeData, keepInWindow, L, renderIcon, sp} from "../utils.js";
+import {admin_editSource} from "./admin-event-editor.js";
+import admin from "./admin-utils.js";
 
 var showedFieldId;
 
@@ -55,7 +57,7 @@ export default class FieldAdmin extends React.Component {
 		}
 		var border;
 		if(fieldsEvents.hasOwnProperty(field.id)) {
-			border = "4px solid #040";
+			border = "4px solid #00440050";
 		}
 
 		var bodyVisible = this.state.show || this.state.locked;
@@ -238,15 +240,12 @@ export default class FieldAdmin extends React.Component {
 			ReactDOM.span({
 				ref: keepInWindow,
 				style: {
-					border: border,
 					display: 'inline-block',
 					position: 'absolute',
 					zIndex: 2 + zAdd,
 					verticalAlign: 'top',
 					padding: '6px',
-					background: '#944',
 					transform: 'scale(0.5)',
-					borderRadius: '5px',
 					color: '#fdd'
 				},
 				className: 'halfvisible',

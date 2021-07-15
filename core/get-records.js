@@ -292,7 +292,6 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 				}
 			}
 			
-			//TODO: move it to client side?
 			for(let f of node.fields) {
 				if(!f.nostore && (f.show & viewMask)) {
 					const fieldType = f.fieldType;

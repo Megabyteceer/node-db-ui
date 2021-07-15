@@ -1,4 +1,4 @@
-import {renderIcon, sp} from "../utils.js";
+import {getData, renderIcon, sp} from "../utils.js";
 import constants from "./consts.js";
 
 

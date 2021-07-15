@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require("path");
 const {isUserHaveRole} = require("../www/both-side-utils");
 
+const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
 let nodes;
 let nodesById;
@@ -45,6 +46,9 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION) {
 				fields: srcNode.fields,
 				filters: srcNode.filters,
 				sortFieldName: srcNode.sortFieldName
+			}
+			if(prevs & PREVS_CREATE) {
+				ret.canCreate = 1;
 			}
 			clientSideNodes.set(nodeId, ret);
 		} else {
@@ -90,10 +94,32 @@ function getNodesTree(userSession) { // get nodes tree visible to user
 }
 
 async function reInitNodesData() {
+	if(metadataReloadingInterval) {
+		clearInterval(metadataReloadingInterval);
+		metadataReloadingInterval = null;
+	}
 	const {setMainTainMode} = require("./auth");
 	setMainTainMode(true);
 	await initNodesData();
 	setMainTainMode(false);
+}
+
+let metadataReloadingInterval;
+function reloadMetadataSchedule() {
+	if(!metadataReloadingInterval) {
+		const {setMainTainMode} = require("./auth");
+		setMainTainMode(true);
+	}
+	metadataReloadingInterval = setInterval(attemptToreloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl);
+}
+
+function attemptToreloadMetadataSchedule() {
+	if(usersSessionsStartedCount() === 0) {
+		reInitNodesData().then(() => {
+			const {setMainTainMode} = require("./auth");
+			setMainTainMode(false);
+		});
+	}
 }
 
 async function initNodesData() { // load whole nodes data in to memory
@@ -113,25 +139,23 @@ async function initNodesData() { // load whole nodes data in to memory
 	for(let nodeData of nodes_new) {
 		nodesById_new.set(nodeData.id, nodeData);
 		nodeData.sortFieldName = 'createdOn';
-		
+
 		let rolesToAccess = await mysqlExec("SELECT roleId, prevs FROM _rolePrevs WHERE nodeID = 0 OR nodeID = " + nodeData.id);
-		
+
 		/// #if DEBUG
 		nodeData.__preventToStringify = nodeData; // circular structure to fail when try to stringify
 		/// #endif
 
 		nodeData.rolesToAccess = rolesToAccess;
 		nodeData.prevs = 65535;
-		if(nodeData.prevs & PREVS_CREATE) {
-			nodeData.canCreate = 1;
-		}
+		nodeData.canCreate = 1;
 		let sortField = nodeData._fieldsID;
 
 		if(nodeData.isDoc) {
 			let query = ("SELECT * FROM _fields WHERE node_fields_linker=" + nodeData.id + " AND status=1 ORDER BY prior");
 			let fields = await mysqlExec(query);
 			for(let field of fields) {
-				
+
 				if(field.id === sortField) {
 					nodeData.sortFieldName = field.fieldName;
 				}
@@ -147,7 +171,7 @@ async function initNodesData() { // load whole nodes data in to memory
 			}
 			nodeData.fields = fields;
 			const filtersRes = await mysqlExec("SELECT id,filter,name,view,hiPriority, fields FROM _filters WHERE _nodesID=" + nodeData.id);
-			
+
 			const filters = {};
 			for(let f of filtersRes) {
 				if(!nodeData.defaultFilterId) {
@@ -189,4 +213,4 @@ function getEventHandler(nodeId, eventName) {
 	}
 }
 
-module.exports = {getNodeDesc, initNodesData, getNodesTree, getEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION, reInitNodesData};
+module.exports = {getNodeDesc, initNodesData, getNodesTree, getEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule};

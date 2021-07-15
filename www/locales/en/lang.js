@@ -49,7 +49,7 @@ import {initDictionary} from "../../js/utils.js";
 		'TO_CONTINUE': 'to continue your work...',
 		'TO_START': 'to start your work...',
 		'LIST_EMPTY': 'List is emty.',
-		'SHOWED_LIST': 'showing % out of %',
+		'SHOWED_LIST': '% of %',
 		'SEARCH_RESULTS': ' (search results for "%")',
 		'EDIT': 'Edit',
 		'TEMPLATE': 'template',

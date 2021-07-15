@@ -24,7 +24,6 @@ const mysqlExec = (query) => {
 	/// #endif
 	
 	return new Promise((resolve, reject) => {
-		
 		connection.query(query, (er, rows) => {
 			if(er) {
 				/// #if DEBUG
@@ -94,11 +93,4 @@ async function mysqlRollback() {
 	}
 }
 
-async function mysqlInsertedID(userSession) {
-	assert(mysqlTransactStarted, "transaction is not started");
-	let ret = await mysqlExec("SELECT LAST_INSERT_ID()");
-	return ret[0]['LAST_INSERT_ID()'];
-}
-
-
-module.exports = {mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback, mysqlInsertedID};
+module.exports = {mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback};
