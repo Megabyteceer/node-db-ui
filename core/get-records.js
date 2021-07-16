@@ -1,5 +1,5 @@
 "use strict";
-const {getNodeDesc, getEventHandler, ADMIN_USER_SESSION} = require('./desc-node.js');
+const {getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION} = require('./desc-node.js');
 const {mysqlExec} = require("./mysql-connection");
 
 const EMPTY_RATING = {all: 0};
@@ -382,12 +382,7 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 		throw new Error('Deletion access is denied');
 	}
 
-	let h = getEventHandler(nodeId, 'delete');
-	let r = h && h(recordData, userSession);
-	if(r && r.then) {
-		await r;
-	}
-
+	await getNodeEventHandler(nodeId, 'delete', recordData, userSession);
 
 	await mysqlExec("UPDATE " + node.tableName + " SET status=0 WHERE id=" + recId + " LIMIT 1");
 	return 1;

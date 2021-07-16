@@ -19,8 +19,9 @@ export default class fieldMixins extends React.Component {
 		} else {
 			if(this.refToInput) {
 				scrollToVisible(this.refToInput);
-				//TODO: shake field
 				ReactDOM.findDOMNode(this.refToInput).focus();
+			} else {
+				return false;
 			}
 		}
 	}

@@ -974,6 +974,7 @@ function scrollToVisible(elem) {
 
 			$('html,body').animate({scrollTop: Math.min(elemBottom - $window.height(), elemTop)}, 300);
 		}
+		//TODO:  shake after scroll.
 	}
 }
 

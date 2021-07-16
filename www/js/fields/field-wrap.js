@@ -4,7 +4,7 @@
 import FieldAdmin from "../admin/field-admin.js";
 import constants from "../custom/consts.js";
 import {iAdmin} from "../user.js";
-import {consoleLog, getClassForField, renderIcon} from "../utils.js";
+import {consoleLog, getClassForField, renderIcon, scrollToVisible} from "../utils.js";
 
 var style = {
 	margin: '20px 0',
@@ -267,11 +267,13 @@ export default class FieldWrap extends React.Component {
 		if(this.props.parentTabName && !this.props.form.isSlave()) {
 			setFormFilter('tab', this.props.parentTabName);
 		}
-		if(this.fieldRef.focusOverride) {
-			setTimeout(() => {this.fieldRef.focusOverride();}, 1);
-		} else {
-			setTimeout(() => {this.fieldRef.focus();}, 1);
-		}
+		setTimeout(() => {
+			if(this.fieldRef.focus() === false) {
+				if(this.fieldRef) {
+					scrollToVisible(this.fieldRef);
+				}
+			}
+		}, 1);
 	}
 
 	setValue(val) {
@@ -321,14 +323,6 @@ export default class FieldWrap extends React.Component {
 
 	render() {
 
-		/// #if DEBUG
-		if(this.props.isEdit) {
-			setTimeout(() => {
-				assert(this.fieldRef.refToInput, this.props.field.fieldType + " 'ref: this.refGetter' should present somewhere in field react component to have reference to dom element.");
-			}, 10);
-		}
-
-		/// #endif
 		var field = this.props.field;
 
 		var domId = 'fc-' + field.id;

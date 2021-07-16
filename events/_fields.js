@@ -17,7 +17,7 @@ module.exports = {
 			for(let l of langs) {
 				if(l.code) {
 					data.fieldName = fn + '_' + l.code;
-					createFieldInTable(data);
+					await createFieldInTable(data);
 				}
 			}
 			data.fieldName = fn;
@@ -27,7 +27,7 @@ module.exports = {
 			data.nodeRef = data.enum;
 		}
 
-		createFieldInTable(data);
+		await createFieldInTable(data);
 	},
 
 	post: async function(data, userSession) {
@@ -101,7 +101,7 @@ module.exports = {
 										debugger;
 										if(l.code) {
 											currentData.fieldName = realBDFNAme + '_' + l.code;
-											createFieldInTable(currentData);
+											await createFieldInTable(currentData);
 										}
 									}
 									currentData.fieldName = realBDFNAme;
@@ -205,7 +205,6 @@ async function createFieldInTable(data) {
 			};
 			const records = await getRecords(6, PREVS_VIEW_ORG, undefined, undefined, filters);
 			if(records.total) {
-				debugger;
 				data.icon = records.items[0].fieldName;
 			}
 		}

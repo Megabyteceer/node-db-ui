@@ -208,10 +208,55 @@ function getLangs() {
 	return langs;
 }
 
-function getEventHandler(nodeId, eventName) {
+async function getNodeEventHandler(nodeId, eventName, d1, d2, d3) {
 	if(eventsHandlers.has(nodeId)) {
-		return eventsHandlers.get(nodeId)[eventName];
+		const h = eventsHandlers.get(nodeId)[eventName];
+		/// #if DEBUG
+		d1 = wrapObjectToDestroy(d1);
+		d2 = wrapObjectToDestroy(d2);
+		d3 = wrapObjectToDestroy(d3);
+		/// #endif
+		if(h) {
+			await h(d1, d2, d3);
+		}
+
+		/// #if DEBUG
+		destroyObject(d1);
+		destroyObject(d2);
+		destroyObject(d3);
+		/// #endif
 	}
 }
 
-module.exports = {getNodeDesc, initNodesData, getNodesTree, getEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule};
+/// #if DEBUG
+const wrapObjectToDestroy = (o) => {
+	let destroyed = false;
+	if(o) {
+		return new Proxy(o, {
+			set: function(obj, prop, value, a, b, c) {
+				if(destroyed) {
+					throw new Error('Attempt to assign data after axit on eventHandler. Has eventHandler not "await" for something?');
+				}
+				if(prop === 'destroyObject_ONKwoiqwhd123123') {
+					destroyed = true;
+				} else {
+					obj[prop] = value;
+				}
+				return true;
+			}
+		});
+	}
+}
+
+const destroyObject = (o) => {
+	if(o) {
+		o.destroyObject_ONKwoiqwhd123123 = true;
+	}
+}
+
+/// #endif
+
+
+
+
+module.exports = {getNodeDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule};

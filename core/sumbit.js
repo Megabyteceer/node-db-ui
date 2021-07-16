@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const {isAdmin} = require("../www/both-side-utils");
-const {getEventHandler, getNodeDesc, ADMIN_USER_SESSION} = require("./desc-node");
+const {getNodeEventHandler, getNodeDesc, ADMIN_USER_SESSION} = require("./desc-node");
 const {getRecords} = require("./get-records");
 const {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit} = require("./mysql-connection");
 const {UPLOADS_FILES_PATH, idToImgURLServer} = require('./upload');
@@ -136,17 +136,9 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		}
 
 		if(recId !== false) {
-			let h = getEventHandler(nodeId, 'update');
-			let r = h && h(currentData, data, userSession);
-			if(r && r.then) {
-				await r;
-			}
+			await getNodeEventHandler(nodeId, 'update', currentData, data, userSession);
 		} else {
-			let h = getEventHandler(nodeId, 'pre');
-			let r = h && h(data, userSession);
-			if(r && r.then) {
-				await r;
-			}
+			await getNodeEventHandler(nodeId, 'pre', data, userSession);
 		}
 		let needProcess_n2m;
 		for(let f of node.fields) {
@@ -278,13 +270,8 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		if(recId === false) {
 			recId = qResult.insertId;
 			data.id = recId;
-			let h = getEventHandler(nodeId, 'post');
-			let r = h && h(data, userSession);
-			if(r && r.then) {
-				await r;
-			}
+			await getNodeEventHandler(nodeId, 'post', data, userSession);
 		}
-
 		if(needProcess_n2m) {
 			for(let f of node.fields) {
 

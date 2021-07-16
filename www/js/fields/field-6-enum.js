@@ -11,7 +11,6 @@ var optionStyle = {
 registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 
 	setValue(val) {
-		this.refToInput.value = val;
 		this.state.value = val;
 	}
 
@@ -31,7 +30,6 @@ registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 				defaultValue: value,
 				title: field.name,
 				readOnly: this.props.fieldDisabled,
-				ref: this.refGetter,
 				onChange: (val) => {
 					this.props.wrapper.valueListener(parseInt(val), false, this);
 				},
