@@ -63,7 +63,7 @@ class Stage extends React.Component {
 		consoleLog('set form data');
 		if(typeof (node) !== 'undefined') {
 			this.state = null;
-			this.setState({node: node, data: data, recId: recId, filters: filters, editable: editable});
+			this.setState({node, data: data, recId: recId, filters: filters, editable: editable});
 		} else {
 			this.state = null;
 			this.forceUpdate()

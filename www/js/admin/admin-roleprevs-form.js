@@ -129,8 +129,8 @@ export default class AdminRoleprevsForm extends BaseForm {
 
 				this.initData = Object.assign({}, data);
 				this.setState({
-					node: node,
-					data: data
+					node,
+					data
 				});
 			});
 		});

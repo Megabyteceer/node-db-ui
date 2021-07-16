@@ -132,7 +132,7 @@ formsEventsOnSave[5] = function () { //form5onsaveBegin_JS89DW72SISA887QKJ32IUSL
 		this.fieldAlert('passconfirm', L('PASS_NOT_MACH'));
 	}
 
-	if(curentUserData.id == this.fieldValue('id')) {
+	if(curentUserData.id === this.fieldValue('id')) {
 		var pLang = this.props.initialData.language;
 		var nLang = this.currentData.language;
 		if(pLang && pLang.hasOwnProperty('id')) {
@@ -155,11 +155,11 @@ formsEventsOnSave[5] = function () { //form5onsaveBegin_JS89DW72SISA887QKJ32IUSL
 
 formsEventsOnLoad[6] = function () { //form6onloadBegin_JS89DW72SISA887QKJ32IUSL
 	if(this.rec_creation) {
-		if(this.fieldValue("show") == "") {
+		if(isNaN(this.fieldValue("show"))) {
 			this.setFieldValue("show", 5);
 			this.setFieldValue("vis_create", 1);
 			this.setFieldValue("vis_view", 1);
-			this.setFieldValue("vis_list", 0);
+			this.setFieldValue("vis_list", 1);
 			this.setFieldValue("vis_reflist", 0);
 		}
 
@@ -193,7 +193,7 @@ formsEventsOnLoad[6] = function () { //form6onloadBegin_JS89DW72SISA887QKJ32IUSL
 		else
 			this.setFieldValue("vis_list_custom", 0);
 
-		if(this.fieldValue("fieldType") == FIELD_12_PICTURE) {
+		if(this.fieldValue("fieldType") === FIELD_12_PICTURE) {
 			this.setFieldValue("height", this.fieldValue("maxlen") % 10000);
 			this.setFieldValue("width", Math.floor(this.fieldValue("maxlen") / 10000));
 		}
@@ -263,7 +263,7 @@ formsEventsOnLoad[6] = function () { //form6onloadBegin_JS89DW72SISA887QKJ32IUSL
 			}
 
 			if(nodeId && fn && fn.length >= 3) {
-				if((this.fieldValue("fieldType") == FIELD_15_1toN) && nodeRef) {
+				if((this.fieldValue("fieldType") === FIELD_15_1toN) && nodeRef) {
 					checkFieldExists(fn + '_linker', nodeRef);
 				}
 				checkFieldExists(fn, nodeId);
@@ -275,19 +275,24 @@ formsEventsOnLoad[6] = function () { //form6onloadBegin_JS89DW72SISA887QKJ32IUSL
 formsEventsOnSave[6] = function () { //form6onsaveBegin_JS89DW72SISA887QKJ32IUSL
 	var fieldType = this.fieldValue("fieldType");
 
+	if(fieldType === FIELD_7_Nto1 || fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) {
+		if(this.isFieldEmpty('nodeRef')) {
+			this.fieldAlert('nodeRef', L('REQUIRED_FLD'));
+		}
+	}
 
 	if(/[^a-zA-Z_0-9]/.test(this.fieldValue('fieldName'))) {
 		this.fieldAlert('fieldName', L('LATIN_ONLY'));
 	}
 
-	if(this.fieldValue("fieldType") == FIELD_12_PICTURE) {
+	if(fieldType === FIELD_12_PICTURE) {
 		this.setFieldValue("maxlen", Math.min(9999, this.fieldValue("height")) +
 			this.fieldValue("width") * 10000);
 	}
 
 	if(!this.fieldValue('maxlen')) {
 		this.setFieldValue('maxlen', 0);
-		if((fieldType === FIELD_1_TEXT) || (fieldType == FIELD_2_INT) || (fieldType == FIELD_3_MONEY) || (fieldType == FIELD_9_EMAIL) || (fieldType == FIELD_10_PASSWORD) || (fieldType == FIELD_13_KEYWORDS) || (fieldType == FIELD_12_PICTURE)) {
+		if((fieldType === FIELD_1_TEXT) || (fieldType === FIELD_2_INT) || (fieldType === FIELD_3_MONEY) || (fieldType === FIELD_9_EMAIL) || (fieldType === FIELD_10_PASSWORD) || (fieldType === FIELD_13_KEYWORDS) || (fieldType === FIELD_12_PICTURE)) {
 			this.fieldAlert('maxlen', L('REQUIRED_FLD'));
 		}
 	}
@@ -302,7 +307,7 @@ formsEventsOnSave[6] = function () { //form6onsaveBegin_JS89DW72SISA887QKJ32IUSL
 		this.hideField('selectFieldName');
 	}
 
-	if((fieldType == FIELD_8_STATICTEXT) || (fieldType == FIELD_17_TAB) || (fieldType == FIELD_18_BUTTON)) {
+	if((fieldType === FIELD_8_STATICTEXT) || (fieldType === FIELD_17_TAB) || (fieldType === FIELD_18_BUTTON)) {
 		this.setFieldValue('nostore', true);
 	}
 	if(this.nameIsBad) {
@@ -327,7 +332,7 @@ formsEventsOnLoad[13] = function () { //form13onloadBegin_JS89DW72SISA887QKJ32IU
 } //form13onloadEnd_JS89DW72SISA887QKJ32IUSL
 
 formsEventsOnLoad[8] = function () { //form8onloadBegin_JS89DW72SISA887QKJ32IUSL
-	if((this.rec_ID == 2) || (this.rec_ID == 3)) {
+	if((this.rec_ID === 2) || (this.rec_ID === 3)) {
 		this.hideField('_userroles');
 	}
 

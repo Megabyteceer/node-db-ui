@@ -8,7 +8,7 @@ var starStyle = {
 	marginRight: 0
 }
 
-registerFieldClass(FIELD_16_RATING, class TextField extends fieldMixins {
+registerFieldClass(FIELD_16_RATING, class RatingField extends fieldMixins {
 
 	setValue(val) {
 		this.refToInput.value = val;

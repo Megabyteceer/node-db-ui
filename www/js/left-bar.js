@@ -71,9 +71,9 @@ function isCurrentlyShowedLeftbarItem(item) {
 			return false;
 		}
 
-		return currentFormParameters.nodeId == item.id &&
-			currentFormParameters.recId == item.recId &&
-			currentFormParameters.editable == item.editable;
+		return currentFormParameters.nodeId === item.id &&
+			currentFormParameters.recId === item.recId &&
+			currentFormParameters.editable === item.editable;
 	} else {
 		excludeItem = null;
 		return isStrictlySelected(item);
@@ -87,7 +87,7 @@ function isStrictlySelected(item) {
 			return item.children.some(isStrictlySelected);
 		} else {
 			if(item !== excludeItem && item.staticLink) {
-				return location.hash == item.staticLink;
+				return location.hash === item.staticLink;
 			}
 		}
 	}

@@ -98,11 +98,11 @@ export default class DebugPanel extends React.Component {
 		sp(ev);
 		myPromt(L('DEPLOY_TO', DEPLOY_TO), () => {
 
-			getData('test_uyas87dq8qwdqw/test', (data) => {
+			getData('test_uyas87dq8qwdqw/test', undefined, (data) => {
 				if(data === 'ok') {
 
 					getData('/deploy/api/deploy', {commitmessage: 'no message'}, (deployData) => {
-						getData('test_uyas87dq8qwdqw/test', {remote: true}, undefined, (data) => {
+						getData('test_uyas87dq8qwdqw/test', {remote: true}, (data) => {
 							if(data === 'ok') {
 
 								myAlert(ReactDOM.span(renderIcon('thumbs-up'), 'Changes aplied to ',
@@ -140,7 +140,7 @@ export default class DebugPanel extends React.Component {
 			cacheClearBtn = ReactDOM.a({
 				className: 'clickable admin-controll', title: L('CLEAR_CACHE'), onClick: (ev) => {
 					sp(ev);
-					getData('admin/cache_info', {clear: 1, json: 1}, undefined, () => { });
+					getData('admin/cache_info', {clear: 1, json: 1}, () => { });
 				}, style: {float: 'right'}
 			},
 				renderIcon('refresh')

@@ -2,16 +2,20 @@
 переименовать pre  post
 в UPDATE передавать fullNewData?
 
+скрывать maxlen где ненадо
 
 
 создание всех типов полей
 отображение всех типов
 проверить отправку всех полей
 
+
 search brokes react
 
 getData
 postData move to promises
+
+code editor не ескейпить
 
 replace callsCount
 
@@ -36,6 +40,13 @@ Maintenance mode ansver immideatelly with special code and client will resend re
 запретить подчеркивания не в начале названия поля. чтобы _en не добавили.
 запретить подчеркивание в названии таблиц
 
+
 crop падает на прозрачной области. когда кроп больше картинки
 
 в релизе CodeMirror импортировать по другому
+
+требовать nodeRef поле если указано nodeRef === FIELD_7_Nto1
+
+shake alerts on аppearing
+
+w h поля для картинки

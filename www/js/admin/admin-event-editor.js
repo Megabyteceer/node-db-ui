@@ -1,9 +1,6 @@
 import Modal from "../modal.js";
 import {getData, L, myAlert, renderIcon, submitData} from "../utils.js";
-/// #if DEBUG
-import '../lib/codemirror/lib/codemirror.js';
 import {defaultButtonStyle, successButtonStyle} from "../stage.js";
-/// #endif
 
 var node;
 
@@ -24,11 +21,11 @@ function admin_editSource(handler, node_, field) {
 	}
 
 	myAlert(React.createElement(AdminEventEditor, {
-		type: type,
-		title: title,
-		handler: handler,
+		type,
+		title,
+		handler,
 		itemId: id,
-		node: node
+		node
 	}), false, false, true);
 }
 
@@ -163,6 +160,7 @@ class AdminEventEditor extends React.Component {
 	constructor(props) {
 		super(props);
 		this.getTextareaRef = this.getTextareaRef.bind(this);
+		this.saveClick = this.saveClick.bind(this);
 	}
 
 	getPostData() {

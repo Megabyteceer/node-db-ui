@@ -295,9 +295,9 @@ function isCurrentlyShowedLeftbarItem(item) {
 		}
 		return item.tab === currentFormParameters.filters.tab;
 	}
-	return currentFormParameters.nodeId == item.id &&
-		currentFormParameters.recId == item.recId &&
-		currentFormParameters.editable == item.editable;
+	return currentFormParameters.nodeId === item.id &&
+		currentFormParameters.recId === item.recId &&
+		currentFormParameters.editable === item.editable;
 };
 
 function goToPageByHash() {

@@ -2,7 +2,7 @@
 import FieldWrap from "../fields/field-wrap.js";
 import {dangerButtonStyle, defaultButtonStyle, successButtonStyle} from "../stage.js";
 import {iAdmin} from "../user.js";
-import {backupCreationData, consoleLog, getItem, goBack, L, myAlert, n2mValuesEqual, removeBackup, renderIcon, submitRecord} from "../utils.js";
+import {backupCreationData, consoleLog, deleteRecord, getItem, goBack, L, myAlert, n2mValuesEqual, removeBackup, renderIcon, submitRecord} from "../utils.js";
 import FormTab from "./form-tab.js";
 import eventProcessingMixins from "./event-processing-mixins.js";
 import constants from "../custom/consts.js";
@@ -168,7 +168,7 @@ export default class FormFull extends eventProcessingMixins {
 				formIsValid = false;
 			}
 			callbacksCount--;
-			if(callbacksCount == 0) {
+			if(callbacksCount === 0) {
 				callback(formIsValid);
 			}
 		}
@@ -186,7 +186,7 @@ export default class FormFull extends eventProcessingMixins {
 				this.fieldAlert(field.fieldName, L('REQUIRED_FLD'), false, formIsValid);
 				formIsValid = false;
 			} else {
-				this.fieldAlert('');
+				this.fieldAlert(field.fieldName, '');
 				callbacksCount++;
 				fieldRef.checkValidityBeforeSave(formIsValid, onFieldValidated);
 			}
@@ -395,14 +395,14 @@ export default class FormFull extends eventProcessingMixins {
 						title: field.name,
 						visible: tabVisible || this.showAllDebug || this.showAllTabs,
 						highlightFrame: this.showAllDebug,
-						field: field, form: this,
-						fields: fields
+						field, form: this,
+						fields
 					});
 					tabs.push(currentTab);
-				} else if(this.props.editable || data[field.fieldName] || (field.nostore == 1) || (field.fieldType === FIELD_15_1toN) || field.fieldType >= 100) {
+				} else if(this.props.editable || data[field.fieldName] || field.nostore || (field.fieldType === FIELD_15_1toN) || field.fieldType >= 100) {
 					var tf = React.createElement(FieldWrap, {
 						key: field.id,
-						field: field,
+						field,
 						initialValue: data[field.fieldName],
 						form: this, parentTabName: currentTabName,
 						isEdit: this.props.editable,

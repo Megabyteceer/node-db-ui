@@ -3,7 +3,7 @@ import {L, renderIcon, serializeForm, submitData} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
-registerFieldClass(FIELD_21_FILE, class TextField extends fieldMixins {
+registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
 
 	setValue(val) {
 
@@ -28,7 +28,7 @@ registerFieldClass(FIELD_21_FILE, class TextField extends fieldMixins {
 		var fileName = this.props.initialValue;
 
 		if(this.props.isEdit) {
-			return React.createElement(FileFormBody, {field: field, ref: 'fileFormBody', accept: this.state.accept, wrapper: this.props.wrapper, parent: this, form: this.props.form, currentFileName: fileName, isCompact: this.props.isCompact});
+			return React.createElement(FileFormBody, {field, ref: 'fileFormBody', accept: this.state.accept, wrapper: this.props.wrapper, parent: this, form: this.props.form, currentFileName: fileName, isCompact: this.props.isCompact});
 		}
 		return ReactDOM.a({style: {color: '#227', fontWeight: 'bold'}, href: fileName, download: true}, fileName ? (fileName.split('/').pop()) : undefined);
 

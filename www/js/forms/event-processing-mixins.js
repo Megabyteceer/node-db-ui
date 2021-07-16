@@ -230,7 +230,7 @@ export default class eventProcessingMixins extends BaseForm {
 	isFieldEmpty(fieldName) {
 		var v = this.fieldValue(fieldName);
 		if(Array.isArray(v)) {
-			return v.length == 0;
+			return v.length === 0;
 		}
 		if(v) {
 			return false;
@@ -261,7 +261,7 @@ export default class eventProcessingMixins extends BaseForm {
 	}
 
 	fieldAlert(fieldName, text, isSuccess, focus) {
-
+		assert(fieldName, "fieldName expected");
 		var f = this.getField(fieldName);
 		if(f && f.props.parentCompactAreaName) {
 			f = this.getField(f.props.parentCompactAreaName);

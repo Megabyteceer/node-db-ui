@@ -186,11 +186,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 				src: idToImgURL(value[field.icon], field.icon)
 			});
 		}
-
-
 		if(this.props.isEdit) {
-
-
 			var list;
 			var clearBtn;
 			if(this.state.expanded) {

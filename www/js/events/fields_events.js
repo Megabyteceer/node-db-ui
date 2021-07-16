@@ -5,7 +5,7 @@ var fieldsEvents = {};
 
 
 fieldsEvents[20] = function () { //field20onchangebegin_cswhggft
-	if(this.fieldValue("fieldType") == FIELD_8_STATICTEXT) {
+	if(this.fieldValue("fieldType") === FIELD_8_STATICTEXT) {
 		this.hideField("maxlen");
 		this.hideField("nostore");
 		this.hideField("name");
@@ -23,9 +23,9 @@ fieldsEvents[20] = function () { //field20onchangebegin_cswhggft
 		this.setFieldLabel("fdescription", L("FLD_DESC"));
 	}
 	this.hideField("selectFieldName");
-	if(((this.fieldValue("fieldType") == FIELD_7_Nto1) ||
-		(this.fieldValue("fieldType") == FIELD_14_NtoM) ||
-		(this.fieldValue("fieldType") == FIELD_15_1toN))) {
+	if(((this.fieldValue("fieldType") === FIELD_7_Nto1) ||
+		(this.fieldValue("fieldType") === FIELD_14_NtoM) ||
+		(this.fieldValue("fieldType") === FIELD_15_1toN))) {
 		this.hideField("maxlen");
 		this.hideField("uniqu");
 		this.setFieldValue("uniqu", 0);
@@ -34,20 +34,20 @@ fieldsEvents[20] = function () { //field20onchangebegin_cswhggft
 		this.hideField("nodeRef");
 	}
 
-	if(this.fieldValue("fieldType") == FIELD_6_ENUM) {
+	if(this.fieldValue("fieldType") === FIELD_6_ENUM) {
 		this.showField('enum');
 	} else {
 		this.hideField('enum')
 	}
 
-	if(this.fieldValue("fieldType") === FIELD_1_TEXT || this.fieldValue("fieldType") == FIELD_19_RICHEDITOR) {
+	if(this.fieldValue("fieldType") === FIELD_1_TEXT || this.fieldValue("fieldType") === FIELD_19_RICHEDITOR) {
 		this.showField('multilang');
 	} else {
 		this.hideField('multilang');
 		this.setFieldValue('multilang', false);
 	}
 
-	if(this.fieldValue("fieldType") == FIELD_12_PICTURE) {
+	if(this.fieldValue("fieldType") === FIELD_12_PICTURE) {
 		this.hideField("maxlen");
 		this.hideField("nostore");
 		this.hideField("clientOnly");

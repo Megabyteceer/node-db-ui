@@ -130,7 +130,7 @@ export default class List extends BaseForm {
 			setTimeout(() => {this.refreshData();}, 1);
 		} else if(!this.props.node) {
 			getNode(this.props.nodeId, (node) => {
-				this.setState({node: node});
+				this.setState({node});
 				if(this.props.parentForm) {
 					this.props.parentForm.savedNode = node;
 				}
@@ -180,7 +180,7 @@ export default class List extends BaseForm {
 						if(this.isSlave()) {
 							this.props.parentForm.saveNodeDataAndFilters(node, data, this.filters);
 						}
-						this.setState({data: data, node: node});
+						this.setState({data, node});
 						this.scrollIfNeed();
 					});
 				} else {
@@ -288,7 +288,7 @@ export default class List extends BaseForm {
 
 						lines.push(
 							ReactDOM.div({key: UID(item), className: 'inline-item', style: {display: 'inline-block', width: '80%', marginBottom: 4, marginTop: 4}},
-								React.createElement(FormFull, {ref: this.subFormRef, inlineEditable: true, editable: true, isCompact: true, filters: filters, parentForm: this.props.parentForm, isLookup: this.props.isLookup, list: this, node: node, initialData: item, overrideOrderData: sorting ? itemNum : -1})
+								React.createElement(FormFull, {ref: this.subFormRef, inlineEditable: true, editable: true, isCompact: true, filters: filters, parentForm: this.props.parentForm, isLookup: this.props.isLookup, list: this, node, initialData: item, overrideOrderData: sorting ? itemNum : -1})
 							)
 						);
 						var btns = [];
@@ -516,13 +516,16 @@ export default class List extends BaseForm {
 
 					var fieldAdmin;
 					if(iAdmin()) {
-						fieldAdmin = React.createElement(FieldAdmin, {field: field, form: this.ref ? (this.ref.inlineList || this) : this, x: 80});
+						fieldAdmin = React.createElement(FieldAdmin, {field, form: this.ref ? (this.ref.inlineList || this) : this, x: 80});
 					}
 
 					var rowHeader;
 					if(field.forSearch === 1) {
 						rowHeader = ReactDOM.span({
-							className: 'clickable', style: {color: (filters.o === field.fieldName) ? '#259' : ''}, onClick: () => {
+							className: 'clickable', style: {
+								color: (filters.o === field.fieldName) ? '#259' : '',
+								whiteSpace: 'nowrap'
+							}, onClick: () => {
 								if(filters.o === field.fieldName) {
 									this.changeFilter('r', filters.r ? undefined : 1, true);
 								} else {
@@ -536,14 +539,13 @@ export default class List extends BaseForm {
 						);
 					} else {
 						rowHeader = field.name;
-						rowHeader = field.name;
 					}
 
 
 					if(this.isVisibleField(field)) {
 						tableHeader.push(ReactDOM.td({key: field.id, style: (field.fieldType === FIELD_2_INT) ? headerStyleNum : headerStyle},
-							fieldAdmin,
-							rowHeader
+							rowHeader,
+							fieldAdmin
 						));
 					}
 				});
@@ -561,7 +563,7 @@ export default class List extends BaseForm {
 				var hideControlls = this.props.hideControlls || this.state.hideControlls || (this.props.filters && this.props.filters.hideControlls);
 
 				var lines = data.items.map((item) => {
-					return React.createElement(FormItem, {key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, onClick: this.props.onItemClick ? () => {this.props.onItemClick(item)} : undefined, parentForm: this.props.parentForm, additionalButtons: additionalButtons, hideControlls: hideControlls, isLookup: this.props.isLookup, list: this, node: node, initialData: item});
+					return React.createElement(FormItem, {key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, onClick: this.props.onItemClick ? () => {this.props.onItemClick(item)} : undefined, parentForm: this.props.parentForm, additionalButtons: additionalButtons, hideControlls: hideControlls, isLookup: this.props.isLookup, list: this, node, initialData: item});
 				});
 
 				body = ReactDOM.table({style: {width: '100%'}},

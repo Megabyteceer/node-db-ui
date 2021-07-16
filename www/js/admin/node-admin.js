@@ -164,7 +164,8 @@ export default class NodeAdmin extends React.Component {
 						},
 						onClick: () => {
 							this.toggleAllFields();
-						}
+						},
+						title: "Show full list of fields document contains."
 					},
 						'all fields ', renderIcon('caret-down')
 					),
@@ -178,10 +179,9 @@ export default class NodeAdmin extends React.Component {
 							paddingRight: '6px'
 						},
 						onClick: () => {
-
 							admin_editSource('onload', node);
-
-						}
+						},
+						title: "Edit client side script which execute on form open."
 					},
 						'onLoad...'
 					),
@@ -196,7 +196,8 @@ export default class NodeAdmin extends React.Component {
 						},
 						onClick: () => {
 							admin_editSource('onsave', node);
-						}
+						},
+						title: "Edit client side script which execute on form save."
 					},
 						'onSave...'
 					),
@@ -208,14 +209,12 @@ export default class NodeAdmin extends React.Component {
 							color: '#fcc'
 						},
 						onClick: () => {
-
 							admin.popup(loactionToHash(6, 'new', {
 								node_fields_linker: {
 									id: node.id,
 									name: node.singleName
 								}
 							}, true), 900, true);
-
 						}
 					},
 						renderIcon('plus')
@@ -296,7 +295,8 @@ export default class NodeAdmin extends React.Component {
 							}, {
 								_nodesID: item.parent
 							});
-						}
+						},
+						title: "Move node down"
 					},
 						renderIcon('arrow-down')
 					),
@@ -317,7 +317,8 @@ export default class NodeAdmin extends React.Component {
 							}, {
 								_nodesID: item.parent
 							});
-						}
+						},
+						title: "Move node up"
 					},
 						renderIcon('arrow-up')
 					)
@@ -432,8 +433,7 @@ export default class NodeAdmin extends React.Component {
 			className: 'admin-controll',
 			style: {
 				position: 'absolute',
-				zIndex: bodyVisible ? 4 : 3,
-				transform: 'translate(' + this.props.x + 'px, ' + this.props.y + 'px)'
+				zIndex: bodyVisible ? 4 : 3
 			},
 			onClick: sp
 		},
@@ -444,7 +444,6 @@ export default class NodeAdmin extends React.Component {
 					position: 'absolute',
 					zIndex: 2,
 					verticalAlign: 'top',
-					padding: '6px',
 					borderRadius: '5px',
 					color: '#0000004'
 				},

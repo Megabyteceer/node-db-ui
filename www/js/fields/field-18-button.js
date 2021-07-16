@@ -3,7 +3,7 @@ import {renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
-registerFieldClass(FIELD_18_BUTTON, class TextField extends fieldMixins {
+registerFieldClass(FIELD_18_BUTTON, class ButtonField extends fieldMixins {
 
 	setValue(val) {
 	}

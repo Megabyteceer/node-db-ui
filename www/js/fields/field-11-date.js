@@ -1,8 +1,8 @@
-import {innerDatetimeFormat, readableDateFormat, registerFieldClass} from "../utils.js";
-import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
+import {innerDatetimeFormat, readableDateFormat, registerFieldClass, toReadableDate} from "../utils.js";
+import {compactInputStyle, notCompactInputStyle, readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import {dateFieldMixins} from "./field-4-datetime.js";
 
-registerFieldClass(FIELD_11_DATE, class TextField extends dateFieldMixins {
+registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 
 	setValue(val) {
 		if(val) {
@@ -40,7 +40,7 @@ registerFieldClass(FIELD_11_DATE, class TextField extends dateFieldMixins {
 	}
 
 	focusOverride() {
-		this.refToInput.refs.inputInstance.focus();
+		ReactDOM.findDOMNode(this.refToInput).querySelector('input').focus();
 	}
 
 	render() {
@@ -70,7 +70,7 @@ registerFieldClass(FIELD_11_DATE, class TextField extends dateFieldMixins {
 				title: (this.props.isCompact ? field.name : ''),
 				style: this.props.isCompact ? compactInputStyle : notCompactInputStyle
 			},
-				React.createElement(Datetime, inputsProps)
+				React.createElement(window.Datetime, inputsProps)
 			);
 
 		} else {

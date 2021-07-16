@@ -11,12 +11,12 @@ export default class FieldAdmin extends React.Component {
 		this.state = {
 			show: showedFieldId === this.props.field.id
 		};
-		this.show = this.show.bind(this);
+		this.onShow = this.onShow.bind(this);
 		this.hide = this.hide.bind(this);
 		this.toggleLock = this.toggleLock.bind(this);
 	}
 
-	show() {
+	onShow() {
 		if(this.timeout) {
 			clearTimeout(this.timeout);
 			delete (this.timeout);
@@ -83,7 +83,6 @@ export default class FieldAdmin extends React.Component {
 					display: 'inline-block',
 					verticalAlign: 'top',
 					marginTop: '-5px',
-					marginLeft: 10,
 					color: '#800',
 					padding: '10px',
 					borderRadius: '5px',
@@ -130,7 +129,8 @@ export default class FieldAdmin extends React.Component {
 
 							admin_editSource('onchange', node, field);
 
-						}
+						},
+						title: "Edit client side script which execute on field value change."
 					},
 						'onChange...'
 					),
@@ -145,7 +145,8 @@ export default class FieldAdmin extends React.Component {
 							if(i > 0) {
 								admin.moveField(i, form, node, -1);
 							}
-						}
+						},
+						title: "Move field up"
 					},
 						renderIcon('arrow-up')
 					),
@@ -160,7 +161,8 @@ export default class FieldAdmin extends React.Component {
 							if(i < (node.fields.length - 1)) {
 								admin.moveField(i, form, node, +1);
 							}
-						}
+						},
+						title: "Move filed down"
 					},
 						renderIcon('arrow-down')
 					),
@@ -181,7 +183,8 @@ export default class FieldAdmin extends React.Component {
 									}
 								}, true), 900, true);
 							});
-						}
+						},
+						title: "Add new field"
 					},
 						renderIcon('plus')
 					),
@@ -193,7 +196,8 @@ export default class FieldAdmin extends React.Component {
 						style: {
 							background: '#944',
 							color: '#fcc'
-						}
+						},
+						title: "Edit field properties"
 					},
 						renderIcon('wrench')
 					),
@@ -232,8 +236,7 @@ export default class FieldAdmin extends React.Component {
 			className: 'admin-controll',
 			style: {
 				position: 'absolute',
-				zIndex: (bodyVisible ? 4 : 3) + zAdd,
-				transform: 'translate(' + this.props.x + 'px, 0)'
+				zIndex: (bodyVisible ? 4 : 3) + zAdd
 			},
 			onClick: sp
 		},
@@ -244,11 +247,10 @@ export default class FieldAdmin extends React.Component {
 					position: 'absolute',
 					zIndex: 2 + zAdd,
 					verticalAlign: 'top',
-					padding: '6px',
 					color: '#00000040'
 				},
 				className: 'halfvisible',
-				onMouseEnter: this.show
+				onMouseEnter: this.onShow
 			},
 				renderIcon('wrench')
 			),

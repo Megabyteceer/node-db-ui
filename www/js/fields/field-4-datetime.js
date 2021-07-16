@@ -1,10 +1,8 @@
 import moment from "./../lib/moment/dist/moment.js";
-import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, toReadableDatetime} from "../utils.js";
+import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, toReadableDate, toReadableDatetime, toReadableTime} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 import {readOnlyCompactFieldProperties} from "./field-1-text-default.js";
-
-import Datetime from "../lib/react-datetime/dist
 
 function isSameDay(val, d) {
 	if(!d || !val) return false;
@@ -149,7 +147,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 			}
 			return new moment(val, innerDatetimeFormat);
 		}
-		return new moment();
+		return null;
 	}
 
 	static encodeValue(val) {
@@ -160,7 +158,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 	}
 
 	focusOverride() {
-		this.timeRef.refs.inputInstance.focus();
+		ReactDOM.findDOMNode(this.timeRef).querySelector('input').focus();
 	}
 
 	render() {
@@ -251,7 +249,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 						display: 'inline-block',
 						width: '35%'
 					}
-				}, React.createElement(Datetime, inputsProps1)),
+				}, React.createElement(window.Datetime, inputsProps1)),
 				ReactDOM.div({
 					style: {
 						display: 'inline-block',
@@ -263,7 +261,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 						display: 'inline-block',
 						width: '60%'
 					}
-				}, React.createElement(Datetime, inputsProps2))
+				}, React.createElement(window.Datetime, inputsProps2))
 			);
 		} else {
 			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyCompactFieldProperties,

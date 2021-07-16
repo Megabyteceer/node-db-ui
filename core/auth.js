@@ -25,8 +25,14 @@ function createSession(userSession, sessionToken) {
 
 //TODO: clear autdated sessions
 
+/// #if DEBUG
+const SESSION_START_REATTEMPT_DELAY = 100;
+const SESSION_START_MAINTAIN_REATTEMPT_DELAY = 500;
+/*
+/// #endif
 const SESSION_START_REATTEMPT_DELAY = 1000;
 const SESSION_START_MAINTAIN_REATTEMPT_DELAY = 5000;
+//*/
 
 let maintainMode = 0;
 let startedSessionsCount = 0;

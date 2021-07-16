@@ -12,7 +12,7 @@ window.addEventListener('message', (e) => {
 	}
 });
 
-registerFieldClass(FIELD_19_RICHEDITOR, class TextField extends fieldMixins {
+registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixins {
 
 	getSummernote() {
 		return this.refs.viewport.contentWindow;

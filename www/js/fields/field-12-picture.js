@@ -6,22 +6,7 @@ import fieldMixins from "./field-mixins.js";
 import Cropper from "../lib/cropperjs/dist/cropper.esm.js";
 import Modal from "../modal.js";
 
-window.exports = {};
-window.require = function (name) {
-	if(name === 'react') {
-		return React;
-	}
-	if(name === 'cropperjs') {
-		return Cropper;
-	}
-	throw new Error('unknown module required');
-}
-let ReactCropper;
-import("../lib/react-cropper/dist/react-cropper.umd.js").then((m) => {
-	ReactCropper = window.exports.default;
-});
-
-registerFieldClass(FIELD_12_PICTURE, class TextField extends fieldMixins {
+registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
 
 	setValue(val) {
 
@@ -46,7 +31,7 @@ registerFieldClass(FIELD_12_PICTURE, class TextField extends fieldMixins {
 		var imgUrl = idToImgURL(this.props.initialValue, this.props.field.fieldName);
 
 		if(this.props.isEdit) {
-			return React.createElement(CropperFieldBody, {field: field, ref: (r) => {this.cropperBody = r;}, parent: this, imageRenderer: this.props.form.imageRenderer, form: this.props.form, currentPicUrl: imgUrl, isCompact: this.props.isCompact});
+			return React.createElement(CropperFieldBody, {field, ref: (r) => {this.cropperBody = r;}, parent: this, imageRenderer: this.props.form.imageRenderer, form: this.props.form, currentPicUrl: imgUrl, isCompact: this.props.isCompact});
 		} else if(this.props.isCompact) {
 			return ReactDOM.img({src: imgUrl, style: {borderRadius: '3px', maxHeight: this.props.form.props.parentForm ? '30px' : '60px', width: 'auto'}})
 		} else {

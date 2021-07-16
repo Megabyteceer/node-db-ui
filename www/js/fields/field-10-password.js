@@ -2,7 +2,7 @@ import {registerFieldClass} from "../utils.js";
 import {compactInputStyle, notCompactInputStyle, readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import fieldMixins from "./field-mixins.js";
 
-registerFieldClass(FIELD_10_PASSWORD, class TextField extends fieldMixins {
+registerFieldClass(FIELD_10_PASSWORD, class PasswordField extends fieldMixins {
 
 	setValue(val) {
 		this.refToInput.value = val;

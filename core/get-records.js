@@ -212,7 +212,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 		}
 
 		ordering = [' ORDER BY ', tableName, '.`', sortFieldName || node.sortFieldName, '`'];
-		if(Boolean(filterFields.r) != node.reverse) {
+		if(Boolean(filterFields.r) !== Boolean(node.reverse)) {
 			ordering.push(' DESC');
 		}
 		let recPerPage;
@@ -241,7 +241,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 	let prevs = node.prevs;
 	if(userSession) {
 
-		if((prevs & (PREVS_EDIT_OWN | PREVS_EDIT_ORG | PREVS_EDIT_ALL | PREVS_PUBLISH)) != 0) {
+		if((prevs & (PREVS_EDIT_OWN | PREVS_EDIT_ORG | PREVS_EDIT_ALL | PREVS_PUBLISH)) !== 0) {
 			wheresBegin.push("(", tableName, ".status > 0)");
 		} else {
 			wheresBegin.push("(", tableName, ".status = 1)");

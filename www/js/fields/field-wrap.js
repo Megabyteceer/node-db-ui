@@ -321,12 +321,20 @@ export default class FieldWrap extends React.Component {
 
 	render() {
 
+		/// #if DEBUG
+		if(this.props.isEdit) {
+			setTimeout(() => {
+				assert(this.fieldRef.refToInput, this.props.field.fieldType + " 'ref: this.refGetter' should present somewhere in field react component to have reference to dom element.");
+			}, 10);
+		}
+
+		/// #endif
 		var field = this.props.field;
 
 		var domId = 'fc-' + field.id;
 
 		var fprops = {
-			field: field,
+			field,
 			wrapper: this,
 			form: this.props.form,
 			initialValue: this.props.initialValue,
@@ -356,7 +364,7 @@ export default class FieldWrap extends React.Component {
 
 		var fieldAdmin;
 		if(iAdmin() && !field.lang && (!this.props.isCompact || this.props.parentCompactAreaName)) {
-			fieldAdmin = React.createElement(FieldAdmin, {field: field, form: this.props.form, x: -10});
+			fieldAdmin = React.createElement(FieldAdmin, {field, form: this.props.form, x: -10});
 		}
 
 		if(this.props.isCompact) {
@@ -392,7 +400,7 @@ export default class FieldWrap extends React.Component {
 			var label;
 
 			if(!noLabel) {
-				label = React.createElement(FieldLabel, {field: field, isEdit: this.props.isEdit, labelOwerride: this.labelOwerride, fieldAlert: this.state ? this.state.fieldAlert : undefined, isSucessAlert: this.state ? this.state.isSucessAlert : undefined});
+				label = React.createElement(FieldLabel, {field, isEdit: this.props.isEdit, labelOwerride: this.labelOwerride, fieldAlert: this.state ? this.state.fieldAlert : undefined, isSucessAlert: this.state ? this.state.isSucessAlert : undefined});
 			}
 
 			return ReactDOM.div({className: domId, style: (this.hidden && !this.props.form.showAllDebug) ? {display: 'none'} : (field.lang ? styleLang : style)},

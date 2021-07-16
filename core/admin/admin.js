@@ -8,7 +8,7 @@ const fs = require('fs');
 
 
 async function nodePrevs(reqData, userSession) {
-	isAdmin(userSession);
+	shouldBeAdmin(userSession);
 	const nodeId = reqData.nodeId;
 	if(reqData.prevs) {//set node prevs
 		const prevs = reqData.prevs;
@@ -21,6 +21,12 @@ async function nodePrevs(reqData, userSession) {
 	}
 }
 
+async function clearCache(userSession) {
+	shouldBeAdmin(userSession);
+	reloadMetadataSchedule();
+	return 1;
+}
+
 const shouldBeAdmin = (userSession) => {
 	if(!isAdmin(userSession)) {
 		throw new Error('Access denied');
@@ -28,7 +34,7 @@ const shouldBeAdmin = (userSession) => {
 }
 
 async function setRolePrevsForNode(nodeID, roleprevs, toChild, userSession) {
-
+	shouldBeAdmin(userSession);
 	await mysqlExec('DELETE FROM `_roleprevs` WHERE `nodeID`=' + nodeID + ';');
 
 	for(let p of roleprevs) {
@@ -116,7 +122,7 @@ function processSource(fileName, startMarker, endMarker, newSource, itemId, type
 }
 
 async function getClientEventHandler(reqData, userSession) {
-	isAdmin(userSession);
+	shouldBeAdmin(userSession);
 	const newSrc = reqData.src || false;
 
 	if(reqData.type === 'field') {
@@ -133,4 +139,4 @@ async function getClientEventHandler(reqData, userSession) {
 	}
 }
 
-module.exports = {nodePrevs, getClientEventHandler, shouldBeAdmin};
+module.exports = {nodePrevs, getClientEventHandler, shouldBeAdmin, clearCache};

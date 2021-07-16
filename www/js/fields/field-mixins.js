@@ -3,6 +3,7 @@ import {scrollToVisible} from "../utils.js";
 export default class fieldMixins extends React.Component {
 
 	constructor(props) {
+		assert(props.field, '"field" property  expected.');
 		super(props);
 		let value = props.initialValue;
 		if(Array.isArray(value)) {
@@ -18,6 +19,7 @@ export default class fieldMixins extends React.Component {
 		} else {
 			if(this.refToInput) {
 				scrollToVisible(this.refToInput);
+				//TODO: shake field
 				ReactDOM.findDOMNode(this.refToInput).focus();
 			}
 		}

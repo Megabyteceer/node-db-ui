@@ -10,7 +10,7 @@ var dragListenersInited;
 
 var refs = [];
 
-registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
+registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixins {
 
 	constructor(props) {
 		super(props);
@@ -225,7 +225,7 @@ registerFieldClass(FIELD_14_NtoM, class TextField extends fieldLookupMixins {
 			var body = ReactDOM.div({key: key, ref: v ? (ref) => {refs[UID(v)] = ref;} : undefined, style: {padding: '2px 20px', borderBottom: borderBottom, outline: isDrag ? '3px solid #0d5' : undefined}},
 				ReactDOM.div({style: {width: '70%', display: 'inline-block'}},
 					React.createElement(getClassForField(FIELD_7_Nto1), {
-						field: field, preventCreateButton: this.state.preventCreateButton, editIt: editIt, hideIcon: this.isDividerItem(v, field), pos: i, isEdit, isN2M: true, filters: this.state.filters, noBorder: true, ref: (ref) => {
+						field, preventCreateButton: this.state.preventCreateButton, editIt: editIt, hideIcon: this.isDividerItem(v, field), pos: i, isEdit, isN2M: true, filters: this.state.filters, noBorder: true, ref: (ref) => {
 							if(ref) {
 								ref.setLookupFilter({'exludeIDs': this.exludeIDs || this.state.filters.exludeIDs});
 							}

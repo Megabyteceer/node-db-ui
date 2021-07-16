@@ -63,7 +63,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 
 		var buttons = [];
 		if(data.hasOwnProperty('isPub') && (!formItem || !formItem.props.disableDrafting)) {
-			if(data.status == 1) {
+			if(data.status === 1) {
 				buttons.push(
 					ReactDOM.button({key: 1, style: {background: constants.PUBLISH_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data, refreshFunction)}},
 						renderIcon('eye')
@@ -159,7 +159,7 @@ export default class FormItem extends BaseForm {
 
 				fields.push(
 					ReactDOM.td({key: field.id, style: styl},
-						React.createElement(FieldWrap, {key: k, field: field, initialValue: data[field.fieldName], form: this, isCompact: true, isTable: true})
+						React.createElement(FieldWrap, {key: k, field, initialValue: data[field.fieldName], form: this, isCompact: true, isTable: true})
 					)
 				);
 			}

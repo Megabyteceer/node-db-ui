@@ -7,7 +7,7 @@ admin.moveField = (fIndex, form, node, direction) => {
 	var fieldIndex;
 	var j = 0;
 	var fields = node.fields.filter((f, i) => {
-		if(i == fIndex) {
+		if(i === fIndex) {
 			fieldIndex = j;
 		}
 		if(form.isVisibleField(f) && !f.lang) {

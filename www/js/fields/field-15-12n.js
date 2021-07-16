@@ -3,7 +3,7 @@ import {backupCreationData, getNodeData, L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
 
-registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
+registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixins {
 
 	constructor(props) {
 		super(props);
@@ -68,7 +68,7 @@ registerFieldClass(FIELD_15_1toN, class TextField extends fieldLookupMixins {
 					allValid = false;
 				}
 				callbacksCount--;
-				if(callbacksCount == 0) {
+				if(callbacksCount === 0) {
 					callback(allValid ? false : L('INVALID_DATA_LIST'));
 				}
 			}

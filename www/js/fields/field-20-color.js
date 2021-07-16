@@ -8,7 +8,7 @@ var intToColor = (i) => {
 
 var _idCounter = 0;
 
-registerFieldClass(FIELD_20_COLOR, class TextField extends fieldMixins {
+registerFieldClass(FIELD_20_COLOR, class ColorField extends fieldMixins {
 
 	constructor(props) {
 		super(props);

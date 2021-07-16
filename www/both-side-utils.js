@@ -55,7 +55,7 @@ global.USER_ROLE_ID = 3;
 
 global.FIELD_1_TEXT = 1;
 global.FIELD_2_INT = 2;
-global.FIELD_3_MONEY = 3;
+//global.FIELD_3_MONEY = 3;
 global.FIELD_4_DATETIME = 4;
 global.FIELD_5_BOOL = 5;
 global.FIELD_6_ENUM = 6;

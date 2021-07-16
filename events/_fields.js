@@ -3,6 +3,7 @@ const {mysqlExec} = require("../core/mysql-connection");
 const {shouldBeAdmin} = require("../core/admin/admin.js");
 const {mustBeUnset} = require("../core/auth.js");
 const {getLangs, reloadMetadataSchedule, getNodeDesc} = require("../core/desc-node.js");
+const {getRecords} = require("../core/get-records.js");
 
 module.exports = {
 	createFieldInTable,
@@ -36,7 +37,7 @@ module.exports = {
 		const fieldName = data.fieldName;
 		if(fieldType === FIELD_15_1toN) {
 
-			const parentNode = getRecords(4, 1, $data['node_fields_linker'], true);
+			const parentNode = getRecords(4, 1, data.node_fields_linker, true);
 
 			const linkerFieldData = {
 				status: 1,
@@ -84,11 +85,11 @@ module.exports = {
 				const realBDFNAme = currentData.fieldName;
 				const fieldType = currentData.fieldType;
 
-				if((realBDFNAme != '_organID') && (realBDFNAme != '_usersID') && (realBDFNAme != 'createdOn') && (realBDFNAme != 'ID')) {
-					if((currentData.nostore == 0) && (fieldType != FIELD_8_STATICTEXT) && (fieldType != FIELD_14_NtoM) && (fieldType != FIELD_15_1toN)) {
+				if((realBDFNAme !== '_organID') && (realBDFNAme !== '_usersID') && (realBDFNAme !== 'createdOn') && (realBDFNAme !== 'ID')) {
+					if((currentData.nostore === 0) && (fieldType !== FIELD_8_STATICTEXT) && (fieldType !== FIELD_14_NtoM) && (fieldType !== FIELD_15_1toN)) {
 
 
-						const typeQ = getFieldTypeSQL($currentData);
+						const typeQ = getFieldTypeSQL(currentData);
 						if(typeQ) {
 
 
@@ -191,28 +192,28 @@ async function createFieldInTable(data) {
 	const nodeName = node.tableName;
 	let linkedNodeName;
 
-	if(fieldType == FIELD_7_Nto1 || fieldType == FIELD_14_NtoM || fieldType == FIELD_15_1toN) {
+	if(fieldType === FIELD_7_Nto1 || fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) {
 		const linkedNodeId = data.nodeRef;
 		linkedNodeName = getNodeDesc(linkedNodeId).tableName;
 
-		if(fieldType == FIELD_7_Nto1 || fieldType == FIELD_14_NtoM) {
+		if(fieldType === FIELD_7_Nto1 || fieldType === FIELD_14_NtoM) {
 
 			const filters = {
 				status: 1,
 				node_fields_linker: linkedNodeId,
 				fieldType: FIELD_12_PICTURE
 			};
-			debugger;
-			const records = getRecords(6, 2, false, false, filters);
+			const records = await getRecords(6, PREVS_VIEW_ORG, undefined, undefined, filters);
 			if(records.total) {
-				data.icon = records[0].fieldName;
+				debugger;
+				data.icon = records.items[0].fieldName;
 			}
 		}
 	}
 
-	if(fieldType == FIELD_15_1toN) {
+	if(fieldType === FIELD_15_1toN) {
 		data.nostore = 1;
-	} else if(fieldType == FIELD_14_NtoM) {
+	} else if(fieldType === FIELD_14_NtoM) {
 
 		data.selectFieldName = linkedNodeName;
 		data.forSearch = 1;
@@ -220,20 +221,20 @@ async function createFieldInTable(data) {
 		const fld1 = nodeName.ID;
 		const fld2 = linkedNodeName.ID;
 
-		await mysqlExec(`CREATE TABLE IF NOT EXISTS $fieldName (
+		await mysqlExec(`CREATE TABLE IF NOT EXISTS ${fieldName} (
 			ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			${fld1} bigint(20) unsigned NOT NULL DEFAULT 0,
 			${fld2} bigint(20) unsigned NOT NULL DEFAULT 0,
 			primary key(ID),
 			INDEX(${fld1}),
 			INDEX(${fld2}),
-			FOREIGN KEY(${fld1}) REFERENCES$nodeName(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-			FOREIGN KEY(${fld2}) REFERENCES$linkedNodeName(ID) ON DELETE CASCADE ON UPDATE CASCADE
+			FOREIGN KEY(${fld1}) REFERENCES ${nodeName}(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY(${fld2}) REFERENCES ${linkedNodeName}(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4; `);
 	} else if(!data.nostore) {
 		if(fieldType === FIELD_7_Nto1) {
 			data.forSearch = 1;
-			data.selectFieldName = $linkedNodeName;
+			data.selectFieldName = linkedNodeName;
 		}
 
 		const typeQ = getFieldTypeSQL(data);
@@ -246,7 +247,7 @@ async function createFieldInTable(data) {
 
 			await mysqlExec(altQ.join(''));
 
-			if(fieldType == FIELD_7_Nto1) {
+			if(fieldType === FIELD_7_Nto1) {
 				await mysqlExec('ALTER TABLE ' + nodeName + ' ADD INDEX(' + fieldName + ');');
 				await mysqlExec('ALTER TABLE ' + nodeName + ' ADD FOREIGN KEY (' + fieldName + ') REFERENCES ' + process.env.DB_NAME + '.' + linkedNodeName + '(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;');
 			}

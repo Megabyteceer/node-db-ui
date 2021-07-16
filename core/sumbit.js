@@ -168,7 +168,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 				if(fieldType === FIELD_14_NtoM) {
 					//will process later
 					needProcess_n2m = 1;
-				} else if(fieldType == FIELD_15_1toN) {
+				} else if(fieldType === FIELD_15_1toN) {
 					throw new Error('children records addition/deletion is independent.');
 				} else {
 					leastOneTablesFieldUpdated = true;
