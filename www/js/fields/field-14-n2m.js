@@ -45,7 +45,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 	}
 
 	isDividerItem(v, field) {
-		return this.state.extendedEditor && v && (v[field.icon] === '111111');
+		return this.state.extendedEditor && v && (v.icon === '111111');
 	}
 
 	dragStart(item) {

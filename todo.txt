@@ -1,3 +1,6 @@
+иконки default ''
+
+
 хендлеры событий
 переименовать pre  post
 в UPDATE передавать fullNewData?

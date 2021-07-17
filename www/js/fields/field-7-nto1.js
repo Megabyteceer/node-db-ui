@@ -91,13 +91,13 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 
 				this.toggleList();
 			}
-			if(!this.state.value || (this.state.value.id !== recordData.id) || (this.state.value.name !== recordData.name) || (this.state.value[this.props.field.icon] !== recordData[this.props.field.icon])) {
+			if(!this.state.value || (this.state.value.id !== recordData.id) || (this.state.value.name !== recordData.name) || (this.state.value.icon !== recordData[this.props.field.icon])) {
 				var newVal = {
 					id: recordData.id,
 					name: recordData.name
 				};
 				if(this.props.field.icon) {
-					newVal[this.props.field.icon] = recordData[this.props.field.icon];
+					newVal.icon = recordData[this.props.field.icon];
 				}
 				this.setValue(newVal);
 				this.props.wrapper.valueListener(newVal, false, this);
@@ -176,14 +176,14 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 		var field = this.props.field;
 		var value = this.state.value;
 		var iconPic;
-		if(field.icon && value && (!this.props.hideIcon) && value[field.icon]) {
+		if(field.icon && value && (!this.props.hideIcon) && value.icon) {
 			iconPic = ReactDOM.img({
 				style: {
 					height: 30,
 					width: 'auto',
 					marginRight: 8
 				},
-				src: idToImgURL(value[field.icon], field.icon)
+				src: idToImgURL(value.icon, field.icon)
 			});
 		}
 		if(this.props.isEdit) {

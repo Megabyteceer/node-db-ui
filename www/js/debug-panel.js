@@ -140,7 +140,7 @@ export default class DebugPanel extends React.Component {
 			cacheClearBtn = ReactDOM.a({
 				className: 'clickable admin-controll', title: L('CLEAR_CACHE'), onClick: (ev) => {
 					sp(ev);
-					getData('admin/cache_info', {clear: 1, json: 1}, () => { });
+					getData('admin/cache_info', {clear: 1, json: 1}, () => {location.reload();});
 				}, style: {float: 'right'}
 			},
 				renderIcon('refresh')
