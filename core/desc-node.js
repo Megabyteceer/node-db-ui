@@ -109,8 +109,8 @@ function reloadMetadataSchedule() {
 	if(!metadataReloadingInterval) {
 		const {setMainTainMode} = require("./auth");
 		setMainTainMode(true);
+		metadataReloadingInterval = setInterval(attemptToreloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl);
 	}
-	metadataReloadingInterval = setInterval(attemptToreloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl);
 }
 
 function attemptToreloadMetadataSchedule() {
