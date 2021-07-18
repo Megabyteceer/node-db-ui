@@ -15,11 +15,11 @@ registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
 	}
 
 	isEmpty() {
-		return !this.fileFormBodyRef.fileInputRef.value;
+		return !this.fileFormBodyRef.fileInputRef.value && !this.state.value;
 	}
 
 	focusOverride() {
-		this.selectButtonRef.focus();
+		this.fileFormBodyRef.selectButtonRef.focus();
 	}
 
 	beforeSave(callback) {

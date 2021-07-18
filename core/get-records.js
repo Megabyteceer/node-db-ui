@@ -306,10 +306,10 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 							let l = a.length;
 							while(i < l) {
 								if(f.icon) {
-									val.push({id: a[i - 1], name: a[i], icon: a[i + 1]});
+									val.push({id: parseInt(a[i - 1]), name: a[i], icon: a[i + 1]});
 									i += 3;
 								} else {
-									val.push({id: a[i - 1], name: a[i]});
+									val.push({id: parseInt(a[i - 1]), name: a[i]});
 									i += 2;
 								}
 							}

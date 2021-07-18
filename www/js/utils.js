@@ -173,10 +173,6 @@ function handleAdditionalData(data, url) {
 
 }
 
-function editRecord(nodeId, recId) {
-	showForm(nodeId, recId, undefined, true);
-}
-
 function clearForm() {
 	Stage.instance._setFormData();
 }
@@ -1255,5 +1251,6 @@ export {
 	myAlert,
 	serializeForm,
 	readableTimeFormat,
-	readableDateFormat
+	readableDateFormat,
+	clearForm
 }

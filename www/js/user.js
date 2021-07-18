@@ -2,7 +2,7 @@
 
 import moment from "./lib/moment/dist/moment.js";
 import constants from "./custom/consts.js";
-import {getData, goToPageByHash, L, loactionToHash, loadJS, renderIcon, sp} from "./utils.js";
+import {clearForm, getData, goToPageByHash, L, loactionToHash, loadJS, renderIcon, sp} from "./utils.js";
 import Select from "./components/select.js";
 import admin from "./admin/admin-utils.js";
 
