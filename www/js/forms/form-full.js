@@ -475,7 +475,7 @@ export default class FormFull extends eventProcessingMixins {
 		var draftButton;
 		var nodeAdmin;
 		if(!this.props.inlineEditable) {
-			if(data.isDel && isMainTab) {
+			if(data.isDel && isMainTab && !this.props.preventDeleteButton) {
 				deleteButton = ReactDOM.button({
 					className: 'clickable clickable-neg', style: dangerButtonStyle, onClick: () => {
 						deleteRecord(data.name, node.id, data.id, () => {

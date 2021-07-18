@@ -122,13 +122,20 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			backupCreationData(this.props.field.nodeRef, Object.assign(curBackup, defaultCreationData), backupPrefix);
 		}
 		this.clearLeaveTimeout();
+		let isOpened = this.state.creationOpened;
 		this.setState({
-			creationOpened: !this.state.creationOpened,
+			creationOpened: !isOpened,
 			backupPrefix: backupPrefix,
 			dataToEdit: undefined,
 			itemIdToEdit: itemIdToEdit
 		});
+		if(isOpened) {
+			this.setState({
+				expanded: this.isEnterCreateThroughList
+			});
+		}
 		if(typeof itemIdToEdit !== 'undefined') {
+			this.isEnterCreateThroughList = this.state.expanded;
 			getNodeData(this.props.field.nodeRef, itemIdToEdit, (data) => {
 				getNode(this.props.field.nodeRef, (node) => {
 					this.saveNodeDataAndFilters(node);
@@ -204,6 +211,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 						);
 					} else {
 						list = React.createElement(FormFull, {
+							preventDeleteButton: true,
 							node: this.savedNode,
 							nodeId: field.nodeRef,
 							backupPrefix: this.state.backupPrefix,
