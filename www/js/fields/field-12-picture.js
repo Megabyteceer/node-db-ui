@@ -1,9 +1,7 @@
 import constants from "../custom/consts.js";
-import User from "../user.js";
 import {checkFileSize, idToImgURL, L, myAlert, renderIcon, serializeForm, submitData} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
-import Cropper from "../lib/cropperjs/dist/cropper.esm.js";
 import Modal from "../modal.js";
 
 registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
@@ -157,7 +155,7 @@ class CropperFieldBody extends React.Component {
 						}
 
 						myAlert(ReactDOM.div({style: {width: 900}},
-							React.createElement(ReactCropper, {
+							React.createElement(window.ReactCropper, {
 								zoomable: false,
 								style: {margin: 'auto', height: cropperH, width: cropperW},
 								aspectRatio: w / h,

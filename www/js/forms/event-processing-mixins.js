@@ -1,4 +1,4 @@
-import {consoleLog} from "../utils.js";
+import {consoleLog, L} from "../utils.js";
 import BaseForm from "./form-mixins.js";
 import {formsEventsOnLoad, formsEventsOnSave} from "../events/forms_events.js";
 import fieldsEvents from "../events/fields_events.js";
@@ -84,19 +84,37 @@ export default class eventProcessingMixins extends BaseForm {
 		this.getField(fieldName).setLabel(label);
 	}
 
-	hideField(fieldName) {
-		var f = this.getField(fieldName);
-		if(f && (this.hiddenFields[fieldName] !== 1)) {
-			this.hiddenFields[fieldName] = 1;
-			f.hide();
+	_fieldsFromArgs(a) {
+		let fields = Array.from(a);
+		if(!fields.length) {
+			fields = this.props.node.fields.map(i => i.fieldName);
+		}
+		return fields;
+	}
+
+	hideField() {
+		let fields = this._fieldsFromArgs(arguments);
+		for(let fieldName of fields) {
+			var f = this.getField(fieldName);
+			if(f && (this.hiddenFields[fieldName] !== 1)) {
+				this.hiddenFields[fieldName] = 1;
+				f.hide();
+			}
 		}
 	}
 
-	showField(fieldName) {
-		if(this.hiddenFields[fieldName] === 1) {
-			delete (this.hiddenFields[fieldName]);
-			this.getField(fieldName).show();
+	showField() {
+		let fields = this._fieldsFromArgs(arguments);
+		for(let fieldName of fields) {
+			if(this.hiddenFields[fieldName] === 1) {
+				delete (this.hiddenFields[fieldName]);
+				this.getField(fieldName).show();
+			}
 		}
+	}
+
+	isFieldVisible(fieldName) {
+		return this.hiddenFields[fieldName] !== 1;
 	}
 
 	hideFooter() {

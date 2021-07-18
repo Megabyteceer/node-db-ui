@@ -286,13 +286,22 @@ formsEventsOnSave[6] = function () { //form6onsaveBegin_JS89DW72SISA887QKJ32IUSL
 	}
 
 	if(fieldType === FIELD_12_PICTURE) {
-		this.setFieldValue("maxlen", Math.min(9999, this.fieldValue("height")) +
-			this.fieldValue("width") * 10000);
+		if(!this.fieldValue("height")) {
+			this.fieldAlert("height", L('REQUIRED_FLD'));
+		}
+		if(!this.fieldValue("width")) {
+			this.fieldAlert("width", L('REQUIRED_FLD'));
+		}
+		let maxlen = Math.min(9999, this.fieldValue("height") || undefined) + (this.fieldValue("width") || undefined) * 10000;
+		if(!isNaN(maxlen)) {
+			this.setFieldValue("maxlen", maxlen);
+		}
+
 	}
 
 	if(!this.fieldValue('maxlen')) {
 		this.setFieldValue('maxlen', 0);
-		if((fieldType === FIELD_1_TEXT) || (fieldType === FIELD_2_INT) || (fieldType === FIELD_3_MONEY) || (fieldType === FIELD_9_EMAIL) || (fieldType === FIELD_10_PASSWORD) || (fieldType === FIELD_13_KEYWORDS) || (fieldType === FIELD_12_PICTURE)) {
+		if((fieldType === FIELD_1_TEXT) || (fieldType === FIELD_2_INT) || (fieldType === FIELD_10_PASSWORD) || (fieldType === FIELD_13_KEYWORDS)) {
 			this.fieldAlert('maxlen', L('REQUIRED_FLD'));
 		}
 	}

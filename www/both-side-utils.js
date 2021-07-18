@@ -55,13 +55,11 @@ global.USER_ROLE_ID = 3;
 
 global.FIELD_1_TEXT = 1;
 global.FIELD_2_INT = 2;
-global.FIELD_3_MONEY = 3;
 global.FIELD_4_DATETIME = 4;
 global.FIELD_5_BOOL = 5;
 global.FIELD_6_ENUM = 6;
 global.FIELD_7_Nto1 = 7;
 global.FIELD_8_STATICTEXT = 8;
-global.FIELD_9_EMAIL = 9;
 global.FIELD_10_PASSWORD = 10;
 global.FIELD_11_DATE = 11;
 global.FIELD_12_PICTURE = 12;

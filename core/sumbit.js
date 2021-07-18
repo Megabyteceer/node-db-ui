@@ -202,7 +202,6 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 
 						//continue to process as text
 						case FIELD_1_TEXT:
-						case FIELD_9_EMAIL:
 						case FIELD_10_PASSWORD:
 						case FIELD_13_KEYWORDS:
 							if(f.maxlen && (fieldVal.length > f.maxlen)) {

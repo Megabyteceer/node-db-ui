@@ -80,7 +80,7 @@ module.exports = {
 
 				currentData = Object.assign(currentData, newData);
 
-				const node = getNodeDesc(currentData.node_fields_linkerid);
+				const node = getNodeDesc(currentData.node_fields_linker.id);
 
 				const realBDFNAme = currentData.fieldName;
 				const fieldType = currentData.fieldType;
@@ -137,7 +137,6 @@ module.exports = {
 function getFieldTypeSQL(data) {
 	switch(data.fieldType) {
 		case FIELD_13_KEYWORDS:
-		case FIELD_9_EMAIL:
 		case FIELD_10_PASSWORD:
 		case FIELD_1_TEXT:
 			if(data.maxlen <= 255) {

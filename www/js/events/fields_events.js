@@ -5,71 +5,42 @@ var fieldsEvents = {};
 
 
 fieldsEvents[20] = function () { //field20onchangebegin_cswhggft
-	if(this.fieldValue("fieldType") === FIELD_8_STATICTEXT) {
-		this.hideField("maxlen");
-		this.hideField("nostore");
-		this.hideField("name");
-		this.hideField("requirement");
-		this.hideField("uniqu");
-		this.hideField("forSearch");
-		this.setFieldLabel("fdescription", L("CONTENT"));
-	} else {
-		this.showField("maxlen");
-		this.showField("nostore");
-		this.showField("name");
-		this.showField("requirement");
-		this.showField("uniqu");
-		this.showField("forSearch");
-		this.setFieldLabel("fdescription", L("FLD_DESC"));
-	}
-	this.hideField("selectFieldName");
-	if(((this.fieldValue("fieldType") === FIELD_7_Nto1) ||
-		(this.fieldValue("fieldType") === FIELD_14_NtoM) ||
-		(this.fieldValue("fieldType") === FIELD_15_1toN))) {
-		this.hideField("maxlen");
-		this.hideField("uniqu");
-		this.setFieldValue("uniqu", 0);
-		this.showField("nodeRef");
-	} else {
-		this.hideField("nodeRef");
+	const fieldType = this.fieldValue("fieldType");
+	this.showField();
+	this.setFieldLabel("fdescription", L("FLD_DESC"));
+	this.hideField("selectFieldName", "show", "nodeRef", "enum", "width", "height", "icon");
+	switch(fieldType) {
+		case FIELD_8_STATICTEXT:
+			this.hideField("maxlen", "clientOnly", "nostore", "name", "requirement", "uniqu", "forSearch");
+			this.setFieldLabel("fdescription", L("CONTENT"));
+			break;
+		case FIELD_7_Nto1:
+		case FIELD_14_NtoM:
+		case FIELD_15_1toN:
+			this.hideField("maxlen", "uniqu");
+			this.setFieldValue("uniqu", false);
+			this.showField("nodeRef");
+			break;
+
+		case FIELD_6_ENUM:
+			this.showField('enum');
+			break;
+		case FIELD_12_PICTURE:
+			this.showField("width", "height");
+			this.hideField("maxlen", "nostore", "clientOnly", "forSearch", "uniqu");
+			this.setFieldValue('nostore', false);
+			this.setFieldValue('clientOnly', false);
+			this.setFieldValue('forSearch', false);
+			this.setFieldValue('uniqu', false);
+			break;
 	}
 
-	if(this.fieldValue("fieldType") === FIELD_6_ENUM) {
-		this.showField('enum');
-	} else {
-		this.hideField('enum')
-	}
-
-	if(this.fieldValue("fieldType") === FIELD_1_TEXT || this.fieldValue("fieldType") === FIELD_19_RICHEDITOR) {
+	if(fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICHEDITOR) {
 		this.showField('multilang');
 	} else {
 		this.hideField('multilang');
 		this.setFieldValue('multilang', false);
 	}
-
-	if(this.fieldValue("fieldType") === FIELD_12_PICTURE) {
-		this.hideField("maxlen");
-		this.hideField("nostore");
-		this.hideField("clientOnly");
-		this.hideField("forSearch");
-		this.hideField("uniqu");
-		this.showField("width");
-		this.showField("height");
-		this.setFieldValue('nostore', false);
-		this.setFieldValue('clientOnly', false);
-		this.setFieldValue('forSearch', false);
-		this.setFieldValue('uniqu', false);
-	} else {
-		this.showField("maxlen");
-		this.showField("nostore");
-		this.showField("clientOnly");
-		this.showField("forSearch");
-		this.showField("uniqu");
-		this.hideField("width");
-		this.hideField("height");
-	}
-
-
 	this.check12nFieldName();
 } //field20onchangeend_wqdggft
 
@@ -111,43 +82,27 @@ fieldsEvents[24] = function () { //field24onchangebegin_cswhggft
 
 fieldsEvents[30] = function () { //field30onchangebegin_cswhggft
 	if(this.fieldValue("isDoc")) {
-		this.showField("tableName");
-		this.showField("creationName");
+		this.showField("tableName", "creationName", "singleName",
+			"captcha", "draftable", "recPerPage");
 		if(this.hasField('creationName_en')) {
-			this.showField("creationName_en");
-			this.showField("singleName_en");
+			this.showField("creationName_en", "singleName_en");
 		}
-		this.showField("singleName");
-		this.showField("captcha");
-		this.showField("draftable");
-
 		if(!this.rec_creation) {
 			this.showField("_fieldsID");
 		}
 
 		if(!this.rec_update) {
-			this.showField("createdon_field");
-			this.showField("createUserFld");
-			this.showField("createdby_field");
-			this.showField("staticLink");
+			this.showField("createdon_field", "createUserFld", "createdby_field",
+				"staticLink");
 		}
-		this.showField("recPerPage");
+
 	} else {
-		this.hideField("tableName");
-		this.hideField("creationName");
+		this.hideField("tableName", "creationName", "singleName",
+			"captcha", "_fieldsID", "draftable", "createdon_field",
+			"createUserFld", "createdby_field", "staticLink", "recPerPage");
 		if(this.hasField('creationName_en')) {
-			this.hideField("creationName_en");
-			this.hideField("singleName_en");
+			this.hideField("creationName_en", "singleName_en");
 		}
-		this.hideField("singleName");
-		this.hideField("captcha");
-		this.hideField("_fieldsID");
-		this.hideField("draftable");
-		this.hideField("createdon_field");
-		this.hideField("createUserFld");
-		this.hideField("createdby_field");
-		this.hideField("staticLink");
-		this.hideField("recPerPage");
 	}
 } //field30onchangeend_wqdggft
 
@@ -176,15 +131,17 @@ fieldsEvents[246] = function () { //field246onchangebegin_cswhggft
 	this.setFieldValue('help', location.protocol + '//' + location.host + '/custom/html/' + newv + '.html');
 } //field246onchangeend_wqdggft
 
-
+fieldsEvents[486] = function () { //field486onchangebegin_cswhggft
+	fieldsEvents[32].call(this);
+} //field486onchangeend_wqdggft
 
 fieldsEvents[32] = function () { //field32onchangebegin_cswhggft
-	if(this.fieldValue('nostore')) {
-		this.hideField('forSearch');
-		this.hideField('uniqu');
-	} else {
-		this.showField('forSearch');
-		this.showField('uniqu');
+	if(this.isFieldVisible('nostore')) {
+		if(this.fieldValue('nostore') || this.fieldValue('clientOnly')) {
+			this.hideField('forSearch', 'uniqu');
+		} else {
+			this.showField('forSearch', 'uniqu');
+		}
 	}
 } //field32onchangeend_wqdggft
 
