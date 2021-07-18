@@ -1,4 +1,5 @@
 import LeftBar from "../left-bar.js";
+import MainFrame from "../main-frame.js";
 import {consoleDir, getNode, getNodeData, isLitePage, popup, submitRecord} from "../utils.js";
 
 const admin = {};
@@ -151,7 +152,7 @@ admin.exchangeNodes = (node1, node2) => {
 			submitRecord(4, {
 				prior: node2.prior
 			}, node1.id, () => {
-				LeftBar.instance.reloadLeftBar();
+				MainFrame.instance.reloadOptions();
 			})
 		});
 	}

@@ -1,11 +1,12 @@
 "use strict";
+const ENV = require("../ENV.js");
 const mysql = require('mysql2');
 const performance = require('perf_hooks').performance;
 const connection = mysql.createConnection({
-	user: process.env.DB_USER,
-	database: process.env.DB_NAME,
-	host: process.env.DB_HOST,
-	password: process.env.DB_PASS
+	user: ENV.DB_USER,
+	database: ENV.DB_NAME,
+	host: ENV.DB_HOST,
+	password: ENV.DB_PASS
 });
 const {getCurrentStack} = require("../www/both-side-utils");
 
@@ -14,7 +15,7 @@ const mysqlExec = (query) => {
 	/// #if DEBUG
 	let preparedError = new Error();
 
-	let SQL = {timeElapsed_ms: performance.now(), SQL : query, stack: getCurrentStack()};
+	let SQL = {timeElapsed_ms: performance.now(), SQL: query, stack: getCurrentStack()};
 	if(process.debug) {
 		if(!process.debug.SQLs) {
 			process.debug.SQLs = [];
@@ -22,13 +23,13 @@ const mysqlExec = (query) => {
 		process.debug.SQLs.push(SQL)
 	}
 	/// #endif
-	
+
 	return new Promise((resolve, reject) => {
 		connection.query(query, (er, rows) => {
 			if(er) {
 				/// #if DEBUG
 				er.stack = preparedError.stack;
-				
+
 				/// #endif
 				debugger;
 				reject(er, preparedError, query);
@@ -41,9 +42,9 @@ const mysqlExec = (query) => {
 	});
 };
 
-if (!String.prototype.replaceAll) {
+if(!String.prototype.replaceAll) {
 	const expCache = new Map();
-	String.prototype.replaceAll = function(str, newStr){
+	String.prototype.replaceAll = function(str, newStr) {
 		/// #if DEBUG
 		assert(typeof str === 'string', "string expected")
 		/// #endif

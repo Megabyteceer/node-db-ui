@@ -5,7 +5,8 @@ import NodeAdmin from "../admin/node-admin.js";
 import constants from "../custom/consts.js";
 import LeftBar from "../left-bar.js";
 import {iAdmin} from "../user.js";
-import {consoleLog, createRecord, getNode, getNodeData, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation} from "../utils.js";
+import {consoleLog, createRecord, deleteRecord, getNode, getNodeData, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation} from "../utils.js";
+import FormFull from "./form-full.js";
 import FormItem from "./form-item.js";
 import BaseForm from "./form-mixins.js";
 
@@ -68,6 +69,7 @@ export default class List extends BaseForm {
 		this.state.data = props.initialData;
 		this.refreshData = this.refreshData.bind(this);
 		this.changeSearch = this.changeSearch.bind(this);
+		this.subFormRef = this.subFormRef.bind(this);
 	}
 
 	componentDidMount() {

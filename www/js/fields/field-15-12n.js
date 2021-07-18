@@ -1,6 +1,6 @@
 import FormFull from "../forms/form-full.js";
 import List from "../forms/list.js";
-import {backupCreationData, getNodeData, L, renderIcon} from "../utils.js";
+import {backupCreationData, deleteRecord, getNodeData, L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
 

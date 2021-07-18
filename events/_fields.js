@@ -249,7 +249,7 @@ async function createFieldInTable(data) {
 
 			if(fieldType === FIELD_7_Nto1) {
 				await mysqlExec('ALTER TABLE ' + nodeName + ' ADD INDEX(' + fieldName + ');');
-				await mysqlExec('ALTER TABLE ' + nodeName + ' ADD FOREIGN KEY (' + fieldName + ') REFERENCES ' + process.env.DB_NAME + '.' + linkedNodeName + '(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;');
+				await mysqlExec('ALTER TABLE ' + nodeName + ' ADD FOREIGN KEY (' + fieldName + ') REFERENCES ' + ENV.DB_NAME + '.' + linkedNodeName + '(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;');
 			}
 		}
 	}

@@ -19,7 +19,7 @@ const api = {
 	"api/getMe": (reqData, userSession, res) => {
 		res(userSession);
 	},
-	"api/getNodes": (reqData, userSession, res) => {
+	"api/getOptions": (reqData, userSession, res) => {
 		res(getNodesTree(userSession));
 	},
 	"api/delete": (reqData, userSession, res) => {

@@ -1,6 +1,7 @@
 import FieldAdmin from "./admin/field-admin.js";
 import NodeAdmin from "./admin/node-admin.js";
 import constants from "./custom/consts.js";
+import {options} from "./main-frame.js";
 import {iAdmin} from "./user.js";
 import {getData, isLitePage, loactionToHash, renderIcon, setFormFilter, sp} from "./utils.js";
 
@@ -244,46 +245,13 @@ function renderItemsArray(itemsArray, level) {
 export default class LeftBar extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {staticItems: options.rootItem.children};
 		LeftBar.instance = this;
-	}
-
-	componentDidMount() {
-		this.reloadLeftBar();
 	}
 
 	toggleCollapse() {
 		collapsed = !collapsed;
 		this.forceUpdate();
-	}
-
-	reloadLeftBar() {
-		getData('api/getNodes', undefined, (data) => {
-
-			var rootItem;
-			var items = {};
-
-			data.some((i) => {
-				items[i.id] = i;
-				if(i.id === 2) {
-					rootItem = i;
-				}
-			});
-
-			for(var k in data) {
-				var i = data[k];
-				if(items.hasOwnProperty(i.parent)) {
-					var parent = items[i.parent];
-					if(!parent.hasOwnProperty('children')) {
-						parent.children = [];
-					}
-					parent.children.push(i);
-				}
-			}
-
-			this.setState({staticItems: rootItem.children});
-
-		});
 	}
 
 	refreshLeftBarActive() {

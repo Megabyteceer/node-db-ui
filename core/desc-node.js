@@ -68,16 +68,19 @@ function getUserAccessToNode(node, userSession) {
 	return ret;
 }
 
+let options;
+
 function getNodesTree(userSession) { // get nodes tree visible to user
 	let langId = userSession.lang.prefix;
 	let cacheKey = userSession.cacheKey;
 
 	if(!nodesTreeCache.has(cacheKey)) {
-		let ret = [];
+		let nodesTree = [];
+		let ret = {nodesTree, options};
 		for(let nodeSrc of nodes) {
 			let prevs = getUserAccessToNode(nodeSrc, userSession);
 			if(prevs) {
-				ret.push({
+				nodesTree.push({
 					icon: nodeSrc.icon,
 					id: nodeSrc.id,
 					name: nodeSrc['name' + langId],
@@ -123,11 +126,28 @@ function attemptToreloadMetadataSchedule() {
 	}
 }
 
+const ENV = require("../ENV.js");
+
 async function initNodesData() { // load whole nodes data in to memory
 	let nodes_new;
 	let nodesById_new;
 	let langs_new;
 	let eventsHandlers_new = new Map();
+
+	options = {
+		DEBUG: ENV.DEBUG,
+		ADMIN_ENABLED_DEFAULT: ENV.ADMIN_ENABLED_DEFAULT,
+		APP_TITLE: ENV.APP_TITLE,
+		HOME_NODE: ENV.HOME_NODE,
+		REQUIRE_COMPANY: ENV.REQUIRE_COMPANY,
+		REQUIRE_NAME: ENV.REQUIRE_NAME,
+		DEFAULT_LANG: ENV.DEFAULT_LANG,
+		MAX_FILESIZE_TO_UPLOAD: ENV.MAX_FILESIZE_TO_UPLOAD,
+		ENABLE_MULTILANG: ENV.ENABLE_MULTILANG,
+		GOOGLE_PLUS: ENV.GOOGLE_PLUS,
+		TERMS_URL: ENV.TERMS_URL,
+		ALLOWED_UPLOADS: ENV.ALLOWED_UPLOADS
+	};
 
 	nodesById_new = new Map();
 	/// #if DEBUG
@@ -259,4 +279,4 @@ const destroyObject = (o) => {
 
 
 
-module.exports = {getNodeDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule};
+module.exports = {ENV, getNodeDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule};

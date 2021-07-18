@@ -1,4 +1,5 @@
 import constants from "../custom/consts.js";
+import {options} from "../main-frame.js";
 import Modal from "../modal.js";
 import {checkFileSize, getReadableUploadSize, idToFileUrl, L, renderIcon, serializeForm, submitData} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
@@ -32,7 +33,8 @@ registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
 		var fileName = this.props.initialValue;
 
 		if(this.props.isEdit) {
-			return React.createElement(FileFormBody, {field, ref: (r) => {this.fileFormBodyRef = r;}, accept: this.state.accept, wrapper: this.props.wrapper, parent: this, form: this.props.form, currentFileName: fileName, isCompact: this.props.isCompact});
+			let accept = options.ALLOWED_UPLOADS.map(i => '.' + i).join(', ');
+			return React.createElement(FileFormBody, {field, ref: (r) => {this.fileFormBodyRef = r;}, accept, wrapper: this.props.wrapper, parent: this, form: this.props.form, currentFileName: fileName, isCompact: this.props.isCompact});
 		}
 		return ReactDOM.a({style: {color: '#227', fontWeight: 'bold'}, href: idToFileUrl(fileName), download: true}, fileName ? (fileName.split('/').pop()) : undefined);
 

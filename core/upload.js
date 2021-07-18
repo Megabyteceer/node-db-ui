@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const sharp = require("sharp");
+const ENV = require("../ENV.js");
 const {getNodeDesc} = require("./desc-node");
 
 const UPLOADS_IMAGES_PATH = path.join(__dirname, '../www/images/uploads');
@@ -79,7 +80,7 @@ async function uploadFile(reqData, userSession) {
 	}
 	const field = getFieldForUpload(reqData, userSession);
 	if(!allowedUpload) {
-		allowedUpload = RegExp('\\.(' + process.env.ALLOWED_UPLOADS + ')$', 'i');
+		allowedUpload = RegExp('\\.(' + ENV.ALLOWED_UPLOADS.join('|') + ')$', 'i');
 	}
 	if(!allowedUpload.test(reqData.filename)) {
 		throw new Error(L('FILE_TYPE_NA', reqData.filename));

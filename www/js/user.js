@@ -5,6 +5,7 @@ import constants from "./custom/consts.js";
 import {clearForm, getData, goToPageByHash, L, loactionToHash, loadJS, renderIcon, sp} from "./utils.js";
 import Select from "./components/select.js";
 import admin from "./admin/admin-utils.js";
+import {options} from "./main-frame.js";
 
 var curentUserData;
 
@@ -101,7 +102,7 @@ export default class User extends React.Component {
 			};
 
 			var multilangBtn;
-			if(ENABLE_MULTILANG) {
+			if(options.ENABLE_MULTILANG) {
 				multilangBtn = ReactDOM.div({className: 'clickable clickable-top', style: mlbs, onClick: this.toggleMultilang},
 					renderIcon(iconName + 'square-o'), L('MULTILANG')
 				);
@@ -109,11 +110,11 @@ export default class User extends React.Component {
 
 			var org;
 			if(this.state.orgs && Object.keys(this.state.orgs).length > 1 && this.state.orgs[this.state.orgId]) {
-				var options = [];
+				var orgsSelect = [];
 
 				for(var k in this.state.orgs) {
 					var o = this.state.orgs[k];
-					options.push(ReactDOM.option({value: k, key: k, style: optionStyle}, o));
+					orgsSelect.push(ReactDOM.option({value: k, key: k, style: optionStyle}, o));
 				};
 
 				org = React.createElement(Select, {options: this.state.orgs, style: selectStyle, isCompact: true, defaultValue: this.state.orgId, onChange: this.changeOrg});

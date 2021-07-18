@@ -263,7 +263,7 @@ class CropperFieldBody extends React.Component {
 		}
 
 		var form = ReactDOM.form({ref: (r) => {this.references.form = r;}, encType: "multipart/form-data", style: {display: 'none'}},
-			ReactDOM.input({name: "picture", ref: (r) => {this.references.fileInput = r;}, type: 'file', accept: "image/*", onChange: this._onChange}),
+			ReactDOM.input({name: "picture", ref: (r) => {this.references.fileInput = r;}, type: 'file', accept: ".jpg, .jpeg, .png, .gif", onChange: this._onChange}),
 			ReactDOM.input({name: "MAX_FILE_SIZE", defaultValue: 3000000}),
 			ReactDOM.input({name: "fid", defaultValue: field.id}),
 			ReactDOM.input({name: "nid", defaultValue: field.node.id}),

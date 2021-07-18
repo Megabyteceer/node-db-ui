@@ -19,23 +19,7 @@ import "./fields/field-19-rich-ditor.js";
 import "./fields/field-20-color.js";
 import "./fields/field-21-file.js";
 
-window.ENABLE_MULTILANG = false;
-window.HOME_NODE = 5;
-window.ALLOWED_UPLOADS = '';
-window.MAX_FILESIZE_TO_UPLOAD = 3000000;
-window.document.title =
-	window.appTitle = '';
-window.DEBUG = true;
-
-//TODO: fill vars on server getMe
-
 /// #if DEBUG
-window.DEPLOY_TO = '';
-
-
-if(!window.DEBUG) {throw "DEBUG directives nadnt cutted of in PRODUCTION mode"};
-
-
 /*
 /// #endif
 window.onerror = (msg, url, line, col, error) => {
@@ -46,6 +30,7 @@ window.onerror = (msg, url, line, col, error) => {
 		submitErrorReport(msg, stack);
 	};
 //*/
+
 setTimeout(() => { //TODO: get to ReactDOM sync
 	for(let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'label', 'b', 'a', 'br', 'hr', 'svg', 'td', 'tr', 'tbody', 'thead', 'table', 'polyline', 'textarea', 'iframe', 'h4', 'h5']) {
 		ReactDOM[factoryType] = (...theArgs) => {

@@ -13,6 +13,7 @@ import DebugPanel from "./debug-panel.js";
 import {isPresentListRenderer} from "./forms/list.js";
 import User from "./user.js";
 import Modal from "./modal.js";
+import {options} from "./main-frame.js";
 
 const headersJSON = new Headers();
 headersJSON.append("Content-Type", "application/json");
@@ -214,8 +215,8 @@ function goToHome() {
 			return;
 		}
 	}
-	if(typeof (HOME_NODE) !== 'undefined') {
-		showForm(HOME_NODE);
+	if(typeof (options.HOME_NODE) !== 'undefined') {
+		showForm(options.HOME_NODE);
 	} else {
 		location.href = '/';
 	}
@@ -273,7 +274,7 @@ function loactionToHash(nodeId, recId, filters, editable) {
 
 	newHash = newHash.join('/');
 
-	if(newHash === 'n/' + HOME_NODE) {
+	if(newHash === 'n/' + options.HOME_NODE) {
 		newHash = '';
 	}
 	newHash = '#' + newHash;
@@ -367,7 +368,7 @@ function goBack(isAfterDelete) {
 		if(window.history.length > 0) {
 			window.history.back();
 		} else {
-			showForm(HOME_NODE);
+			showForm(options.HOME_NODE);
 		}
 
 	} else if(currentFormParameters.recId) {
@@ -658,7 +659,6 @@ function encodeData(data, node) {
 }
 
 function addMixins(Class, mixins) {
-	debugger;
 	Object.assign(Class.prototype, mixins);
 }
 
@@ -1137,21 +1137,21 @@ function strip_tags(input) {
 
 function checkFileSize(file) {
 
-	var regex = new RegExp('\.(' + ALLOWED_UPLOADS + ')$', 'gi');
+	var regex = new RegExp('\.(' + options.ALLOWED_UPLOADS.join('|') + ')$', 'gi');
 
 	if(!regex.exec(file.name)) {
-		myAlert(L('TYPES_ALLOWED', ALLOWED_UPLOADS));
+		myAlert(L('TYPES_ALLOWED', options.ALLOWED_UPLOADS));
 		return true;
 	}
 
-	if(file.size > MAX_FILESIZE_TO_UPLOAD) {
+	if(file.size > options.MAX_FILESIZE_TO_UPLOAD) {
 		myAlert(L('FILE_BIG', (file.size / 1000000.0).toFixed(0)) + getReadableUploadSize());
 		return true;
 	}
 }
 
 function getReadableUploadSize() {
-	return (MAX_FILESIZE_TO_UPLOAD / 1000000.0).toFixed(0) + L('MB');
+	return (options.MAX_FILESIZE_TO_UPLOAD / 1000000.0).toFixed(0) + L('MB');
 }
 
 var __errorsSent = {};

@@ -1,4 +1,5 @@
 "use strict";
+const ENV = require("../ENV.js");
 const {mysqlExec} = require("./mysql-connection");
 const crypto = require('crypto');
 const {shouldBeAuthorized} = require("../www/both-side-utils");
@@ -93,13 +94,13 @@ function killSession(userSession) {
 }
 
 function getServerHref() {
-	return process.env.SERVER_NAME;
+	return ENV.SERVER_NAME;
 }
 
 async function registerUser(reqData) {
 
-	const r_name = process.env.REQUIRE_NAME;
-	const r_company = process.env.REQUIRE_COMPANY;
+	const r_name = ENV.REQUIRE_NAME;
+	const r_company = ENV.REQUIRE_COMPANY;
 
 	const login = reqData.login_username;
 	const password = reqData.login_password;
@@ -305,7 +306,7 @@ async function setCurrentOrg(organID, userSession, updateInBd) {
 
 async function setMultiLang(enable, userSession) {
 	shouldBeAuthorized(userSession);
-	if(enable && defined('ENABLE_MULTILANG')) {
+	if(enable && ENV.ENABLE_MULTILANG) {
 		userSession.langs = getLangs(); //TODO: just flag if its enabled
 	} else {
 		delete userSession.langs;
@@ -317,7 +318,7 @@ async function setMultiLang(enable, userSession) {
 let transporter;
 async function mail_utf8(email, subject, text) {
 	return new Promise((resolve, rejects) => {
-		if(process.env.DEBUG) {
+		if(ENV.DEBUG) {
 			return;
 		}
 		if(!transporter) {
@@ -328,7 +329,7 @@ async function mail_utf8(email, subject, text) {
 			})
 		}
 		transporter.sendMail({
-			from: process.env.EMAIL_FROM,
+			from: ENV.EMAIL_FROM,
 			to: email,
 			subject,
 			text
