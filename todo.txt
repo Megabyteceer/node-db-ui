@@ -4,6 +4,7 @@
 проверить отправку всех полей
 
 создание всех видов разделов.
+по умолчанию сортировать старые в конце
 
 переименовать pre  post
 в UPDATE передавать fullNewData?
@@ -15,9 +16,16 @@ search brokes react
 getData
 postData move to promises
 
-code editor не ескейпить
+code editor не ескейпить добавить __noescape field in to request and use it in src sendRemove all \r symbols before send and in alll sources
 
 replace callsCount
+
+Save subform on save parent form when edit enum entry. check if subform valid
+
+Hide enum value parent field if it subform
+
+Add classes for all elements. Move styles to css.
+Make selenium tests
 
 модальные формы для редактирования админских вещей. (admin.popup заменить)
 
@@ -40,12 +48,18 @@ Maintenance mode ansver immideatelly with special code and client will resend re
 запретить подчеркивания не в начале названия поля. чтобы _en не добавили.
 запретить подчеркивание в названии таблиц
 
+Check editable fields visible before prehandler, but alliow to set them all in handlers. Check data for unknown fields in debug
+Скрыть icon,selectFieldName поле фиелдс таким рбразоми 
+
+Combine sqls in field edit. Node edit.
 
 crop падает на прозрачной области. когда кроп больше картинки
 
 в релизе CodeMirror импортировать по другому
 
 требовать nodeRef поле если указано nodeRef === FIELD_7_Nto1
+
+try mysql.createPool
 
 shake alerts on аppearing
 
@@ -54,3 +68,9 @@ w h поля для картинки
 в разделе добавить выбор ссылки на _html
 
 captcha
+
+Generate small icons for all image fields
+
+Lookup to user gives access for user if field marked as access opener. Keep such a fields in prevsFields property. Use it in messages.
+
+Linemaster list. render items one by one with delay

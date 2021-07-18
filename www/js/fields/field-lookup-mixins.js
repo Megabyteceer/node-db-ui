@@ -14,7 +14,7 @@ export default class fieldLookupMixins extends fieldMixins {
 
 		var parentId = props.wrapper.props.form.props.initialData.id || props.wrapper.props.form.filters[props.field.fieldName] || 'new';
 
-		if(props.field.fieldType === FIELD_17_TAB) {
+		if(props.field.fieldType === FIELD_15_1toN) {
 			ret[props.field.fieldName + '_linker'] = parentId;
 		}/* else {
 			ret[props.field.fieldName] = parentId;

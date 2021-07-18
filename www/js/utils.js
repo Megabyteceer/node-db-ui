@@ -691,6 +691,9 @@ function idToImgURL(imgId, holder) {
 	return 'images/placeholder_' + holder + '.png';
 }
 
+function idToFileUrl(fileId) {
+	return 'uploads/file/' + fileId;
+}
 
 let __requestsOrder = [];
 
@@ -1006,6 +1009,7 @@ function backupCreationData(nodeId, data, backupPrefix) {
 function getBackupData(nodeId, backupPrefix) {
 	return getItem('backup_for_node' + nodeId + (backupPrefix ? backupPrefix : '')) || {};
 }
+
 function removeBackup(nodeId, backupPrefix) {
 	removeItem('backup_for_node' + nodeId + (backupPrefix ? backupPrefix : ''));
 }
@@ -1229,6 +1233,7 @@ export {
 	draftRecord,
 	publishRecord,
 	idToImgURL,
+	idToFileUrl,
 	isCurrentlyShowedLeftbarItem,
 	addMixins,
 	loactionToHash,

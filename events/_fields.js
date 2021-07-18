@@ -4,6 +4,7 @@ const {shouldBeAdmin} = require("../core/admin/admin.js");
 const {mustBeUnset} = require("../core/auth.js");
 const {getLangs, reloadMetadataSchedule, getNodeDesc} = require("../core/desc-node.js");
 const {getRecords} = require("../core/get-records.js");
+const {submitRecord} = require("../core/sumbit.js");
 
 module.exports = {
 	createFieldInTable,
@@ -37,7 +38,7 @@ module.exports = {
 		const fieldName = data.fieldName;
 		if(fieldType === FIELD_15_1toN) {
 
-			const parentNode = getRecords(4, 1, data.node_fields_linker, true);
+			const parentNode = await getRecords(4, 1, data.node_fields_linker, userSession);
 
 			const linkerFieldData = {
 				status: 1,
@@ -49,9 +50,11 @@ module.exports = {
 				prior: 1000,
 				fieldType: 7,
 				forSearch: 1,
-				selectFieldName: parentNode.tableName
+				selectFieldName: parentNode.tableName,
+				_usersID: userSession.id,
+				_organID: userSession.orgId
 			};
-			submitRecord(6, linkerFieldData);
+			await submitRecord(6, linkerFieldData);
 		}
 		reloadMetadataSchedule();
 	},
@@ -136,7 +139,6 @@ module.exports = {
 
 function getFieldTypeSQL(data) {
 	switch(data.fieldType) {
-		case FIELD_13_KEYWORDS:
 		case FIELD_10_PASSWORD:
 		case FIELD_1_TEXT:
 			if(data.maxlen <= 255) {
@@ -161,7 +163,7 @@ function getFieldTypeSQL(data) {
 			return "TINYINT(1) NOT NULL DEFAULT b'0'";
 		case FIELD_6_ENUM:
 		case FIELD_7_Nto1:
-			return 'BIGINT(20) UNSIGNED NOT NULL DEFAULT 0';
+			return 'BIGINT(15) UNSIGNED NOT NULL DEFAULT 0';
 		case FIELD_12_PICTURE:
 			return "VARCHAR(32) NOT NULL DEFAULT ''";
 		case FIELD_16_RATING:
@@ -216,13 +218,13 @@ async function createFieldInTable(data) {
 		data.selectFieldName = linkedNodeName;
 		data.forSearch = 1;
 
-		const fld1 = nodeName.ID;
-		const fld2 = linkedNodeName.ID;
+		const fld1 = nodeName + 'ID';
+		const fld2 = linkedNodeName + 'ID';
 
 		await mysqlExec(`CREATE TABLE IF NOT EXISTS ${fieldName} (
-			ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-			${fld1} bigint(20) unsigned NOT NULL DEFAULT 0,
-			${fld2} bigint(20) unsigned NOT NULL DEFAULT 0,
+			ID bigint(15) unsigned NOT NULL AUTO_INCREMENT,
+			${fld1} bigint(15) unsigned NOT NULL DEFAULT 0,
+			${fld2} bigint(15) unsigned NOT NULL DEFAULT 0,
 			primary key(ID),
 			INDEX(${fld1}),
 			INDEX(${fld2}),

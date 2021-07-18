@@ -34,12 +34,12 @@ module.exports = {
 		if(data.isDoc && !data.staticLink) {
 
 			const tblCrtQ = `CREATE TABLE ${data.tableName} (
-			ID bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			ID bigint(15) unsigned NOT NULL AUTO_INCREMENT,
 			status int(1) unsigned NOT NULL DEFAULT '1',
 			name VARCHAR(64) NOT NULL default '',
-			_usersID bigint(20) unsigned NOT NULL,
+			_usersID bigint(15) unsigned NOT NULL,
 			createdON timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			_organID bigint(20) unsigned NOT NULL DEFAULT '0',
+			_organID bigint(15) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY (ID),
 			KEY creator_id (_usersID),
 			KEY createdON (createdON),

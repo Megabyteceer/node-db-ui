@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"rootDir": ".",
+		"baseUrl": ".",
+		"paths": {
+			"/*": [
+				"./*"
+			]
+		},
+		"outDir": "",
+		"module": "es2015",
+		"moduleResolution": "node",
+		"diagnostics": false,
+		"skipLibCheck": true
+	},
+	"exclude": [
+		"node_modules",
+		"**/node_modules/*",
+		"**/lib/**"
+	]
+}

@@ -37,7 +37,7 @@ global.getCurrentStack = () => {
 }
 
 global.notificationOut = (userSession, text) => {
-	if(userSession.is) {
+	if(!userSession || userSession.__temporaryServerSideSession) {
 		console.log(text);
 	} else {
 		if(!userSession.notifications) {
@@ -63,7 +63,6 @@ global.FIELD_8_STATICTEXT = 8;
 global.FIELD_10_PASSWORD = 10;
 global.FIELD_11_DATE = 11;
 global.FIELD_12_PICTURE = 12;
-global.FIELD_13_KEYWORDS = 13;
 global.FIELD_14_NtoM = 14;
 global.FIELD_15_1toN = 15;
 global.FIELD_16_RATING = 16;

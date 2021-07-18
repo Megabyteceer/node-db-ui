@@ -9,19 +9,23 @@ const UPLOADS_IMAGES_PATH = path.join(__dirname, '../www/images/uploads');
 const UPLOADS_FILES_PATH = path.join(__dirname, '../www/uploads/file');
 
 const getRadomPattern = () => {
-	return Math.floor(Math.random() * 900000000000000 + 100000000000000);
+	return Math.floor(Math.random() * 0xEffffffffffff + 0x1000000000000).toString(16);
 }
 
 const getNewFileDir = () => {
 	return new Promise((resolve, reject) => {
-		const generateId = (err) => {
-			if(err) {
-				reject(err);
-			}
+		const generateId = () => {
 			let folder = getRadomPattern();
-			fs.access(path.join(UPLOADS_FILES_PATH, id), fs.constants.F_OK, (err) => {
+			const folderName = path.join(UPLOADS_FILES_PATH, folder);
+			fs.access(folderName, fs.constants.F_OK, (err) => {
 				if(err) {
-					resolve(id);
+					fs.mkdir(folderName, (err) => {
+						if(err) {
+							reject(err);
+						} else {
+							resolve(folder);
+						}
+					});
 				} else {
 					generateId();
 				}
@@ -36,11 +40,11 @@ const getNewFileDir = () => {
 const getNewImageID = (originalFileName) => {
 	return new Promise((resolve, reject) => {
 		let ext = originalFileName.split('.').pop();
-		if (ext === 'jpeg') {
+		if(ext === 'jpeg') {
 			ext = 'jpg';
 		}
 		let folder = Math.floor(Math.random() * 256).toString(16);
-		
+
 		const generateId = (err) => {
 			if(err) {
 				reject(err);
@@ -70,22 +74,25 @@ const getNewImageID = (originalFileName) => {
 let allowedUpload;
 
 async function uploadFile(reqData, userSession) {
-	if(reqData.name.indexOf('..') >= 0) {
+	if(reqData.filename.indexOf('..') >= 0) {
 		throw new Error(L('UPL_ERROW_WFN'));
 	}
 	const field = getFieldForUpload(reqData, userSession);
 	if(!allowedUpload) {
-		allowedUpload = RegExp('/\.(' + process.env.ALLOWED_UPLOADS + ')$/i');
+		allowedUpload = RegExp('\\.(' + process.env.ALLOWED_UPLOADS + ')$', 'i');
 	}
-	if(!allowedUpload.test(reqData.name)) {
-		throw new Error(L('FILE_TYPE_NA', reqData.name));
+	if(!allowedUpload.test(reqData.filename)) {
+		throw new Error(L('FILE_TYPE_NA', reqData.filename));
 	}
-	const newFileName = (await getNewFileDir()) + reqData.name;
-	
+	const newFileName = (await getNewFileDir()) + '/' + reqData.filename;
+
 	return new Promise((resolve, reject) => {
 		fs.writeFile(path.join(UPLOADS_FILES_PATH, newFileName), reqData.fileContent, (err) => {
 			if(err) {
 				reject(err);
+			}
+			if(!userSession.uploaded) {
+				userSession.uploaded = {};
 			}
 			userSession.uploaded[reqData.fid] = newFileName;
 			resolve(newFileName);
@@ -114,7 +121,7 @@ async function uploadImage(reqData, userSession) {
 
 	let srcW = meta.width;
 	let srcH = meta.height;
-	
+
 	const isPerfectSize = (srcW === targetW) && (srcH === targetH);
 
 	if(!isPerfectSize) {
@@ -128,48 +135,47 @@ async function uploadImage(reqData, userSession) {
 		let targetX = 0;
 		let targetY = 0;
 
-		
-		if(X < 0){
+
+		if(X < 0) {
 			targetW -= -X * Q;
 			targetX = -X * Q;
 			W += X;
 			X = 0;
 		}
-		if(Y < 0){
+		if(Y < 0) {
 			targetH -= -Y * Q;
 			targetY = -Y * Q;
 			H += Y;
 			Y = 0;
 		}
-		
-		if(W > srcW){
+
+		if(W > srcW) {
 			targetW -= (W - srcW) * Q;
 			W = srcW;
 		}
-		
-		if(H > srcH){
+
+		if(H > srcH) {
 			targetH -= (H - srcH) * Q;
 			H = srcH;
 		}
 
 		await img.extract({left: Math.floor(X), top: Math.floor(Y), width: Math.floor(W), height: Math.floor(H)})
-		.resize(targetW, targetH);
+			.resize(targetW, targetH);
 		if(meta.format === 'png') {
-			await img.flatten({ background: '#FFFFFF' })
+			await img.flatten({background: '#FFFFFF'})
 		}
 	}
 
 	let newFileNameID = await getNewImageID('tmp.jpg');
 	let newFileName = idToImgURLServer(newFileNameID);
-	
-	if(!userSession.uploaded) {
-		userSession.uploaded = {};
-	}
 
 	return new Promise((resolve, reject) => {
 		img.toFile(newFileName, (err, info) => {
 			if(err) {
 				reject(err);
+			}
+			if(!userSession.uploaded) {
+				userSession.uploaded = {};
 			}
 			userSession.uploaded[reqData.fid] = newFileNameID;
 			resolve(newFileNameID);

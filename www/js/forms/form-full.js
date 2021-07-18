@@ -2,7 +2,7 @@
 import FieldWrap from "../fields/field-wrap.js";
 import {dangerButtonStyle, defaultButtonStyle, successButtonStyle} from "../stage.js";
 import {iAdmin} from "../user.js";
-import {backupCreationData, consoleLog, deleteRecord, getItem, goBack, L, myAlert, n2mValuesEqual, removeBackup, renderIcon, submitRecord} from "../utils.js";
+import {backupCreationData, consoleLog, deleteRecord, getBackupData, getItem, goBack, L, myAlert, n2mValuesEqual, removeBackup, renderIcon, submitRecord} from "../utils.js";
 import FormTab from "./form-tab.js";
 import eventProcessingMixins from "./event-processing-mixins.js";
 import constants from "../custom/consts.js";
@@ -91,7 +91,7 @@ export default class FormFull extends eventProcessingMixins {
 
 	recoveryBackupIfNeed() {
 		if(!this.currentData.id && !this.props.inlineEditable) {
-			var backup = getItem('backup_for_node' + this.props.node.id + (this.props.backupPrefix ? this.props.backupPrefix : ''));
+			var backup = getBackupData(this.props.node.id, this.props.backupPrefix);
 			if(backup) {
 				this.currentData = Object.assign(backup, this.filters);
 				this.resendDataToFields();
@@ -323,11 +323,10 @@ export default class FormFull extends eventProcessingMixins {
 			if(!isInvalid) {
 				this.rec_ID = this.currentData.id;
 				this.deteleBackup();
-				if(callback) {
-					callback();
-				} else if(this.onSaveCallback) {
-
+				if(this.onSaveCallback) {
 					this.onSaveCallback(callback);
+				} else if(callback) {
+					callback();
 				} else {
 					if(this.isSlave()) {
 						this.props.parentForm.valueChoosed(this.currentData, true);
@@ -369,7 +368,7 @@ export default class FormFull extends eventProcessingMixins {
 		for(var k in flds) {
 			var field = flds[k];
 			if(this.isVisibleField(field)) {
-				if((field.fieldType === FIELD_17_TAB) && (field.maxlen === 0)) {//tab
+				if((field.fieldType === FIELD_17_TAB) && (field.maxlen === 0) && !this.isSlave()) {//tab
 					currentCompactAreaCounter = 0;//terminate compact area nesting
 					var isDefaultTab;
 					if(!tabs) {
@@ -412,7 +411,7 @@ export default class FormFull extends eventProcessingMixins {
 					});
 
 
-					if((field.fieldType === FIELD_17_TAB) && (field.maxlen >= 0)) {//compact area
+					if((field.fieldType === FIELD_17_TAB) && (field.maxlen >= 0) && !this.isSlave()) {//compact area
 						currentCompactAreaCounter = 0;//terminate compact area nesting
 					}
 
@@ -427,7 +426,7 @@ export default class FormFull extends eventProcessingMixins {
 					} else {
 						fields.push(tf);
 					}
-					if((field.fieldType === FIELD_17_TAB) && (field.maxlen >= 0)) {//compact area
+					if((field.fieldType === FIELD_17_TAB) && (field.maxlen >= 0) && !this.isSlave()) {//compact area
 						currentCompactAreaCounter = field.maxlen;
 						currentCompactAreaName = field.fieldName;
 					}

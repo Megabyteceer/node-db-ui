@@ -1,24 +1,29 @@
+import constants from "../custom/consts.js";
 import Modal from "../modal.js";
-import {L, renderIcon, serializeForm, submitData} from "../utils.js";
+import {checkFileSize, getReadableUploadSize, idToFileUrl, L, renderIcon, serializeForm, submitData} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
 registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
 
 	setValue(val) {
-
+		if(typeof val === 'string') {
+			this.state.value = val;
+		} else {
+			this.props.form.currentData[this.props.field.fieldName] = undefined;
+		}
 	}
 
 	isEmpty() {
-		return !this.refs.fileInput.value;
+		return !this.fileFormBodyRef.fileInputRef.value;
 	}
 
 	focusOverride() {
-		this.refs.selectButton.focus();
+		this.selectButtonRef.focus();
 	}
 
 	beforeSave(callback) {
-		this.refs.fileFormBody.save(callback);
+		this.fileFormBodyRef.save(callback);
 	}
 
 	render() {
@@ -27,9 +32,9 @@ registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
 		var fileName = this.props.initialValue;
 
 		if(this.props.isEdit) {
-			return React.createElement(FileFormBody, {field, ref: 'fileFormBody', accept: this.state.accept, wrapper: this.props.wrapper, parent: this, form: this.props.form, currentFileName: fileName, isCompact: this.props.isCompact});
+			return React.createElement(FileFormBody, {field, ref: (r) => {this.fileFormBodyRef = r;}, accept: this.state.accept, wrapper: this.props.wrapper, parent: this, form: this.props.form, currentFileName: fileName, isCompact: this.props.isCompact});
 		}
-		return ReactDOM.a({style: {color: '#227', fontWeight: 'bold'}, href: fileName, download: true}, fileName ? (fileName.split('/').pop()) : undefined);
+		return ReactDOM.a({style: {color: '#227', fontWeight: 'bold'}, href: idToFileUrl(fileName), download: true}, fileName ? (fileName.split('/').pop()) : undefined);
 
 	}
 });
@@ -39,20 +44,21 @@ export default class FileFormBody extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
+		this._onChange = this._onChange.bind(this);
 	}
 
 	_cancel() {
 		this.setState({
 			file: null
 		});
-		this.refs.fileInput.value = '';
+		this.fileInputRef.value = '';
 		Modal.instance.hide();
 		this.props.parent.props.wrapper.hideTooltip();
 	}
 
 	save(callback) {
 		if(this.state.file) {
-			submitData('api/uploadFile', serializeForm(ReactDOM.findDOMNode(this.refs.form)), callback, true);
+			submitData('api/uploadFile', serializeForm(ReactDOM.findDOMNode(this.formRef)), callback, true);
 		} else {
 			callback(undefined);
 		}
@@ -83,11 +89,10 @@ export default class FileFormBody extends React.Component {
 		var curFile;
 		var selFile
 		var select;
-		var preview;
 
 		if(this.props.currentFileName) {
 			curFile =
-				ReactDOM.a({href: this.props.currentFileName, target: '_blank', style: {fontSize: '70%', color: '#00a'}},
+				ReactDOM.a({href: idToFileUrl(this.props.currentFileName), download: true, target: '_blank', style: {fontSize: '70%', color: '#00a'}},
 					L('DOWNLOAD')
 				);
 
@@ -100,9 +105,9 @@ export default class FileFormBody extends React.Component {
 		}
 
 		select = ReactDOM.button({
-			style: {background: constants.PUBLISH_COLOR, fontSize: '80%', marginLeft: 10, padding: '5px 20px 6px 20px'}, ref: 'selectButton', className: 'clickable clickable-edit', onClick: () => {
-				this.refs.fileInput.value = null;
-				this.refs.fileInput.click();
+			style: {background: constants.PUBLISH_COLOR, fontSize: '80%', marginLeft: 10, padding: '5px 20px 6px 20px'}, ref: (r) => {this.selectButtonRef = r;}, className: 'clickable clickable-edit', onClick: () => {
+				this.fileInputRef.value = null;
+				this.fileInputRef.click();
 			}
 		}, renderIcon('folder-open'),
 			L('FILE_SELECT', getReadableUploadSize())
@@ -115,8 +120,8 @@ export default class FileFormBody extends React.Component {
 		}
 
 
-		var form = ReactDOM.form({ref: 'form', encType: "multipart/form-data", style: {display: 'none'}},
-			ReactDOM.input({name: "all files", ref: 'fileInput', type: 'file', accept: this.props.accept, onChange: this._onChange}),
+		var form = ReactDOM.form({ref: (r) => {this.formRef = r;}, encType: "multipart/form-data", style: {display: 'none'}},
+			ReactDOM.input({name: "all files", ref: (r) => {this.fileInputRef = r;}, type: 'file', accept: this.props.accept, onChange: this._onChange}),
 			ReactDOM.input({name: "MAX_FILE_SIZE", defaultValue: 30000000}),
 			ReactDOM.input({name: "fid", defaultValue: field.id}),
 			ReactDOM.input({name: "nid", defaultValue: field.node.id}),

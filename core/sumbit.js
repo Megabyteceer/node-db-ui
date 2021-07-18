@@ -1,4 +1,5 @@
 "use strict";
+const {assert} = require("console");
 const fs = require('fs');
 const path = require('path');
 const {isAdmin} = require("../www/both-side-utils");
@@ -100,16 +101,19 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 
 		if(recId === false) {
 			if(data.hasOwnProperty('_usersID')) {
-				assert(isAdmin(userSession) || userSession.id === data._usersID, "wrong _usersID detected");
+				assert(!userSession || isAdmin(userSession) || userSession.id === data._usersID, "wrong _usersID detected");
 			} else {
+				assert(userSession, "submitRecord without userSession requires _usersID to be defined.");
 				noNeedComma = false;
 				insQ.push('_usersID=', userSession.id);
 				leastOneTablesFieldUpdated = true;
 			}
 
 			if(data.hasOwnProperty('_organID')) {
-				assert(isAdmin(userSession) || userSession.orgId === data._organID, "wrong _organID detected");
+				assert(!userSession || isAdmin(userSession) || userSession.orgId === data._organID, "wrong _organID detected");
 			} else {
+				assert(userSession, "submitRecord without userSession requires _organID to be defined.");
+
 				if(!noNeedComma) {
 					insQ.push(",");
 				}
@@ -132,6 +136,12 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 						realDataBefore[fieldName] = currentData[fieldName];
 					}
 				}
+
+				/// #if DEBUG
+				if(f.clientOnly && data.hasOwnProperty('fieldName')) {
+					notificationOut(userSession, L('CLIENT_ONLY_ON_SERVER', fieldName));
+				}
+				/// #endif
 			}
 		}
 
@@ -144,12 +154,6 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		for(let f of node.fields) {
 
 			let fieldName = f.fieldName;
-
-			/// #if DEBUG
-			if(f.clientOnly && data.hasOwnProperty('fieldName')) {
-				notificationOut(userSession, L('CLIENT_ONLY_ON_SERVER', fieldName));
-			}
-			/// #endif
 
 			if(!f.nostore && data.hasOwnProperty(fieldName)) {
 
@@ -203,7 +207,6 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 						//continue to process as text
 						case FIELD_1_TEXT:
 						case FIELD_10_PASSWORD:
-						case FIELD_13_KEYWORDS:
 							if(f.maxlen && (fieldVal.length > f.maxlen)) {
 								throw new Error("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxlen);
 							}
@@ -221,7 +224,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 
 						case FIELD_7_Nto1:
 							if(!isAdmin(userSession) && fieldVal) {
-								getRecords(f.nodeRef, 8, fieldVal, userSession); //check if you have read access to refered item
+								await getRecords(f.nodeRef, 8, fieldVal, userSession); //check if you have read access to refered item
 							}
 							insQ.push(fieldVal);
 							break;
@@ -293,7 +296,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 								}
 
 								if(!isAdmin(userSession) && id) {
-									getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to refered item
+									await getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to refered item
 								}
 
 								n2miQ.push("(", recId, ',', id, ")");

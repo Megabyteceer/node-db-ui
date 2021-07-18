@@ -15,7 +15,7 @@ window.addEventListener('message', (e) => {
 registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixins {
 
 	getSummernote() {
-		return this.refs.viewport.contentWindow;
+		return this.viewportRef.contentWindow;
 	}
 
 	componentDidMount() {
@@ -94,6 +94,6 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 			cog = ReactDOM.div(null, renderIcon('cog fa-spin'));
 		}
 
-		return ReactDOM.div(null, cog, ReactDOM.iframe({ref: 'viewport', sandbox: 'allow-scripts allow-forms', style: style, src: 'rich-editor/index.html?iframeId=' + this.iframeId}));
+		return ReactDOM.div(null, cog, ReactDOM.iframe({ref: (r) => {this.viewportRef = r;}, sandbox: 'allow-scripts allow-forms', style: style, src: 'rich-editor/index.html?iframeId=' + this.iframeId}));
 	}
 });

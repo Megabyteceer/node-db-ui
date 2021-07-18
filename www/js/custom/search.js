@@ -95,12 +95,12 @@ export default class Search extends React.Component {
 
 	doSearch() {
 		this.clearTimeout();
-		if(this.refs.input.value.length > 2) {
+		if(this.inputRef.value.length > 2) {
 			this.setState({
 				queryInProgress: true
 			});
 			getData('/custom/api/search', {
-				s: this.refs.input.value
+				s: this.inputRef.value
 			}, (data) => {
 				this.setState({
 					queryInProgress: false,
@@ -116,7 +116,7 @@ export default class Search extends React.Component {
 		var inputsProps = {
 			style: inputStyle,
 			title: 'Search',
-			ref: 'input',
+			ref: (r) => {this.inputRef = r;},
 			onChange: this.onChange
 		};
 
@@ -157,7 +157,7 @@ export default class Search extends React.Component {
 								this.setState({
 									data: undefined
 								});
-								this.refs.input.value = '';
+								this.inputRef.value = '';
 								eval(i.click);
 							}
 						},
@@ -181,7 +181,7 @@ export default class Search extends React.Component {
 							textAlign: 'center'
 						}
 					},
-						'No results for request "' + this.refs.input.value + '".'
+						'No results for request "' + this.inputRef.value + '".'
 					)
 				)
 			}
@@ -216,7 +216,7 @@ export default class Search extends React.Component {
 					this.setState({
 						data: undefined
 					})
-					this.refs.input.value = '';
+					this.inputRef.value = '';
 
 				}
 			}, renderIcon('times')),

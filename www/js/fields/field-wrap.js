@@ -142,7 +142,8 @@ export default class FieldWrap extends React.Component {
 		if(this.fieldRef.isEmpty) {
 			return this.fieldRef.isEmpty();
 		}
-		return true;
+		var val = this.props.form.currentData[this.props.field.fieldName];
+		return !val;
 	}
 
 	hide() {

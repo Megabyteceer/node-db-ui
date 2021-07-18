@@ -1,7 +1,7 @@
 "use strict";
 
 const {isAdmin} = require("../../www/both-side-utils");
-const {getNodeDesc, reloadMetadataSchedule} = require("../desc-node");
+const {getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION} = require("../desc-node");
 const {mysqlExec} = require("../mysql-connection");
 const path = require('path');
 const fs = require('fs');
@@ -27,7 +27,7 @@ async function clearCache(userSession) {
 	return 1;
 }
 
-const shouldBeAdmin = (userSession) => {
+const shouldBeAdmin = (userSession = ADMIN_USER_SESSION) => {
 	if(!isAdmin(userSession)) {
 		throw new Error('Access denied');
 	}

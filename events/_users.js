@@ -11,10 +11,10 @@ async function clearUserParams(data, currentData, userSession) {
 		delete data._organID;
 		delete data._userRolesm2n;
 	}
-	
+
 	if(data.hasOwnProperty('PASS')) {
 		const p = data.PASS;
-		if (p !== 'nc_l4DFn76ds5yhg') {
+		if(p !== 'nc_l4DFn76ds5yhg') {
 			let salt = crypto.randomBytes(16).toString('hex');
 			await mysqlExec("UPDATE _users SET salt='" + salt + "' WHERE id=" + currentData.id);
 			data.PASS = await getPasswordHash(data.PASS, salt);
@@ -29,7 +29,7 @@ async function clearUserParams(data, currentData, userSession) {
 	} else {
 		currentData = data;
 	}
-	
+
 	data.public_email = currentData.show_email ? currentData.email : 'hidden_91d2g7';
 	data.public_phone = currentData.show_phone ? currentData.PHONE : 'hidden_91d2g7';
 	data.public_vk = currentData.show_vk ? currentData.soc_vk : 'hidden_91d2g7';
@@ -39,14 +39,13 @@ async function clearUserParams(data, currentData, userSession) {
 
 module.exports = {
 	update: async function(currentData, newData, userSession) {
-		debugger;
 		if(!isAdmin(userSession)) {
 			delete newData.email;
 		}
-	
-		if (newData.hasOwnProperty('company')) {
-			if (currentData._organID.id) {
-				await submitRecord(7, {name:newData.company}, currentData._organID.id);
+
+		if(newData.hasOwnProperty('company')) {
+			if(currentData._organID.id) {
+				await submitRecord(7, {name: newData.company}, currentData._organID.id);
 			}
 		}
 		return clearUserParams(newData, currentData, userSession);

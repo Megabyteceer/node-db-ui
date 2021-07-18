@@ -26,8 +26,7 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 		var ret = [];
 		var i;
 		if(this.state.inlineEditing) {
-			var field = this.props.field;
-			var subForms = this.refs.inlineList.getSubforms();
+			var subForms = this.inlineListRef.getSubforms();
 			for(i = 0; i < subForms.length; i++) {
 				var form = subForms[i];
 				form.prepareToBackup();
@@ -73,7 +72,7 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 					callback(allValid ? false : L('INVALID_DATA_LIST'));
 				}
 			}
-			this.refs.inlineList.getSubforms().some((subForm) => {
+			this.inlineListRef.getSubforms().some((subForm) => {
 				callbacksCount++;
 				subForm.validate(onSubformValidated);
 			});
@@ -92,7 +91,7 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 
 
 			var invalidSave = false;
-			var subForms = this.refs.inlineList.getSubforms(true);
+			var subForms = this.inlineListRef.getSubforms(true);
 			var field = this.props.field;
 
 
@@ -131,6 +130,14 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 		}
 	}
 
+	saveParentFormBeforeCreation(callback) {
+		this.props.form.saveForm(() => {
+			const linkerFieldName = this.props.field.fieldName + '_linker';
+			this.state.filters[linkerFieldName] = this.props.form.currentData.id;
+			callback();
+		});
+	}
+
 	render() {
 
 		var field = this.props.field;
@@ -145,9 +152,9 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 			}
 
 		} else {
-			var isParentRecordCreation = !this.props.form.props.initialData.hasOwnProperty('id');
+			var askToSaveParentBeforeCreation = !this.props.form.props.initialData.hasOwnProperty('id');
 			body = ReactDOM.div(null,
-				React.createElement(List, {ref: 'inlineList', hideControlls: this.state.hideControlls, noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton, disableDrafting: this.state.disableDrafting, additionalButtons: this.state.additionalButtons || this.props.additionalButtons, node: this.savedNode, omitHeader: this.state.creationOpened, initialData: this.savedData, preventCreateButton: isParentRecordCreation || this.state.preventCreateButton, editable: this.state.inlineEditing, nodeId: field.nodeRef, parentForm: this, filters: this.savedFilters || this.state.filters})
+				React.createElement(List, {ref: (r) => {this.inlineListRef = r;}, hideControlls: this.state.hideControlls, noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton, disableDrafting: this.state.disableDrafting, additionalButtons: this.state.additionalButtons || this.props.additionalButtons, node: this.savedNode, omitHeader: this.state.creationOpened, initialData: this.savedData, preventCreateButton: this.state.preventCreateButton, askToSaveParentBeforeCreation, editable: this.state.inlineEditing, nodeId: field.nodeRef, parentForm: this, filters: this.savedFilters || this.state.filters})
 			);
 		}
 		return body;

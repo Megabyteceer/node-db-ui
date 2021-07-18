@@ -301,7 +301,7 @@ formsEventsOnSave[6] = function () { //form6onsaveBegin_JS89DW72SISA887QKJ32IUSL
 
 	if(!this.fieldValue('maxlen')) {
 		this.setFieldValue('maxlen', 0);
-		if((fieldType === FIELD_1_TEXT) || (fieldType === FIELD_2_INT) || (fieldType === FIELD_10_PASSWORD) || (fieldType === FIELD_13_KEYWORDS)) {
+		if((fieldType === FIELD_1_TEXT) || (fieldType === FIELD_2_INT) || (fieldType === FIELD_10_PASSWORD)) {
 			this.fieldAlert('maxlen', L('REQUIRED_FLD'));
 		}
 	}

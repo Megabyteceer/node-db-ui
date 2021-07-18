@@ -89,7 +89,7 @@ export default class List extends BaseForm {
 	higlightResults() {
 		if((this.filters && this.filters.s) || this.prevHiglightedTerm) {
 			/* //TODO fix search highlight
-			var c = $('.list-body', ReactDOM.findDOMNode(this.refs.this));
+			var c = $('.list-body', ReactDOM.findDOMNode(this));
 
 			var src_str = c.html();
 			if(src_str) {
@@ -445,23 +445,19 @@ export default class List extends BaseForm {
 			var createButton;
 			if(node.canCreate && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
 				if(this.isSlave()) {
-
-
-					createButton = ReactDOM.button({style: {padding: '5px 15px', background: constants.CREATE_COLOR}, className: 'clickable clickable-neg', onClick: () => {this.props.parentForm.toggleCreateDialogue();}},
+					createButton = ReactDOM.button({
+						style: {padding: '5px 15px', background: constants.CREATE_COLOR}, className: 'clickable clickable-neg', onClick: () => {
+							if(this.props.askToSaveParentBeforeCreation) {
+								this.props.parentForm.saveParentFormBeforeCreation(() => {
+									this.props.parentForm.toggleCreateDialogue();
+								});
+							} else {
+								this.props.parentForm.toggleCreateDialogue();
+							}
+						}
+					},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
-					if(node.id === 21) {
-						createButton = ReactDOM.span(null,
-							ReactDOM.button({style: {padding: '5px 15px', background: constants.CREATE_COLOR}, className: 'clickable clickable-neg', onClick: () => {this.props.parentForm.toggleCreateDialogue(undefined, {isGroupDivider: 0})}},
-								renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
-							),
-							ReactDOM.button({style: {padding: '5px 15px', background: constants.CREATE_COLOR}, className: 'clickable clickable-neg', onClick: () => {this.props.parentForm.toggleCreateDialogue(undefined, {isGroupDivider: 1});}},
-								renderIcon('plus'), ' ' + L('CREATE_DELIMITER')
-							)
-						);
-
-					}
-
 				} else {
 					createButton = ReactDOM.button({style: {background: constants.CREATE_COLOR, color: '#fff', padding: '15px 40px'}, className: 'clickable clickable-neg', onClick: () => {createRecord(node.id, filters);}},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
@@ -666,7 +662,7 @@ export default class List extends BaseForm {
 			}
 		}
 
-		return ReactDOM.div({style: style, ref: 'this'},
+		return ReactDOM.div({style: style},
 			nodeAdmin,
 			title,
 			header,
