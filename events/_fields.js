@@ -163,7 +163,7 @@ function getFieldTypeSQL(data) {
 		case FIELD_7_Nto1:
 			return 'BIGINT(20) UNSIGNED NOT NULL DEFAULT 0';
 		case FIELD_12_PICTURE:
-			return "VARCHAR(21) NOT NULL DEFAULT ''";
+			return "VARCHAR(32) NOT NULL DEFAULT ''";
 		case FIELD_16_RATING:
 			throw new Error(L('RATING_FLD_NOEDIT'));
 		case FIELD_19_RICHEDITOR:

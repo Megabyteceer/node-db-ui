@@ -139,8 +139,8 @@ export default class FieldWrap extends React.Component {
 	}
 
 	isEmpty() {
-		if(this.fieldRef.hasOwnProperty('isEmpty')) {
-			return !this.fieldRef.isEmpty();
+		if(this.fieldRef.isEmpty) {
+			return this.fieldRef.isEmpty();
 		}
 		return true;
 	}

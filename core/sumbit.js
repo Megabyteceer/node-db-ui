@@ -59,7 +59,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		} else if(!f.nostore) {
 
 			if(f.requirement) {
-				if(!data.hasOwnProperty(fieldName) && !currentData.hasOwnProperty(fieldName)) {
+				if(!data.hasOwnProperty(fieldName) && (!currentData || !currentData.hasOwnProperty(fieldName))) {
 					throw new Error("Required field '" + fieldName + "' is empty.");
 				}
 			}

@@ -10,8 +10,7 @@ registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
 	}
 
 	isEmpty() {
-		//for checkingIfIsEmpty
-		return this.refs.fileInput.value;
+		return !this.refs.fileInput.value;
 	}
 
 	focusOverride() {

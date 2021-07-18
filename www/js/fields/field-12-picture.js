@@ -11,8 +11,7 @@ registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
 	}
 
 	isEmpty() {
-		//for checkingIfIsEmpty
-		return this.cropperBody.references.fileInput.value;
+		return !this.cropperBody.references.fileInput.value;
 	}
 
 	focusOverride() {

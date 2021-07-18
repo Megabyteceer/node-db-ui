@@ -21,6 +21,7 @@ import('./lib/react-dom/umd/react-dom.production.min.js');
 //*/
 
 import './lib/jquery/dist/jquery.js'
+import Cropper from "./lib/cropperjs/dist/cropper.esm.js";
 
 //TODO: add release imports
 window.module = {};
@@ -33,7 +34,7 @@ window.require = function (name) {
 		return window.ReactDOM;
 	}
 	if(name === 'cropperjs') {
-		return window.Cropper;
+		return Cropper;
 	}
 	if(name === 'moment') {
 		return window.moment;

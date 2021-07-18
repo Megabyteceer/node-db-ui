@@ -180,9 +180,7 @@ export default class FormFull extends eventProcessingMixins {
 				this.currentData[field.fieldName] = this.props.overrideOrderData;
 			}
 
-			var val = this.currentData[field.fieldName];
-
-			if(field.requirement && (!val && val !== 0) && field.fieldType != FIELD_17_TAB) {
+			if(field.requirement && fieldRef.isEmpty()) {
 				this.fieldAlert(field.fieldName, L('REQUIRED_FLD'), false, formIsValid);
 				formIsValid = false;
 			} else {

@@ -13,6 +13,11 @@ export default class fieldMixins extends React.Component {
 		this.refGetter = this.refGetter.bind(this);
 	}
 
+	isEmpty() {
+		const val = this.state.value;
+		return (!val && val !== 0);
+	}
+
 	focus() {
 		if(this.focusOverride) {
 			this.focusOverride();
