@@ -154,6 +154,9 @@ formsEventsOnSave[5] = function () { //form5onsaveBegin_JS89DW72SISA887QKJ32IUSL
 
 
 formsEventsOnLoad[6] = function () { //form6onloadBegin_JS89DW72SISA887QKJ32IUSL
+
+	this.getField('fieldType').fieldRef.setFilterValues([16]);
+
 	if(this.rec_creation) {
 		if(isNaN(this.fieldValue("show"))) {
 			this.setFieldValue("show", 5);
@@ -193,7 +196,7 @@ formsEventsOnLoad[6] = function () { //form6onloadBegin_JS89DW72SISA887QKJ32IUSL
 		else
 			this.setFieldValue("vis_list_custom", 0);
 
-		if(this.fieldValue("fieldType") === FIELD_12_PICTURE) {
+		if(this.fieldValue("fieldType") === FIELD_12_PICTURE || this.fieldValue("fieldType") === FIELD_19_RICHEDITOR) {
 			this.setFieldValue("height", this.fieldValue("maxlen") % 10000);
 			this.setFieldValue("width", Math.floor(this.fieldValue("maxlen") / 10000));
 		}
@@ -285,7 +288,7 @@ formsEventsOnSave[6] = function () { //form6onsaveBegin_JS89DW72SISA887QKJ32IUSL
 		this.fieldAlert('fieldName', L('LATIN_ONLY'));
 	}
 
-	if(fieldType === FIELD_12_PICTURE) {
+	if(fieldType === FIELD_12_PICTURE || fieldType === FIELD_19_RICHEDITOR) {
 		if(!this.fieldValue("height")) {
 			this.fieldAlert("height", L('REQUIRED_FLD'));
 		}

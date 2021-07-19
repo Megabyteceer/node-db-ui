@@ -1,6 +1,6 @@
 import LeftBar from "../left-bar.js";
 import MainFrame from "../main-frame.js";
-import {consoleDir, getNode, getNodeData, isLitePage, popup, submitRecord} from "../utils.js";
+import {consoleDir, getNode, getNodeData, isLitePage, popup, refreshForm, submitRecord} from "../utils.js";
 
 const admin = {};
 
@@ -44,7 +44,7 @@ admin.moveField = (fIndex, form, node, direction) => {
 			if(direction < 0) {
 				if(fieldIndex > 0) {
 					i = fieldIndex - 1;
-					while(i >= 0) {
+					while(i > 0) {
 						var f = fields[i];
 						if(f.fieldType === FIELD_17_TAB && f.maxlen === 0) {
 							break;
@@ -108,7 +108,6 @@ admin.moveField = (fIndex, form, node, direction) => {
 	}
 
 	if(group2.length === 0) {
-		debugError('tried to move field to out of form.');
 		return;
 	}
 

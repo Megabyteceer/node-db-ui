@@ -9,14 +9,24 @@ fieldsEvents[20] = function () { //field20onchangebegin_cswhggft
 	this.showField();
 	this.setFieldLabel("fdescription", L("FLD_DESC"));
 	this.hideField("selectFieldName", "show", "nodeRef", "enum", "width", "height", "icon");
+	this.enableField("vis_list");
+	if(fieldType === FIELD_14_NtoM) {
+		this.getField('nodeRef').setLookupFilter('exludeIDs', [this.fieldValue("node_fields_linker").id]);
+	} else {
+		this.getField('nodeRef').setLookupFilter('exludeIDs', undefined);
+	}
 	switch(fieldType) {
 		case FIELD_8_STATICTEXT:
-			this.hideField("maxlen", "clientOnly", "nostore", "name", "requirement", "uniqu", "forSearch");
 			this.setFieldLabel("fdescription", L("CONTENT"));
+		case FIELD_17_TAB:
+		case FIELD_18_BUTTON:
+			this.hideField("maxlen", "clientOnly", "nostore", "requirement", "uniqu", "forSearch");
 			break;
-		case FIELD_7_Nto1:
 		case FIELD_14_NtoM:
 		case FIELD_15_1toN:
+			this.disableField("vis_list");
+			this.setFieldValue("vis_list", 0);
+		case FIELD_7_Nto1:
 			this.hideField("maxlen", "uniqu");
 			this.setFieldValue("uniqu", false);
 			this.showField("nodeRef");
@@ -25,6 +35,7 @@ fieldsEvents[20] = function () { //field20onchangebegin_cswhggft
 		case FIELD_6_ENUM:
 			this.showField('enum');
 			break;
+		case FIELD_19_RICHEDITOR:
 		case FIELD_12_PICTURE:
 			this.showField("width", "height");
 			this.hideField("maxlen", "nostore", "clientOnly", "forSearch", "uniqu");
@@ -33,6 +44,14 @@ fieldsEvents[20] = function () { //field20onchangebegin_cswhggft
 			this.setFieldValue('forSearch', false);
 			this.setFieldValue('uniqu', false);
 			break;
+		case FIELD_5_BOOL:
+		case FIELD_4_DATETIME:
+		case FIELD_11_DATE:
+		case FIELD_20_COLOR:
+		case FIELD_21_FILE:
+			this.hideField("maxlen");
+			break;
+
 	}
 
 	if(fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICHEDITOR) {

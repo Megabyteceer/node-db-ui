@@ -376,10 +376,7 @@ export default class FieldWrap extends React.Component {
 				style: {width: this.props.isTable ? undefined : '30%', display: (this.hidden && !this.props.form.showAllDebug) ? 'none' : 'inline-block', verticalAlign: 'middle'},
 				className: domId,
 				onFocus: () => {
-
 					this.setState({showtooltip: true});
-
-
 				},
 				onBlur: () => {
 					this.setState({showtooltip: false});

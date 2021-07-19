@@ -1,9 +1,16 @@
 import constants from "../custom/consts.js";
+import fieldsEvents from "../events/fields_events.js";
+import eventProcessingMixins from "../forms/event-processing-mixins.js";
 import {renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
 registerFieldClass(FIELD_18_BUTTON, class ButtonField extends fieldMixins {
+
+	constructor(props) {
+		super(props);
+		this.onClick = this.onClick.bind(this);
+	}
 
 	setValue(val) {
 	}

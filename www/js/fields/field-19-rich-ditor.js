@@ -19,36 +19,37 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 	}
 
 	componentDidMount() {
-		this.iframeId = idCounter++;
-		var field = this.props.field;
-		var w = Math.floor(field.maxlen / 1000);
-		var h = field.maxlen % 1000;
-		var s = this.getSummernote();
-		var options = {
-			width: w,
-			height: h,
-			toolbar: [
-				['misc', ['style', 'bold', 'italic', 'underline', 'fontname', 'fontsize', 'color', 'help', 'ul', 'ol', 'paragraph', 'picture', 'link', 'table', 'hr', 'fullscreen', 'codeview']]
+		if(this.props.isEdit) {
+			this.iframeId = idCounter++;
+			var field = this.props.field;
+			var w = Math.floor(field.maxlen / 10000);
+			var h = field.maxlen % 10000;
+			var options = {
+				width: w,
+				height: h,
+				lang: 'ru-RU'
+			};
 
-			],
-			lang: 'ru-RU'
-		};
+			listeners[this.iframeId] = (data) => {
 
-		listeners[this.iframeId] = (data) => {
+				if(!this.summerNoteIsInited) {
+					this.summerNoteIsInited = true;
+					this.forceUpdate();
+				}
 
-			if(!this.summerNoteIsInited) {
-				this.summerNoteIsInited = true;
-				this.forceUpdate();
-			}
-
-			var s = this.getSummernote();
-			if(data.hasOwnProperty('value')) {
-				this.setValue(data.value, false);
-				this.props.wrapper.valueListener(this.state.value, true, this);
-			} else {
-				s.postMessage({options: options, value: this.state.value}, '*');
-			}
-		};
+				var s = this.getSummernote();
+				if(data.hasOwnProperty('value')) {
+					this.setValue(data.value, false);
+					this.props.wrapper.valueListener(this.state.value, true, this);
+				} else {
+					s.postMessage({options: options, value: this.state.value}, '*');
+				}
+				if(this.inSaveCallback) {
+					this.inSaveCallback(data.value);
+					delete this.inSaveCallback;
+				}
+			};
+		}
 	}
 
 	componentWillUnmount() {
@@ -82,18 +83,28 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 		}
 	}
 
+	beforeSave(callback) {
+		var s = this.getSummernote();
+		this.inSaveCallback = callback;
+		s.postMessage({onSave: true}, '*');
+	}
+
 	render() {
-		var field = this.props.field;
+		if(this.props.isEdit) {
+			var field = this.props.field;
 
-		var w = Math.floor(field.maxlen / 1000) + 230;
-		var h = (field.maxlen % 1000) + 30;
+			var w = Math.floor(field.maxlen / 10000) + 230;
+			var h = (field.maxlen % 10000) + 30;
 
-		var style = {width: w, height: h + 100};
-		var cog;
-		if(!this.summerNoteIsInited) {
-			cog = ReactDOM.div(null, renderIcon('cog fa-spin'));
+			var style = {width: w, height: h + 100};
+			var cog;
+			if(!this.summerNoteIsInited) {
+				cog = ReactDOM.div(null, renderIcon('cog fa-spin'));
+			}
+
+			return ReactDOM.div(null, cog, ReactDOM.iframe({ref: (r) => {this.viewportRef = r;}, allowFullScreen: true, sandbox: 'allow-scripts allow-forms allow-same-origin', style, src: 'rich-editor/index.html?iframeId=' + this.iframeId}));
+		} else {
+			return ReactDOM.div({dangerouslySetInnerHTML: {__html: this.props.initialValue}});
 		}
-
-		return ReactDOM.div(null, cog, ReactDOM.iframe({ref: (r) => {this.viewportRef = r;}, sandbox: 'allow-scripts allow-forms', style: style, src: 'rich-editor/index.html?iframeId=' + this.iframeId}));
 	}
 });

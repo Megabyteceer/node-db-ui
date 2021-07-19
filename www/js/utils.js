@@ -1252,5 +1252,6 @@ export {
 	serializeForm,
 	readableTimeFormat,
 	readableDateFormat,
-	clearForm
+	clearForm,
+	refreshForm
 }
