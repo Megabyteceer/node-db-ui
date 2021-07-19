@@ -56,7 +56,7 @@ var styleDisabled = {
 	borderRadius: 4,
 	background: '#fff',
 	opacity: 0.3,
-	pointerEvent: 'none'
+	pointerEvents: 'none'
 };
 
 var checkStyle = {
