@@ -119,7 +119,7 @@ async function registerUser(reqData) {
 			let actKey = crypto.randomBytes(24).toString('base64');
 			let href = getServerHref() + '?activate_user&key=' + actKey;
 			await mysqlExec("INSERT INTO `_users` (status, `name`, `PASS`, `email`, `company`, `activation`) VALUES (2,'" + name + "','" + (await getPasswordHash(password)) + "','" + login + "','" + company + "','" + actKey + "');");
-			await mail_utf8(login, L('CONFIRM_EMAIL_SUBJ'), L('CONFIRM_EMAIL', APP_TITLE) + href);
+			await mail_utf8(login, L('CONFIRM_EMAIL_SUBJ'), L('CONFIRM_EMAIL', ENV.APP_TITLE) + href);
 			return L('EMAIL_SENDED', login);
 		}
 	}

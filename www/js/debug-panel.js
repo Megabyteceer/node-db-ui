@@ -1,3 +1,4 @@
+import {ENV} from "./main-frame.js";
 import {iAdmin} from "./user.js";
 import {getData, isLitePage, L, myAlert, myPromt, renderIcon, sp, strip_tags} from "./utils.js";
 
@@ -96,7 +97,7 @@ export default class DebugPanel extends React.Component {
 
 	deployClick(ev) {
 		sp(ev);
-		myPromt(L('DEPLOY_TO', DEPLOY_TO), () => {
+		myPromt(L('DEPLOY_TO', ENV.DEPLOY_TO), () => {
 
 			getData('test_uyas87dq8qwdqw/test', undefined, (data) => {
 				if(data === 'ok') {
@@ -106,8 +107,8 @@ export default class DebugPanel extends React.Component {
 							if(data === 'ok') {
 
 								myAlert(ReactDOM.span(renderIcon('thumbs-up'), 'Changes aplied to ',
-									ReactDOM.a({href: DEPLOY_TO, target: '_blank', onClick: (ev) => {ev.stopPropagation();}},
-										DEPLOY_TO
+									ReactDOM.a({href: ENV.DEPLOY_TO, target: '_blank', onClick: (ev) => {ev.stopPropagation();}},
+										ENV.DEPLOY_TO
 									),
 									ReactDOM.br(), JSON.stringify(deployData)), true);
 							}

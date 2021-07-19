@@ -24,7 +24,7 @@ var footerStyle = {
 	//,marginBottom:500
 }
 
-const options = {};
+const ENV = {};
 
 class MainFrame extends React.Component {
 
@@ -39,18 +39,18 @@ class MainFrame extends React.Component {
 
 			const nodesTree = data.nodesTree;
 			var items = {};
-			Object.assign(options, data.options);
-			options.nodesTree = nodesTree;
+			Object.assign(ENV, data.options);
+			ENV.nodesTree = nodesTree;
 
 			/// #if DEBUG
-			if(!options.DEBUG) {throw "DEBUG directives nad not cutted of in PRODUCTION mode"};
+			if(!ENV.DEBUG) {throw "DEBUG directives nad not cutted of in PRODUCTION mode"};
 			/// #endif
 
 
 			nodesTree.some((i) => {
 				items[i.id] = i;
 				if(i.id === 2) {
-					options.rootItem = i;
+					ENV.rootItem = i;
 				}
 			});
 
@@ -70,7 +70,7 @@ class MainFrame extends React.Component {
 
 	render() {
 		var debug = React.createElement(DebugPanel);
-		if(!options.nodesTree) {
+		if(!ENV.nodesTree) {
 			return ReactDOM.div(null, debug);
 		}
 		return ReactDOM.div({style: style},
@@ -87,7 +87,7 @@ class MainFrame extends React.Component {
 					)
 				)
 			),
-			ReactDOM.div({style: footerStyle}, options.APP_TITLE),
+			ReactDOM.div({style: footerStyle}, ENV.APP_TITLE),
 			React.createElement(Modal),
 			React.createElement(Notify),
 			debug,
@@ -98,4 +98,4 @@ class MainFrame extends React.Component {
 }
 
 export default MainFrame;
-export {options};
+export {ENV};

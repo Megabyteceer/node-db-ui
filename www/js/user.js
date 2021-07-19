@@ -5,7 +5,7 @@ import constants from "./custom/consts.js";
 import {clearForm, getData, goToPageByHash, L, loactionToHash, loadJS, renderIcon, sp} from "./utils.js";
 import Select from "./components/select.js";
 import admin from "./admin/admin-utils.js";
-import {options} from "./main-frame.js";
+import {ENV} from "./main-frame.js";
 
 var curentUserData;
 
@@ -102,7 +102,7 @@ export default class User extends React.Component {
 			};
 
 			var multilangBtn;
-			if(options.ENABLE_MULTILANG) {
+			if(ENV.ENABLE_MULTILANG) {
 				multilangBtn = ReactDOM.div({className: 'clickable clickable-top', style: mlbs, onClick: this.toggleMultilang},
 					renderIcon(iconName + 'square-o'), L('MULTILANG')
 				);

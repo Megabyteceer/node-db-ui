@@ -1,7 +1,7 @@
 import FieldAdmin from "./admin/field-admin.js";
 import NodeAdmin from "./admin/node-admin.js";
 import constants from "./custom/consts.js";
-import {options} from "./main-frame.js";
+import {ENV} from "./main-frame.js";
 import {iAdmin} from "./user.js";
 import {getData, isLitePage, loactionToHash, renderIcon, setFormFilter, sp} from "./utils.js";
 
@@ -245,7 +245,7 @@ function renderItemsArray(itemsArray, level) {
 export default class LeftBar extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {staticItems: options.rootItem.children};
+		this.state = {staticItems: ENV.rootItem.children};
 		LeftBar.instance = this;
 	}
 
