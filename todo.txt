@@ -1,9 +1,3 @@
-проверить 1toM inlineEditable
-
-Check editable fields visible before prehandler, but alliow to set them all in handlers. Check data for unknown fields in debug
-Скрыть icon,selectFieldName поле фиелдс таким рбразоми 
-
-
 создание всех типов полей
 отображение всех типов
 проверить отправку всех полей

@@ -3,7 +3,7 @@ const {nodePrevs, getClientEventHandler, clearCache} = require('./admin/admin.js
 const {setCurrentOrg, setMultiLang, login, resetPassword, registerUser, activateUser} = require('./auth.js');
 const {getNodeDesc, getNodesTree} = require('./desc-node.js');
 const {getRecords, deleteRecord} = require('./get-records.js');
-const {submitRecord} = require('./sumbit.js');
+const {submitRecord} = require('./submit.js');
 const {uploadImage, uploadFile} = require('./upload.js');
 
 const api = {

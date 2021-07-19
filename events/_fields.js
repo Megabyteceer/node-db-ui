@@ -4,7 +4,7 @@ const {shouldBeAdmin} = require("../core/admin/admin.js");
 const {mustBeUnset} = require("../core/auth.js");
 const {getLangs, reloadMetadataSchedule, getNodeDesc} = require("../core/desc-node.js");
 const {getRecords} = require("../core/get-records.js");
-const {submitRecord} = require("../core/sumbit.js");
+const {submitRecord} = require("../core/submit.js");
 
 module.exports = {
 	createFieldInTable,

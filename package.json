@@ -13,6 +13,7 @@
     "bootstrap": "^3.4.1",
     "codemirror": "^5.62.0",
     "dotenv": "^10.0.0",
+    "font-awesome": "^4.7.0",
     "jquery": "^3.6.0",
     "moment": "^2.29.1",
     "mysql2": "^2.2.5",
@@ -23,6 +24,7 @@
     "react-cropper": "^2.1.8",
     "react-datetime": "^3.0.4",
     "react-dom": "^17.0.2",
+    "reset-css": "^5.0.1",
     "sharp": "^0.28.3",
     "summernote": "^0.8.18"
   }

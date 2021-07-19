@@ -28,16 +28,16 @@ function callForEachField(fildRefs, data, functionName, onComplete) {
 	var isInvalidForm = false;
 	var callbacksCount = 0;
 	var waitingForCallbacks = false;
-	for(var k in fildRefs) {
-		var f = fildRefs[k];
+	for(let k in fildRefs) {
+		let f = fildRefs[k];
 
 		callbacksCount++;
 		(() => {
-			var imgFieldName = f.props.field.fieldName;
+			var fieldName = f.props.field.fieldName;
 
 			f[functionName]((newValue, isInvalid) => {
-				if(typeof newValue !== 'undefined') {
-					data[imgFieldName] = newValue;
+				if((typeof newValue !== 'undefined') && (f.props.initialValue !== newValue)) {
+					data[fieldName] = newValue;
 				}
 				callbacksCount--;
 				if(waitingForCallbacks) {

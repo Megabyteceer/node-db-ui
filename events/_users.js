@@ -3,7 +3,7 @@ const {mysqlExec} = require("../core/mysql-connection");
 const {isAdmin} = require("../www/both-side-utils");
 const {getPasswordHash} = require("../core/auth");
 const crypto = require('crypto');
-const {submitRecord} = require("../core/sumbit");
+const {submitRecord} = require("../core/submit");
 
 async function clearUserParams(data, currentData, userSession) {
 

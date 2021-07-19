@@ -2,11 +2,23 @@
 const {assert} = require("console");
 const fs = require('fs');
 const path = require('path');
+const ENV = require("../ENV.js");
 const {isAdmin} = require("../www/both-side-utils");
 const {getNodeEventHandler, getNodeDesc, ADMIN_USER_SESSION} = require("./desc-node");
 const {getRecords} = require("./get-records");
 const {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit} = require("./mysql-connection");
 const {UPLOADS_FILES_PATH, idToImgURLServer} = require('./upload');
+
+const blockTags = [];
+for(let tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
+	blockTags.push({
+		exp: new RegExp('<' + tag + '(\\s|>)', 'img'),
+		val: '&lt;' + tag + '&gt;'
+	}, {
+		exp: new RegExp('<\/' + tag + '(\\s|>)', 'img'),
+		val: '&lt;/' + tag + '&gt;'
+	});
+}
 
 async function submitRecord(nodeId, data, recId = false, userSession) {
 
@@ -64,18 +76,24 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 					throw new Error("Required field '" + fieldName + "' is empty.");
 				}
 			}
-
-			if(data.hasOwnProperty(fieldName) && f.uniqu) {
-
-				let query = ["SELECT id FROM ", tableName, " WHERE ", fieldName, " ='", data[fieldName], "'"];
-				if(recId !== false) {
-					query.push(" AND id<>", recId);
+			if(data.hasOwnProperty(fieldName)) {
+				if(f.fieldType === FIELD_19_RICHEDITOR) {
+					for(let replacer of blockTags) {
+						data[fieldName] = data[fieldName].replace(replacer.exp, replacer.val);
+					}
 				}
-				query.push(" LIMIT 1");
 
-				let exists = await mysqlExec(query.join(''));
-				if(exists.length) {
-					throw new Error('Record ' + f.label + ' with value "' + data[fieldName] + '" already exist.');
+				if(f.uniqu) {
+					let query = ["SELECT id FROM ", tableName, " WHERE ", fieldName, " ='", data[fieldName], "'"];
+					if(recId !== false) {
+						query.push(" AND id<>", recId);
+					}
+					query.push(" LIMIT 1");
+
+					let exists = await mysqlExec(query.join(''));
+					if(exists.length) {
+						throw new Error('Record ' + f.label + ' with value "' + data[fieldName] + '" already exist.');
+					}
 				}
 			}
 		}
@@ -267,6 +285,13 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		else {
 			throw new Error('No fields updated in sumbitRecord.');
 		}
+
+		for(let key in data) {
+			if(key !== 'status') {
+				assert(node.fields.find(f => (f.fieldName === key) && !f.nostore), "Unknown field in '" + key + "' in data set detected.");
+			}
+		}
+
 		/// #endif
 
 		if(recId === false) {

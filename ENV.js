@@ -31,5 +31,7 @@ module.exports = {
 	TERMS_URL: "https: //org.uforum.pro/custom/html/terms_of_use.html",
 	MAX_FILESIZE_TO_UPLOAD: 3000000,
 
-	ALLOWED_UPLOADS: ["gif", "jpg", "jpeg", "jpe", "png", "zip", "rar", "doc", "docx", "xls", "xlsx", "pdf", "ppt", "pptx", "txt", "wav"]
+	ALLOWED_UPLOADS: ["gif", "jpg", "jpeg", "jpe", "png", "zip", "rar", "doc", "docx", "xls", "xlsx", "pdf", "ppt", "pptx", "txt", "wav"],
+
+	BLOCK_RICH_EDITOR_TAGS: ["script"]
 }
