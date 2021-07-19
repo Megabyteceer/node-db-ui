@@ -22,7 +22,7 @@ export default class Select extends React.Component {
 		super(props);
 		this.state = {};
 		this.toggle = this.toggle.bind(this);
-		this.toggle = this.toggle.bind(this);
+		this.onMouseLeave = this.onMouseLeave.bind(this);
 	}
 
 	toggle() {
@@ -42,7 +42,7 @@ export default class Select extends React.Component {
 		}
 	}
 
-	onBlur() {
+	onMouseLeave() {
 		if(this.state.expanded) {
 			this.toggle();
 		}
@@ -112,7 +112,7 @@ export default class Select extends React.Component {
 				whiteSpace: 'nowrap',
 				overflow: 'hidden'
 			},
-			onBlur: this.onBlur
+			onMouseLeave: this.onMouseLeave
 		},
 			ReactDOM.div({
 				style: this.props.style || style,

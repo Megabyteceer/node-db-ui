@@ -14,6 +14,18 @@ registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 		this.state.value = val;
 	}
 
+	setFilterValues(filter) {
+		if(filter) {
+			let _enum = Object.assign({}, this.props.field.enum);
+			for(let f of filter) {
+				delete _enum[f];
+			}
+			this.enum = _enum;
+		} else {
+			delete this.enum;
+		}
+	}
+
 	render() {
 
 		var value = this.state.value;
@@ -33,7 +45,7 @@ registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 				onChange: (val) => {
 					this.props.wrapper.valueListener(parseInt(val), false, this);
 				},
-				options: field.enum
+				options: this.enum || field.enum
 			};
 			/*
 			var options = [ReactDOM.option({value: '', key:0, style:optionStyle},'')];
