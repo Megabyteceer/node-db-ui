@@ -1,65 +1,63 @@
+"use strict";
+
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
-var intToColor = (i) => {
-	var ret = 'rgba(' + (i & 255) + ',' + ((i >> 8) & 255) + ',' + ((i >> 16) & 255) + ',' + (((i >> 24) & 255) / 255.0).toFixed(2) + ')';
-	return ret;
+const styleInput = {
+	width: '130px',
+	display: 'inline-block'
 };
 
-var _idCounter = 0;
+var intToColor = (color, alpha) => {
+	var ret = 'rgba(' + ((color >> 16) & 255) + ',' + ((color >> 8) & 255) + ',' + (color & 255) + ',' + (alpha / 255.0).toFixed(2) + ')';
+	return ret;
+};
 
 registerFieldClass(FIELD_20_COLOR, class ColorField extends fieldMixins {
 
 	constructor(props) {
 		super(props);
-		_idCounter++;
-		this.state = {id: 'spectrum' + _idCounter};
+		this.state = {value: props.initialValue, color: props.initialValue % 0x1000000, alpha: Math.round(props.initialValue / 0x1000000)};
+		this.onChangeColor = this.onChangeColor.bind(this);
+		this.onChangeAlpha = this.onChangeAlpha.bind(this);
 	}
 
-	getSpectrum() {
-		return $('#' + this.state.id);
+	onChangeAlpha(ev) {
+		this.setState({alpha: ev.target.value});
+		this._onChange();
 	}
 
-	colorChange(color) {
-		color = color.toRgb();
-		this.state.value = color.r + (color.g * 256) + (color.b * 65536) + (Math.round(color.a * 255) * 16777216);
-		this.props.wrapper.valueListener(this.state.value, true, this);
+	_onChange() {
+		let value = Math.floor(Math.floor(this.state.alpha) * 0x1000000) + this.state.color;
+		this.setState({value});
+		this.props.wrapper.valueListener(value, true, this);
 	}
 
-	componentDidMount() {
-		this.getSpectrum().spectrum({
-			color: intToColor(this.props.initialValue),
-			showInput: true,
-			showInitial: true,
-			preferredFormat: "hex",
-			showAlpha: true,
-			hide: this.colorChange,
-			move: this.colorChange
-		});
-		if(typeof (this.state.value) === 'undefined' || this.state.value === '') {
-			this.setValue(0xff000000);
-		}
+	onChangeColor(ev) {
+		this.setState({color: parseInt(ev.target.value.substr(1), 16)});
+		this._onChange();
 	}
 
-	componentWillUnmount() {
-		this.getSpectrum().spectrum('destroy');
-	}
-
-	setValue(val) {
-		this.getSpectrum().spectrum('set', intToColor(val));
-		this.state.value = val;
+	setValue(value) {
+		this.setState({color: value % 0x1000000, alpha: value / 0x1000000});
 	}
 
 	render() {
-		var value = this.state.value;
-		var field = this.props.field;
-
+		let background = intToColor(this.state.color, this.state.alpha);
+		let preview = ReactDOM.div({style: styleInput},
+			ReactDOM.div({style: {width: 120, display: 'inline-block', background: "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQYV2OcM2fOfwY0kJycjC7EwDgUFP7//x/DM3PnzsX0zBBQCADu1zEWG5C/XgAAAABJRU5ErkJggg==) repeat"}},
+				ReactDOM.div({style: {margin: '6px', height: 24, background}})
+			)
+		);
 		if(this.props.isEdit) {
-			return ReactDOM.input({id: this.state.id});
-		} else {
-			return ReactDOM.div({style: {width: 60, position: 'relative', height: 32, background: "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQYV2OcM2fOfwY0kJycjC7EwDgUFP7//x/DM3PnzsX0zBBQCADu1zEWG5C/XgAAAABJRU5ErkJggg==) repeat"}},
-				ReactDOM.div({style: {width: 60, position: 'absolute', top: 0, left: 0, height: 32, background: intToColor(value)}, defaultValue: value})
+			return ReactDOM.div(null,
+				ReactDOM.input({style: styleInput, type: 'color', defaultValue: '#' + (this.state.color & 0xFFFFFF).toString(16), onChange: this.onChangeColor}),
+				ReactDOM.input({style: styleInput, type: 'number', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
+				ReactDOM.input({style: styleInput, type: 'range', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
+				preview
 			);
+		} else {
+			return preview;
 		}
 
 	}
