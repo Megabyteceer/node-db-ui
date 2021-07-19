@@ -1,16 +1,3 @@
-
-function appendCSS(src) {
-	let s = document.createElement('link');
-	s.rel = 'stylesheet';
-	s.href = src;
-	document.head.appendChild(s);
-}
-
-appendCSS('js/lib/codemirror/lib/codemirror.css');
-appendCSS('js/lib/codemirror/addon/search/matchesonscrollbar.css');
-appendCSS('js/lib/codemirror/addon/scroll/simplescrollbars.css');
-appendCSS('js/lib/codemirror/addon/hint/show-hint.css');
-
 /// #if DEBUG
 import './lib/react/umd/react.development.js';
 import './lib/react-dom/umd/react-dom.development.js';
@@ -39,6 +26,9 @@ window.require = function (name) {
 	if(name === 'moment') {
 		return window.moment;
 	}
+	if(name === 'jquery') {
+		return $;
+	}
 	debugger;
 	throw new Error('unknown module required');
 };
@@ -49,6 +39,9 @@ Promise.all([
 		window.CodeMirror = window.module.exports;
 	}),
 	import("./lib/moment/dist/moment.js").then((m) => {
+		window.moment = m.default;
+	}),
+	import("./lib/spectrum-colorpicker/spectrum.js").then((m) => {
 		window.moment = m.default;
 	})
 ]).then(() => {
