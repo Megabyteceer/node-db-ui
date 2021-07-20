@@ -68,9 +68,10 @@ module.exports = {
 				fieldName, selectFieldName, name, fdescription, maxLen, requirement,
 				uniqu, _usersID, forSearch, nostore)
 				VALUES
-				(${createdID}, 1, 63, 1, 4, 'createdOn', '',
+				(${createdID}, 1, 62, 1, 4, 'createdOn', '',
 				'${L('Created on')}', '', 0, 0, 0, 0, 1, 0);`;  //TODO add all languages
-				await mysqlExec(createdOnQ);
+				const dateFieldId = (await mysqlExec(createdOnQ)).insertId;
+				await mysqlExec('UPDATE _nodes SET _fieldsID=' + dateFieldId + ', reverse = 1 WHERE id=' + createdID);
 			}
 
 			if(data.createdby_field) {
@@ -100,7 +101,7 @@ module.exports = {
 		throw new Error('_nodes pre deletion event is not implemented');
 	},
 
-	update: (userSession) => {
+	update: (currentData, newData, userSession) => {
 		shouldBeAdmin(userSession);
 		reloadMetadataSchedule();
 	}

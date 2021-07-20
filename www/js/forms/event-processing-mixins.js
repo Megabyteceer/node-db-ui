@@ -258,7 +258,7 @@ export default class eventProcessingMixins extends BaseForm {
 				if(!data) {
 					this.fieldAlert(field.fieldName, L('VALUE_EXISTS'), false, true);
 				} else {
-					this.fieldAlert(field.fieldName, L('VALUE_CORRECT'), true);
+					this.fieldAlert(field.fieldName, '', true);
 				}
 				callback && callback(data);
 			}, undefined, undefined, true);

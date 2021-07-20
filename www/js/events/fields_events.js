@@ -112,7 +112,9 @@ fieldsEvents[30] = function () { //field30onchangebegin_cswhggft
 			this.showField("creationName_en", "singleName_en");
 		}
 		if(!this.rec_creation) {
-			this.showField("_fieldsID");
+			this.showField("_fieldsID", "reverse");
+		} else {
+			this.hideField("_fieldsID", "reverse");
 		}
 
 		if(!this.rec_update) {
@@ -122,7 +124,7 @@ fieldsEvents[30] = function () { //field30onchangebegin_cswhggft
 
 	} else {
 		this.hideField("tableName", "creationName", "singleName",
-			"captcha", "_fieldsID", "draftable", "createdon_field",
+			"captcha", "_fieldsID", "reverse", "draftable", "createdon_field",
 			"createUserFld", "createdby_field", "staticLink", "recPerPage");
 		if(this.hasField('creationName_en')) {
 			this.hideField("creationName_en", "singleName_en");
