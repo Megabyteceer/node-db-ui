@@ -4,7 +4,7 @@
 import FieldAdmin from "../admin/field-admin.js";
 import constants from "../custom/consts.js";
 import {iAdmin} from "../user.js";
-import {consoleLog, getClassForField, renderIcon, scrollToVisible} from "../utils.js";
+import {consoleLog, getClassForField, renderIcon, scrollToVisible, setFormFilter} from "../utils.js";
 
 var style = {
 	margin: '20px 0',

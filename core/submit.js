@@ -288,7 +288,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 
 		for(let key in data) {
 			if(key !== 'status') {
-				assert(node.fields.find(f => (f.fieldName === key) && !f.nostore), "Unknown field in '" + key + "' in data set detected.");
+				assert(node.fields.find(f => (f.fieldName === key) && !f.clientOnly), "Unknown field in '" + key + "' in data set detected.");
 			}
 		}
 

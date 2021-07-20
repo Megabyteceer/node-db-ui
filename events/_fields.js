@@ -149,9 +149,9 @@ function getFieldTypeSQL(data) {
 				return "MEDIUMTEXT NOT NULL DEFAULT ''";
 			}
 		case FIELD_20_COLOR:
-			return "INT (11) UNSIGNED NOT NULL DEFAULT 4294967295";
+			return "BIGINT (11) UNSIGNED NOT NULL DEFAULT 4294967295";
 		case FIELD_2_INT:
-			if(data.maxlen <= 11) {
+			if(data.maxlen <= 9) {
 				return 'INT(' + data.maxlen + ') NOT NULL DEFAULT 0';
 			} else {
 				return 'BIGINT(' + data.maxlen + ') NOT NULL DEFAULT 0';

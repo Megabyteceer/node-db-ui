@@ -40,9 +40,6 @@ Promise.all([
 	}),
 	import("./lib/moment/dist/moment.js").then((m) => {
 		window.moment = m.default;
-	}),
-	import("./lib/spectrum-colorpicker/spectrum.js").then((m) => {
-		window.moment = m.default;
 	})
 ]).then(() => {
 	Promise.all([

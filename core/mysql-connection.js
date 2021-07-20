@@ -6,7 +6,8 @@ const connection = mysql.createConnection({
 	user: ENV.DB_USER,
 	database: ENV.DB_NAME,
 	host: ENV.DB_HOST,
-	password: ENV.DB_PASS
+	password: ENV.DB_PASS,
+	multipleStatements: true
 });
 const {getCurrentStack} = require("../www/both-side-utils");
 

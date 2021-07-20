@@ -14,7 +14,7 @@ module.exports = {
 	},
 
 	post: async function(data, userSession) {
-		debugger;
+
 		shouldBeAdmin(userSession);
 
 		const createdID = data.id;
@@ -25,10 +25,10 @@ module.exports = {
 
 		const parentPrevs = await mysqlExec(rpQ);
 
-		for(let prev of parentPrevs) {
-			const rpiQ = 'INSERT INTO _roleprevs SET nodeID=' + createdID + ', roleID=' + prev.roleID + ', prevs=' + prev.prevs + ';';
-			await mysqlExec(rpiQ);
-		}
+		await mysqlExec(parentPrevs.map((prev) => {
+			return 'INSERT INTO _roleprevs SET nodeID=' + createdID + ', roleID=' + prev.roleID + ', prevs=' + prev.prevs + ';';
+		}).join(''));
+
 
 
 		if(data.isDoc && !data.staticLink) {
@@ -50,7 +50,7 @@ module.exports = {
 
 			await mysqlExec(tblCrtQ);
 
-			const insertedId = await mysqlExec("INSERT INTO " + data.tableName + " SET status=0");
+			const insertedId = (await mysqlExec("INSERT INTO " + data.tableName + " SET status=0, _usersID=0")).insertId;
 			await mysqlExec("UPDATE " + data.tableName + " SET ID=0 WHERE ID=" + insertedId);
 
 			//create default fields
