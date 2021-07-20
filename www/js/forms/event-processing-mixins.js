@@ -248,7 +248,7 @@ export default class eventProcessingMixins extends BaseForm {
 	}
 
 	async checkUniquValue(field, val, callback) {
-		if(field.uniqu) {
+		if(field.uniqu && val) {
 			return getData('api/uniquCheck', {
 				fieldId: field.id,
 				nodeId: field.node.id,
