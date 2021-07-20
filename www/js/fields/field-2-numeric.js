@@ -26,22 +26,19 @@ registerFieldClass(FIELD_2_INT, class NumericField extends fieldMixins {
 		}
 
 		if(this.props.isEdit) {
-
-			var maxVal = Array(parseInt(field.maxlen) + 1).join("9");
-
 			var inputsProps = {
 				style: this.props.isCompact ? compactInputStyle : notCompactInputStyle,
 				type: 'number',
-				defaultValue: value,
-				min: 0,
-				max: maxVal,
+				value: value,
 				title: field.name,
 				maxLength: field.maxlen,
 				placeholder: field.name,
 				readOnly: this.props.fieldDisabled,
 				ref: this.refGetter,
 				onChange: () => {
-					this.props.wrapper.valueListener(parseInt(this.refToInput.value), true, this);
+					let value = parseInt(this.refToInput.value.substr(0, field.maxlen));
+					this.setState({value});
+					this.props.wrapper.valueListener(value, true, this);
 				}
 			};
 
