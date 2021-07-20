@@ -160,7 +160,7 @@ export default class FormFull extends eventProcessingMixins {
 		}
 	}
 
-	validate(callback) { //TODO: validate
+	validate(callback) {
 		if(this.onSave()) {
 			callback(false);
 			return;
@@ -201,7 +201,7 @@ export default class FormFull extends eventProcessingMixins {
 		onFieldValidated(true);
 	}
 
-	saveClick(isDraft, callback, callbackInvalid) { //TODO: saveClick
+	saveClick(isDraft, callback, callbackInvalid) {
 
 		if(typeof callback !== 'function') {
 			callback = false;
@@ -351,7 +351,7 @@ export default class FormFull extends eventProcessingMixins {
 		return (this.props.editable ? (field.show & 1) : (field.show & 4));
 	}
 
-	render() { //TODO: render
+	render() {
 		var node = this.props.node;
 		if(!node) {
 			return ReactDOM.div({style: {textAlign: 'center', color: '#ccc', padding: '5px'}},

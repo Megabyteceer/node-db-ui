@@ -10,7 +10,7 @@ import('./lib/react-dom/umd/react-dom.production.min.js');
 import './lib/jquery/dist/jquery.js'
 import Cropper from "./lib/cropperjs/dist/cropper.esm.js";
 
-//TODO: add release imports
+
 window.module = {};
 window.exports = {};
 window.require = function (name) {

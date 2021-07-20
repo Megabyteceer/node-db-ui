@@ -24,7 +24,7 @@ function createSession(userSession, sessionToken) {
 	return sessionToken;
 }
 
-//TODO: clear autdated sessions
+//TODO: clear outdated sessions
 
 /// #if DEBUG
 const SESSION_START_REATTEMPT_DELAY = 100;
@@ -307,7 +307,8 @@ async function setCurrentOrg(organID, userSession, updateInBd) {
 async function setMultiLang(enable, userSession) {
 	shouldBeAuthorized(userSession);
 	if(enable && ENV.ENABLE_MULTILANG) {
-		userSession.langs = getLangs(); //TODO: just flag if its enabled
+		debugger;
+		userSession.langs = getLangs();
 	} else {
 		delete userSession.langs;
 	}

@@ -972,16 +972,24 @@ function scrollToVisible(elem) {
 		var elemBottom = elemTop + $elem.height() + 40;
 
 		if(elemTop < docViewTop) {
-
-			$('html,body').animate({scrollTop: elemTop}, 300);
-
+			$('html,body').animate({scrollTop: elemTop}, 300, undefined, () => {shakeDomElement($elem)});
 		} else if(elemBottom > docViewBottom) {
-
-			$('html,body').animate({scrollTop: Math.min(elemBottom - $window.height(), elemTop)}, 300);
+			$('html,body').animate({scrollTop: Math.min(elemBottom - $window.height(), elemTop)}, 300, undefined, () => {shakeDomElement($elem)});
+		} else {
+			shakeDomElement($elem);
 		}
-		//TODO:  shake after scroll.
 	}
 }
+
+function shakeDomElement(e) {
+	e[0].classList.remove('shake');
+	setTimeout(() => {
+		e[0].classList.add('shake');
+	}, 10);
+	setTimeout(() => {
+		e[0].classList.remove('shake');
+	}, 1000);
+};
 
 function getItem(name, def) {
 	if(typeof (Storage) !== "undefined") {
@@ -1118,16 +1126,6 @@ function loadJS(name, callback) {
 	script.type = "module";
 	document.head.appendChild(script);
 }
-
-//TODO: uncomment
-//setInterval(() => {
-
-//if(window.location.href.indexOf('#n/28/f/p/*/formTitle')>0 || window.location.href.indexOf('#n/73/f/event_consultations_linker')>0){
-//	refreshForm();
-//}
-
-
-//}, 10000)
 
 function strip_tags(input) {
 	if(typeof (input !== 'string')) return input;

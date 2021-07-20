@@ -269,7 +269,7 @@ export default class List extends BaseForm {
 		return (!this.props.onItemClick && !this.props.filters.noCustomList && !this.props.isLookup && isPresentListRenderer(parseInt(this.props.nodeId || this.props.node.id)));
 	}
 
-	renderEditableList() { //TODO: renderEditableList
+	renderEditableList() {
 		var node = this.state.node;
 		var data = this.state.data;
 		var filters = this.filters;
@@ -435,7 +435,7 @@ export default class List extends BaseForm {
 		}
 	}
 
-	renderList() { //TODO: renderList
+	renderList() {
 		var node = this.state.node;
 		var data = this.state.data;
 		var filters = this.filters;

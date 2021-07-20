@@ -8,7 +8,7 @@ module.exports = {
 			let emails = ENV.ERROR_NOTIFY_EMAIL.split(',');
 			for(let email of emails) {
 				if(email) {
-					mail_utf8(email, 'Error. ' + data.name, data.stack); //TODO add error email template
+					mail_utf8(email, 'Error at ' + ENV.SERVER_NAME + '; ' + data.name, data.stack);
 				}
 			}
 		}

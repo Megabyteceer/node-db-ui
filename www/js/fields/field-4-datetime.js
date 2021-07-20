@@ -140,11 +140,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 	}
 
 	static decodeValue(val) {
-		//TODO: check if its necessery yet
 		if(val) {
-			if(val === '0000-00-00 00:00:00') {
-				return null;
-			}
 			return new moment(val, innerDatetimeFormat);
 		}
 		return null;
