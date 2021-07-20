@@ -1,10 +1,9 @@
 "use strict";
-const {assert} = require("console");
 const fs = require('fs');
 const path = require('path');
 const ENV = require("../ENV.js");
 const {isAdmin} = require("../www/both-side-utils");
-const {getNodeEventHandler, getNodeDesc, ADMIN_USER_SESSION} = require("./desc-node");
+const {getNodeEventHandler, getNodeDesc, ADMIN_USER_SESSION, getFieldDesc} = require("./desc-node");
 const {getRecords} = require("./get-records");
 const {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit} = require("./mysql-connection");
 const {UPLOADS_FILES_PATH, idToImgURLServer} = require('./upload');
@@ -84,14 +83,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 				}
 
 				if(f.uniqu) {
-					let query = ["SELECT id FROM ", tableName, " WHERE ", fieldName, " ='", data[fieldName], "'"];
-					if(recId !== false) {
-						query.push(" AND id<>", recId);
-					}
-					query.push(" LIMIT 1");
-
-					let exists = await mysqlExec(query.join(''));
-					if(exists.length) {
+					if(!(await uniquCheckInner(tableName, fieldName, data[fieldName], recId))) {
 						throw new Error('Record ' + f.label + ' with value "' + data[fieldName] + '" already exist.');
 					}
 				}
@@ -351,4 +343,19 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 	}
 }
 
-module.exports = {submitRecord};
+async function uniquCheckInner(tableName, fieldName, val, recId) {
+	let query = ["SELECT id FROM ", tableName, " WHERE ", fieldName, " ='", val, "'"];
+	if(recId !== false) {
+		query.push(" AND id<>", recId);
+	}
+	query.push(" LIMIT 1");
+
+	let exists = await mysqlExec(query.join(''));
+	return !exists.length;
+}
+
+function uniquCheck(fieldId, nodeId, val, recId, userSession) {
+	return uniquCheckInner(getNodeDesc(nodeId, userSession).tableName, getFieldDesc(fieldId).fieldName, val, recId);
+}
+
+module.exports = {submitRecord, uniquCheck};

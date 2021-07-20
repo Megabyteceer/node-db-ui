@@ -186,7 +186,11 @@ export default class FormFull extends eventProcessingMixins {
 			} else {
 				this.fieldAlert(field.fieldName, '');
 				callbacksCount++;
-				fieldRef.checkValidityBeforeSave(formIsValid, onFieldValidated);
+				this.checkUniquValue(field, this.currentData[field.fieldName], (isValid) => {
+					fieldRef.checkValidityBeforeSave(formIsValid, (isValid2) => {
+						onFieldValidated(isValid && isValid2);
+					});
+				});
 			}
 		}
 		onFieldValidated(true);

@@ -24,6 +24,8 @@ import {initDictionary} from "../../js/utils.js";
 		'CONTENT': 'Content',
 		'FLD_DESC': 'Field description',
 		'PASSWORDS_NOT_M': 'Passwords dont match',
+		'VALUE_EXISTS': 'Value already in use.',
+		'VALUE_CORRECT': 'Value is available for usage.',
 		'FLD_EXISTS': 'Field with same name already exists in this document.',
 		'FLD_CORRECT': 'Name is avalable.',
 		'MULTILANG': 'Multilangual',

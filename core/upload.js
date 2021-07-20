@@ -4,7 +4,7 @@ const path = require('path');
 
 const sharp = require("sharp");
 const ENV = require("../ENV.js");
-const {getNodeDesc} = require("./desc-node");
+const {getNodeDesc, getFieldDesc} = require("./desc-node");
 
 const UPLOADS_IMAGES_PATH = path.join(__dirname, '../www/images/uploads');
 const UPLOADS_FILES_PATH = path.join(__dirname, '../www/uploads/file');
@@ -102,8 +102,8 @@ async function uploadFile(reqData, userSession) {
 }
 
 const getFieldForUpload = (reqData, userSession) => {
-	const node = getNodeDesc(parseInt(reqData.nid), userSession);
-	const field = node.fields.find(f => f.id === parseInt(reqData.fid));
+	getNodeDesc(parseInt(reqData.nid), userSession);
+	const field = getFieldDesc(parseInt(reqData.fid));
 	if(!field) {
 		throw new Error("field " + reqData.fid + " access denied");
 	}

@@ -1,6 +1,8 @@
 создание всех видов разделов.
 по умолчанию сортировать старые в конце
 
+Enums order where is it? Add splitters in to enums
+
 проверить все TODO
 
 переименовать pre post

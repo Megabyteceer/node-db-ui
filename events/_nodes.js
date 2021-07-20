@@ -55,7 +55,7 @@ module.exports = {
 
 			//create default fields
 			const mainFieldQ = `INSERT INTO _fields
-			(node_fields_linker, status, show, prior, fieldType,
+			(node_fields_linker, status, \`show\`, prior, fieldType,
 			fieldName, selectFieldName, name, fdescription, maxLen, requirement,
 			uniqu, _usersID, forSearch, nostore)
 			VALUES
@@ -64,7 +64,7 @@ module.exports = {
 
 			if(data.createdon_field) {
 				const createdOnQ = `INSERT INTO _fields 
-				(node_fields_linker, status, show, prior, fieldType,
+				(node_fields_linker, status, \`show\`, prior, fieldType,
 				fieldName, selectFieldName, name, fdescription, maxLen, requirement,
 				uniqu, _usersID, forSearch, nostore)
 				VALUES
@@ -75,7 +75,7 @@ module.exports = {
 
 			if(data.createdby_field) {
 				const createdByQ = `INSERT INTO _fields
-				(node_fields_linker, status, show, prior, fieldType,
+				(node_fields_linker, status, \`show\`, prior, fieldType,
 				fieldName, selectFieldName, name, fdescription, maxLen, requirement,
 				uniqu, _usersID, forSearch, nostore, nodeRef)
 				VALUES
@@ -85,7 +85,7 @@ module.exports = {
 
 			if(data.createUserFld) {
 				const createdByQ = `INSERT INTO _fields
-				(node_fields_linker, status, show, prior, fieldType,
+				(node_fields_linker, status, \`show\`, prior, fieldType,
 				fieldName, selectFieldName, name, fdescription, maxLen, requirement,
 				uniqu, _usersID, forSearch, nostore, nodeRef, icon)
 				VALUES

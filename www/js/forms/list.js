@@ -1,5 +1,3 @@
-/* global React */
-
 import FieldAdmin from "../admin/field-admin.js";
 import NodeAdmin from "../admin/node-admin.js";
 import constants from "../custom/consts.js";

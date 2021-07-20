@@ -64,7 +64,7 @@ fieldsEvents[20] = function () { //field20onchangebegin_cswhggft
 } //field20onchangeend_wqdggft
 
 fieldsEvents[14] = function () { //field14onchangebegin_cswhggft
-	if(this.fieldValue('tableName')) {
+	if(this.fieldValue('tableName') && !this.isFieldDisabled('tableName')) {
 		this.setFieldValue("tableName", this.fieldValue('tableName').replace('_', ''));
 	}
 } //field14onchangeend_wqdggft
@@ -171,7 +171,7 @@ fieldsEvents[32] = function () { //field32onchangebegin_cswhggft
 
 
 fieldsEvents[9] = function () { //field9onchangebegin_cswhggft
-	if(this.fieldValue('fieldName')) {
+	if(this.fieldValue('fieldName') && !this.isFieldDisabled('fieldName')) {
 		this.setFieldValue("fieldName", this.fieldValue('fieldName').replace('_', ''));
 	}
 	this.check12nFieldName();

@@ -1,4 +1,4 @@
-import {consoleLog, L} from "../utils.js";
+import {consoleLog, getData, L} from "../utils.js";
 import BaseForm from "./form-mixins.js";
 import {formsEventsOnLoad, formsEventsOnSave} from "../events/forms_events.js";
 import fieldsEvents from "../events/fields_events.js";
@@ -143,6 +143,10 @@ export default class eventProcessingMixins extends BaseForm {
 		}
 	}
 
+	isFieldDisabled(fieldName) {
+		return (this.disabledFields[fieldName] === 1);
+	}
+
 	addLookupFilters(fieldName, filtersObjOrName, val) {
 		this.getField(fieldName).setLookupFilter(filtersObjOrName, val);
 	}
@@ -220,6 +224,7 @@ export default class eventProcessingMixins extends BaseForm {
 	setFieldValue(fieldName, val, isUserAction) {
 
 		var f = this.getField(fieldName);
+		let field = f.props.field;
 
 		if(this.currentData[fieldName] !== val) {
 			if(!isUserAction) {
@@ -228,16 +233,37 @@ export default class eventProcessingMixins extends BaseForm {
 			var prev_value = this.currentData[fieldName];
 			this.currentData[fieldName] = val;
 
-			if(f && fieldsEvents.hasOwnProperty(f.props.field.id)) {
-				this.processFormEvent(fieldsEvents[f.props.field.id], isUserAction, prev_value);
+			if(fieldsEvents.hasOwnProperty(field.id)) {
+				this.processFormEvent(fieldsEvents[field.id], isUserAction, prev_value);
 			}
 			//DEBUG
 			consoleLog('onChange ' + fieldName + '; ' + prev_value + ' -> ' + val);
-			//ENDDEBUG				
+			//ENDDEBUG
+			this.checkUniquValue(field, val);
 
 			if(fieldName === 'name') {
 				this.refreshLeftBar();
 			}
+		}
+	}
+
+	async checkUniquValue(field, val, callback) {
+		if(field.uniqu) {
+			return getData('api/uniquCheck', {
+				fieldId: field.id,
+				nodeId: field.node.id,
+				recId: (this.rec_ID !== 'new') && this.rec_ID,
+				val
+			}, (data) => {
+				if(!data) {
+					this.fieldAlert(field.fieldName, L('VALUE_EXISTS'), false, true);
+				} else {
+					this.fieldAlert(field.fieldName, L('VALUE_CORRECT'), true);
+				}
+				callback && callback(data);
+			}, undefined, undefined, true);
+		} else {
+			callback && callback(true);
 		}
 	}
 

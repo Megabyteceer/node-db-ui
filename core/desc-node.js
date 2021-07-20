@@ -6,6 +6,7 @@ const {isUserHaveRole} = require("../www/both-side-utils");
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
+let fields;
 let nodes;
 let nodesById;
 let langs;
@@ -17,7 +18,10 @@ const GUEST_USER_SESSION = {};
 const clientSideNodes = new Map();
 const nodesTreeCache = new Map();
 
-
+function getFieldDesc(fieldId) {
+	assert(fields.has(fieldId), "Unknown field id " + fieldId);
+	return fields.get(fieldId);
+}
 
 function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION) {
 	assert(!isNaN(nodeId), 'nodeId expected');
@@ -129,6 +133,7 @@ function attemptToreloadMetadataSchedule() {
 const ENV = require("../ENV.js");
 
 async function initNodesData() { // load whole nodes data in to memory
+	let fields_new = new Map();
 	let nodes_new;
 	let nodesById_new;
 	let langs_new;
@@ -189,6 +194,7 @@ async function initNodesData() { // load whole nodes data in to memory
 					}
 					field.enum = enData;
 				}
+				fields_new.set(field.id, field);
 			}
 			nodeData.fields = fields;
 			const filtersRes = await mysqlExec("SELECT id,filter,name,view,hiPriority, fields FROM _filters WHERE _nodesID=" + nodeData.id);
@@ -216,6 +222,7 @@ async function initNodesData() { // load whole nodes data in to memory
 		l.prefix = l.code ? ('_' + l.code) : '';
 	}
 
+	fields = fields_new;
 	nodes = nodes_new;
 	nodesById = nodesById_new;
 	langs = langs_new;
@@ -279,4 +286,4 @@ const destroyObject = (o) => {
 
 
 
-module.exports = {ENV, getNodeDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule};
+module.exports = {ENV, getNodeDesc, getFieldDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule};

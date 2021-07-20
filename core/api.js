@@ -3,7 +3,7 @@ const {nodePrevs, getClientEventHandler, clearCache} = require('./admin/admin.js
 const {setCurrentOrg, setMultiLang, login, resetPassword, registerUser, activateUser} = require('./auth.js');
 const {getNodeDesc, getNodesTree} = require('./desc-node.js');
 const {getRecords, deleteRecord} = require('./get-records.js');
-const {submitRecord} = require('./submit.js');
+const {submitRecord, uniquCheck} = require('./submit.js');
 const {uploadImage, uploadFile} = require('./upload.js');
 
 const api = {
@@ -42,6 +42,9 @@ const api = {
 	},
 	"api/uploadFile": (reqData, userSession, res) => {
 		uploadFile(reqData, userSession).then(res);
+	},
+	"api/uniquCheck": (reqData, userSession, res) => {
+		uniquCheck(reqData.fieldId, reqData.nodeId, reqData.val, reqData.recId, userSession).then(res);
 	},
 	"register": (reqData, userSession, res) => {
 		registerUser(reqData).then(res);
