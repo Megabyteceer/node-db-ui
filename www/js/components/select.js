@@ -2,18 +2,14 @@ import {renderIcon} from "../utils.js";
 
 var style = {
 	position: 'relative',
-	padding: '2px 8px',
-	height: 32,
-	width: '100%',
+	padding: '7px 8px',
 	color: '#333',
-	border: '2px solid rgb(204, 204, 204)',
-	borderRadius: 4
+	border: '1px solid #a8a8a8',
+	borderRadius: '4px'
 }
 
 var optionStyle = {
-	width: '100%',
-	height: 32,
-	padding: '2px 20px',
+	padding: '6px 20px',
 	borderTop: '1px solid #ddd'
 }
 
@@ -57,16 +53,17 @@ export default class Select extends React.Component {
 			w = '100%';
 		}
 
-		var curVal;
-		if(this.state.curVal) {
-			curVal = this.props.options[this.state.curVal];
-		} else {
-			curVal = this.props.options[this.props.defaultValue];
+		var curVal = this.state.curVal || this.props.defaultValue;
+		for(let o of this.props.options) {
+			if(o.value === curVal) {
+				curVal = o.name;
+				break;
+			}
 		}
 
-		var options;
+		var optionsList;
 		if(this.state.expanded) {
-			options = ReactDOM.div({
+			optionsList = ReactDOM.div({
 				style: {
 					position: 'absolute',
 					marginTop: -2,
@@ -77,18 +74,18 @@ export default class Select extends React.Component {
 					boxShadow: '0px 2px 5px 0px rgba(0,0,0,0.26)'
 				}
 			},
-				Object.keys(this.props.options).map((k) => {
+				this.props.options.map((o) => {
 					return ReactDOM.div({
 						style: optionStyle,
 						className: this.props.disabled ? 'unclickable disabled' : 'clickable',
-						key: k,
-						title: this.props.options[k],
+						key: o.value,
+						title: o.name,
 						onClick: () => {
-							this.setValue(k);
+							this.setValue(o.value);
 							this.toggle();
 						}
 					},
-						this.props.options[k]);
+						o.name);
 				})
 			)
 		}
@@ -96,8 +93,8 @@ export default class Select extends React.Component {
 		var downCaret = ReactDOM.div({
 			style: {
 				position: 'absolute',
-				right: 0,
-				top: 0
+				right: '2px',
+				top: '8px'
 			}
 		}, renderIcon('caret-down'));
 
@@ -120,10 +117,10 @@ export default class Select extends React.Component {
 				onClick: this.toggle
 			},
 
-				curVal,
+				curVal || '\xa0',
 				downCaret
 
-			), options
+			), optionsList
 
 		)
 

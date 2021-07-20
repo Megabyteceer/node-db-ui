@@ -187,12 +187,8 @@ async function initNodesData() { // load whole nodes data in to memory
 				}
 
 				if(field.fieldType === FIELD_6_ENUM && field.show) {
-					let enums = await mysqlExec("SELECT value,name FROM _enum_values WHERE values_linker=" + field.nodeRef + " ORDER BY value");
-					let enData = {};
-					for(let i of enums) {
-						enData[i.value] = i.name;
-					}
-					field.enum = enData;
+					let enums = await mysqlExec("SELECT value,name FROM _enum_values WHERE values_linker=" + field.nodeRef + " ORDER BY `order`");
+					field.enum = enums;
 				}
 				fields_new.set(field.id, field);
 			}

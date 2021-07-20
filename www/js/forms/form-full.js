@@ -79,6 +79,11 @@ export default class FormFull extends eventProcessingMixins {
 		this.recoveryBackupIfNeed();
 		this.onShow();
 		backupCallback = this.backupCurrentDataIfNeed.bind(this);
+		if(this.props.overrideOrderData >= 0) {
+			if(this.getField('order')) {
+				this.hideField('order');
+			}
+		}
 	}
 
 	componentDidUpdate() {

@@ -16,11 +16,7 @@ registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 
 	setFilterValues(filter) {
 		if(filter) {
-			let _enum = Object.assign({}, this.props.field.enum);
-			for(let f of filter) {
-				delete _enum[f];
-			}
-			this.enum = _enum;
+			this.enum = this.props.field.enum.filter(v => filter.indexOf(v) < 0);
 		} else {
 			delete this.enum;
 		}
@@ -60,7 +56,7 @@ registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 		} else {
 			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties, ReactDOM.span({
 				className: 'enum-' + field.id + '_' + value
-			}, field.enum[value]));
+			}, field.enumNamesById[value]));
 		}
 	}
 });

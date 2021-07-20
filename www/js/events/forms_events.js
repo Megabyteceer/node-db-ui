@@ -247,7 +247,7 @@ formsEventsOnLoad[6] = function () { //form6onloadBegin_JS89DW72SISA887QKJ32IUSL
 						this.fieldAlert('fieldName', L('FLD_EXISTS'));
 						this.nameIsBad = true;
 					} else {
-						this.fieldAlert('fieldName', L('FLD_CORRECT'), true);
+						this.fieldAlert('fieldName', '', true);
 					}
 				}, {
 					fieldName: fName,
@@ -371,6 +371,12 @@ formsEventsOnLoad[12] = function () { //form12onloadBegin_JS89DW72SISA887QKJ32IU
 formsEventsOnLoad[82] = function () { //form82onloadBegin_JS89DW72SISA887QKJ32IUSL
 	//this.getField('subMessages').inlineEditable();
 } //form82onloadEnd_JS89DW72SISA887QKJ32IUSL
+
+
+formsEventsOnLoad[52] = function () { //form52onloadBegin_JS89DW72SISA887QKJ32IUSL
+	this.getField("values").inlineEditable();
+} //form52onloadEnd_JS89DW72SISA887QKJ32IUSL
+
 //insertNewhandlersHere_adsqw09
 
 export {

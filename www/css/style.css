@@ -142,18 +142,13 @@ img{
 
 .admin-controll .clickable:hover,
 .admin-controll:hover,
+.clickable-top:hover,
 .clickable-neg:hover{
 	color:#def !important;
 	background:#567 !important;
 }
 
 .clickable:active{
-	-ms-transform: scale(0.98);
-	-webkit-transform: scale(0.98);
-	transform: scale(0.98);
-/*	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
-	box-shadow: none;*/
 	-webkit-box-shadow: inset 0px 4px 12px 0px rgba(44,0,0,0.75);
 	-moz-box-shadow: inset 0px 4px 12px 0px rgba(44,0,0,0.75);
 	box-shadow: inset 0px 4px 12px 0px rgba(44,0,0,0.75);

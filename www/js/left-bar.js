@@ -1,9 +1,9 @@
 import FieldAdmin from "./admin/field-admin.js";
-import NodeAdmin from "./admin/node-admin.js";
+import NodeAdmin, {createNodeForMenuItem} from "./admin/node-admin.js";
 import constants from "./custom/consts.js";
 import {ENV} from "./main-frame.js";
 import {iAdmin} from "./user.js";
-import {getData, isLitePage, loactionToHash, renderIcon, setFormFilter, sp} from "./utils.js";
+import {isLitePage, L, loactionToHash, renderIcon, setFormFilter, sp} from "./utils.js";
 
 let collapsed;
 
@@ -151,7 +151,11 @@ class BarItem extends React.Component {
 			)
 		} else {
 
-			if(!item.isDoc && (!item.children || (item.children.length === 0))) {
+			if(!item.isDoc && (!item.children || (item.children.length === 0))
+				/// #if DEBUG
+				&& false// in debug build always show empty nodes
+				/// #endif
+			) {
 				return ReactDOM.div();
 			}
 
@@ -163,7 +167,7 @@ class BarItem extends React.Component {
 			if((this.state && this.state.expanded) || isMustBeExpanded(this.props.item)) {
 				caret = 'up';
 				children = ReactDOM.div({className: 'jump-in', style: {opacity: 0.85, fontSize: '85%'}},
-					renderItemsArray(item.children, this.props.level + 1)
+					renderItemsArray(item.children, this.props.level + 1, item)
 				)
 			} else if(!item.isDoc) {
 				caret = 'down';
@@ -179,11 +183,11 @@ class BarItem extends React.Component {
 			if(item.subheader) {
 				itemBody = ReactDOM.h6({style: {margin: 10, color: '#999', fontSize: '80%'}}, adminControl, item.name);
 			} else {
-
+				const isMustBeExpandedVal = isMustBeExpanded(this.props.item);
 				itemBody = ReactDOM.div({onClick: this.closeMenuIfNeed, className: 'lb-item' + (item.tabId ? " lb-item-" + item.tabId : undefined), style: {overflow: 'hidden', width: collapsed ? 33 : undefined}},
 					adminControl,
 					ReactDOM.div({
-						style: (item.isDoc) ? innerItemStyle : groupStyle, className: 'clickable' + (!item.isDoc ? ' clickable-top' : ''), onClick: (event) => {
+						style: (item.isDoc) ? innerItemStyle : groupStyle, className: isMustBeExpandedVal ? undefined : ('clickable' + (!item.isDoc ? ' clickable-top' : '')), onClick: isMustBeExpandedVal ? undefined : (event) => {
 							if(item.isDoc) {
 								if(item.id === false) {
 									setFormFilter('tab', item.tab);
@@ -223,8 +227,19 @@ class BarItem extends React.Component {
 	}
 }
 
-function renderItemsArray(itemsArray, level) {
+function renderItemsArray(itemsArray, level, item) {
+	/// #if DEBUG
+	if((!itemsArray || itemsArray.length === 0) && (level > 0)) {
+		return ReactDOM.div({
+			className: 'clickable', style: {padding: '15px 20px'}, onClick: () => {
+				createNodeForMenuItem(item);
+			}
+		}, L("EMPTY_SECTION"));
+	}
+	/// #endif
+
 	var ret = [];
+
 	for(var k in itemsArray) {
 		var i = itemsArray[k];
 		if(typeof i === 'string') {

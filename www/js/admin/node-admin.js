@@ -244,7 +244,7 @@ export default class NodeAdmin extends React.Component {
 							color: '#fcc'
 						},
 						onClick: () => {
-
+							// TODO: implement ratings creation process
 
 						}
 					},
@@ -263,17 +263,7 @@ export default class NodeAdmin extends React.Component {
 							color: '#fcc'
 						},
 						onClick: () => {
-
-							getNodeData(4, item.parent, (data) => {
-								admin.popup(loactionToHash(4, 'new', {
-									prior: data.prior,
-									_nodesID: {
-										id: data.id,
-										name: data.name
-									}
-								}, true), 900, true);
-							});
-
+							createNodeForMenuItem(item);
 						}
 					},
 						renderIcon('plus')
@@ -457,3 +447,17 @@ export default class NodeAdmin extends React.Component {
 
 	}
 }
+
+function createNodeForMenuItem(item) {
+	getNodeData(4, item.isDoc ? item.parent : item.id, (data) => {
+		admin.popup(loactionToHash(4, 'new', {
+			prior: data.prior,
+			_nodesID: {
+				id: data.id,
+				name: data.name
+			}
+		}, true), 900, true);
+	});
+}
+
+export {createNodeForMenuItem};

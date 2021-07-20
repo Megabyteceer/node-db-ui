@@ -101,7 +101,7 @@ function processSource(fileName, startMarker, endMarker, newSource, itemId, type
 		} else if(newSource) {
 			//add new handler
 
-			start = text.indexOf("\n\t//insertNewhandlersHere_adsqw09");
+			start = text.indexOf("//insertNewhandlersHere_adsqw09");
 			if(start < 0) {
 				throw new Error('new handlers marker is corrupted.');
 			}

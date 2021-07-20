@@ -33,7 +33,7 @@ module.exports = {
 
 		if(data.isDoc && !data.staticLink) {
 
-			const tblCrtQ = `CREATE TABLE ${data.tableName} (
+			const tblCrtQ = `CREATE TABLE \`${data.tableName}\` (
 			ID bigint(15) unsigned NOT NULL AUTO_INCREMENT,
 			status int(1) unsigned NOT NULL DEFAULT '1',
 			name VARCHAR(64) NOT NULL default '',
@@ -50,8 +50,8 @@ module.exports = {
 
 			await mysqlExec(tblCrtQ);
 
-			const insertedId = (await mysqlExec("INSERT INTO " + data.tableName + " SET status=0, _usersID=0")).insertId;
-			await mysqlExec("UPDATE " + data.tableName + " SET ID=0 WHERE ID=" + insertedId);
+			const insertedId = (await mysqlExec("INSERT INTO \`" + data.tableName + "\` SET status=0, _usersID=0")).insertId;
+			await mysqlExec("UPDATE \`" + data.tableName + "\` SET ID=0 WHERE ID=" + insertedId);
 
 			//create default fields
 			const mainFieldQ = `INSERT INTO _fields

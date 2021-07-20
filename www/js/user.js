@@ -110,14 +110,14 @@ export default class User extends React.Component {
 
 			var org;
 			if(this.state.orgs && Object.keys(this.state.orgs).length > 1 && this.state.orgs[this.state.orgId]) {
-				var orgsSelect = [];
+				var options = [];
 
 				for(var k in this.state.orgs) {
-					var o = this.state.orgs[k];
-					orgsSelect.push(ReactDOM.option({value: k, key: k, style: optionStyle}, o));
+					var name = this.state.orgs[k];
+					options.push({value: k, name});
 				};
 
-				org = React.createElement(Select, {options: this.state.orgs, style: selectStyle, isCompact: true, defaultValue: this.state.orgId, onChange: this.changeOrg});
+				org = React.createElement(Select, {options, style: selectStyle, isCompact: true, defaultValue: this.state.orgId, onChange: this.changeOrg});
 			} else {
 				org = this.state.org;
 			}

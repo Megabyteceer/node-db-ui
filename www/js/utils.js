@@ -526,6 +526,12 @@ function normalizeNode(node) {
 			f.index = i;
 			f.node = node;
 			node.fieldsById[f.id] = f;
+			if(f.enum) {
+				f.enumNamesById = {};
+				for(let e of f.enum) {
+					f.enumNamesById[e.value] = e.name;
+				}
+			}
 		});
 	}
 }

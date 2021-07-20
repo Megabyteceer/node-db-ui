@@ -24,9 +24,11 @@ import {initDictionary} from "../../js/utils.js";
 		'CONTENT': 'Content',
 		'FLD_DESC': 'Field description',
 		'PASSWORDS_NOT_M': 'Passwords dont match',
+		/// #if DEBUG
+		'EMPTY_SECTION': 'Empty section (click to add)',
+		/// #endif
 		'VALUE_EXISTS': 'Value already in use.',
 		'FLD_EXISTS': 'Field with same name already exists in this document.',
-		'FLD_CORRECT': 'Name is avalable.',
 		'MULTILANG': 'Multilangual',
 		'LOGIN': 'Login',
 		'USER_PROFILE': 'User profile',

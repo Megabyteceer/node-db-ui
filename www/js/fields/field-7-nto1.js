@@ -12,7 +12,7 @@ var dropListStyle = {
 	background: '#F7F7F7',
 	minWidth: 550,
 	border: '1px solid #BBBBBB',
-	padding: '8px',
+	padding: '6px 5px',
 	fontSize: '80%',
 	boxShadow: '0px 4px 12px 0px #777',
 	borderRadius: 6,
@@ -307,7 +307,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 						whiteSpace: 'nowrap',
 						cursor: this.props.fieldDisabled ? 'default' : 'pointer',
 						borderRadius: 3,
-						padding: 2
+						padding: '5px 8px'
 					},
 					className: this.props.fieldDisabled ? 'unclickable disabled' : 'clickable',
 					title: this.props.isCompact ? field.name : L('SELECT'),
@@ -321,9 +321,9 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 							width: '100%',
 							whiteSpace: 'nowrap',
 							overflow: 'hidden',
-							paddingLeft: 8,
 							paddingRight: 54,
-							marginRight: mrg
+							marginRight: mrg,
+							boxSizing: 'border-box'
 						}
 					},
 						iconPic,

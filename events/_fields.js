@@ -24,7 +24,7 @@ module.exports = {
 			data.fieldName = fn;
 		}
 
-		if(data.enum) {
+		if(data.enum) { //TODO: rename nodeRef field to enum?
 			data.nodeRef = data.enum;
 		}
 
@@ -71,7 +71,7 @@ module.exports = {
 		mustBeUnset(newData, 'nostore');
 		mustBeUnset(newData, 'node_fields_linker');
 
-		if(newData.enum) {
+		if(newData.enum) { //TODO: rename nodeRef field to enum?
 			newData.nodeRef = newData.enum;
 		}
 
@@ -221,15 +221,15 @@ async function createFieldInTable(data) {
 		const fld1 = nodeName + 'ID';
 		const fld2 = linkedNodeName + 'ID';
 
-		await mysqlExec(`CREATE TABLE IF NOT EXISTS ${fieldName} (
+		await mysqlExec(`CREATE TABLE IF NOT EXISTS \`${fieldName}\` (
 			ID bigint(15) unsigned NOT NULL AUTO_INCREMENT,
-			${fld1} bigint(15) unsigned NOT NULL DEFAULT 0,
-			${fld2} bigint(15) unsigned NOT NULL DEFAULT 0,
+			\`${fld1}\` bigint(15) unsigned NOT NULL DEFAULT 0,
+			\`${fld2}\` bigint(15) unsigned NOT NULL DEFAULT 0,
 			primary key(ID),
-			INDEX(${fld1}),
-			INDEX(${fld2}),
-			FOREIGN KEY(${fld1}) REFERENCES ${nodeName}(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-			FOREIGN KEY(${fld2}) REFERENCES ${linkedNodeName}(ID) ON DELETE CASCADE ON UPDATE CASCADE
+			INDEX(\`${fld1}\`),
+			INDEX(\`${fld2}\`),
+			FOREIGN KEY(\`${fld1}\`) REFERENCES \`${nodeName}\`(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY(\`${fld2}\`) REFERENCES \`${linkedNodeName}\`(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4; `);
 	} else if(!data.nostore) {
 		if(fieldType === FIELD_7_Nto1) {
@@ -239,17 +239,17 @@ async function createFieldInTable(data) {
 
 		const typeQ = getFieldTypeSQL(data);
 		if(typeQ) {
-			const altQ = ['ALTER TABLE ', nodeName, ' ADD COLUMN ', fieldName, ' ', typeQ];
+			const altQ = ['ALTER TABLE \`', nodeName, '\` ADD COLUMN \`', fieldName, '\` ', typeQ];
 
 			if(data.forSearch || data.uniqu) {
-				altQ.push(', ADD', (data.uniqu ? ' UNIQUE' : ''), ' INDEX ', nodeName, '_', fieldName, ' (', fieldName, ' ASC) ;');
+				altQ.push(', ADD', (data.uniqu ? ' UNIQUE' : ''), ' INDEX ', nodeName, '_', fieldName, ' (\`', fieldName, '\` ASC) ;');
 			}
 
 			await mysqlExec(altQ.join(''));
 
 			if(fieldType === FIELD_7_Nto1) {
-				await mysqlExec('ALTER TABLE ' + nodeName + ' ADD INDEX(' + fieldName + ');');
-				await mysqlExec('ALTER TABLE ' + nodeName + ' ADD FOREIGN KEY (' + fieldName + ') REFERENCES ' + ENV.DB_NAME + '.' + linkedNodeName + '(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;');
+				await mysqlExec('ALTER TABLE \`' + nodeName + '\` ADD INDEX(\`' + fieldName + '\`);');
+				await mysqlExec('ALTER TABLE \`' + nodeName + '\` ADD FOREIGN KEY (\`' + fieldName + '\`) REFERENCES \`' + linkedNodeName + '\`(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;');
 			}
 		}
 	}

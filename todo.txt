@@ -1,6 +1,3 @@
-создание всех видов разделов.
-по умолчанию сортировать старые в конце
-
 Enums order where is it? Add splitters in to enums
 
 проверить все TODO
@@ -61,3 +58,5 @@ Generate small icons for all image fields
 Lookup to user gives access for user if field marked as access opener. Keep such a fields in prevsFields property. Use it in messages.
 
 Linemaster list. render items one by one with delay
+
+captcha field handling
