@@ -4,6 +4,7 @@ import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
 const styleInput = {
+	verticalAlign: 'middle',
 	width: '130px',
 	display: 'inline-block'
 };
