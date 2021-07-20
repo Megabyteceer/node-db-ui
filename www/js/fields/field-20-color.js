@@ -9,16 +9,21 @@ const styleInput = {
 	display: 'inline-block'
 };
 
-var intToColor = (color, alpha) => {
+const intToColor = (color, alpha) => {
 	var ret = 'rgba(' + ((color >> 16) & 255) + ',' + ((color >> 8) & 255) + ',' + (color & 255) + ',' + (alpha / 255.0).toFixed(2) + ')';
 	return ret;
+};
+
+const validateValue = (val) => {
+	return (typeof val !== 'number' || isNaN(val)) ? 0xffffffff : val;
 };
 
 registerFieldClass(FIELD_20_COLOR, class ColorField extends fieldMixins {
 
 	constructor(props) {
 		super(props);
-		this.state = {value: props.initialValue, color: props.initialValue % 0x1000000, alpha: Math.round(props.initialValue / 0x1000000)};
+		const val = validateValue(props.initialValue);
+		this.state = {value: val, color: val % 0x1000000, alpha: Math.floor(val / 0x1000000)};
 		this.onChangeColor = this.onChangeColor.bind(this);
 		this.onChangeAlpha = this.onChangeAlpha.bind(this);
 	}
@@ -40,7 +45,8 @@ registerFieldClass(FIELD_20_COLOR, class ColorField extends fieldMixins {
 	}
 
 	setValue(value) {
-		this.setState({color: value % 0x1000000, alpha: value / 0x1000000});
+		value = validateValue(value);
+		this.setState({color: value % 0x1000000, alpha: Math.floor(value / 0x1000000)});
 	}
 
 	render() {
