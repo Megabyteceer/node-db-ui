@@ -9,7 +9,7 @@ const {submitRecord} = require("../core/submit.js");
 module.exports = {
 	createFieldInTable,
 
-	pre: async function(data, userSession) {
+	beforeCreate: async function(data, userSession) {
 		shouldBeAdmin(userSession);
 
 		if(data.multilang) {
@@ -31,7 +31,7 @@ module.exports = {
 		await createFieldInTable(data);
 	},
 
-	post: async function(data, userSession) {
+	afterCreate: async function(data, userSession) {
 		shouldBeAdmin(userSession);
 
 		const fieldType = data.fieldType;
@@ -59,7 +59,7 @@ module.exports = {
 		reloadMetadataSchedule();
 	},
 
-	update: async function(currentData, newData, userSession) {
+	beforeUpdate: async function(currentData, newData, userSession) {
 
 		shouldBeAdmin(userSession);
 
@@ -131,8 +131,8 @@ module.exports = {
 		reloadMetadataSchedule();
 	},
 
-	delete: async function(data, userSession) {
-		throw new Error('_fields pre deletion event is not implemented');
+	beforeDelete: async function(data, userSession) {
+		throw new Error('_fields beforeCreate deletion event is not implemented');
 	}
 }
 

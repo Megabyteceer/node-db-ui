@@ -4,7 +4,7 @@ const {createFieldInTable} = require("./_fields.js");
 
 module.exports = {
 
-	post: async function(data, userSession) {
+	afterCreate: async function(data, userSession) {
 		debugger;
 		const fields = await getRecords(6, 1, false, true, {multilang: 1, p: '*'});
 		fields = fields.items;
@@ -17,11 +17,11 @@ module.exports = {
 		reloadMetadataSchedule();
 	},
 
-	update: async function(currentData, newData, userSession) {
-		throw new Error('_languages update event is not implemented');
+	beforeUpdate: async function(currentData, newData, userSession) {
+		throw new Error('_languages beforeUpdate event is not implemented');
 	},
 
-	delete: async function(data, userSession) {
-		throw new Error('_languages pre deletion event is not implemented');
+	beforeDelete: async function(data, userSession) {
+		throw new Error('_languages beforeCreate deletion event is not implemented');
 	}
 }

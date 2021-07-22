@@ -387,7 +387,7 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 		throw new Error('Deletion access is denied');
 	}
 
-	await getNodeEventHandler(nodeId, 'delete', recordData, userSession);
+	await getNodeEventHandler(nodeId, 'beforeDelete', recordData, userSession);
 
 	await mysqlExec("UPDATE " + node.tableName + " SET status=0 WHERE id=" + recId + " LIMIT 1");
 	return 1;

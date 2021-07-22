@@ -1,18 +1,18 @@
 module.exports = {
 
-	pre: async function (data, userSession) {
-		
+	beforeCreate: async function(data, userSession) {
+
 	},
 
-	post: async function (data, userSession) {
-		
+	afterCreate: async function(data, userSession) {
+
 	},
 
-	update: async function (currentData, newData, userSession) {
-		
+	beforeUpdate: async function(currentData, newData, userSession) {
+
 	},
 
-	delete: async function(data, userSession) {
-		
+	beforeDelete: async function(data, userSession) {
+
 	}
 }

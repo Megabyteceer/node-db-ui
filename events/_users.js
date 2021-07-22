@@ -38,7 +38,7 @@ async function clearUserParams(data, currentData, userSession) {
 }
 
 module.exports = {
-	update: async function(currentData, newData, userSession) {
+	beforeUpdate: async function(currentData, newData, userSession) {
 		if(!isAdmin(userSession)) {
 			delete newData.email;
 		}

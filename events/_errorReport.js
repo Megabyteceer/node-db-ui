@@ -2,7 +2,7 @@ const {mail_utf8} = require("../core/auth.js");
 const ENV = require("../ENV.js");
 
 module.exports = {
-	post: async function(data, userSession) {
+	afterCreate: async function(data, userSession) {
 		debugger;
 		if(ENV.ERROR_NOTIFY_EMAIL) {
 			let emails = ENV.ERROR_NOTIFY_EMAIL.split(',');

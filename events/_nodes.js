@@ -7,13 +7,13 @@ const {reloadMetadataSchedule} = require("../core/desc-node.js");
 
 module.exports = {
 
-	pre: async function(data, userSession) {
+	beforeCreate: async function(data, userSession) {
 		shouldBeAdmin(userSession);
 		// shift all nodes in the same parent node
 		return mysqlExec("UPDATE _nodes SET prior=prior+10 WHERE (_nodesID =" + data._nodesID + ") AND (prior >=" + data.prior + ")");
 	},
 
-	post: async function(data, userSession) {
+	afterCreate: async function(data, userSession) {
 
 		shouldBeAdmin(userSession);
 
@@ -55,53 +55,40 @@ module.exports = {
 
 			//create default fields
 			const mainFieldQ = `INSERT INTO _fields
-			(node_fields_linker, status, \`show\`, prior, fieldType,
-			fieldName, selectFieldName, name, fdescription, maxLen, requirement,
-			uniqu, _usersID, forSearch, nostore)
-			VALUES
-			(${createdID}, 1, 255, 0, 1, 'name', '', '${L('Name')}', '', 64, 1, 0, 0, 1, 0);`; //TODO add all languages
+				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName, selectFieldName, name,           fdescription, maxLen, requirement, uniqu, _usersID, forSearch, nostore) VALUES
+				(${createdID},       1,       255,     1,     1,         'name',    '',              '${L('Name')}', '',           64,     1,           0,     0,        1,         0);`; //TODO add all languages
 			await mysqlExec(mainFieldQ);
 
 			if(data.createdon_field) {
 				const createdOnQ = `INSERT INTO _fields 
-				(node_fields_linker, status, \`show\`, prior, fieldType,
-				fieldName, selectFieldName, name, fdescription, maxLen, requirement,
-				uniqu, _usersID, forSearch, nostore)
-				VALUES
-				(${createdID}, 1, 62, 1, 4, 'createdOn', '',
-				'${L('Created on')}', '', 0, 0, 0, 0, 1, 0);`;  //TODO add all languages
+				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,   selectFieldName, name,                 fdescription, maxLen, requirement, uniqu, _usersID, forSearch, nostore) VALUES
+				(${createdID},       1,        62,     2,     4,         'createdOn', '',              '${L('Created on')}', '',           0,      0,           0,     0,        1,         0);`;  //TODO add all languages
 				const dateFieldId = (await mysqlExec(createdOnQ)).insertId;
 				await mysqlExec('UPDATE _nodes SET _fieldsID=' + dateFieldId + ', reverse = 1 WHERE id=' + createdID);
 			}
 
 			if(data.createdby_field) {
 				const createdByQ = `INSERT INTO _fields
-				(node_fields_linker, status, \`show\`, prior, fieldType,
-				fieldName, selectFieldName, name, fdescription, maxLen, requirement,
-				uniqu, _usersID, forSearch, nostore, nodeRef)
-				VALUES
-				(${createdID}, 1, 6, 2, 7, '_organID', '_organ', '${L('Organization')}', '', 0, 0, 0, 0, 1, 0, 7);`; //TODO add all languages
+				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,  selectFieldName, name,                   fdescription, maxLen, requirement, uniqu, _usersID, forSearch, nostore, nodeRef) VALUES
+				(${createdID},       1,        6,      2,     7,         '_organID', '_organ',        '${L('Organization')}', '',           0,      0,           0,     0,        1,         0,       7);`; //TODO add all languages
 				await mysqlExec(createdByQ);
 			}
 
 			if(data.createUserFld) {
 				const createdByQ = `INSERT INTO _fields
-				(node_fields_linker, status, \`show\`, prior, fieldType,
-				fieldName, selectFieldName, name, fdescription, maxLen, requirement,
-				uniqu, _usersID, forSearch, nostore, nodeRef, icon)
-				VALUES
-				(${createdID}, 1, 6, 3, 7, '_usersID', '_users', '${L('Owner')}', '', 0, 0, 0, 0, 1, 0, 5, 'avatar');`; //TODO add all languages
+				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,  selectFieldName,  name,           fdescription, maxLen, requirement, uniqu, _usersID, forSearch, nostore, nodeRef, icon) VALUES
+				(${createdID},       1,        6,      3,     7,         '_usersID', '_users',        '${L('Owner')}', '',           0,      0,           0,     0,        1,         0,       5,       'avatar');`; //TODO add all languages
 				await mysqlExec(createdByQ);
 			}
 		}
 		reloadMetadataSchedule();
 	},
 
-	delete: async function(data, userSession) {
-		throw new Error('_nodes pre deletion event is not implemented');
+	beforeDelete: async function(data, userSession) {
+		throw new Error('_nodes beforeCreate deletion event is not implemented');
 	},
 
-	update: (currentData, newData, userSession) => {
+	beforeUpdate: (currentData, newData, userSession) => {
 		shouldBeAdmin(userSession);
 		reloadMetadataSchedule();
 	}

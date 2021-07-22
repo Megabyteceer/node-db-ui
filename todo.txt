@@ -1,19 +1,7 @@
 
-проверить все TODO
-
-переименовать pre post
-в UPDATE передавать fullNewData?
-
-
-search brokes react
-
 getData
 postData move to promises
 replace callsCount
-
-code editor не ескейпить добавить __noescape field in to request and use it in src sendRemove all \r symbols before send and in alll sources
-
-codw editor fix intellisence 
 
 Hide enum value parent field if it subform
 
@@ -51,3 +39,5 @@ Generate small icons for all image fields
 Lookup nto1 and ntom to user gives access for user if field marked as access opener. Keep such a fields in prevsFields property. Use it in messages.
 
 Linemaster list. render items one by one with delay
+
+проверить все TODO

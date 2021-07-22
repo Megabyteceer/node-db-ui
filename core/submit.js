@@ -156,9 +156,9 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		}
 
 		if(recId !== false) {
-			await getNodeEventHandler(nodeId, 'update', currentData, data, userSession);
+			await getNodeEventHandler(nodeId, 'beforeUpdate', currentData, data, userSession);
 		} else {
-			await getNodeEventHandler(nodeId, 'pre', data, userSession);
+			await getNodeEventHandler(nodeId, 'beforeCreate', data, userSession);
 		}
 		let needProcess_n2m;
 		for(let f of node.fields) {
@@ -289,7 +289,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		if(recId === false) {
 			recId = qResult.insertId;
 			data.id = recId;
-			await getNodeEventHandler(nodeId, 'post', data, userSession);
+			await getNodeEventHandler(nodeId, 'afterCreate', data, userSession);
 		}
 		if(needProcess_n2m) {
 			for(let f of node.fields) {
