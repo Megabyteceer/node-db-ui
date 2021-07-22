@@ -4,7 +4,7 @@ import {defaultButtonStyle, successButtonStyle} from "../stage.js";
 
 var node;
 
-function admin_editSource(handler, node_, field) {
+function admin_editSource(handler, node_, field, form) {
 
 	node = node_;
 
@@ -25,7 +25,8 @@ function admin_editSource(handler, node_, field) {
 		title,
 		handler,
 		itemId: id,
-		node
+		node,
+		form
 	}), false, false, true);
 }
 
@@ -104,12 +105,12 @@ var style = {
 }
 
 
-function javascriptHint(cm) {
+function javascriptHint(cm, form) {
 
 	var cur = cm.getCursor();
 	var token = cm.getTokenAt(cur);
 
-	var list;
+	var list = [];
 	var flt;
 	var from = token.start;
 	var to = token.end;
@@ -118,43 +119,42 @@ function javascriptHint(cm) {
 
 		list = node.fields.map((f) => {
 			return '"' + f.fieldName + '"';
-		})
-
+		});
 
 	} else {
 
 		if(token.string === '.') {
-			flt = '';
-			from = to;
+			if(cm.getTokenAt({ch: cur.ch - 2, line: cur.line}).string === 'this') {
+				flt = '';
+				from = to;
+			}
 		} else if(token.type = 'property') {
-			flt = token.string;
+			if(cm.getTokenAt({ch: token.start - 2, line: cur.line}).string === 'this') {
+				flt = token.string;
+			}
 		}
 		if(typeof flt !== 'undefined') {
 			list = tipProps;
 		}
-
 	}
 
 	if(list && flt) {
 		flt = flt.toLowerCase();
-
 		list = list.filter((s) => {
 			return s.toLowerCase().indexOf(flt) >= 0;
 		});
 	}
 
-
-	if(list) {
-		return {
-			from: window.CodeMirror.Pos(cur.line, from),
-			to: window.CodeMirror.Pos(cur.line, to),
-			list: list
-		};
+	let jsList = window.CodeMirror.hint.javascript.call(form, cm);
+	if(jsList && jsList.list) {
+		list = list.concat(jsList.list);
 	}
-
+	return {
+		from: window.CodeMirror.Pos(cur.line, from),
+		to: window.CodeMirror.Pos(cur.line, to),
+		list
+	};
 }
-
-window.CodeMirror.registerHelper("hint", "javascript", javascriptHint);
 
 class AdminEventEditor extends React.Component {
 
@@ -185,7 +185,7 @@ class AdminEventEditor extends React.Component {
 		this.editor.save();
 		if(this.state.src !== this.textareaRef.value) {
 			let data = this.getPostData();
-			data.src = this.textareaRef.value;
+			data.__UNSAFE_UNESCAPED = {src: this.textareaRef.value};
 			submitData('admin/getEventHandler', data, () => {
 				window.location.reload();
 			});
@@ -199,15 +199,18 @@ class AdminEventEditor extends React.Component {
 			var ta = ReactDOM.findDOMNode(ref);
 			this.textareaRef = ref;
 			this.editor = window.CodeMirror.fromTextArea(ta, {
-				lineNumbers: true,
+				mode: {name: "javascript", globalVars: true},
 				matchBrackets: true,
 				autofocus: true,
-				highlightSelectionMatches: {
-					showToken: /\w/,
-					annotateScrollbar: true
+				lineNumbers: true,
+				styleActiveLine: true,
+				hintOptions: {
+					hint: (cm) => {
+						return javascriptHint(cm, this.props.form);
+					}
 				},
 				extraKeys: {
-					//"Ctrl-Space": "autocomplete",
+					"Ctrl-Space": "autocomplete",
 					"Ctrl-D": (instance) => {
 
 						if(!instance.doc.somethingSelected()) {
@@ -244,9 +247,9 @@ class AdminEventEditor extends React.Component {
 			this.editor.setSize('900px', '500px');
 			this.editor.on("keyup", (editor, event) => {
 				if(!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
-					/*window.CodeMirror.commands.autocomplete(editor, null, {
+					window.CodeMirror.commands.autocomplete(editor, null, {
 						completeSingle: false
-					});*/ //TODO:
+					});
 				}
 			});
 

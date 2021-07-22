@@ -67,7 +67,7 @@ function substrCount(string, subString) {
 function processSource(fileName, startMarker, endMarker, newSource, itemId, type, handler) {
 	fileName = path.join(__dirname, fileName);
 
-	let text = fs.readFileSync(fileName, 'utf8').replaceAll("\r\n", "\n");
+	let text = fs.readFileSync(fileName, 'utf8').replaceAll("\n", "\n");
 
 	const c1 = substrCount(text, startMarker);
 	const c2 = substrCount(text, endMarker);
@@ -85,18 +85,18 @@ function processSource(fileName, startMarker, endMarker, newSource, itemId, type
 
 	if(newSource === false) {
 		if(start >= 0) {
-			return text.substring(start, end);
+			return text.substring(start + 1, end - 1);
 		} else {
 			return '';
 		}
 	} else {
-		newSource = newSource.trim();
+
 		if(start >= 0) { //replace handler
-			const re = new RegExp("/\\t[^\\n]*" + startMarker.replaceAll('/', '\\/') + ".*" + endMarker.replaceAll('/', '\\/') + "/sm");
-			if(!newSource) { // remove handler
+			const re = new RegExp("[^\\n]*" + startMarker.replaceAll('/', '\\/') + ".*" + endMarker.replaceAll('/', '\\/'), 'sm');
+			if(!newSource.trim()) { // remove handler
 				fs.writeFileSync(fileName, text.replace(re, '')); //can use sync, because events update is very rare and admin only operation
 			} else {
-				fs.writeFileSync(fileName, text.substring(0, start) + newSource + text.substring(end));
+				fs.writeFileSync(fileName, text.substring(0, start) + '\n' + newSource + '\n' + text.substring(end));
 			}
 		} else if(newSource) {
 			//add new handler
@@ -105,17 +105,17 @@ function processSource(fileName, startMarker, endMarker, newSource, itemId, type
 			if(start < 0) {
 				throw new Error('new handlers marker is corrupted.');
 			}
-			let startMarker;
+			let functionStart;
 			if(type === 'field') {
-				startMarker = "\r\n\r\n\r\n\tfieldsEvents[" + itemId + "] = function() {" + startMarker;
+				functionStart = "fieldsEvents[" + itemId + "] = function() {" + startMarker;
 			} else {
 				if(handler === 'onload') {
-					startMarker = "\r\n\r\n\r\n\tformsEventsOnLoad[" + itemId + "] = function() {" + startMarker;
+					functionStart = "formsEventsOnLoad[" + itemId + "] = function() {" + startMarker;
 				} else {
-					startMarker = "\r\n\r\n\r\n\tformsEventsOnSave[" + itemId + "] = function() {" + startMarker;
+					functionStart = "formsEventsOnSave[" + itemId + "] = function() {" + startMarker;
 				}
 			}
-			fs.writeFileSync(fileName, text.substring(0, start) + startMarker + newSource + endMarker + text.substring(start));
+			fs.writeFileSync(fileName, text.substring(0, start) + functionStart + '\n' + newSource + '\n' + endMarker + '\n\n' + text.substring(start));
 		}
 		return 1;
 	}
@@ -123,7 +123,7 @@ function processSource(fileName, startMarker, endMarker, newSource, itemId, type
 
 async function getClientEventHandler(reqData, userSession) {
 	shouldBeAdmin(userSession);
-	const newSrc = reqData.src || false;
+	const newSrc = reqData.__UNSAFE_UNESCAPED ? reqData.__UNSAFE_UNESCAPED.src : false;
 
 	if(reqData.type === 'field') {
 		const fieldId = reqData.itemId;

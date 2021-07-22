@@ -269,11 +269,8 @@ export default class FieldWrap extends React.Component {
 			setFormFilter('tab', this.props.parentTabName);
 		}
 		setTimeout(() => {
-			if(this.fieldRef.focus() === false) {
-				if(this.fieldRef) {
-					scrollToVisible(this.fieldRef);
-				}
-			}
+			scrollToVisible(this);
+			this.fieldRef.focus();
 		}, 1);
 	}
 

@@ -127,7 +127,7 @@ export default class FieldAdmin extends React.Component {
 						},
 						onClick: () => {
 
-							admin_editSource('onchange', node, field);
+							admin_editSource('onchange', node, field, form);
 
 						},
 						title: "Edit client side script which execute on field value change."

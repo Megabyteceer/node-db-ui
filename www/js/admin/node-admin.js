@@ -179,7 +179,7 @@ export default class NodeAdmin extends React.Component {
 							paddingRight: '6px'
 						},
 						onClick: () => {
-							admin_editSource('onload', node);
+							admin_editSource('onload', node, undefined, form);
 						},
 						title: "Edit client side script which execute on form open."
 					},
@@ -195,7 +195,7 @@ export default class NodeAdmin extends React.Component {
 							paddingRight: '6px'
 						},
 						onClick: () => {
-							admin_editSource('onsave', node);
+							admin_editSource('onsave', node, undefined, form);
 						},
 						title: "Edit client side script which execute on form save."
 					},

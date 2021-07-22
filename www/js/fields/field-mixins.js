@@ -1,4 +1,3 @@
-import {scrollToVisible} from "../utils.js";
 
 export default class fieldMixins extends React.Component {
 
@@ -35,7 +34,6 @@ export default class fieldMixins extends React.Component {
 			this.focusOverride();
 		} else {
 			if(this.refToInput) {
-				scrollToVisible(this.refToInput);
 				ReactDOM.findDOMNode(this.refToInput).focus();
 			} else {
 				return false;

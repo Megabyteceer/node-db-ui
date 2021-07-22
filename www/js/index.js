@@ -29,6 +29,9 @@ window.require = function (name) {
 	if(name === 'jquery') {
 		return $;
 	}
+	if(name === '../../lib/codemirror') {
+		return window.CodeMirror;
+	}
 	debugger;
 	throw new Error('unknown module required');
 };
@@ -47,6 +50,9 @@ Promise.all([
 		})
 	]).then(() => {
 		Promise.all([
+			import('./lib/codemirror/addon/hint/javascript-hint.js'),
+			import('./lib/codemirror/addon/hint/show-hint.js'),
+			import('./lib/codemirror/mode/javascript/javascript.js'),
 			import("./lib/react-datetime/dist/react-datetime.cjs.js").then(() => {
 				window.Datetime = window.module.exports.default;
 			}),

@@ -152,15 +152,17 @@ initNodesData().then(async function() {
 
 const mysql_real_escape_object = (o) => {
 	for(let key in o) {
-		let val = o[key];
-		switch(typeof val) {
-			case 'string':
-				o[key] = mysql_real_escape_string(val);
-				break;
-			case 'object':
-				if(val) {
-					mysql_real_escape_object(val);
-				}
+		if(key !== '__UNSAFE_UNESCAPED') {
+			let val = o[key];
+			switch(typeof val) {
+				case 'string':
+					o[key] = mysql_real_escape_string(val);
+					break;
+				case 'object':
+					if(val) {
+						mysql_real_escape_object(val);
+					}
+			}
 		}
 	}
 }
