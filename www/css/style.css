@@ -94,6 +94,10 @@ b{
 	font-weight:bold;
 }
 
+.mark-search {
+	background: #FFFF00;
+}
+
 textarea{
 	padding-top:6px;
 	padding-bottom:6px;

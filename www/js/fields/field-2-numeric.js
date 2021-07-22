@@ -44,7 +44,7 @@ registerFieldClass(FIELD_2_INT, class NumericField extends fieldMixins {
 
 			return ReactDOM.input(inputsProps);
 		} else {
-			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties, value.toString());
+			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties, this.renderTextValue(value.toString()));
 		}
 
 	}

@@ -13,6 +13,8 @@ replace callsCount
 
 code editor не ескейпить добавить __noescape field in to request and use it in src sendRemove all \r symbols before send and in alll sources
 
+codw editor fix intellisence 
+
 Hide enum value parent field if it subform
 
 Add classes for all elements. Move styles to css.
@@ -32,11 +34,6 @@ separate server side and client side isUserHaveRole
 
 убрать <a href="/login
 
-запретить подчеркивания не в начале названия поля. чтобы _en не добавили.
-запретить подчеркивание в названии таблиц
-
-Combine sqls in field edit. Node edit.
-
 crop падает на прозрачной области. когда кроп больше картинки
 
 в релизе CodeMirror импортировать по другому
@@ -45,16 +42,12 @@ crop падает на прозрачной области. когда кроп 
 
 try mysql.createPool
 
-shake alerts on аppearing
-
 в разделе добавить выбор ссылки на _html
 
 captcha
 
 Generate small icons for all image fields
 
-Lookup to user gives access for user if field marked as access opener. Keep such a fields in prevsFields property. Use it in messages.
+Lookup nto1 and ntom to user gives access for user if field marked as access opener. Keep such a fields in prevsFields property. Use it in messages.
 
 Linemaster list. render items one by one with delay
-
-captcha field handling

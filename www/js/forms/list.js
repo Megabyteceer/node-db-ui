@@ -72,7 +72,6 @@ export default class List extends BaseForm {
 
 	componentDidMount() {
 		this.subformsRefs = {};
-		this.higlightResults();
 		this.onShow();
 	}
 
@@ -84,45 +83,6 @@ export default class List extends BaseForm {
 		this.state.node = newProps.node;
 		this.state.data = newProps.initialData;
 		this.onShow();
-	}
-
-	higlightResults() {
-		if((this.filters && this.filters.s) || this.prevHiglightedTerm) {
-			/* //TODO fix search highlight
-			var c = $('.list-body', ReactDOM.findDOMNode(this));
-
-			var src_str = c.html();
-			if(src_str) {
-
-				src_str = src_str.replace(/<mark>/g, '');
-				src_str = src_str.replace(/<\/mark>/g, '');
-
-
-				var term = this.filters.s;
-				if(term) {
-
-
-					term = term.replace(/(\s+)/, "(<[^>]+>)*$1(<[^>]+>)*");
-					var pattern = new RegExp("(" + term + ")", "gi");
-
-					src_str = src_str.split('>').map((s) => {
-						var b = s.split('<');
-						b[0] = b[0].replace(pattern, "<mark>$1</mark>");
-						return b.join('<')
-					}).join('>');
-				}
-				c.html(src_str)
-
-				this.prevHiglightedTerm = this.filters.s;
-
-			} else {
-				this.prevHiglightedTerm = false;
-			}*/
-		}
-	}
-
-	componentDidUpdate() {
-		this.higlightResults();
 	}
 
 	onShow() {
@@ -380,7 +340,7 @@ export default class List extends BaseForm {
 						}
 
 						lines.push(
-							ReactDOM.span({key: UID(item) + 'btns', className: 'btns', style: {whiteSpace: 'nowrap', display: 'inline-block', width: 0}},
+							ReactDOM.span({key: UID(item) + 'btns', className: 'btns', style: {display: 'inline-block', width: 0}},
 								btns
 							)
 
@@ -519,8 +479,7 @@ export default class List extends BaseForm {
 					if(field.forSearch === 1) {
 						rowHeader = ReactDOM.span({
 							className: 'clickable', style: {
-								color: (filters.o === field.fieldName) ? '#259' : '',
-								whiteSpace: 'nowrap'
+								color: (filters.o === field.fieldName) ? '#259' : ''
 							}, onClick: () => {
 								if(filters.o === field.fieldName) {
 									this.changeFilter('r', filters.r ? undefined : 1, true);
@@ -562,7 +521,7 @@ export default class List extends BaseForm {
 					return React.createElement(FormItem, {key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, onClick: this.props.onItemClick ? () => {this.props.onItemClick(item)} : undefined, parentForm: this.props.parentForm, additionalButtons: additionalButtons, hideControlls: hideControlls, isLookup: this.props.isLookup, list: this, node, initialData: item});
 				});
 
-				body = ReactDOM.table({style: {width: '100%'}},
+				body = ReactDOM.table({style: {width: '100%', tableLayout: 'fixed'}},
 					ReactDOM.thead(null, ReactDOM.tr(null, tableHeader)),
 					ReactDOM.tbody({className: 'list-body'}, lines)
 				);

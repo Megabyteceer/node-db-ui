@@ -21,6 +21,7 @@ fieldsEvents[20] = function () { //field20onchangebegin_cswhggft
 		case FIELD_17_TAB:
 		case FIELD_18_BUTTON:
 			this.hideField("maxlen", "clientOnly", "nostore", "requirement", "uniqu", "forSearch");
+			this.setFieldValue('forSearch', false);
 			break;
 		case FIELD_14_NtoM:
 		case FIELD_15_1toN:
@@ -38,10 +39,9 @@ fieldsEvents[20] = function () { //field20onchangebegin_cswhggft
 		case FIELD_19_RICHEDITOR:
 		case FIELD_12_PICTURE:
 			this.showField("width", "height");
-			this.hideField("maxlen", "nostore", "clientOnly", "forSearch", "uniqu");
+			this.hideField("maxlen", "nostore", "clientOnly", "uniqu");
 			this.setFieldValue('nostore', false);
 			this.setFieldValue('clientOnly', false);
-			this.setFieldValue('forSearch', false);
 			this.setFieldValue('uniqu', false);
 			break;
 		case FIELD_5_BOOL:

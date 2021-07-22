@@ -52,7 +52,7 @@ registerFieldClass(FIELD_20_COLOR, class ColorField extends fieldMixins {
 	render() {
 		let background = intToColor(this.state.color, this.state.alpha);
 		let preview = ReactDOM.div({style: styleInput},
-			ReactDOM.div({style: {width: 120, display: 'inline-block', background: "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQYV2OcM2fOfwY0kJycjC7EwDgUFP7//x/DM3PnzsX0zBBQCADu1zEWG5C/XgAAAABJRU5ErkJggg==) repeat"}},
+			ReactDOM.div({style: {width: this.props.isCompact ? 42 : 120, verticalAlign: 'middle', display: 'inline-block', background: "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQYV2OcM2fOfwY0kJycjC7EwDgUFP7//x/DM3PnzsX0zBBQCADu1zEWG5C/XgAAAABJRU5ErkJggg==) repeat"}},
 				ReactDOM.div({style: {margin: '6px', height: 24, background}})
 			)
 		);

@@ -33,25 +33,29 @@ window.require = function (name) {
 	throw new Error('unknown module required');
 };
 
-
 Promise.all([
-	import('./lib/codemirror/lib/codemirror.js').then(() => {
-		window.CodeMirror = window.module.exports;
-	}),
-	import("./lib/moment/dist/moment.js").then((m) => {
-		window.moment = m.default;
+	import("./lib/react-highlight-words/dist/main.umd.js").then((m) => {
+		window.Highlighter = window.module.exports;
 	})
 ]).then(() => {
 	Promise.all([
-		import("./lib/react-datetime/dist/react-datetime.cjs.js").then(() => {
-			window.Datetime = window.module.exports.default;
+		import('./lib/codemirror/lib/codemirror.js').then(() => {
+			window.CodeMirror = window.module.exports;
 		}),
-		import("./lib/react-cropper/dist/react-cropper.umd.js").then(() => {
-			window.ReactCropper = window.exports.default;
+		import("./lib/moment/dist/moment.js").then((m) => {
+			window.moment = m.default;
 		})
 	]).then(() => {
-		import('./entry.js');
+		Promise.all([
+			import("./lib/react-datetime/dist/react-datetime.cjs.js").then(() => {
+				window.Datetime = window.module.exports.default;
+			}),
+			import("./lib/react-cropper/dist/react-cropper.umd.js").then(() => {
+				window.ReactCropper = window.exports.default;
+			})
+		]).then(() => {
+			import('./entry.js');
+		});
 	});
 });
-
 //TODO: add release imports

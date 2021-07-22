@@ -13,7 +13,22 @@ export default class fieldMixins extends React.Component {
 		this.refGetter = this.refGetter.bind(this);
 	}
 
+	renderTextValue(txt) {
+		if(this.props.field.forSearch) {
+			const list = this.props.form.props.list;
+			if(list && list.filters && list.filters.s) {
 
+				return React.createElement(window.Highlighter, {
+
+					highlightClassName: 'mark-search',
+					searchWords: [(typeof list.filters.s === 'string') ? list.filters.s : String(list.filters.s)],
+					autoEscape: true,
+					textToHighlight: txt
+				});
+			}
+		}
+		return txt;
+	}
 
 	focus() {
 		if(this.focusOverride) {

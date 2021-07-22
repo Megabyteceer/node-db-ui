@@ -31,15 +31,15 @@ window.onerror = (msg, url, line, col, error) => {
 	};
 //*/
 
-setTimeout(() => { //TODO: get to ReactDOM sync
-	for(let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'label', 'b', 'a', 'br', 'hr', 'svg', 'td', 'tr', 'tbody', 'thead', 'table', 'polyline', 'textarea', 'iframe', 'h4', 'h5']) {
-		ReactDOM[factoryType] = (...theArgs) => {
-			return React.createElement.call(this, factoryType, ...theArgs);
-		};
-	}
 
-	ReactDOM.render(
-		React.createElement(MainFrame),
-		document.getElementById('container')
-	);
-}, 100);
+for(let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'label', 'b', 'a', 'br', 'hr', 'svg', 'td', 'tr', 'tbody', 'thead', 'table', 'polyline', 'textarea', 'iframe', 'h4', 'h5']) {
+	ReactDOM[factoryType] = (...theArgs) => {
+		return React.createElement.call(this, factoryType, ...theArgs);
+	};
+}
+
+ReactDOM.render(
+	React.createElement(MainFrame),
+	document.getElementById('container')
+);
+

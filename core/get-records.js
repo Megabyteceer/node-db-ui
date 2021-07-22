@@ -2,6 +2,10 @@
 const {getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION} = require('./desc-node.js');
 const {mysqlExec} = require("./mysql-connection");
 
+const isASCII = (str) => {
+	return /^[\x00-\x7F]*$/.test(str);
+}
+
 const EMPTY_RATING = {all: 0};
 /*
 * @param nodeId
@@ -111,9 +115,10 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 		let sortFieldName;
 		let fieldName;
 
+		const isAsciiSearch = search && isASCII(search);
+
 		if(filterFields && filterFields.o) {
 			sortFieldName = filterFields.o;
-
 		}
 
 		for(let f of node.fields) {
@@ -130,7 +135,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 
 
 			if(search && f.forSearch) {
-				if(f.fieldType === FIELD_1_TEXT) {
+				if(isAsciiSearch || f.fieldType === FIELD_1_TEXT) {
 					if(!searchWHERE) {
 						searchWHERE = [];
 					} else {

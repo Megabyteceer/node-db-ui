@@ -108,7 +108,7 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 			}
 		} else {
 			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
-				value
+				this.renderTextValue(value)
 			);
 		}
 	}
