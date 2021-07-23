@@ -5,32 +5,200 @@ var formsEventsOnLoad = {};
 var formsEventsOnSave = {};
 
 
-formsEventsOnLoad[4] = function () { //form4onloadBegin_JS89DW72SISA887QKJ32IUSL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+formsEventsOnLoad[13] = function () { //form13onloadBegin_JS89DW72SISA887QKJ32IUSL
 	if(this.rec_update) {
-		this.disableField('isDoc');
-		this.disableField('tableName');
-		this.hideField('createdby_field');
-		this.hideField('createdon_field');
-		this.hideField('createUserFld');
+		this.disableField('title');
+		this.hideField('title');
+	} else if(!this.rec_creation) {
+		this.hideField('title');
 	}
+	this.disableField('help');
 
-	if(this.rec_creation) {
-		if(!this.fieldValue('recPerPage')) {
-			this.setFieldValue('recPerPage', 25);
-		}
-		this.hideField('_fieldsID');
+	if(!isUserHaveRole(0) && !isUserHaveRole(4)) {
+		$('#rec_header').parent().parent().hide();
+		this.hideField('help');
+		this.hideField('name');
 	}
+} //form13onloadEnd_JS89DW72SISA887QKJ32IUSL
 
-	this.addLookupFilters('_nodesID', 'isDoc', 0);
-	this.addLookupFilters('_fieldsID', {
-		node_fields_linker: this.rec_ID,
-		forSearch: 1
-	});
+
+
+formsEventsOnLoad[15] = function () { //form15onloadBegin_JS89DW72SISA887QKJ32IUSL
+	this.getField("values").inlineEditable();
+} //form15onloadEnd_JS89DW72SISA887QKJ32IUSL
+
+formsEventsOnLoad[85] = function () { //form85onloadBegin_JS89DW72SISA887QKJ32IUSL
+	this.hideField("data");
+	this.hideField("preview");
+	this.hideFooter();
+
+	this.focusField("name");
+} //form85onloadEnd_JS89DW72SISA887QKJ32IUSL
+
+
+
+
+
+
+
+formsEventsOnLoad[5] = function _users_onload() {//form5onloadBegin_JS89DW72SISA887QKJ32IUSL
+
+const isHiddenField = (fn) => {
+  if(this.fieldValue(fn) === 'hidden_91d2g7') {
+    this.hideField(fn);
+  }
+}
+
+if($('#org-edit-link').length === 0) {
+  $('.fc-63 input').css('width', '50%');
+  if(this.fieldValue('_organID')) {
+    $('.fc-63 input').after(
+      '<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organisation settings" href="#n/7/r/' +
+      this.fieldValue('_organID').id +
+      '/e">additional organisation settings <p class="fa fa-wrench"></p></a>'
+    );
+  }
+}
+
+if(!iAdmin()) {
+  this.hideField('_userroles');
+}
+
+this.disableField('_organID');
+
+if(!iAdmin()) {
+  this.hideField('_organID');
+}
+
+var myname = this.fieldValue('name');
+
+
+if(!isUserHaveRole(1)) {
+  this.disableField('email');
+}
+
+if(this.rec_update || this.rec_creation) {
+  this.addLookupFilters('_userroles', {
+    exludeIDs: [2, 3]
+  });
+  this.hideField('public_phone');
+  this.hideField('public_vk');
+  this.hideField('public_fb');
+  this.hideField('public_google');
+  this.hideField('public_email');
+
+} else {
+  isHiddenField('public_phone');
+  isHiddenField('public_vk');
+  isHiddenField('public_fb');
+  isHiddenField('public_google');
+  isHiddenField('public_email');
+
+}
+
+
+if(this.rec_update) {
+  this.header = 'Edit user\'s profile ' + myname;
+  this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
+  this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
+  this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
+}
+
+if(this.rec_creation) {
+  this.hideField('mailing');
+  this.hideField('PHONE');
+  //this.hideField('desc');
+  this.hideField('_organID');
+  this.header = ('Registration:');
+  this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
+  this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
+  this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
+}
+} //form5onloadEnd_JS89DW72SISA887QKJ32IUSL
+
+formsEventsOnSave[5] = function _users_onsave() {//form5onsaveBegin_JS89DW72SISA887QKJ32IUSL
+var pass = this.fieldValue('PASS');
+
+if(pass.length < 6) {
+  this.fieldAlert('PASS', L('PASS_LEN', 6));
+}
+
+
+if(pass != this.fieldValue('passconfirm')) {
+  this.fieldAlert('passconfirm', L('PASS_NOT_MACH'));
+}
+
+if(curentUserData.id === this.fieldValue('id')) {
+  var pLang = this.props.initialData.language;
+  var nLang = this.currentData.language;
+  if(pLang && pLang.hasOwnProperty('id')) {
+    pLang = pLang.id;
+  }
+  if(nLang && nLang.hasOwnProperty('id')) {
+    nLang = nLang.id;
+  }
+  if(nLang != pLang) {
+    this.onSaveCallback = () => {
+      myPromt(L('RESTARTNOW'), () => {
+        location = 'login';
+      });
+    };
+  }
+}
+} //form5onsaveEnd_JS89DW72SISA887QKJ32IUSL
+
+formsEventsOnLoad[8] = function _roles_onload() {//form8onloadBegin_JS89DW72SISA887QKJ32IUSL
+if((this.rec_ID === 2) || (this.rec_ID === 3)) {
+  this.hideField('_userroles');
+}
+
+} //form8onloadEnd_JS89DW72SISA887QKJ32IUSL
+
+formsEventsOnLoad[52] = function _enums_onload() {//form52onloadBegin_JS89DW72SISA887QKJ32IUSL
+this.getField("values").inlineEditable();
+} //form52onloadEnd_JS89DW72SISA887QKJ32IUSL
+
+formsEventsOnLoad[4] = function _nodes_onload() {//form4onloadBegin_JS89DW72SISA887QKJ32IUSL
+if(this.rec_update) {
+  this.disableField('isDoc');
+  this.disableField('tableName');
+  this.hideField('createdby_field');
+  this.hideField('createdon_field');
+  this.hideField('createUserFld');
+}
+
+if(this.rec_creation) {
+  if(!this.fieldValue('recPerPage')) {
+    this.setFieldValue('recPerPage', 25);
+  }
+  this.hideField('_fieldsID');
+}
+
+this.addLookupFilters('_nodesID', 'isDoc', 0);
+this.addLookupFilters('_fieldsID', {
+  node_fields_linker: this.rec_ID,
+  forSearch: 1
+});
 
 } //form4onloadEnd_JS89DW72SISA887QKJ32IUSL
 
-
-formsEventsOnSave[4] = function () { //form4onsaveBegin_JS89DW72SISA887QKJ32IUSL
+formsEventsOnSave[4] = function _nodes_onsave() {//form4onsaveBegin_JS89DW72SISA887QKJ32IUSL
 
 	if(!this.fieldValue("isDoc")) {
 		var v = this.fieldValue("name");
@@ -43,117 +211,7 @@ formsEventsOnSave[4] = function () { //form4onsaveBegin_JS89DW72SISA887QKJ32IUSL
 
 } //form4onsaveEnd_JS89DW72SISA887QKJ32IUSL
 
-
-
-
-formsEventsOnLoad[5] = function () { //form5onloadBegin_JS89DW72SISA887QKJ32IUSL
-
-	const isHiddenField = (fn) => {
-		if(this.fieldValue(fn) === 'hidden_91d2g7') {
-			this.hideField(fn);
-		}
-	}
-
-	if($('#org-edit-link').length === 0) {
-		$('.fc-63 input').css('width', '50%');
-		if(this.fieldValue('_organID')) {
-			$('.fc-63 input').after(
-				'<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organisation settings" href="#n/7/r/' +
-				this.fieldValue('_organID').id +
-				'/e">additional organisation settings <p class="fa fa-wrench"></p></a>'
-			);
-		}
-	}
-
-	if(!iAdmin()) {
-		this.hideField('_userroles');
-	}
-
-	this.disableField('_organID');
-
-	if(!iAdmin()) {
-		this.hideField('_organID');
-	}
-
-	var myname = this.fieldValue('name');
-
-
-	if(!isUserHaveRole(1)) {
-		this.disableField('email');
-	}
-
-	if(this.rec_update || this.rec_creation) {
-		this.addLookupFilters('_userroles', {
-			exludeIDs: [2, 3]
-		});
-		this.hideField('public_phone');
-		this.hideField('public_vk');
-		this.hideField('public_fb');
-		this.hideField('public_google');
-		this.hideField('public_email');
-
-	} else {
-		isHiddenField('public_phone');
-		isHiddenField('public_vk');
-		isHiddenField('public_fb');
-		isHiddenField('public_google');
-		isHiddenField('public_email');
-
-	}
-
-
-	if(this.rec_update) {
-		this.header = 'Edit user\'s profile ' + myname;
-		this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
-		this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
-		this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
-	}
-
-	if(this.rec_creation) {
-		this.hideField('mailing');
-		this.hideField('PHONE');
-		//this.hideField('desc');
-		this.hideField('_organID');
-		this.header = ('Registration:');
-		this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
-		this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
-		this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
-	}
-} //form5onloadEnd_JS89DW72SISA887QKJ32IUSL
-formsEventsOnSave[5] = function () { //form5onsaveBegin_JS89DW72SISA887QKJ32IUSL
-	var pass = this.fieldValue('PASS');
-
-	if(pass.length < 6) {
-		this.fieldAlert('PASS', L('PASS_LEN', 6));
-	}
-
-
-	if(pass != this.fieldValue('passconfirm')) {
-		this.fieldAlert('passconfirm', L('PASS_NOT_MACH'));
-	}
-
-	if(curentUserData.id === this.fieldValue('id')) {
-		var pLang = this.props.initialData.language;
-		var nLang = this.currentData.language;
-		if(pLang && pLang.hasOwnProperty('id')) {
-			pLang = pLang.id;
-		}
-		if(nLang && nLang.hasOwnProperty('id')) {
-			nLang = nLang.id;
-		}
-		if(nLang != pLang) {
-			this.onSaveCallback = () => {
-				myPromt(L('RESTARTNOW'), () => {
-					location = 'login';
-				});
-			};
-		}
-	}
-} //form5onsaveEnd_JS89DW72SISA887QKJ32IUSL
-
-
-
-formsEventsOnLoad[6] = function () { //form6onloadBegin_JS89DW72SISA887QKJ32IUSL
+formsEventsOnLoad[6] = function _fields_onload() {//form6onloadBegin_JS89DW72SISA887QKJ32IUSL
 
 	this.getField('fieldType').fieldRef.setFilterValues([16]);
 
@@ -275,7 +333,8 @@ formsEventsOnLoad[6] = function () { //form6onloadBegin_JS89DW72SISA887QKJ32IUSL
 	};
 
 } //form6onloadEnd_JS89DW72SISA887QKJ32IUSL
-formsEventsOnSave[6] = function () { //form6onsaveBegin_JS89DW72SISA887QKJ32IUSL
+
+formsEventsOnSave[6] = function _fields_onsave() {//form6onsaveBegin_JS89DW72SISA887QKJ32IUSL
 	var fieldType = this.fieldValue("fieldType");
 
 	if(fieldType === FIELD_7_Nto1 || fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) {
@@ -327,50 +386,15 @@ formsEventsOnSave[6] = function () { //form6onsaveBegin_JS89DW72SISA887QKJ32IUSL
 	}
 } //form6onsaveEnd_JS89DW72SISA887QKJ32IUSL
 
-formsEventsOnLoad[13] = function () { //form13onloadBegin_JS89DW72SISA887QKJ32IUSL
-	if(this.rec_update) {
-		this.disableField('title');
-		this.hideField('title');
-	} else if(!this.rec_creation) {
-		this.hideField('title');
-	}
-	this.disableField('help');
-
-	if(!isUserHaveRole(0) && !isUserHaveRole(4)) {
-		$('#rec_header').parent().parent().hide();
-		this.hideField('help');
-		this.hideField('name');
-	}
-} //form13onloadEnd_JS89DW72SISA887QKJ32IUSL
-
-formsEventsOnLoad[8] = function () { //form8onloadBegin_JS89DW72SISA887QKJ32IUSL
-	if((this.rec_ID === 2) || (this.rec_ID === 3)) {
-		this.hideField('_userroles');
-	}
-
-} //form8onloadEnd_JS89DW72SISA887QKJ32IUSL
-
-formsEventsOnLoad[15] = function () { //form15onloadBegin_JS89DW72SISA887QKJ32IUSL
-	this.getField("values").inlineEditable();
-} //form15onloadEnd_JS89DW72SISA887QKJ32IUSL
-
-formsEventsOnLoad[85] = function () { //form85onloadBegin_JS89DW72SISA887QKJ32IUSL
-	this.hideField("data");
-	this.hideField("preview");
-	this.hideFooter();
-
-	this.focusField("name");
-} //form85onloadEnd_JS89DW72SISA887QKJ32IUSL
-
-formsEventsOnLoad[12] = function () { //form12onloadBegin_JS89DW72SISA887QKJ32IUSL
+formsEventsOnLoad[12] = function _languages_onload() {//form12onloadBegin_JS89DW72SISA887QKJ32IUSL
 	if(this.rec_update) {
 		this.disableField("code");
 	}
 } //form12onloadEnd_JS89DW72SISA887QKJ32IUSL
 
-formsEventsOnLoad[52] = function () { //form52onloadBegin_JS89DW72SISA887QKJ32IUSL
-	this.getField("values").inlineEditable();
-} //form52onloadEnd_JS89DW72SISA887QKJ32IUSL
+formsEventsOnLoad[82] = function my_records_onload() {//form82onloadBegin_JS89DW72SISA887QKJ32IUSL
+	12
+} //form82onloadEnd_JS89DW72SISA887QKJ32IUSL
 
 //insertNewhandlersHere_adsqw09
 

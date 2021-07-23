@@ -2,9 +2,72 @@ import {L} from "../utils.js";
 
 var fieldsEvents = {};
 
+fieldsEvents[246] = function _html_title_onChange() {//field246onchangebegin_cswhggft
+	var pv = this.fieldValue('title');
+	if(pv) {
+		var newv = pv.replace(/ /g, '_').replace(/[^0-9a-zA-Z_]/g, '');
 
+		if(pv != newv) {
+			this.setFieldValue('title', newv);
+		}
 
-fieldsEvents[20] = function () { //field20onchangebegin_cswhggft
+	}
+	this.setFieldValue('help', location.protocol + '//' + location.host + '/custom/html/' + newv + '.html');
+
+} //field246onchangeend_wqdggft
+
+fieldsEvents[39] = function _users_passconfirm_onChange() {//field39onchangebegin_cswhggft
+	var p = this.fieldValue('PASS');
+	var p2 = this.fieldValue('passconfirm');
+	if(p && (p !== p2)) {
+		this.fieldAlert('passconfirm', L('PASSWORDS_NOT_M'));
+	} else {
+		this.fieldAlert('passconfirm');
+	}
+} //field39onchangeend_wqdggft
+
+fieldsEvents[30] = function _nodes_isDoc_onChange() {//field30onchangebegin_cswhggft
+	if(this.fieldValue("isDoc")) {
+		this.showField("tableName", "creationName", "singleName",
+			"captcha", "draftable", "recPerPage");
+		if(this.hasField('creationName_en')) {
+			this.showField("creationName_en", "singleName_en");
+		}
+		if(!this.rec_creation) {
+			this.showField("_fieldsID", "reverse");
+		} else {
+			this.hideField("_fieldsID", "reverse");
+		}
+
+		if(!this.rec_update) {
+			this.showField("createdon_field", "createUserFld", "createdby_field",
+				"staticLink");
+		}
+
+	} else {
+		this.hideField("tableName", "creationName", "singleName",
+			"captcha", "_fieldsID", "reverse", "draftable", "createdon_field",
+			"createUserFld", "createdby_field", "staticLink", "recPerPage");
+		if(this.hasField('creationName_en')) {
+			this.hideField("creationName_en", "singleName_en");
+		}
+	}
+} //field30onchangeend_wqdggft
+
+fieldsEvents[14] = function _nodes_tableName_onChange() {//field14onchangebegin_cswhggft
+	if(this.fieldValue('tableName') && !this.isFieldDisabled('tableName')) {
+		this.setFieldValue("tableName", this.fieldValue('tableName').replace('_', ''));
+	}
+} //field14onchangeend_wqdggft
+
+fieldsEvents[9] = function _fields_fieldName_onChange() {//field9onchangebegin_cswhggft
+	if(this.fieldValue('fieldName') && !this.isFieldDisabled('fieldName')) {
+		this.setFieldValue("fieldName", this.fieldValue('fieldName').replace('_', ''));
+	}
+	this.check12nFieldName();
+} //field9onchangeend_wqdggft
+
+fieldsEvents[20] = function _fields_fieldType_onChange() {//field20onchangebegin_cswhggft
 	const fieldType = this.fieldValue("fieldType");
 	this.showField();
 	this.setFieldLabel("fdescription", L("FLD_DESC"));
@@ -63,13 +126,21 @@ fieldsEvents[20] = function () { //field20onchangebegin_cswhggft
 	this.check12nFieldName();
 } //field20onchangeend_wqdggft
 
-fieldsEvents[14] = function () { //field14onchangebegin_cswhggft
-	if(this.fieldValue('tableName') && !this.isFieldDisabled('tableName')) {
-		this.setFieldValue("tableName", this.fieldValue('tableName').replace('_', ''));
+fieldsEvents[32] = function _fields_nostore_onChange() {//field32onchangebegin_cswhggft
+	if(this.isFieldVisible('nostore')) {
+		if(this.fieldValue('nostore') || this.fieldValue('clientOnly')) {
+			this.hideField('forSearch', 'uniqu');
+		} else {
+			this.showField('forSearch', 'uniqu');
+		}
 	}
-} //field14onchangeend_wqdggft
+} //field32onchangeend_wqdggft
 
-fieldsEvents[22] = function () { //field22onchangebegin_cswhggft
+fieldsEvents[486] = function _fields_clientOnly_onChange() {//field486onchangebegin_cswhggft
+	fieldsEvents[32].call(this);
+} //field486onchangeend_wqdggft
+
+fieldsEvents[22] = function _fields_vis_create_onChange() {//field22onchangebegin_cswhggft
 	var shv = this.fieldValue("show");
 
 	if(this.fieldValue("vis_create"))
@@ -80,7 +151,7 @@ fieldsEvents[22] = function () { //field22onchangebegin_cswhggft
 	this.setFieldValue("show", shv);
 } //field22onchangeend_wqdggft
 
-fieldsEvents[23] = function () { //field23onchangebegin_cswhggft
+fieldsEvents[23] = function _fields_vis_list_onChange() {//field23onchangebegin_cswhggft
 	var shv = this.fieldValue("show");
 
 	if(this.fieldValue("vis_list"))
@@ -91,108 +162,7 @@ fieldsEvents[23] = function () { //field23onchangebegin_cswhggft
 	this.setFieldValue("show", shv);
 } //field23onchangeend_wqdggft
 
-fieldsEvents[24] = function () { //field24onchangebegin_cswhggft
-	var shv = this.fieldValue("show");
-	if(this.fieldValue("vis_view")) {
-		shv |= 4;
-	} else {
-		shv &= (65535 - 4);
-	}
-
-	this.setFieldValue("show", shv);
-} //field24onchangeend_wqdggft
-
-
-
-fieldsEvents[30] = function () { //field30onchangebegin_cswhggft
-	if(this.fieldValue("isDoc")) {
-		this.showField("tableName", "creationName", "singleName",
-			"captcha", "draftable", "recPerPage");
-		if(this.hasField('creationName_en')) {
-			this.showField("creationName_en", "singleName_en");
-		}
-		if(!this.rec_creation) {
-			this.showField("_fieldsID", "reverse");
-		} else {
-			this.hideField("_fieldsID", "reverse");
-		}
-
-		if(!this.rec_update) {
-			this.showField("createdon_field", "createUserFld", "createdby_field",
-				"staticLink");
-		}
-
-	} else {
-		this.hideField("tableName", "creationName", "singleName",
-			"captcha", "_fieldsID", "reverse", "draftable", "createdon_field",
-			"createUserFld", "createdby_field", "staticLink", "recPerPage");
-		if(this.hasField('creationName_en')) {
-			this.hideField("creationName_en", "singleName_en");
-		}
-	}
-} //field30onchangeend_wqdggft
-
-
-fieldsEvents[39] = function () { //field39onchangebegin_cswhggft
-	var p = this.fieldValue('PASS');
-	var p2 = this.fieldValue('passconfirm');
-	if(p && (p !== p2)) {
-		this.fieldAlert('passconfirm', L('PASSWORDS_NOT_M'));
-	} else {
-		this.fieldAlert('passconfirm');
-	}
-} //field39onchangeend_wqdggft
-
-
-fieldsEvents[246] = function () { //field246onchangebegin_cswhggft
-	var pv = this.fieldValue('title');
-	if(pv) {
-		var newv = pv.replace(/ /g, '_').replace(/[^0-9a-zA-Z_]/g, '');
-
-		if(pv != newv) {
-			this.setFieldValue('title', newv);
-		}
-
-	}
-	this.setFieldValue('help', location.protocol + '//' + location.host + '/custom/html/' + newv + '.html');
-} //field246onchangeend_wqdggft
-
-fieldsEvents[486] = function () { //field486onchangebegin_cswhggft
-	fieldsEvents[32].call(this);
-} //field486onchangeend_wqdggft
-
-fieldsEvents[32] = function () { //field32onchangebegin_cswhggft
-	if(this.isFieldVisible('nostore')) {
-		if(this.fieldValue('nostore') || this.fieldValue('clientOnly')) {
-			this.hideField('forSearch', 'uniqu');
-		} else {
-			this.showField('forSearch', 'uniqu');
-		}
-	}
-} //field32onchangeend_wqdggft
-
-
-fieldsEvents[9] = function () { //field9onchangebegin_cswhggft
-	if(this.fieldValue('fieldName') && !this.isFieldDisabled('fieldName')) {
-		this.setFieldValue("fieldName", this.fieldValue('fieldName').replace('_', ''));
-	}
-	this.check12nFieldName();
-} //field9onchangeend_wqdggft
-
-
-
-fieldsEvents[318] = function () { //field318onchangebegin_cswhggft
-	var shv = this.fieldValue("show");
-	if(this.fieldValue("vis_reflist")) {
-		shv |= 8;
-	} else {
-		shv &= (65535 - 8);
-	}
-
-	this.setFieldValue("show", shv);
-} //field318onchangeend_wqdggft
-
-fieldsEvents[357] = function () { //field357onchangebegin_cswhggft
+fieldsEvents[357] = function _fields_vis_list_custom_onChange() {//field357onchangebegin_cswhggft
 	var shv = this.fieldValue("show");
 
 	if(this.fieldValue("vis_list_custom"))
@@ -203,10 +173,32 @@ fieldsEvents[357] = function () { //field357onchangebegin_cswhggft
 	this.setFieldValue("show", shv);
 } //field357onchangeend_wqdggft
 
-fieldsEvents[253] = function () { //field253onchangebegin_cswhggft
+fieldsEvents[24] = function _fields_vis_view_onChange() {//field24onchangebegin_cswhggft
+	var shv = this.fieldValue("show");
+	if(this.fieldValue("vis_view")) {
+		shv |= 4;
+	} else {
+		shv &= (65535 - 4);
+	}
 
+	this.setFieldValue("show", shv);
+} //field24onchangeend_wqdggft
+
+fieldsEvents[318] = function _fields_vis_reflist_onChange() {//field318onchangebegin_cswhggft
+	var shv = this.fieldValue("show");
+	if(this.fieldValue("vis_reflist")) {
+		shv |= 8;
+	} else {
+		shv &= (65535 - 8);
+	}
+
+	this.setFieldValue("show", shv);
+} //field318onchangeend_wqdggft
+
+fieldsEvents[253] = function _fields_nodeRef_onChange() {//field253onchangebegin_cswhggft
 	this.check12nFieldName();
 } //field253onchangeend_wqdggft
+
 //insertNewhandlersHere_adsqw09
 
 

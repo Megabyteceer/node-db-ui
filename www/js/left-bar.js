@@ -72,9 +72,7 @@ function isCurrentlyShowedLeftbarItem(item) {
 			return false;
 		}
 
-		return currentFormParameters.nodeId === item.id &&
-			currentFormParameters.recId === item.recId &&
-			currentFormParameters.editable === item.editable;
+		return currentFormParameters.nodeId === item.id;
 	} else {
 		excludeItem = null;
 		return isStrictlySelected(item);

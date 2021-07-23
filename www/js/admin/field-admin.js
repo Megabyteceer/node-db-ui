@@ -57,7 +57,7 @@ export default class FieldAdmin extends React.Component {
 		}
 		var border;
 		if(fieldsEvents.hasOwnProperty(field.id)) {
-			border = "4px solid #00440050";
+			border = "2px solid #00440050";
 		}
 
 		var bodyVisible = this.state.show || this.state.locked;
@@ -119,7 +119,8 @@ export default class FieldAdmin extends React.Component {
 					ReactDOM.button({
 						className: 'clickable toolbtn',
 						style: {
-							border: border,
+							borderRadius: '5px',
+							border,
 							background: '#944',
 							color: '#fcc',
 							paddingLeft: '6px',
@@ -243,6 +244,8 @@ export default class FieldAdmin extends React.Component {
 			ReactDOM.span({
 				ref: keepInWindow,
 				style: {
+					borderRadius: '5px',
+					border,
 					display: 'inline-block',
 					position: 'absolute',
 					zIndex: 2 + zAdd,

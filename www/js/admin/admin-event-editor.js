@@ -26,6 +26,7 @@ function admin_editSource(handler, node_, field, form) {
 		handler,
 		itemId: id,
 		node,
+		field,
 		form
 	}), false, false, true);
 }
@@ -184,11 +185,23 @@ class AdminEventEditor extends React.Component {
 	saveClick() {
 		this.editor.save();
 		if(this.state.src !== this.textareaRef.value) {
-			let data = this.getPostData();
-			data.__UNSAFE_UNESCAPED = {src: this.textareaRef.value};
-			submitData('admin/getEventHandler', data, () => {
-				window.location.reload();
-			});
+			let src = this.textareaRef.value;
+			try {
+				let compiledSrc = eval('"use strict";"function" + function Wrapper() {\n' + src + '\n}.name');
+				if(compiledSrc !== 'functionWrapper') {
+					myAlert("Invalid javascript detected.");
+				}
+				let data = this.getPostData();
+				data.__UNSAFE_UNESCAPED = {src};
+				submitData('admin/getEventHandler', data, () => {
+					window.location.reload();
+				});
+			} catch(er) {
+				myAlert(er.message);
+				console.dir(er);
+
+			}
+
 		} else {
 			Modal.instance.hide();
 		}
@@ -246,7 +259,7 @@ class AdminEventEditor extends React.Component {
 			});
 			this.editor.setSize('900px', '500px');
 			this.editor.on("keyup", (editor, event) => {
-				if(!ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
+				if((!event.ctrlKey || event.keyCode === 32) && !ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
 					window.CodeMirror.commands.autocomplete(editor, null, {
 						completeSingle: false
 					});
@@ -281,6 +294,8 @@ class AdminEventEditor extends React.Component {
 
 		});
 
+		const functionName = this.props.node.tableName + (this.props.field ? '_' + this.props.field.fieldName + '_' : '_') + this.props.handler;
+
 		return ReactDOM.div({
 			style: {
 				textAlign: 'left'
@@ -292,6 +307,7 @@ class AdminEventEditor extends React.Component {
 					margin: '30px'
 				}
 			},
+				ReactDOM.span({style: {fontFamily: 'monospace'}}, 'function ', ReactDOM.span({style: {fontWeight: 'bold'}}, functionName), '() {'),
 				ReactDOM.textarea({
 					ref: this.getTextareaRef,
 					style: {
@@ -299,7 +315,8 @@ class AdminEventEditor extends React.Component {
 						minHeight: '4	00px'
 					},
 					defaultValue: this.state.src
-				})
+				}),
+				ReactDOM.span({style: {fontFamily: 'monospace'}}, '}')
 			),
 			ReactDOM.div({
 				style: {
