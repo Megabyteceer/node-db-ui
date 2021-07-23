@@ -54,17 +54,10 @@ fieldsEvents[30] = function _nodes_isDoc_onChange() {//field30onchangebegin_cswh
 	}
 } //field30onchangeend_wqdggft
 
-fieldsEvents[14] = function _nodes_tableName_onChange() {//field14onchangebegin_cswhggft
-	if(this.fieldValue('tableName') && !this.isFieldDisabled('tableName')) {
-		this.setFieldValue("tableName", this.fieldValue('tableName').replace('_', ''));
-	}
-} //field14onchangeend_wqdggft
+
 
 fieldsEvents[9] = function _fields_fieldName_onChange() {//field9onchangebegin_cswhggft
-	if(this.fieldValue('fieldName') && !this.isFieldDisabled('fieldName')) {
-		this.setFieldValue("fieldName", this.fieldValue('fieldName').replace('_', ''));
-	}
-	this.check12nFieldName();
+this.check12nFieldName();
 } //field9onchangeend_wqdggft
 
 fieldsEvents[20] = function _fields_fieldType_onChange() {//field20onchangebegin_cswhggft

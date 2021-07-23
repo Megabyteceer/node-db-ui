@@ -22,6 +22,7 @@ import {initDictionary} from "../../js/utils.js";
 		'EDIT_NODE': 'Edit node settings',
 		'EDIT_ACCESS': 'Edit access previlegies for node',
 		'CONTENT': 'Content',
+		'LOOKUP_NAME_NOT_UNIC': 'Lookup N to M should have globally unique name.',
 		'FLD_DESC': 'Field description',
 		'PASSWORDS_NOT_M': 'Passwords dont match',
 		/// #if DEBUG

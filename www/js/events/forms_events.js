@@ -59,142 +59,142 @@ formsEventsOnLoad[85] = function () { //form85onloadBegin_JS89DW72SISA887QKJ32IU
 
 formsEventsOnLoad[5] = function _users_onload() {//form5onloadBegin_JS89DW72SISA887QKJ32IUSL
 
-const isHiddenField = (fn) => {
-  if(this.fieldValue(fn) === 'hidden_91d2g7') {
-    this.hideField(fn);
-  }
-}
+	const isHiddenField = (fn) => {
+		if(this.fieldValue(fn) === 'hidden_91d2g7') {
+			this.hideField(fn);
+		}
+	}
 
-if($('#org-edit-link').length === 0) {
-  $('.fc-63 input').css('width', '50%');
-  if(this.fieldValue('_organID')) {
-    $('.fc-63 input').after(
-      '<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organisation settings" href="#n/7/r/' +
-      this.fieldValue('_organID').id +
-      '/e">additional organisation settings <p class="fa fa-wrench"></p></a>'
-    );
-  }
-}
+	if($('#org-edit-link').length === 0) {
+		$('.fc-63 input').css('width', '50%');
+		if(this.fieldValue('_organID')) {
+			$('.fc-63 input').after(
+				'<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organisation settings" href="#n/7/r/' +
+				this.fieldValue('_organID').id +
+				'/e">additional organisation settings <p class="fa fa-wrench"></p></a>'
+			);
+		}
+	}
 
-if(!iAdmin()) {
-  this.hideField('_userroles');
-}
+	if(!iAdmin()) {
+		this.hideField('_userroles');
+	}
 
-this.disableField('_organID');
+	this.disableField('_organID');
 
-if(!iAdmin()) {
-  this.hideField('_organID');
-}
+	if(!iAdmin()) {
+		this.hideField('_organID');
+	}
 
-var myname = this.fieldValue('name');
-
-
-if(!isUserHaveRole(1)) {
-  this.disableField('email');
-}
-
-if(this.rec_update || this.rec_creation) {
-  this.addLookupFilters('_userroles', {
-    exludeIDs: [2, 3]
-  });
-  this.hideField('public_phone');
-  this.hideField('public_vk');
-  this.hideField('public_fb');
-  this.hideField('public_google');
-  this.hideField('public_email');
-
-} else {
-  isHiddenField('public_phone');
-  isHiddenField('public_vk');
-  isHiddenField('public_fb');
-  isHiddenField('public_google');
-  isHiddenField('public_email');
-
-}
+	var myname = this.fieldValue('name');
 
 
-if(this.rec_update) {
-  this.header = 'Edit user\'s profile ' + myname;
-  this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
-  this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
-  this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
-}
+	if(!isUserHaveRole(1)) {
+		this.disableField('email');
+	}
 
-if(this.rec_creation) {
-  this.hideField('mailing');
-  this.hideField('PHONE');
-  //this.hideField('desc');
-  this.hideField('_organID');
-  this.header = ('Registration:');
-  this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
-  this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
-  this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
-}
+	if(this.rec_update || this.rec_creation) {
+		this.addLookupFilters('_userroles', {
+			exludeIDs: [2, 3]
+		});
+		this.hideField('public_phone');
+		this.hideField('public_vk');
+		this.hideField('public_fb');
+		this.hideField('public_google');
+		this.hideField('public_email');
+
+	} else {
+		isHiddenField('public_phone');
+		isHiddenField('public_vk');
+		isHiddenField('public_fb');
+		isHiddenField('public_google');
+		isHiddenField('public_email');
+
+	}
+
+
+	if(this.rec_update) {
+		this.header = 'Edit user\'s profile ' + myname;
+		this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
+		this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
+		this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
+	}
+
+	if(this.rec_creation) {
+		this.hideField('mailing');
+		this.hideField('PHONE');
+		//this.hideField('desc');
+		this.hideField('_organID');
+		this.header = ('Registration:');
+		this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
+		this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
+		this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
+	}
 } //form5onloadEnd_JS89DW72SISA887QKJ32IUSL
 
 formsEventsOnSave[5] = function _users_onsave() {//form5onsaveBegin_JS89DW72SISA887QKJ32IUSL
-var pass = this.fieldValue('PASS');
+	var pass = this.fieldValue('PASS');
 
-if(pass.length < 6) {
-  this.fieldAlert('PASS', L('PASS_LEN', 6));
-}
+	if(pass.length < 6) {
+		this.fieldAlert('PASS', L('PASS_LEN', 6));
+	}
 
 
-if(pass != this.fieldValue('passconfirm')) {
-  this.fieldAlert('passconfirm', L('PASS_NOT_MACH'));
-}
+	if(pass != this.fieldValue('passconfirm')) {
+		this.fieldAlert('passconfirm', L('PASS_NOT_MACH'));
+	}
 
-if(curentUserData.id === this.fieldValue('id')) {
-  var pLang = this.props.initialData.language;
-  var nLang = this.currentData.language;
-  if(pLang && pLang.hasOwnProperty('id')) {
-    pLang = pLang.id;
-  }
-  if(nLang && nLang.hasOwnProperty('id')) {
-    nLang = nLang.id;
-  }
-  if(nLang != pLang) {
-    this.onSaveCallback = () => {
-      myPromt(L('RESTARTNOW'), () => {
-        location = 'login';
-      });
-    };
-  }
-}
+	if(curentUserData.id === this.fieldValue('id')) {
+		var pLang = this.props.initialData.language;
+		var nLang = this.currentData.language;
+		if(pLang && pLang.hasOwnProperty('id')) {
+			pLang = pLang.id;
+		}
+		if(nLang && nLang.hasOwnProperty('id')) {
+			nLang = nLang.id;
+		}
+		if(nLang != pLang) {
+			this.onSaveCallback = () => {
+				myPromt(L('RESTARTNOW'), () => {
+					location = 'login';
+				});
+			};
+		}
+	}
 } //form5onsaveEnd_JS89DW72SISA887QKJ32IUSL
 
 formsEventsOnLoad[8] = function _roles_onload() {//form8onloadBegin_JS89DW72SISA887QKJ32IUSL
-if((this.rec_ID === 2) || (this.rec_ID === 3)) {
-  this.hideField('_userroles');
-}
+	if((this.rec_ID === 2) || (this.rec_ID === 3)) {
+		this.hideField('_userroles');
+	}
 
 } //form8onloadEnd_JS89DW72SISA887QKJ32IUSL
 
 formsEventsOnLoad[52] = function _enums_onload() {//form52onloadBegin_JS89DW72SISA887QKJ32IUSL
-this.getField("values").inlineEditable();
+	this.getField("values").inlineEditable();
 } //form52onloadEnd_JS89DW72SISA887QKJ32IUSL
 
 formsEventsOnLoad[4] = function _nodes_onload() {//form4onloadBegin_JS89DW72SISA887QKJ32IUSL
-if(this.rec_update) {
-  this.disableField('isDoc');
-  this.disableField('tableName');
-  this.hideField('createdby_field');
-  this.hideField('createdon_field');
-  this.hideField('createUserFld');
-}
+	if(this.rec_update) {
+		this.disableField('isDoc');
+		this.disableField('tableName');
+		this.hideField('createdby_field');
+		this.hideField('createdon_field');
+		this.hideField('createUserFld');
+	}
 
-if(this.rec_creation) {
-  if(!this.fieldValue('recPerPage')) {
-    this.setFieldValue('recPerPage', 25);
-  }
-  this.hideField('_fieldsID');
-}
+	if(this.rec_creation) {
+		if(!this.fieldValue('recPerPage')) {
+			this.setFieldValue('recPerPage', 25);
+		}
+		this.hideField('_fieldsID');
+	}
 
-this.addLookupFilters('_nodesID', 'isDoc', 0);
-this.addLookupFilters('_fieldsID', {
-  node_fields_linker: this.rec_ID,
-  forSearch: 1
-});
+	this.addLookupFilters('_nodesID', 'isDoc', 0);
+	this.addLookupFilters('_fieldsID', {
+		node_fields_linker: this.rec_ID,
+		forSearch: 1
+	});
 
 } //form4onloadEnd_JS89DW72SISA887QKJ32IUSL
 
@@ -299,18 +299,25 @@ formsEventsOnLoad[6] = function _fields_onload() {//form6onloadBegin_JS89DW72SIS
 			this.nameIsBad = false;
 
 			var checkFieldExists = (fName, nodeId) => {
+				let fieldsFilter = {
+					fieldName: fName
+				}
+				if(this.fieldValue('fieldType') !== FIELD_14_NtoM) {
+					fieldsFilter.node_fields_linker = nodeId;
+				}
 				getNodeData(6, undefined, (data) => {
 					if(this.nameIsBad) return;
 					if(data.items.length > 0) {
-						this.fieldAlert('fieldName', L('FLD_EXISTS'));
+						if(this.fieldValue('fieldType') === FIELD_14_NtoM) {
+							this.fieldAlert('fieldName', L('LOOKUP_NAME_NOT_UNIC'));
+						} else {
+							this.fieldAlert('fieldName', L('FLD_EXISTS'));
+						}
 						this.nameIsBad = true;
 					} else {
 						this.fieldAlert('fieldName', '', true);
 					}
-				}, {
-					fieldName: fName,
-					node_fields_linker: nodeId
-				});
+				}, fieldsFilter);
 			};
 
 			var fn = this.fieldValue('fieldName');
