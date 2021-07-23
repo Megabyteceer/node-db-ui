@@ -213,7 +213,7 @@ export default class FormFull extends eventProcessingMixins {
 		var data = {};
 
 		if(isDraft !== 'keepStatus') {
-			if(this.props.initialData.isPub || !this.props.initialData.id) {
+			if(this.props.initialData.isP || !this.props.initialData.id) {
 				if(isDraft === true) {
 					if(this.props.initialData.status !== 2) {
 						data.status = 2;
@@ -484,7 +484,7 @@ export default class FormFull extends eventProcessingMixins {
 		var draftButton;
 		var nodeAdmin;
 		if(!this.props.inlineEditable) {
-			if(data.isDel && isMainTab && !this.props.preventDeleteButton) {
+			if(data.isD && isMainTab && !this.props.preventDeleteButton) {
 				deleteButton = ReactDOM.button({
 					className: 'clickable clickable-neg', style: dangerButtonStyle, onClick: () => {
 						deleteRecord(data.name, node.id, data.id, () => {
@@ -499,7 +499,7 @@ export default class FormFull extends eventProcessingMixins {
 			}
 
 			if(this.props.editable) {
-				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isPub) || !(node.prevs & PREVS_PUBLISH)) {
+				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.prevs & PREVS_PUBLISH)) {
 					saveButton = ReactDOM.button({className: 'clickable clickable-edit save-btn', style: successButtonStyle, onClick: this.saveClick, title: L('SAVE')}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
 				} else {
 					if(data.status === 1) {

@@ -38,7 +38,7 @@ const publishClick = (draft, node, data, refreshFunction) => {
 
 const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFilters) => {
 	if(formItem && formItem.props.isLookup) {
-		if(data.hasOwnProperty('isEd')) {
+		if(data.hasOwnProperty('isE')) {
 
 			buttons = [
 				ReactDOM.button({
@@ -62,7 +62,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 		}
 
 		var buttons = [];
-		if(data.hasOwnProperty('isPub') && (!formItem || !formItem.props.disableDrafting)) {
+		if(data.hasOwnProperty('isP') && (!formItem || !formItem.props.disableDrafting)) {
 			if(data.status === 1) {
 				buttons.push(
 					ReactDOM.button({key: 1, style: {background: constants.PUBLISH_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data, refreshFunction)}},
@@ -78,7 +78,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 			}
 		}
 		if(editButtonFilters != 'noed') {
-			if(data.hasOwnProperty('isEd')) {
+			if(data.hasOwnProperty('isE')) {
 				if(!formItem || !formItem.props.list || !formItem.props.list.state.noEditButton) {
 					buttons.push(
 						ReactDOM.a({
@@ -107,7 +107,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 
 			}
 		}
-		if(data.hasOwnProperty('isDel')) {
+		if(data.hasOwnProperty('isD')) {
 			buttons.push(
 				ReactDOM.button({
 					key: 3, style: {background: constants.DELETE_COLOR}, className: 'clickable clickable-del toolbtn', title: L('DELETE') + itemName, onClick: () => {

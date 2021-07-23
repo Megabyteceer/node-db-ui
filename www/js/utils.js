@@ -897,7 +897,7 @@ function createRecord(nodeId, parameters) {
 	getNode(nodeId, (node) => {
 		var emptyData = {};
 		if(node.draftable && (node.prevs & PREVS_PUBLISH)) { //access to publish records
-			emptyData.isPub = 1;
+			emptyData.isP = 1;
 		}
 
 		setFormData(nodeId, emptyData, 'new', parameters, true);

@@ -51,7 +51,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 	}
 
 	if(recId !== false) {
-		if(!currentData.isEd) {
+		if(!currentData.isE) {
 			throw new Error('Update access denied.');
 		}
 	} else {

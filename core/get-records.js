@@ -279,19 +279,19 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 
 		if(viewMask) {
 			if(prevs & PREVS_EDIT_ALL) {
-				pag.isEd = 1;
+				pag.isE = 1;
 			} else if((prevs & PREVS_EDIT_ORG) && (userSession.orgId !== 0) && (pag.creatorORG === userSession.orgId)) {
-				pag.isEd = 1;
+				pag.isE = 1;
 			} else if((prevs & PREVS_EDIT_OWN) && (pag.creatorUSER === userSession.id)) {
-				pag.isEd = 1;
+				pag.isE = 1;
 			}
 
-			if(pag.isEd) {
+			if(pag.isE) {
 				if(prevs & PREVS_DELETE) {
-					pag.isDel = 1;
+					pag.isD = 1;
 				}
 				if(node.draftable && (prevs & PREVS_PUBLISH)) {
-					pag.isPub = 1;
+					pag.isP = 1;
 				}
 			} else {
 				if(viewMask & 1) {
@@ -383,7 +383,7 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 	const node = getNodeDesc(nodeId, userSession);
 
 	const recordData = await getRecords(nodeId, 4, recId, userSession);
-	if(!recordData.isDel) {
+	if(!recordData.isD) {
 		throw new Error('Deletion access is denied');
 	}
 
