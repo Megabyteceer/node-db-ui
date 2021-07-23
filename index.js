@@ -1,5 +1,4 @@
 "use strict";
-require('dotenv').config()
 const http = require('http');
 const api = require('./core/api.js');
 const {startSession, authorizeUserByID, finishSession, createSession} = require('./core/auth.js');
@@ -33,95 +32,109 @@ server.on('request', (req, res) => {
 				}
 			});
 			req.on('end', () => {
+				/// #if DEBUG
+				/*
+				/// #endif
 				try {
-					/// #if DEBUG
-					let startTime = performance.now();
-					/// #endif
+				//*/
+				/// #if DEBUG
+				let startTime = performance.now();
+				/// #endif
 
 
-					if(isMultipart) {
-						let boundary = multipart.getBoundary(req.headers['content-type']);
-						if(Array.isArray(body)) {
-							body = Buffer.concat(body);
-						}
-						let parts = multipart.parse(body, boundary);
-						body = {};
-						for(let part of parts) {
-							if(part.filename) {
-								body.filename = part.filename;
-								body.fileContent = part.data;
-							} else {
-								body[part.name] = part.data.toString();
-							}
-						}
-					} else {
-						if(Array.isArray(body)) {
-							if(body.length > 1) {
-								body = body.join('');
-							} else {
-								body = body[0];
-							}
-						}
-						body = JSON.parse(body);
+				if(isMultipart) {
+					let boundary = multipart.getBoundary(req.headers['content-type']);
+					if(Array.isArray(body)) {
+						body = Buffer.concat(body);
 					}
-					/// #if DEBUG
-					console.log(req.url);
-					console.dir(body);
-					/// #endif
-					mysql_real_escape_object(body);
-					let userSession;
-					const onResult = (result, error) => {
-						const resHeaders = {
-							'content-type': 'application/json'
-						};
-
-						let ret = {result, error};
-						/// #if DEBUG
-						resHeaders['Access-Control-Allow-Origin'] = '*';
-						if(process.debug) {
-							ret.debug = process.debug;
-							delete process.debug;
-							ret.debug.timeElapsed_ms = performance.now() - startTime;
+					let parts = multipart.parse(body, boundary);
+					body = {};
+					for(let part of parts) {
+						if(part.filename) {
+							body.filename = part.filename;
+							body.fileContent = part.data;
+						} else {
+							body[part.name] = part.data.toString();
 						}
-						/// #endif
-
-						if(isUserHaveRole(GUEST_ROLE_ID, userSession)) {
-							ret.isGuest = true;
-						}
-
-						res.writeHead(200, resHeaders);
-
-						if(userSession.hasOwnProperty('notifications')) {
-							ret.notifications = userSession.notifications;
-							delete userSession.notifications;
-						}
-						res.end(JSON.stringify(ret));
 					}
+				} else {
+					if(Array.isArray(body)) {
+						if(body.length > 1) {
+							body = body.join('');
+						} else {
+							body = body[0];
+						}
+					}
+					body = JSON.parse(body);
+				}
+				/// #if DEBUG
+				console.log(req.url);
+				console.dir(body);
+				/// #endif
+				mysql_real_escape_object(body);
+				let userSession;
+				const onResult = (result, error) => {
+					const resHeaders = {
+						'content-type': 'application/json'
+					};
+
+					let ret = {result, error};
 					/// #if DEBUG
-					process.debug = {requestTime: new Date(), stack: []};
+					resHeaders['Access-Control-Allow-Origin'] = '*';
+					if(process.debug) {
+						ret.debug = process.debug;
+						delete process.debug;
+						ret.debug.timeElapsed_ms = performance.now() - startTime;
+					}
 					/// #endif
-					startSession(body.sessionToken).then((session) => {
-						userSession = session;
-						handler(body, session, onResult);
-					})
+
+					if(isUserHaveRole(GUEST_ROLE_ID, userSession)) {
+						ret.isGuest = true;
+					}
+
+					res.writeHead(200, resHeaders);
+
+					if(userSession.hasOwnProperty('notifications')) {
+						ret.notifications = userSession.notifications;
+						delete userSession.notifications;
+					}
+					res.end(JSON.stringify(ret));
+				}
+				/// #if DEBUG
+				process.debug = {requestTime: new Date(), stack: []};
+				/// #endif
+				startSession(body.sessionToken).then((session) => {
+					userSession = session;
+					handler(body, session, onResult);
+				})
+					/// #if DEBUG
+					/*
+					/// #endif
 						.catch((error) => {
+							debugger;
 							console.log(error.stack);
 							onResult(undefined, error.message);
 						})
 						//*/
-						.finally(() => {
-							finishSession(body.sessionToken);
-						});
-
-				} catch(error) {
-					res.writeHead(500);
-					/// #if DEBUG
-					res.end(JSON.stringify({error}));
-					/*
-					/// #endif
-					res.end('{"error":"error"}');
-					//*/
+					.finally(() => {
+						finishSession(body.sessionToken);
+					});
+				/// #if DEBUG
+				/*
 				}
+
+				/// #endif
+				catch(error) {
+					debugger;
+					res.writeHead(500);
+					
+					res.end(JSON.stringify({error}));
+					
+					
+					res.end('{"error":"error"}');
+					
+				}
+				//*/
 			});
 		} else {
 			res.writeHead(404);

@@ -12,7 +12,6 @@
     "@popperjs/core": "^2.9.2",
     "bootstrap": "^3.4.1",
     "codemirror": "^5.62.0",
-    "dotenv": "^10.0.0",
     "font-awesome": "^4.7.0",
     "jquery": "^3.6.0",
     "moment": "^2.29.1",
