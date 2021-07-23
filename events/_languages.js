@@ -10,7 +10,7 @@ module.exports = {
 		fields = fields.items;
 		for(let f of fields) {
 			f.node_fields_linker = f.node_fields_linker.id;
-			f.fieldName = f.fieldName + '_' + data.code;
+			f.fieldName = f.fieldName + '$' + data.code;
 			f.uniqu = 0;
 			await createFieldInTable(f);
 		}

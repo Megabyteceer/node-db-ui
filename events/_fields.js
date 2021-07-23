@@ -17,7 +17,7 @@ module.exports = {
 			const fn = data.fieldName;
 			for(let l of langs) {
 				if(l.code) {
-					data.fieldName = fn + '_' + l.code;
+					data.fieldName = fn + '$' + l.code;
 					await createFieldInTable(data);
 				}
 			}
@@ -103,7 +103,7 @@ module.exports = {
 									for(let l of langs) {
 										debugger;
 										if(l.code) {
-											currentData.fieldName = realBDFNAme + '_' + l.code;
+											currentData.fieldName = realBDFNAme + '$' + l.code;
 											await createFieldInTable(currentData);
 										}
 									}
@@ -111,14 +111,14 @@ module.exports = {
 								} else {
 									for(let l of langs) {
 										if(l.code) {
-											await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realBDFNAme + '_' + l.code);
+											await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realBDFNAme + '$' + l.code);
 										}
 									}
 								}
 							} else if(currentData.multilang) {
 								for(let l of langs) {
 									if(l.code) {
-										await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realBDFNAme + '_' + l.code + ' ' + typeQ);
+										await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realBDFNAme + '$' + l.code + ' ' + typeQ);
 									}
 								}
 							}

@@ -215,7 +215,7 @@ async function initNodesData() { // load whole nodes data in to memory
 
 	langs_new = await mysqlExec("SELECT id, name, code FROM _languages WHERE id <> 0");
 	for(let l of langs_new) {
-		l.prefix = l.code ? ('_' + l.code) : '';
+		l.prefix = l.code ? ('$' + l.code) : '';
 	}
 
 	fields = fields_new;
