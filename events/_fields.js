@@ -221,7 +221,7 @@ async function createFieldInTable(data) {
 		const fld1 = nodeName + 'ID';
 		const fld2 = linkedNodeName + 'ID';
 
-		await mysqlExec(`CREATE TABLE IF NOT EXISTS \`${fieldName}\` (
+		await mysqlExec(`CREATE TABLE \`${fieldName}\` (
 			ID bigint(15) unsigned NOT NULL AUTO_INCREMENT,
 			\`${fld1}\` bigint(15) unsigned NOT NULL DEFAULT 0,
 			\`${fld2}\` bigint(15) unsigned NOT NULL DEFAULT 0,
