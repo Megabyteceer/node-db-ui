@@ -175,14 +175,14 @@ class AdminEventEditor extends React.Component {
 
 	componentDidMount() {
 
-		getData('admin/getEventHandler', this.getPostData(), (data) => {
+		getData('admin/getEventHandler', this.getPostData()).then((data) => {
 			this.setState({
 				src: data
 			});
 		});
 	}
 
-	saveClick() {
+	async saveClick() {
 		this.editor.save();
 		if(this.state.src !== this.textareaRef.value) {
 			let src = this.textareaRef.value;
@@ -193,15 +193,13 @@ class AdminEventEditor extends React.Component {
 				}
 				let data = this.getPostData();
 				data.__UNSAFE_UNESCAPED = {src};
-				submitData('admin/getEventHandler', data, () => {
+				await submitData('admin/getEventHandler', data).then(() => {
 					window.location.reload();
 				});
 			} catch(er) {
 				myAlert(er.message);
 				console.dir(er);
-
 			}
-
 		} else {
 			Modal.instance.hide();
 		}
