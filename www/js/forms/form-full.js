@@ -130,7 +130,7 @@ export default class FormFull extends eventProcessingMixins {
 	}
 
 	async validate() {
-		if(this.onSave()) {
+		if(await this.onSave()) {
 			throw false;
 		}
 
@@ -263,11 +263,6 @@ export default class FormFull extends eventProcessingMixins {
 				}
 			}
 
-			if(this.props.onSave) {
-				this.props.onSave();
-				return;
-			}
-
 			await callForEachField(this.fieldsRefs, data, 'afterSave');
 
 			this.rec_ID = this.currentData.id;
@@ -282,7 +277,6 @@ export default class FormFull extends eventProcessingMixins {
 		} else {
 			this.cancelClick();
 		}
-
 	}
 
 	isVisibleField(field) {

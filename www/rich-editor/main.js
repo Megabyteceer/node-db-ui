@@ -29,7 +29,7 @@ $(function () {
 			}
 			if(data.hasOwnProperty('value')) {
 				s.summernote('code', data.value);
-			} else if(data.hasOwnProperty('onSave')) {
+			} else if(data.hasOwnProperty('onSaveRichEditor')) {
 				sendValueToParent();
 			}
 		}, false);

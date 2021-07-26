@@ -276,7 +276,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		}
 
 		if(recId !== false) {
-			insQ.push(" WHERE id=", recId, " LIMIT 1");
+			insQ.push(" WHERE id=", recId.toString(), " LIMIT 1");
 		}
 		let qResult;
 		if(leastOneTablesFieldUpdated) {

@@ -305,7 +305,7 @@ class AdminEventEditor extends React.Component {
 					margin: '30px'
 				}
 			},
-				ReactDOM.span({style: {fontFamily: 'monospace'}}, 'function ', ReactDOM.span({style: {fontWeight: 'bold'}}, functionName), '() {'),
+				ReactDOM.span({style: {fontFamily: 'monospace'}}, (this.props.handler === 'onsave' ? 'async ' : ''), 'function ', ReactDOM.span({style: {fontWeight: 'bold'}}, functionName), '() {'),
 				ReactDOM.textarea({
 					ref: this.getTextareaRef,
 					style: {

@@ -87,7 +87,7 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 		return new Promise((resolve) => {
 			var s = this.getSummernote();
 			this.onSaveCallback = resolve;
-			s.postMessage({onSave: true}, '*');
+			s.postMessage({onSaveRichEditor: true}, '*');
 		});
 	}
 

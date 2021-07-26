@@ -112,7 +112,7 @@ function processSource(fileName, startMarker, endMarker, newSource, itemId, type
 				if(handler === 'onload') {
 					functionStart = "formsEventsOnLoad[" + itemId + "] = function " + functionName + "() {" + startMarker;
 				} else {
-					functionStart = "formsEventsOnSave[" + itemId + "] = function " + functionName + "() {" + startMarker;
+					functionStart = "formsEventsOnSave[" + itemId + "] = async function " + functionName + "() {" + startMarker;
 				}
 			}
 			fs.writeFileSync(fileName, text.substring(0, start) + functionStart + '\n' + newSource + '\n' + endMarker + '\n\n' + text.substring(start));

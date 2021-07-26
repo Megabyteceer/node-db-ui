@@ -4,23 +4,6 @@ import {getNodeData, L, myPromt} from "../utils.js";
 var formsEventsOnLoad = {};
 var formsEventsOnSave = {};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 formsEventsOnLoad[13] = function () { //form13onloadBegin_JS89DW72SISA887QKJ32IUSL
 	if(this.rec_update) {
 		this.disableField('title');
@@ -132,7 +115,7 @@ formsEventsOnLoad[5] = function _users_onload() {//form5onloadBegin_JS89DW72SISA
 	}
 } //form5onloadEnd_JS89DW72SISA887QKJ32IUSL
 
-formsEventsOnSave[5] = function _users_onsave() {//form5onsaveBegin_JS89DW72SISA887QKJ32IUSL
+formsEventsOnSave[5] = async function _users_onsave() {//form5onsaveBegin_JS89DW72SISA887QKJ32IUSL
 	var pass = this.fieldValue('PASS');
 
 	if(pass.length < 6) {
@@ -199,7 +182,7 @@ formsEventsOnLoad[4] = function _nodes_onload() {//form4onloadBegin_JS89DW72SISA
 
 } //form4onloadEnd_JS89DW72SISA887QKJ32IUSL
 
-formsEventsOnSave[4] = function _nodes_onsave() {//form4onsaveBegin_JS89DW72SISA887QKJ32IUSL
+formsEventsOnSave[4] = async function _nodes_onsave() {//form4onsaveBegin_JS89DW72SISA887QKJ32IUSL
 
 	if(!this.fieldValue("isDoc")) {
 		var v = this.fieldValue("name");
@@ -351,7 +334,7 @@ formsEventsOnLoad[6] = function _fields_onload() {//form6onloadBegin_JS89DW72SIS
 
 } //form6onloadEnd_JS89DW72SISA887QKJ32IUSL
 
-formsEventsOnSave[6] = function _fields_onsave() {//form6onsaveBegin_JS89DW72SISA887QKJ32IUSL
+formsEventsOnSave[6] = async function _fields_onsave() {//form6onsaveBegin_JS89DW72SISA887QKJ32IUSL
 	var fieldType = this.fieldValue("fieldType");
 
 	if(fieldType === FIELD_7_Nto1 || fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) {

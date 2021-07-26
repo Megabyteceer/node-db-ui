@@ -277,7 +277,7 @@ export default class eventProcessingMixins extends BaseForm {
 		return this.getField(fieldName).isEmpty();
 	}
 
-	onSave() {
+	async onSave() {
 		//DEBUG
 		consoleLog('onSave ' + this.props.node.tableName);
 		//ENDDEBUG			
@@ -290,7 +290,7 @@ export default class eventProcessingMixins extends BaseForm {
 
 		this.invalidAlertInOnSaveHandler = false;
 		if(formsEventsOnSave.hasOwnProperty(this.props.node.id)) {
-			var onSaveRes = this.processFormEvent(formsEventsOnSave[this.props.node.id], false);
+			var onSaveRes = await this.processFormEvent(formsEventsOnSave[this.props.node.id], false);
 			if(onSaveRes) {
 				//debugError('onSave event handler returned true. Saving operation was canceled.');
 			}
@@ -320,7 +320,7 @@ export default class eventProcessingMixins extends BaseForm {
 		}
 	}
 
-	processFormEvent(handler, isUserAction, prev_val) {
+	async processFormEvent(handler, isUserAction, prev_val) {
 
 		this.prev_value = prev_val;
 
