@@ -89,7 +89,7 @@ export default class List extends BaseForm {
 		if(!this.state.data) {
 			setTimeout(() => {this.refreshData();}, 1);
 		} else if(!this.props.node) {
-			getNode(this.props.nodeId, (node) => {
+			getNode(this.props.nodeId).then((node) => {
 				this.setState({node});
 				if(this.props.parentForm) {
 					this.props.parentForm.savedNode = node;
@@ -123,7 +123,7 @@ export default class List extends BaseForm {
 				this.filters.p = '*';
 			}
 
-			getNodeData(nodeIdToFetch, undefined, (data) => {
+			getNodeData(nodeIdToFetch, undefined, this.filters, this.props.editable, this.props.isLookup, this.isCustomListRenering()).then((data) => {
 
 				if(this.unmounted) {
 					return;
@@ -136,7 +136,7 @@ export default class List extends BaseForm {
 				}
 
 				if(!this.props.node) {
-					getNode(this.props.nodeId, (node) => {
+					getNode(this.props.nodeId).then((node) => {
 						if(this.isSlave()) {
 							this.props.parentForm.saveNodeDataAndFilters(node, data, this.filters);
 						}
@@ -150,13 +150,13 @@ export default class List extends BaseForm {
 					this.setState({data: data});
 					this.scrollIfNeed();
 				}
-			}, this.filters, this.props.editable, this.props.isLookup, this.isCustomListRenering());
+			});
 		}
 	}
 
 	scrollIfNeed() {
 		if(this.isSlave() && this.props.parentForm.props.field.fieldType === FIELD_7_Nto1) {
-			scrollToVisible(this);
+			scrollToVisible(this, true);
 		}
 	}
 
@@ -254,18 +254,12 @@ export default class List extends BaseForm {
 						var btns = [];
 
 						btns.push(ReactDOM.button({
-							className: 'clickable clickable-del toolbtn', title: L('DELETE'), key: 'b' + UID(item), style: {color: '#fff', background: constants.DELETE_COLOR}, onClick: () => {
-
-								var deleteItem = () => {
-
-									item.__deleted_901d123f = true;
-									this.forceUpdate();
-								};
+							className: 'clickable clickable-del toolbtn', title: L('DELETE'), key: 'b' + UID(item), style: {color: '#fff', background: constants.DELETE_COLOR}, onClick: async () => {
 								if(item.hasOwnProperty('id') && !this.state.noPromptDelete) {
-									deleteRecord(item.name, node.id, 0, undefined, false, deleteItem);
-								} else {
-									deleteItem();
+									await deleteRecord(item.name, node.id, 0, undefined, false, deleteItem);
 								}
+								item.__deleted_901d123f = true;
+								this.forceUpdate();
 							}
 						}, renderIcon('times')));
 
@@ -406,11 +400,10 @@ export default class List extends BaseForm {
 			if(node.canCreate && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
 				if(this.isSlave()) {
 					createButton = ReactDOM.button({
-						style: {padding: '5px 15px', background: constants.CREATE_COLOR}, className: 'clickable clickable-neg', onClick: () => {
+						style: {padding: '5px 15px', background: constants.CREATE_COLOR}, className: 'clickable clickable-neg', onClick: async () => {
 							if(this.props.askToSaveParentBeforeCreation) {
-								this.props.parentForm.saveParentFormBeforeCreation(() => {
-									this.props.parentForm.toggleCreateDialogue();
-								});
+								await this.props.parentForm.saveParentFormBeforeCreation();
+								this.props.parentForm.toggleCreateDialogue();
 							} else {
 								this.props.parentForm.toggleCreateDialogue();
 							}

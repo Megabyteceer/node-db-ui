@@ -11,7 +11,7 @@ var curentUserData;
 
 function setUserOrg(orgId) {
 	if(curentUserData.orgId !== orgId) {
-		getData('api/setCurrentOrg', {orgId}, () => {
+		getData('api/setCurrentOrg', {orgId}).then(() => {
 			User.instance.refreshUser();
 		});
 	}
@@ -36,14 +36,6 @@ var selectStyle = {
 	borderRadius: '3px',
 	cursor: 'pointer'
 }
-var optionStyle = {
-	padding: '5px',
-	cursor: 'pointer'
-}
-
-function editProfileClick(e) {
-	sp(e);
-}
 
 var isFirstCall = true;
 
@@ -55,10 +47,10 @@ export default class User extends React.Component {
 	}
 
 	refreshUser() {
-		getData('api/getMe', undefined, (data) => {
+		getData('api/getMe').then((data) => {
 			data.lang.code = data.lang.code || 'en';
 			moment.locale(data.lang.code);
-			loadJS('/locales/' + data.lang.code + '/lang.js', () => {
+			import('/locales/' + data.lang.code + '/lang.js').then(() => {
 				this.setState(data);
 
 				window.curentUserData = data;
@@ -70,7 +62,7 @@ export default class User extends React.Component {
 					goToPageByHash();
 				}
 			})
-		})
+		});
 	}
 
 	changeOrg(value) {
@@ -82,7 +74,7 @@ export default class User extends React.Component {
 	}
 
 	toggleMultilang() {
-		getData('api/toggleMultilang', undefined, () => {
+		getData('api/toggleMultilang').then(() => {
 			window.location.reload();
 		});
 

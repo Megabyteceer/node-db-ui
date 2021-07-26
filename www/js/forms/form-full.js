@@ -7,7 +7,7 @@ import FormTab from "./form-tab.js";
 import eventProcessingMixins from "./event-processing-mixins.js";
 import constants from "../custom/consts.js";
 import NodeAdmin from "../admin/node-admin.js";
-import Modal from "../modal.js";
+import LoadingIndicator from "../loading-indicator.js";
 
 var style = {
 	marginBottom: 7
@@ -24,46 +24,15 @@ function tryBackup() {
 window.addEventListener('unload', tryBackup);
 setInterval(tryBackup, 15000);
 
-function callForEachField(fildRefs, data, functionName, onComplete) {
-	var isInvalidForm = false;
-	var callbacksCount = 0;
-	var waitingForCallbacks = false;
-	for(let k in fildRefs) {
-		let f = fildRefs[k];
-
-		callbacksCount++;
-		(() => {
-			var fieldName = f.props.field.fieldName;
-
-			f[functionName]((newValue, isInvalid) => {
-				if((typeof newValue !== 'undefined') && (f.props.initialValue !== newValue)) {
-					data[fieldName] = newValue;
-				}
-				callbacksCount--;
-				if(waitingForCallbacks) {
-					if(callbacksCount === 0) {
-						Modal.instance.hide();
-						onComplete(isInvalid);
-					}
-				} else {
-					if(isInvalid) {
-						isInvalidForm = isInvalid;
-					}
-				}
-			});
-		})();
-	}
-	waitingForCallbacks = true;
-
-	if(callbacksCount === 0) {
-		onComplete(isInvalidForm);
-	} else {
-		myAlert(ReactDOM.span({},
-			L('LOADING'),
-			ReactDOM.br(),
-			renderIcon('cog fa-spin fa-2x')
-		), 1, 0, 1, 1);
-	}
+async function callForEachField(fieldRefs, data, functionName) {
+	await Promise.all(Object.keys(fieldRefs).map(async (k) => {
+		let f = fieldRefs[k];
+		var fieldName = f.props.field.fieldName;
+		let newValue = await f[functionName]();
+		if((typeof newValue !== 'undefined') && (f.props.initialValue !== newValue)) {
+			data[fieldName] = newValue;
+		}
+	}));
 }
 
 
@@ -160,24 +129,14 @@ export default class FormFull extends eventProcessingMixins {
 		}
 	}
 
-	validate(callback) {
+	async validate() {
 		if(this.onSave()) {
-			callback(false);
-			return;
+			throw false;
 		}
 
 		var formIsValid = true;
-		var callbacksCount = 1; //one fake call
-		var onFieldValidated = (isValid) => {
-			if(!isValid) {
-				formIsValid = false;
-			}
-			callbacksCount--;
-			if(callbacksCount === 0) {
-				callback(formIsValid);
-			}
-		}
-		for(var k in this.fieldsRefs) {
+
+		for(let k in this.fieldsRefs) {
 			var fieldRef = this.fieldsRefs[k];
 			var field = fieldRef.props.field;
 
@@ -190,25 +149,31 @@ export default class FormFull extends eventProcessingMixins {
 				formIsValid = false;
 			} else {
 				this.fieldAlert(field.fieldName, '');
-				callbacksCount++;
-				this.checkUniquValue(field, (!fieldRef.isEmpty()) && this.currentData[field.fieldName], (isValid) => {
-					fieldRef.checkValidityBeforeSave(formIsValid, (isValid2) => {
-						onFieldValidated(isValid && isValid2);
-					});
-				});
+				let isValid = await this.checkUniquValue(field, (!fieldRef.isEmpty()) && this.currentData[field.fieldName]);
+				let isValid2 = await fieldRef.checkValidityBeforeSave(formIsValid);
+				if(!isValid || !isValid2) {
+					formIsValid = false;
+				}
 			}
 		}
-		onFieldValidated(true);
+		if(!formIsValid) {
+			throw false;
+		}
 	}
+	saveClick(isDraft) {
+		LoadingIndicator.instance.show();
+		this.saveClickInner(isDraft).catch(() => {
+			console.log('invalid form.');
+		}).finally(() => {
+			LoadingIndicator.instance.hide();
+		});
+	}
+	async saveClickInner(isDraft) {
 
-	saveClick(isDraft, callback, callbackInvalid) {
+		let a = "end";
+		a = 213;
 
-		if(typeof callback !== 'function') {
-			callback = false;
-		}
-		if(typeof callbackInvalid !== 'function') {
-			callbackInvalid = false;
-		}
+
 		this.forceBouncingTimeout();
 		var data = {};
 
@@ -226,125 +191,98 @@ export default class FormFull extends eventProcessingMixins {
 			}
 		}
 
-		this.validate((formIsValid) => {
-			if(formIsValid) {
+		await this.validate();
 
-				for(var k in this.fieldsRefs) {
-					var fieldRef = this.fieldsRefs[k];
-					var field = fieldRef.props.field;
+		for(var k in this.fieldsRefs) {
+			var fieldRef = this.fieldsRefs[k];
+			var field = fieldRef.props.field;
 
-					var val = this.currentData[field.fieldName];
+			var val = this.currentData[field.fieldName];
 
-					if(!field.clientOnly) {
-						if((field.fieldType === FIELD_14_NtoM)) {
-							if(!n2mValuesEqual(this.props.initialData[field.fieldName], val)) {
-								data[field.fieldName] = val.map(v => v.id);
-							}
-						} else if((field.fieldType === FIELD_7_Nto1)) {
+			if(!field.clientOnly) {
+				if((field.fieldType === FIELD_14_NtoM)) {
+					if(!n2mValuesEqual(this.props.initialData[field.fieldName], val)) {
+						data[field.fieldName] = val.map(v => v.id);
+					}
+				} else if((field.fieldType === FIELD_7_Nto1)) {
 
-							var cVal = val;
-							var iVal = this.props.initialData[field.fieldName];
+					var cVal = val;
+					var iVal = this.props.initialData[field.fieldName];
 
-							if(cVal && cVal.id) {
-								cVal = cVal.id;
-							}
-
-							if(iVal && iVal.id) {
-								iVal = iVal.id;
-							}
-
-							if(cVal !== iVal) {
-								data[field.fieldName] = val;
-							}
-
-						} else if(val && val._isAMomentObject) {
-							if(!val.isSame(this.props.initialData[field.fieldName])) {
-								data[field.fieldName] = val;
-							}
-						} else {
-							if(this.props.initialData[field.fieldName] != val) {
-								data[field.fieldName] = val;
-							}
-						}
+					if(cVal && cVal.id) {
+						cVal = cVal.id;
 					}
 
-				}
-
-				this.saveClickInner(data, callback);
-			} else {
-				if(callbackInvalid) {
-					callbackInvalid();
-				}
-			}
-		});
-	}
-
-	saveClickInner(data, callback) {
-		callForEachField(this.fieldsRefs, data, 'beforeSave', (isInvalid) => {
-			if(!isInvalid) {
-				this.saveClickInner2(data, callback);
-			}
-		});
-	}
-
-	saveClickInner2(data, callback) {
-		if(Object.keys(data).length > 0) {
-			submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined, (recId) => {
-				if(!this.currentData.hasOwnProperty('id')) {
-					this.currentData.id = recId;
-					this.props.initialData.id = recId;
-				}
-
-				//renew current data
-				this.currentData = Object.assign(this.currentData, data);
-				//renew initial data;
-				for(var k in data) {
-					var val = data[k];
-					if(typeof val === 'object') {
-						if($.isEmptyObject(val)) {
-							this.props.initialData[k] = undefined;
-						} else if(val._isAMomentObject) {
-							this.props.initialData[k] = val.clone();
-						} else if(Array.isArray(val)) {
-							this.props.initialData[k] = val.concat();
-						} else {
-							this.props.initialData[k] = Object.assign({}, val);
-						}
-					} else {
-						this.props.initialData[k] = val;
+					if(iVal && iVal.id) {
+						iVal = iVal.id;
 					}
-				}
 
-				this.didSave(data, callback);
+					if(cVal !== iVal) {
+						data[field.fieldName] = val;
+					}
 
-			});
-		} else {
-			this.didSave(data, callback);
-		}
-	}
-
-	didSave(data, callback) {
-		if(this.props.onSave) {
-			this.props.onSave();
-			return;
-		}
-		callForEachField(this.fieldsRefs, data, 'afterSave', (isInvalid) => {
-			if(!isInvalid) {
-				this.rec_ID = this.currentData.id;
-				this.deteleBackup();
-				if(this.onSaveCallback) {
-					this.onSaveCallback(callback);
-				} else if(callback) {
-					callback();
+				} else if(val && val._isAMomentObject) {
+					if(!val.isSame(this.props.initialData[field.fieldName])) {
+						data[field.fieldName] = val;
+					}
 				} else {
-					if(this.isSlave()) {
-						this.props.parentForm.valueChoosed(this.currentData, true);
-					} else {
-						this.cancelClick();
+					if(this.props.initialData[field.fieldName] != val) {
+						data[field.fieldName] = val;
 					}
 				}
 			}
-		});
+		}
+
+		await callForEachField(this.fieldsRefs, data, 'beforeSave')
+
+		if(Object.keys(data).length > 0) {
+			let recId = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
+
+			if(!this.currentData.hasOwnProperty('id')) {
+				this.currentData.id = recId;
+				this.props.initialData.id = recId;
+			}
+
+			//renew current data
+			this.currentData = Object.assign(this.currentData, data);
+			//renew initial data;
+			for(var k in data) {
+				var val = data[k];
+				if(typeof val === 'object') {
+					if($.isEmptyObject(val)) {
+						this.props.initialData[k] = undefined;
+					} else if(val._isAMomentObject) {
+						this.props.initialData[k] = val.clone();
+					} else if(Array.isArray(val)) {
+						this.props.initialData[k] = val.concat();
+					} else {
+						this.props.initialData[k] = Object.assign({}, val);
+					}
+				} else {
+					this.props.initialData[k] = val;
+				}
+			}
+
+			if(this.props.onSave) {
+				this.props.onSave();
+				return;
+			}
+
+			await callForEachField(this.fieldsRefs, data, 'afterSave');
+
+			this.rec_ID = this.currentData.id;
+			this.deteleBackup();
+			if(this.onSaveCallback) {
+				await this.onSaveCallback();
+			}
+		}
+
+		if(this.isSlave()) {
+			this.props.parentForm.valueChoosed(this.currentData, true);
+		} else {
+			this.cancelClick();
+		}
+
 	}
 
 	isVisibleField(field) {
@@ -441,8 +379,6 @@ export default class FormFull extends eventProcessingMixins {
 					}
 				}
 			}
-
-
 		}
 
 		var isMainTab = (!this.filters.tab || (tabs[0].props.field.fieldName === this.filters.tab));
@@ -486,14 +422,13 @@ export default class FormFull extends eventProcessingMixins {
 		if(!this.props.inlineEditable) {
 			if(data.isD && isMainTab && !this.props.preventDeleteButton) {
 				deleteButton = ReactDOM.button({
-					className: 'clickable clickable-neg', style: dangerButtonStyle, onClick: () => {
-						deleteRecord(data.name, node.id, data.id, () => {
-							if(this.isSlave()) {
-								this.props.parentForm.valueChoosed();
-							} else {
-								goBack(true);
-							}
-						});
+					className: 'clickable clickable-neg', style: dangerButtonStyle, onClick: async () => {
+						await deleteRecord(data.name, node.id, data.id);
+						if(this.isSlave()) {
+							this.props.parentForm.valueChoosed();
+						} else {
+							goBack(true);
+						}
 					}, title: L('DELETE')
 				}, renderIcon('trash'), this.isSlave() ? '' : L('DELETE'));
 			}

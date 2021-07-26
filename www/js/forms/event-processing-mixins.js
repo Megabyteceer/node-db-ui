@@ -36,12 +36,9 @@ export default class eventProcessingMixins extends BaseForm {
 		this.needCallOnload = needCallOnload;
 	}
 
-	saveForm(callback, callbackInvalid) {
+	async saveForm() {
 		if(this.props.editable) {
-			if(!callback) {
-				callback = () => { };
-			}
-			this.saveClick('keepStatus', callback, callbackInvalid);
+			return this.saveClick('keepStatus');
 		}
 	}
 
@@ -247,24 +244,22 @@ export default class eventProcessingMixins extends BaseForm {
 		}
 	}
 
-	async checkUniquValue(field, val, callback) {
+	async checkUniquValue(field, val) {
 		if(field.uniqu && val) {
-			return getData('api/uniquCheck', {
+			let data = await getData('api/uniquCheck', {
 				fieldId: field.id,
 				nodeId: field.node.id,
 				recId: (this.rec_ID !== 'new') && this.rec_ID,
 				val
-			}, (data) => {
-				if(!data) {
-					this.fieldAlert(field.fieldName, L('VALUE_EXISTS'), false, true);
-				} else {
-					this.fieldAlert(field.fieldName, '', true);
-				}
-				callback && callback(data);
-			}, undefined, undefined, true);
-		} else {
-			callback && callback(true);
+			}, undefined, true);
+			if(!data) {
+				this.fieldAlert(field.fieldName, L('VALUE_EXISTS'), false, true);
+				return false;
+			} else {
+				this.fieldAlert(field.fieldName, '', true);
+			}
 		}
+		return true;
 	}
 
 	fieldValue(fieldName) {

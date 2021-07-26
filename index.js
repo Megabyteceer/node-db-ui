@@ -8,6 +8,7 @@ const performance = require('perf_hooks').performance;
 const multipart = require('parse-multipart-data');
 const {isUserHaveRole} = require("./www/both-side-utils.js");
 require('./core/locale.js');
+const {mysqlDebug} = require("./core/mysql-connection.js");
 
 server.on('request', (req, res) => {
 	if(req.method === 'POST') {
@@ -51,7 +52,9 @@ server.on('request', (req, res) => {
 					body = {};
 					for(let part of parts) {
 						if(part.filename) {
+							// @ts-ignore
 							body.filename = part.filename;
+							// @ts-ignore
 							body.fileContent = part.data;
 						} else {
 							body[part.name] = part.data.toString();
@@ -77,13 +80,12 @@ server.on('request', (req, res) => {
 					const resHeaders = {
 						'content-type': 'application/json'
 					};
-
 					let ret = {result, error};
 					/// #if DEBUG
 					resHeaders['Access-Control-Allow-Origin'] = '*';
-					if(process.debug) {
-						ret.debug = process.debug;
-						delete process.debug;
+					if(mysqlDebug.debug) {
+						ret.debug = mysqlDebug.debug;
+						delete mysqlDebug.debug;
 						ret.debug.timeElapsed_ms = performance.now() - startTime;
 					}
 					/// #endif
@@ -101,7 +103,7 @@ server.on('request', (req, res) => {
 					res.end(JSON.stringify(ret));
 				}
 				/// #if DEBUG
-				process.debug = {requestTime: new Date(), stack: []};
+				mysqlDebug.debug = {requestTime: new Date(), stack: []};
 				/// #endif
 				startSession(body.sessionToken).then((session) => {
 					userSession = session;
@@ -179,6 +181,7 @@ const mysql_real_escape_object = (o) => {
 		}
 	}
 }
+
 
 const mysql_real_escape_string = (str) => {
 	return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function(char) {

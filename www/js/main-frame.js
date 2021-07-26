@@ -34,38 +34,37 @@ class MainFrame extends React.Component {
 		this.reloadOptions();
 	}
 
-	reloadOptions() {
-		getData('api/getOptions', undefined, (data) => {
+	async reloadOptions() {
+		let data = await getData('api/getOptions');
 
-			const nodesTree = data.nodesTree;
-			var items = {};
-			Object.assign(ENV, data.options);
-			ENV.nodesTree = nodesTree;
+		const nodesTree = data.nodesTree;
+		var items = {};
+		Object.assign(ENV, data.options);
+		ENV.nodesTree = nodesTree;
 
-			/// #if DEBUG
-			if(!ENV.DEBUG) {throw "DEBUG directives nad not cutted of in PRODUCTION mode"};
-			/// #endif
+		/// #if DEBUG
+		if(!ENV.DEBUG) {throw "DEBUG directives nad not cutted of in PRODUCTION mode"};
+		/// #endif
 
 
-			nodesTree.some((i) => {
-				items[i.id] = i;
-				if(i.id === 2) {
-					ENV.rootItem = i;
-				}
-			});
-
-			for(var k in nodesTree) {
-				var i = nodesTree[k];
-				if(items.hasOwnProperty(i.parent)) {
-					var parent = items[i.parent];
-					if(!parent.hasOwnProperty('children')) {
-						parent.children = [];
-					}
-					parent.children.push(i);
-				}
+		nodesTree.some((i) => {
+			items[i.id] = i;
+			if(i.id === 2) {
+				ENV.rootItem = i;
 			}
-			this.forceUpdate();
 		});
+
+		for(var k in nodesTree) {
+			var i = nodesTree[k];
+			if(items.hasOwnProperty(i.parent)) {
+				var parent = items[i.parent];
+				if(!parent.hasOwnProperty('children')) {
+					parent.children = [];
+				}
+				parent.children.push(i);
+			}
+		}
+		this.forceUpdate();
 	}
 
 	render() {
@@ -79,7 +78,7 @@ class MainFrame extends React.Component {
 				ReactDOM.table({style: {width: '100%'}},
 					ReactDOM.tbody(null,
 						ReactDOM.tr(null,
-							React.createElement(LeftBar),
+							React.createElement(LeftBar, {staticItems: ENV.rootItem.children}),
 							ReactDOM.td({style: {verticalAlign: 'top'}},
 								React.createElement(Stage)
 							)

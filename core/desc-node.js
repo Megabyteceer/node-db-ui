@@ -56,7 +56,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION) {
 			}
 			clientSideNodes.set(nodeId, ret);
 		} else {
-			throw new Error("Access to node " + nodeId + " is denied");
+			throwError("Access to node " + nodeId + " is denied");
 		}
 	}
 	return clientSideNodes.get(nodeId);
@@ -131,6 +131,7 @@ function attemptToreloadMetadataSchedule() {
 }
 
 const ENV = require("../ENV.js");
+const {throwError} = require("./utils.js");
 
 async function initNodesData() { // load whole nodes data in to memory
 	let fields_new = new Map();
@@ -159,7 +160,7 @@ async function initNodesData() { // load whole nodes data in to memory
 	await mysqlExec('-- ======== NODES RELOADING STARTED ===================================================================================================================== --');
 	/// #endif
 
-	let query = "SELECT * FROM _nodes WHERE status=1";
+	let query = "SELECT * FROM _nodes WHERE status=1 ORDER BY prior";
 	nodes_new = await mysqlExec(query);
 
 	for(let nodeData of nodes_new) {
@@ -258,7 +259,7 @@ const wrapObjectToDestroy = (o) => {
 		return new Proxy(o, {
 			set: function(obj, prop, value, a, b, c) {
 				if(destroyed) {
-					throw new Error('Attempt to assign data after axit on eventHandler. Has eventHandler not "await" for something?');
+					throwError('Attempt to assign data after axit on eventHandler. Has eventHandler not "await" for something?');
 				}
 				if(prop === 'destroyObject_ONKwoiqwhd123123') {
 					destroyed = true;

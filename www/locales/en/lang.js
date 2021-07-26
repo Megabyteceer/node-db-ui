@@ -113,6 +113,7 @@ import {initDictionary} from "../../js/utils.js";
 		'PASS_LEN': 'Password length should be at leas % symbols.',
 		'PASS_NOT_MACH': 'Passwords dont mach.',
 		'LATIN_ONLY': 'Latin symbols only',
+		'NO_NUMERIC_NAME': 'Numeric name is not allowed',
 		'MIN_NAMES_LEN': 'Minimal name\'s length is % symbols.',
 		'SAVE_TOADDSUB': 'Save form before create %',
 		'APPLY_CHILD': 'Apply settings for all sub sections?',

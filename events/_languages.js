@@ -1,12 +1,13 @@
 const {reloadMetadataSchedule} = require("../core/desc-node.js");
 const {getRecords} = require("../core/get-records.js");
 const {createFieldInTable} = require("./_fields.js");
+const {throwError} = require("../core/utils.js");
 
 module.exports = {
 
 	afterCreate: async function(data, userSession) {
 		debugger;
-		const fields = await getRecords(6, 1, false, true, {multilang: 1, p: '*'});
+		let fields = await getRecords(6, 1, false, true, {multilang: 1, p: '*'});
 		fields = fields.items;
 		for(let f of fields) {
 			f.node_fields_linker = f.node_fields_linker.id;
@@ -18,10 +19,10 @@ module.exports = {
 	},
 
 	beforeUpdate: async function(currentData, newData, userSession) {
-		throw new Error('_languages beforeUpdate event is not implemented');
+		throwError('_languages beforeUpdate event is not implemented');
 	},
 
 	beforeDelete: async function(data, userSession) {
-		throw new Error('_languages beforeCreate deletion event is not implemented');
+		throwError('_languages beforeCreate deletion event is not implemented');
 	}
 }

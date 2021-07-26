@@ -4,6 +4,8 @@ const {isAdmin} = require("../www/both-side-utils");
 const crypto = require('crypto');
 const {shouldBeAdmin} = require("../core/admin/admin.js");
 const {reloadMetadataSchedule} = require("../core/desc-node.js");
+const {throwError} = require("../core/utils.js");
+const {L} = require("../core/locale.js");
 
 module.exports = {
 
@@ -25,9 +27,11 @@ module.exports = {
 
 		const parentPrevs = await mysqlExec(rpQ);
 
-		await mysqlExec(parentPrevs.map((prev) => {
-			return 'INSERT INTO _roleprevs SET nodeID=' + createdID + ', roleID=' + prev.roleID + ', prevs=' + prev.prevs + ';';
-		}).join(''));
+		if(parentPrevs.length) {
+			await mysqlExec(parentPrevs.map((prev) => {
+				return 'INSERT INTO _roleprevs SET nodeID=' + createdID + ', roleID=' + prev.roleID + ', prevs=' + prev.prevs + ';';
+			}).join(''));
+		}
 
 
 
@@ -85,7 +89,7 @@ module.exports = {
 	},
 
 	beforeDelete: async function(data, userSession) {
-		throw new Error('_nodes beforeCreate deletion event is not implemented');
+		throwError('_nodes beforeCreate deletion event is not implemented');
 	},
 
 	beforeUpdate: (currentData, newData, userSession) => {

@@ -4,7 +4,7 @@ import {consoleDir, getNode, getNodeData, isLitePage, popup, refreshForm, submit
 
 const admin = {};
 
-admin.moveField = (fIndex, form, node, direction) => {
+admin.moveField = async (fIndex, form, node, direction) => {
 	var fieldIndex;
 	var j = 0;
 	var fields = node.fields.filter((f, i) => {
@@ -111,49 +111,39 @@ admin.moveField = (fIndex, form, node, direction) => {
 		return;
 	}
 
-	getNodeData(6, group1[0].id, (field1) => {
-		getNodeData(6, group2[0].id, (field2) => {
-			var prior = Math.min(field1.prior, field2.prior);
-			if(direction < 0) {
-				group1 = group1.concat(group2);
-			} else {
-				group1 = group2.concat(group1);
-			}
+	let field1 = await getNodeData(6, group1[0].id);
+	let field2 = await getNodeData(6, group2[0].id);
 
-			for(let f of group1) {
-				f.prior = prior;
-				prior++;
-			}
-
-			var callsCount = group1.length;
-
-			for(let f of group1) {
-				submitRecord(6, {
-					prior: f.prior
-				}, f.id, () => {
-					callsCount--;
-					if(callsCount === 0) {
-						getNode(node.id, () => {
-							refreshForm();
-						}, true);
-					}
-				})
-			}
-		});
-	});
+	var prior = Math.min(field1.prior, field2.prior);
+	if(direction < 0) {
+		group1 = group1.concat(group2);
+	} else {
+		group1 = group2.concat(group1);
+	}
+	for(let f of group1) {
+		f.prior = prior;
+		prior++;
+	}
+	await Promise.all(group1.map((f) => {
+		return submitRecord(6, {prior: f.prior}, f.id);
+	}));
+	await getNode(node.id, true);
+	refreshForm();
 }
 
-admin.exchangeNodes = (node1, node2) => {
+admin.exchangeNodes = async (node1, node2) => {
 	if(node1 && node2) {
-		submitRecord(4, {
+		let ret = await Promise.all([submitRecord(4, {
 			prior: node1.prior
-		}, node2.id, () => {
-			submitRecord(4, {
-				prior: node2.prior
-			}, node1.id, () => {
-				MainFrame.instance.reloadOptions();
-			})
-		});
+		}, node2.id).then(() => {
+			console.log(1);
+		}),
+		submitRecord(4, {
+			prior: node2.prior
+		}, node1.id).then(() => {
+			console.log(2);
+		})]);
+		MainFrame.instance.reloadOptions();
 	}
 }
 

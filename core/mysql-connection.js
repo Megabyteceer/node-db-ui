@@ -11,17 +11,18 @@ const connection = mysql.createConnection({
 });
 const {getCurrentStack} = require("../www/both-side-utils");
 
+const mysqlDebug = {};
 
 const mysqlExec = (query) => {
 	/// #if DEBUG
 	let preparedError = new Error();
 
 	let SQL = {timeElapsed_ms: performance.now(), SQL: query, stack: getCurrentStack()};
-	if(process.debug) {
-		if(!process.debug.SQLs) {
-			process.debug.SQLs = [];
+	if(mysqlDebug.debug) {
+		if(!mysqlDebug.debug.SQLs) {
+			mysqlDebug.debug.SQLs = [];
 		}
-		process.debug.SQLs.push(SQL)
+		mysqlDebug.debug.SQLs.push(SQL)
 	}
 	/// #endif
 
@@ -33,7 +34,8 @@ const mysqlExec = (query) => {
 
 				/// #endif
 				debugger;
-				reject(er, preparedError, query);
+				reject(er);
+				console.dir(preparedError, query);
 			}
 			/// #if DEBUG
 			SQL.timeElapsed_ms = performance.now() - SQL.timeElapsed_ms;
@@ -95,4 +97,4 @@ async function mysqlRollback() {
 	}
 }
 
-module.exports = {mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback};
+module.exports = {mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback, mysqlDebug};

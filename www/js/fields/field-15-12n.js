@@ -49,9 +49,9 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 		}
 		this.setState({creationOpened: !this.state.creationOpened, backupPrefix: backupPrefix, dataToEdit: undefined, itemIdToEdit: itemIdToEdit});
 		if(typeof itemIdToEdit !== 'undefined') {
-			getNodeData(this.props.field.nodeRef, itemIdToEdit, (data) => {
+			getNodeData(this.props.field.nodeRef, itemIdToEdit, undefined, true).then((data) => {
 				this.setState({dataToEdit: data, itemIdToEdit: undefined});
-			}, undefined, true);
+			});
 		}
 	}
 
@@ -59,83 +59,48 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 		this.setState({inlineEditing: true});
 	}
 
-	getMessageIfInvalid(callback) {
+	async getMessageIfInvalid() {
 		if(this.state.inlineEditing) {
-			var allValid = true;
-			var callbacksCount = 1;
-			var onSubformValidated = (isValid) => {
-				if(!isValid) {
-					allValid = false;
-				}
-				callbacksCount--;
-				if(callbacksCount === 0) {
-					callback(allValid ? false : L('INVALID_DATA_LIST'));
-				}
-			}
-			this.inlineListRef.getSubforms().some((subForm) => {
-				callbacksCount++;
-				subForm.validate(onSubformValidated);
-			});
-			onSubformValidated(true);
+			let ret;
+			await Promise.all(this.inlineListRef.getSubforms().map((subForm) => {
+				return subForm.validate().catch(() => {
+					ret = L('INVALID_DATA_LIST')
+				});
+			}));
+			return ret;
 		}
 		else if(this.state.creationOpened) {
-			callback(L("SAVE_SUB_FIRST"));
+			return L("SAVE_SUB_FIRST");
 		} else {
-			callback(false);
+			return false;
 		}
 	}
 
-	afterSave(callback) {
-
+	async afterSave() {
 		if(this.state.inlineEditing) {
-
-
-			var invalidSave = false;
 			var subForms = this.inlineListRef.getSubforms(true);
 			var field = this.props.field;
-
-
-			const handleCallbackCountingInvalid = () => {
-				invalidSave = true;
-				processSubForms();
-			}
-			//saving one by one for keep order.
-			var processSubForms = () => {
-				if(subForms.length > 0) {
-					var form = subForms.shift();
-
-					var initialData = form.props.initialData;
-
-					if(initialData.hasOwnProperty('__deleted_901d123f')) {
-						if(initialData.hasOwnProperty('id')) {
-							deleteRecord('', field.nodeRef, initialData.id, processSubForms, true);
-						}
-					} else {
-						var ln = field.fieldName + '_linker';
-						if(!initialData.hasOwnProperty(ln) || initialData[ln] === 'new') {
-							form.currentData[ln] = {id: this.props.form.currentData.id};
-						}
-						form.saveForm(processSubForms, handleCallbackCountingInvalid);
+			for(let form of subForms) {
+				var initialData = form.props.initialData;
+				if(initialData.hasOwnProperty('__deleted_901d123f')) {
+					if(initialData.hasOwnProperty('id')) {
+						await deleteRecord('', field.nodeRef, initialData.id, true);
 					}
-
-
-
 				} else {
-					callback(undefined, invalidSave);
+					var ln = field.fieldName + '_linker';
+					if(!initialData.hasOwnProperty(ln) || initialData[ln] === 'new') {
+						form.currentData[ln] = {id: this.props.form.currentData.id};
+					}
+					await form.saveForm();
 				}
-			};
-			processSubForms();
-		} else {
-			callback();
+			}
 		}
 	}
 
-	saveParentFormBeforeCreation(callback) {
-		this.props.form.saveForm(() => {
-			const linkerFieldName = this.props.field.fieldName + '_linker';
-			this.state.filters[linkerFieldName] = this.props.form.currentData.id;
-			callback();
-		});
+	async saveParentFormBeforeCreation() {
+		await this.props.form.saveForm();
+		const linkerFieldName = this.props.field.fieldName + '_linker';
+		this.state.filters[linkerFieldName] = this.props.form.currentData.id;
 	}
 
 	render() {

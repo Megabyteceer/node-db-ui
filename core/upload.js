@@ -5,6 +5,8 @@ const path = require('path');
 const sharp = require("sharp");
 const ENV = require("../ENV.js");
 const {getNodeDesc, getFieldDesc} = require("./desc-node");
+const {L} = require("./locale.js");
+const {throwError} = require("./utils.js");
 
 const UPLOADS_IMAGES_PATH = path.join(__dirname, '../www/images/uploads');
 const UPLOADS_FILES_PATH = path.join(__dirname, '../www/uploads/file');
@@ -76,14 +78,14 @@ let allowedUpload;
 
 async function uploadFile(reqData, userSession) {
 	if(reqData.filename.indexOf('..') >= 0) {
-		throw new Error(L('UPL_ERROW_WFN'));
+		throwError(L('UPL_ERROW_WFN'));
 	}
 	const field = getFieldForUpload(reqData, userSession);
 	if(!allowedUpload) {
 		allowedUpload = RegExp('\\.(' + ENV.ALLOWED_UPLOADS.join('|') + ')$', 'i');
 	}
 	if(!allowedUpload.test(reqData.filename)) {
-		throw new Error(L('FILE_TYPE_NA', reqData.filename));
+		throwError(L('FILE_TYPE_NA', reqData.filename));
 	}
 	const newFileName = (await getNewFileDir()) + '/' + reqData.filename;
 
@@ -105,7 +107,7 @@ const getFieldForUpload = (reqData, userSession) => {
 	getNodeDesc(parseInt(reqData.nid), userSession);
 	const field = getFieldDesc(parseInt(reqData.fid));
 	if(!field) {
-		throw new Error("field " + reqData.fid + " access denied");
+		throwError("field " + reqData.fid + " access denied");
 	}
 	return field;
 }

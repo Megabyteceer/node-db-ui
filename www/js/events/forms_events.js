@@ -139,7 +139,6 @@ formsEventsOnSave[5] = function _users_onsave() {//form5onsaveBegin_JS89DW72SISA
 		this.fieldAlert('PASS', L('PASS_LEN', 6));
 	}
 
-
 	if(pass != this.fieldValue('passconfirm')) {
 		this.fieldAlert('passconfirm', L('PASS_NOT_MACH'));
 	}
@@ -155,8 +154,10 @@ formsEventsOnSave[5] = function _users_onsave() {//form5onsaveBegin_JS89DW72SISA
 		}
 		if(nLang != pLang) {
 			this.onSaveCallback = () => {
-				myPromt(L('RESTARTNOW'), () => {
-					location = 'login';
+				myPromt(L('RESTARTNOW')).then((isYes) => {
+					if(isYes) {
+						location = 'login';
+					}
 				});
 			};
 		}
@@ -207,6 +208,15 @@ formsEventsOnSave[4] = function _nodes_onsave() {//form4onsaveBegin_JS89DW72SISA
 			this.setFieldValue("singleName", v);
 		if(!v && v2)
 			this.setFieldValue("name", v2);
+	}
+	else {
+		if(/[^a-zA-Z_0-9]/.test(this.fieldValue('tableName'))) {
+			this.fieldAlert('tableName', L('LATIN_ONLY'));
+		}
+
+		if(this.fieldValue('tableName') == parseInt(this.fieldValue('tableName'))) {
+			this.fieldAlert('tableName', L('NO_NUMERIC_NAME'));
+		}
 	}
 
 } //form4onsaveEnd_JS89DW72SISA887QKJ32IUSL
@@ -305,7 +315,7 @@ formsEventsOnLoad[6] = function _fields_onload() {//form6onloadBegin_JS89DW72SIS
 				if(this.fieldValue('fieldType') !== FIELD_14_NtoM) {
 					fieldsFilter.node_fields_linker = nodeId;
 				}
-				getNodeData(6, undefined, (data) => {
+				getNodeData(6, undefined, fieldsFilter).then((data) => {
 					if(this.nameIsBad) return;
 					if(data.items.length > 0) {
 						if(this.fieldValue('fieldType') === FIELD_14_NtoM) {
@@ -317,7 +327,7 @@ formsEventsOnLoad[6] = function _fields_onload() {//form6onloadBegin_JS89DW72SIS
 					} else {
 						this.fieldAlert('fieldName', '', true);
 					}
-				}, fieldsFilter);
+				});
 			};
 
 			var fn = this.fieldValue('fieldName');
@@ -352,6 +362,10 @@ formsEventsOnSave[6] = function _fields_onsave() {//form6onsaveBegin_JS89DW72SIS
 
 	if(/[^a-zA-Z_0-9]/.test(this.fieldValue('fieldName'))) {
 		this.fieldAlert('fieldName', L('LATIN_ONLY'));
+	}
+
+	if(this.fieldValue('fieldName') == parseInt(this.fieldValue('fieldName'))) {
+		this.fieldAlert('fieldName', L('NO_NUMERIC_NAME'));
 	}
 
 	if(fieldType === FIELD_12_PICTURE || fieldType === FIELD_19_RICHEDITOR) {
@@ -398,10 +412,6 @@ formsEventsOnLoad[12] = function _languages_onload() {//form12onloadBegin_JS89DW
 		this.disableField("code");
 	}
 } //form12onloadEnd_JS89DW72SISA887QKJ32IUSL
-
-formsEventsOnLoad[82] = function my_records_onload() {//form82onloadBegin_JS89DW72SISA887QKJ32IUSL
-	12
-} //form82onloadEnd_JS89DW72SISA887QKJ32IUSL
 
 //insertNewhandlersHere_adsqw09
 

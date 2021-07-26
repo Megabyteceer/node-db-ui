@@ -212,36 +212,30 @@ export default class FieldWrap extends React.Component {
 		}
 	}
 
-	checkValidityBeforeSave(focusIfInvalid, callback) {
+	async checkValidityBeforeSave(focusIfInvalid) {
 		if(!this.fieldRef || !this.fieldRef.getMessageIfInvalid) {
-			callback(true);
+			return true;
 		} else {
-
-			this.fieldRef.getMessageIfInvalid((invalidMessage) => {
-				if(!invalidMessage) {
-					this.fieldAlert();
-					callback(true);
-				} else {
-					this.fieldAlert(invalidMessage, false, focusIfInvalid);
-					callback(false);
-				}
-			});
+			let invalidMessage = await this.fieldRef.getMessageIfInvalid();
+			if(!invalidMessage) {
+				this.fieldAlert();
+				return true;
+			} else {
+				this.fieldAlert(invalidMessage, false, focusIfInvalid);
+				return false;
+			}
 		}
 	}
 
-	beforeSave(callback) {
+	async beforeSave() {
 		if(this.fieldRef.beforeSave) {
-			this.fieldRef.beforeSave(callback);
-		} else {
-			callback();
+			return this.fieldRef.beforeSave();
 		}
 	}
 
-	afterSave(callback) {
+	async afterSave() {
 		if(this.fieldRef.afterSave) {
-			this.fieldRef.afterSave(callback);
-		} else {
-			callback();
+			return this.fieldRef.afterSave();
 		}
 	}
 

@@ -1,23 +1,23 @@
 
 
 if(typeof global === 'undefined') {
-
 	window.global = window;
 }
 
 /// #if DEBUG
 global.assert = (condition, errorTxt) => {
 	if(!condition) {
-		throw new Error(errorTxt);
+		throwError(errorTxt);
 	}
 }
 /// #endif
 
 global.shouldBeAuthorized = (userSession) => {
 	if(!userSession || userSession.__temporaryServerSideSession || isUserHaveRole(GUEST_ROLE_ID, userSession)) {
-		throw new Error("operation permitted for authorized user only");
+		throwError("operation permitted for authorized user only");
 	}
 }
+
 
 global.isAdmin = (userSession) => {
 	return isUserHaveRole(ADMIN_ROLE_ID, userSession);
@@ -34,18 +34,6 @@ global.getCurrentStack = () => {
 	let a = new Error().stack.split('\n');
 	a.splice(0, 3);
 	return a;
-}
-
-global.notificationOut = (userSession, text) => {
-	if(!userSession || userSession.__temporaryServerSideSession) {
-		console.log(text);
-	} else {
-		if(!userSession.notifications) {
-			userSession.notifications = [text];
-		} else {
-			userSession.notifications.push(text);
-		}
-	}
 }
 
 global.ADMIN_ROLE_ID = 1;

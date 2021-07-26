@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "es2020",
 		"rootDir": ".",
 		"baseUrl": ".",
 		"paths": {
@@ -9,7 +9,7 @@
 			]
 		},
 		"outDir": "",
-		"module": "es2015",
+		"module": "es2020",
 		"moduleResolution": "node",
 		"diagnostics": false,
 		"skipLibCheck": true

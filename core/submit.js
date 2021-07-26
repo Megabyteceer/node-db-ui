@@ -1,4 +1,7 @@
 "use strict";
+/// #if DEBUG
+const {notificationOut, throwError} = require("./utils.js");
+/// #endif
 const fs = require('fs');
 const path = require('path');
 const ENV = require("../ENV.js");
@@ -7,6 +10,8 @@ const {getNodeEventHandler, getNodeDesc, ADMIN_USER_SESSION, getFieldDesc} = req
 const {getRecords} = require("./get-records");
 const {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit} = require("./mysql-connection");
 const {UPLOADS_FILES_PATH, idToImgURLServer} = require('./upload');
+const {L} = require("./locale.js");
+
 
 const blockTags = [];
 for(let tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
@@ -52,11 +57,11 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 
 	if(recId !== false) {
 		if(!currentData.isE) {
-			throw new Error('Update access denied.');
+			throwError('Update access denied.');
 		}
 	} else {
 		if(!node.canCreate) {
-			throw new Error('Creation access denied: ' + node.id);
+			throwError('Creation access denied: ' + node.id);
 		}
 	}
 
@@ -66,13 +71,13 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 
 		if((f.show & 1) === 0) {
 			if(data.hasOwnProperty(fieldName)) {
-				throw new Error('Field ' + f['fieldName'] + ' hidden for update, but present in request.');
+				throwError('Field ' + f['fieldName'] + ' hidden for update, but present in request.');
 			}
 		} else if(!f.nostore) {
 
 			if(f.requirement) {
-				if(!data.hasOwnProperty(fieldName) && (!currentData || !currentData.hasOwnProperty(fieldName))) {
-					throw new Error("Required field '" + fieldName + "' is empty.");
+				if(((!data.hasOwnProperty(fieldName) || !data[fieldName])) && (!currentData || !currentData[fieldName])) {
+					throwError("Required field '" + fieldName + "' is empty.");
 				}
 			}
 			if(data.hasOwnProperty(fieldName)) {
@@ -84,7 +89,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 
 				if(f.uniqu) {
 					if(!(await uniquCheckInner(tableName, fieldName, data[fieldName], recId))) {
-						throw new Error('Record ' + f.label + ' with value "' + data[fieldName] + '" already exist.');
+						throwError('Record ' + f.label + ' with value "' + data[fieldName] + '" already exist.');
 					}
 				}
 			}
@@ -111,7 +116,9 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 
 		if(recId === false) {
 			if(data.hasOwnProperty('_usersID')) {
-				assert(!userSession || isAdmin(userSession) || userSession.id === data._usersID, "wrong _usersID detected");
+				if(userSession && !isAdmin(userSession) && (userSession.id !== data._usersID)) {
+					throwError("wrong _usersID detected");
+				};
 			} else {
 				assert(userSession, "submitRecord without userSession requires _usersID to be defined.");
 				noNeedComma = false;
@@ -120,7 +127,9 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 			}
 
 			if(data.hasOwnProperty('_organID')) {
-				assert(!userSession || isAdmin(userSession) || userSession.orgId === data._organID, "wrong _organID detected");
+				if(userSession && !isAdmin(userSession) && (userSession.id !== data._organID)) {
+					throwError("wrong _organID detected");
+				};
 			} else {
 				assert(userSession, "submitRecord without userSession requires _organID to be defined.");
 
@@ -175,7 +184,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 					//will process later
 					needProcess_n2m = 1;
 				} else if(fieldType === FIELD_15_1toN) {
-					throw new Error('children records addition/deletion is independent.');
+					throwError('children records addition/deletion is independent.');
 				} else {
 					leastOneTablesFieldUpdated = true;
 					if(!noNeedComma) {
@@ -198,7 +207,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 								if(userSession.uploaded && (userSession.uploaded[f.id] === fieldVal)) {
 									delete userSession.uploaded[fieldVal];
 								} else {
-									throw new Error("Error. Couldn't link uploaded file to the record.");
+									throwError("Error. Couldn't link uploaded file to the record.");
 								}
 							}
 							if(realDataBefore && realDataBefore[fieldName]) {
@@ -218,14 +227,14 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 						case FIELD_1_TEXT:
 						case FIELD_10_PASSWORD:
 							if(f.maxlen && (fieldVal.length > f.maxlen)) {
-								throw new Error("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxlen);
+								throwError("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxlen);
 							}
 							insQ.push("'", fieldVal, "'");
 							break;
 
 						case FIELD_19_RICHEDITOR:
 							if(fieldVal.length > 16000000) {
-								throw new Error("Value length for field '" + fieldName + "' (" + tableName + ") is longer that 16000000");
+								throwError("Value length for field '" + fieldName + "' (" + tableName + ") is longer that 16000000");
 							}
 							insQ.push("'", fieldVal, "'");
 							break;
@@ -245,10 +254,10 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 						default:
 
 							if((typeof fieldVal !== 'number') || isNaN(fieldVal)) {
-								throw new Error("Value for field " + fieldName + " (" + tableName + ") expected as numeric.");
+								throwError("Value for field " + fieldName + " (" + tableName + ") expected as numeric.");
 							}
 							if(f.maxlen && fieldVal.toString().length > f.maxlen) {
-								throw new Error("Value -length for field '" + fieldName + "' (" + tableName + ") is longer that " + f.maxlen);
+								throwError("Value -length for field '" + fieldName + "' (" + tableName + ") is longer that " + f.maxlen);
 							}
 							insQ.push(fieldVal);
 							break;
@@ -275,12 +284,12 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		}
 		/// #if DEBUG
 		else {
-			throw new Error('No fields updated in sumbitRecord.');
+			throwError('No fields updated in sumbitRecord.');
 		}
 
 		for(let key in data) {
-			if(key !== 'status') {
-				assert(node.fields.find(f => (f.fieldName === key) && !f.clientOnly), "Unknown field in '" + key + "' in data set detected.");
+			if(key !== 'status' && key !== '_organID' && key !== '_usersID') {
+				assert(node.fields.find(f => (f.fieldName === key) && !f.clientOnly), "Unknown field '" + key + "' in data set detected.");
 			}
 		}
 

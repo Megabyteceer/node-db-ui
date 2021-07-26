@@ -66,13 +66,15 @@ function isCurrentlyShowedLeftbarItem(item) {
 
 	if(!item.staticLink) {
 
-		var allItems = LeftBar.instance.state.staticItems.concat(LeftBar.instance.state.items);
+		var allItems = LeftBar.instance.props.staticItems.concat(LeftBar.instance.state.items);
 		excludeItem = item;
 		if(allItems.some(isStrictlySelected)) {
 			return false;
 		}
 
-		return currentFormParameters.nodeId === item.id;
+		return currentFormParameters.nodeId === item.id &&
+			currentFormParameters.recId === item.recId &&
+			currentFormParameters.editable === item.editable;
 	} else {
 		excludeItem = null;
 		return isStrictlySelected(item);
@@ -258,8 +260,12 @@ function renderItemsArray(itemsArray, level, item) {
 export default class LeftBar extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {staticItems: ENV.rootItem.children};
+		this.state = {};
 		LeftBar.instance = this;
+	}
+
+	UNSAFE_componentWillReceiveProps(nextProps) {
+
 	}
 
 	toggleCollapse() {
@@ -284,10 +290,8 @@ export default class LeftBar extends React.Component {
 		var lines;
 		var staticLines;
 
-
-
+		staticLines = renderItemsArray(this.props.staticItems, 0);
 		if(this.state) {
-			staticLines = renderItemsArray(this.state.staticItems, 0);
 			lines = renderItemsArray(this.state.items, 0);
 			if(lines.length === 1) {
 				lines = undefined;

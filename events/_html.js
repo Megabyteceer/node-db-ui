@@ -17,9 +17,11 @@ module.exports = {
 	},
 
 	beforeDelete: async function(data, userSession) {
-		fs.unlink(getDocFilename(data));
+		fs.unlink(getDocFilename(data), emptyCallback);
 	}
 }
+
+const emptyCallback = () => { };
 
 async function saveDoc(data) {
 	return new Promise((resolve, rejects) => {

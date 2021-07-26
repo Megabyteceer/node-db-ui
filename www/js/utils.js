@@ -40,46 +40,46 @@ function myAlert(txt, isSucess, autoHide, noDiscardByBackdrop) {
 
 }
 
-function myPromt(txt, onYes, yesLabel, onNo, noLabel, yesIcon, noIcon, discardByOutsideClick) {
-	if(!yesLabel) {
-		yesLabel = L('OK');
-	}
-	if(!yesIcon) {
-		yesIcon = 'check';
-	}
+async function myPromt(txt, yesLabel, noLabel, yesIcon, noIcon, discardByOutsideClick) {
+	return new Promise((resolve) => {
+		if(!yesLabel) {
+			yesLabel = L('OK');
+		}
+		if(!yesIcon) {
+			yesIcon = 'check';
+		}
 
-	var noButton;
+		var noButton;
 
-	if(!noLabel) {
-		noLabel = L('CANCEL');
-	}
+		if(!noLabel) {
+			noLabel = L('CANCEL');
+		}
 
-	if(!noIcon) {
-		noIcon = 'times';
-	}
+		if(!noIcon) {
+			noIcon = 'times';
+		}
 
-	noButton = ReactDOM.button({
-		style: {background: '#f84c4c', padding: '10px 45px 10px 40px'}, onClick: () => {
-			Modal.instance.hide();
-			if(onNo) {
-				onNo();
-			}
-		}, className: 'clickable clickable-neg'
-	}, renderIcon(noIcon), ' ', noLabel);
+		noButton = ReactDOM.button({
+			style: {background: '#f84c4c', padding: '10px 45px 10px 40px'}, onClick: () => {
+				Modal.instance.hide();
+				resolve(false);
+			}, className: 'clickable clickable-neg'
+		}, renderIcon(noIcon), ' ', noLabel);
 
-	var body = ReactDOM.span({style: {minWidth: '700px', display: 'inline-block', background: '#F7F7F7', color: '#000', border: '3px solid #F7F7F7', padding: '30px'}},
-		txt,
-		ReactDOM.div({style: {marginTop: '30px'}},
-			noButton,
-			ReactDOM.button({
-				style: {background: '#A8A9AD', padding: '10px 55px 10px 40px'}, onClick: () => {
-					Modal.instance.hide();
-					onYes();
-				}, className: 'clickable clickable-cancel'
-			}, renderIcon(yesIcon), ' ', yesLabel)
-		)
-	);
-	Modal.instance.show(body, !discardByOutsideClick);
+		var body = ReactDOM.span({style: {minWidth: '700px', display: 'inline-block', background: '#F7F7F7', color: '#000', border: '3px solid #F7F7F7', padding: '30px'}},
+			txt,
+			ReactDOM.div({style: {marginTop: '30px'}},
+				noButton,
+				ReactDOM.button({
+					style: {background: '#A8A9AD', padding: '10px 55px 10px 40px'}, onClick: () => {
+						Modal.instance.hide();
+						resolve(true);
+					}, className: 'clickable clickable-cancel'
+				}, renderIcon(yesIcon), ' ', yesLabel)
+			)
+		);
+		Modal.instance.show(body, !discardByOutsideClick);
+	});
 }
 
 function debugError(txt) {
@@ -436,10 +436,10 @@ function showForm(nodeId, recId, filters, editable) {
 		if(recId === 'new') {
 			createRecord(nodeId, filters);
 		} else {
-			getNodeData(nodeId, recId, (data) => {
+			getNodeData(nodeId, recId, (!recId && recId !== 0) ? filters : undefined, editable, false, isPresentListRenderer(nodeId)).then((data) => {
 				setFormData(nodeId, data, recId, filters, editable);
 
-			}, (!recId && recId !== 0) ? filters : undefined, editable, false, isPresentListRenderer(nodeId))
+			})
 		}
 	}
 }
@@ -460,15 +460,16 @@ function setFormData(nodeId, data, recId, filters, editable) {
 	currentFormParameters.editable = editable;
 	updateHashLocation();
 
-	getNode(nodeId, (node) => {
+	getNode(nodeId).then((node) => {
 		Stage.instance._setFormData(node, data, recId, filters, editable);
 		oneFormShowed = true;
 	});
 }
 
 function setFormFilter(name, val) {
-	Stage.instance.setFormFilter(name, val);
-	updateHashLocation();
+	if(Stage.instance.setFormFilter(name, val)) {
+		updateHashLocation();
+	}
 	oneFormShowed = true;
 }
 
@@ -476,17 +477,26 @@ function setFormFilter(name, val) {
 var nodes = {};
 var nodesRequested = {};
 
-function waitForNode(nodeId, callback) {
+function waitForNodeInner(nodeId, callback) {
 	if(nodes.hasOwnProperty(nodeId)) {
 		callback(nodes[nodeId]);
 	} else {
 		setTimeout(() => {
-			waitForNode(nodeId, callback);
+			waitForNodeInner(nodeId, callback);
 		}, 50);
 	}
 }
 
-function getNode(nodeId, callback, forceRefresh, callStack) {
+async function waitForNode(nodeId) {
+	if(nodes.hasOwnProperty(nodeId)) {
+		return nodes[nodeId];
+	}
+	return new Promise((resolve) => {
+		waitForNodeInner(nodeId, resolve);
+	});
+}
+
+async function getNode(nodeId, forceRefresh, callStack) {
 
 	if(!callStack) {
 		callStack = new Error('getNode called from: ').stack;
@@ -498,23 +508,16 @@ function getNode(nodeId, callback, forceRefresh, callStack) {
 	}
 
 	if(nodes.hasOwnProperty(nodeId)) {
-		callback(nodes[nodeId]);
+		return nodes[nodeId];
 	} else {
 		if(nodesRequested.hasOwnProperty(nodeId)) {
-			waitForNode(nodeId, callback);
+			return waitForNode(nodeId);
 		} else {
 			nodesRequested[nodeId] = true;
-			getData('api/descNode', {nodeId}, (data) => {
-
-				normalizeNode(data);
-
-				nodes[nodeId] = data;
-
-				callback(data);
-			}, (data, url, callStack) => {
-				delete (nodesRequested[nodeId]);
-				handleError(data, url, callStack);
-			}, callStack);
+			let data = await getData('api/descNode', {nodeId});
+			normalizeNode(data);
+			nodes[nodeId] = data;
+			return data;
 		}
 	}
 }
@@ -536,7 +539,7 @@ function normalizeNode(node) {
 	}
 }
 
-function getNodeData(nodeId, recId, callback, filters, editable, isForRefList, isForCustomList, noLoadingIndicator, onError) {
+async function getNodeData(nodeId, recId, filters, editable, isForRefList, isForCustomList, noLoadingIndicator, onError) {
 
 	/// #if DEBUG
 	if(typeof (recId) !== 'undefined' && typeof (filters) !== 'undefined') {
@@ -573,12 +576,12 @@ function getNodeData(nodeId, recId, callback, filters, editable, isForRefList, i
 		params.descNode = true;
 		nodesRequested[nodeId] = true;
 	}
+	try {
+		if(filters) {
+			Object.assign(params, filters);
+		}
 
-	if(filters) {
-		Object.assign(params, filters);
-	}
-
-	return getData('api/', params, (data) => {
+		let data = await getData('api/', params, callStack, noLoadingIndicator);
 
 		if(data.hasOwnProperty('node')) {
 			if(nodes[nodeId]) {
@@ -589,28 +592,25 @@ function getNodeData(nodeId, recId, callback, filters, editable, isForRefList, i
 			delete (data.node);
 		}
 
-		waitForNode(nodeId, (node) => {
-			data = data.data;
-			if(data) {
-				if(data.hasOwnProperty('items')) {
-					for(var k in data.items) {
-						decodeData(data.items[k], node);
-					}
-				} else {
-					decodeData(data, node);
+		let node = await waitForNode(nodeId);
+
+		data = data.data;
+		if(data) {
+			if(data.hasOwnProperty('items')) {
+				for(var k in data.items) {
+					decodeData(data.items[k], node);
 				}
+			} else {
+				decodeData(data, node);
 			}
-			callback(data);
-		});
-
-
-	}, (data, url, callStack) => {
-		if(onError) {
-			onError();
 		}
+		return data;
+
+
+
+	} catch(err) {
 		delete (nodesRequested[nodeId]);
-		handleError(data, url, callStack);
-	}, callStack, noLoadingIndicator);
+	}
 }
 
 var _fieldClasses = {};
@@ -668,14 +668,12 @@ function addMixins(Class, mixins) {
 	Object.assign(Class.prototype, mixins);
 }
 
-function submitRecord(nodeId, data, recId, callback, onError) {
+async function submitRecord(nodeId, data, recId) {
 	if(Object.keys(data).length === 0) {
 		throw 'Tried to submit emty object';
 	}
-	getNode(nodeId, (node) => {
-		submitData('api/submit', {nodeId, recId, data: encodeData(data, node)}, callback, undefined, onError);
-	});
-
+	let node = await getNode(nodeId);
+	return submitData('api/submit', {nodeId, recId, data: encodeData(data, node)});
 }
 
 var UID_counter = 0;
@@ -699,102 +697,101 @@ function idToFileUrl(fileId) {
 
 let __requestsOrder = [];
 
-function getData(url, params, callback, onError, callStack, noLoadingIndicator) {
+async function getData(url, params, callStack, noLoadingIndicator) {
+	return new Promise((resolve) => {
+		assert(url.indexOf('?') < 0, 'More parameters to data');
 
-	assert(url.indexOf('?') < 0, 'More parameters to data');
+		var requestRecord = {
+			/// #if DEBUG
+			url: url,
+			/// #endif
+			resolve,
+		}
 
-	var requestRecord = {
-		/// #if DEBUG
-		url: url,
-		/// #endif
-		callback: callback,
-	}
+		if(!params) {
+			params = {};
+		}
+		params.sessionToken = User.sessionToken;
 
-	if(!params) {
-		params = {};
-	}
-	params.sessionToken = User.sessionToken;
-
-	__requestsOrder.push(requestRecord);
+		__requestsOrder.push(requestRecord);
 
 
-	if(!callStack) {
-		callStack = new Error('GetData called from: ').stack;
-	}
+		if(!callStack) {
+			callStack = new Error('GetData called from: ').stack;
+		}
 
-	if(!noLoadingIndicator && LoadingIndicator.instance) {
-		LoadingIndicator.instance.show();
-	} else {
-		noLoadingIndicator = true;
-	}
+		if(!noLoadingIndicator && LoadingIndicator.instance) {
+			LoadingIndicator.instance.show();
+		} else {
+			noLoadingIndicator = true;
+		}
 
-	fetch(__corePath + url, {
-		method: 'POST',
-		headers: headersJSON,
-		body: JSON.stringify(params)
-	})
-		.then((res) => {
-			return res.json();
-		}).then((data) => {
-			handleAdditionalData(data, url);
-			if(isAuthNeed(data)) {
+		fetch(__corePath + url, {
+			method: 'POST',
+			headers: headersJSON,
+			body: JSON.stringify(params)
+		})
+			.then((res) => {
+				return res.json();
+			}).then((data) => {
+				handleAdditionalData(data, url);
+				if(isAuthNeed(data)) {
 
-				authHerePopup
+					authHerePopup
 
-			} else if(data.hasOwnProperty('result')) {
-				requestRecord.result = data.result;
-			} else {
+				} else if(data.hasOwnProperty('result')) {
+					requestRecord.result = data.result;
+				} else {
+					var roi = __requestsOrder.indexOf(requestRecord);
+					/// #if DEBUG
+					if(roi < 0) {
+						throw new Error('requests order is corrupted');
+					}
+					/// #endif
+					__requestsOrder.splice(roi, 1);
+
+					if(onError) {
+						onError(data, url, callStack);
+					} else {
+						handleError(data, url, callStack);
+					}
+				}
+			})
+			/// #if DEBUG
+			/*
+			/// #endif
+			.catch((error) => {
 				var roi = __requestsOrder.indexOf(requestRecord);
 				/// #if DEBUG
-				if(roi < 0) {
-					throw new Error('requests order is corrupted');
-				}
+					if(roi < 0) {
+						throw new Error('requests order is corrupted');
+					}
 				/// #endif
 				__requestsOrder.splice(roi, 1);
-
-				if(onError) {
-					onError(data, url, callStack);
-				} else {
-					handleError(data, url, callStack);
-				}
-			}
-		})
-		/// #if DEBUG
-		/*
-		/// #endif
-		.catch((error) => {
-			var roi = __requestsOrder.indexOf(requestRecord);
-			/// #if DEBUG
-				if(roi < 0) {
-					throw new Error('requests order is corrupted');
-				}
-			/// #endif
-			__requestsOrder.splice(roi, 1);
-	
-			if (onError) {
-				onError(error, url, callStack);
-			} else {
+		
 				handleError(error, url, callStack);
-			}
-			myAlert(L('CHECK_CONNECTION'), false, true);
-		})
-		//*/
-		.finally(() => {
-			while(__requestsOrder.length > 0 && __requestsOrder[0].hasOwnProperty('result')) {
-				var rr = __requestsOrder.shift();
-				rr.callback(rr.result);
-			}
-			if(!noLoadingIndicator) {
-				LoadingIndicator.instance.hide();
-			}
-		})
+				
+				myAlert(L('CHECK_CONNECTION'), false, true);
+			})
+			//*/
+			.finally(() => {
+				while(__requestsOrder.length > 0 && __requestsOrder[0].hasOwnProperty('result')) {
+					var rr = __requestsOrder.shift();
+					rr.resolve(rr.result);
+				}
+				if(!noLoadingIndicator) {
+					LoadingIndicator.instance.hide();
+				}
+			})
+	});
 }
 
-function publishRecord(nodeId, recId, callback) {
-	submitRecord(nodeId, {status: 1}, recId, callback);
+async function publishRecord(nodeId, recId) {
+	return submitRecord(nodeId, {status: 1}, recId);
 }
-function draftRecord(nodeId, recId, callback) {
-	submitRecord(nodeId, {status: 2}, recId, callback);
+
+async function draftRecord(nodeId, recId) {
+	return submitRecord(nodeId, {status: 2}, recId);
 }
 
 function isAuthNeed(data) {
@@ -818,7 +815,7 @@ function serializeForm(form) {
 	return formData;
 }
 
-function submitData(url, dataToSend, callback, noProcessData, onError) {
+function submitData(url, dataToSend, noProcessData) {
 	LoadingIndicator.instance.show();
 
 	if(!noProcessData) {
@@ -834,7 +831,7 @@ function submitData(url, dataToSend, callback, noProcessData, onError) {
 	if(!noProcessData) {
 		options.headers = headersJSON;
 	}
-	fetch(__corePath + url, options)
+	return fetch(__corePath + url, options)
 		.then((res) => {
 			return res.json();
 		})
@@ -844,7 +841,7 @@ function submitData(url, dataToSend, callback, noProcessData, onError) {
 			if(isAuthNeed(data)) {
 				authHerePopup
 			} else if(data.hasOwnProperty('result')) {
-				callback(data.result);
+				return data.result;
 			} else {
 				handleError(data, url, JSON.stringify(dataToSend) + ';\n' + callStack);
 			}
@@ -867,26 +864,20 @@ function submitData(url, dataToSend, callback, noProcessData, onError) {
 }
 
 
-function deleteRecord(name, nodeId, recId, callback, noPromt, onYes) {
+async function deleteRecord(name, nodeId, recId, noPromt, onYes) {
 	if(noPromt) {
 		if(onYes) {
 			onYes();
 		} else {
-			submitData('api/delete', {nodeId, recId}, () => {
-				dataDidModifed();
-				callback();
-			});
+			await submitData('api/delete', {nodeId, recId});
+			dataDidModifed();
 		}
 	} else {
-
-		getNode(nodeId, (node) => {
-
-			myPromt(L('SURE_DELETE', (node.creationName || node.singleName)) + ' "' + name + '"?', () => { }, L('CANCEL'), () => {
-				deleteRecord(null, nodeId, recId, callback, true, onYes);
-			}, L('DELETE'), 'caret-left', 'times', true);
-		});
-
-
+		let node = await getNode(nodeId);
+		if(!await myPromt(L('SURE_DELETE', (node.creationName || node.singleName)) + ' "' + name + '"?', L('CANCEL'),
+			L('DELETE'), 'caret-left', 'times', true)) {
+			return deleteRecord(null, nodeId, recId, true, onYes);
+		}
 	}
 }
 
@@ -894,7 +885,7 @@ function createRecord(nodeId, parameters) {
 	if(!parameters) {
 		parameters = {};
 	}
-	getNode(nodeId, (node) => {
+	getNode(nodeId).then((node) => {
 		var emptyData = {};
 		if(node.draftable && (node.prevs & PREVS_PUBLISH)) { //access to publish records
 			emptyData.isP = 1;
@@ -957,7 +948,7 @@ function isLitePage() {
 	return window.location.href.indexOf('?liteUI') >= 0;
 }
 
-function scrollToVisible(elem) {
+function scrollToVisible(elem, doNotShake = false) {
 	if(elem) {
 		var $elem = $(ReactDOM.findDOMNode(elem));
 		if(!$elem.is(":visible")) {
@@ -972,11 +963,11 @@ function scrollToVisible(elem) {
 		var elemBottom = elemTop + $elem.height() + 40;
 
 		if(elemTop < docViewTop) {
-			$('html,body').animate({scrollTop: elemTop}, 300, undefined, () => {shakeDomElement($elem)});
+			$('html,body').animate({scrollTop: elemTop}, 300, undefined, () => {!doNotShake && shakeDomElement($elem);});
 		} else if(elemBottom > docViewBottom) {
-			$('html,body').animate({scrollTop: Math.min(elemBottom - $window.height(), elemTop)}, 300, undefined, () => {shakeDomElement($elem)});
+			$('html,body').animate({scrollTop: Math.min(elemBottom - $window.height(), elemTop)}, 300, undefined, () => {!doNotShake && shakeDomElement($elem)});
 		} else {
-			shakeDomElement($elem);
+			!doNotShake && shakeDomElement($elem);
 		}
 	}
 }
@@ -1092,39 +1083,28 @@ function popup(url, W = 900, reloadParentIfSomethingUpdated) { //new window
 
 let loadedScripts;
 
-function loadJS(name, callback) {
+async function loadJS(name) {
 	if(!loadedScripts) {
 		loadedScripts = {};
 	}
 	if(loadedScripts[name] === true) {
-		if(callback) {
-			callback();
-		}
 		return;
 	}
 	if(!loadedScripts[name]) {
-		loadedScripts[name] = [];
-	} else {
-		if(callback) {
-			loadedScripts[name].push(callback);
-		}
-		return;
+		loadedScripts[name] = new Promise((resolve) => {
+			LoadingIndicator.instance.show();
+			var script = document.createElement('script');
+			script.onload = () => {
+				LoadingIndicator.instance.hide();
+				loadedScripts[name] = true;
+				resolve();
+			}
+			script.src = name;
+			script.type = "module";
+			document.head.appendChild(script);
+		});
 	}
-
-	LoadingIndicator.instance.show();
-	var script = document.createElement('script');
-	script.onload = () => {
-		LoadingIndicator.instance.hide();
-		loadedScripts[name].some((f) => {f()});
-
-		if(callback) {
-			callback();
-		}
-		loadedScripts[name] = true;
-	}
-	script.src = name;
-	script.type = "module";
-	document.head.appendChild(script);
+	return loadedScripts[name];
 }
 
 function strip_tags(input) {
@@ -1179,7 +1159,7 @@ function submitErrorReport(name, stack) {
 		submitRecord(81, {
 			name: name + ' (' + window.location.href + ')',
 			stack: stack.substring(0, 3999)
-		}, undefined, () => { });
+		});
 	}
 
 }
@@ -1257,5 +1237,7 @@ export {
 	readableTimeFormat,
 	readableDateFormat,
 	clearForm,
-	refreshForm
+	refreshForm,
+	showForm,
+	debugError
 }

@@ -75,7 +75,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 		if(!this.props.fieldDisabled || this.state.expanded) {
 
 			if(this.state.expanded) {
-				scrollToVisible(this);
+				scrollToVisible(this, true);
 			}
 
 			this.setState({
@@ -136,15 +136,15 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 		}
 		if(typeof itemIdToEdit !== 'undefined') {
 			this.isEnterCreateThroughList = this.state.expanded;
-			getNodeData(this.props.field.nodeRef, itemIdToEdit, (data) => {
-				getNode(this.props.field.nodeRef, (node) => {
+			getNodeData(this.props.field.nodeRef, itemIdToEdit, undefined, true).then((data) => {
+				getNode(this.props.field.nodeRef).then((node) => {
 					this.saveNodeDataAndFilters(node);
 					this.setState({
 						dataToEdit: data,
 						itemIdToEdit: undefined
 					});
 				});
-			}, undefined, true);
+			});
 		} else {
 			this.setState({
 				dataToEdit: {}
@@ -239,7 +239,9 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			if(list) {
 				list = ReactDOM.div({
 					style: dropListStyle,
-					ref: scrollToVisible
+					ref: (ref) => {
+						scrollToVisible(ref, true);
+					}
 				},
 					list
 				);

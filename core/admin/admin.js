@@ -5,6 +5,7 @@ const {getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc} = 
 const {mysqlExec} = require("../mysql-connection");
 const path = require('path');
 const fs = require('fs');
+const {throwError} = require("../utils.js");
 
 
 async function nodePrevs(reqData, userSession) {
@@ -29,7 +30,7 @@ async function clearCache(userSession) {
 
 const shouldBeAdmin = (userSession = ADMIN_USER_SESSION) => {
 	if(!isAdmin(userSession)) {
-		throw new Error('Access denied');
+		throwError('Access denied');
 	}
 }
 
@@ -72,7 +73,7 @@ function processSource(fileName, startMarker, endMarker, newSource, itemId, type
 	const c1 = substrCount(text, startMarker);
 	const c2 = substrCount(text, endMarker);
 	if((c1 !== c2) || (c1 > 1)) {
-		throw new Error("Begin or end marker for handler is corrupted or duplicated. Begin entries (" + startMarker + "): " + c1 + " End entries (" + endMarker + "): " + c2);
+		throwError("Begin or end marker for handler is corrupted or duplicated. Begin entries (" + startMarker + "): " + c1 + " End entries (" + endMarker + "): " + c2);
 	}
 
 	let start = text.indexOf(startMarker);
@@ -102,7 +103,7 @@ function processSource(fileName, startMarker, endMarker, newSource, itemId, type
 
 			start = text.indexOf("//insertNewhandlersHere_adsqw09");
 			if(start < 0) {
-				throw new Error('new handlers marker is corrupted.');
+				throwError('new handlers marker is corrupted.');
 			}
 			let functionStart;
 			if(type === 'field') {

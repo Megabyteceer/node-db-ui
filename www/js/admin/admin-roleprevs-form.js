@@ -116,32 +116,32 @@ export default class AdminRoleprevsForm extends BaseForm {
 		this.onShow();
 	}
 
-	onShow() {
-		getNode(this.props.recId, (node) => {
-			getData('admin/nodePrevs', {
-				nodeId: this.props.recId
-			}, (data) => {
-				var lines = data.prevs.map((i) => {
-					if(!i.prevs) {
-						i.prevs = 0;
-					}
-				});
+	async onShow() {
+		let node = await getNode(this.props.recId);
 
-				this.initData = Object.assign({}, data);
-				this.setState({
-					node,
-					data
-				});
-			});
+		let data = getData('admin/nodePrevs', {
+			nodeId: this.props.recId
+		});
+		debugger;
+		var lines = data.prevs.map((i) => {
+			if(!i.prevs) {
+				i.prevs = 0;
+			}
+		});
+
+		this.initData = Object.assign({}, data);
+		this.setState({
+			node,
+			data
 		});
 	}
 
-	saveClick() {
+	async saveClick() {
 		if(JSON.stringify(this.initData) !== JSON.stringify(this.state.data)) {
 			var submit = (toChild) => {
 				this.state.data.nodeId = this.props.recId;
 				this.state.data.toChild = this.props.toChild;
-				submitData('core/admin/nodePrevs', this.state.data, () => {
+				submitData('core/admin/nodePrevs', this.state.data).then(() => {
 					this.cancelClick();
 				});
 			};
@@ -149,13 +149,8 @@ export default class AdminRoleprevsForm extends BaseForm {
 			if(this.state.data.isDoc) {
 				submit();
 			} else {
-				myPromt(L('APPLY_CHILD'), () => {
-					submit();
-				}, L('TO_THIS'), () => {
-					submit(true);
-				}, L('TO_ALL'), 'check', 'check');
+				submit(!await myPromt(L('APPLY_CHILD'), L('TO_THIS'), L('TO_ALL'), 'check', 'check'));
 			}
-
 		} else {
 			this.cancelClick();
 		}

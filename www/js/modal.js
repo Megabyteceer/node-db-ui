@@ -1,4 +1,4 @@
-import {sp} from "./utils.js";
+import {debugError, sp} from "./utils.js";
 
 var style = {
 	marginTop: '90px',
@@ -26,13 +26,10 @@ var modalStack = [];
 var idCounter = 0;
 
 export default class Modal extends React.Component {
-
 	constructor(props) {
 		super(props);
 		this.show = this.show.bind(this);
 		this.hide = this.hide.bind(this);
-
-
 	}
 
 	componentDidMount() {
@@ -96,3 +93,6 @@ export default class Modal extends React.Component {
 		}
 	}
 }
+
+/* @type = {Modal}*/// #if DEBUG
+Modal.instance = null;

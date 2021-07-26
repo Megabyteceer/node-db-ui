@@ -11,8 +11,11 @@
 			"skipFiles": [
 				"<node_internals>/**"
 			],
-			"runtimeArgs": [
-				"--trace-warnings"
+			"args": [
+				"--abort-on-uncaught-exception=true",
+				"--report-uncaught-exception=true",
+				"--trace-uncaught=true",
+				"--unhandled-rejections=throw"
 			],
 			"program": "${workspaceFolder}\\index.js"
 		}

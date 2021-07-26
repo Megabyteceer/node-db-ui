@@ -11,17 +11,6 @@ export default class NodeAdmin extends React.Component {
 		super(props);
 
 		if(this.props.form) {
-			if(!this.props.form.props.node) {
-				var waitingCallback;
-				getNode(this.props.form.props.nodeId, (node) => {
-					this.node = node;
-					if(waitingCallback) {
-						this.forceUpdate();
-					}
-				});
-				waitingCallback = true;
-				this.state = {};
-			}
 			this.state = {
 				show: this.props.form.props.node && (showedNodeId === this.props.form.props.node.id)
 			};
@@ -34,6 +23,15 @@ export default class NodeAdmin extends React.Component {
 		this.hide = this.hide.bind(this);
 		this.toggleLock = this.toggleLock.bind(this);
 		this.toggleAllFields = this.toggleAllFields.bind(this);
+	}
+
+	componentDidMount() {
+		if(this.props.form && !this.props.form.props.node) {
+			getNode(this.props.form.props.nodeId).then((node) => {
+				this.node = node;
+				this.forceUpdate();
+			});
+		}
 	}
 
 	componentWillUnmount() {
@@ -74,8 +72,6 @@ export default class NodeAdmin extends React.Component {
 	}
 
 	render() {
-
-
 		var node;
 		var form;
 		var item;
@@ -89,7 +85,7 @@ export default class NodeAdmin extends React.Component {
 			item = this.props.menuItem; //left-bar-item
 		}
 
-		var nodeId = (node.id || item.id);
+		var nodeId = node && (node.id || item.id);
 
 		var borderOnSave;
 		var borderOnLoad;
@@ -275,15 +271,14 @@ export default class NodeAdmin extends React.Component {
 							color: '#fcc'
 						},
 						onClick: () => {
-							getNodeData(4, undefined, (data) => {
-								var closestNode;
+							getNodeData(4, undefined, {
+								_nodesID: item.parent
+							}).then((data) => {
 								for(var k in data.items) {
 									if(data.items[k].id === item.id) {
 										admin.exchangeNodes(data.items[parseInt(k)], data.items[parseInt(k) + 1]);
 									}
 								}
-							}, {
-								_nodesID: item.parent
 							});
 						},
 						title: "Move node down"
@@ -297,15 +292,14 @@ export default class NodeAdmin extends React.Component {
 							color: '#fcc'
 						},
 						onClick: () => {
-							getNodeData(4, undefined, (data) => {
-								var closestNode;
+							getNodeData(4, undefined, {
+								_nodesID: item.parent
+							}).then((data) => {
 								for(var k in data.items) {
 									if(data.items[k].id === item.id) {
 										admin.exchangeNodes(data.items[parseInt(k)], data.items[parseInt(k) - 1]);
 									}
 								}
-							}, {
-								_nodesID: item.parent
 							});
 						},
 						title: "Move node up"
@@ -449,7 +443,7 @@ export default class NodeAdmin extends React.Component {
 }
 
 function createNodeForMenuItem(item) {
-	getNodeData(4, item.isDoc ? item.parent : item.id, (data) => {
+	getNodeData(4, item.isDoc ? item.parent : item.id).then((data) => {
 		admin.popup(loactionToHash(4, 'new', {
 			prior: data.prior,
 			_nodesID: {

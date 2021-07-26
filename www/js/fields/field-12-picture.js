@@ -6,20 +6,20 @@ import Modal from "../modal.js";
 
 registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
 
-	setValue(val) {
-
+	setValue(value) {
+		this.setState({value});
 	}
 
 	isEmpty() {
-		return !this.cropperBody.references.fileInput.value;
+		return !this.cropperBody.references.fileInput.value && !this.state.value;
 	}
 
 	focusOverride() {
 		this.cropperBody.references.selectButton.focus();
 	}
 
-	beforeSave(callback) {
-		this.cropperBody.save(callback);
+	async beforeSave() {
+		return this.cropperBody.save();
 	}
 
 	render() {
@@ -98,17 +98,16 @@ class CropperFieldBody extends React.Component {
 			cropResult: null,
 			src: ''
 		});
+		this.props.parent.setValue('');
 		this.references.fileInput.value = '';
 	}
 
-	save(callback) {
+	async save() {
 		if(this.state.cropResult) {
 			let form = ReactDOM.findDOMNode(this.references.form);
-			submitData('api/uploadImage', serializeForm(form), callback, true);
+			return submitData('api/uploadImage', serializeForm(form), true);
 		} else if(this.state.cleared) {
-			callback('0');
-		} else {
-			callback(undefined);
+			return '';
 		}
 	}
 

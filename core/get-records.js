@@ -1,6 +1,7 @@
 "use strict";
 const {getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION} = require('./desc-node.js');
 const {mysqlExec} = require("./mysql-connection");
+const {throwError} = require("./utils.js");
 
 const isASCII = (str) => {
 	return /^[\x00-\x7F]*$/.test(str);
@@ -30,11 +31,11 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 	let node = getNodeDesc(nodeId, userSession);
 
 	if(!node.isDoc) {
-		throw new Error("nodeId " + nodeId + " is not a document.");
+		throwError("nodeId " + nodeId + " is not a document.");
 	}
 
 	if(node.staticLink) {
-		throw new Error("nodeId " + nodeId + " is a static link.");
+		throwError("nodeId " + nodeId + " is a static link.");
 	}
 
 	let singleSelectionById = recId && (typeof (recId) === 'number');
@@ -128,7 +129,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 				if(!f.forSearch) {
 					sortFieldName = undefined;
 					/// #if DEBUG
-					throw new Error("Tried to sort by unindexed field: " + fieldName);
+					throwError("Tried to sort by unindexed field: " + fieldName);
 					/// #endif
 				}
 			}
@@ -154,7 +155,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 						wheres.push(" AND(`", tableName, "`.`", fieldName, "`=", fltVal, ')');
 					}
 				} else {
-					throw new Error("Attempt to filter records by unindexed field " + fieldName);
+					throwError("Attempt to filter records by unindexed field " + fieldName);
 				}
 			}
 		}
@@ -189,11 +190,9 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 		if(filter) {
 			let fw = filter['filter'];
 			if(fw) {
-
-
 				if(fw.indexOf('@') >= 0) {
-					fw = fs.replaceAll('@userid', userSession.id);
-					fw = fs.replaceAll('@orgid', userSession.orgId);
+					fw = fw.replaceAll('@userid', userSession.id);
+					fw = fw.replaceAll('@orgid', userSession.orgId);
 					if(fw.indexOf('@') >= 0) {
 						for(let k in filterFields) {
 							fw.replaceAll('@' + k, filterFields[k]);
@@ -263,7 +262,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 				wheresBegin.push(" AND ((", tableName, "._usersID=", userSession.id, ")OR(", tableName, "._receiverID=", userSession.id, '))');
 			}
 		} else {
-			throw new Error('Access denied 3.');
+			throwError('Access denied 3.');
 		}
 	} else {
 		wheresBegin.push('1');
@@ -295,15 +294,15 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 				}
 			} else {
 				if(viewMask & 1) {
-					throw new Error('Access to view editabl fields denied.');
+					throwError('Access to view editabl fields denied.');
 				}
 			}
 
 			for(let f of node.fields) {
 				if(!f.nostore && (f.show & viewMask)) {
 					const fieldType = f.fieldType;
+					const fieldName = f.fieldName;
 					if(fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) { //n2m,12n
-						const fieldName = f.fieldName;
 						if(pag[fieldName]) {
 							let a = pag[fieldName].split('␞');
 							let val = [];
@@ -321,7 +320,6 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 							pag[fieldName] = val;
 						}
 					} else if(fieldType === FIELD_7_Nto1) { //n21
-						const fieldName = f.fieldName;
 						if(pag[fieldName]) {
 							let a = pag[fieldName].split('␞');
 							if(f.icon) {
@@ -347,7 +345,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 								your: pag.rates_y
 							};
 						} else {
-							pag[f.fieldName] = EMPTY_RATING;
+							pag[fieldName] = EMPTY_RATING;
 						}
 						delete pag.rates_1;
 						delete pag.rates_2;
@@ -372,9 +370,9 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 			return items[0];
 		} else {
 			/// #if DEBUG
-			throw new Error("Record not found. nodeId:" + nodeId + ", viewMask: " + viewMask + ", recId: " + recId);
+			throwError("Record not found. nodeId:" + nodeId + ", viewMask: " + viewMask + ", recId: " + recId);
 			/// #endif
-			throw new Error('Record not found.');
+			throwError('Record not found.');
 		}
 	}
 }
@@ -384,7 +382,7 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 
 	const recordData = await getRecords(nodeId, 4, recId, userSession);
 	if(!recordData.isD) {
-		throw new Error('Deletion access is denied');
+		throwError('Deletion access is denied');
 	}
 
 	await getNodeEventHandler(nodeId, 'beforeDelete', recordData, userSession);

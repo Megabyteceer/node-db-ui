@@ -5,6 +5,8 @@ const crypto = require('crypto');
 const {shouldBeAuthorized} = require("../www/both-side-utils");
 const {getLangs, GUEST_USER_SESSION} = require("./desc-node");
 const path = require("path");
+const {throwError} = require("./utils.js");
+const {L} = require("./locale.js");
 
 const sessions = new Map();
 const sessionsByUserId = new Map();
@@ -55,7 +57,7 @@ async function startSession(sessionToken) {
 		return Promise.resolve(GUEST_USER_SESSION);
 	}
 	if(!sessions.has(sessionToken)) {
-		throw new Error('session expired')
+		throwError('session expired')
 	}
 	const userSession = sessions.get(sessionToken);
 	if(!userSession.hasOwnProperty('_isStarted') && !maintainMode) {
@@ -109,12 +111,12 @@ async function registerUser(reqData) {
 	const name = r_name ? reqData.name : '';
 
 	if(password !== password_r) {
-		throw new Error('PASS_NOT_SAME');
+		throwError('PASS_NOT_SAME');
 	} else {
 
 		let pgs = await mysqlExec("SELECT id FROM _users WHERE _users.status=1 AND email='" + login + "' LIMIT 1");
 		if(pgs.length > 0) {
-			throw new Error('EMAIL_ALREADY');
+			throwError('EMAIL_ALREADY');
 		} else {
 			let actKey = crypto.randomBytes(24).toString('base64');
 			let href = getServerHref() + '?activate_user&key=' + actKey;
@@ -138,7 +140,7 @@ async function activateUser(key) {
 			return authorizeUserByID(userID);
 		}
 	}
-	throw new Error('REG_EXPIRED');
+	throwError('REG_EXPIRED');
 }
 
 async function resetPassword(key) {
@@ -151,7 +153,7 @@ async function resetPassword(key) {
 			return authorizeUserByID(userID);
 		}
 	}
-	throw new Error('RECOVERY_EXPIRED');
+	throwError('RECOVERY_EXPIRED');
 }
 
 function getPasswordHash(password, salt) {
@@ -177,7 +179,7 @@ async function login(username, password) {
 		let blocked = user.blocked;
 
 		if(blocked > 0) {
-			throw new Error('USER_BLOCKED', blocked);
+			throwError(L('USER_BLOCKED', blocked));
 		} else {
 
 			let mistakes = user.mistakes;
@@ -190,13 +192,13 @@ async function login(username, password) {
 				} else {
 					await mysqlExec("UPDATE _users SET mistakes=(mistakes-1) WHERE id='" + userID + "'");
 				}
-				throw new Error('WRONG_PASS');
+				throwError('WRONG_PASS');
 			}
 
 			return authorizeUserByID(userID);
 		}
 	}
-	throw new Error('WRONG_PASS');
+	throwError('WRONG_PASS');
 }
 
 async function authorizeUserByID(userID, isItServerSideRole, sessionToken) {
@@ -209,14 +211,14 @@ async function authorizeUserByID(userID, isItServerSideRole, sessionToken) {
 	let pag = await mysqlExec(query);
 	pag = pag[0];
 	if(!pag) {
-		throw new Error("user activation error " + userID);
+		throwError("user activation error " + userID);
 	}
 
 	let organID = pag.orgID;
 
 	// fix user's org if undefined
 	if(organID === 0) {
-		await mysqlExec("INSERT INTO `_organ` (`name`, `status`, `_usersID`) VALUES ('" + pag.company + "', '1', " + userID + ")");
+		const orgId = await mysqlExec("INSERT INTO `_organ` (`name`, `status`, `_usersID`) VALUES ('" + pag.company + "', '1', " + userID + ")");
 		await mysqlExec("UPDATE _users SET _organID=" + orgId + ", _usersID = " + userID + " WHERE id=" + userID);
 		await mysqlExec("UPDATE _organ SET _organID=" + orgId + " WHERE id=" + orgId);
 		return authorizeUserByID(userID);
@@ -297,7 +299,7 @@ async function setCurrentOrg(organID, userSession, updateInBd) {
 		userSession.org = userSession.orgs[organID];
 		if(updateInBd) {
 			shouldBeAuthorized(userSession);
-			await mySQLexec("UPDATE _users SET defaultOrg=organID WHERE id=" + userSession.id);
+			await mysqlExec("UPDATE _users SET defaultOrg=organID WHERE id=" + userSession.id);
 		}
 		return 1;
 	}
@@ -346,7 +348,7 @@ async function mail_utf8(email, subject, text) {
 
 function mustBeUnset(obj, fieldName) {
 	if(obj.hasOwnProperty(fieldName)) {
-		throw new Error('Forbidden field "' + fieldName + '" detected.');
+		throwError('Forbidden field "' + fieldName + '" detected.');
 	}
 }
 

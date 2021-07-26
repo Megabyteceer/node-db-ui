@@ -5,6 +5,8 @@ const {mustBeUnset} = require("../core/auth.js");
 const {getLangs, reloadMetadataSchedule, getNodeDesc} = require("../core/desc-node.js");
 const {getRecords} = require("../core/get-records.js");
 const {submitRecord} = require("../core/submit.js");
+const {throwError} = require("../core/utils.js");
+const {L} = require("../core/locale.js");
 
 module.exports = {
 	createFieldInTable,
@@ -64,7 +66,7 @@ module.exports = {
 		shouldBeAdmin(userSession);
 
 		if(currentData.id === 9 && newData.hasOwnProperty('maxlen')) {
-			throw new Error(L('SIZE_FLD_BLOCKED'));
+			throwError(L('SIZE_FLD_BLOCKED'));
 		}
 
 		mustBeUnset(newData, 'fieldName');
@@ -132,7 +134,7 @@ module.exports = {
 	},
 
 	beforeDelete: async function(data, userSession) {
-		throw new Error('_fields beforeCreate deletion event is not implemented');
+		throwError('_fields beforeCreate deletion event is not implemented');
 	}
 }
 
@@ -167,7 +169,7 @@ function getFieldTypeSQL(data) {
 		case FIELD_12_PICTURE:
 			return "VARCHAR(32) NOT NULL DEFAULT ''";
 		case FIELD_16_RATING:
-			throw new Error(L('RATING_FLD_NOEDIT'));
+			throwError(L('RATING_FLD_NOEDIT'));
 		case FIELD_19_RICHEDITOR:
 			return "MEDIUMTEXT NOT NULL DEFAULT ''";
 		case FIELD_21_FILE:

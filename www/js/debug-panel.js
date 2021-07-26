@@ -4,7 +4,7 @@ import {getData, isLitePage, L, myAlert, myPromt, renderIcon, sp, strip_tags} fr
 
 var adminPanelStyle = {
 	position: 'fixed',
-	top: '100px',
+	top: '130px',
 	right: 0,
 	background: '#a44',
 	border: '2px solid #fff',
@@ -95,38 +95,24 @@ export default class DebugPanel extends React.Component {
 		this.forceUpdate();
 	}
 
-	deployClick(ev) {
+	async deployClick(ev) {
 		sp(ev);
-		myPromt(L('DEPLOY_TO', ENV.DEPLOY_TO), () => {
-
-			getData('test_uyas87dq8qwdqw/test', undefined, (data) => {
+		if(await myPromt(L('DEPLOY_TO', ENV.DEPLOY_TO))) {
+			let testResult = await getData('test_uyas87dq8qwdqw/test');
+			if(testResult === 'ok') {
+				let deployData = await getData('/deploy/api/deploy', {commitmessage: 'no message'});
+				let data = await getData('test_uyas87dq8qwdqw/test', {remote: true});
 				if(data === 'ok') {
-
-					getData('/deploy/api/deploy', {commitmessage: 'no message'}, (deployData) => {
-						getData('test_uyas87dq8qwdqw/test', {remote: true}, (data) => {
-							if(data === 'ok') {
-
-								myAlert(ReactDOM.span(renderIcon('thumbs-up'), 'Changes aplied to ',
-									ReactDOM.a({href: ENV.DEPLOY_TO, target: '_blank', onClick: (ev) => {ev.stopPropagation();}},
-										ENV.DEPLOY_TO
-									),
-									ReactDOM.br(), JSON.stringify(deployData)), true);
-							}
-						});
-
-					});
-
-
-				} else {
-					myAlert(ReactDOM.div(null, ReactDOM.h2(null, L('TESTS_ERROR')), data));
+					myAlert(ReactDOM.span(renderIcon('thumbs-up'), 'Changes aplied to ',
+						ReactDOM.a({href: ENV.DEPLOY_TO, target: '_blank', onClick: (ev) => {ev.stopPropagation();}},
+							ENV.DEPLOY_TO
+						),
+						ReactDOM.br(), JSON.stringify(deployData)), true);
 				}
-			});
-
-
-
-
-		});
-
+			} else {
+				myAlert(ReactDOM.div(null, ReactDOM.h2(null, L('TESTS_ERROR')), data));
+			}
+		}
 	}
 
 	render() {
@@ -141,7 +127,7 @@ export default class DebugPanel extends React.Component {
 			cacheClearBtn = ReactDOM.a({
 				className: 'clickable admin-controll', title: L('CLEAR_CACHE'), onClick: (ev) => {
 					sp(ev);
-					getData('admin/cache_info', {clear: 1, json: 1}, () => {location.reload();});
+					getData('admin/cache_info', {clear: 1, json: 1}).then(() => {location.reload();});
 				}, style: {float: 'right'}
 			},
 				renderIcon('refresh')

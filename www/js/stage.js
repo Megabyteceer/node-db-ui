@@ -4,7 +4,7 @@ import constants from "./custom/consts.js";
 import FormFull from "./forms/form-full.js";
 import List from "./forms/list.js";
 import LeftBar from "./left-bar.js";
-import {consoleLog, isLitePage, myAlert, renderIcon} from "./utils.js";
+import {consoleLog, isLitePage, loadJS, myAlert, renderIcon} from "./utils.js";
 
 var defaultButtonStyle = {
 	background: '#ddd',
@@ -63,7 +63,9 @@ class Stage extends React.Component {
 		consoleLog('set form data');
 		if(typeof (node) !== 'undefined') {
 			this.state = null;
-			this.setState({node, data: data, recId: recId, filters: filters, editable: editable});
+			setTimeout(() => {
+				this.setState({node, data: data, recId: recId, filters: filters, editable: editable});
+			});
 		} else {
 			this.state = null;
 			this.forceUpdate()
@@ -80,19 +82,17 @@ class Stage extends React.Component {
 			if(name === 'tab') {
 				LeftBar.instance.refreshLeftBarActive();
 			}
+			return true;
 		}
 	}
 
 	loadCustomClass() {
-		loadJS('js/custom/' + this.state.customClass.toLowerCase() + '.js', () => {
+		loadJS('js/custom/' + this.state.customClass.toLowerCase() + '.js').then(() => {
 			this.forceUpdate();
 		});
 	}
 
 	render() {
-
-
-
 		var body;
 		if(this.state) {
 
