@@ -23,8 +23,8 @@ registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
 		this.fileFormBodyRef.selectButtonRef.focus();
 	}
 
-	beforeSave(callback) {
-		this.fileFormBodyRef.save(callback);
+	async beforeSave() {
+		return this.fileFormBodyRef.save();
 	}
 
 	render() {
@@ -58,11 +58,9 @@ export default class FileFormBody extends React.Component {
 		this.props.parent.props.wrapper.hideTooltip();
 	}
 
-	save(callback) {
+	save() {
 		if(this.state.file) {
-			submitData('api/uploadFile', serializeForm(ReactDOM.findDOMNode(this.formRef)), callback, true);
-		} else {
-			callback(undefined);
+			return submitData('api/uploadFile', serializeForm(ReactDOM.findDOMNode(this.formRef)), true);
 		}
 	}
 

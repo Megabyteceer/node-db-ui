@@ -1,8 +1,3 @@
-
-getData
-postData move to promises
-replace callsCount
-
 Hide enum value parent field if it subform
 
 Add classes for all elements. Move styles to css.
