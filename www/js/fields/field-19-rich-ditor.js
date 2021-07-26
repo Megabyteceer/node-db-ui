@@ -44,9 +44,9 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 				} else {
 					s.postMessage({options: options, value: this.state.value}, '*');
 				}
-				if(this.inSaveCallback) {
-					this.inSaveCallback(data.value);
-					delete this.inSaveCallback;
+				if(this.onSaveCallback) {
+					this.onSaveCallback(data.value);
+					delete this.onSaveCallback;
 				}
 			};
 		}
@@ -60,14 +60,14 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 		}
 	}
 
-	getMessageIfInvalid(callback) {
+	async getMessageIfInvalid() {
 		if(this.state.value) {
 			var val = this.state.value;
 			if(val.length > 4000000) {
-				callback(L('RICH_ED_SIZE', this.props.field.name));
+				return L('RICH_ED_SIZE', this.props.field.name);
 			}
 		}
-		callback(false);
+		return (false);
 	}
 
 	setValue(val, sendToEditor) {
@@ -83,10 +83,12 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 		}
 	}
 
-	beforeSave(callback) {
-		var s = this.getSummernote();
-		this.inSaveCallback = callback;
-		s.postMessage({onSave: true}, '*');
+	async beforeSave() {
+		return new Promise((resolve) => {
+			var s = this.getSummernote();
+			this.onSaveCallback = resolve;
+			s.postMessage({onSave: true}, '*');
+		});
 	}
 
 	render() {

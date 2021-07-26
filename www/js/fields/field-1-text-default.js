@@ -41,10 +41,6 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 		this.state.value = val;
 	}
 
-	getMessageIfInvalid(callback) {
-		callback(false);
-	}
-
 	render() {
 
 		var value = this.state.value;
