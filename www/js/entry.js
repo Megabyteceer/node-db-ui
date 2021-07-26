@@ -20,6 +20,8 @@ import "./fields/field-20-color.js";
 import "./fields/field-21-file.js";
 
 /// #if DEBUG
+import AdminRoleprevsForm from "./admin/admin-roleprevs-form.js";
+window.AdminRoleprevsForm = AdminRoleprevsForm;
 /*
 /// #endif
 window.onerror = (msg, url, line, col, error) => {
@@ -32,7 +34,7 @@ window.onerror = (msg, url, line, col, error) => {
 //*/
 
 
-for(let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'label', 'b', 'a', 'br', 'hr', 'svg', 'td', 'tr', 'tbody', 'thead', 'table', 'polyline', 'textarea', 'iframe', 'h4', 'h5']) {
+for(let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'label', 'b', 'a', 'br', 'hr', 'svg', 'td', 'tr', 'th', 'tbody', 'thead', 'table', 'polyline', 'textarea', 'iframe', 'h3', 'h4', 'h5']) {
 	ReactDOM[factoryType] = (...theArgs) => {
 		return React.createElement.call(this, factoryType, ...theArgs);
 	};

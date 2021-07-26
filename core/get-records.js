@@ -35,7 +35,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 	}
 
 	if(node.staticLink) {
-		throwError("nodeId " + nodeId + " is a static link.");
+		return null;
 	}
 
 	let singleSelectionById = recId && (typeof (recId) === 'number');

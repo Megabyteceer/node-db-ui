@@ -1,5 +1,5 @@
 import BaseForm from "../forms/form-mixins.js";
-import {defaultButtonStyle, successButtonStyle} from "../stage.js";
+import {defaultButtonStyle, FormLoaderCog, successButtonStyle} from "../stage.js";
 import {iAdmin} from "../user.js";
 import {getData, getNode, L, myPromt, renderIcon, submitData} from "../utils.js";
 import NodeAdmin from "./node-admin.js";
@@ -106,8 +106,12 @@ class PrevsEditor extends React.Component {
 
 export default class AdminRoleprevsForm extends BaseForm {
 
-	componentDidUpdate(props, state) {
-		super.componentDidUpdate(props, state);
+	constructor(props) {
+		super(props);
+		this.saveClick = this.saveClick.bind(this);
+	}
+
+	componentDidMount(props, state) {
 		this.onShow();
 	}
 
@@ -119,17 +123,17 @@ export default class AdminRoleprevsForm extends BaseForm {
 	async onShow() {
 		let node = await getNode(this.props.recId);
 
-		let data = getData('admin/nodePrevs', {
+		let data = await getData('admin/nodePrevs', {
 			nodeId: this.props.recId
 		});
-		debugger;
-		var lines = data.prevs.map((i) => {
+
+		for(let i of data.prevs) {
 			if(!i.prevs) {
 				i.prevs = 0;
 			}
-		});
+		}
 
-		this.initData = Object.assign({}, data);
+		this.initData = Object.assign({}, data.prevs);
 		this.setState({
 			node,
 			data
@@ -137,11 +141,11 @@ export default class AdminRoleprevsForm extends BaseForm {
 	}
 
 	async saveClick() {
-		if(JSON.stringify(this.initData) !== JSON.stringify(this.state.data)) {
+		if(JSON.stringify(this.initData) !== JSON.stringify(this.state.data.prevs)) {
 			var submit = (toChild) => {
 				this.state.data.nodeId = this.props.recId;
 				this.state.data.toChild = this.props.toChild;
-				submitData('core/admin/nodePrevs', this.state.data).then(() => {
+				submitData('admin/nodePrevs', this.state.data).then(() => {
 					this.cancelClick();
 				});
 			};
