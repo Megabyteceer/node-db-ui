@@ -101,7 +101,7 @@ export default class Search extends React.Component {
 			});
 			getData('/custom/api/search', {
 				s: this.inputRef.value
-			}, (data) => {
+			}).then((data) => {
 				this.setState({
 					queryInProgress: false,
 					data: data

@@ -175,7 +175,7 @@ export default class FieldAdmin extends React.Component {
 						},
 						onClick: () => {
 
-							getNodeData(6, field.id, (data) => {
+							getNodeData(6, field.id).then((data) => {
 								admin.popup(loactionToHash(6, 'new', {
 									prior: data.prior,
 									node_fields_linker: {

@@ -28,11 +28,11 @@ var rowStyleNum = {
 }
 
 
-const publishClick = (draft, node, data, refreshFunction) => {
+const publishClick = (draft, node, data) => {
 	if(draft) {
-		draftRecord(node.id, data.id, refreshFunction);
+		return draftRecord(node.id, data.id);
 	} else {
-		publishRecord(node.id, data.id, refreshFunction);
+		return publishRecord(node.id, data.id);
 	}
 }
 
@@ -65,13 +65,13 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 		if(data.hasOwnProperty('isP') && (!formItem || !formItem.props.disableDrafting)) {
 			if(data.status === 1) {
 				buttons.push(
-					ReactDOM.button({key: 1, style: {background: constants.PUBLISH_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data, refreshFunction)}},
+					ReactDOM.button({key: 1, style: {background: constants.PUBLISH_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data).then(refreshFunction)}},
 						renderIcon('eye')
 					)
 				)
 			} else {
 				buttons.push(
-					ReactDOM.button({key: 1, style: {background: constants.UNPUBLISH_COLOR}, className: 'clickable clickable-del toolbtn', title: L('PUBLISH'), onClick: () => {publishClick(false, node, data, refreshFunction)}},
+					ReactDOM.button({key: 1, style: {background: constants.UNPUBLISH_COLOR}, className: 'clickable clickable-del toolbtn', title: L('PUBLISH'), onClick: () => {publishClick(false, node, data).then(refreshFunction)}},
 						renderIcon('eye-slash')
 					)
 				)
@@ -110,14 +110,13 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 		if(data.hasOwnProperty('isD')) {
 			buttons.push(
 				ReactDOM.button({
-					key: 3, style: {background: constants.DELETE_COLOR}, className: 'clickable clickable-del toolbtn', title: L('DELETE') + itemName, onClick: () => {
-						deleteRecord(data.name, node.id, data.id, () => {
-							if(formItem && formItem.props.parentForm) {
-								formItem.props.parentForm.valueChoosed();
-							} else {
-								refreshFunction();
-							}
-						});
+					key: 3, style: {background: constants.DELETE_COLOR}, className: 'clickable clickable-del toolbtn', title: L('DELETE') + itemName, onClick: async () => {
+						await deleteRecord(data.name, node.id, data.id);
+						if(formItem && formItem.props.parentForm) {
+							formItem.props.parentForm.valueChoosed();
+						} else {
+							refreshFunction();
+						}
 					}
 				},
 					renderIcon('times')
