@@ -202,7 +202,7 @@ export default class eventProcessingMixins extends BaseForm {
 
 						if(this.isVisibleField(f)) {
 
-							items.push({icon: f.icon, subheader: (f.fieldName.indexOf('header_') === 0), name: f.name, field: f, form: this, id: false, isDoc: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName});
+							items.push({icon: f.icon, name: f.name, field: f, form: this, id: false, isDoc: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName});
 							isDefault = false;
 
 						}

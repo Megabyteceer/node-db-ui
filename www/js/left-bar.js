@@ -5,39 +5,6 @@ import {isLitePage, L, loactionToHash, renderIcon, setFormFilter, sp} from "./ut
 
 let collapsed;
 
-var style = {
-	width: '100%',
-	boxShadow: '5px 0px 6px -3px #aaa',
-	paddingTop: '10px',
-	minHeight: '600px',
-	verticalAlign: 'top',
-	overflowX: 'hidden'
-};
-
-var itemStyle = {
-	display: 'block',
-	color: 'inherit',
-	border: 0,
-	marginLeft: '7px',
-
-	fontSize: '90%',
-	fontWeight: 'bold',
-	borderBottom: '1px solid #ddd'
-};
-
-var groupStyle = {
-	display: 'block',
-	background: window.constants.BRAND_COLOR,
-	//textTransform: 'uppercase',
-	fontWeight: 'bold',
-	color: window.constants.BRAND_COLOR_SHINE,
-	border: 0,
-	padding: '5px 3px',
-	fontSize: '70%',
-	marginTop: '1px',
-	boxShadow: '0 3px 3px -1px rgba(102,30,10,0.3)'
-};
-
 function isMustBeExpanded(i) {
 	if(i.children) {
 		for(var k in i.children) {
@@ -92,22 +59,22 @@ function isStrictlySelected(item) {
 	}
 }
 
-
-var hasInactiveItems;
 class BarItem extends React.Component {
+
 	toggle() {
 		if(!this.state) {
 			this.setState({expanded: true});
 		} else {
 			this.setState({expanded: !this.state.expanded});
 		}
-
 	}
+
 	closeMenuIfNeed() {
 		if(LeftBar.collapsable && !collapsed) {
 			LeftBar.instance.toggleCollapse();
 		}
 	}
+
 	render() {
 		var item = this.props.item;
 
@@ -122,52 +89,35 @@ class BarItem extends React.Component {
 		}
 		/// #endif
 
-		var innerItemStyle = Object.assign({}, itemStyle);
+		if(!item.isDoc && (!item.children || (item.children.length === 0))
+			/// #if DEBUG
+			&& false// in debug build always show empty nodes
+			/// #endif
+		) {
+			return ReactDOM.div();
+		}
 
-		innerItemStyle.padding = Math.max(0, (13 - this.props.level * 3)) + 'px 0';
-
-		var itemsIcon = ReactDOM.div({style: {display: 'inline-block', textAlign: 'center', width: 40}},
+		var itemsIcon = ReactDOM.div({className: "left-bar-item-icon"},
 			renderIcon(item.icon + (item.isDoc ? ' brand-color' : 'noicon'))
 		)
 
+		let className = 'left-bar-item ' + (item.isDoc ? 'left-bar-doc' : 'left-bar-group');
+
 		if(this.props.active) {
+			className += ' left-bar-active-item unclickable';
+		}
 
-			return ReactDOM.div({
-				style: {
-					background: '#ebe5e8',
-					borderLeft: '5px solid ' + window.constants.BRAND_COLOR_DARK,
-					overflow: 'hidden',
-					width: collapsed ? 33 : undefined,
-				}, className: 'lb-item' + (item.tabId ? " lb-item-" + item.tabId : undefined)
-			},
-				/// #if DEBUG
-				adminControl,
-				/// #endif
-				ReactDOM.span({
-					style: innerItemStyle, className: 'unclickable'
-				},
-					itemsIcon,
-					collapsed ? undefined : item.name
-				)
-			)
-		} else {
+		if(item.tabId) {
+			className += ' left-bar-item-tab-' + item.tabId;
+		}
 
-			if(!item.isDoc && (!item.children || (item.children.length === 0))
-				/// #if DEBUG
-				&& false// in debug build always show empty nodes
-				/// #endif
-			) {
-				return ReactDOM.div();
-			}
+		var caret;
 
-			hasInactiveItems = true;
-
-			var caret;
-
-			var children;
+		var children;
+		if(!item.isDoc) {
 			if((this.state && this.state.expanded) || isMustBeExpanded(this.props.item)) {
 				caret = 'up';
-				children = ReactDOM.div({className: 'jump-in', style: {opacity: 0.85, fontSize: '85%'}},
+				children = ReactDOM.div({className: 'left-bar-children'},
 					renderItemsArray(item.children, this.props.level + 1, item)
 				)
 			} else if(!item.isDoc) {
@@ -175,55 +125,63 @@ class BarItem extends React.Component {
 			}
 
 			if(caret) {
-				caret = ReactDOM.div({style: {float: 'right', marginRight: '20px'}},
+				caret = ReactDOM.div({className: "left-bar-group-caret"},
 					renderIcon('caret-' + caret)
 				)
 			}
+		}
 
-			var itemBody;
-			if(item.subheader) {
-				itemBody = ReactDOM.h6({style: {margin: 10, color: '#999', fontSize: '80%'}}, adminControl, item.name);
-			} else {
-				const isMustBeExpandedVal = isMustBeExpanded(this.props.item);
-				itemBody = ReactDOM.div({onClick: this.closeMenuIfNeed, className: 'lb-item' + (item.tabId ? " lb-item-" + item.tabId : undefined), style: {overflow: 'hidden', width: collapsed ? 33 : undefined}},
-					adminControl,
-					ReactDOM.div({
-						style: (item.isDoc) ? innerItemStyle : groupStyle, className: isMustBeExpandedVal ? undefined : ('clickable' + (!item.isDoc ? ' clickable-top' : '')), onClick: isMustBeExpandedVal ? undefined : (event) => {
-							if(item.isDoc) {
-								if(item.id === false) {
-									setFormFilter('tab', item.tab);
-									sp(event);
-								}
-							} else {
-								this.toggle();
-								sp(event);
-							}
-
-						}
-					},
-						itemsIcon,
-						collapsed ? undefined : item.name,
-						collapsed ? undefined : caret
-					),
-					children
-				);
-			}
-
-			if(item.isDoc && (item.id !== false)) {
-
-				var href;
-
-				if(item.staticLink && item.staticLink !== 'reactClass') {
-					href = item.staticLink;
-				} else {
-					href = loactionToHash(item.id, item.recId, item.filters, item.editable);
+		const isMustBeExpandedVal = isMustBeExpanded(this.props.item);
+		if(!isMustBeExpandedVal) {
+			if(!this.props.active) {
+				className += ' clickable';
+				if(!item.isDoc) {
+					className += ' clickable-neg';
 				}
-
-				return ReactDOM.a({href: href},
-					itemBody
-				)
 			}
-			return itemBody;
+		} else {
+			className += ' unclickable left-bar-active-group';
+		}
+
+		const itemBody = ReactDOM.div({
+			onClick: () => {
+				if(!isMustBeExpandedVal) {
+					if(item.isDoc) {
+						if(item.id === false) {
+							setFormFilter('tab', item.tab);
+							return;
+						}
+					} else {
+						this.toggle();
+						return;
+					}
+					this.closeMenuIfNeed();
+				}
+			}, className
+		},
+			itemsIcon,
+			collapsed ? undefined : item.name,
+			collapsed ? undefined : caret
+		);
+
+
+		if(item.isDoc && (item.id !== false)) {
+			var href;
+			if(item.staticLink && item.staticLink !== 'reactClass') {
+				href = item.staticLink;
+			} else {
+				href = loactionToHash(item.id, item.recId, item.filters, item.editable);
+			}
+			return ReactDOM.a({href: href},
+				adminControl,
+				itemBody
+			)
+		} else {
+			return ReactDOM.div(null,
+				adminControl,
+				itemBody,
+				children
+			);
 		}
 	}
 }
@@ -232,7 +190,7 @@ function renderItemsArray(itemsArray, level, item) {
 	/// #if DEBUG
 	if((!itemsArray || itemsArray.length === 0) && (level > 0)) {
 		return ReactDOM.div({
-			className: 'clickable', style: {padding: '15px 20px'}, onClick: () => {
+			className: 'clickable left-bar-empty-section', onClick: () => {
 				createNodeForMenuItem(item);
 			}
 		}, L("EMPTY_SECTION"));
@@ -245,13 +203,10 @@ function renderItemsArray(itemsArray, level, item) {
 		var i = itemsArray[k];
 		if(typeof i === 'string') {
 			if(!collapsed) {
-				ret.push(ReactDOM.h5({key: ret.length, style: {fontWeight: 'bold', margin: '29px 0', marginLeft: '20px', color: window.constants.BRAND_COLOR_HEADER}}, i));
+				ret.push(ReactDOM.h5({key: ret.length, className: 'left-bar-tabs-header'}, i));
 			}
 		} else {
 			var itemActive = isCurrentlyShowedLeftbarItem(i);
-			if(!itemActive) {
-				hasInactiveItems = true;
-			}
 			ret.push(React.createElement(BarItem, {item: i, key: ret.length, level: level, active: itemActive}));
 		}
 	}
@@ -263,6 +218,7 @@ export default class LeftBar extends React.Component {
 		super(props);
 		this.state = {};
 		LeftBar.instance = this;
+		this.toggleCollapse = this.toggleCollapse.bind(this);
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
@@ -286,7 +242,6 @@ export default class LeftBar extends React.Component {
 		if(isLitePage()) {
 			return ReactDOM.td();
 		}
-		hasInactiveItems = false;
 
 		var lines;
 		var staticLines;
@@ -305,22 +260,15 @@ export default class LeftBar extends React.Component {
 		}
 
 		if(LeftBar.collapsable) {
-			staticLines.unshift(ReactDOM.div({key: 'toggle-collapsing', style: {paddingTop: 5, paddingBottom: 5}, onClick: this.toggleCollapse, className: 'clickable'}, renderIcon('bars')));
+			staticLines.unshift(ReactDOM.div({key: 'toggle-collapsing', className: "left-bar-collapse-button clickable", onClick: this.toggleCollapse}, renderIcon('bars')));
 		}
 
-		if(!hasInactiveItems) {
-			return ReactDOM.td({style: {width: LeftBar.collapsable ? 33 : 300}});
-		} else {
-
-			return ReactDOM.td({className: 'left-bar', style: {width: LeftBar.collapsable ? 33 : 300, minWidth: LeftBar.collapsable ? 33 : 300}},
-				ReactDOM.div({style: {position: 'absolute', zIndex: 1, background: '#fff', width: collapsed ? 33 : 300}},
-					ReactDOM.div({style: style},
-						staticLines,
-						lines
-					)
-				)
-			);
-		}
+		return ReactDOM.td({className: collapsed ? 'left-bar left-bar-collapsed' : 'left-bar '},
+			ReactDOM.div({className: "left-bar-body"},
+				staticLines,
+				lines
+			)
+		);
 	}
 }
 

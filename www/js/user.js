@@ -94,7 +94,7 @@ export default class User extends React.Component {
 
 			var multilangBtn;
 			if(ENV.ENABLE_MULTILANG) {
-				multilangBtn = ReactDOM.div({className: 'clickable clickable-top', style: mlbs, onClick: this.toggleMultilang},
+				multilangBtn = ReactDOM.div({className: 'clickable clickable-neg', style: mlbs, onClick: this.toggleMultilang},
 					renderIcon(iconName + 'square-o'), L('MULTILANG')
 				);
 			}
@@ -115,14 +115,14 @@ export default class User extends React.Component {
 
 			var btn1, btn2;
 			if(this.state.id === 2) {
-				btn2 = ReactDOM.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px'}, href: 'login', title: L('LOGIN'), className: 'clickable clickable-top'},
+				btn2 = ReactDOM.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px'}, href: 'login', title: L('LOGIN'), className: 'clickable clickable-neg'},
 					renderIcon('sign-in fa-2x')
 				)
 			} else {
-				btn1 = ReactDOM.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px', marginLeft: '20px', width: '50px'}, href: loactionToHash(5, this.state.id, undefined, true), title: L('USER_PROFILE'), className: 'clickable clickable-top'},
+				btn1 = ReactDOM.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px', marginLeft: '20px', width: '50px'}, href: loactionToHash(5, this.state.id, undefined, true), title: L('USER_PROFILE'), className: 'clickable clickable-neg'},
 					renderIcon('user fa-2x')
 				);
-				btn2 = ReactDOM.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px'}, href: 'login', title: L('LOGOUT'), className: 'clickable clickable-top'},
+				btn2 = ReactDOM.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px'}, href: 'login', title: L('LOGOUT'), className: 'clickable clickable-neg'},
 					renderIcon('sign-out fa-2x')
 				);
 			}

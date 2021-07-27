@@ -209,7 +209,7 @@ export default class Search extends React.Component {
 			ReactDOM.input(inputsProps),
 			ReactDOM.span({
 				style: clearBtnStyle,
-				className: 'clickable clickable-top',
+				className: 'clickable clickable-neg',
 				onClick: () => {
 					this.setState({
 						data: undefined

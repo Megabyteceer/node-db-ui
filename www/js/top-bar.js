@@ -25,7 +25,7 @@ export default class TopBar extends React.Component {
 
 		return ReactDOM.div({className: 'clearfix', style: style},
 			ReactDOM.a({
-				className: 'clickable clickable-top',
+				className: 'clickable clickable-neg',
 				href: '/',
 				style: {padding: '8px 10px', float: 'left', display: 'block'}
 			},
