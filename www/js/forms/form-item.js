@@ -1,4 +1,3 @@
-import constants from "../custom/consts.js";
 import FieldWrap from "../fields/field-wrap.js";
 import {deleteRecord, draftRecord, L, loactionToHash, publishRecord, renderIcon, sp} from "../utils.js";
 import BaseForm from "./form-mixins.js";
@@ -42,7 +41,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 
 			buttons = [
 				ReactDOM.button({
-					key: 2, style: {background: constants.EDIT_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('EDIT'), onMouseDown: (e) => {
+					key: 2, style: {background: window.constants.EDIT_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('EDIT'), onMouseDown: (e) => {
 						sp(e);
 						formItem.props.parentForm.toggleCreateDialogue(data.id)
 					}
@@ -65,13 +64,13 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 		if(data.hasOwnProperty('isP') && (!formItem || !formItem.props.disableDrafting)) {
 			if(data.status === 1) {
 				buttons.push(
-					ReactDOM.button({key: 1, style: {background: constants.PUBLISH_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data).then(refreshFunction)}},
+					ReactDOM.button({key: 1, style: {background: window.constants.PUBLISH_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data).then(refreshFunction)}},
 						renderIcon('eye')
 					)
 				)
 			} else {
 				buttons.push(
-					ReactDOM.button({key: 1, style: {background: constants.UNPUBLISH_COLOR}, className: 'clickable clickable-del toolbtn', title: L('PUBLISH'), onClick: () => {publishClick(false, node, data).then(refreshFunction)}},
+					ReactDOM.button({key: 1, style: {background: window.constants.UNPUBLISH_COLOR}, className: 'clickable clickable-del toolbtn', title: L('PUBLISH'), onClick: () => {publishClick(false, node, data).then(refreshFunction)}},
 						renderIcon('eye-slash')
 					)
 				)
@@ -89,7 +88,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 								}
 							}
 						},
-							ReactDOM.button({style: {background: constants.EDIT_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('EDIT', itemName)},
+							ReactDOM.button({style: {background: window.constants.EDIT_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('EDIT', itemName)},
 								renderIcon('pencil')
 							)
 						)
@@ -110,7 +109,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 		if(data.hasOwnProperty('isD')) {
 			buttons.push(
 				ReactDOM.button({
-					key: 3, style: {background: constants.DELETE_COLOR}, className: 'clickable clickable-del toolbtn', title: L('DELETE') + itemName, onClick: async () => {
+					key: 3, style: {background: window.constants.DELETE_COLOR}, className: 'clickable clickable-del toolbtn', title: L('DELETE') + itemName, onClick: async () => {
 						await deleteRecord(data.name, node.id, data.id);
 						if(formItem && formItem.props.parentForm) {
 							formItem.props.parentForm.valueChoosed();

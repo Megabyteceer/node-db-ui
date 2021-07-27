@@ -1,16 +1,11 @@
 import FieldAdmin from "../admin/field-admin.js";
 import NodeAdmin from "../admin/node-admin.js";
-import constants from "../custom/consts.js";
 import LeftBar from "../left-bar.js";
 import {iAdmin} from "../user.js";
 import {consoleLog, createRecord, deleteRecord, getNode, getNodeData, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation} from "../utils.js";
 import FormFull from "./form-full.js";
 import FormItem from "./form-item.js";
 import BaseForm from "./form-mixins.js";
-
-var style = {
-
-};
 
 var headerStyle = {
 	verticalAlign: 'middle',
@@ -45,7 +40,7 @@ function isPresentListRenderer(nodeId) {
 
 function createPageButton(self, page, isActive) {
 	if(isActive) {
-		return ReactDOM.button({key: page, style: {background: '#ebe5e8', borderBottom: '5px solid ' + constants.BRAND_COLOR_DARK, color: '#555', margin: 0, borderRadius: 0}},
+		return ReactDOM.button({key: page, style: {background: '#ebe5e8', borderBottom: '5px solid ' + window.constants.BRAND_COLOR_DARK, color: '#555', margin: 0, borderRadius: 0}},
 			page + 1
 		);
 	}
@@ -254,7 +249,7 @@ export default class List extends BaseForm {
 						var btns = [];
 
 						btns.push(ReactDOM.button({
-							className: 'clickable clickable-del toolbtn', title: L('DELETE'), key: 'b' + UID(item), style: {color: '#fff', background: constants.DELETE_COLOR}, onClick: async () => {
+							className: 'clickable clickable-del toolbtn', title: L('DELETE'), key: 'b' + UID(item), style: {color: '#fff', background: window.constants.DELETE_COLOR}, onClick: async () => {
 								if(item.hasOwnProperty('id') && !this.state.noPromptDelete) {
 									await deleteRecord(item.name, node.id, 0, undefined, false, deleteItem);
 								}
@@ -294,7 +289,7 @@ export default class List extends BaseForm {
 									var itemNumM1 = _itemNumM1;
 									var uidM1 = _uidM1;
 									btns.push(ReactDOM.button({
-										className: 'clickable toolbtn', title: L('MOVE_UP'), key: 'bu' + UID(item), style: {color: '#fff', background: constants.EDIT_COLOR}, onClick: () => {
+										className: 'clickable toolbtn', title: L('MOVE_UP'), key: 'bu' + UID(item), style: {color: '#fff', background: window.constants.EDIT_COLOR}, onClick: () => {
 											var t = data.items[itemNum];
 											data.items[itemNum] = data.items[itemNumM1];
 											data.items[itemNumM1] = t;
@@ -316,7 +311,7 @@ export default class List extends BaseForm {
 									var uidP1 = _uidP1;
 
 									btns.push(ReactDOM.button({
-										className: 'clickable toolbtn', title: L('MOVE_DOWN'), key: 'bd' + UID(item), style: {color: '#fff', background: constants.EDIT_COLOR}, onClick: () => {
+										className: 'clickable toolbtn', title: L('MOVE_DOWN'), key: 'bd' + UID(item), style: {color: '#fff', background: window.constants.EDIT_COLOR}, onClick: () => {
 											var t = data.items[itemNum];
 											data.items[itemNum] = data.items[itemNumP1];
 											data.items[itemNumP1] = t;
@@ -352,13 +347,13 @@ export default class List extends BaseForm {
 		var createBtn;
 		if(node.canCreate) {
 			createBtn = ReactDOM.div(null,
-				ReactDOM.button({style: {background: constants.CREATE_COLOR}, title: L('ADD', (node.creationName || node.singleName)), className: 'clickable clickable-neg toolbtn', onClick: () => {data.items.push({}); this.forceUpdate();}},
+				ReactDOM.button({style: {background: window.constants.CREATE_COLOR}, title: L('ADD', (node.creationName || node.singleName)), className: 'clickable clickable-neg toolbtn', onClick: () => {data.items.push({}); this.forceUpdate();}},
 					renderIcon('plus')
 				)
 			);
 		}
 
-		return ReactDOM.div({style: style},
+		return ReactDOM.div(null,
 			nodeAdmin,
 			lines,
 			createBtn
@@ -395,7 +390,7 @@ export default class List extends BaseForm {
 			if(node.canCreate && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
 				if(this.isSlave()) {
 					createButton = ReactDOM.button({
-						style: {padding: '5px 15px', background: constants.CREATE_COLOR}, className: 'clickable clickable-neg', onClick: async () => {
+						style: {padding: '5px 15px', background: window.constants.CREATE_COLOR}, className: 'clickable clickable-neg', onClick: async () => {
 							if(this.props.askToSaveParentBeforeCreation) {
 								await this.props.parentForm.saveParentFormBeforeCreation();
 								this.props.parentForm.toggleCreateDialogue();
@@ -407,7 +402,7 @@ export default class List extends BaseForm {
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				} else {
-					createButton = ReactDOM.button({style: {background: constants.CREATE_COLOR, color: '#fff', padding: '15px 40px'}, className: 'clickable clickable-neg', onClick: () => {createRecord(node.id, filters);}},
+					createButton = ReactDOM.button({style: {background: window.constants.CREATE_COLOR, color: '#fff', padding: '15px 40px'}, className: 'clickable clickable-neg', onClick: () => {createRecord(node.id, filters);}},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				}
@@ -605,11 +600,11 @@ export default class List extends BaseForm {
 		if(!this.props.isCompact) {
 			var hdr = this.header || this.filters.formTitle;
 			if(hdr) {
-				title = ReactDOM.h4({style: {color: constants.BRAND_COLOR_HEADER, margin: 10}}, hdr);
+				title = ReactDOM.h4({style: {color: window.constants.BRAND_COLOR_HEADER, margin: 10}}, hdr);
 			}
 		}
 
-		return ReactDOM.div({style: style},
+		return ReactDOM.div(null,
 			nodeAdmin,
 			title,
 			header,

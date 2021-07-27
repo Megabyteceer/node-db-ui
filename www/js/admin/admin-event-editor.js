@@ -1,6 +1,5 @@
 import Modal from "../modal.js";
 import {getData, L, myAlert, renderIcon, submitData} from "../utils.js";
-import {defaultButtonStyle, successButtonStyle} from "../stage.js";
 
 var node;
 
@@ -71,7 +70,7 @@ var ExcludedIntelliSenseTriggerKeys = {
 	"144": "numlock",
 	"145": "scrolllock",
 	"186": "semicolon"
-}
+};
 
 var tipProps = [
 	'rec_creation',
@@ -96,15 +95,7 @@ var tipProps = [
 	'hideFooter(',
 	'showFooter(',
 	'saveForm('
-]
-
-
-var style = {
-	marginTop: '20px',
-	display: 'inline-block',
-	cursor: 'default'
-}
-
+];
 
 function javascriptHint(cm, form) {
 
@@ -295,40 +286,29 @@ class AdminEventEditor extends React.Component {
 		const functionName = this.props.node.tableName + (this.props.field ? '_' + this.props.field.fieldName + '_' : '_') + this.props.handler;
 
 		return ReactDOM.div({
-			style: {
-				textAlign: 'left'
-			}
+			className: "left"
 		},
 			ReactDOM.h4(null, this.props.title),
 			ReactDOM.div({
-				style: {
-					margin: '30px'
-				}
+				className: 'admin-events-editor-body'
 			},
-				ReactDOM.span({style: {fontFamily: 'monospace'}}, (this.props.handler === 'onsave' ? 'async ' : ''), 'function ', ReactDOM.span({style: {fontWeight: 'bold'}}, functionName), '() {'),
+				ReactDOM.span({className: 'monospace'}, (this.props.handler === 'onsave' ? 'async ' : ''), 'function ', ReactDOM.b(null, functionName), '() {'),
 				ReactDOM.textarea({
 					ref: this.getTextareaRef,
-					style: {
-						minWidth: '1000px',
-						minHeight: '4	00px'
-					},
+					className: "admin-events-editor-textarea",
 					defaultValue: this.state.src
 				}),
-				ReactDOM.span({style: {fontFamily: 'monospace'}}, '}')
+				ReactDOM.span({className: 'monospace'}, '}')
 			),
 			ReactDOM.div({
-				style: {
-					textAlign: 'center'
-				}
+				className: 'centralize'
 			},
 				ReactDOM.button({
-					className: 'clickable',
-					style: defaultButtonStyle,
+					className: 'clickable default-button',
 					onClick: Modal.instance.hide
 				}, renderIcon('times'), L('CANCEL')),
 				ReactDOM.button({
-					className: 'clickable',
-					style: successButtonStyle,
+					className: 'clickable success-button',
 					onClick: this.saveClick
 				}, renderIcon('floppy-o'), L('SAVE'))
 

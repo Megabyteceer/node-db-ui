@@ -1,7 +1,6 @@
 ﻿
 
 import moment from "./lib/moment/dist/moment.js";
-import constants from "./custom/consts.js";
 import {clearForm, getData, goToPageByHash, L, loactionToHash, loadJS, renderIcon, sp} from "./utils.js";
 import Select from "./components/select.js";
 import admin from "./admin/admin-utils.js";
@@ -30,7 +29,7 @@ var selectStyle = {
 	width: '100%',
 	height: 32,
 	padding: '2px 8px',
-	color: constants.TEXT_COLOR,
+	color: window.constants.TEXT_COLOR,
 	background: '#fff',
 	border: '1px solid #aaa',
 	borderRadius: '3px',
@@ -87,7 +86,7 @@ export default class User extends React.Component {
 		if(this.state) {
 
 			var iconName = '';
-			var mlbs = {display: 'inline-block', marginRight: 12, borderRadius: 4, border: '1px solid ' + constants.BRAND_COLOR_DARK, color: constants.BRAND_COLOR_LIGHT, padding: '3px 10px'};
+			var mlbs = {display: 'inline-block', marginRight: 12, borderRadius: 4, border: '1px solid ' + window.constants.BRAND_COLOR_DARK, color: window.constants.BRAND_COLOR_LIGHT, padding: '3px 10px'};
 			if(this.state.hasOwnProperty('langs')) {
 				mlbs.color = '#ffbf8c';
 				iconName = 'check-';

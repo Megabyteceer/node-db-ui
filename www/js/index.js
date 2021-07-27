@@ -1,6 +1,11 @@
 /// #if DEBUG
 import './lib/react/umd/react.development.js';
 import './lib/react-dom/umd/react-dom.development.js';
+import './lib/promise-polyfill/dist/polyfill.js';
+
+//TODO:  remove
+window.constants = {};
+
 /*
 /// #endif
 import('./lib/react/umd/react.production.min.js');

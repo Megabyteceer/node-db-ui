@@ -1,15 +1,12 @@
 import BaseForm from "../forms/form-mixins.js";
-import {defaultButtonStyle, FormLoaderCog, successButtonStyle} from "../stage.js";
+import {FormLoaderCog} from "../stage.js";
 import {iAdmin} from "../user.js";
 import {getData, getNode, L, myPromt, renderIcon, submitData} from "../utils.js";
 import NodeAdmin from "./node-admin.js";
 
 function check() {
 	return ReactDOM.span({
-		style: {
-			marginLeft: -12,
-			marginRight: -12
-		}
+		className: "admin-role-prevs-check"
 	}, renderIcon('check'));
 }
 
@@ -26,38 +23,28 @@ class PrevsEditor extends React.Component {
 
 		if(curVal === 0) {
 			body = ReactDOM.span({
-				style: {
-					color: '#ccc'
-				}
+				className: "admin-role-prevs-disabled"
 			}, renderIcon('ban'));
 			title = L('ADM_NA');
 		} else if(this.props.bitsCount === 1) {
 			body = ReactDOM.span({
-				style: {
-					color: '#3a3'
-				}
+				className: "admin-role-prevs-enabled"
 			}, check());
 			title = L('ADM_A');
 		} else {
 			switch(curVal / this.props.baseBit) {
 				case 1:
 					body = ReactDOM.span({
-						style: {
-							color: '#3a3'
-						}
+						className: "admin-role-prevs-enabled"
 					}, check());
 					title = L('ADM_A_OWN');
 					break;
 				case 2:
 				case 3:
 					body = ReactDOM.span({
-						style: {
-							color: '#3a3'
-						}
+						className: "admin-role-prevs-enabled"
 					}, ReactDOM.span({
-						style: {
-							fontSize: '120%'
-						}
+						className: "admin-role-prevs-size2"
 					}, check(), check()));
 					title = L('ADM_A_ORG');
 					break;
@@ -66,13 +53,9 @@ class PrevsEditor extends React.Component {
 				case 6:
 				case 7:
 					body = ReactDOM.span({
-						style: {
-							color: '#3a3'
-						}
+						className: "admin-role-prevs-enabled"
 					}, ReactDOM.span({
-						style: {
-							fontSize: '140%'
-						}
+						className: "admin-role-prevs-size3"
 					}, check(), check(), check()));
 					title = L('ADM_A_FULL');
 					break;
@@ -83,11 +66,8 @@ class PrevsEditor extends React.Component {
 		}
 
 		return ReactDOM.td({
-			className: 'clickable',
+			className: 'clickable admin-role-prevs-cell',
 			title: title,
-			style: {
-				width: 140
-			},
 			onClick: () => {
 				curVal *= 2;
 				curVal += this.props.baseBit;
@@ -169,19 +149,10 @@ export default class AdminRoleprevsForm extends BaseForm {
 			var lines = data.prevs.map((i) => {
 				return ReactDOM.tr({
 					key: i.id,
-					style: {
-						paddingBottom: 10,
-						paddingTop: 10,
-						height: 40
-					}
+					className: "admin-role-prevs-line"
 				},
 					ReactDOM.td({
-						style: {
-							textAlign: 'right',
-							verticalAlign: 'middle',
-							paddingRight: 20,
-							width: 250
-						}
+						className: "admin-role-prevs-line-header"
 					}, i.name),
 					React.createElement(PrevsEditor, {
 						bitsCount: 3,
@@ -211,40 +182,26 @@ export default class AdminRoleprevsForm extends BaseForm {
 				)
 			});
 
-			var body = ReactDOM.div(null,
+			var body = ReactDOM.div({
+				className: "admin-role-prevs-block"
+			},
 				ReactDOM.h3(null,
 					ReactDOM.span({
-						style: {
-							color: '#aaa',
-							fontSize: '80%'
-						}
+						className: "admin-role-prevs-header"
 					}, L('ADM_NODE_ACCESS')),
 					node.matchName
 				),
 
 				ReactDOM.table({
-					style: {
-						textAlign: 'center',
-						marginTop: 50
-					}
+					className: "admin-role-prevs-table"
 				},
 					ReactDOM.thead({
-						style: {
-							fontWeight: 'bold',
-							borderBottom: '1px solid #aaa'
-						}
+						className: "admin-role-prevs-row-header"
 					},
 						ReactDOM.tr({
-							style: {
-								height: 40
-							}
+							className: "admin-role-prevs-line"
 						},
-							ReactDOM.th({
-								style: {
-									textAlign: 'right',
-									paddingRight: 20
-								}
-							}, L('ADM_ROLE')),
+							ReactDOM.th(),
 							ReactDOM.th(null, L('VIEW')),
 							ReactDOM.th(null, L('CREATE')),
 							ReactDOM.th(null, L('EDIT')),
@@ -259,8 +216,7 @@ export default class AdminRoleprevsForm extends BaseForm {
 			);
 
 			var saveButton = ReactDOM.button({
-				className: 'clickable',
-				style: successButtonStyle,
+				className: 'clickable success-button',
 				onClick: this.saveClick
 			}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
 
@@ -274,25 +230,15 @@ export default class AdminRoleprevsForm extends BaseForm {
 			}
 
 			var closeButton = ReactDOM.button({
-				className: 'clickable',
-				style: defaultButtonStyle,
+				className: 'clickable default-button',
 				onClick: this.cancelClick
 			}, renderIcon('times'), this.isSlave() ? '' : L('CANCEL'));
 
-			return ReactDOM.div({
-				style: null
-			},
+			return ReactDOM.div({className: "admin-role-prevs-body"},
 				nodeAdmin,
 				body,
 
-				ReactDOM.div({
-					style: this.isSlave() ? {
-						display: 'inline-block'
-					} : {
-						textAlign: 'center',
-						marginTop: 45
-					}
-				},
+				ReactDOM.div(null,
 					saveButton,
 					closeButton
 				)

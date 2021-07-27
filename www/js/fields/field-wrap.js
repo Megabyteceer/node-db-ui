@@ -1,8 +1,4 @@
-
-
-
 import FieldAdmin from "../admin/field-admin.js";
-import constants from "../custom/consts.js";
 import {iAdmin} from "../user.js";
 import {consoleLog, getClassForField, renderIcon, scrollToVisible, setFormFilter} from "../utils.js";
 
@@ -19,13 +15,13 @@ var styleLang = {
 var valuePartStyle = {
 	verticalAlign: 'top',
 	width: '70%',
-	color: constants.TEXT_COLOR,
+	color: window.constants.TEXT_COLOR,
 	fontSize: '110%',
 	display: 'inline-block'
 };
 var valueNoLabelPartStyle = {
 	width: '100%',
-	color: constants.TEXT_COLOR,
+	color: window.constants.TEXT_COLOR,
 	fontSize: '110%',
 	display: 'inline-block'
 };
@@ -36,7 +32,7 @@ var labelStyle = {
 	padding: '5px 0',
 	width: '25%',
 	paddingRight: '20px',
-	color: constants.TEXT_COLOR,
+	color: window.constants.TEXT_COLOR,
 	textAlign: 'right',
 	verticalAlign: 'top',
 	display: 'inline-block'

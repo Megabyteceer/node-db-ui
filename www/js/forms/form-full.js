@@ -1,11 +1,9 @@
 
 import FieldWrap from "../fields/field-wrap.js";
-import {dangerButtonStyle, defaultButtonStyle, successButtonStyle} from "../stage.js";
 import {iAdmin} from "../user.js";
-import {backupCreationData, consoleLog, deleteRecord, getBackupData, getItem, goBack, L, myAlert, n2mValuesEqual, removeBackup, renderIcon, submitRecord} from "../utils.js";
+import {backupCreationData, consoleLog, deleteRecord, getBackupData, goBack, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord} from "../utils.js";
 import FormTab from "./form-tab.js";
 import eventProcessingMixins from "./event-processing-mixins.js";
-import constants from "../custom/consts.js";
 import NodeAdmin from "../admin/node-admin.js";
 import LoadingIndicator from "../loading-indicator.js";
 
@@ -416,7 +414,7 @@ export default class FormFull extends eventProcessingMixins {
 		if(!this.props.inlineEditable) {
 			if(data.isD && isMainTab && !this.props.preventDeleteButton) {
 				deleteButton = ReactDOM.button({
-					className: 'clickable clickable-neg', style: dangerButtonStyle, onClick: async () => {
+					className: 'clickable danger-button clickable-neg', onClick: async () => {
 						await deleteRecord(data.name, node.id, data.id);
 						if(this.isSlave()) {
 							this.props.parentForm.valueChoosed();
@@ -429,14 +427,14 @@ export default class FormFull extends eventProcessingMixins {
 
 			if(this.props.editable) {
 				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.prevs & PREVS_PUBLISH)) {
-					saveButton = ReactDOM.button({className: 'clickable clickable-edit save-btn', style: successButtonStyle, onClick: this.saveClick, title: L('SAVE')}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
+					saveButton = ReactDOM.button({className: 'clickable clickable-edit success-button save-btn', onClick: this.saveClick, title: L('SAVE')}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
 				} else {
 					if(data.status === 1) {
-						draftButton = ReactDOM.button({className: 'clickable clickable-cancel', style: defaultButtonStyle, onClick: () => {this.saveClick(true)}, title: L('UNPUBLISH')}, L('UNPUBLISH'));
-						saveButton = ReactDOM.button({className: 'clickable  clickable-edit save-btn', style: successButtonStyle, onClick: this.saveClick}, L('SAVE'));
+						draftButton = ReactDOM.button({className: 'clickable default-button clickable-cancel', onClick: () => {this.saveClick(true)}, title: L('UNPUBLISH')}, L('UNPUBLISH'));
+						saveButton = ReactDOM.button({className: 'clickable  clickable-edit success-button save-btn', onClick: this.saveClick}, L('SAVE'));
 					} else {
-						draftButton = ReactDOM.button({className: 'clickable clickable-cancel', style: defaultButtonStyle, onClick: () => {this.saveClick(true)}, title: L('SAVE_TEMPLATE')}, L('SAVE_TEMPLATE'));
-						saveButton = ReactDOM.button({className: 'clickable clickable-edit save-btn', style: successButtonStyle, onClick: this.saveClick, title: L('PUBLISH')}, L('PUBLISH'));
+						draftButton = ReactDOM.button({className: 'clickable default-button clickable-cancel', onClick: () => {this.saveClick(true)}, title: L('SAVE_TEMPLATE')}, L('SAVE_TEMPLATE'));
+						saveButton = ReactDOM.button({className: 'clickable clickable-edit success-button save-btn', onClick: this.saveClick, title: L('PUBLISH')}, L('PUBLISH'));
 
 					}
 				}
@@ -447,13 +445,13 @@ export default class FormFull extends eventProcessingMixins {
 			}
 
 			if(!this.props.isCompact && (this.header || this.state.header)) {
-				header = ReactDOM.h4({style: {color: constants.BRAND_COLOR_HEADER, margin: 10}}, this.header || this.state.header);
+				header = ReactDOM.h4({style: {color: window.constants.BRAND_COLOR_HEADER, margin: 10}}, this.header || this.state.header);
 			}
 
 			if(this.props.editable) {
-				closeButton = ReactDOM.button({className: 'clickable clickable-cancel', style: defaultButtonStyle, onClick: this.cancelClick, title: L('CANCEL')}, renderIcon('caret-left'), this.isSlave() ? '' : L('CANCEL'));
+				closeButton = ReactDOM.button({className: 'clickable default-button clickable-cancel', onClick: this.cancelClick, title: L('CANCEL')}, renderIcon('caret-left'), this.isSlave() ? '' : L('CANCEL'));
 			} else {
-				closeButton = ReactDOM.button({className: 'clickable clickable-cancel', style: defaultButtonStyle, onClick: this.cancelClick}, renderIcon('caret-left'), this.isSlave() ? '' : L('BACK'));
+				closeButton = ReactDOM.button({className: 'clickable default-button clickable-cancel', onClick: this.cancelClick}, renderIcon('caret-left'), this.isSlave() ? '' : L('BACK'));
 			}
 		}
 		return ReactDOM.div({className: domId, style: style},

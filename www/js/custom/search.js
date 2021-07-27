@@ -1,6 +1,4 @@
 import {getData, renderIcon, sp} from "../utils.js";
-import constants from "./consts.js";
-
 
 var style = {
 	display: 'inline-block',
@@ -13,11 +11,11 @@ var style = {
 var inputStyle = {
 	width: 240,
 	borderRadius: 0,
-	border: '1px solid ' + constants.BRAND_COLOR_LIGHT,
-	//		borderTop:'1px solid ' + constants.BRAND_COLOR_LIGHT,
-	//		borderBottom:'1px solid ' + constants.BRAND_COLOR_LIGHT,
+	border: '1px solid ' + window.constants.BRAND_COLOR_LIGHT,
+	//		borderTop:'1px solid ' + window.constants.BRAND_COLOR_LIGHT,
+	//		borderBottom:'1px solid ' + window.constants.BRAND_COLOR_LIGHT,
 	color: '#fff',
-	background: constants.BRAND_COLOR_SHADOW,
+	background: window.constants.BRAND_COLOR_SHADOW,
 }
 var imgStyle = {
 	width: 40,
@@ -31,10 +29,10 @@ var labelStyle = {
 	borderTopLeftRadius: 4,
 	padding: '2px 10px',
 	height: 34,
-	color: constants.BRAND_COLOR_LIGHT,
+	color: window.constants.BRAND_COLOR_LIGHT,
 	verticalAlign: 'middle',
 	display: 'inline-block',
-	border: '1px solid ' + constants.BRAND_COLOR_LIGHT,
+	border: '1px solid ' + window.constants.BRAND_COLOR_LIGHT,
 	borderRight: 0
 }
 
@@ -44,10 +42,10 @@ var clearBtnStyle = {
 	borderTopRightRadius: 4,
 	padding: '2px 10px',
 	height: 34,
-	color: constants.BRAND_COLOR_LIGHT,
+	color: window.constants.BRAND_COLOR_LIGHT,
 	verticalAlign: 'middle',
 	display: 'inline-block',
-	border: '1px solid ' + constants.BRAND_COLOR_LIGHT,
+	border: '1px solid ' + window.constants.BRAND_COLOR_LIGHT,
 	borderLeft: 0
 }
 

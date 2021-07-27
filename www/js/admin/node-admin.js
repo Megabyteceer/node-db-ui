@@ -113,9 +113,7 @@ export default class NodeAdmin extends React.Component {
 
 						allFields.push(ReactDOM.span({
 							key: f.id + 'a',
-							style: {
-								fontSize: '130%'
-							}
+							className: 'admin-form-header'
 						}, React.createElement(FieldAdmin, {
 							field: f,
 							form: form,
@@ -124,18 +122,10 @@ export default class NodeAdmin extends React.Component {
 						}))),
 							allFields.push(ReactDOM.div({
 								key: f.id,
-								style: {
-									textAlign: 'right',
-									transform: 'scale(1.2)',
-									width: '340px',
-									marginTop: '3px'
-								}
+								className: "admin-form-all-fields"
 							},
 								ReactDOM.div({
-									style: {
-										display: 'inline-block',
-										width: '180px'
-									}
+									className: "admin-form-all-fields-name"
 								}, f.fieldName + '; (' + f.id + ')'),
 								renderIcon((f.show & 1) ? 'eye' : 'eye-slash halfvisible'),
 								renderIcon((f.show & 2) ? 'eye' : 'eye-slash halfvisible'),
@@ -151,13 +141,7 @@ export default class NodeAdmin extends React.Component {
 
 				buttons = ReactDOM.span(null,
 					ReactDOM.button({
-						className: 'clickable toolbtn',
-						style: {
-							background: '#944',
-							color: '#fcc',
-							paddingLeft: '6px',
-							paddingRight: '6px'
-						},
+						className: 'clickable toolbtn admin-form-btn',
 						onClick: () => {
 							this.toggleAllFields();
 						},
@@ -166,14 +150,8 @@ export default class NodeAdmin extends React.Component {
 						'all fields ', renderIcon('caret-down')
 					),
 					ReactDOM.button({
-						className: 'clickable toolbtn',
-						style: {
-							border: borderOnLoad,
-							background: '#944',
-							color: '#fcc',
-							paddingLeft: '6px',
-							paddingRight: '6px'
-						},
+						className: 'clickable toolbtn admin-form-btn',
+						style: {border: borderOnLoad},
 						onClick: () => {
 							admin_editSource('onload', node, undefined, form);
 						},
@@ -182,14 +160,8 @@ export default class NodeAdmin extends React.Component {
 						'onLoad...'
 					),
 					ReactDOM.button({
-						className: 'clickable toolbtn',
-						style: {
-							border: borderOnSave,
-							background: '#944',
-							color: '#fcc',
-							paddingLeft: '6px',
-							paddingRight: '6px'
-						},
+						className: 'clickable toolbtn admin-form-btn',
+						style: {border: borderOnSave},
 						onClick: () => {
 							admin_editSource('onsave', node, undefined, form);
 						},
@@ -198,12 +170,8 @@ export default class NodeAdmin extends React.Component {
 						'onSave...'
 					),
 					ReactDOM.button({
-						className: 'clickable toolbtn',
+						className: 'clickable toolbtn admin-form-btn',
 						title: L('FLD_ADD'),
-						style: {
-							background: '#944',
-							color: '#fcc'
-						},
 						onClick: () => {
 							admin.popup(loactionToHash(6, 'new', {
 								node_fields_linker: {
@@ -216,29 +184,20 @@ export default class NodeAdmin extends React.Component {
 						renderIcon('plus')
 					),
 					ReactDOM.button({
-						className: 'clickable toolbtn',
+						className: 'clickable toolbtn admin-form-btn',
 						title: L('FLD_SHOW_ALL'),
-						style: {
-							background: '#944',
-							color: '#fcc'
-						},
 						onClick: () => {
 							if(form) {
 								form.showAllDebug = !form.showAllDebug;
 								form.forceUpdate();
 							}
-
 						}
 					},
 						renderIcon('eye')
 					),
 					ReactDOM.button({
-						className: 'clickable toolbtn',
+						className: 'clickable toolbtn admin-form-btn',
 						title: L('ADD_RATING_FLD'),
-						style: {
-							background: '#944',
-							color: '#fcc'
-						},
 						onClick: () => {
 							// TODO: implement ratings creation process
 
@@ -252,12 +211,8 @@ export default class NodeAdmin extends React.Component {
 			} else {
 				buttons = ReactDOM.span(null,
 					ReactDOM.button({
-						className: 'clickable toolbtn',
+						className: 'clickable toolbtn admin-form-btn',
 						title: L('ADD_NODE'),
-						style: {
-							background: '#944',
-							color: '#fcc'
-						},
 						onClick: () => {
 							createNodeForMenuItem(item);
 						}
@@ -265,11 +220,7 @@ export default class NodeAdmin extends React.Component {
 						renderIcon('plus')
 					),
 					ReactDOM.button({
-						className: 'clickable toolbtn',
-						style: {
-							background: '#944',
-							color: '#fcc'
-						},
+						className: 'clickable toolbtn admin-form-btn',
 						onClick: () => {
 							getNodeData(4, undefined, {
 								_nodesID: item.parent
@@ -286,11 +237,7 @@ export default class NodeAdmin extends React.Component {
 						renderIcon('arrow-down')
 					),
 					ReactDOM.button({
-						className: 'clickable toolbtn',
-						style: {
-							background: '#944',
-							color: '#fcc'
-						},
+						className: 'clickable toolbtn admin-form-btn',
 						onClick: () => {
 							getNodeData(4, undefined, {
 								_nodesID: item.parent
@@ -311,19 +258,7 @@ export default class NodeAdmin extends React.Component {
 
 			body = ReactDOM.div({
 				ref: keepInWindow,
-				style: {
-					position: 'absolute',
-					zIndex: 4,
-					fontSize: '70%',
-					display: 'inline-block',
-					verticalAlign: 'top',
-					marginTop: '-5px',
-					color: '#800',
-					padding: '10px',
-					borderRadius: '5px',
-					background: '#fee',
-					border: '1px solid #ebb'
-				},
+				className: "admin-form-body",
 				onClick: () => {
 					clearTimeout(this.timeout);
 					delete (this.timeout);
@@ -335,31 +270,19 @@ export default class NodeAdmin extends React.Component {
 				}
 			},
 				L('NODE_SETTINGS'),
-				ReactDOM.b({
-					style: {
-						fontSize: '130%'
-					}
-				},
+				ReactDOM.b({className: "admin-form-header"},
 					node.tableName
 				),
 				ReactDOM.span(null,
 					'; (' + (node.matchName || item.name) + '); id: ' + nodeId
 				),
 				ReactDOM.div({
-					style: {
-						marginTop: '5px',
-						whiteSpace: 'nowrap',
-						textAlign: 'center'
-					}
+					className: "admin-form-content"
 				},
 					buttons,
 					ReactDOM.button({
-						className: 'clickable toolbtn',
+						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_NODE'),
-						style: {
-							background: '#944',
-							color: '#fcc'
-						},
 						onClick: () => {
 							admin.popup(loactionToHash(4, nodeId, undefined, true), 900, true);
 
@@ -368,77 +291,48 @@ export default class NodeAdmin extends React.Component {
 						renderIcon('wrench')
 					),
 					ReactDOM.button({
-						className: 'clickable toolbtn',
+						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_ACCESS'),
-						style: {
-							background: '#944',
-							color: '#fcc'
-						},
 						onClick: () => {
 							admin.popup(loactionToHash(1, nodeId, undefined, true), 1100);
 						}
 					},
 						renderIcon('user')
 					),
-					ReactDOM.span({
-						style: {
-							position: 'absolute',
-							right: 5,
-							top: 5
+					ReactDOM.button({
+						onClick: () => {
+							admin.debug(form || node);
 						},
-						className: 'clickable',
+						className: 'clickable toolbtn admin-form-btn',
+						title: 'log node to console'
+					},
+						renderIcon('info')
+					),
+					ReactDOM.span({
+						className: 'clickable admin-form-lock-btn',
 						onClick: this.toggleLock
 					},
 						renderIcon(this.state.locked ? 'lock' : 'unlock')
-
 					)
 				),
-				allFields,
-				ReactDOM.button({
-					onClick: () => {
-						admin.debug(form || node);
-					},
-					className: 'clickable toolbtn',
-					style: {
-						background: '#944',
-						color: '#fcc'
-					},
-					title: 'log node to console'
-				},
-					renderIcon('info')
-				)
+				allFields
 			);
 		}
 
-
-
 		return ReactDOM.div({
 			ref: keepInWindow,
-			className: 'admin-controll',
-			style: {
-				position: 'absolute',
-				zIndex: bodyVisible ? 4 : 3
-			},
+			className: 'admin-controll admin-form-wrap' + (bodyVisible ? 'admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
 			ReactDOM.span({
-				style: {
-					border: borderOnLoad || borderOnSave,
-					display: 'inline-block',
-					position: 'absolute',
-					zIndex: 2,
-					verticalAlign: 'top',
-					borderRadius: '5px',
-					color: '#0000004'
-				},
-				className: 'halfvisible',
+				style: {border: borderOnLoad || borderOnSave},
+				className: 'halfvisible admin-form-open-btn',
 				onMouseEnter: this.show
 			},
 				renderIcon('wrench')
 			),
 			body
 		)
-
 	}
 }
 

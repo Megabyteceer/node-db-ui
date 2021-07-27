@@ -1,35 +1,9 @@
 ﻿
 
-import constants from "./custom/consts.js";
 import FormFull from "./forms/form-full.js";
 import List from "./forms/list.js";
 import LeftBar from "./left-bar.js";
 import {consoleLog, isLitePage, loadJS, myAlert, renderIcon} from "./utils.js";
-
-var defaultButtonStyle = {
-	background: '#ddd',
-	color: '#666',
-	fontSize: '90%',
-	fontWeight: 'bold',
-	padding: '10px 30px',
-	border: 0
-}
-var dangerButtonStyle = {
-	background: constants.DELETE_COLOR,
-	color: '#fee',
-	fontSize: '90%',
-	fontWeight: 'bold',
-	padding: '10px 30px',
-	border: 0
-}
-var successButtonStyle = {
-	background: constants.EDIT_COLOR,
-	color: '#efe',
-	fontSize: '90%',
-	fontWeight: 'bold',
-	padding: '10px 30px',
-	border: 0
-}
 
 class FormLoaderCog extends React.Component {
 	render() {
@@ -134,4 +108,4 @@ class Stage extends React.Component {
 	}
 }
 
-export {Stage, FormLoaderCog, defaultButtonStyle, dangerButtonStyle, successButtonStyle}
+export {Stage, FormLoaderCog}

@@ -1,4 +1,3 @@
-import constants from "../custom/consts.js";
 import FormFull from "../forms/form-full.js";
 import List from "../forms/list.js";
 import {backupCreationData, getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp} from "../utils.js";
@@ -252,7 +251,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 					style: {
 						display: 'inline-block',
 						borderRadius: '3px',
-						backgroundColor: constants.DELETE_COLOR,
+						backgroundColor: window.constants.DELETE_COLOR,
 						color: '#fff'
 					},
 					title: L('CLEAR'),

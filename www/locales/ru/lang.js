@@ -80,7 +80,6 @@ import {initDictionary} from "../../js/utils.js";
 		'ADM_A_ORG': 'Разрешено в пределах своей организации',
 		'ADM_A_FULL': 'Полные права',
 		'ADM_NODE_ACCESS': 'Разрешения для раздела ',
-		'ADM_ROLE': 'Роль',
 		'APPLY': 'Применить',
 		'PREVIEW': 'Предварительный просмотр:',
 		'SELECT_IMG': 'Выбрать...',

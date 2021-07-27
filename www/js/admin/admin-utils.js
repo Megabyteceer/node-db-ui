@@ -156,15 +156,9 @@ admin.debug = (obj) => {
 	debugInfoGetter.call(obj);
 }
 
-
-
-
-
 var styleEl = document.createElement('style');
 var styleSheet;
-// Append style element to head
 document.head.appendChild(styleEl);
-// Grab style sheet
 styleSheet = styleEl.sheet;
 
 var adminOn = !isLitePage();
@@ -183,7 +177,7 @@ admin.toggleAdminUI = () => {
 	adminOn = !adminOn;
 }
 
-$('body').append('<span style="position:fixed; width:200px; pointer-events: none; top:0;right:25%; color:#fcc;"><span>Admin tools </span><input type="checkbox" checked="' + adminOn + '" id="admin-disable" style="margin:2px; width:50px; vertical-align:middle; cursor:pointer;  pointer-events: all;" title="hide/show admin controls"/></span>');
+$('body').append('<span class="admin-tools-enable-btn"><span>Admin tools </span><input type="checkbox" checked="' + adminOn + '" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>');
 $('#admin-disable').on('click', admin.toggleAdminUI);
 
 admin.toggleAdminUI();

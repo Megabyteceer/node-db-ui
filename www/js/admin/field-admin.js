@@ -51,10 +51,6 @@ export default class FieldAdmin extends React.Component {
 
 		var body;
 
-		var zAdd = this.props.zIndex;
-		if(!zAdd) {
-			zAdd = 0;
-		}
 		var border;
 		if(fieldsEvents.hasOwnProperty(field.id)) {
 			border = "2px solid #00440050";
@@ -75,20 +71,7 @@ export default class FieldAdmin extends React.Component {
 
 			body = ReactDOM.div({
 				ref: keepInWindow,
-				style: {
-					position: 'absolute',
-					textAlign: 'left',
-					zIndex: 4 + zAdd,
-					fontSize: '70%',
-					display: 'inline-block',
-					verticalAlign: 'top',
-					marginTop: '-5px',
-					color: '#800',
-					padding: '10px',
-					borderRadius: '5px',
-					background: '#fee',
-					border: '1px solid #ebb'
-				},
+				className: "admin-form-body",
 				onClick: () => {
 					clearTimeout(this.timeout);
 					delete (this.timeout);
@@ -99,33 +82,18 @@ export default class FieldAdmin extends React.Component {
 				}
 			},
 				L('FLD_SETTINGS'),
-				ReactDOM.b({
-					style: {
-						fontSize: '130%'
-					}
-				},
+				ReactDOM.b({className: "admin-form-header"},
 					field.fieldName
 				),
 				ReactDOM.div(null,
 					'type: ' + field.fieldType + '; id: ' + field.id + '; len:' + field.maxlen
 				),
 				ReactDOM.div({
-					style: {
-						marginTop: '5px',
-						textAlign: 'center',
-						whiteSpace: 'nowrap'
-					}
+					className: "admin-form-content"
 				},
 					ReactDOM.button({
-						className: 'clickable toolbtn',
-						style: {
-							borderRadius: '5px',
-							border,
-							background: '#944',
-							color: '#fcc',
-							paddingLeft: '6px',
-							paddingRight: '6px'
-						},
+						className: 'clickable toolbtn admin-form-btn',
+						style: {border},
 						onClick: () => {
 
 							admin_editSource('onchange', node, field, form);
@@ -136,11 +104,7 @@ export default class FieldAdmin extends React.Component {
 						'onChange...'
 					),
 					ReactDOM.button({
-						className: 'clickable toolbtn',
-						style: {
-							background: '#944',
-							color: '#fcc'
-						},
+						className: 'clickable toolbtn admin-form-btn',
 						onClick: () => {
 							var i = field.index;
 							if(i > 0) {
@@ -152,11 +116,7 @@ export default class FieldAdmin extends React.Component {
 						renderIcon('arrow-up')
 					),
 					ReactDOM.button({
-						className: 'clickable toolbtn',
-						style: {
-							background: '#944',
-							color: '#fcc'
-						},
+						className: 'clickable toolbtn admin-form-btn',
 						onClick: () => {
 							var i = field.index;
 							if(i < (node.fields.length - 1)) {
@@ -168,11 +128,7 @@ export default class FieldAdmin extends React.Component {
 						renderIcon('arrow-down')
 					),
 					ReactDOM.button({
-						className: 'clickable toolbtn',
-						style: {
-							background: '#944',
-							color: '#fcc'
-						},
+						className: 'clickable toolbtn admin-form-btn',
 						onClick: () => {
 
 							getNodeData(6, field.id).then((data) => {
@@ -193,66 +149,41 @@ export default class FieldAdmin extends React.Component {
 						onClick: () => {
 							admin.popup(loactionToHash(6, field.id, undefined, true), 900, true);
 						},
-						className: 'clickable toolbtn',
-						style: {
-							background: '#944',
-							color: '#fcc'
-						},
+						className: 'clickable toolbtn admin-form-btn',
 						title: "Edit field properties"
 					},
 						renderIcon('wrench')
 					),
 					ReactDOM.span({
-						style: {
-							position: 'absolute',
-							right: 5,
-							top: 5
-						},
-						className: 'clickable',
+						className: 'clickable admin-form-lock-btn',
 						onClick: this.toggleLock
 					},
 						renderIcon(this.state.locked ? 'lock' : 'unlock')
 
+					),
+					ReactDOM.button({
+						onClick: () => {
+							admin.debug(form.getField(field.fieldName) || form);
+						},
+						className: 'clickable toolbtn admin-form-btn',
+						title: 'log field to console'
+					},
+						renderIcon('info')
 					)
 				),
-				extendedInfo,
-				ReactDOM.button({
-					onClick: () => {
-						admin.debug(form.getField(field.fieldName) || form);
-					},
-					className: 'clickable toolbtn',
-					style: {
-						background: '#944',
-						color: '#fcc'
-					},
-					title: 'log field to console'
-				},
-					renderIcon('info')
-				)
+				extendedInfo
 			);
 		}
 
 		return ReactDOM.span({
 			ref: keepInWindow,
-			className: 'admin-controll',
-			style: {
-				position: 'absolute',
-				zIndex: (bodyVisible ? 4 : 3) + zAdd
-			},
+			className: 'admin-controll admin-form-wrap' + (bodyVisible ? 'admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
 			ReactDOM.span({
 				ref: keepInWindow,
-				style: {
-					borderRadius: '5px',
-					border,
-					display: 'inline-block',
-					position: 'absolute',
-					zIndex: 2 + zAdd,
-					verticalAlign: 'top',
-					color: '#00000040'
-				},
-				className: 'halfvisible',
+				style: {border},
+				className: 'halfvisible admin-form-open-btn',
 				onMouseEnter: this.onShow
 			},
 				renderIcon('wrench')

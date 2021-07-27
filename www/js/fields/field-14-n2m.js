@@ -1,4 +1,3 @@
-import constants from "../custom/consts.js";
 import {getClassForField, L, n2mValuesEqual, renderIcon, sp, UID} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
@@ -123,7 +122,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 
 					buttons = ReactDOM.div({style: {width: '30%', display: 'inline-block', verticalAlign: 'middle', textAlign: 'right'}},
 						additionalButtonsN2M,
-						/*ReactDOM.button({style:{background: constants.EDIT_COLOR, color:'#fff'}, title:L('MOVE_UP'), className:'clickable toolbtn', onClick:() => {
+						/*ReactDOM.button({style:{background: window.constants.EDIT_COLOR, color:'#fff'}, title:L('MOVE_UP'), className:'clickable toolbtn', onClick:() => {
 								
 								if (i > 0) {
 									var t = this.state.value[i];
@@ -134,7 +133,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 							}},
 							renderIcon('arrow-up')
 						),
-						ReactDOM.button({style:{background: constants.EDIT_COLOR, color:'#fff'}, title:L('MOVE_DOWN'), className:'clickable toolbtn', onClick:() => {
+						ReactDOM.button({style:{background: window.constants.EDIT_COLOR, color:'#fff'}, title:L('MOVE_DOWN'), className:'clickable toolbtn', onClick:() => {
 								if(i < (this.state.value.length-1)){
 									var t = this.state.value[i];
 									this.state.value[i] = this.state.value[i+1];
@@ -146,7 +145,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 							renderIcon('arrow-down')
 						),*/
 						ReactDOM.button({
-							style: {background: constants.EDIT_COLOR, color: '#fff'}, title: L('EDIT'), className: 'clickable clickable-edit toolbtn', onClick: () => {
+							style: {background: window.constants.EDIT_COLOR, color: '#fff'}, title: L('EDIT'), className: 'clickable clickable-edit toolbtn', onClick: () => {
 								this.uidToEdit = UID(this.state.value[i]);
 								this.forceUpdate();
 							}
@@ -154,7 +153,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 							renderIcon('pencil')
 						),
 						ReactDOM.button({
-							style: {background: constants.DELETE_COLOR, color: '#fff'}, title: L('LIST_REMOVE'), className: 'clickable clickable-del toolbtn', onClick: () => {
+							style: {background: window.constants.DELETE_COLOR, color: '#fff'}, title: L('LIST_REMOVE'), className: 'clickable clickable-del toolbtn', onClick: () => {
 								this.deleteItemByIndex(i);
 
 							}
@@ -182,7 +181,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 				buttons = ReactDOM.div({style: {width: '30%', display: 'inline-block', fontSize: '60%', verticalAlign: 'middle', textAlign: 'left'}, className: 'halfvisible'},
 					additionalButtonsN2M,
 					ReactDOM.button({
-						style: {background: constants.EDIT_COLOR, color: '#fff'}, title: L('EDIT'), className: 'clickable clickable-edit toolbtn', onClick: () => {
+						style: {background: window.constants.EDIT_COLOR, color: '#fff'}, title: L('EDIT'), className: 'clickable clickable-edit toolbtn', onClick: () => {
 							this.uidToEdit = UID(this.state.value[i]);
 							this.forceUpdate();
 						}
@@ -190,7 +189,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 						renderIcon('pencil')
 					),
 					ReactDOM.button({
-						style: {background: constants.DELETE_COLOR, color: '#fff'}, title: L('LIST_REMOVE'), className: 'clickable clickable-del toolbtn', onClick: () => {
+						style: {background: window.constants.DELETE_COLOR, color: '#fff'}, title: L('LIST_REMOVE'), className: 'clickable clickable-del toolbtn', onClick: () => {
 							this.deleteItemByIndex(i);
 						}
 					},

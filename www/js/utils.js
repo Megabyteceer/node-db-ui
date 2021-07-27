@@ -1,6 +1,5 @@
 
 
-import constants from "./custom/consts.js";
 import Notify from "./notify.js";
 import {Stage} from "./stage.js";
 
@@ -22,14 +21,14 @@ function myAlert(txt, isSucess, autoHide, noDiscardByBackdrop) {
 	if(!Modal.instance) {
 		alert(txt);
 	} else {
-		var style;
+		var className;
 		if(isSucess) {
-			style = {display: 'inline-block', background: constants.SUCCESS_ALERT_BG, color: constants.EDIT_COLOR, border: '1px solid ' + constants.EDIT_COLOR, padding: '30px', borderRadius: 4};
+			className = "alert-bg alert-bg-success";
 		} else {
-			style = {display: 'inline-block', background: constants.ERROR_ALERT_BG, color: '#a00', border: '1px solid #922', padding: '30px', borderRadius: 4};
+			className = "alert-bg alert-bg-danger";
 		}
 
-		var modalId = Modal.instance.show(ReactDOM.div({style: style}, txt), noDiscardByBackdrop);
+		var modalId = Modal.instance.show(ReactDOM.div({className}, txt), noDiscardByBackdrop);
 
 		if(autoHide) {
 			setTimeout(() => {

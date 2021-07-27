@@ -1,4 +1,3 @@
-import constants from "../custom/consts.js";
 import {ENV} from "../main-frame.js";
 import Modal from "../modal.js";
 import {checkFileSize, getReadableUploadSize, idToFileUrl, L, renderIcon, serializeForm, submitData} from "../utils.js";
@@ -105,7 +104,7 @@ export default class FileFormBody extends React.Component {
 		}
 
 		select = ReactDOM.button({
-			style: {background: constants.PUBLISH_COLOR, fontSize: '80%', marginLeft: 10, padding: '5px 20px 6px 20px'}, ref: (r) => {this.selectButtonRef = r;}, className: 'clickable clickable-edit', onClick: () => {
+			style: {background: window.constants.PUBLISH_COLOR, fontSize: '80%', marginLeft: 10, padding: '5px 20px 6px 20px'}, ref: (r) => {this.selectButtonRef = r;}, className: 'clickable clickable-edit', onClick: () => {
 				this.fileInputRef.value = null;
 				this.fileInputRef.click();
 			}

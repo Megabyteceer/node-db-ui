@@ -1,4 +1,3 @@
-import constants from "../custom/consts.js";
 import {checkFileSize, idToImgURL, L, myAlert, renderIcon, serializeForm, submitData} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
@@ -217,7 +216,7 @@ class CropperFieldBody extends React.Component {
 
 		var clrBtn;
 		if(this.state.cropResult || this.state.src || this.props.currentPicUrl && this.props.currentPicUrl !== 'images/placeholder_' + field.fieldName + '.png') {
-			clrBtn = ReactDOM.button({style: {background: constants.DELETE_COLOR, color: '#fff'}, className: 'clickable clickable-del toolbtn', onClick: this.clear},
+			clrBtn = ReactDOM.button({style: {background: window.constants.DELETE_COLOR, color: '#fff'}, className: 'clickable clickable-del toolbtn', onClick: this.clear},
 				renderIcon('times')
 			)
 		}
@@ -249,7 +248,7 @@ class CropperFieldBody extends React.Component {
 
 				select = ReactDOM.div(null,
 					ReactDOM.button({
-						style: {background: constants.PUBLISH_COLOR, fontSize: '80%', padding: '5px 20px 6px 20px'}, ref: (r) => {this.references.selectButton = r;}, className: 'clickable clickable-edit', onClick: () => {
+						style: {background: window.constants.PUBLISH_COLOR, fontSize: '80%', padding: '5px 20px 6px 20px'}, ref: (r) => {this.references.selectButton = r;}, className: 'clickable clickable-edit', onClick: () => {
 							this.references.fileInput.value = null;
 							this.references.fileInput.click();
 						}

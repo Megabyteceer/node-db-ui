@@ -7,8 +7,6 @@ body,html{
 	line-height:normal;
 }
 
-
-
 hr{
 	border:0;
 	border-bottom:1px solid #aaa;
@@ -47,6 +45,18 @@ h5{
 .container {
 	max-width: 1424px;
 	margin:0 auto;
+}
+
+.monospace {
+	font-family: monospace;
+}
+
+.centralize {
+	text-align: center;
+}
+
+.left {
+	text-align: left;
 }
 
 .fa {
@@ -144,8 +154,6 @@ img{
 	background:#eeeef3 !important;
 }
 
-.admin-controll .clickable:hover,
-.admin-controll:hover,
 .clickable-top:hover,
 .clickable-neg:hover{
 	color:#def !important;
@@ -255,6 +263,55 @@ input[readonly]
     background-color:rgb(235, 235, 228);
 }
 
+.success-button {
+	background: var(--EDIT_COLOR);
+	color: #efe;
+	font-size: 90%;
+	font-weight: bold;
+	padding: 10px 30px;
+	border: 0;
+}
+
+.danger-button {
+	background: var(--DELETE_COLOR);
+	color: #fee;
+	font-size: 90%;
+	font-weight: bold;
+	padding: 10px 30px;
+	border: 0;
+}
+
+.default-button {
+	background: #ddd;
+	color: #666;
+	font-size: 90%;
+	font-weight: bold;
+	padding: 10px 30px;
+	border: 0;
+}
+
+.alert-bg {
+	display: inline-block;
+	color: #a00;
+	border: 1px solid #922;
+	padding: 30px;
+	border-radius: 4px;
+}
+
+.alert-bg-danger {
+	background: var(--ERROR_ALERT_BG);
+}
+
+.alert-bg-success {
+	background: var(--SUCCESS_ALERT_BG);
+	color: var(--EDIT_COLOR);
+	border: 1px solid var(--EDIT_COLOR);
+	padding: 30px;
+	border-radius: 4px;
+}
+
+
+
 
 
 .shake{
@@ -277,3 +334,6 @@ input[readonly]
 		transform:  translate(0px,0px)  ;
 	}
 }
+
+
+

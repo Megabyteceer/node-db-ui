@@ -1,13 +1,12 @@
 
 
-import constants from "./custom/consts.js";
 import User from "./user.js";
 import {isLitePage} from "./utils.js";
 
 var style = {
 	width: '100%',
 	color: '#fff',
-	background: constants.BRAND_COLOR,
+	background: window.constants.BRAND_COLOR,
 	fontSize: '120%',
 	textAlign: 'center',
 	zIndex: 8

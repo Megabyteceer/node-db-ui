@@ -1,7 +1,5 @@
 import FieldAdmin from "./admin/field-admin.js";
 import NodeAdmin, {createNodeForMenuItem} from "./admin/node-admin.js";
-import constants from "./custom/consts.js";
-import {ENV} from "./main-frame.js";
 import {iAdmin} from "./user.js";
 import {isLitePage, L, loactionToHash, renderIcon, setFormFilter, sp} from "./utils.js";
 
@@ -29,10 +27,10 @@ var itemStyle = {
 
 var groupStyle = {
 	display: 'block',
-	background: constants.BRAND_COLOR,
+	background: window.constants.BRAND_COLOR,
 	//textTransform: 'uppercase',
 	fontWeight: 'bold',
-	color: constants.BRAND_COLOR_SHINE,
+	color: window.constants.BRAND_COLOR_SHINE,
 	border: 0,
 	padding: '5px 3px',
 	fontSize: '70%',
@@ -113,15 +111,16 @@ class BarItem extends React.Component {
 	render() {
 		var item = this.props.item;
 
+		/// #if DEBUG
 		var adminControl;
 		if(iAdmin()) {
 			if(item.field) {
-				adminControl = ReactDOM.div({style: {position: 'absolute', left: '0'}}, React.createElement(FieldAdmin, {field: item.field, form: item.form, x: -10, y: 0}));
+				adminControl = ReactDOM.div({className: "left-bar-admin-button"}, React.createElement(FieldAdmin, {field: item.field, form: item.form, x: -10, y: 0}));
 			} else {
-				adminControl = ReactDOM.div({style: {position: 'absolute', left: '0'}}, React.createElement(NodeAdmin, {menuItem: item, x: -10, y: 0}));
+				adminControl = ReactDOM.div({className: "left-bar-admin-button"}, React.createElement(NodeAdmin, {menuItem: item, x: -10, y: 0}));
 			}
 		}
-
+		/// #endif
 
 		var innerItemStyle = Object.assign({}, itemStyle);
 
@@ -136,12 +135,14 @@ class BarItem extends React.Component {
 			return ReactDOM.div({
 				style: {
 					background: '#ebe5e8',
-					borderLeft: '5px solid ' + constants.BRAND_COLOR_DARK,
+					borderLeft: '5px solid ' + window.constants.BRAND_COLOR_DARK,
 					overflow: 'hidden',
 					width: collapsed ? 33 : undefined,
 				}, className: 'lb-item' + (item.tabId ? " lb-item-" + item.tabId : undefined)
 			},
+				/// #if DEBUG
 				adminControl,
+				/// #endif
 				ReactDOM.span({
 					style: innerItemStyle, className: 'unclickable'
 				},
@@ -244,7 +245,7 @@ function renderItemsArray(itemsArray, level, item) {
 		var i = itemsArray[k];
 		if(typeof i === 'string') {
 			if(!collapsed) {
-				ret.push(ReactDOM.h5({key: ret.length, style: {fontWeight: 'bold', margin: '29px 0', marginLeft: '20px', color: constants.BRAND_COLOR_HEADER}}, i));
+				ret.push(ReactDOM.h5({key: ret.length, style: {fontWeight: 'bold', margin: '29px 0', marginLeft: '20px', color: window.constants.BRAND_COLOR_HEADER}}, i));
 			}
 		} else {
 			var itemActive = isCurrentlyShowedLeftbarItem(i);

@@ -85,7 +85,6 @@ import {initDictionary} from "../../js/utils.js";
 		'ADM_A_ORG': 'Allowed inside organization',
 		'ADM_A_FULL': 'Full access',
 		'ADM_NODE_ACCESS': 'Previlegies for node ',
-		'ADM_ROLE': 'Role',
 		'APPLY': 'Apply',
 		'PREVIEW': 'Preview:',
 		'SELECT_IMG': 'Select...',
