@@ -146,7 +146,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 				}
 			}
 
-			if(filterFields && filterFields[fieldName]) {
+			if(filterFields && filterFields.hasOwnProperty(fieldName)) {
 				if(f.forSearch) {
 					const fltVal = filterFields[fieldName];
 					if(f.fieldType === FIELD_1_TEXT) {

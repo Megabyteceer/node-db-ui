@@ -173,7 +173,9 @@ formsEventsOnLoad[4] = function _nodes_onload() {//form4onloadBegin_JS89DW72SISA
 		}
 		this.hideField('_fieldsID');
 	}
-
+	if(!this.rec_creation) {
+		this.addLookupFilters('_nodesID', 'exludeIDs', [this.rec_ID]);
+    }
 	this.addLookupFilters('_nodesID', 'isDoc', 0);
 	this.addLookupFilters('_fieldsID', {
 		node_fields_linker: this.rec_ID,
