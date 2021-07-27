@@ -1,6 +1,5 @@
-Hide enum value parent field if it subform
-
 Add classes for all elements. Move styles to css.
+
 Make selenium tests
 
 модальные формы для редактирования админских вещей. (admin.popup заменить)

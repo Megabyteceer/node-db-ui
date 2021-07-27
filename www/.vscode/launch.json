@@ -12,12 +12,30 @@
 			"outFiles": [],
 			"disableNetworkCache": true,
 			"sourceMaps": false,
+			"skipFiles": [
+				"<node_internals>/**",
+				"**/lib/**"
+			],
 			"vueComponentPaths": [],
 			"enableContentValidation": false,
 			"pauseForSourceMap": true,
 			"cleanUp": false,
 			"url": "https://node-db-ui.com:1443/#n/82/r/7/e",
 			"userDataDir": "C:\\tmp\\userdir"
+		},
+		{
+			"name": "FF",
+			"type": "firefox",
+			"request": "launch",
+			"reAttach": true,
+			"webRoot": "${workspaceFolder}",
+			"url": "https://node-db-ui.com:1443/#n/82/r/7/e",
+			"pathMappings": [
+				{
+					"url": "https://node-db-ui.com:1443",
+					"path": "${workspaceFolder}"
+				}
+			]
 		}
 	]
 }

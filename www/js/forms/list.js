@@ -334,20 +334,15 @@ export default class List extends BaseForm {
 						}
 
 						lines.push(
-							ReactDOM.span({key: UID(item) + 'btns', className: 'btns', style: {display: 'inline-block', width: 0}},
+							ReactDOM.span({key: UID(item) + 'btns', className: 'btns', style: {display: 'inline-block'}},
 								btns
 							)
-
 						);
-
-
-
 					}
 				})()
 
 			}
 		}
-
 
 		var nodeAdmin;
 		if(iAdmin()) {

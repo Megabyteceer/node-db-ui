@@ -57,7 +57,7 @@ fieldsEvents[30] = function _nodes_isDoc_onChange() {//field30onchangebegin_cswh
 
 
 fieldsEvents[9] = function _fields_fieldName_onChange() {//field9onchangebegin_cswhggft
-this.check12nFieldName();
+	this.check12nFieldName();
 } //field9onchangeend_wqdggft
 
 fieldsEvents[20] = function _fields_fieldType_onChange() {//field20onchangebegin_cswhggft
@@ -191,6 +191,10 @@ fieldsEvents[318] = function _fields_vis_reflist_onChange() {//field318onchangeb
 fieldsEvents[253] = function _fields_nodeRef_onChange() {//field253onchangebegin_cswhggft
 	this.check12nFieldName();
 } //field253onchangeend_wqdggft
+
+fieldsEvents[680] = function my_records_btn_onChange() {//field680onchangebegin_cswhggft
+	alert(2);
+} //field680onchangeend_wqdggft
 
 //insertNewhandlersHere_adsqw09
 

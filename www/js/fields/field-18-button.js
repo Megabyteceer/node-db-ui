@@ -17,7 +17,7 @@ registerFieldClass(FIELD_18_BUTTON, class ButtonField extends fieldMixins {
 
 	onClick() {
 		if(fieldsEvents.hasOwnProperty(this.props.field.id)) {
-			eventProcessingMixins.processFormEvent.call(this.props.form, fieldsEvents[this.props.field.id], true);
+			this.props.form.processFormEvent.call(this.props.form, fieldsEvents[this.props.field.id], true);
 		}
 	}
 
