@@ -7,23 +7,6 @@ import {Stage} from "./stage.js";
 import TopBar from "./top-bar.js";
 import {getData} from "./utils.js";
 
-var style = {
-	width: '100%'
-}
-
-var subStyle = {
-	//minHeight:'600px',
-	background: '#fff'
-}
-
-var footerStyle = {
-	color: '#ccc',
-	padding: '50px',
-	fontSize: '80%',
-	textAlign: 'center'
-	//,marginBottom:500
-}
-
 const ENV = {};
 
 class MainFrame extends React.Component {
@@ -72,21 +55,19 @@ class MainFrame extends React.Component {
 		if(!ENV.nodesTree) {
 			return ReactDOM.div(null, debug);
 		}
-		return ReactDOM.div({style: style},
+		return ReactDOM.div(null,
 			React.createElement(TopBar),
-			ReactDOM.div({style: subStyle},
-				ReactDOM.table({style: {width: '100%'}},
-					ReactDOM.tbody(null,
-						ReactDOM.tr(null,
-							React.createElement(LeftBar, {staticItems: ENV.rootItem.children}),
-							ReactDOM.td({style: {verticalAlign: 'top'}},
-								React.createElement(Stage)
-							)
+			ReactDOM.table({className: "root-table"},
+				ReactDOM.tbody(null,
+					ReactDOM.tr(null,
+						React.createElement(LeftBar, {staticItems: ENV.rootItem.children}),
+						ReactDOM.td({className: "stage-container"},
+							React.createElement(Stage)
 						)
 					)
 				)
 			),
-			ReactDOM.div({style: footerStyle}, ENV.APP_TITLE),
+			ReactDOM.div({className: "footer"}, ENV.APP_TITLE),
 			React.createElement(Modal),
 			React.createElement(Notify),
 			debug,

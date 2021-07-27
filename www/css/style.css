@@ -416,8 +416,20 @@ input[readonly]
 	bottom: 3px;
 }
 
+.footer {
+	color: #ccc;
+	padding: 50px;
+	font-size: 80%;
+	text-align: center;
+}
 
+.root-table {
+	width: 100%;
+}
 
+.stage-container {
+	vertical-align: top;
+}
 
 
 
