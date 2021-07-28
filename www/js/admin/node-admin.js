@@ -92,10 +92,14 @@ export default class NodeAdmin extends Component {
 		var borderOnSave;
 		var borderOnLoad;
 		if(formsEventsOnSave.hasOwnProperty(nodeId)) {
-			borderOnSave = "2px solid #00840088";
+			borderOnSave = " admin-button-highlighted";
+		} else {
+			borderOnSave = '';
 		}
 		if(formsEventsOnLoad.hasOwnProperty(nodeId)) {
-			borderOnLoad = "2px solid #00840088";
+			borderOnLoad = " admin-button-highlighted";
+		} else {
+			borderOnLoad = '';
 		}
 
 
@@ -152,8 +156,7 @@ export default class NodeAdmin extends Component {
 						'all fields ', renderIcon('caret-down')
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
-						style: {border: borderOnLoad},
+						className: 'clickable toolbtn admin-form-btn' + borderOnLoad,
 						onClick: () => {
 							admin_editSource('onload', node, undefined, form);
 						},
@@ -162,8 +165,7 @@ export default class NodeAdmin extends Component {
 						'onLoad...'
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
-						style: {border: borderOnSave},
+						className: 'clickable toolbtn admin-form-btn' + borderOnSave,
 						onClick: () => {
 							admin_editSource('onsave', node, undefined, form);
 						},
@@ -327,8 +329,7 @@ export default class NodeAdmin extends Component {
 			onClick: sp
 		},
 			R.span({
-				style: {border: borderOnLoad || borderOnSave},
-				className: 'halfvisible admin-form-open-btn',
+				className: 'halfvisible admin-form-open-btn' + (borderOnLoad || borderOnSave),
 				onMouseEnter: this.show
 			},
 				renderIcon('wrench')

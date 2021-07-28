@@ -54,7 +54,9 @@ export default class FieldAdmin extends Component {
 
 		var border;
 		if(fieldsEvents.hasOwnProperty(field.id)) {
-			border = "2px solid #00440050";
+			border = " admin-button-highlighted";
+		} else {
+			border = "";
 		}
 
 		var bodyVisible = this.state.show || this.state.locked;
@@ -93,8 +95,7 @@ export default class FieldAdmin extends Component {
 					className: "admin-form-content"
 				},
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
-						style: {border},
+						className: 'clickable toolbtn admin-form-btn' + border,
 						onClick: () => {
 
 							admin_editSource('onchange', node, field, form);
@@ -183,8 +184,7 @@ export default class FieldAdmin extends Component {
 		},
 			R.span({
 				ref: keepInWindow,
-				style: {border},
-				className: 'halfvisible admin-form-open-btn',
+				className: 'halfvisible admin-form-open-btn' + border,
 				onMouseEnter: this.onShow
 			},
 				renderIcon('wrench')
