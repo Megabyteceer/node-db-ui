@@ -430,10 +430,10 @@ export default class FormFull extends eventProcessingMixins {
 					saveButton = R.button({className: 'clickable clickable-edit success-button save-btn', onClick: this.saveClick, title: L('SAVE')}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
 				} else {
 					if(data.status === 1) {
-						draftButton = R.button({className: 'clickable default-button clickable-cancel', onClick: () => {this.saveClick(true)}, title: L('UNPUBLISH')}, L('UNPUBLISH'));
+						draftButton = R.button({className: 'clickable default-button', onClick: () => {this.saveClick(true)}, title: L('UNPUBLISH')}, L('UNPUBLISH'));
 						saveButton = R.button({className: 'clickable  clickable-edit success-button save-btn', onClick: this.saveClick}, L('SAVE'));
 					} else {
-						draftButton = R.button({className: 'clickable default-button clickable-cancel', onClick: () => {this.saveClick(true)}, title: L('SAVE_TEMPLATE')}, L('SAVE_TEMPLATE'));
+						draftButton = R.button({className: 'clickable default-button', onClick: () => {this.saveClick(true)}, title: L('SAVE_TEMPLATE')}, L('SAVE_TEMPLATE'));
 						saveButton = R.button({className: 'clickable clickable-edit success-button save-btn', onClick: this.saveClick, title: L('PUBLISH')}, L('PUBLISH'));
 
 					}
@@ -449,9 +449,9 @@ export default class FormFull extends eventProcessingMixins {
 			}
 
 			if(this.props.editable) {
-				closeButton = R.button({className: 'clickable default-button clickable-cancel', onClick: this.cancelClick, title: L('CANCEL')}, renderIcon('caret-left'), this.isSlave() ? '' : L('CANCEL'));
+				closeButton = R.button({className: 'clickable default-button', onClick: this.cancelClick, title: L('CANCEL')}, renderIcon('caret-left'), this.isSlave() ? '' : L('CANCEL'));
 			} else {
-				closeButton = R.button({className: 'clickable default-button clickable-cancel', onClick: this.cancelClick}, renderIcon('caret-left'), this.isSlave() ? '' : L('BACK'));
+				closeButton = R.button({className: 'clickable default-button', onClick: this.cancelClick}, renderIcon('caret-left'), this.isSlave() ? '' : L('BACK'));
 			}
 		}
 		return R.div({className: domId, style: style},

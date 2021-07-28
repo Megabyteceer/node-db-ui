@@ -60,21 +60,21 @@ async function myPromt(txt, yesLabel, noLabel, yesIcon, noIcon, discardByOutside
 		}
 
 		noButton = R.button({
-			style: {background: '#f84c4c', padding: '10px 45px 10px 40px'}, onClick: () => {
+			onClick: () => {
 				Modal.instance.hide();
 				resolve(false);
-			}, className: 'clickable clickable-neg'
+			}, className: 'clickable clickable-neg prompt-no-button'
 		}, renderIcon(noIcon), ' ', noLabel);
 
-		var body = R.span({style: {minWidth: '700px', display: 'inline-block', background: '#F7F7F7', color: '#000', border: '3px solid #F7F7F7', padding: '30px'}},
+		var body = R.span({className: 'prompt-body'},
 			txt,
-			R.div({style: {marginTop: '30px'}},
+			R.div({className: 'prompt-footer'},
 				noButton,
 				R.button({
-					style: {background: '#A8A9AD', padding: '10px 55px 10px 40px'}, onClick: () => {
+					onClick: () => {
 						Modal.instance.hide();
 						resolve(true);
-					}, className: 'clickable clickable-cancel'
+					}, className: 'clickable prompt-yes-button'
 				}, renderIcon(yesIcon), ' ', yesLabel)
 			)
 		);

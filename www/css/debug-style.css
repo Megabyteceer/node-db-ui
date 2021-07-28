@@ -119,6 +119,10 @@
 	color: #00000040;
 }
 
+.admin-button-highlighted {
+	border: 2px solid #00440050;
+}
+
 .admin-form-content {
 	margin-top: 5px;
 	text-align: center;
