@@ -39,7 +39,7 @@ h5{
 }
 
 .hidden {
-	display:none;
+	display: none;
 }
 
 .container {
@@ -477,7 +477,6 @@ input[readonly]
 	width: 50px;
 }
 
-
 .top-bar-user-multilang-active {
 	color: #ffbf8c;
 }
@@ -573,12 +572,187 @@ input[readonly]
 	padding: 10px 45px 10px 40px;
 }
 
+.field-wrap {
+	margin: 20px 0;
+	max-width: 1124px;
+}
+
+.field-wrap-lang {
+	margin-top: -22px;
+}
+
+.form-compact .field-wrap {
+	display: inline-block;
+	vertical-align: middle;
+	margin: 1px;
+}
+
+.field-wrap-inline {
+	width: 30%;
+}
+
+
+
+.field-wrap-value {
+	vertical-align: top;
+	width: 70%;
+	color: var(--TEXT_COLOR);
+	font-size: 110%;
+	display: inline-block;
+}
+
+.field-wrap-value-no-label {
+	width: 100%;
+	color: var(--TEXT_COLOR);
+	font-size: 110%;
+	display: inline-block;
+}
+
+.field-wrap-label {
+	font-size: 110%;
+	font-weight: bold;
+	padding: 5px 0;
+	width: 25%;
+	padding-right: 20px;
+	color: var(--TEXT_COLOR);
+	text-align: right;
+	vertical-align: top;
+	display: inline-block;
+}
+
+.field-wrap-help-container {
+	display: inline-block;
+	position: relative;
+	width: 0;
+	left: 30px;
+	bottom: 10px;
+	overflow: visible;
+	color: #707072;
+}
+
+.field-wrap-help {
+	position: absolute;
+	right: 0;
+	color: #707072;
+}
+
+.field-wrap-help-open {
+	z-index: 2;
+	width: 300px;
+	background: #707072;
+	color: #f0f0f2;
+	padding: 10px;
+	border-radius: 5px;
+	font-size: 80%;
+}
+
+.field-wrap-required-star {
+	color: red;
+	font-size: 60%;
+	vertical-align: top
+}
+
+.field-wrap-alert {
+	background: #fee;
+	border-top: 2px solid #a33;
+	color: #700;
+	font-size: 70%;
+	padding: 3px;
+	margin-top: 2px;
+	margin-bottom: -16px;
+}
+
+.field-wrap-alert-success {
+	background: #efe;
+	border-top: 2px solid #3a3;
+	color: #070;
+}
+
+.field-wrap-label-lang {
+	color: #aaa;
+	font-size: 65%;
+}
+
+.field-wrap-tooltip {
+	position: absolute;
+	z-index: 2;
+	margin-top: 8px;
+	font-size: 12px;
+	white-space: nowrap;
+	pointer-events: none;
+}
+
+.field-wrap-tooltip-arrow {
+	color: #665;
+	margin: -1px;
+}
+
+.field-wrap-tooltip-body {
+	background: #665;
+	border-radius: 4;
+	color: #ddc;
+	padding: 3px 10px;
+}
 
 
 
 
 
 
+
+
+
+.select-control-wrapper {
+	display: inline-block;
+	width: 100%;
+	background: #fff;
+	border-radius: 4px;
+	vertical-align: middle;
+	text-align: left;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.disabled .select-control-wrapper {
+	background: unset,
+}
+
+.form-compact .select-control-wrapper {
+	width: 230px; /*TODO is it necessary? */
+}
+
+.select-control {
+	position: relative;
+	padding: 7px 8px;
+	color: #333;
+	border: 1px solid #a8a8a8;
+	border-radius: 4px;
+}
+
+.select-control-list {
+	position: absolute;
+	margin-top: -2px;
+	z-index: 2;
+	background: #fff;
+	color: #333;
+	border: 1px solid #ddd;
+	box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.26);
+}
+
+.disabled .select-control-list {
+	background: unset,
+}
+
+.select-control-item {
+	padding: 6px 20px;
+	border-top: 1px solid #ddd;
+}
+
+.select-control-caret {
+	position: absolute;
+	right: 2px;
+	top: 8px;
+}
 
 
 

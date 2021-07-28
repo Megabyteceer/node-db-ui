@@ -1,18 +1,5 @@
 import {renderIcon} from "../utils.js";
 
-var style = {
-	position: 'relative',
-	padding: '7px 8px',
-	color: '#333',
-	border: '1px solid #a8a8a8',
-	borderRadius: '4px'
-}
-
-var optionStyle = {
-	padding: '6px 20px',
-	borderTop: '1px solid #ddd'
-}
-
 export default class Select extends Component {
 	constructor(props) {
 		super(props);
@@ -46,13 +33,6 @@ export default class Select extends Component {
 
 	render() {
 
-		var w;
-		if(this.props.isCompact) {
-			w = 230;
-		} else {
-			w = '100%';
-		}
-
 		var curVal = this.state.curVal || this.props.defaultValue;
 		for(let o of this.props.options) {
 			if(o.value === curVal) {
@@ -64,20 +44,11 @@ export default class Select extends Component {
 		var optionsList;
 		if(this.state.expanded) {
 			optionsList = R.div({
-				style: {
-					position: 'absolute',
-					marginTop: -2,
-					zIndex: 2,
-					background: this.props.disabled ? undefined : '#fff',
-					color: '#333',
-					border: '1px solid #ddd',
-					boxShadow: '0px 2px 5px 0px rgba(0,0,0,0.26)'
-				}
+				className: 'select-control-list'
 			},
 				this.props.options.map((o) => {
 					return R.div({
-						style: optionStyle,
-						className: this.props.disabled ? 'unclickable disabled' : 'clickable',
+						className: 'clickable select-control-item',
 						key: o.value,
 						title: o.name,
 						onClick: () => {
@@ -91,39 +62,20 @@ export default class Select extends Component {
 		}
 
 		var downCaret = R.div({
-			style: {
-				position: 'absolute',
-				right: '2px',
-				top: '8px'
-			}
+			className: 'select-control-caret'
 		}, renderIcon('caret-down'));
 
 		return R.span({
-			style: {
-				display: 'inline-block',
-				width: w,
-				background: this.props.disabled ? undefined : '#fff',
-				borderRadius: 4,
-				verticalAlign: 'middle',
-				textAlign: 'left',
-				whiteSpace: 'nowrap',
-				overflow: 'hidden'
-			},
+			className: 'select-control-wrapper',
 			onMouseLeave: this.onMouseLeave
 		},
 			R.div({
-				style: this.props.style || style,
-				className: this.props.disabled ? 'unclickable disabled' : 'clickable',
+				className: this.props.disabled ? 'unclickable disabled select-control' : 'clickable select-control',
 				onClick: this.toggle
 			},
-
 				curVal || '\xa0',
 				downCaret
-
 			), optionsList
-
 		)
-
-
 	}
 }

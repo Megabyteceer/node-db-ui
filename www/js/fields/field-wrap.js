@@ -1,43 +1,6 @@
 import FieldAdmin from "../admin/field-admin.js";
 import {iAdmin} from "../user.js";
-import {consoleLog, getClassForField, renderIcon, scrollToVisible, setFormFilter} from "../utils.js";
-
-var style = {
-	margin: '20px 0',
-	maxWidth: 1124
-};
-var styleLang = {
-	margin: '20px 0',
-	marginTop: -22,
-	maxWidth: 1124
-}
-
-var valuePartStyle = {
-	verticalAlign: 'top',
-	width: '70%',
-	color: window.constants.TEXT_COLOR,
-	fontSize: '110%',
-	display: 'inline-block'
-};
-var valueNoLabelPartStyle = {
-	width: '100%',
-	color: window.constants.TEXT_COLOR,
-	fontSize: '110%',
-	display: 'inline-block'
-};
-
-var labelStyle = {
-	fontSize: '110%',
-	fontWeight: 'bold',
-	padding: '5px 0',
-	width: '25%',
-	paddingRight: '20px',
-	color: window.constants.TEXT_COLOR,
-	textAlign: 'right',
-	verticalAlign: 'top',
-	display: 'inline-block'
-};
-
+import {consoleLog, debugError, getClassForField, renderIcon, scrollToVisible, setFormFilter} from "../utils.js";
 
 class FieldHelp extends Component {
 	constructor(props) {
@@ -56,16 +19,14 @@ class FieldHelp extends Component {
 
 	render() {
 		var body;
-
 		if(this.state && this.state.hovered) {
-			body = R.div({style: {position: 'absolute', right: 0, zIndex: 2, width: 300, background: '#707072', color: '#f0f0f2', padding: 10, borderRadius: 5, fontSize: '80%'}},
+			body = R.div({className: 'field-wrap-help field-wrap-help-open'},
 				this.props.text
 			);
 		} else {
-			body = R.div({style: {position: 'absolute', right: 0, color: '#707072'}}, renderIcon('question-circle'));
+			body = R.div({className: 'field-wrap-help'}, renderIcon('question-circle'));
 		}
-
-		return R.div({onMouseOver: this.mouseOver, onMouseOut: this.mouseOut, style: {display: 'inline-block', position: 'relative', width: 0, left: 30, bottom: 10, overflow: 'visible', color: '#707072'}}, body);
+		return R.div({onMouseOver: this.mouseOver, onMouseOut: this.mouseOut, className: 'field-wrap-help-container'}, body);
 	}
 }
 
@@ -74,7 +35,7 @@ class FieldLabel extends Component {
 		var field = this.props.field;
 		var star;
 		if(this.props.isEdit && field.requirement) {
-			star = R.span({style: {color: 'red', fontSize: '60%', verticalAlign: 'top'}}, '*');
+			star = R.span({className: 'field-wrap-required-star'}, '*');
 		} else {
 			star = '';
 		}
@@ -82,22 +43,22 @@ class FieldLabel extends Component {
 		var alertBody;
 		if(this.props.fieldAlert) {
 			if(this.props.isSucessAlert) {
-				alertBody = R.div({style: {background: '#efe', borderTop: '2px solid #3a3', color: '#070', fontSize: '70%', padding: '3px', marginTop: '2px', marginBottom: '-16px'}, className: 'fade-in'}, this.props.fieldAlert);
+				alertBody = R.div({className: 'fade-in field-wrap-alert field-wrap-alert-success'}, this.props.fieldAlert);
 			} else {
-				alertBody = R.div({style: {background: '#fee', borderTop: '2px solid #a33', color: '#700', fontSize: '70%', padding: '3px', marginTop: '2px', marginBottom: '-16px'}, className: 'fade-in'}, this.props.fieldAlert);
+				alertBody = R.div({className: 'fade-in field-wrap-alert'}, this.props.fieldAlert);
 			}
 		}
 
 		var body;
 		if(field.lang) {
-			body = R.span({style: {color: '#aaa', fontSize: '65%'}},
+			body = R.span({className: 'field-wrap-label-lang'},
 				field.lang
 			)
 		} else {
 			body = (field.fieldType !== FIELD_18_BUTTON) ? (this.props.labelOwerride || field.name) : '';
 		}
 
-		return R.div({className: 'field-label', style: labelStyle},
+		return R.div({className: 'field-wrap-label'},
 			body,
 			star,
 			alertBody
@@ -119,7 +80,9 @@ export default class FieldWrap extends Component {
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		this.hidden = nextProps.hidden;
 		//this.currentValue = nextProps.initialValue;
-		this.fieldDisabled |= nextProps.fieldDisabled;
+		if(nextProps.fieldDisabled) {
+			this.fieldDisabled = true;
+		}
 	}
 
 	hideTooltip() {
@@ -349,19 +312,28 @@ export default class FieldWrap extends Component {
 			fieldAdmin = React.createElement(FieldAdmin, {field, form: this.props.form, x: -10});
 		}
 
-		if(this.props.isCompact) {
+		let className = domId + ' field-wrap';
+		if(this.hidden
+			/// #if DEBUG
+			&& !this.props.form.showAllDebug
+			/// #endif
+		) {
+			className += ' hidden';
+		}
 
+		if(this.props.isCompact) {
+			if(this.props.isTable) {
+				className += ' field-wrap-inline';
+			}
 			var tooltip;
 			if(this.state.showtooltip) {
-				tooltip = R.span({style: {position: 'absolute', zIndex: 2, marginTop: 8, fontSize: 12, whiteSpace: 'nowrap', pointerEvents: 'none'}},
-					R.span({className: 'fa fa-caret-left', style: {color: '#665', margin: -1}}),
-					R.span({style: {background: '#665', borderRadius: 4, color: '#ddc', padding: '3px 10px'}}, field.name, (field.lang ? (' (' + field.lang + ')') : undefined), (this.state && this.state.fieldAlert) ? (' (' + this.state.fieldAlert + ')') : '')
+				tooltip = R.span({className: 'field-wrap-tooltip'},
+					R.span({className: 'fa fa-caret-left field-wrap-tooltip-arrow'}),
+					R.span({className: 'field-wrap-tooltip-body'}, field.name, (field.lang ? (' (' + field.lang + ')') : undefined), (this.state && this.state.fieldAlert) ? (' (' + this.state.fieldAlert + ')') : '')
 				)
 			}
-
 			return R.span({
-				style: {width: this.props.isTable ? undefined : '30%', display: (this.hidden && !this.props.form.showAllDebug) ? 'none' : 'inline-block', verticalAlign: 'middle'},
-				className: domId,
+				className,
 				onFocus: () => {
 					this.setState({showtooltip: true});
 				},
@@ -375,16 +347,16 @@ export default class FieldWrap extends Component {
 				tooltip
 			);
 		} else {
-
+			if(field.lang) {
+				className += 'field-wrap-lang';
+			}
 			var label;
-
 			if(!noLabel) {
 				label = React.createElement(FieldLabel, {field, isEdit: this.props.isEdit, labelOwerride: this.labelOwerride, fieldAlert: this.state ? this.state.fieldAlert : undefined, isSucessAlert: this.state ? this.state.isSucessAlert : undefined});
 			}
-
-			return R.div({className: domId, style: (this.hidden && !this.props.form.showAllDebug) ? {display: 'none'} : (field.lang ? styleLang : style)},
+			return R.div({className},
 				label,
-				R.div({style: noLabel ? valueNoLabelPartStyle : valuePartStyle},
+				R.div({className: noLabel ? 'field-wrap-value-no-label' : 'field-wrap-value'},
 					fieldTypedBody,
 					fieldCustomBody
 				),

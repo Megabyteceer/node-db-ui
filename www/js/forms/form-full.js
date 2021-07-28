@@ -168,10 +168,6 @@ export default class FormFull extends eventProcessingMixins {
 	}
 	async saveClickInner(isDraft) {
 
-		let a = "end";
-		a = 213;
-
-
 		this.forceBouncingTimeout();
 		var data = {};
 
@@ -295,7 +291,10 @@ export default class FormFull extends eventProcessingMixins {
 		var flds = node.fields;
 
 		var domId = 'form-full-' + node.id;
-
+		var className = domId;
+		if(this.props.isCompact) {
+			className += ' form-compact';
+		}
 
 		var forcedValues = this.props.filters;
 		var currentTab;
@@ -454,7 +453,7 @@ export default class FormFull extends eventProcessingMixins {
 				closeButton = R.button({className: 'clickable default-button', onClick: this.cancelClick}, renderIcon('caret-left'), this.isSlave() ? '' : L('BACK'));
 			}
 		}
-		return R.div({className: domId, style: style},
+		return R.div({className, style: style},
 			nodeAdmin,
 			header,
 			tabs || fields,

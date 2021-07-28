@@ -328,8 +328,9 @@ formsEventsOnLoad[6] = function _fields_onload() {//form6onloadBegin_JS89DW72SIS
 			if(nodeId && fn && fn.length >= 3) {
 				if((this.fieldValue("fieldType") === FIELD_15_1toN) && nodeRef) {
 					checkFieldExists(fn + '_linker', nodeRef);
+				} else {
+					checkFieldExists(fn, nodeId);
 				}
-				checkFieldExists(fn, nodeId);
 			}
 		}
 	};
