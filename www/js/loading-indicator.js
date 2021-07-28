@@ -36,3 +36,5 @@ export default class LoadingIndicator extends Component {
 
 	}
 }
+/** @type LoadingIndicator */
+LoadingIndicator.instance = null;

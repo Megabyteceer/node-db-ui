@@ -4,7 +4,7 @@ import {consoleDir, getNode, getNodeData, isLitePage, popup, refreshForm, submit
 
 const admin = {};
 
-admin.moveField = async (fIndex, form, node, direction) => {
+admin.moveField = async (fIndex, form, node, direction = 0) => {
 	var fieldIndex;
 	var j = 0;
 	var fields = node.fields.filter((f, i) => {
@@ -17,118 +17,118 @@ admin.moveField = async (fIndex, form, node, direction) => {
 		}
 		return false;
 	});
+	if(typeof fieldIndex !== 'undefined') {
+		var field = fields[fieldIndex];
+		var group1 = [];
+		var group2 = [];
+		var f;
+		var i;
 
-	var field = fields[fieldIndex];
-	var group1 = [];
-	var group2 = [];
-	var f;
-	var i;
+		if(field.fieldType === FIELD_17_TAB) {
+			if(field.maxlen === 0) { //two tabs exchanging
 
-
-	if(field.fieldType === FIELD_17_TAB) {
-		if(field.maxlen === 0) { //two tabs exchanging
-
-			i = fieldIndex;
-			group1.push(fields[i]);
-			i++;
-			while(i < fields.length && i >= 0) {
-				f = fields[i];
-
-				if(f.fieldType === FIELD_17_TAB && f.maxlen === 0) {
-					break;
-				}
-				group1.push(f);
+				i = fieldIndex;
+				group1.push(fields[i]);
 				i++;
-			}
+				while(i < fields.length && i >= 0) {
+					f = fields[i];
 
-			if(direction < 0) {
-				if(fieldIndex > 0) {
-					i = fieldIndex - 1;
-					while(i > 0) {
-						var f = fields[i];
-						if(f.fieldType === FIELD_17_TAB && f.maxlen === 0) {
-							break;
+					if(f.fieldType === FIELD_17_TAB && f.maxlen === 0) {
+						break;
+					}
+					group1.push(f);
+					i++;
+				}
+
+				if(direction < 0) {
+					if(fieldIndex > 0) {
+						i = fieldIndex - 1;
+						while(i > 0) {
+							var f = fields[i];
+							if(f.fieldType === FIELD_17_TAB && f.maxlen === 0) {
+								break;
+							}
+							i--;
 						}
+						while(i < fieldIndex) {
+							group2.push(fields[i]);
+							i++;
+						}
+					}
+				} else {
+					if(i < fields.length) {
+						group2.push(fields[i]);
+						i++;
+						while(i < fields.length) {
+							var f = fields[i];
+							if(f.fieldType === FIELD_17_TAB && f.maxlen === 0) {
+								break;
+							}
+							group2.push(f);
+							i++;
+						}
+					}
+				}
+
+			} else { //compact area exchange
+
+				group1.push(fields[fieldIndex]);
+				i = fieldIndex + 1;
+				while(fields[i].isCompactNested) {
+					group1.push(fields[i]);
+					i++;
+				}
+				if(direction < 0) {
+					i = fieldIndex - 1;
+					while(fields[i].isCompactNested) {
 						i--;
 					}
 					while(i < fieldIndex) {
 						group2.push(fields[i]);
 						i++;
 					}
-				}
-			} else {
-				if(i < fields.length) {
+				} else {
 					group2.push(fields[i]);
 					i++;
-					while(i < fields.length) {
-						var f = fields[i];
-						if(f.fieldType === FIELD_17_TAB && f.maxlen === 0) {
-							break;
-						}
-						group2.push(f);
+					while(fields[i].isCompactNested) {
+						group2.push(fields[i]);
 						i++;
 					}
 				}
 			}
 
-		} else { //compact area exchange
+		} else { //field and field exchange;
 
 			group1.push(fields[fieldIndex]);
-			i = fieldIndex + 1;
-			while(fields[i].isCompactNested) {
-				group1.push(fields[i]);
-				i++;
-			}
-			if(direction < 0) {
-				i = fieldIndex - 1;
-				while(fields[i].isCompactNested) {
-					i--;
-				}
-				while(i < fieldIndex) {
-					group2.push(fields[i]);
-					i++;
-				}
-			} else {
+			i = fieldIndex + direction;
+			if((i < fields.length) && (i >= 0)) {
 				group2.push(fields[i]);
-				i++;
-				while(fields[i].isCompactNested) {
-					group2.push(fields[i]);
-					i++;
-				}
 			}
 		}
 
-	} else { //field and field exchange;
-
-		group1.push(fields[fieldIndex]);
-		i = fieldIndex + direction;
-		if(i < fields.length && i >= 0) {
-			group2.push(fields[i]);
+		if(group2.length === 0) {
+			return;
 		}
-	}
 
-	if(group2.length === 0) {
-		return;
-	}
+		let field1 = await getNodeData(6, group1[0].id);
+		let field2 = await getNodeData(6, group2[0].id);
 
-	let field1 = await getNodeData(6, group1[0].id);
-	let field2 = await getNodeData(6, group2[0].id);
-
-	var prior = Math.min(field1.prior, field2.prior);
-	if(direction < 0) {
-		group1 = group1.concat(group2);
-	} else {
-		group1 = group2.concat(group1);
+		var prior = Math.min(field1.prior, field2.prior);
+		if(direction < 0) {
+			group1 = group1.concat(group2);
+		} else {
+			group1 = group2.concat(group1);
+		}
+		for(let f of group1) {
+			f.prior = prior;
+			prior++;
+		}
+		await Promise.all(group1.map((f) => {
+			return submitRecord(6, {prior: f.prior}, f.id);
+		}));
+		await getNode(node.id, true);
+		refreshForm();
 	}
-	for(let f of group1) {
-		f.prior = prior;
-		prior++;
-	}
-	await Promise.all(group1.map((f) => {
-		return submitRecord(6, {prior: f.prior}, f.id);
-	}));
-	await getNode(node.id, true);
-	refreshForm();
 }
 
 admin.exchangeNodes = async (node1, node2) => {

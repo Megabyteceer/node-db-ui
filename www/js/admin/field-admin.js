@@ -14,6 +14,7 @@ export default class FieldAdmin extends Component {
 		this.onShow = this.onShow.bind(this);
 		this.hide = this.hide.bind(this);
 		this.toggleLock = this.toggleLock.bind(this);
+		this.timeout = null;
 	}
 
 	onShow() {

@@ -47,11 +47,11 @@ class Stage extends Component {
 	}
 
 	setFormFilter(name, val) {
-		if(!this.state.filters) {
-			this.state.filters = {};
+		if(!this.filters) {
+			this.filters = {};
 		}
-		if(this.state.filters[name] !== val) {
-			this.state.filters[name] = val;
+		if(this.filters[name] !== val) {
+			this.filters[name] = val;
 			this.forceUpdate();
 			if(name === 'tab') {
 				LeftBar.instance.refreshLeftBarActive();
@@ -81,16 +81,16 @@ class Stage extends Component {
 			} else {
 				if(!this.state.node.staticLink) {
 					if(typeof (this.state.recId) !== 'undefined') {
-						body = React.createElement(FormFull, {node: this.state.node, initialData: this.state.data, filters: this.state.filters || {}, editable: this.state.editable});
+						body = React.createElement(FormFull, {node: this.state.node, initialData: this.state.data, filters: this.filters || {}, editable: this.state.editable});
 					} else {
-						body = React.createElement(List, {node: this.state.node, initialData: this.state.data, filters: this.state.filters || {}});
+						body = React.createElement(List, {node: this.state.node, initialData: this.state.data, filters: this.filters || {}});
 					}
 				} else {
 					if(this.state.node.staticLink === 'reactClass') {
 						if(typeof window[this.state.node.tableName] === 'undefined') {
 							myAlert('Unknown react class: ' + this.state.node.tableName);
 						} else {
-							body = React.createElement(window[this.state.node.tableName], {node: this.state.node, recId: this.state.recId, filters: this.state.filters || {}});
+							body = React.createElement(window[this.state.node.tableName], {node: this.state.node, recId: this.state.recId, filters: this.filters || {}});
 						}
 					} else {
 						location.href = this.state.node.staticLink;
@@ -107,5 +107,7 @@ class Stage extends Component {
 		);
 	}
 }
+/** @type Stage */
+Stage.instance = null;
 
 export {Stage, FormLoaderCog}

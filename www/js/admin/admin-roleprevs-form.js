@@ -96,7 +96,7 @@ export default class AdminRoleprevsForm extends BaseForm {
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
-		super.UNSAFE_componentWillReceiveProps(newProps);
+		super.UNSAFE_componentWillReceiveProps(nextProps);
 		this.onShow();
 	}
 

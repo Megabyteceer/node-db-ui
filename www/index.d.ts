@@ -39,9 +39,16 @@ declare global {
 	const ReactDOM: TReactDOM;
 	const React: TReact;
 	const R: TR;
-	function assert(expression: boolean, message?: string, errorCode?: number);
-	function __getNodeExtendData(node: Container): any;
-	function __EDITOR_editableProps(constructor: new () => T, fields: EditableFieldDescription[]): void;
+	let currentFormParameters: any;
+	let __corePath: string;
+
+	interface Window {
+		reloadParentIfSomethingUpdated_qwi012d: Function;
+		currentFormParameters: any;
+		__corePath: string;
+	}
+
+	function assert(expression: boolean, message?: string);
 
 	function isUserHaveRole(params: Number);
 
@@ -79,7 +86,4 @@ declare global {
 	const PREVS_DELETE = 128;
 	const PREVS_PUBLISH = 256;
 	const PREVS_ANY = 65535;
-
-
-
 }

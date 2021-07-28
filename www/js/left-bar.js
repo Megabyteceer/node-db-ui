@@ -70,7 +70,7 @@ class BarItem extends Component {
 	}
 
 	closeMenuIfNeed() {
-		if(LeftBar.collapsable && !collapsed) {
+		if(collapsable && !collapsed) {
 			LeftBar.instance.toggleCollapse();
 		}
 	}
@@ -189,11 +189,11 @@ class BarItem extends Component {
 function renderItemsArray(itemsArray, level, item) {
 	/// #if DEBUG
 	if((!itemsArray || itemsArray.length === 0) && (level > 0)) {
-		return R.div({
+		return [R.div({
 			className: 'clickable left-bar-empty-section', onClick: () => {
 				createNodeForMenuItem(item);
 			}
-		}, L("EMPTY_SECTION"));
+		}, L("EMPTY_SECTION"))];
 	}
 	/// #endif
 
@@ -259,7 +259,7 @@ export default class LeftBar extends Component {
 			staticLines = [];
 		}
 
-		if(LeftBar.collapsable) {
+		if(collapsable) {
 			staticLines.unshift(R.div({key: 'toggle-collapsing', className: "left-bar-collapse-button clickable", onClick: this.toggleCollapse}, renderIcon('bars')));
 		}
 
@@ -272,9 +272,13 @@ export default class LeftBar extends Component {
 	}
 }
 
+/** @type LeftBar */
+LeftBar.instance = null;
+
+let collapsable;
 function renewIsCollapsable() {
-	LeftBar.collapsable = window.innerWidth < 1330;
-	collapsed = LeftBar.collapsable;
+	collapsable = window.innerWidth < 1330;
+	collapsed = collapsable;
 	if(LeftBar.instance) {
 		LeftBar.instance.forceUpdate();
 	}

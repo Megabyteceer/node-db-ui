@@ -76,6 +76,8 @@ class MainFrame extends Component {
 		);
 	}
 }
+/** @type MainFrame */
+MainFrame.instance = null;
 
 export default MainFrame;
 export {ENV};

@@ -1,6 +1,7 @@
 {
 	"editor.formatOnSave": true,
 	"files.exclude": {
-		"**/uploads/**": true
+		"**/uploads/**": true,
+		"**/fonts/**": true
 	}
 }

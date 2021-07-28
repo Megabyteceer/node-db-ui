@@ -137,6 +137,7 @@ function javascriptHint(cm, form) {
 		});
 	}
 
+	// @ts-ignore
 	let jsList = window.CodeMirror.hint.javascript.call(form, cm);
 	if(jsList && jsList.list) {
 		list = list.concat(jsList.list);
@@ -198,8 +199,10 @@ class AdminEventEditor extends Component {
 
 	getTextareaRef(ref) {
 		if(ref) {
+
 			var ta = ReactDOM.findDOMNode(ref);
 			this.textareaRef = ref;
+			// @ts-ignore
 			this.editor = window.CodeMirror.fromTextArea(ta, {
 				mode: {name: "javascript", globalVars: true},
 				matchBrackets: true,
@@ -214,27 +217,27 @@ class AdminEventEditor extends Component {
 				extraKeys: {
 					"Ctrl-Space": "autocomplete",
 					"Ctrl-D": (instance) => {
+						let doc = instance.getDoc();
+						if(!doc.somethingSelected()) {
 
-						if(!instance.doc.somethingSelected()) {
-
-							var c = instance.doc.getCursor();
+							var c = doc.getCursor();
 							var text = instance.lineInfo(c.line).text;
 
-							instance.doc.setCursor({
+							doc.setCursor({
 								line: c.line,
 								ch: text.length
 							});
 
 							instance.replaceSelection('\r\n' + text);
-							instance.doc.setCursor({
+							doc.setCursor({
 								line: c.line + 1,
 								ch: c.ch
 							});
 						} else {
-							var selections = instance.doc.listSelections();
-							var text = instance.doc.getSelection();
+							var selections = doc.listSelections();
+							var text = doc.getSelection();
 							instance.replaceSelection(text + text);
-							instance.doc.setSelections(selections);
+							doc.setSelections(selections);
 						}
 						return false;
 					},
@@ -249,6 +252,7 @@ class AdminEventEditor extends Component {
 			this.editor.setSize('900px', '500px');
 			this.editor.on("keyup", (editor, event) => {
 				if((!event.ctrlKey || event.keyCode === 32) && !ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
+					// @ts-ignore
 					window.CodeMirror.commands.autocomplete(editor, null, {
 						completeSingle: false
 					});

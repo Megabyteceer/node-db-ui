@@ -19,6 +19,8 @@ export default class NodeAdmin extends Component {
 				show: showedNodeId === this.props.menuItem.id
 			};
 		}
+		this.timeout = null;
+
 		this.show = this.show.bind(this);
 		this.hide = this.hide.bind(this);
 		this.toggleLock = this.toggleLock.bind(this);

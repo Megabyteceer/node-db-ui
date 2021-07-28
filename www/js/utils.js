@@ -4,6 +4,7 @@ import Notify from "./notify.js";
 import {Stage} from "./stage.js";
 
 
+// @ts-ignore
 window.__corePath = 'https://node-db-ui.com:1443/core/';
 
 import "../both-side-utils.js";
@@ -209,11 +210,6 @@ function toReadableTime(d) {
 
 
 function goToHome() {
-	if(typeof (goToHome_custom) != 'undefined') {
-		if(goToHome_custom()) {
-			return;
-		}
-	}
 	if(typeof (ENV.HOME_NODE) !== 'undefined') {
 		showForm(ENV.HOME_NODE);
 	} else {
@@ -271,14 +267,16 @@ function loactionToHash(nodeId, recId, filters, editable) {
 		}
 	}
 
-	newHash = newHash.join('/');
+	let retHash = newHash.join('/');
 
-	if(newHash === 'n/' + ENV.HOME_NODE) {
-		newHash = '';
+	if(retHash === 'n/' + ENV.HOME_NODE) {
+		retHash = '';
 	}
-	newHash = '#' + newHash;
+	if(retHash) {
+		retHash = '#' + retHash;
+	}
 
-	return newHash;
+	return retHash;
 }
 
 window.currentFormParameters = {};
@@ -297,16 +295,16 @@ function isCurrentlyShowedLeftbarItem(item) {
 };
 
 function goToPageByHash() {
-	var hash = window.location.hash.substr(1);
+	var hashTxt = window.location.hash.substr(1);
 
-	if(hash) {
+	if(hashTxt) {
 
 		var nodeId;
 		var recId;
 		var editable;
 		var filters;
 
-		hash = hash.split('/');
+		let hash = hashTxt.split('/');
 		var i;
 		while(hash.length) {
 			i = hash.shift();
@@ -329,7 +327,8 @@ function goToPageByHash() {
 						let key = hash.shift();
 						let val = decodeURIComponent(hash.shift());
 						let numVal = parseInt(val); // return numeric values to filter
-						if(val == numVal) {
+						if(val == numVal.toString()) {
+							// @ts-ignore
 							val = numVal;
 						}
 						filters[key] = val;
@@ -735,8 +734,8 @@ async function getData(url, params, callStack, noLoadingIndicator) {
 			}).then((data) => {
 				handleAdditionalData(data, url);
 				if(isAuthNeed(data)) {
-
-					authHerePopup
+					alert('authHerePopup');
+					//authHerePopup
 
 				} else if(data.hasOwnProperty('result')) {
 					requestRecord.result = data.result;
@@ -749,11 +748,7 @@ async function getData(url, params, callStack, noLoadingIndicator) {
 					/// #endif
 					__requestsOrder.splice(roi, 1);
 
-					if(onError) {
-						onError(data, url, callStack);
-					} else {
-						handleError(data, url, callStack);
-					}
+					handleError(data, url, callStack);
 				}
 			})
 			/// #if DEBUG
@@ -802,7 +797,9 @@ function serializeForm(form) {
 	/* ADD FILE TO PARAM AJAX */
 	var formData = new FormData();
 	$.each($(obj).find("input[type='file']"), (i, tag) => {
+		// @ts-ignore
 		$.each($(tag)[0].files, (i, file) => {
+			// @ts-ignore
 			formData.append(tag.name, file);
 		});
 	});
@@ -838,7 +835,8 @@ function submitData(url, dataToSend, noProcessData) {
 			dataDidModifed();
 			handleAdditionalData(data, url);
 			if(isAuthNeed(data)) {
-				authHerePopup
+				alert('authHerePopup');
+				//authHerePopup
 			} else if(data.hasOwnProperty('result')) {
 				return data.result;
 			} else {
@@ -933,12 +931,6 @@ function n2mValuesEqual(v1, v2) {
 function renderIcon(name) {
 	if(!name) {
 		name = 'circle-o';
-	}
-	if(typeof (icon_custom) !== 'undefined') {
-		var i;
-		if(i = icon_custom(name)) {
-			return i;
-		}
 	}
 	return R.p({className: 'fa fa-' + name});
 }
@@ -1179,7 +1171,7 @@ function L(key, param) {
 	/// #if DEBUG
 	throw new Error(L('NO_TRANSLATION', key));
 	/// #endif
-	return ('#'.key);
+	return ('#' + key);
 }
 
 export {
