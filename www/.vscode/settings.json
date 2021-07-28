@@ -2,6 +2,5 @@
 	"editor.formatOnSave": true,
 	"files.exclude": {
 		"**/uploads/**": true
-	},
-	"js/ts.implicitProjectConfig.checkJs": false
+	}
 }

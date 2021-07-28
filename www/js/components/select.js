@@ -13,7 +13,7 @@ var optionStyle = {
 	borderTop: '1px solid #ddd'
 }
 
-export default class Select extends React.Component {
+export default class Select extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
@@ -63,7 +63,7 @@ export default class Select extends React.Component {
 
 		var optionsList;
 		if(this.state.expanded) {
-			optionsList = ReactDOM.div({
+			optionsList = R.div({
 				style: {
 					position: 'absolute',
 					marginTop: -2,
@@ -75,7 +75,7 @@ export default class Select extends React.Component {
 				}
 			},
 				this.props.options.map((o) => {
-					return ReactDOM.div({
+					return R.div({
 						style: optionStyle,
 						className: this.props.disabled ? 'unclickable disabled' : 'clickable',
 						key: o.value,
@@ -90,7 +90,7 @@ export default class Select extends React.Component {
 			)
 		}
 
-		var downCaret = ReactDOM.div({
+		var downCaret = R.div({
 			style: {
 				position: 'absolute',
 				right: '2px',
@@ -98,7 +98,7 @@ export default class Select extends React.Component {
 			}
 		}, renderIcon('caret-down'));
 
-		return ReactDOM.span({
+		return R.span({
 			style: {
 				display: 'inline-block',
 				width: w,
@@ -111,7 +111,7 @@ export default class Select extends React.Component {
 			},
 			onMouseLeave: this.onMouseLeave
 		},
-			ReactDOM.div({
+			R.div({
 				style: this.props.style || style,
 				className: this.props.disabled ? 'unclickable disabled' : 'clickable',
 				onClick: this.toggle

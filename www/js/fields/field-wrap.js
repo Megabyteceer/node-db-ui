@@ -39,7 +39,7 @@ var labelStyle = {
 };
 
 
-class FieldHelp extends React.Component {
+class FieldHelp extends Component {
 	constructor(props) {
 		super(props);
 		this.mouseOut = this.mouseOut.bind(this);
@@ -58,23 +58,23 @@ class FieldHelp extends React.Component {
 		var body;
 
 		if(this.state && this.state.hovered) {
-			body = ReactDOM.div({style: {position: 'absolute', right: 0, zIndex: 2, width: 300, background: '#707072', color: '#f0f0f2', padding: 10, borderRadius: 5, fontSize: '80%'}},
+			body = R.div({style: {position: 'absolute', right: 0, zIndex: 2, width: 300, background: '#707072', color: '#f0f0f2', padding: 10, borderRadius: 5, fontSize: '80%'}},
 				this.props.text
 			);
 		} else {
-			body = ReactDOM.div({style: {position: 'absolute', right: 0, color: '#707072'}}, renderIcon('question-circle'));
+			body = R.div({style: {position: 'absolute', right: 0, color: '#707072'}}, renderIcon('question-circle'));
 		}
 
-		return ReactDOM.div({onMouseOver: this.mouseOver, onMouseOut: this.mouseOut, style: {display: 'inline-block', position: 'relative', width: 0, left: 30, bottom: 10, overflow: 'visible', color: '#707072'}}, body);
+		return R.div({onMouseOver: this.mouseOver, onMouseOut: this.mouseOut, style: {display: 'inline-block', position: 'relative', width: 0, left: 30, bottom: 10, overflow: 'visible', color: '#707072'}}, body);
 	}
 }
 
-class FieldLabel extends React.Component {
+class FieldLabel extends Component {
 	render() {
 		var field = this.props.field;
 		var star;
 		if(this.props.isEdit && field.requirement) {
-			star = ReactDOM.span({style: {color: 'red', fontSize: '60%', verticalAlign: 'top'}}, '*');
+			star = R.span({style: {color: 'red', fontSize: '60%', verticalAlign: 'top'}}, '*');
 		} else {
 			star = '';
 		}
@@ -82,22 +82,22 @@ class FieldLabel extends React.Component {
 		var alertBody;
 		if(this.props.fieldAlert) {
 			if(this.props.isSucessAlert) {
-				alertBody = ReactDOM.div({style: {background: '#efe', borderTop: '2px solid #3a3', color: '#070', fontSize: '70%', padding: '3px', marginTop: '2px', marginBottom: '-16px'}, className: 'fade-in'}, this.props.fieldAlert);
+				alertBody = R.div({style: {background: '#efe', borderTop: '2px solid #3a3', color: '#070', fontSize: '70%', padding: '3px', marginTop: '2px', marginBottom: '-16px'}, className: 'fade-in'}, this.props.fieldAlert);
 			} else {
-				alertBody = ReactDOM.div({style: {background: '#fee', borderTop: '2px solid #a33', color: '#700', fontSize: '70%', padding: '3px', marginTop: '2px', marginBottom: '-16px'}, className: 'fade-in'}, this.props.fieldAlert);
+				alertBody = R.div({style: {background: '#fee', borderTop: '2px solid #a33', color: '#700', fontSize: '70%', padding: '3px', marginTop: '2px', marginBottom: '-16px'}, className: 'fade-in'}, this.props.fieldAlert);
 			}
 		}
 
 		var body;
 		if(field.lang) {
-			body = ReactDOM.span({style: {color: '#aaa', fontSize: '65%'}},
+			body = R.span({style: {color: '#aaa', fontSize: '65%'}},
 				field.lang
 			)
 		} else {
 			body = (field.fieldType !== FIELD_18_BUTTON) ? (this.props.labelOwerride || field.name) : '';
 		}
 
-		return ReactDOM.div({className: 'field-label', style: labelStyle},
+		return R.div({className: 'field-label', style: labelStyle},
 			body,
 			star,
 			alertBody
@@ -107,7 +107,7 @@ class FieldLabel extends React.Component {
 
 export {FieldHelp, FieldLabel};
 
-export default class FieldWrap extends React.Component {
+export default class FieldWrap extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
@@ -340,7 +340,7 @@ export default class FieldWrap extends React.Component {
 
 		var help;
 		if(field.fdescription && field.fieldType !== FIELD_8_STATICTEXT) {
-			help = React.createElement(FieldHelp, {text: ReactDOM.div(null, ReactDOM.h4(null, field.name), field.fdescription)});
+			help = React.createElement(FieldHelp, {text: R.div(null, R.h4(null, field.name), field.fdescription)});
 		}
 
 
@@ -353,13 +353,13 @@ export default class FieldWrap extends React.Component {
 
 			var tooltip;
 			if(this.state.showtooltip) {
-				tooltip = ReactDOM.span({style: {position: 'absolute', zIndex: 2, marginTop: 8, fontSize: 12, whiteSpace: 'nowrap', pointerEvents: 'none'}},
-					ReactDOM.span({className: 'fa fa-caret-left', style: {color: '#665', margin: -1}}),
-					ReactDOM.span({style: {background: '#665', borderRadius: 4, color: '#ddc', padding: '3px 10px'}}, field.name, (field.lang ? (' (' + field.lang + ')') : undefined), (this.state && this.state.fieldAlert) ? (' (' + this.state.fieldAlert + ')') : '')
+				tooltip = R.span({style: {position: 'absolute', zIndex: 2, marginTop: 8, fontSize: 12, whiteSpace: 'nowrap', pointerEvents: 'none'}},
+					R.span({className: 'fa fa-caret-left', style: {color: '#665', margin: -1}}),
+					R.span({style: {background: '#665', borderRadius: 4, color: '#ddc', padding: '3px 10px'}}, field.name, (field.lang ? (' (' + field.lang + ')') : undefined), (this.state && this.state.fieldAlert) ? (' (' + this.state.fieldAlert + ')') : '')
 				)
 			}
 
-			return ReactDOM.span({
+			return R.span({
 				style: {width: this.props.isTable ? undefined : '30%', display: (this.hidden && !this.props.form.showAllDebug) ? 'none' : 'inline-block', verticalAlign: 'middle'},
 				className: domId,
 				onFocus: () => {
@@ -382,9 +382,9 @@ export default class FieldWrap extends React.Component {
 				label = React.createElement(FieldLabel, {field, isEdit: this.props.isEdit, labelOwerride: this.labelOwerride, fieldAlert: this.state ? this.state.fieldAlert : undefined, isSucessAlert: this.state ? this.state.isSucessAlert : undefined});
 			}
 
-			return ReactDOM.div({className: domId, style: (this.hidden && !this.props.form.showAllDebug) ? {display: 'none'} : (field.lang ? styleLang : style)},
+			return R.div({className: domId, style: (this.hidden && !this.props.form.showAllDebug) ? {display: 'none'} : (field.lang ? styleLang : style)},
 				label,
-				ReactDOM.div({style: noLabel ? valueNoLabelPartStyle : valuePartStyle},
+				R.div({style: noLabel ? valueNoLabelPartStyle : valuePartStyle},
 					fieldTypedBody,
 					fieldCustomBody
 				),

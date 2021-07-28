@@ -101,12 +101,12 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 			var style = {width: w, height: h + 100};
 			var cog;
 			if(!this.summerNoteIsInited) {
-				cog = ReactDOM.div(null, renderIcon('cog fa-spin'));
+				cog = R.div(null, renderIcon('cog fa-spin'));
 			}
 
-			return ReactDOM.div(null, cog, ReactDOM.iframe({ref: (r) => {this.viewportRef = r;}, allowFullScreen: true, sandbox: 'allow-scripts allow-forms allow-same-origin', style, src: 'rich-editor/index.html?iframeId=' + this.iframeId}));
+			return R.div(null, cog, R.iframe({ref: (r) => {this.viewportRef = r;}, allowFullScreen: true, sandbox: 'allow-scripts allow-forms allow-same-origin', style, src: 'rich-editor/index.html?iframeId=' + this.iframeId}));
 		} else {
-			return ReactDOM.div({dangerouslySetInnerHTML: {__html: this.props.initialValue}});
+			return R.div({dangerouslySetInnerHTML: {__html: this.props.initialValue}});
 		}
 	}
 });

@@ -40,7 +40,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 		if(data.hasOwnProperty('isE')) {
 
 			buttons = [
-				ReactDOM.button({
+				R.button({
 					key: 2, style: {background: window.constants.EDIT_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('EDIT'), onMouseDown: (e) => {
 						sp(e);
 						formItem.props.parentForm.toggleCreateDialogue(data.id)
@@ -64,13 +64,13 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 		if(data.hasOwnProperty('isP') && (!formItem || !formItem.props.disableDrafting)) {
 			if(data.status === 1) {
 				buttons.push(
-					ReactDOM.button({key: 1, style: {background: window.constants.PUBLISH_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data).then(refreshFunction)}},
+					R.button({key: 1, style: {background: window.constants.PUBLISH_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data).then(refreshFunction)}},
 						renderIcon('eye')
 					)
 				)
 			} else {
 				buttons.push(
-					ReactDOM.button({key: 1, style: {background: window.constants.UNPUBLISH_COLOR}, className: 'clickable clickable-del toolbtn', title: L('PUBLISH'), onClick: () => {publishClick(false, node, data).then(refreshFunction)}},
+					R.button({key: 1, style: {background: window.constants.UNPUBLISH_COLOR}, className: 'clickable clickable-del toolbtn', title: L('PUBLISH'), onClick: () => {publishClick(false, node, data).then(refreshFunction)}},
 						renderIcon('eye-slash')
 					)
 				)
@@ -80,7 +80,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 			if(data.hasOwnProperty('isE')) {
 				if(!formItem || !formItem.props.list || !formItem.props.list.state.noEditButton) {
 					buttons.push(
-						ReactDOM.a({
+						R.a({
 							key: 2, href: loactionToHash(node.id, data.id, editButtonFilters, true), onClick: (e) => {
 								if(formItem && formItem.props.parentForm) {
 									sp(e);
@@ -88,7 +88,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 								}
 							}
 						},
-							ReactDOM.button({style: {background: window.constants.EDIT_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('EDIT', itemName)},
+							R.button({style: {background: window.constants.EDIT_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('EDIT', itemName)},
 								renderIcon('pencil')
 							)
 						)
@@ -97,8 +97,8 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 
 			} else if(!formItem || !formItem.props.list || !(formItem.props.list.state.noPreviewButton || formItem.props.list.props.noPreviewButton)) {
 				buttons.push(
-					ReactDOM.a({key: 2, href: loactionToHash(node.id, data.id, undefined)},
-						ReactDOM.button({style: {background: '#00a5bf'}, className: 'clickable toolbtn', title: L('DETAILS') + itemName},
+					R.a({key: 2, href: loactionToHash(node.id, data.id, undefined)},
+						R.button({style: {background: '#00a5bf'}, className: 'clickable toolbtn', title: L('DETAILS') + itemName},
 							renderIcon('search')
 						)
 					)
@@ -108,7 +108,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 		}
 		if(data.hasOwnProperty('isD')) {
 			buttons.push(
-				ReactDOM.button({
+				R.button({
 					key: 3, style: {background: window.constants.DELETE_COLOR}, className: 'clickable clickable-del toolbtn', title: L('DELETE') + itemName, onClick: async () => {
 						await deleteRecord(data.name, node.id, data.id);
 						if(formItem && formItem.props.parentForm) {
@@ -156,7 +156,7 @@ export default class FormItem extends BaseForm {
 				}
 
 				fields.push(
-					ReactDOM.td({key: field.id, style: styl},
+					R.td({key: field.id, style: styl},
 						React.createElement(FieldWrap, {key: k, field, initialValue: data[field.fieldName], form: this, isCompact: true, isTable: true})
 					)
 				);
@@ -192,9 +192,9 @@ export default class FormItem extends BaseForm {
 		if(this.props.additionalButtons) {
 			additionalButtons = this.props.additionalButtons(this.props.node, data, this.props.list.refreshData, this);
 		}
-		fields.push(ReactDOM.td({key: 'b', style: rowStyleNoWrap}, ReactDOM.div({style: {textAlign: 'right'}}, buttons, additionalButtons)));
+		fields.push(R.td({key: 'b', style: rowStyleNoWrap}, R.div({style: {textAlign: 'right'}}, buttons, additionalButtons)));
 
-		return ReactDOM.tr(itemProps,
+		return R.tr(itemProps,
 			fields
 		);
 	}

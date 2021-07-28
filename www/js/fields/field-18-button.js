@@ -28,7 +28,7 @@ registerFieldClass(FIELD_18_BUTTON, class ButtonField extends fieldMixins {
 			bIcon = renderIcon(field.icon);
 		}
 
-		return ReactDOM.button({className: (this.props.disabled ? 'btn-' + this.props.field.id + ' unclickable' : 'btn-' + this.props.field.id + ' clickable clickable-edit btn-' + this.props.field.fieldName), style: {padding: '5px 20px 6px 20px', fontSize: '80%', background: window.constants.EDIT_COLOR, color: '#fff'}, onClick: this.onClick},
+		return R.button({className: (this.props.disabled ? 'btn-' + this.props.field.id + ' unclickable' : 'btn-' + this.props.field.id + ' clickable clickable-edit btn-' + this.props.field.fieldName), style: {padding: '5px 20px 6px 20px', fontSize: '80%', background: window.constants.EDIT_COLOR, color: '#fff'}, onClick: this.onClick},
 			bIcon,
 			field.name
 		);

@@ -1,7 +1,7 @@
 import {goBack} from "../utils.js";
 
 
-export default class BaseForm extends React.Component {
+export default class BaseForm extends Component {
 
 	constructor(props) {
 		super(props);

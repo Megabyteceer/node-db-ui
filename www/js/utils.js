@@ -28,7 +28,7 @@ function myAlert(txt, isSucess, autoHide, noDiscardByBackdrop) {
 			className = "alert-bg alert-bg-danger";
 		}
 
-		var modalId = Modal.instance.show(ReactDOM.div({className}, txt), noDiscardByBackdrop);
+		var modalId = Modal.instance.show(R.div({className}, txt), noDiscardByBackdrop);
 
 		if(autoHide) {
 			setTimeout(() => {
@@ -58,18 +58,18 @@ async function myPromt(txt, yesLabel, noLabel, yesIcon, noIcon, discardByOutside
 			noIcon = 'times';
 		}
 
-		noButton = ReactDOM.button({
+		noButton = R.button({
 			style: {background: '#f84c4c', padding: '10px 45px 10px 40px'}, onClick: () => {
 				Modal.instance.hide();
 				resolve(false);
 			}, className: 'clickable clickable-neg'
 		}, renderIcon(noIcon), ' ', noLabel);
 
-		var body = ReactDOM.span({style: {minWidth: '700px', display: 'inline-block', background: '#F7F7F7', color: '#000', border: '3px solid #F7F7F7', padding: '30px'}},
+		var body = R.span({style: {minWidth: '700px', display: 'inline-block', background: '#F7F7F7', color: '#000', border: '3px solid #F7F7F7', padding: '30px'}},
 			txt,
-			ReactDOM.div({style: {marginTop: '30px'}},
+			R.div({style: {marginTop: '30px'}},
 				noButton,
-				ReactDOM.button({
+				R.button({
 					style: {background: '#A8A9AD', padding: '10px 55px 10px 40px'}, onClick: () => {
 						Modal.instance.hide();
 						resolve(true);
@@ -940,7 +940,7 @@ function renderIcon(name) {
 			return i;
 		}
 	}
-	return ReactDOM.p({className: 'fa fa-' + name});
+	return R.p({className: 'fa fa-' + name});
 }
 
 function isLitePage() {

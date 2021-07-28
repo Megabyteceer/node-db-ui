@@ -109,7 +109,7 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 		var body;
 		if(this.state.creationOpened) {
 			if(this.state.itemIdToEdit) {
-				body = ReactDOM.div({style: {textAlign: 'center', color: '#ccc', padding: '5px'}},
+				body = R.div({style: {textAlign: 'center', color: '#ccc', padding: '5px'}},
 					renderIcon('cog fa-spin fa-2x')
 				);
 			} else {
@@ -118,7 +118,7 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 
 		} else {
 			var askToSaveParentBeforeCreation = !this.props.form.props.initialData.hasOwnProperty('id');
-			body = ReactDOM.div(null,
+			body = R.div(null,
 				React.createElement(List, {ref: (r) => {this.inlineListRef = r;}, hideControlls: this.state.hideControlls, noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton, disableDrafting: this.state.disableDrafting, additionalButtons: this.state.additionalButtons || this.props.additionalButtons, node: this.savedNode, omitHeader: this.state.creationOpened, initialData: this.savedData, preventCreateButton: this.state.preventCreateButton, askToSaveParentBeforeCreation, editable: this.state.inlineEditing, nodeId: field.nodeRef, parentForm: this, filters: this.savedFilters || this.state.filters})
 			);
 		}

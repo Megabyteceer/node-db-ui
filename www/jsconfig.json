@@ -12,7 +12,8 @@
 		"module": "es2020",
 		"moduleResolution": "node",
 		"diagnostics": false,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"checkJs": true
 	},
 	"exclude": [
 		"node_modules",

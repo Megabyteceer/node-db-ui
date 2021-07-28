@@ -1,34 +1,44 @@
-/// <reference path="../node_modules/pixi.js-legacy/pixi.js-legacy.d.ts" />
-/// <reference path="../current-scene-typings.d.ts" />
 
-import 'current-project-typings.js';
-import Editor from 'thing-editor/js/editor/editor.js';
-import game from 'thing-editor/js/engine/game.js';
-
-import Container from '/thing-editor/js/engine/components/container.js';
-import DisplayObject from '/thing-editor/js/engine/components/display-object.js';
-import MovieClip from '/thing-editor/js/engine/components/movie-clip/movie-clip.js';
-
-class TEditor extends Editor {
-	game: typeof game;
-	_root_initCalled: boolean;
-	_root_onRemovedCalled: boolean;
-}
-import ReactDOM from "react-dom";
-import React, { ComponentProps } from "react";
+import R from "react-dom";
+import React, { Component as C, Component } from "react";
 
 
-interface TReactDOM extends ReactDOM {
-	div: (props: ComponentProps, ...children) => Comment
-	form: (props: ComponentProps, ...children) => Comment
-
+interface TR {
+	div: (props: ComponentProps, ...children) => Component;
+	form: (props: ComponentProps, ...children) => Component;
+	span: (props: ComponentProps, ...children) => Component;
+	p: (props: ComponentProps, ...children) => Component;
+	img: (props: ComponentProps, ...children) => Component;
+	button: (props: ComponentProps, ...children) => Component;
+	input: (props: ComponentProps, ...children) => Component;
+	label: (props: ComponentProps, ...children) => Component;
+	b: (props: ComponentProps, ...children) => Component;
+	a: (props: ComponentProps, ...children) => Component;
+	br: (props: ComponentProps, ...children) => Component;
+	hr: (props: ComponentProps, ...children) => Component;
+	svg: (props: ComponentProps, ...children) => Component;
+	td: (props: ComponentProps, ...children) => Component;
+	tr: (props: ComponentProps, ...children) => Component;
+	th: (props: ComponentProps, ...children) => Component;
+	tbody: (props: ComponentProps, ...children) => Component;
+	thead: (props: ComponentProps, ...children) => Component;
+	table: (props: ComponentProps, ...children) => Component;
+	polyline: (props: ComponentProps, ...children) => Component;
+	textarea: (props: ComponentProps, ...children) => Component;
+	iframe: (props: ComponentProps, ...children) => Component;
+	h2: (props: ComponentProps, ...children) => Component;
+	h3: (props: ComponentProps, ...children) => Component;
+	h4: (props: ComponentProps, ...children) => Component;
+	h5: (props: ComponentProps, ...children) => Component;
 }
 
 const TReact = typeof React;
 
 declare global {
+	const Component = C;
 	const ReactDOM: TReactDOM;
 	const React: TReact;
+	const R: TR;
 	function assert(expression: boolean, message?: string, errorCode?: number);
 	function __getNodeExtendData(node: Container): any;
 	function __EDITOR_editableProps(constructor: new () => T, fields: EditableFieldDescription[]): void;

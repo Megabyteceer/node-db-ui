@@ -23,7 +23,7 @@ var blockStyle = {
 var stack = [];
 var idCounter = 0;
 
-export default class Notify extends React.Component {
+export default class Notify extends Component {
 	componentDidMount() {
 		instance = this;
 	}
@@ -52,21 +52,21 @@ export default class Notify extends React.Component {
 
 	render() {
 		if(stack.length > 0) {
-			return ReactDOM.div({style: style},
+			return R.div({style: style},
 				stack.map((m) => {
-					return ReactDOM.div({
+					return R.div({
 						key: m.id, style: blockStyle, className: 'fade-in', onClick: () => {
 							this.hideById(m.id);
 						}
 					},
 						m.content.split('\n').map((l, i) => {
-							return ReactDOM.div({key: i}, l)
+							return R.div({key: i}, l)
 						})
 					);
 				})
 			);
 		} else {
-			return ReactDOM.span();
+			return R.span();
 		}
 	}
 }

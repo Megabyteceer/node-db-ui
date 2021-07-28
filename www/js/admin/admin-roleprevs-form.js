@@ -5,12 +5,12 @@ import {getData, getNode, L, myPromt, renderIcon, submitData} from "../utils.js"
 import NodeAdmin from "./node-admin.js";
 
 function check() {
-	return ReactDOM.span({
+	return R.span({
 		className: "admin-role-prevs-check"
 	}, renderIcon('check'));
 }
 
-class PrevsEditor extends React.Component {
+class PrevsEditor extends Component {
 	render() {
 		var body;
 		var item = this.props.item;
@@ -22,28 +22,28 @@ class PrevsEditor extends React.Component {
 		var title;
 
 		if(curVal === 0) {
-			body = ReactDOM.span({
+			body = R.span({
 				className: "admin-role-prevs-disabled"
 			}, renderIcon('ban'));
 			title = L('ADM_NA');
 		} else if(this.props.bitsCount === 1) {
-			body = ReactDOM.span({
+			body = R.span({
 				className: "admin-role-prevs-enabled"
 			}, check());
 			title = L('ADM_A');
 		} else {
 			switch(curVal / this.props.baseBit) {
 				case 1:
-					body = ReactDOM.span({
+					body = R.span({
 						className: "admin-role-prevs-enabled"
 					}, check());
 					title = L('ADM_A_OWN');
 					break;
 				case 2:
 				case 3:
-					body = ReactDOM.span({
+					body = R.span({
 						className: "admin-role-prevs-enabled"
-					}, ReactDOM.span({
+					}, R.span({
 						className: "admin-role-prevs-size2"
 					}, check(), check()));
 					title = L('ADM_A_ORG');
@@ -52,9 +52,9 @@ class PrevsEditor extends React.Component {
 				case 5:
 				case 6:
 				case 7:
-					body = ReactDOM.span({
+					body = R.span({
 						className: "admin-role-prevs-enabled"
-					}, ReactDOM.span({
+					}, R.span({
 						className: "admin-role-prevs-size3"
 					}, check(), check(), check()));
 					title = L('ADM_A_FULL');
@@ -65,7 +65,7 @@ class PrevsEditor extends React.Component {
 			}
 		}
 
-		return ReactDOM.td({
+		return R.td({
 			className: 'clickable admin-role-prevs-cell',
 			title: title,
 			onClick: () => {
@@ -147,11 +147,11 @@ export default class AdminRoleprevsForm extends BaseForm {
 			var node = this.state.node;
 
 			var lines = data.prevs.map((i) => {
-				return ReactDOM.tr({
+				return R.tr({
 					key: i.id,
 					className: "admin-role-prevs-line"
 				},
-					ReactDOM.td({
+					R.td({
 						className: "admin-role-prevs-line-header"
 					}, i.name),
 					React.createElement(PrevsEditor, {
@@ -182,40 +182,40 @@ export default class AdminRoleprevsForm extends BaseForm {
 				)
 			});
 
-			var body = ReactDOM.div({
+			var body = R.div({
 				className: "admin-role-prevs-block"
 			},
-				ReactDOM.h3(null,
-					ReactDOM.span({
+				R.h3(null,
+					R.span({
 						className: "admin-role-prevs-header"
 					}, L('ADM_NODE_ACCESS')),
 					node.matchName
 				),
 
-				ReactDOM.table({
+				R.table({
 					className: "admin-role-prevs-table"
 				},
-					ReactDOM.thead({
+					R.thead({
 						className: "admin-role-prevs-row-header"
 					},
-						ReactDOM.tr({
+						R.tr({
 							className: "admin-role-prevs-line"
 						},
-							ReactDOM.th(),
-							ReactDOM.th(null, L('VIEW')),
-							ReactDOM.th(null, L('CREATE')),
-							ReactDOM.th(null, L('EDIT')),
-							ReactDOM.th(null, L('DELETE')),
-							node.draftable ? ReactDOM.th(null, L('PUBLISH')) : undefined
+							R.th(),
+							R.th(null, L('VIEW')),
+							R.th(null, L('CREATE')),
+							R.th(null, L('EDIT')),
+							R.th(null, L('DELETE')),
+							node.draftable ? R.th(null, L('PUBLISH')) : undefined
 						)
 					),
-					ReactDOM.tbody(null,
+					R.tbody(null,
 						lines
 					)
 				)
 			);
 
-			var saveButton = ReactDOM.button({
+			var saveButton = R.button({
 				className: 'clickable success-button',
 				onClick: this.saveClick
 			}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
@@ -229,16 +229,16 @@ export default class AdminRoleprevsForm extends BaseForm {
 				});
 			}
 
-			var closeButton = ReactDOM.button({
+			var closeButton = R.button({
 				className: 'clickable default-button',
 				onClick: this.cancelClick
 			}, renderIcon('times'), this.isSlave() ? '' : L('CANCEL'));
 
-			return ReactDOM.div({className: "admin-role-prevs-body"},
+			return R.div({className: "admin-role-prevs-body"},
 				nodeAdmin,
 				body,
 
-				ReactDOM.div(null,
+				R.div(null,
 					saveButton,
 					closeButton
 				)

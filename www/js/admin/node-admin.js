@@ -6,7 +6,7 @@ import FieldAdmin from "./field-admin.js";
 
 var showedNodeId;
 
-export default class NodeAdmin extends React.Component {
+export default class NodeAdmin extends Component {
 	constructor(props) {
 		super(props);
 
@@ -111,7 +111,7 @@ export default class NodeAdmin extends React.Component {
 					for(let f of node.fields) {
 						if(f.lang) return undefined;
 
-						allFields.push(ReactDOM.span({
+						allFields.push(R.span({
 							key: f.id + 'a',
 							className: 'admin-form-header'
 						}, React.createElement(FieldAdmin, {
@@ -120,11 +120,11 @@ export default class NodeAdmin extends React.Component {
 							x: 370,
 							zIndex: 10
 						}))),
-							allFields.push(ReactDOM.div({
+							allFields.push(R.div({
 								key: f.id,
 								className: "admin-form-all-fields"
 							},
-								ReactDOM.div({
+								R.div({
 									className: "admin-form-all-fields-name"
 								}, f.fieldName + '; (' + f.id + ')'),
 								renderIcon((f.show & 1) ? 'eye' : 'eye-slash halfvisible'),
@@ -139,8 +139,8 @@ export default class NodeAdmin extends React.Component {
 					}
 				}
 
-				buttons = ReactDOM.span(null,
-					ReactDOM.button({
+				buttons = R.span(null,
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						onClick: () => {
 							this.toggleAllFields();
@@ -149,7 +149,7 @@ export default class NodeAdmin extends React.Component {
 					},
 						'all fields ', renderIcon('caret-down')
 					),
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						style: {border: borderOnLoad},
 						onClick: () => {
@@ -159,7 +159,7 @@ export default class NodeAdmin extends React.Component {
 					},
 						'onLoad...'
 					),
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						style: {border: borderOnSave},
 						onClick: () => {
@@ -169,7 +169,7 @@ export default class NodeAdmin extends React.Component {
 					},
 						'onSave...'
 					),
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('FLD_ADD'),
 						onClick: () => {
@@ -183,7 +183,7 @@ export default class NodeAdmin extends React.Component {
 					},
 						renderIcon('plus')
 					),
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('FLD_SHOW_ALL'),
 						onClick: () => {
@@ -195,7 +195,7 @@ export default class NodeAdmin extends React.Component {
 					},
 						renderIcon('eye')
 					),
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('ADD_RATING_FLD'),
 						onClick: () => {
@@ -209,8 +209,8 @@ export default class NodeAdmin extends React.Component {
 				)
 
 			} else {
-				buttons = ReactDOM.span(null,
-					ReactDOM.button({
+				buttons = R.span(null,
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('ADD_NODE'),
 						onClick: () => {
@@ -219,7 +219,7 @@ export default class NodeAdmin extends React.Component {
 					},
 						renderIcon('plus')
 					),
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						onClick: () => {
 							getNodeData(4, undefined, {
@@ -236,7 +236,7 @@ export default class NodeAdmin extends React.Component {
 					},
 						renderIcon('arrow-down')
 					),
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						onClick: () => {
 							getNodeData(4, undefined, {
@@ -256,7 +256,7 @@ export default class NodeAdmin extends React.Component {
 				)
 			}
 
-			body = ReactDOM.div({
+			body = R.div({
 				ref: keepInWindow,
 				className: "admin-form-body",
 				onClick: () => {
@@ -270,17 +270,17 @@ export default class NodeAdmin extends React.Component {
 				}
 			},
 				L('NODE_SETTINGS'),
-				ReactDOM.b({className: "admin-form-header"},
+				R.b({className: "admin-form-header"},
 					node.tableName
 				),
-				ReactDOM.span(null,
+				R.span(null,
 					'; (' + (node.matchName || item.name) + '); id: ' + nodeId
 				),
-				ReactDOM.div({
+				R.div({
 					className: "admin-form-content"
 				},
 					buttons,
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_NODE'),
 						onClick: () => {
@@ -290,7 +290,7 @@ export default class NodeAdmin extends React.Component {
 					},
 						renderIcon('wrench')
 					),
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_ACCESS'),
 						onClick: () => {
@@ -299,7 +299,7 @@ export default class NodeAdmin extends React.Component {
 					},
 						renderIcon('user')
 					),
-					ReactDOM.button({
+					R.button({
 						onClick: () => {
 							admin.debug(form || node);
 						},
@@ -308,7 +308,7 @@ export default class NodeAdmin extends React.Component {
 					},
 						renderIcon('info')
 					),
-					ReactDOM.span({
+					R.span({
 						className: 'clickable admin-form-lock-btn',
 						onClick: this.toggleLock
 					},
@@ -319,12 +319,12 @@ export default class NodeAdmin extends React.Component {
 			);
 		}
 
-		return ReactDOM.div({
+		return R.div({
 			ref: keepInWindow,
 			className: 'admin-controll admin-form-wrap' + (bodyVisible ? 'admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
-			ReactDOM.span({
+			R.span({
 				style: {border: borderOnLoad || borderOnSave},
 				className: 'halfvisible admin-form-open-btn',
 				onMouseEnter: this.show

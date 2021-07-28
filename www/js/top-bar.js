@@ -13,7 +13,7 @@ var style = {
 }
 
 
-export default class TopBar extends React.Component {
+export default class TopBar extends Component {
 	render() {
 		//var search;
 		if(isLitePage()) {
@@ -23,15 +23,15 @@ export default class TopBar extends React.Component {
 		}
 
 
-		return ReactDOM.div({className: 'clearfix', style: style},
-			ReactDOM.a({
+		return R.div({className: 'clearfix', style: style},
+			R.a({
 				className: 'clickable clickable-neg',
 				href: '/',
 				style: {padding: '8px 10px', float: 'left', display: 'block'}
 			},
-				ReactDOM.img({src: 'images/logo.png', style: {}})),
+				R.img({src: 'images/logo.png', style: {}})),
 			//search,
-			ReactDOM.div({style: {float: 'right', marginTop: 15, marginBottom: 15}},
+			R.div({style: {float: 'right', marginTop: 15, marginBottom: 15}},
 				React.createElement(User)
 			)
 		);

@@ -10,7 +10,7 @@ registerFieldClass(FIELD_8_STATICTEXT, class StaticTextField extends fieldMixins
 		if(window[field.fdescription]) {
 			return React.createElement(window[field.fdescription], this.props);
 		} else {
-			return ReactDOM.span({
+			return R.span({
 				dangerouslySetInnerHTML: {
 					__html: field.fdescription
 				}

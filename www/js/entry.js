@@ -21,6 +21,7 @@ import "./fields/field-21-file.js";
 
 /// #if DEBUG
 import AdminRoleprevsForm from "./admin/admin-roleprevs-form.js";
+// @ts-ignore
 window.AdminRoleprevsForm = AdminRoleprevsForm;
 /*
 /// #endif
@@ -33,8 +34,14 @@ window.onerror = (msg, url, line, col, error) => {
 	};
 //*/
 
-for(let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'label', 'b', 'a', 'br', 'hr', 'svg', 'td', 'tr', 'th', 'tbody', 'thead', 'table', 'polyline', 'textarea', 'iframe', 'h3', 'h4', 'h5']) {
-	ReactDOM[factoryType] = (...theArgs) => {
+// @ts-ignore
+window.R = {};
+
+for(let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'label',
+	'b', 'a', 'br', 'hr', 'svg', 'td', 'tr', 'th', 'tbody', 'thead', 'table', 'polyline',
+	'textarea', 'iframe', 'h2', 'h3', 'h4', 'h5']) {
+	// @ts-ignore
+	window.R[factoryType] = (...theArgs) => {
 		return React.createElement.call(this, factoryType, ...theArgs);
 	};
 }

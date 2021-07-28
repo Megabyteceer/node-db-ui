@@ -66,7 +66,7 @@ registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 					this.props.wrapper.valueListener(val, true, this);
 				}
 			};
-			return ReactDOM.div({
+			return R.div({
 				title: (this.props.isCompact ? field.name : ''),
 				style: this.props.isCompact ? compactInputStyle : notCompactInputStyle
 			},
@@ -74,7 +74,7 @@ registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 			);
 
 		} else {
-			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
+			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
 				value
 			)
 		}

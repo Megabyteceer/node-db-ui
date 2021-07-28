@@ -17,7 +17,7 @@ registerFieldClass(FIELD_16_RATING, class RatingField extends fieldMixins {
 
 	render() {
 		if(this.state.value.all === 0) {
-			return ReactDOM.span(null,
+			return R.span(null,
 				L('NORATES')
 			);
 		} else {
@@ -25,14 +25,14 @@ registerFieldClass(FIELD_16_RATING, class RatingField extends fieldMixins {
 			var stars = [];
 			for(var i = 1; i < 6; i++) {
 				if(i <= (rate + 0.1)) {
-					stars.push(ReactDOM.p({key: i, style: starStyle, className: 'fa fa-star'}));
+					stars.push(R.p({key: i, style: starStyle, className: 'fa fa-star'}));
 				} else if(i <= rate + 0.6) {
-					stars.push(ReactDOM.p({key: i, style: starStyle, className: 'fa fa-star-half-o'}));
+					stars.push(R.p({key: i, style: starStyle, className: 'fa fa-star-half-o'}));
 				} else {
-					stars.push(ReactDOM.p({key: i, style: starStyle, className: 'fa fa-star-o'}));
+					stars.push(R.p({key: i, style: starStyle, className: 'fa fa-star-o'}));
 				}
 			}
-			return ReactDOM.span({title: rate.toFixed(2)},
+			return R.span({title: rate.toFixed(2)},
 				stars,
 				' (' + this.state.value.all + ')'
 			);

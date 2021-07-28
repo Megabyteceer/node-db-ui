@@ -97,13 +97,13 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 			};
 
 			if(field.maxlen > 200) {
-				return ReactDOM.textarea(inputsProps);
+				return R.textarea(inputsProps);
 			} else {
-				return ReactDOM.input(inputsProps);
+				return R.input(inputsProps);
 
 			}
 		} else {
-			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
+			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
 				this.renderTextValue(value)
 			);
 		}

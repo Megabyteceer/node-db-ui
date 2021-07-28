@@ -59,7 +59,7 @@ function isStrictlySelected(item) {
 	}
 }
 
-class BarItem extends React.Component {
+class BarItem extends Component {
 
 	toggle() {
 		if(!this.state) {
@@ -82,9 +82,9 @@ class BarItem extends React.Component {
 		var adminControl;
 		if(iAdmin()) {
 			if(item.field) {
-				adminControl = ReactDOM.div({className: "left-bar-admin-button"}, React.createElement(FieldAdmin, {field: item.field, form: item.form, x: -10, y: 0}));
+				adminControl = R.div({className: "left-bar-admin-button"}, React.createElement(FieldAdmin, {field: item.field, form: item.form, x: -10, y: 0}));
 			} else {
-				adminControl = ReactDOM.div({className: "left-bar-admin-button"}, React.createElement(NodeAdmin, {menuItem: item, x: -10, y: 0}));
+				adminControl = R.div({className: "left-bar-admin-button"}, React.createElement(NodeAdmin, {menuItem: item, x: -10, y: 0}));
 			}
 		}
 		/// #endif
@@ -94,10 +94,10 @@ class BarItem extends React.Component {
 			&& false// in debug build always show empty nodes
 			/// #endif
 		) {
-			return ReactDOM.div();
+			return R.div();
 		}
 
-		var itemsIcon = ReactDOM.div({className: "left-bar-item-icon"},
+		var itemsIcon = R.div({className: "left-bar-item-icon"},
 			renderIcon(item.icon + (item.isDoc ? ' brand-color' : 'noicon'))
 		)
 
@@ -117,7 +117,7 @@ class BarItem extends React.Component {
 		if(!item.isDoc) {
 			if((this.state && this.state.expanded) || isMustBeExpanded(this.props.item)) {
 				caret = 'up';
-				children = ReactDOM.div({className: 'left-bar-children'},
+				children = R.div({className: 'left-bar-children'},
 					renderItemsArray(item.children, this.props.level + 1, item)
 				)
 			} else if(!item.isDoc) {
@@ -125,7 +125,7 @@ class BarItem extends React.Component {
 			}
 
 			if(caret) {
-				caret = ReactDOM.div({className: "left-bar-group-caret"},
+				caret = R.div({className: "left-bar-group-caret"},
 					renderIcon('caret-' + caret)
 				)
 			}
@@ -143,7 +143,7 @@ class BarItem extends React.Component {
 			className += ' unclickable left-bar-active-group';
 		}
 
-		const itemBody = ReactDOM.div({
+		const itemBody = R.div({
 			onClick: () => {
 				if(!isMustBeExpandedVal) {
 					if(item.isDoc) {
@@ -172,12 +172,12 @@ class BarItem extends React.Component {
 			} else {
 				href = loactionToHash(item.id, item.recId, item.filters, item.editable);
 			}
-			return ReactDOM.a({href: href},
+			return R.a({href: href},
 				adminControl,
 				itemBody
 			)
 		} else {
-			return ReactDOM.div(null,
+			return R.div(null,
 				adminControl,
 				itemBody,
 				children
@@ -189,7 +189,7 @@ class BarItem extends React.Component {
 function renderItemsArray(itemsArray, level, item) {
 	/// #if DEBUG
 	if((!itemsArray || itemsArray.length === 0) && (level > 0)) {
-		return ReactDOM.div({
+		return R.div({
 			className: 'clickable left-bar-empty-section', onClick: () => {
 				createNodeForMenuItem(item);
 			}
@@ -203,7 +203,7 @@ function renderItemsArray(itemsArray, level, item) {
 		var i = itemsArray[k];
 		if(typeof i === 'string') {
 			if(!collapsed) {
-				ret.push(ReactDOM.h5({key: ret.length, className: 'left-bar-tabs-header'}, i));
+				ret.push(R.h5({key: ret.length, className: 'left-bar-tabs-header'}, i));
 			}
 		} else {
 			var itemActive = isCurrentlyShowedLeftbarItem(i);
@@ -213,7 +213,7 @@ function renderItemsArray(itemsArray, level, item) {
 	return ret;
 }
 
-export default class LeftBar extends React.Component {
+export default class LeftBar extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
@@ -240,7 +240,7 @@ export default class LeftBar extends React.Component {
 
 	render() {
 		if(isLitePage()) {
-			return ReactDOM.td();
+			return R.td();
 		}
 
 		var lines;
@@ -260,11 +260,11 @@ export default class LeftBar extends React.Component {
 		}
 
 		if(LeftBar.collapsable) {
-			staticLines.unshift(ReactDOM.div({key: 'toggle-collapsing', className: "left-bar-collapse-button clickable", onClick: this.toggleCollapse}, renderIcon('bars')));
+			staticLines.unshift(R.div({key: 'toggle-collapsing', className: "left-bar-collapse-button clickable", onClick: this.toggleCollapse}, renderIcon('bars')));
 		}
 
-		return ReactDOM.td({className: collapsed ? 'left-bar left-bar-collapsed' : 'left-bar '},
-			ReactDOM.div({className: "left-bar-body"},
+		return R.td({className: collapsed ? 'left-bar left-bar-collapsed' : 'left-bar '},
+			R.div({className: "left-bar-body"},
 				staticLines,
 				lines
 			)

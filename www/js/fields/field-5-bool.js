@@ -2,7 +2,7 @@ import {L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
-export default class CheckBox extends React.Component {
+export default class CheckBox extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -19,11 +19,11 @@ export default class CheckBox extends React.Component {
 	render() {
 		var check;
 		if(this.state && this.state.value) {
-			check = ReactDOM.span({
+			check = R.span({
 				style: checkStyle
 			}, renderIcon('check'));
 		}
-		return ReactDOM.span({
+		return R.span({
 			style: this.props.disable ? styleDisabled : style,
 			title: this.props.title,
 			onClick: () => {
@@ -106,7 +106,7 @@ registerFieldClass(FIELD_5_BOOL, class BooleanField extends fieldMixins {
 		} else {
 			if(this.props.isCompact) {
 				if(value) {
-					return ReactDOM.span({
+					return R.span({
 						style: {
 							fontSize: '130%',
 							color: '#4a2'
@@ -115,10 +115,10 @@ registerFieldClass(FIELD_5_BOOL, class BooleanField extends fieldMixins {
 						renderIcon('check')
 					)
 				} else {
-					return ReactDOM.span(null);
+					return R.span(null);
 				}
 			} else {
-				return ReactDOM.span(null,
+				return R.span(null,
 					value ? L('YES') : L('NO')
 				);
 			}

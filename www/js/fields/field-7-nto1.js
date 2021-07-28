@@ -184,7 +184,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 		var value = this.state.value;
 		var iconPic;
 		if(field.icon && value && (!this.props.hideIcon) && value.icon) {
-			iconPic = ReactDOM.img({
+			iconPic = R.img({
 				style: {
 					height: 30,
 					width: 'auto',
@@ -199,7 +199,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			if(this.state.expanded) {
 				if(this.state.creationOpened) {
 					if(this.state.itemIdToEdit) {
-						list = ReactDOM.div({
+						list = R.div({
 							style: {
 								textAlign: 'center',
 								color: '#ccc',
@@ -236,7 +236,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			}
 
 			if(list) {
-				list = ReactDOM.div({
+				list = R.div({
 					style: dropListStyle,
 					ref: (ref) => {
 						scrollToVisible(ref, true);
@@ -247,7 +247,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			}
 
 			if(!field.requirement && !this.props.isN2M) {
-				clearBtn = ReactDOM.div({
+				clearBtn = R.div({
 					style: {
 						display: 'inline-block',
 						borderRadius: '3px',
@@ -276,14 +276,14 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 
 			var valLabel;
 			if(value && value.name) {
-				valLabel = ReactDOM.span({
+				valLabel = R.span({
 					style: {
 						verticalAlign: 'initial'
 					}
 				}, value.name);
 			} else {
 
-				valLabel = ReactDOM.span({
+				valLabel = R.span({
 					style: {
 						color: '#aaa',
 						marginLeft: 8,
@@ -298,11 +298,11 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 
 
 
-			return ReactDOM.div({
+			return R.div({
 				onMouseLeave: this.onMouseLeave,
 				onMouseEnter: this.clearLeaveTimeout
 			},
-				ReactDOM.div({
+				R.div({
 					style: {
 						border: this.props.noBorder ? '0' : '1px solid #aaa',
 						whiteSpace: 'nowrap',
@@ -314,7 +314,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 					title: this.props.isCompact ? field.name : L('SELECT'),
 					onClick: this.toggleList
 				},
-					ReactDOM.span({
+					R.span({
 						style: {
 							display: 'inline-block',
 							verticalAlign: 'middle',
@@ -330,7 +330,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 						iconPic,
 						valLabel
 					),
-					ReactDOM.span({
+					R.span({
 						style: {
 							display: 'inline-block',
 							verticalAlign: 'middle'
@@ -343,7 +343,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 				list
 			)
 		} else {
-			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
+			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
 				iconPic, value.name
 			)
 		}

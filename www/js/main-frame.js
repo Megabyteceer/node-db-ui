@@ -9,7 +9,7 @@ import {getData} from "./utils.js";
 
 const ENV = {};
 
-class MainFrame extends React.Component {
+class MainFrame extends Component {
 
 	constructor(props) {
 		super(props);
@@ -53,21 +53,21 @@ class MainFrame extends React.Component {
 	render() {
 		var debug = React.createElement(DebugPanel);
 		if(!ENV.nodesTree) {
-			return ReactDOM.div(null, debug);
+			return R.div(null, debug);
 		}
-		return ReactDOM.div(null,
+		return R.div(null,
 			React.createElement(TopBar),
-			ReactDOM.table({className: "root-table"},
-				ReactDOM.tbody(null,
-					ReactDOM.tr(null,
+			R.table({className: "root-table"},
+				R.tbody(null,
+					R.tr(null,
 						React.createElement(LeftBar, {staticItems: ENV.rootItem.children}),
-						ReactDOM.td({className: "stage-container"},
+						R.td({className: "stage-container"},
 							React.createElement(Stage)
 						)
 					)
 				)
 			),
-			ReactDOM.div({className: "footer"}, ENV.APP_TITLE),
+			R.div({className: "footer"}, ENV.APP_TITLE),
 			React.createElement(Modal),
 			React.createElement(Notify),
 			debug,

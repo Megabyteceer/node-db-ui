@@ -70,7 +70,7 @@ var itemStyle = {
 
 
 
-export default class Search extends React.Component {
+export default class Search extends Component {
 
 	clearTimeout() {
 		if(this.timeout) {
@@ -129,7 +129,7 @@ export default class Search extends React.Component {
 			if(this.state.data.length > 0) {
 
 
-				results = ReactDOM.div({
+				results = R.div({
 					style: resultsStyle
 				},
 					this.state.data.map((i) => {
@@ -137,7 +137,7 @@ export default class Search extends React.Component {
 						var img;
 						if(i.img) {
 
-							img = ReactDOM.img({
+							img = R.img({
 								style: imgStyle,
 								src: i.img
 							});
@@ -145,7 +145,7 @@ export default class Search extends React.Component {
 
 
 
-						return ReactDOM.span({
+						return R.span({
 							style: itemStyle,
 							className: 'clickable',
 							href: '#',
@@ -160,9 +160,9 @@ export default class Search extends React.Component {
 							}
 						},
 							img,
-							ReactDOM.h5(null, i.name),
+							R.h5(null, i.name),
 							i.desc.split('<br>').map((i, k) => {
-								return ReactDOM.p({
+								return R.p({
 									key: k
 								}, i);
 							})
@@ -170,10 +170,10 @@ export default class Search extends React.Component {
 					})
 				)
 			} else {
-				results = ReactDOM.div({
+				results = R.div({
 					style: resultsStyle
 				},
-					ReactDOM.div({
+					R.div({
 						style: {
 							padding: '10px 20px',
 							textAlign: 'center'
@@ -185,7 +185,7 @@ export default class Search extends React.Component {
 			}
 		}
 
-		return ReactDOM.span({
+		return R.span({
 			style: style,
 			onMouseLeave: () => {
 				this.clearHideTimeout();
@@ -203,11 +203,11 @@ export default class Search extends React.Component {
 			}
 		},
 			waitIcon,
-			ReactDOM.span({
+			R.span({
 				style: labelStyle
 			}, 'Search: '),
-			ReactDOM.input(inputsProps),
-			ReactDOM.span({
+			R.input(inputsProps),
+			R.span({
 				style: clearBtnStyle,
 				className: 'clickable clickable-neg',
 				onClick: () => {

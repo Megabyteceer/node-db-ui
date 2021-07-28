@@ -2,7 +2,7 @@
 
 import {isLitePage, renderIcon} from "./utils.js";
 
-export default class LoadingIndicator extends React.Component {
+export default class LoadingIndicator extends Component {
 
 	constructor(props) {
 		super(props);
@@ -26,9 +26,9 @@ export default class LoadingIndicator extends React.Component {
 	render() {
 		let active = this.state.showCount > 0;
 
-		return ReactDOM.div({className: active ? 'back-drop' : null},
-			ReactDOM.div({className: active ? "loading-spinner-container" : "loading-spinner-container-inactive"},
-				active ? ReactDOM.div({className: "loading-spinner"},
+		return R.div({className: active ? 'back-drop' : null},
+			R.div({className: active ? "loading-spinner-container" : "loading-spinner-container-inactive"},
+				active ? R.div({className: "loading-spinner"},
 					renderIcon('cog fa-spin')
 				) : undefined
 			)

@@ -5,9 +5,9 @@ import List from "./forms/list.js";
 import LeftBar from "./left-bar.js";
 import {consoleLog, isLitePage, loadJS, myAlert, renderIcon} from "./utils.js";
 
-class FormLoaderCog extends React.Component {
+class FormLoaderCog extends Component {
 	render() {
-		return ReactDOM.div({style: {paddingTop: '50px', textAlign: 'center', color: '#ccc'}},
+		return R.div({style: {paddingTop: '50px', textAlign: 'center', color: '#ccc'}},
 			renderIcon('cog fa-spin fa-5x')
 		);
 	}
@@ -23,7 +23,7 @@ var liteStyle = {
 	margin: 30
 };
 
-class Stage extends React.Component {
+class Stage extends Component {
 
 	componentDidMount() {
 		Stage.instance = this;
@@ -102,7 +102,7 @@ class Stage extends React.Component {
 			//body = React.createElement(FormLoaderCog);
 		}
 
-		return ReactDOM.div({style: isLitePage() ? liteStyle : style},
+		return R.div({style: isLitePage() ? liteStyle : style},
 			body
 		);
 	}

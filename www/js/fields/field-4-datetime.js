@@ -234,25 +234,25 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 					}
 				}
 			};
-			return ReactDOM.div({
+			return R.div({
 				title: (this.props.isCompact ? field.name : ''),
 				style: {
 					display: 'inline-block'
 				}
 			},
-				ReactDOM.div({
+				R.div({
 					style: {
 						display: 'inline-block',
 						width: '35%'
 					}
 				}, React.createElement(window.Datetime, inputsProps1)),
-				ReactDOM.div({
+				R.div({
 					style: {
 						display: 'inline-block',
 						width: '5%'
 					}
 				}),
-				ReactDOM.div({
+				R.div({
 					style: {
 						display: 'inline-block',
 						width: '60%'
@@ -260,7 +260,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 				}, React.createElement(window.Datetime, inputsProps2))
 			);
 		} else {
-			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyCompactFieldProperties,
+			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyCompactFieldProperties,
 				toReadableDatetime(value)
 			)
 		}

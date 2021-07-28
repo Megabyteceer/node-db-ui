@@ -33,28 +33,28 @@ import {idToImgURL, renderIcon} from "../utils.js";
 			var imgUrl = idToImgURL(item.avatar, 'avatar');
 			var phone;
 			if(item.phone) {
-				phone = ReactDOM.div({style: infoStyle}, renderIcon('phone'), ' ' + item.public_phone)
+				phone = R.div({style: infoStyle}, renderIcon('phone'), ' ' + item.public_phone)
 			}
 			var email;
 			if(item.email) {
-				email = ReactDOM.div({style: infoStyle}, renderIcon('envelope'), ' ',
-					ReactDOM.a({href: 'mailto:' + item.public_email},
+				email = R.div({style: infoStyle}, renderIcon('envelope'), ' ',
+					R.a({href: 'mailto:' + item.public_email},
 						item.email
 					)
 				)
 			}
 
-			return ReactDOM.div({key: item.id, style: style},
-				ReactDOM.img({src: imgUrl, style: {height: 80, width: 'auto', borderRadius: '50%'}}),
-				ReactDOM.div({style: {display: 'inline-block', verticalAlign: 'middle', marginLeft: 20, width: '40%'}},
-					ReactDOM.h5(null, item.name),
-					ReactDOM.div({style: textStyle}, item.company)
+			return R.div({key: item.id, style: style},
+				R.img({src: imgUrl, style: {height: 80, width: 'auto', borderRadius: '50%'}}),
+				R.div({style: {display: 'inline-block', verticalAlign: 'middle', marginLeft: 20, width: '40%'}},
+					R.h5(null, item.name),
+					R.div({style: textStyle}, item.company)
 				),
-				ReactDOM.div({style: {display: 'inline-block', verticalAlign: 'bottom', marginLeft: 20, width: '27%'}},
+				R.div({style: {display: 'inline-block', verticalAlign: 'bottom', marginLeft: 20, width: '27%'}},
 					phone,
 					email
 				),
-				ReactDOM.div({style: {position: 'absolute', top: 10, right: 10}},
+				R.div({style: {position: 'absolute', top: 10, right: 10}},
 					renderItemsButtons(node, item, this.refreshData)
 				)
 			);

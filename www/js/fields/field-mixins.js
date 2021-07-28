@@ -1,5 +1,5 @@
 
-export default class fieldMixins extends React.Component {
+export default class fieldMixins extends Component {
 
 	constructor(props) {
 		assert(props.field, '"field" property  expected.');

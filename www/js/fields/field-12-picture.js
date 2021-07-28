@@ -29,14 +29,14 @@ registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
 		if(this.props.isEdit) {
 			return React.createElement(CropperFieldBody, {field, ref: (r) => {this.cropperBody = r;}, parent: this, imageRenderer: this.props.form.imageRenderer, form: this.props.form, currentPicUrl: imgUrl, isCompact: this.props.isCompact});
 		} else if(this.props.isCompact) {
-			return ReactDOM.img({src: imgUrl, style: {borderRadius: '3px', maxHeight: this.props.form.props.parentForm ? '30px' : '60px', width: 'auto'}})
+			return R.img({src: imgUrl, style: {borderRadius: '3px', maxHeight: this.props.form.props.parentForm ? '30px' : '60px', width: 'auto'}})
 		} else {
-			return ReactDOM.img({src: imgUrl, style: {borderRadius: '5px'}})
+			return R.img({src: imgUrl, style: {borderRadius: '5px'}})
 		}
 	}
 });
 
-class CropperFieldBody extends React.Component {
+class CropperFieldBody extends Component {
 
 	constructor(props) {
 		super(props);
@@ -151,7 +151,7 @@ class CropperFieldBody extends React.Component {
 							cropperW = 350 / h * w;
 						}
 
-						myAlert(ReactDOM.div({style: {width: 900}},
+						myAlert(R.div({style: {width: 900}},
 							React.createElement(window.ReactCropper, {
 								zoomable: false,
 								style: {margin: 'auto', height: cropperH, width: cropperW},
@@ -164,21 +164,21 @@ class CropperFieldBody extends React.Component {
 								},
 								crop: this._crop
 							}),
-							ReactDOM.div({style: {marginTop: '12px', textAlign: 'center'}},
-								ReactDOM.button(
+							R.div({style: {marginTop: '12px', textAlign: 'center'}},
+								R.button(
 									{className: 'clickable', style: {background: '#382', color: '#fff'}, onClick: this._cropImage},
 									renderIcon('check'),
 									L('APPLY')
 								),
-								ReactDOM.button(
+								R.button(
 									{className: 'clickable', onClick: this._cancel},
 									renderIcon('times'),
 									L('CANCEL')
 								),
-								ReactDOM.div(
+								R.div(
 									{className: 'box', style: {margin: '30px auto', width: w, height: h}},
 									L('PREVIEW'),
-									ReactDOM.div({className: 'img-preview', style: {margin: '15px', overflow: 'hidden', border: '1px dashed #ccc', borderRadius: '5px', width: w, height: h}})
+									R.div({className: 'img-preview', style: {margin: '15px', overflow: 'hidden', border: '1px dashed #ccc', borderRadius: '5px', width: w, height: h}})
 								)
 							)
 						), 1, 0, 1);
@@ -216,7 +216,7 @@ class CropperFieldBody extends React.Component {
 
 		var clrBtn;
 		if(this.state.cropResult || this.state.src || this.props.currentPicUrl && this.props.currentPicUrl !== 'images/placeholder_' + field.fieldName + '.png') {
-			clrBtn = ReactDOM.button({style: {background: window.constants.DELETE_COLOR, color: '#fff'}, className: 'clickable clickable-del toolbtn', onClick: this.clear},
+			clrBtn = R.button({style: {background: window.constants.DELETE_COLOR, color: '#fff'}, className: 'clickable clickable-del toolbtn', onClick: this.clear},
 				renderIcon('times')
 			)
 		}
@@ -238,7 +238,7 @@ class CropperFieldBody extends React.Component {
 					preview = this.props.imageRenderer(imgSrc, this.props.form);
 
 				} else {
-					preview = ReactDOM.img({
+					preview = R.img({
 						ref: (r) => {this.references.img = r;}, style: {borderRadius: '5px', width: w / 2, height: h / 2}, src: imgSrc, className: 'clickable', onClick: () => {
 							this.references.fileInput.value = null;
 							this.references.fileInput.click();
@@ -246,8 +246,8 @@ class CropperFieldBody extends React.Component {
 					});
 				}
 
-				select = ReactDOM.div(null,
-					ReactDOM.button({
+				select = R.div(null,
+					R.button({
 						style: {background: window.constants.PUBLISH_COLOR, fontSize: '80%', padding: '5px 20px 6px 20px'}, ref: (r) => {this.references.selectButton = r;}, className: 'clickable clickable-edit', onClick: () => {
 							this.references.fileInput.value = null;
 							this.references.fileInput.click();
@@ -260,22 +260,22 @@ class CropperFieldBody extends React.Component {
 			}
 		}
 
-		var form = ReactDOM.form({ref: (r) => {this.references.form = r;}, encType: "multipart/form-data", style: {display: 'none'}},
-			ReactDOM.input({name: "picture", ref: (r) => {this.references.fileInput = r;}, type: 'file', accept: ".jpg, .jpeg, .png, .gif", onChange: this._onChange}),
-			ReactDOM.input({name: "MAX_FILE_SIZE", defaultValue: 3000000}),
-			ReactDOM.input({name: "fid", defaultValue: field.id}),
-			ReactDOM.input({name: "nid", defaultValue: field.node.id}),
-			ReactDOM.input({name: "w", ref: (r) => {this.references.w = r;}}),
-			ReactDOM.input({name: "h", ref: (r) => {this.references.h = r;}}),
-			ReactDOM.input({name: "x", ref: (r) => {this.references.x = r;}}),
-			ReactDOM.input({name: "y", ref: (r) => {this.references.y = r;}})
+		var form = R.form({ref: (r) => {this.references.form = r;}, encType: "multipart/form-data", style: {display: 'none'}},
+			R.input({name: "picture", ref: (r) => {this.references.fileInput = r;}, type: 'file', accept: ".jpg, .jpeg, .png, .gif", onChange: this._onChange}),
+			R.input({name: "MAX_FILE_SIZE", defaultValue: 3000000}),
+			R.input({name: "fid", defaultValue: field.id}),
+			R.input({name: "nid", defaultValue: field.node.id}),
+			R.input({name: "w", ref: (r) => {this.references.w = r;}}),
+			R.input({name: "h", ref: (r) => {this.references.h = r;}}),
+			R.input({name: "x", ref: (r) => {this.references.x = r;}}),
+			R.input({name: "y", ref: (r) => {this.references.y = r;}})
 		);
 
-		return ReactDOM.div(null,
-			ReactDOM.div(null,
+		return R.div(null,
+			R.div(null,
 				preview,
 				body,
-				ReactDOM.div({style: {color: '#aaa', fontSize: '70%'}}, L('RECOMEND_SIZE', recW).replace('%', recH)),
+				R.div({style: {color: '#aaa', fontSize: '70%'}}, L('RECOMEND_SIZE', recW).replace('%', recH)),
 				form
 			),
 			select

@@ -148,7 +148,7 @@ function javascriptHint(cm, form) {
 	};
 }
 
-class AdminEventEditor extends React.Component {
+class AdminEventEditor extends Component {
 
 	constructor(props) {
 		super(props);
@@ -261,7 +261,7 @@ class AdminEventEditor extends React.Component {
 	render() {
 		var src = '';
 		if(!this.state) {
-			return ReactDOM.div();
+			return R.div();
 		}
 
 		var fields = this.props.node.fields.map((f, i) => {
@@ -271,13 +271,13 @@ class AdminEventEditor extends React.Component {
 				extName = ' (' + f.name + ')';
 			}
 
-			return ReactDOM.div({
+			return R.div({
 				key: i
 			},
-				((f.fieldType === FIELD_17_TAB) ? ReactDOM.hr({
+				((f.fieldType === FIELD_17_TAB) ? R.hr({
 					className: 'halfvisible'
 				}) : ''),
-				ReactDOM.b(null, f.fieldName),
+				R.b(null, f.fieldName),
 				extName
 			);
 
@@ -285,60 +285,60 @@ class AdminEventEditor extends React.Component {
 
 		const functionName = this.props.node.tableName + (this.props.field ? '_' + this.props.field.fieldName + '_' : '_') + this.props.handler;
 
-		return ReactDOM.div({
+		return R.div({
 			className: "left"
 		},
-			ReactDOM.h4(null, this.props.title),
-			ReactDOM.div({
+			R.h4(null, this.props.title),
+			R.div({
 				className: 'admin-events-editor-body'
 			},
-				ReactDOM.span({className: 'monospace'}, (this.props.handler === 'onsave' ? 'async ' : ''), 'function ', ReactDOM.b(null, functionName), '() {'),
-				ReactDOM.textarea({
+				R.span({className: 'monospace'}, (this.props.handler === 'onsave' ? 'async ' : ''), 'function ', R.b(null, functionName), '() {'),
+				R.textarea({
 					ref: this.getTextareaRef,
 					className: "admin-events-editor-textarea",
 					defaultValue: this.state.src
 				}),
-				ReactDOM.span({className: 'monospace'}, '}')
+				R.span({className: 'monospace'}, '}')
 			),
-			ReactDOM.div({
+			R.div({
 				className: 'centralize'
 			},
-				ReactDOM.button({
+				R.button({
 					className: 'clickable default-button',
 					onClick: Modal.instance.hide
 				}, renderIcon('times'), L('CANCEL')),
-				ReactDOM.button({
+				R.button({
 					className: 'clickable success-button',
 					onClick: this.saveClick
 				}, renderIcon('floppy-o'), L('SAVE'))
 
 			),
-			ReactDOM.hr(),
-			ReactDOM.h4(null, L('ADM_VARS')),
-			ReactDOM.b(null, 'this.rec_creation'), L('ADM_HLP_1'),
-			ReactDOM.br(),
-			ReactDOM.b(null, 'this.rec_update'), L('ADM_HLP_2'),
-			ReactDOM.br(),
-			ReactDOM.b(null, 'this.rec_ID'), L('ADM_HLP_3'),
-			ReactDOM.br(),
-			ReactDOM.b(null, 'this.prev_value'), L('ADM_HLP_4'),
-			ReactDOM.br(),
-			ReactDOM.b(null, 'this.linkedCreationParams'), L('ADM_HLP_5'),
-			ReactDOM.br(),
-			ReactDOM.b(null, 'this.linkedFilter'), L('ADM_HLP_6'),
-			ReactDOM.br(),
-			ReactDOM.b(null, 'this.isUserEdit'), L('ADM_HLP_7'),
-			ReactDOM.hr(),
-			ReactDOM.h4(null, L('ADM_FUNCTIONS')),
-			ReactDOM.p(null,
+			R.hr(),
+			R.h4(null, L('ADM_VARS')),
+			R.b(null, 'this.rec_creation'), L('ADM_HLP_1'),
+			R.br(),
+			R.b(null, 'this.rec_update'), L('ADM_HLP_2'),
+			R.br(),
+			R.b(null, 'this.rec_ID'), L('ADM_HLP_3'),
+			R.br(),
+			R.b(null, 'this.prev_value'), L('ADM_HLP_4'),
+			R.br(),
+			R.b(null, 'this.linkedCreationParams'), L('ADM_HLP_5'),
+			R.br(),
+			R.b(null, 'this.linkedFilter'), L('ADM_HLP_6'),
+			R.br(),
+			R.b(null, 'this.isUserEdit'), L('ADM_HLP_7'),
+			R.hr(),
+			R.h4(null, L('ADM_FUNCTIONS')),
+			R.p(null,
 				'this.fieldValue(fn); this.isFieldEmpty(fn); this.setFieldValue(fn,val); this.isFieldVisible(fn); this.focusField(fn); this.setFieldLabel(fn,val);',
-				ReactDOM.br(),
+				R.br(),
 				'this.hideField(fn); this.showField(fn); this.disableField(fn); this.enableField(fn); this.fieldAlert(fn, text, isSucess); ',
-				ReactDOM.br(),
+				R.br(),
 				'this.addLookupFilters(fn, filtersObject), this.hideFooter(), this.showFooter(), this.saveForm()'
 			),
-			ReactDOM.hr(),
-			ReactDOM.h4(null, L('ADM_FIELDS')),
+			R.hr(),
+			R.h4(null, L('ADM_FIELDS')),
 			fields
 		)
 	}

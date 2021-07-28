@@ -44,17 +44,17 @@ registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 				options: this.enum || field.enum
 			};
 			/*
-			var options = [ReactDOM.option({value: '', key:0, style:optionStyle},'')];
+			var options = [R.option({value: '', key:0, style:optionStyle},'')];
 		    
 			for (var k in field.enum){
 				var o = field.enum[k];
-				options.push(ReactDOM.option({value: k, key:k, style:optionStyle},o));
+				options.push(R.option({value: k, key:k, style:optionStyle},o));
 			};
-			return ReactDOM.select(inputsProps, options);
+			return R.select(inputsProps, options);
 			*/
 			return React.createElement(Select, inputsProps);
 		} else {
-			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties, ReactDOM.span({
+			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties, R.span({
 				className: 'enum-' + field.id + '_' + value
 			}, field.enumNamesById[value]));
 		}

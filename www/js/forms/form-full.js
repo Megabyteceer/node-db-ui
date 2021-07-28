@@ -284,7 +284,7 @@ export default class FormFull extends eventProcessingMixins {
 	render() {
 		var node = this.props.node;
 		if(!node) {
-			return ReactDOM.div({style: {textAlign: 'center', color: '#ccc', padding: '5px'}},
+			return R.div({style: {textAlign: 'center', color: '#ccc', padding: '5px'}},
 				renderIcon('cog fa-spin fa-2x')
 			);
 		}
@@ -413,7 +413,7 @@ export default class FormFull extends eventProcessingMixins {
 		var nodeAdmin;
 		if(!this.props.inlineEditable) {
 			if(data.isD && isMainTab && !this.props.preventDeleteButton) {
-				deleteButton = ReactDOM.button({
+				deleteButton = R.button({
 					className: 'clickable danger-button clickable-neg', onClick: async () => {
 						await deleteRecord(data.name, node.id, data.id);
 						if(this.isSlave()) {
@@ -427,14 +427,14 @@ export default class FormFull extends eventProcessingMixins {
 
 			if(this.props.editable) {
 				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.prevs & PREVS_PUBLISH)) {
-					saveButton = ReactDOM.button({className: 'clickable clickable-edit success-button save-btn', onClick: this.saveClick, title: L('SAVE')}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
+					saveButton = R.button({className: 'clickable clickable-edit success-button save-btn', onClick: this.saveClick, title: L('SAVE')}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
 				} else {
 					if(data.status === 1) {
-						draftButton = ReactDOM.button({className: 'clickable default-button clickable-cancel', onClick: () => {this.saveClick(true)}, title: L('UNPUBLISH')}, L('UNPUBLISH'));
-						saveButton = ReactDOM.button({className: 'clickable  clickable-edit success-button save-btn', onClick: this.saveClick}, L('SAVE'));
+						draftButton = R.button({className: 'clickable default-button clickable-cancel', onClick: () => {this.saveClick(true)}, title: L('UNPUBLISH')}, L('UNPUBLISH'));
+						saveButton = R.button({className: 'clickable  clickable-edit success-button save-btn', onClick: this.saveClick}, L('SAVE'));
 					} else {
-						draftButton = ReactDOM.button({className: 'clickable default-button clickable-cancel', onClick: () => {this.saveClick(true)}, title: L('SAVE_TEMPLATE')}, L('SAVE_TEMPLATE'));
-						saveButton = ReactDOM.button({className: 'clickable clickable-edit success-button save-btn', onClick: this.saveClick, title: L('PUBLISH')}, L('PUBLISH'));
+						draftButton = R.button({className: 'clickable default-button clickable-cancel', onClick: () => {this.saveClick(true)}, title: L('SAVE_TEMPLATE')}, L('SAVE_TEMPLATE'));
+						saveButton = R.button({className: 'clickable clickable-edit success-button save-btn', onClick: this.saveClick, title: L('PUBLISH')}, L('PUBLISH'));
 
 					}
 				}
@@ -445,21 +445,21 @@ export default class FormFull extends eventProcessingMixins {
 			}
 
 			if(!this.props.isCompact && (this.header || this.state.header)) {
-				header = ReactDOM.h4({style: {color: window.constants.BRAND_COLOR_HEADER, margin: 10}}, this.header || this.state.header);
+				header = R.h4({style: {color: window.constants.BRAND_COLOR_HEADER, margin: 10}}, this.header || this.state.header);
 			}
 
 			if(this.props.editable) {
-				closeButton = ReactDOM.button({className: 'clickable default-button clickable-cancel', onClick: this.cancelClick, title: L('CANCEL')}, renderIcon('caret-left'), this.isSlave() ? '' : L('CANCEL'));
+				closeButton = R.button({className: 'clickable default-button clickable-cancel', onClick: this.cancelClick, title: L('CANCEL')}, renderIcon('caret-left'), this.isSlave() ? '' : L('CANCEL'));
 			} else {
-				closeButton = ReactDOM.button({className: 'clickable default-button clickable-cancel', onClick: this.cancelClick}, renderIcon('caret-left'), this.isSlave() ? '' : L('BACK'));
+				closeButton = R.button({className: 'clickable default-button clickable-cancel', onClick: this.cancelClick}, renderIcon('caret-left'), this.isSlave() ? '' : L('BACK'));
 			}
 		}
-		return ReactDOM.div({className: domId, style: style},
+		return R.div({className: domId, style: style},
 			nodeAdmin,
 			header,
 			tabs || fields,
-			ReactDOM.div({style: {maxWidth: 1024}},
-				ReactDOM.div({className: 'footer-' + domId, style: {marginLeft: '25%', paddingLeft: 22, display: (this.state.footerHidden || this.props.inlineEditable ? 'none' : undefined), textAlign: 'left', marginTop: 65}},
+			R.div({style: {maxWidth: 1024}},
+				R.div({className: 'footer-' + domId, style: {marginLeft: '25%', paddingLeft: 22, display: (this.state.footerHidden || this.props.inlineEditable ? 'none' : undefined), textAlign: 'left', marginTop: 65}},
 					deleteButton,
 					draftButton,
 					saveButton,

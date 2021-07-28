@@ -31,10 +31,10 @@ registerFieldClass(FIELD_10_PASSWORD, class PasswordField extends fieldMixins {
 				}
 			};
 
-			return ReactDOM.input(inputsProps);
+			return R.input(inputsProps);
 
 		} else {
-			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
+			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
 				'********'
 			);
 		}

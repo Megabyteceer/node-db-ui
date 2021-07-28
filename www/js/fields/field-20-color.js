@@ -51,16 +51,16 @@ registerFieldClass(FIELD_20_COLOR, class ColorField extends fieldMixins {
 
 	render() {
 		let background = intToColor(this.state.color, this.state.alpha);
-		let preview = ReactDOM.div({style: styleInput},
-			ReactDOM.div({style: {width: this.props.isCompact ? 42 : 120, verticalAlign: 'middle', display: 'inline-block', background: "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQYV2OcM2fOfwY0kJycjC7EwDgUFP7//x/DM3PnzsX0zBBQCADu1zEWG5C/XgAAAABJRU5ErkJggg==) repeat"}},
-				ReactDOM.div({style: {margin: '6px', height: 24, background}})
+		let preview = R.div({style: styleInput},
+			R.div({style: {width: this.props.isCompact ? 42 : 120, verticalAlign: 'middle', display: 'inline-block', background: "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQYV2OcM2fOfwY0kJycjC7EwDgUFP7//x/DM3PnzsX0zBBQCADu1zEWG5C/XgAAAABJRU5ErkJggg==) repeat"}},
+				R.div({style: {margin: '6px', height: 24, background}})
 			)
 		);
 		if(this.props.isEdit) {
-			return ReactDOM.div(null,
-				ReactDOM.input({style: styleInput, type: 'color', defaultValue: '#' + (this.state.color & 0xFFFFFF).toString(16), onChange: this.onChangeColor}),
-				ReactDOM.input({style: styleInput, type: 'number', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
-				ReactDOM.input({style: styleInput, type: 'range', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
+			return R.div(null,
+				R.input({style: styleInput, type: 'color', defaultValue: '#' + (this.state.color & 0xFFFFFF).toString(16), onChange: this.onChangeColor}),
+				R.input({style: styleInput, type: 'number', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
+				R.input({style: styleInput, type: 'range', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
 				preview
 			);
 		} else {

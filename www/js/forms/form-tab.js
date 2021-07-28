@@ -1,6 +1,6 @@
 import FieldAdmin from "../admin/field-admin.js";
 
-export default class FormTab extends React.Component {
+export default class FormTab extends Component {
 
 	constructor(props) {
 		super(props);
@@ -24,7 +24,7 @@ export default class FormTab extends React.Component {
 	}
 
 	render() {
-		return ReactDOM.div({style: {display: this.state.visible ? 'block' : 'none', marginBottom: (this.props.highlightFrame ? '10px' : 0), border: (this.props.highlightFrame ? '2px solid #944' : 0)}},
+		return R.div({style: {display: this.state.visible ? 'block' : 'none', marginBottom: (this.props.highlightFrame ? '10px' : 0), border: (this.props.highlightFrame ? '2px solid #944' : 0)}},
 			(this.props.highlightFrame ? React.createElement(FieldAdmin, {field: this.props.field, form: this.props.form, x: 13}) : ''),
 			this.props.fields);
 	}

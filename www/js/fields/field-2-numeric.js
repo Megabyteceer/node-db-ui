@@ -42,9 +42,9 @@ registerFieldClass(FIELD_2_INT, class NumericField extends fieldMixins {
 				}
 			};
 
-			return ReactDOM.input(inputsProps);
+			return R.input(inputsProps);
 		} else {
-			return ReactDOM.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties, this.renderTextValue(value.toString()));
+			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties, this.renderTextValue(value.toString()));
 		}
 
 	}

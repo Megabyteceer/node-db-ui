@@ -40,11 +40,11 @@ function isPresentListRenderer(nodeId) {
 
 function createPageButton(self, page, isActive) {
 	if(isActive) {
-		return ReactDOM.button({key: page, style: {background: '#ebe5e8', borderBottom: '5px solid ' + window.constants.BRAND_COLOR_DARK, color: '#555', margin: 0, borderRadius: 0}},
+		return R.button({key: page, style: {background: '#ebe5e8', borderBottom: '5px solid ' + window.constants.BRAND_COLOR_DARK, color: '#555', margin: 0, borderRadius: 0}},
 			page + 1
 		);
 	}
-	return ReactDOM.button({
+	return R.button({
 		key: page, className: 'clickable', style: {background: '#fff', color: '#555', margin: 0, borderRadius: 0}, onClick: () => {
 			self.changeFilter('p', page, true);
 		}
@@ -242,13 +242,13 @@ export default class List extends BaseForm {
 					if(!item.__deleted_901d123f) {
 
 						lines.push(
-							ReactDOM.div({key: UID(item), className: 'inline-item', style: {display: 'inline-block', width: '80%', marginBottom: 4, marginTop: 4}},
+							R.div({key: UID(item), className: 'inline-item', style: {display: 'inline-block', width: '80%', marginBottom: 4, marginTop: 4}},
 								React.createElement(FormFull, {ref: this.subFormRef, inlineEditable: true, editable: true, isCompact: true, filters: filters, parentForm: this.props.parentForm, isLookup: this.props.isLookup, list: this, node, initialData: item, overrideOrderData: sorting ? itemNum : -1})
 							)
 						);
 						var btns = [];
 
-						btns.push(ReactDOM.button({
+						btns.push(R.button({
 							className: 'clickable clickable-del toolbtn', title: L('DELETE'), key: 'b' + UID(item), style: {color: '#fff', background: window.constants.DELETE_COLOR}, onClick: async () => {
 								if(item.hasOwnProperty('id') && !this.state.noPromptDelete) {
 									await deleteRecord(item.name, node.id, 0, undefined, false, deleteItem);
@@ -288,7 +288,7 @@ export default class List extends BaseForm {
 									var uid = UID(data.items[itemNum]);
 									var itemNumM1 = _itemNumM1;
 									var uidM1 = _uidM1;
-									btns.push(ReactDOM.button({
+									btns.push(R.button({
 										className: 'clickable toolbtn', title: L('MOVE_UP'), key: 'bu' + UID(item), style: {color: '#fff', background: window.constants.EDIT_COLOR}, onClick: () => {
 											var t = data.items[itemNum];
 											data.items[itemNum] = data.items[itemNumM1];
@@ -310,7 +310,7 @@ export default class List extends BaseForm {
 									var itemNumP1 = _itemNumP1;
 									var uidP1 = _uidP1;
 
-									btns.push(ReactDOM.button({
+									btns.push(R.button({
 										className: 'clickable toolbtn', title: L('MOVE_DOWN'), key: 'bd' + UID(item), style: {color: '#fff', background: window.constants.EDIT_COLOR}, onClick: () => {
 											var t = data.items[itemNum];
 											data.items[itemNum] = data.items[itemNumP1];
@@ -329,7 +329,7 @@ export default class List extends BaseForm {
 						}
 
 						lines.push(
-							ReactDOM.span({key: UID(item) + 'btns', className: 'btns', style: {display: 'inline-block'}},
+							R.span({key: UID(item) + 'btns', className: 'btns', style: {display: 'inline-block'}},
 								btns
 							)
 						);
@@ -346,14 +346,14 @@ export default class List extends BaseForm {
 
 		var createBtn;
 		if(node.canCreate) {
-			createBtn = ReactDOM.div(null,
-				ReactDOM.button({style: {background: window.constants.CREATE_COLOR}, title: L('ADD', (node.creationName || node.singleName)), className: 'clickable clickable-neg toolbtn', onClick: () => {data.items.push({}); this.forceUpdate();}},
+			createBtn = R.div(null,
+				R.button({style: {background: window.constants.CREATE_COLOR}, title: L('ADD', (node.creationName || node.singleName)), className: 'clickable clickable-neg toolbtn', onClick: () => {data.items.push({}); this.forceUpdate();}},
 					renderIcon('plus')
 				)
 			);
 		}
 
-		return ReactDOM.div(null,
+		return R.div(null,
 			nodeAdmin,
 			lines,
 			createBtn
@@ -367,7 +367,7 @@ export default class List extends BaseForm {
 		var node = this.state.node;
 		var data = this.state.data;
 		if(!node || !data) {
-			return ReactDOM.div({style: {textAlign: 'center', color: '#ccc', padding: '5px'}},
+			return R.div({style: {textAlign: 'center', color: '#ccc', padding: '5px'}},
 				renderIcon('cog fa-spin fa-2x')
 			);
 		}
@@ -389,7 +389,7 @@ export default class List extends BaseForm {
 			var createButton;
 			if(node.canCreate && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
 				if(this.isSlave()) {
-					createButton = ReactDOM.button({
+					createButton = R.button({
 						style: {padding: '5px 15px', background: window.constants.CREATE_COLOR}, className: 'clickable clickable-neg', onClick: async () => {
 							if(this.props.askToSaveParentBeforeCreation) {
 								await this.props.parentForm.saveParentFormBeforeCreation();
@@ -402,7 +402,7 @@ export default class List extends BaseForm {
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				} else {
-					createButton = ReactDOM.button({style: {background: window.constants.CREATE_COLOR, color: '#fff', padding: '15px 40px'}, className: 'clickable clickable-neg', onClick: () => {createRecord(node.id, filters);}},
+					createButton = R.button({style: {background: window.constants.CREATE_COLOR, color: '#fff', padding: '15px 40px'}, className: 'clickable clickable-neg', onClick: () => {createRecord(node.id, filters);}},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				}
@@ -411,9 +411,9 @@ export default class List extends BaseForm {
 			var searchPanel;
 
 			if(!this.props.hideSearch && !this.state.hideSearch && (this.filters.s || data.items.length > 2)) {
-				searchPanel = ReactDOM.div({style: {display: 'block', border: '1px solid #a8a8a8', marginTop: '10px', borderRadius: '6px'}},
-					ReactDOM.input({ref: (input) => {this.searchInput = input;}, style: {width: '200px', borderRadius: '6px', verticalAlign: 'middle', padding: '2px 8px', border: 'none', borderRight: '1px solid #a8a8a8', borderTopRightRadius: 0, borderBottomRightRadius: 0}, placeholder: L('SEARCH_LIST'), onChange: this.changeSearch, defaultValue: this.filters.s}),
-					ReactDOM.a({
+				searchPanel = R.div({style: {display: 'block', border: '1px solid #a8a8a8', marginTop: '10px', borderRadius: '6px'}},
+					R.input({ref: (input) => {this.searchInput = input;}, style: {width: '200px', borderRadius: '6px', verticalAlign: 'middle', padding: '2px 8px', border: 'none', borderRight: '1px solid #a8a8a8', borderTopRightRadius: 0, borderBottomRightRadius: 0}, placeholder: L('SEARCH_LIST'), onChange: this.changeSearch, defaultValue: this.filters.s}),
+					R.a({
 						className: 'clickable', style: {color: '#ccc', verticalAlign: 'middle', fontSize: '120%'}, onClick: (e) => {
 							this.clearSearch();
 							sp(e);
@@ -427,11 +427,11 @@ export default class List extends BaseForm {
 
 
 			if(createButton || searchPanel) {
-				header = ReactDOM.div({style: {marginBottom: 30, display: 'flex', justifyContent: 'space-between'}},
-					ReactDOM.div(null,
+				header = R.div({style: {marginBottom: 30, display: 'flex', justifyContent: 'space-between'}},
+					R.div(null,
 						createButton
 					),
-					ReactDOM.div({style: {}},
+					R.div({style: {}},
 						searchPanel
 					)
 				);
@@ -460,7 +460,7 @@ export default class List extends BaseForm {
 
 					var rowHeader;
 					if(field.forSearch === 1) {
-						rowHeader = ReactDOM.span({
+						rowHeader = R.span({
 							className: 'clickable', style: {
 								color: (filters.o === field.fieldName) ? '#259' : ''
 							}, onClick: () => {
@@ -481,13 +481,13 @@ export default class List extends BaseForm {
 
 
 					if(this.isVisibleField(field)) {
-						tableHeader.push(ReactDOM.td({key: field.id, style: (field.fieldType === FIELD_2_INT) ? headerStyleNum : headerStyle},
+						tableHeader.push(R.td({key: field.id, style: (field.fieldType === FIELD_2_INT) ? headerStyleNum : headerStyle},
 							rowHeader,
 							fieldAdmin
 						));
 					}
 				});
-				tableHeader.push(ReactDOM.td({key: 'holder', style: headerStyle}, ' '));
+				tableHeader.push(R.td({key: 'holder', style: headerStyle}, ' '));
 
 
 				var additionalButtons;
@@ -504,9 +504,9 @@ export default class List extends BaseForm {
 					return React.createElement(FormItem, {key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, onClick: this.props.onItemClick ? () => {this.props.onItemClick(item)} : undefined, parentForm: this.props.parentForm, additionalButtons: additionalButtons, hideControlls: hideControlls, isLookup: this.props.isLookup, list: this, node, initialData: item});
 				});
 
-				body = ReactDOM.table({style: {width: '100%', tableLayout: 'fixed'}},
-					ReactDOM.thead(null, ReactDOM.tr(null, tableHeader)),
-					ReactDOM.tbody({className: 'list-body'}, lines)
+				body = R.table({style: {width: '100%', tableLayout: 'fixed'}},
+					R.thead(null, R.tr(null, tableHeader)),
+					R.tbody({className: 'list-body'}, lines)
 				);
 			}
 
@@ -526,15 +526,15 @@ export default class List extends BaseForm {
 
 			var emptyIcon;
 			if(node.icon) {
-				emptyIcon = ReactDOM.div({style: {margin: '50px'}},
+				emptyIcon = R.div({style: {margin: '50px'}},
 					renderIcon((node.icon || 'plus') + (this.isSlave() ? ' fa-3x' : ' fa-5x'))
 				)
 			}
 
-			body = ReactDOM.div({style: {color: '#ccc', textAlign: 'center', fontSize: '140%'}},
+			body = R.div({style: {color: '#ccc', textAlign: 'center', fontSize: '140%'}},
 				emptyIcon,
 				t1,
-				ReactDOM.br(),
+				R.br(),
 				t2
 			)
 		}
@@ -560,7 +560,7 @@ export default class List extends BaseForm {
 			p = parseInt(p);
 			if(p >= 0 && p < totalPages) {
 				if((p - prevP) !== 1) {
-					paginator.push(ReactDOM.span({key: 'dots' + p}, ' ... '));
+					paginator.push(R.span({key: 'dots' + p}, ' ... '));
 				}
 				prevP = p;
 				paginator.push(createPageButton(this, p, p === curPage));
@@ -568,7 +568,7 @@ export default class List extends BaseForm {
 		}
 
 		if(paginator.length > 1) {
-			paginator = ReactDOM.div({style: {paddingTop: '10px', marginLeft: 15, display: 'inline-block'}},
+			paginator = R.div({style: {paddingTop: '10px', marginLeft: 15, display: 'inline-block'}},
 				paginator
 			)
 		} else {
@@ -583,7 +583,7 @@ export default class List extends BaseForm {
 		}
 
 		if(data.items.length > 0 && data.items.length < data.total) {
-			footer = ReactDOM.div({style: {marginTop: this.isSlave() ? 5 : 30, fontSize: '75%'}},
+			footer = R.div({style: {marginTop: this.isSlave() ? 5 : 30, fontSize: '75%'}},
 				footerText,
 				paginator
 			)
@@ -600,11 +600,11 @@ export default class List extends BaseForm {
 		if(!this.props.isCompact) {
 			var hdr = this.header || this.filters.formTitle;
 			if(hdr) {
-				title = ReactDOM.h4({style: {color: window.constants.BRAND_COLOR_HEADER, margin: 10}}, hdr);
+				title = R.h4({style: {color: window.constants.BRAND_COLOR_HEADER, margin: 10}}, hdr);
 			}
 		}
 
-		return ReactDOM.div(null,
+		return R.div(null,
 			nodeAdmin,
 			title,
 			header,

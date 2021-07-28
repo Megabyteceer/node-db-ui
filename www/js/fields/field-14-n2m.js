@@ -120,9 +120,9 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 			if(this.state.extendedEditor) {
 				if(v) {
 
-					buttons = ReactDOM.div({style: {width: '30%', display: 'inline-block', verticalAlign: 'middle', textAlign: 'right'}},
+					buttons = R.div({style: {width: '30%', display: 'inline-block', verticalAlign: 'middle', textAlign: 'right'}},
 						additionalButtonsN2M,
-						/*ReactDOM.button({style:{background: window.constants.EDIT_COLOR, color:'#fff'}, title:L('MOVE_UP'), className:'clickable toolbtn', onClick:() => {
+						/*R.button({style:{background: window.constants.EDIT_COLOR, color:'#fff'}, title:L('MOVE_UP'), className:'clickable toolbtn', onClick:() => {
 								
 								if (i > 0) {
 									var t = this.state.value[i];
@@ -133,7 +133,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 							}},
 							renderIcon('arrow-up')
 						),
-						ReactDOM.button({style:{background: window.constants.EDIT_COLOR, color:'#fff'}, title:L('MOVE_DOWN'), className:'clickable toolbtn', onClick:() => {
+						R.button({style:{background: window.constants.EDIT_COLOR, color:'#fff'}, title:L('MOVE_DOWN'), className:'clickable toolbtn', onClick:() => {
 								if(i < (this.state.value.length-1)){
 									var t = this.state.value[i];
 									this.state.value[i] = this.state.value[i+1];
@@ -144,7 +144,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 							}},
 							renderIcon('arrow-down')
 						),*/
-						ReactDOM.button({
+						R.button({
 							style: {background: window.constants.EDIT_COLOR, color: '#fff'}, title: L('EDIT'), className: 'clickable clickable-edit toolbtn', onClick: () => {
 								this.uidToEdit = UID(this.state.value[i]);
 								this.forceUpdate();
@@ -152,7 +152,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 						},
 							renderIcon('pencil')
 						),
-						ReactDOM.button({
+						R.button({
 							style: {background: window.constants.DELETE_COLOR, color: '#fff'}, title: L('LIST_REMOVE'), className: 'clickable clickable-del toolbtn', onClick: () => {
 								this.deleteItemByIndex(i);
 
@@ -160,7 +160,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 						},
 							renderIcon('times')
 						),
-						ReactDOM.div({
+						R.div({
 							style: {color: '#bbb', fontSize: '140%', verticalAlign: 'middle', display: 'inline-block'}, className: isDrag ? 'drag' : 'draggable', onMouseDown: (e) => {
 								sp(e);
 								this.dragStart(v);
@@ -168,8 +168,8 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 						}, renderIcon('reorder'))
 					)
 				} else {
-					/*buttons = ReactDOM.div({style:{width:'20%', display:'inline-block', fontSize:'50%', verticalAlign:'middle', textAlign:'left'}, className:'halfvisible'},
-						ReactDOM.button({style:{background:'#0a7', color:'#fff'}, title:L('ADD_DIVIDER'), className:'clickable toolbtn', onClick:() => {
+					/*buttons = R.div({style:{width:'20%', display:'inline-block', fontSize:'50%', verticalAlign:'middle', textAlign:'left'}, className:'halfvisible'},
+						R.button({style:{background:'#0a7', color:'#fff'}, title:L('ADD_DIVIDER'), className:'clickable toolbtn', onClick:() => {
 								this.state.value.splice(i,0,{id:0, name:L('NEW_GROUP')});
 								this.forceUpdate();
 							}},
@@ -178,9 +178,9 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 					)*/
 				}
 			} else if(v) {
-				buttons = ReactDOM.div({style: {width: '30%', display: 'inline-block', fontSize: '60%', verticalAlign: 'middle', textAlign: 'left'}, className: 'halfvisible'},
+				buttons = R.div({style: {width: '30%', display: 'inline-block', fontSize: '60%', verticalAlign: 'middle', textAlign: 'left'}, className: 'halfvisible'},
 					additionalButtonsN2M,
-					ReactDOM.button({
+					R.button({
 						style: {background: window.constants.EDIT_COLOR, color: '#fff'}, title: L('EDIT'), className: 'clickable clickable-edit toolbtn', onClick: () => {
 							this.uidToEdit = UID(this.state.value[i]);
 							this.forceUpdate();
@@ -188,7 +188,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 					},
 						renderIcon('pencil')
 					),
-					ReactDOM.button({
+					R.button({
 						style: {background: window.constants.DELETE_COLOR, color: '#fff'}, title: L('LIST_REMOVE'), className: 'clickable clickable-del toolbtn', onClick: () => {
 							this.deleteItemByIndex(i);
 						}
@@ -221,8 +221,8 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 				keyCounter++;
 			}
 
-			var body = ReactDOM.div({key: key, ref: v ? (ref) => {refs[UID(v)] = ref;} : undefined, style: {padding: '2px 20px', borderBottom: borderBottom, outline: isDrag ? '3px solid #0d5' : undefined}},
-				ReactDOM.div({style: {width: '70%', display: 'inline-block'}},
+			var body = R.div({key: key, ref: v ? (ref) => {refs[UID(v)] = ref;} : undefined, style: {padding: '2px 20px', borderBottom: borderBottom, outline: isDrag ? '3px solid #0d5' : undefined}},
+				R.div({style: {width: '70%', display: 'inline-block'}},
 					React.createElement(getClassForField(FIELD_7_Nto1), {
 						field, preventCreateButton: this.state.preventCreateButton, editIt, hideIcon: this.isDividerItem(v, field), pos: i, isEdit, isN2M: true, filters: this.state.filters, noBorder: true, ref: (ref) => {
 							if(ref) {
@@ -235,7 +235,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 			);
 
 			if(this.isDividerItem(v, field)) {
-				return ReactDOM.div({key: key, noBorder: true, style: {background: '#eee', fontWeight: 'bold', padding: '5px', marginTop: (i === 0) ? 0 : '40px'}},
+				return R.div({key: key, noBorder: true, style: {background: '#eee', fontWeight: 'bold', padding: '5px', marginTop: (i === 0) ? 0 : '40px'}},
 					body
 				)
 			} else {
@@ -276,8 +276,8 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 
 		lines.push(this.renderItem(field, null, lines.length, this.props.isEdit));
 
-		return ReactDOM.div(null,
-			//ReactDOM.h3({key:'header', style:{marginBottom:15}}, field.name),
+		return R.div(null,
+			//R.h3({key:'header', style:{marginBottom:15}}, field.name),
 			lines
 		);
 

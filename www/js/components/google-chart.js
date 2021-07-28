@@ -22,7 +22,7 @@ var init = () => {
 }
 init();
 
-class GoogleChart extends React.Component {
+class GoogleChart extends Component {
 
 	constructor(props) {
 		super(props);
@@ -51,7 +51,7 @@ class GoogleChart extends React.Component {
 
 	render() {
 		if(chartLoaded) {
-			return ReactDOM.div({
+			return R.div({
 				id: this.chartId,
 				className: 'chart-body',
 				ref: (ref) => {

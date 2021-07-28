@@ -25,7 +25,7 @@ var backdropStyle = {
 var modalStack = [];
 var idCounter = 0;
 
-export default class Modal extends React.Component {
+export default class Modal extends Component {
 	constructor(props) {
 		super(props);
 		this.show = this.show.bind(this);
@@ -70,26 +70,26 @@ export default class Modal extends React.Component {
 
 	render() {
 		if(modalStack.length > 0) {
-			return ReactDOM.div(null,
+			return R.div(null,
 				modalStack.map((m) => {
 
 					var bs = Object.assign({cursor: m.noDiscardByBackdrop ? 'default' : 'pointer'}, backdropStyle);
 
-					return ReactDOM.div({
+					return R.div({
 						key: m.id, style: bs, className: 'fade-in', onClick: () => {
 							if(!m.noDiscardByBackdrop) {
 								this.hide();
 							}
 						}
 					},
-						ReactDOM.div({style: style, onClick: sp},
+						R.div({style: style, onClick: sp},
 							m.content
 						)
 					);
 				})
 			);
 		} else {
-			return ReactDOM.span();
+			return R.span();
 		}
 	}
 }

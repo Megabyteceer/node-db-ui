@@ -15,6 +15,7 @@ import('./lib/react-dom/umd/react-dom.production.min.js');
 import './lib/jquery/dist/jquery.js'
 import Cropper from "./lib/cropperjs/dist/cropper.esm.js";
 
+window.Component = React.Component;
 
 window.module = {};
 window.exports = {};
@@ -23,7 +24,7 @@ window.require = function (name) {
 		return window.React;
 	}
 	if(name === 'react-dom') {
-		return window.ReactDOM;
+		return window.R;
 	}
 	if(name === 'cropperjs') {
 		return Cropper;

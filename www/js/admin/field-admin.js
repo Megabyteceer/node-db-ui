@@ -5,7 +5,7 @@ import admin from "./admin-utils.js";
 
 var showedFieldId;
 
-export default class FieldAdmin extends React.Component {
+export default class FieldAdmin extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -61,15 +61,15 @@ export default class FieldAdmin extends React.Component {
 		if(bodyVisible) {
 			var extendedInfo;
 			if(form.fieldsRefs && form.fieldsRefs[field.fieldName] && form.fieldsRefs[field.fieldName].fieldRef && form.getField(field.fieldName).fieldRef.state.filters) {
-				extendedInfo = ReactDOM.div(null,
+				extendedInfo = R.div(null,
 					'filters:',
-					ReactDOM.input({
+					R.input({
 						defaultValue: JSON.stringify(form.getField(field.fieldName).fieldRef.state.filters)
 					})
 				);
 			}
 
-			body = ReactDOM.div({
+			body = R.div({
 				ref: keepInWindow,
 				className: "admin-form-body",
 				onClick: () => {
@@ -82,16 +82,16 @@ export default class FieldAdmin extends React.Component {
 				}
 			},
 				L('FLD_SETTINGS'),
-				ReactDOM.b({className: "admin-form-header"},
+				R.b({className: "admin-form-header"},
 					field.fieldName
 				),
-				ReactDOM.div(null,
+				R.div(null,
 					'type: ' + field.fieldType + '; id: ' + field.id + '; len:' + field.maxlen
 				),
-				ReactDOM.div({
+				R.div({
 					className: "admin-form-content"
 				},
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						style: {border},
 						onClick: () => {
@@ -103,7 +103,7 @@ export default class FieldAdmin extends React.Component {
 					},
 						'onChange...'
 					),
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						onClick: () => {
 							var i = field.index;
@@ -115,7 +115,7 @@ export default class FieldAdmin extends React.Component {
 					},
 						renderIcon('arrow-up')
 					),
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						onClick: () => {
 							var i = field.index;
@@ -127,7 +127,7 @@ export default class FieldAdmin extends React.Component {
 					},
 						renderIcon('arrow-down')
 					),
-					ReactDOM.button({
+					R.button({
 						className: 'clickable toolbtn admin-form-btn',
 						onClick: () => {
 
@@ -145,7 +145,7 @@ export default class FieldAdmin extends React.Component {
 					},
 						renderIcon('plus')
 					),
-					ReactDOM.button({
+					R.button({
 						onClick: () => {
 							admin.popup(loactionToHash(6, field.id, undefined, true), 900, true);
 						},
@@ -154,14 +154,14 @@ export default class FieldAdmin extends React.Component {
 					},
 						renderIcon('wrench')
 					),
-					ReactDOM.span({
+					R.span({
 						className: 'clickable admin-form-lock-btn',
 						onClick: this.toggleLock
 					},
 						renderIcon(this.state.locked ? 'lock' : 'unlock')
 
 					),
-					ReactDOM.button({
+					R.button({
 						onClick: () => {
 							admin.debug(form.getField(field.fieldName) || form);
 						},
@@ -175,12 +175,12 @@ export default class FieldAdmin extends React.Component {
 			);
 		}
 
-		return ReactDOM.span({
+		return R.span({
 			ref: keepInWindow,
 			className: 'admin-controll admin-form-wrap' + (bodyVisible ? 'admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
-			ReactDOM.span({
+			R.span({
 				ref: keepInWindow,
 				style: {border},
 				className: 'halfvisible admin-form-open-btn',
