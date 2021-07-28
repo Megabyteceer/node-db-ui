@@ -32,7 +32,8 @@ class Stage extends Component {
 		if(typeof (node) !== 'undefined') {
 			this.state = null;
 			setTimeout(() => {
-				this.setState({node, data: data, recId: recId, filters: filters, editable: editable});
+				this.filters = filters;
+				this.setState({node, data, recId, editable});
 			});
 		} else {
 			this.state = null;
