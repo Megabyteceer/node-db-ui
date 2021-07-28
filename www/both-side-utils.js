@@ -24,8 +24,8 @@ global.isAdmin = (userSession) => {
 }
 
 global.isUserHaveRole = (roleId, userSession) => {
-	if(!userSession && typeof (curentUserData) !== 'undefined') {
-		userSession = curentUserData;
+	if(!userSession && typeof (currentUserData) !== 'undefined') {
+		userSession = currentUserData;
 	}
 	return userSession && userSession.userRoles[roleId];
 }

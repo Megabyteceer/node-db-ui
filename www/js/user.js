@@ -1,15 +1,15 @@
 ﻿
 
 import moment from "./lib/moment/dist/moment.js";
-import {clearForm, getData, goToPageByHash, L, loactionToHash, loadJS, renderIcon, sp} from "./utils.js";
+import {clearForm, getData, goToPageByHash, L, loactionToHash, renderIcon, showForm} from "./utils.js";
 import Select from "./components/select.js";
 import admin from "./admin/admin-utils.js";
 import {ENV} from "./main-frame.js";
 
-var curentUserData;
+var currentUserData;
 
 function setUserOrg(orgId) {
-	if(curentUserData.orgId !== orgId) {
+	if(currentUserData.orgId !== orgId) {
 		getData('api/setCurrentOrg', {orgId}).then(() => {
 			User.instance.refreshUser();
 		});
@@ -18,22 +18,6 @@ function setUserOrg(orgId) {
 
 function iAdmin() {
 	return isUserHaveRole(ADMIN_ROLE_ID);
-}
-
-var style = {
-	marginRight: 10
-}
-
-var selectStyle = {
-	position: 'relative',
-	width: '100%',
-	height: 32,
-	padding: '2px 8px',
-	color: window.constants.TEXT_COLOR,
-	background: '#fff',
-	border: '1px solid #aaa',
-	borderRadius: '3px',
-	cursor: 'pointer'
 }
 
 var isFirstCall = true;
@@ -52,7 +36,7 @@ export default class User extends Component {
 			import('/locales/' + data.lang.code + '/lang.js').then(() => {
 				this.setState(data);
 
-				window.curentUserData = data;
+				window.currentUserData = data;
 				if(iAdmin()) {
 					admin.toggleAdminUI();
 				}
@@ -86,15 +70,15 @@ export default class User extends Component {
 		if(this.state) {
 
 			var iconName = '';
-			var mlbs = {display: 'inline-block', marginRight: 12, borderRadius: 4, border: '1px solid ' + window.constants.BRAND_COLOR_DARK, color: window.constants.BRAND_COLOR_LIGHT, padding: '3px 10px'};
+			let className = 'clickable clickable-neg top-bar-user-multilang'
 			if(this.state.hasOwnProperty('langs')) {
-				mlbs.color = '#ffbf8c';
+				className += ' top-bar-user-multilang-active';
 				iconName = 'check-';
 			};
 
 			var multilangBtn;
 			if(ENV.ENABLE_MULTILANG) {
-				multilangBtn = R.div({className: 'clickable clickable-neg', style: mlbs, onClick: this.toggleMultilang},
+				multilangBtn = R.div({className, onClick: this.toggleMultilang},
 					renderIcon(iconName + 'square-o'), L('MULTILANG')
 				);
 			}
@@ -108,21 +92,21 @@ export default class User extends Component {
 					options.push({value: k, name});
 				};
 
-				org = React.createElement(Select, {options, style: selectStyle, isCompact: true, defaultValue: this.state.orgId, onChange: this.changeOrg});
+				org = React.createElement(Select, {options, className: "top-bar-user-org-select", isCompact: true, defaultValue: this.state.orgId, onChange: this.changeOrg});
 			} else {
 				org = this.state.org;
 			}
 
 			var btn1, btn2;
 			if(this.state.id === 2) {
-				btn2 = R.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px'}, href: 'login', title: L('LOGIN'), className: 'clickable clickable-neg'},
+				btn2 = R.a({href: 'login', title: L('LOGIN'), className: 'clickable clickable-neg top-bar-user-btn'},
 					renderIcon('sign-in fa-2x')
 				)
 			} else {
-				btn1 = R.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px', marginLeft: '20px', width: '50px'}, href: loactionToHash(5, this.state.id, undefined, true), title: L('USER_PROFILE'), className: 'clickable clickable-neg'},
+				btn1 = R.a({href: loactionToHash(5, this.state.id, undefined, true), title: L('USER_PROFILE'), className: 'clickable clickable-neg top-bar-user-btn'},
 					renderIcon('user fa-2x')
 				);
-				btn2 = R.a({style: {borderRadius: '5px', display: 'inline-block', padding: '2px 10px'}, href: 'login', title: L('LOGOUT'), className: 'clickable clickable-neg'},
+				btn2 = R.a({href: 'login', title: L('LOGOUT'), className: 'clickable clickable-neg top-bar-user-btn'},
 					renderIcon('sign-out fa-2x')
 				);
 			}
@@ -136,12 +120,16 @@ export default class User extends Component {
 			body = renderIcon('cog fa-spin');
 		}
 
-		return R.div({style: style},
+		return R.div({className: "top-bar-user-container"},
 			body
 		)
 	}
 }
+/** @type User */
+User.instance = null;
 
+/// #if DEBUG
 User.sessionToken = "dev-admin-session-token";
+/// #endif
 
 export {iAdmin};

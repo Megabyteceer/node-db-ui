@@ -7,21 +7,15 @@ import {consoleLog, isLitePage, loadJS, myAlert, renderIcon} from "./utils.js";
 
 class FormLoaderCog extends Component {
 	render() {
-		return R.div({style: {paddingTop: '50px', textAlign: 'center', color: '#ccc'}},
+		return R.div({className: "fade-in loading-icon"},
 			renderIcon('cog fa-spin fa-5x')
 		);
 	}
 }
 
-var style = {
-	paddingTop: '10px',
-	//minHeight:'600px',
-	margin: '0 20px',
-	//maxWidth:'1124px'
-};
-var liteStyle = {
-	margin: 30
-};
+if(isLitePage()) {
+	document.body.classList.add('lite-ui');
+}
 
 class Stage extends Component {
 
@@ -99,10 +93,10 @@ class Stage extends Component {
 			}
 
 		} else {
-			//body = React.createElement(FormLoaderCog);
+			body = React.createElement(FormLoaderCog);
 		}
 
-		return R.div({style: isLitePage() ? liteStyle : style},
+		return R.div({className: 'stage'},
 			body
 		);
 	}

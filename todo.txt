@@ -1,3 +1,5 @@
+fade-in class
+
 Add classes for all elements. Move styles to css.
 
 Make selenium tests

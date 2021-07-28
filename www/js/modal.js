@@ -1,27 +1,5 @@
 import {debugError, sp} from "./utils.js";
 
-var style = {
-	marginTop: '90px',
-	display: 'inline-block',
-	cursor: 'default',
-	maxHeight: '80%',
-	overflowY: 'auto',
-	overflowX: 'hidden',
-}
-
-
-
-var backdropStyle = {
-	textAlign: 'center',
-	background: 'rgba(0,0,0,0.35)',
-	position: 'fixed',
-	top: 0,
-	bottom: 0,
-	left: 0,
-	right: 0,
-	zIndex: 9
-}
-
 var modalStack = [];
 var idCounter = 0;
 
@@ -38,6 +16,7 @@ export default class Modal extends Component {
 
 	show(content, noDiscardByBackdrop) {
 		if(document.activeElement) {
+			// @ts-ignore
 			document.activeElement.blur();
 		}
 		idCounter++;
@@ -72,17 +51,18 @@ export default class Modal extends Component {
 		if(modalStack.length > 0) {
 			return R.div(null,
 				modalStack.map((m) => {
-
-					var bs = Object.assign({cursor: m.noDiscardByBackdrop ? 'default' : 'pointer'}, backdropStyle);
-
+					let className = 'fade-in modal-backdrop';
+					if(m.noDiscardByBackdrop) {
+						className += " pointer";
+					}
 					return R.div({
-						key: m.id, style: bs, className: 'fade-in', onClick: () => {
+						key: m.id, className, onClick: () => {
 							if(!m.noDiscardByBackdrop) {
 								this.hide();
 							}
 						}
 					},
-						R.div({style: style, onClick: sp},
+						R.div({className: "modal", onClick: sp},
 							m.content
 						)
 					);

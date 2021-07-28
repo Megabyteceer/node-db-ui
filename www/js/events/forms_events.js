@@ -126,7 +126,7 @@ formsEventsOnSave[5] = async function _users_onsave() {//form5onsaveBegin_JS89DW
 		this.fieldAlert('passconfirm', L('PASS_NOT_MACH'));
 	}
 
-	if(curentUserData.id === this.fieldValue('id')) {
+	if(currentUserData.id === this.fieldValue('id')) {
 		var pLang = this.props.initialData.language;
 		var nLang = this.currentData.language;
 		if(pLang && pLang.hasOwnProperty('id')) {
@@ -175,7 +175,7 @@ formsEventsOnLoad[4] = function _nodes_onload() {//form4onloadBegin_JS89DW72SISA
 	}
 	if(!this.rec_creation) {
 		this.addLookupFilters('_nodesID', 'exludeIDs', [this.rec_ID]);
-    }
+	}
 	this.addLookupFilters('_nodesID', 'isDoc', 0);
 	this.addLookupFilters('_fieldsID', {
 		node_fields_linker: this.rec_ID,

@@ -1,25 +1,5 @@
 var instance;
 
-var style = {
-	position: 'fixed',
-	right: 0,
-	bottom: 30,
-	width: 350,
-	zIndex: 12
-}
-
-
-
-var blockStyle = {
-	background: '#765',
-	border: '1px solid #a98',
-	color: '#fed',
-	borderRadius: 5,
-	padding: 12,
-	margin: 3,
-	cursor: 'pointer'
-}
-
 var stack = [];
 var idCounter = 0;
 
@@ -52,10 +32,10 @@ export default class Notify extends Component {
 
 	render() {
 		if(stack.length > 0) {
-			return R.div({style: style},
+			return R.div({className: "notify-area"},
 				stack.map((m) => {
 					return R.div({
-						key: m.id, style: blockStyle, className: 'fade-in', onClick: () => {
+						key: m.id, className: 'fade-in notify-block', onClick: () => {
 							this.hideById(m.id);
 						}
 					},

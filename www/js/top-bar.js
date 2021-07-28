@@ -1,37 +1,15 @@
-
-
 import User from "./user.js";
-import {isLitePage} from "./utils.js";
-
-var style = {
-	width: '100%',
-	color: '#fff',
-	background: window.constants.BRAND_COLOR,
-	fontSize: '120%',
-	textAlign: 'center',
-	zIndex: 8
-}
-
 
 export default class TopBar extends Component {
 	render() {
-		//var search;
-		if(isLitePage()) {
-			style.display = 'none';
-		} else {
-			//search = React.createElement(Search);
-		}
-
-
-		return R.div({className: 'clearfix', style: style},
+		return R.div({className: 'clearfix top-bar'},
 			R.a({
-				className: 'clickable clickable-neg',
-				href: '/',
-				style: {padding: '8px 10px', float: 'left', display: 'block'}
+				className: 'clickable clickable-neg top-bar-logo',
+				href: '/'
 			},
-				R.img({src: 'images/logo.png', style: {}})),
+				R.img({src: 'images/logo.png'})),
 			//search,
-			R.div({style: {float: 'right', marginTop: 15, marginBottom: 15}},
+			R.div({className: "top-bar-right-area"},
 				React.createElement(User)
 			)
 		);

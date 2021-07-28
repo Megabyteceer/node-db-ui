@@ -1,7 +1,6 @@
 
 import R from "react-dom";
-import React, { Component as C, Component } from "react";
-
+import React, { Component as C, Component, ComponentProps } from "react";
 
 interface TR {
 	div: (props: ComponentProps, ...children) => Component;
@@ -39,11 +38,13 @@ declare global {
 	const ReactDOM: TReactDOM;
 	const React: TReact;
 	const R: TR;
+	let currentUserData: any;
 	let currentFormParameters: any;
 	let __corePath: string;
 
 	interface Window {
 		reloadParentIfSomethingUpdated_qwi012d: Function;
+		currentUserData: any;
 		currentFormParameters: any;
 		__corePath: string;
 	}
