@@ -226,7 +226,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			if(!field.requirement && !this.props.isN2M) {
 				clearBtn = R.div({
 					title: L('CLEAR'),
-					className: 'clickable field-lookup-clear-btn',
+					className: 'clickable clear-btn',
 					onClick: (e) => {
 						sp(e);
 						this.valueChoosed({

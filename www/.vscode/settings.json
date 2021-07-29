@@ -11,9 +11,13 @@
 		},
 		"css_props_fix": {
 			"find": "'",
+			"replace": ""
+		},
+		"css_end_fix3": {
+			"find": "  ",
 			"replace": " "
 		},
-		"css_end_fix2": {
+		"css_end_fix4": {
 			"find": ",",
 			"replace": ";"
 		}
@@ -23,6 +27,8 @@
 			"rules": [
 				"css_props_fix1",
 				"css_props_fix",
+				"css_end_fix3",
+				"css_end_fix4",
 				"css_end_fix2"
 			]
 		}

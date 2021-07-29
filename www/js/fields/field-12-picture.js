@@ -28,10 +28,8 @@ registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
 
 		if(this.props.isEdit) {
 			return React.createElement(CropperFieldBody, {field, ref: (r) => {this.cropperBody = r;}, parent: this, imageRenderer: this.props.form.imageRenderer, form: this.props.form, currentPicUrl: imgUrl, isCompact: this.props.isCompact});
-		} else if(this.props.isCompact) {
-			return R.img({src: imgUrl, style: {borderRadius: '3px', maxHeight: this.props.form.props.parentForm ? '30px' : '60px', width: 'auto'}})
 		} else {
-			return R.img({src: imgUrl, style: {borderRadius: '5px'}})
+			return R.img({src: imgUrl, className: "field-readonly-image"})
 		}
 	}
 });
@@ -151,46 +149,42 @@ class CropperFieldBody extends Component {
 							cropperW = 350 / h * w;
 						}
 
-						myAlert(R.div({style: {width: 900}},
+						myAlert(R.div({className: 'image-copper-popup'},
 							React.createElement(window.ReactCropper, {
 								zoomable: false,
 								style: {margin: 'auto', height: cropperH, width: cropperW},
 								aspectRatio: w / h,
-								preview: '.img-preview',
+								preview: '.image-copper-preview',
 								guides: false,
 								src: reader.result,
 								ref: (ref) => {
 									this.cropper = ref;
-								},
-								crop: this._crop
+								}
 							}),
-							R.div({style: {marginTop: '12px', textAlign: 'center'}},
+							R.div({className: 'image-copper-controls'},
 								R.button(
-									{className: 'clickable', style: {background: '#382', color: '#fff'}, onClick: this._cropImage},
+									{className: 'clickable image-copper-crop-btn', onClick: this._cropImage},
 									renderIcon('check'),
 									L('APPLY')
 								),
 								R.button(
-									{className: 'clickable', onClick: this._cancel},
+									{className: 'clickable image-copper-cancel-btn', onClick: this._cancel},
 									renderIcon('times'),
 									L('CANCEL')
 								),
 								R.div(
 									{className: 'box', style: {margin: '30px auto', width: w, height: h}},
 									L('PREVIEW'),
-									R.div({className: 'img-preview', style: {margin: '15px', overflow: 'hidden', border: '1px dashed #ccc', borderRadius: '5px', width: w, height: h}})
+									R.div({className: 'image-copper-preview', style: {width: w, height: h}})
 								)
 							)
 						), 1, 0, 1);
 					}
 
 				};
-
+				// @ts-ignore
 				selectedImage.src = reader.result;
-
 			};
-
-
 			this.setState({waiting: 1});
 			reader.readAsDataURL(files[0]);
 		}
@@ -199,8 +193,6 @@ class CropperFieldBody extends Component {
 	render() {
 
 		var field = this.props.field;
-
-
 		var w = Math.floor(field.maxlen / 10000);
 		var h = field.maxlen % 10000;
 		var recW = w;
@@ -216,11 +208,10 @@ class CropperFieldBody extends Component {
 
 		var clrBtn;
 		if(this.state.cropResult || this.state.src || this.props.currentPicUrl && this.props.currentPicUrl !== 'images/placeholder_' + field.fieldName + '.png') {
-			clrBtn = R.button({style: {background: window.constants.DELETE_COLOR, color: '#fff'}, className: 'clickable toolbtn', onClick: this.clear},
+			clrBtn = R.button({className: 'clickable toolbtn clear-btn', onClick: this.clear},
 				renderIcon('times')
 			)
 		}
-
 
 		if(this.state.src) {
 			body = clrBtn;
@@ -248,7 +239,7 @@ class CropperFieldBody extends Component {
 
 				select = R.div(null,
 					R.button({
-						style: {background: window.constants.PUBLISH_COLOR, fontSize: '80%', padding: '5px 20px 6px 20px'}, ref: (r) => {this.references.selectButton = r;}, className: 'clickable', onClick: () => {
+						className: 'clickable success-button button-small', onClick: () => {
 							this.references.fileInput.value = null;
 							this.references.fileInput.click();
 						}
@@ -260,7 +251,7 @@ class CropperFieldBody extends Component {
 			}
 		}
 
-		var form = R.form({ref: (r) => {this.references.form = r;}, encType: "multipart/form-data", style: {display: 'none'}},
+		var form = R.form({ref: (r) => {this.references.form = r;}, encType: "multipart/form-data", className: 'hidden'},
 			R.input({name: "picture", ref: (r) => {this.references.fileInput = r;}, type: 'file', accept: ".jpg, .jpeg, .png, .gif", onChange: this._onChange}),
 			R.input({name: "MAX_FILE_SIZE", defaultValue: 3000000}),
 			R.input({name: "fid", defaultValue: field.id}),
@@ -275,7 +266,7 @@ class CropperFieldBody extends Component {
 			R.div(null,
 				preview,
 				body,
-				R.div({style: {color: '#aaa', fontSize: '70%'}}, L('RECOMEND_SIZE', recW).replace('%', recH)),
+				R.div({className: 'small-text'}, L('RECOMEND_SIZE', recW).replace('%', recH)),
 				form
 			),
 			select

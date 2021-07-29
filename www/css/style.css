@@ -295,6 +295,11 @@ input[readonly]
 	border: 0;
 }
 
+.button-small {
+	font-size: 80%;
+	padding: 7px 20px;
+}
+
 .alert-bg {
 	display: inline-block;
 	color: #a00;
@@ -313,6 +318,11 @@ input[readonly]
 	border: 1px solid var(--EDIT_COLOR);
 	padding: 30px;
 	border-radius: 4px;
+}
+
+.small-text {
+	color: #aaa;
+	font-size: 70%;
 }
 
 .left-bar {
@@ -799,7 +809,10 @@ input[readonly]
 .field-lookup-icon-pic {
 	height: 30px;
 	width: auto;
+	margin: -5px;
 	margin-right: 8px;
+	border-radius: 3px;
+	vertical-align: text-bottom;
 }
 
 .field-lookup-loading-icon-container {
@@ -824,7 +837,7 @@ input[readonly]
 	box-sizing: border-box;
 }
 
-.field-lookup-clear-btn {
+.clear-btn {
 	display: inline-block;
 	border-radius: 3px;
 	background-color: var(--DELETE_COLOR);
@@ -871,6 +884,51 @@ input[readonly]
 	display: inline-block;
 	vertical-align:  middle;
 }
+
+.field-readonly-image {
+	border-Radius: 5px;
+}
+
+.form-compact .field-readonly-image {
+	max-height: 34px;
+	width: auto;
+}
+
+.image-copper-popup {
+	width: 900px;
+}
+
+.image-copper-body {
+	width: 900px;
+}
+
+.image-copper-controls {
+	margin-top: 12px;
+	text-align: center;
+}
+
+.image-copper-crop-btn {
+	background: #382;
+	color: #fff;
+}
+
+.image-copper-cancel-btn {
+	color: rgb(99, 99, 99);
+}
+
+.image-copper-preview {
+	margin: 15px;
+	overflow: hidden;
+	border: 1px dashed #ccc;
+	border-radius: 5px;
+}
+
+
+
+
+
+
+
 
 
 

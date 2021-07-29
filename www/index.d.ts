@@ -54,6 +54,7 @@ declare global {
 
 	interface Window {
 		reloadParentIfSomethingUpdated_qwi012d: Function;
+		ReactCropper: any;
 		currentUserData: any;
 		currentFormParameters: any;
 		__corePath: string;
