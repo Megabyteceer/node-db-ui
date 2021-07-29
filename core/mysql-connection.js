@@ -7,7 +7,8 @@ const connection = mysql.createConnection({
 	database: ENV.DB_NAME,
 	host: ENV.DB_HOST,
 	password: ENV.DB_PASS,
-	multipleStatements: true
+	multipleStatements: true,
+	timezone: 'Z'
 });
 const {getCurrentStack} = require("../www/both-side-utils");
 

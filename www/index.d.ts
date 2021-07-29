@@ -1,7 +1,7 @@
 
 import R from "react-dom";
 import React, { Component as C, Component } from "react";
-import moment from "moment";
+import { moment as m } from "moment";
 
 interface ComponentProps {
 	className?: string;
@@ -42,7 +42,7 @@ interface TR {
 const TReact = typeof React;
 
 declare global {
-	moment;
+	const moment = m;
 	const Datetime;
 	const Component = C;
 	const ReactDOM: TReactDOM;

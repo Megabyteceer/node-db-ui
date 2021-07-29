@@ -11,6 +11,38 @@ function isSameDay(val, d) {
 
 class dateFieldMixins extends fieldMixins {
 
+	setValue(val) {
+		if(val) {
+			if(typeof val === 'string') {
+				val = moment(val);
+			} else {
+				val = val.clone();
+			}
+		}
+
+		var props = {
+			inputValue: toReadableDate(val),
+			selectedDate: val,
+		}
+		if(val) {
+			props.viewDate = val.clone().startOf("day");
+
+		}
+		this.refToInput.setState(props);
+		// @ts-ignore
+		if(this.timeRef) {
+			// @ts-ignore
+			this.timeRef.setState({
+				inputValue: toReadableTime(val),
+				selectedDate: val,
+			});
+		}
+
+		this.state.value = val;
+		this.props.wrapper.valueListener(val, false, this);
+
+	}
+
 	setMin(moment) {
 		this.state.minDate = moment;
 		if(moment && (this.state.focused)) {
@@ -88,7 +120,7 @@ class dateFieldMixins extends fieldMixins {
 
 		if(!val) {
 			if(doFix === true) {
-				val = new moment();
+				val = moment();
 				this.setValue(val);
 			} else {
 				return false;
@@ -109,38 +141,9 @@ class dateFieldMixins extends fieldMixins {
 
 registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins {
 
-	setValue(val) {
-
-		if(val) {
-			if(typeof val === 'string') {
-				val = new moment(val);
-			} else {
-				val = val.clone();
-			}
-		}
-
-		var props = {
-			inputValue: toReadableDate(val),
-			selectedDate: val,
-		}
-		if(val) {
-			props.viewDate = val.clone().startOf("day");
-
-		}
-		this.dateRef.setState(props);
-		this.timeRef.setState({
-			inputValue: toReadableTime(val),
-			selectedDate: val,
-		});
-
-		this.state.value = val;
-		this.props.wrapper.valueListener(val, false, this);
-
-	}
-
 	static decodeValue(val) {
 		if(val) {
-			return new moment(val, innerDatetimeFormat);
+			return moment(val, innerDatetimeFormat);
 		}
 		return null;
 	}
@@ -170,7 +173,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 
 			var inputsProps1 = {
 				closeOnSelect: true,
-				defaultValue: value,
+				initialValue: value,
 				placeholder: L('TIME'),
 				readOnly: this.props.fieldDisabled,
 				dateFormat: false,
@@ -205,7 +208,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 
 			var inputsProps2 = {
 				closeOnSelect: true,
-				defaultValue: value,
+				initialValue: value,
 				placeholder: L('DATE'),
 				readOnly: this.props.fieldDisabled,
 				dateFormat: readableDateFormat,
@@ -214,7 +217,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 				onFocus: this.focused,
 				title: L('N_DATE', field.name),
 				ref: (ref) => {
-					this.dateRef = ref;
+					this.refToInput = ref;
 				},
 				onChange: (val) => {
 					if(val._isAMomentObject) {

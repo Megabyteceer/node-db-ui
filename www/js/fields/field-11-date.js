@@ -3,32 +3,11 @@ import {dateFieldMixins} from "./field-4-datetime.js";
 
 registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 
-	setValue(val) {
-		if(val) {
-			if(typeof val === 'string') {
-				val = new moment(val);
-			} else {
-				val = val.clone();
-			}
-		}
-		var props = {
-			inputValue: toReadableDate(val),
-			selectedDate: val,
-		}
-		if(val) {
-			val = val.startOf("day")
-			props.viewDate = val;
-		}
-		this.refToInput.setState(props);
-		this.state.value = val;
-		this.props.wrapper.valueListener(val, false, this);
-	}
-
 	static decodeValue(val) {
 		if(val === '0000-00-00 00:00:00') {
 			return null;
 		}
-		return new moment(val, innerDatetimeFormat);
+		return moment(val, innerDatetimeFormat);
 	}
 
 	static encodeValue(val) {
