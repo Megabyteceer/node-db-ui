@@ -94,7 +94,16 @@ input{
 	box-sizing: border-box;
 }
 
-b{
+*::-webkit-scrollbar {
+    width: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #dddddd;
+	border-radius: 4px;
+}
+
+b {
 	font-weight:bold;
 }
 
@@ -992,17 +1001,12 @@ input[readonly] {
 	height: 24px;
 }
 
-
-
-
-
-
-
-
-
-
-
-
+.field-button {
+	padding: 5px 20px 6px 20px;
+	font-Size: 80%;
+	background: var(--EDIT_COLOR);
+	color: #fff;
+}
 
 .shake{
 	animation: shake-animation linear 0.3s;
