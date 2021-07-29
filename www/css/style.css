@@ -757,11 +757,46 @@ input[readonly]
 	height: 206px;
 }
 
+.field-date-time-time {
+	display: inline-block;
+	width: 25%;
+	max-width: 120px;
+	margin-right: 20px;
+}
 
+.field-date-time-date {
+	display: inline-block;
+	width: 70%;
+	max-width: 220px;
+}
 
+.field-boolean {
+	cursor: pointer;
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	margin: 6px 10px 6px 0;
+	vertical-align: middle;
+	border: 2px solid #ccc;
+	border-radius: 4px;
+	background: #fff;
+}
 
+.disabled .field-boolean {
+	opacity: 0.3;
+	pointer-events: none;
+}
 
+.field-boolean-check {
+	display: inline-block;
+	position: absolute;
+	margin-left: -6px;
+}
 
+.field-boolean-read-only-compact {
+	font-size: 130%;
+	color: #4a2;
+}
 
 
 

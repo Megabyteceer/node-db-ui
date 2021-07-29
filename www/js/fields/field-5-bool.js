@@ -20,11 +20,11 @@ export default class CheckBox extends Component {
 		var check;
 		if(this.state && this.state.value) {
 			check = R.span({
-				style: checkStyle
+				className: "field-boolean-check"
 			}, renderIcon('check'));
 		}
 		return R.span({
-			style: this.props.disable ? styleDisabled : style,
+			className: 'field-boolean',
 			title: this.props.title,
 			onClick: () => {
 				this.props.onClick(!this.state.value);
@@ -34,37 +34,6 @@ export default class CheckBox extends Component {
 		);
 	}
 }
-
-var style = {
-	cursor: 'pointer',
-	display: 'inline-block',
-	width: 20,
-	height: 20,
-	marginRight: 10,
-	verticalAlign: 'middle',
-	border: '2px solid #ccc',
-	borderRadius: 4,
-	background: '#fff'
-};
-var styleDisabled = {
-	display: 'inline-block',
-	width: 20,
-	height: 20,
-	verticalAlign: 'middle',
-	marginRight: 10,
-	border: '2px solid #ccc',
-	borderRadius: 4,
-	background: '#fff',
-	opacity: 0.3,
-	pointerEvents: 'none'
-};
-
-var checkStyle = {
-	display: 'inline-block',
-	position: 'absolute',
-	marginLeft: '-6px'
-}
-
 
 registerFieldClass(FIELD_5_BOOL, class BooleanField extends fieldMixins {
 
@@ -107,18 +76,15 @@ registerFieldClass(FIELD_5_BOOL, class BooleanField extends fieldMixins {
 			if(this.props.isCompact) {
 				if(value) {
 					return R.span({
-						style: {
-							fontSize: '130%',
-							color: '#4a2'
-						}
+						className: 'field-boolean-read-only-compact'
 					},
 						renderIcon('check')
 					)
 				} else {
-					return R.span(null);
+					return R.span({className: 'field-boolean-read-only-compact'});
 				}
 			} else {
-				return R.span(null,
+				return R.span({className: 'field-boolean-read-only'},
 					value ? L('YES') : L('NO')
 				);
 			}

@@ -5,7 +5,7 @@ import { moment as m } from "moment";
 
 interface ComponentProps {
 	className?: string;
-	onClick?: string;
+	onClick?: Function;
 	[key: string]: any;
 }
 

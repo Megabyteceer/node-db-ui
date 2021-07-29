@@ -47,7 +47,7 @@ registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 			return R.div({
 				title: (this.props.isCompact ? field.name : '')
 			},
-				React.createElement(window.Datetime, inputsProps)
+				React.createElement(Datetime, inputsProps)
 			);
 
 		} else {

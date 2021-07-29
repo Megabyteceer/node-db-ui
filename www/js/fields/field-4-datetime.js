@@ -156,6 +156,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 	}
 
 	focusOverride() {
+		// @ts-ignore
 		ReactDOM.findDOMNode(this.timeRef).querySelector('input').focus();
 	}
 
@@ -237,29 +238,14 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 				}
 			};
 			return R.div({
-				title: (this.props.isCompact ? field.name : ''),
-				style: {
-					display: 'inline-block'
-				}
+				title: (this.props.isCompact ? field.name : '')
 			},
 				R.div({
-					style: {
-						display: 'inline-block',
-						width: '35%'
-					}
-				}, React.createElement(window.Datetime, inputsProps1)),
+					className: "field-date-time-time"
+				}, React.createElement(Datetime, inputsProps1)),
 				R.div({
-					style: {
-						display: 'inline-block',
-						width: '5%'
-					}
-				}),
-				R.div({
-					style: {
-						display: 'inline-block',
-						width: '60%'
-					}
-				}, React.createElement(window.Datetime, inputsProps2))
+					className: "field-date-time-date"
+				}, React.createElement(Datetime, inputsProps2))
 			);
 		} else {
 			return toReadableDatetime(value);
