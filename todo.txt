@@ -39,3 +39,5 @@ Lookup nto1 and ntom to user gives access for user if field marked as access ope
 Linemaster list. render items one by one with delay
 
 проверить все TODO
+
+extendEditor доки
