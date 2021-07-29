@@ -42,15 +42,6 @@ registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 				},
 				options: this.enum || field.enum
 			};
-			/*
-			var options = [R.option({value: '', key:0, style:optionStyle},'')];
-		    
-			for (var k in field.enum){
-				var o = field.enum[k];
-				options.push(R.option({value: k, key:k, style:optionStyle},o));
-			};
-			return R.select(inputsProps, options);
-			*/
 			return React.createElement(Select, inputsProps);
 		} else {
 			return R.span({

@@ -413,7 +413,7 @@ export default class FormFull extends eventProcessingMixins {
 		if(!this.props.inlineEditable) {
 			if(data.isD && isMainTab && !this.props.preventDeleteButton) {
 				deleteButton = R.button({
-					className: 'clickable danger-button clickable-neg', onClick: async () => {
+					className: 'clickable danger-button', onClick: async () => {
 						await deleteRecord(data.name, node.id, data.id);
 						if(this.isSlave()) {
 							this.props.parentForm.valueChoosed();
@@ -426,14 +426,14 @@ export default class FormFull extends eventProcessingMixins {
 
 			if(this.props.editable) {
 				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.prevs & PREVS_PUBLISH)) {
-					saveButton = R.button({className: 'clickable clickable-edit success-button save-btn', onClick: this.saveClick, title: L('SAVE')}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
+					saveButton = R.button({className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('SAVE')}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
 				} else {
 					if(data.status === 1) {
 						draftButton = R.button({className: 'clickable default-button', onClick: () => {this.saveClick(true)}, title: L('UNPUBLISH')}, L('UNPUBLISH'));
-						saveButton = R.button({className: 'clickable  clickable-edit success-button save-btn', onClick: this.saveClick}, L('SAVE'));
+						saveButton = R.button({className: 'clickable success-button save-btn', onClick: this.saveClick}, L('SAVE'));
 					} else {
 						draftButton = R.button({className: 'clickable default-button', onClick: () => {this.saveClick(true)}, title: L('SAVE_TEMPLATE')}, L('SAVE_TEMPLATE'));
-						saveButton = R.button({className: 'clickable clickable-edit success-button save-btn', onClick: this.saveClick, title: L('PUBLISH')}, L('PUBLISH'));
+						saveButton = R.button({className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('PUBLISH')}, L('PUBLISH'));
 
 					}
 				}

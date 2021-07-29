@@ -94,7 +94,7 @@ class BarItem extends Component {
 			&& false// in debug build always show empty nodes
 			/// #endif
 		) {
-			return R.div();
+			return R.div(null);
 		}
 
 		var itemsIcon = R.div({className: "left-bar-item-icon"},
@@ -135,9 +135,6 @@ class BarItem extends Component {
 		if(!isMustBeExpandedVal) {
 			if(!this.props.active) {
 				className += ' clickable';
-				if(!item.isDoc) {
-					className += ' clickable-neg';
-				}
 			}
 		} else {
 			className += ' unclickable left-bar-active-group';
@@ -177,7 +174,7 @@ class BarItem extends Component {
 				itemBody
 			)
 		} else {
-			return R.div(null,
+			return R.div({className: 'left-bar-group-container'},
 				adminControl,
 				itemBody,
 				children
@@ -240,7 +237,7 @@ export default class LeftBar extends Component {
 
 	render() {
 		if(isLitePage()) {
-			return R.td();
+			return R.td(null);
 		}
 
 		var lines;

@@ -104,7 +104,7 @@ export default class FileFormBody extends Component {
 		}
 
 		select = R.button({
-			style: {background: window.constants.PUBLISH_COLOR, fontSize: '80%', marginLeft: 10, padding: '5px 20px 6px 20px'}, ref: (r) => {this.selectButtonRef = r;}, className: 'clickable clickable-edit', onClick: () => {
+			style: {background: window.constants.PUBLISH_COLOR, fontSize: '80%', marginLeft: 10, padding: '5px 20px 6px 20px'}, ref: (r) => {this.selectButtonRef = r;}, className: 'clickable', onClick: () => {
 				this.fileInputRef.value = null;
 				this.fileInputRef.click();
 			}

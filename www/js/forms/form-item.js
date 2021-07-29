@@ -41,7 +41,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 
 			buttons = [
 				R.button({
-					key: 2, style: {background: window.constants.EDIT_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('EDIT'), onMouseDown: (e) => {
+					key: 2, style: {background: window.constants.EDIT_COLOR}, className: 'clickable toolbtn', title: L('EDIT'), onMouseDown: (e) => {
 						sp(e);
 						formItem.props.parentForm.toggleCreateDialogue(data.id)
 					}
@@ -64,13 +64,13 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 		if(data.hasOwnProperty('isP') && (!formItem || !formItem.props.disableDrafting)) {
 			if(data.status === 1) {
 				buttons.push(
-					R.button({key: 1, style: {background: window.constants.PUBLISH_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data).then(refreshFunction)}},
+					R.button({key: 1, style: {background: window.constants.PUBLISH_COLOR}, className: 'clickable toolbtn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data).then(refreshFunction)}},
 						renderIcon('eye')
 					)
 				)
 			} else {
 				buttons.push(
-					R.button({key: 1, style: {background: window.constants.UNPUBLISH_COLOR}, className: 'clickable clickable-del toolbtn', title: L('PUBLISH'), onClick: () => {publishClick(false, node, data).then(refreshFunction)}},
+					R.button({key: 1, style: {background: window.constants.UNPUBLISH_COLOR}, className: 'clickable toolbtn', title: L('PUBLISH'), onClick: () => {publishClick(false, node, data).then(refreshFunction)}},
 						renderIcon('eye-slash')
 					)
 				)
@@ -88,7 +88,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 								}
 							}
 						},
-							R.button({style: {background: window.constants.EDIT_COLOR}, className: 'clickable clickable-edit toolbtn', title: L('EDIT', itemName)},
+							R.button({style: {background: window.constants.EDIT_COLOR}, className: 'clickable toolbtn', title: L('EDIT', itemName)},
 								renderIcon('pencil')
 							)
 						)
@@ -109,7 +109,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 		if(data.hasOwnProperty('isD')) {
 			buttons.push(
 				R.button({
-					key: 3, style: {background: window.constants.DELETE_COLOR}, className: 'clickable clickable-del toolbtn', title: L('DELETE') + itemName, onClick: async () => {
+					key: 3, style: {background: window.constants.DELETE_COLOR}, className: 'clickable toolbtn', title: L('DELETE') + itemName, onClick: async () => {
 						await deleteRecord(data.name, node.id, data.id);
 						if(formItem && formItem.props.parentForm) {
 							formItem.props.parentForm.valueChoosed();
@@ -172,7 +172,6 @@ export default class FormItem extends BaseForm {
 		itemProps.className = 'form-item-' + this.props.node.id;
 
 		if(this.props.isLookup) {
-
 			itemProps.title = L('SELECT');
 			itemProps.className += ' clickable';
 			itemProps.onClick = () => {this.props.parentForm.valueChoosed(data)};

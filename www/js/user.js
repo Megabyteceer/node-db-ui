@@ -70,7 +70,7 @@ export default class User extends Component {
 		if(this.state) {
 
 			var iconName = '';
-			let className = 'clickable clickable-neg top-bar-user-multilang'
+			let className = 'clickable top-bar-user-multilang'
 			if(this.state.hasOwnProperty('langs')) {
 				className += ' top-bar-user-multilang-active';
 				iconName = 'check-';
@@ -99,14 +99,14 @@ export default class User extends Component {
 
 			var btn1, btn2;
 			if(this.state.id === 2) {
-				btn2 = R.a({href: 'login', title: L('LOGIN'), className: 'clickable clickable-neg top-bar-user-btn'},
+				btn2 = R.a({href: 'login', title: L('LOGIN'), className: 'clickable top-bar-user-btn'},
 					renderIcon('sign-in fa-2x')
 				)
 			} else {
-				btn1 = R.a({href: loactionToHash(5, this.state.id, undefined, true), title: L('USER_PROFILE'), className: 'clickable clickable-neg top-bar-user-btn'},
+				btn1 = R.a({href: loactionToHash(5, this.state.id, undefined, true), title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn'},
 					renderIcon('user fa-2x')
 				);
-				btn2 = R.a({href: 'login', title: L('LOGOUT'), className: 'clickable clickable-neg top-bar-user-btn'},
+				btn2 = R.a({href: 'login', title: L('LOGOUT'), className: 'clickable top-bar-user-btn'},
 					renderIcon('sign-out fa-2x')
 				);
 			}

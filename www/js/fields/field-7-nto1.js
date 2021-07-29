@@ -1,22 +1,8 @@
 import FormFull from "../forms/form-full.js";
 import List from "../forms/list.js";
-import {backupCreationData, getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp} from "../utils.js";
+import {backupCreationData, getBackupData, getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
-
-var dropListStyle = {
-	position: 'absolute',
-	zIndex: 8,
-	background: '#F7F7F7',
-	minWidth: 550,
-	border: '1px solid #BBBBBB',
-	padding: '6px 5px',
-	fontSize: '80%',
-	boxShadow: '0px 4px 12px 0px #777',
-	borderRadius: 6,
-	//borderTopLeftRadius:0,
-	marginBottom: 400
-}
 
 registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 
@@ -184,11 +170,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 		var iconPic;
 		if(field.icon && value && (!this.props.hideIcon) && value.icon) {
 			iconPic = R.img({
-				style: {
-					height: 30,
-					width: 'auto',
-					marginRight: 8
-				},
+				className: 'field-lookup-icon-pic',
 				src: idToImgURL(value.icon, field.icon)
 			});
 		}
@@ -199,11 +181,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 				if(this.state.creationOpened) {
 					if(this.state.itemIdToEdit) {
 						list = R.div({
-							style: {
-								textAlign: 'center',
-								color: '#ccc',
-								padding: 5
-							}
+							className: 'field-lookup-loading-icon-container'
 						},
 							renderIcon('cog fa-spin fa-2x')
 						);
@@ -236,7 +214,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 
 			if(list) {
 				list = R.div({
-					style: dropListStyle,
+					className: 'field-lookup-drop-list',
 					ref: (ref) => {
 						scrollToVisible(ref, true);
 					}
@@ -247,14 +225,8 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 
 			if(!field.requirement && !this.props.isN2M) {
 				clearBtn = R.div({
-					style: {
-						display: 'inline-block',
-						borderRadius: '3px',
-						backgroundColor: window.constants.DELETE_COLOR,
-						color: '#fff'
-					},
 					title: L('CLEAR'),
-					className: 'clickable clickable-del',
+					className: 'clickable field-lookup-clear-btn',
 					onClick: (e) => {
 						sp(e);
 						this.valueChoosed({
@@ -298,6 +270,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 
 
 			return R.div({
+				style: {position: 'relative'},
 				onMouseLeave: this.onMouseLeave,
 				onMouseEnter: this.clearLeaveTimeout
 			},

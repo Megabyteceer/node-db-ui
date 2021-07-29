@@ -249,7 +249,7 @@ export default class List extends BaseForm {
 						var btns = [];
 
 						btns.push(R.button({
-							className: 'clickable clickable-del toolbtn', title: L('DELETE'), key: 'b' + UID(item), style: {color: '#fff', background: window.constants.DELETE_COLOR}, onClick: async () => {
+							className: 'clickable toolbtn', title: L('DELETE'), key: 'b' + UID(item), style: {color: '#fff', background: window.constants.DELETE_COLOR}, onClick: async () => {
 								if(item.hasOwnProperty('id') && !this.state.noPromptDelete) {
 									await deleteRecord(item.name, node.id, 0, undefined, false, deleteItem);
 								}
@@ -347,7 +347,7 @@ export default class List extends BaseForm {
 		var createBtn;
 		if(node.canCreate) {
 			createBtn = R.div(null,
-				R.button({style: {background: window.constants.CREATE_COLOR}, title: L('ADD', (node.creationName || node.singleName)), className: 'clickable clickable-neg toolbtn', onClick: () => {data.items.push({}); this.forceUpdate();}},
+				R.button({style: {background: window.constants.CREATE_COLOR}, title: L('ADD', (node.creationName || node.singleName)), className: 'clickable toolbtn', onClick: () => {data.items.push({}); this.forceUpdate();}},
 					renderIcon('plus')
 				)
 			);
@@ -390,7 +390,7 @@ export default class List extends BaseForm {
 			if(node.canCreate && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
 				if(this.isSlave()) {
 					createButton = R.button({
-						style: {padding: '5px 15px', background: window.constants.CREATE_COLOR}, className: 'clickable clickable-neg', onClick: async () => {
+						style: {padding: '5px 15px', background: window.constants.CREATE_COLOR}, className: 'clickable', onClick: async () => {
 							if(this.props.askToSaveParentBeforeCreation) {
 								await this.props.parentForm.saveParentFormBeforeCreation();
 								this.props.parentForm.toggleCreateDialogue();
@@ -402,7 +402,7 @@ export default class List extends BaseForm {
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				} else {
-					createButton = R.button({style: {background: window.constants.CREATE_COLOR, color: '#fff', padding: '15px 40px'}, className: 'clickable clickable-neg', onClick: () => {createRecord(node.id, filters);}},
+					createButton = R.button({style: {background: window.constants.CREATE_COLOR, color: '#fff', padding: '15px 40px'}, className: 'clickable', onClick: () => {createRecord(node.id, filters);}},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				}
@@ -504,7 +504,7 @@ export default class List extends BaseForm {
 					return React.createElement(FormItem, {key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, onClick: this.props.onItemClick ? () => {this.props.onItemClick(item)} : undefined, parentForm: this.props.parentForm, additionalButtons: additionalButtons, hideControlls: hideControlls, isLookup: this.props.isLookup, list: this, node, initialData: item});
 				});
 
-				body = R.table({style: {width: '100%', tableLayout: 'fixed'}},
+				body = R.table({style: {width: '100%'}},
 					R.thead(null, R.tr(null, tableHeader)),
 					R.tbody({className: 'list-body'}, lines)
 				);

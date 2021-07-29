@@ -89,6 +89,13 @@
 .admin-form-wrap{
 	position: absolute;
 	z-index: 3;
+	height: 34px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.left-bar-group-container>.left-bar-admin-button>.admin-form-wrap{
+	height: 22px;
 }
 
 .admin-form-wrap-visible {

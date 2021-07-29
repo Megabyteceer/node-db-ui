@@ -63,7 +63,7 @@ async function myPromt(txt, yesLabel, noLabel, yesIcon, noIcon, discardByOutside
 			onClick: () => {
 				Modal.instance.hide();
 				resolve(false);
-			}, className: 'clickable clickable-neg prompt-no-button'
+			}, className: 'clickable prompt-no-button'
 		}, renderIcon(noIcon), ' ', noLabel);
 
 		var body = R.span({className: 'prompt-body'},

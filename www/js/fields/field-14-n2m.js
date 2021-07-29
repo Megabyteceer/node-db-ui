@@ -145,7 +145,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 							renderIcon('arrow-down')
 						),*/
 						R.button({
-							style: {background: window.constants.EDIT_COLOR, color: '#fff'}, title: L('EDIT'), className: 'clickable clickable-edit toolbtn', onClick: () => {
+							style: {background: window.constants.EDIT_COLOR, color: '#fff'}, title: L('EDIT'), className: 'clickable toolbtn', onClick: () => {
 								this.uidToEdit = UID(this.state.value[i]);
 								this.forceUpdate();
 							}
@@ -153,7 +153,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 							renderIcon('pencil')
 						),
 						R.button({
-							style: {background: window.constants.DELETE_COLOR, color: '#fff'}, title: L('LIST_REMOVE'), className: 'clickable clickable-del toolbtn', onClick: () => {
+							style: {background: window.constants.DELETE_COLOR, color: '#fff'}, title: L('LIST_REMOVE'), className: 'clickable toolbtn', onClick: () => {
 								this.deleteItemByIndex(i);
 
 							}
@@ -181,7 +181,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 				buttons = R.div({style: {width: '30%', display: 'inline-block', fontSize: '60%', verticalAlign: 'middle', textAlign: 'left'}, className: 'halfvisible'},
 					additionalButtonsN2M,
 					R.button({
-						style: {background: window.constants.EDIT_COLOR, color: '#fff'}, title: L('EDIT'), className: 'clickable clickable-edit toolbtn', onClick: () => {
+						style: {background: window.constants.EDIT_COLOR, color: '#fff'}, title: L('EDIT'), className: 'clickable toolbtn', onClick: () => {
 							this.uidToEdit = UID(this.state.value[i]);
 							this.forceUpdate();
 						}
@@ -189,7 +189,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 						renderIcon('pencil')
 					),
 					R.button({
-						style: {background: window.constants.DELETE_COLOR, color: '#fff'}, title: L('LIST_REMOVE'), className: 'clickable clickable-del toolbtn', onClick: () => {
+						style: {background: window.constants.DELETE_COLOR, color: '#fff'}, title: L('LIST_REMOVE'), className: 'clickable toolbtn', onClick: () => {
 							this.deleteItemByIndex(i);
 						}
 					},
