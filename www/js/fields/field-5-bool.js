@@ -24,7 +24,7 @@ export default class CheckBox extends Component {
 			}, renderIcon('check'));
 		}
 		return R.span({
-			className: 'field-boolean',
+			className: 'field-boolean clickable',
 			title: this.props.title,
 			onClick: () => {
 				this.props.onClick(!this.state.value);

@@ -69,13 +69,6 @@ a {
 	color:inherit;
 }
 
-.clearfix:after {
-   content: " ";
-   display: block;
-   height: 0;
-   clear: both;
-}
-
 button {
 	color:#fff;
 	font:inherit;
@@ -159,6 +152,7 @@ img{
 	opacity: 0.15;
 }
 .clickable:after {
+	pointer-events: none;
     content: "";
     position: absolute;
     left: 0;
@@ -429,6 +423,10 @@ input[readonly]
 }
 
 .top-bar {
+	height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 	width: 100%;
 	color: #fff;
 	background: var(--BRAND_COLOR);
@@ -442,16 +440,8 @@ input[readonly]
 }
 
 .top-bar-logo {
-	padding: 8px 10px;
-	float: left;
+	margin-left: 10px;
 	display: block;
-}
-
-.top-bar-right-area {
-	float: right;
-	margin-top: 15px;
-	margin-bottom: 15px;
-	margin-right: 10px;
 }
 
 .top-bar-user-container {
@@ -828,8 +818,10 @@ input[readonly]
 	padding: 6px 5px;
 	font-size: 80%;
 	box-shadow: 0px 4px 12px 0px #777;
-	border-radius: 6;
+	border-bottom-right-radius: 6px;
+	border-bottom-left-radius: 6px;
 	margin-bottom: 400px;
+	box-sizing: border-box;
 }
 
 .field-lookup-clear-btn {
@@ -839,15 +831,46 @@ input[readonly]
 	color: #fff;
 }
 
+.field-lookup-value-label {
+	color: #aaa;
+	margin-left: 8px;
+	vertical-align: initial;
+	display: inline-block;
+	font-size: 75%;
+	font-weight: bold;
+}
 
+.field-lookup-wrapper {
+	position: relative;
+}
 
+.field-lookup-chooser {
+	border: 1px solid #a8a8a8;
+	white-space: nowrap;
+	border-radius: 3px;
+	padding: 5px 8px;
+}
 
+.field-lookup-value {
+	display: inline-block;
+	vertical-align: middle;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	padding-right: 54px;
+	box-sizing: border-box 
+}
 
+.field-lookup-right-block {
+	position: absolute;
+	right: 10px;
 
+}
 
-
-
-
+.field-lookup-caret {
+	display: inline-block;
+	vertical-align:  middle;
+}
 
 
 

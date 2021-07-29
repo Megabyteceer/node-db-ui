@@ -2,7 +2,7 @@ import User from "./user.js";
 
 export default class TopBar extends Component {
 	render() {
-		return R.div({className: 'clearfix top-bar'},
+		return R.div({className: 'top-bar'},
 			R.a({
 				className: 'clickable top-bar-logo',
 				href: '/'

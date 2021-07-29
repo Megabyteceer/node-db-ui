@@ -1,4 +1,6 @@
-fade-in class
+([A-Z])
+-\l$1
+
 
 Add classes for all elements. Move styles to css.
 

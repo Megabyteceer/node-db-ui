@@ -3,5 +3,28 @@
 	"files.exclude": {
 		"**/uploads/**": true,
 		"**/fonts/**": true
+	},
+	"replacerules.rules": {
+		"css_props_fix1": {
+			"find": "([A-Z])",
+			"replace": "-$1"
+		},
+		"css_props_fix": {
+			"find": "'",
+			"replace": " "
+		},
+		"css_end_fix2": {
+			"find": ",",
+			"replace": ";"
+		}
+	},
+	"replacerules.rulesets": {
+		"CSS fix": {
+			"rules": [
+				"css_props_fix1",
+				"css_props_fix",
+				"css_end_fix2"
+			]
+		}
 	}
 }

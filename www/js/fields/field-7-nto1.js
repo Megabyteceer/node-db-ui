@@ -240,77 +240,42 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 				},
 					renderIcon('times')
 				)
-				var mrg = -56;
 			} else {
-				var mrg = -30;
 			}
 
 			var valLabel;
 			if(value && value.name) {
-				valLabel = R.span({
-					style: {
-						verticalAlign: 'initial'
-					}
-				}, value.name);
+				valLabel = R.span(null, value.name);
 			} else {
-
 				valLabel = R.span({
-					style: {
-						color: '#aaa',
-						marginLeft: 8,
-						verticalAlign: 'initial',
-						display: 'inline-block',
-						fontSize: '75%',
-						fontWeight: 'bold'
-					}
+					className: 'field-lookup-value-label'
 				}, this.props.noBorder ? L('+ADD') : L('SELECT'))
-
 			}
 
-
-
 			return R.div({
-				style: {position: 'relative'},
+				className: 'field-lookup-wrapper',
 				onMouseLeave: this.onMouseLeave,
 				onMouseEnter: this.clearLeaveTimeout
 			},
 				R.div({
-					style: {
-						border: this.props.noBorder ? '0' : '1px solid #aaa',
-						whiteSpace: 'nowrap',
-						cursor: this.props.fieldDisabled ? 'default' : 'pointer',
-						borderRadius: 3,
-						padding: '5px 8px'
-					},
-					className: this.props.fieldDisabled ? 'unclickable disabled' : 'clickable',
+					className: this.props.fieldDisabled ? 'field-lookup-chooser unclickable disabled' : 'field-lookup-chooser clickable',
 					title: this.props.isCompact ? field.name : L('SELECT'),
 					onClick: this.toggleList
 				},
 					R.span({
-						style: {
-							display: 'inline-block',
-							verticalAlign: 'middle',
-							textOverflow: 'ellipsis',
-							width: '100%',
-							whiteSpace: 'nowrap',
-							overflow: 'hidden',
-							paddingRight: 54,
-							marginRight: mrg,
-							boxSizing: 'border-box'
-						}
+						className: 'field-lookup-value'
 					},
 						iconPic,
 						valLabel
 					),
-					R.span({
-						style: {
-							display: 'inline-block',
-							verticalAlign: 'middle'
-						}
-					},
-						renderIcon('caret-down')
-					),
-					clearBtn
+					R.span({className: 'field-lookup-right-block'},
+						R.span({
+							className: 'field-lookup-caret'
+						},
+							renderIcon('caret-down')
+						),
+						clearBtn
+					)
 				),
 				list
 			)
