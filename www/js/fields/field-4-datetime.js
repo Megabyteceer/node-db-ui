@@ -2,7 +2,6 @@ import moment from "./../lib/moment/dist/moment.js";
 import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, toReadableDate, toReadableDatetime, toReadableTime} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
-import {readOnlyCompactFieldProperties} from "./field-1-text-default.js";
 
 function isSameDay(val, d) {
 	if(!d || !val) return false;
@@ -260,9 +259,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 				}, React.createElement(window.Datetime, inputsProps2))
 			);
 		} else {
-			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyCompactFieldProperties,
-				toReadableDatetime(value)
-			)
+			return toReadableDatetime(value);
 		}
 	}
 });

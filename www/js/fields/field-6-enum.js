@@ -1,6 +1,5 @@
 import Select from "../components/select.js";
 import {registerFieldClass} from "../utils.js";
-import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import fieldMixins from "./field-mixins.js";
 /*
 var optionStyle = {
@@ -54,9 +53,9 @@ registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 			*/
 			return React.createElement(Select, inputsProps);
 		} else {
-			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties, R.span({
+			return R.span({
 				className: 'enum-' + field.id + '_' + value
-			}, field.enumNamesById[value]));
+			}, field.enumNamesById[value]);
 		}
 	}
 });

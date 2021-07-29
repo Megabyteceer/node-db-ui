@@ -2,7 +2,6 @@ import FormFull from "../forms/form-full.js";
 import List from "../forms/list.js";
 import {backupCreationData, getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import {readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
 
 var dropListStyle = {
@@ -343,7 +342,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 				list
 			)
 		} else {
-			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
+			return R.span(null,
 				iconPic, value.name
 			)
 		}

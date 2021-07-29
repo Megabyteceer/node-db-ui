@@ -21,6 +21,7 @@ import {initDictionary} from "../../js/utils.js";
 		'NODE_SETTINGS': 'Node ',
 		'EDIT_NODE': 'Edit node settings',
 		'EDIT_ACCESS': 'Edit access previlegies for node',
+		'SEARCH': 'Search',
 		'CONTENT': 'Content',
 		'LOOKUP_NAME_NOT_UNIC': 'Lookup N to M should have globally unique name.',
 		'FLD_DESC': 'Field description',

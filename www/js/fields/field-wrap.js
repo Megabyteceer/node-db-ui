@@ -306,7 +306,6 @@ export default class FieldWrap extends Component {
 			help = React.createElement(FieldHelp, {text: R.div(null, R.h4(null, field.name), field.fdescription)});
 		}
 
-
 		var fieldAdmin;
 		if(iAdmin() && !field.lang && (!this.props.isCompact || this.props.parentCompactAreaName)) {
 			fieldAdmin = React.createElement(FieldAdmin, {field, form: this.props.form, x: -10});
@@ -319,6 +318,10 @@ export default class FieldWrap extends Component {
 			/// #endif
 		) {
 			className += ' hidden';
+		}
+
+		if(!this.props.isEdit) {
+			className += ' field-wrap-readonly';
 		}
 
 		if(this.props.isCompact) {
@@ -356,7 +359,7 @@ export default class FieldWrap extends Component {
 			}
 			return R.div({className},
 				label,
-				R.div({className: noLabel ? 'field-wrap-value-no-label' : 'field-wrap-value'},
+				R.div({className: noLabel ? 'field-wrap-value field-wrap-value-no-label' : 'field-wrap-value'},
 					fieldTypedBody,
 					fieldCustomBody
 				),

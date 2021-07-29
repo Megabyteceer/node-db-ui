@@ -1,5 +1,4 @@
 import {registerFieldClass} from "../utils.js";
-import {compactInputStyle, notCompactInputStyle, readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import fieldMixins from "./field-mixins.js";
 
 registerFieldClass(FIELD_2_INT, class NumericField extends fieldMixins {
@@ -27,7 +26,6 @@ registerFieldClass(FIELD_2_INT, class NumericField extends fieldMixins {
 
 		if(this.props.isEdit) {
 			var inputsProps = {
-				style: this.props.isCompact ? compactInputStyle : notCompactInputStyle,
 				type: 'number',
 				value: value,
 				title: field.name,
@@ -44,7 +42,7 @@ registerFieldClass(FIELD_2_INT, class NumericField extends fieldMixins {
 
 			return R.input(inputsProps);
 		} else {
-			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties, this.renderTextValue(value.toString()));
+			return this.renderTextValue(value.toString());
 		}
 
 	}

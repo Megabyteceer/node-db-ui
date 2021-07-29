@@ -1,5 +1,4 @@
 import {registerFieldClass} from "../utils.js";
-import {compactInputStyle, notCompactInputStyle, readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import fieldMixins from "./field-mixins.js";
 
 registerFieldClass(FIELD_10_PASSWORD, class PasswordField extends fieldMixins {
@@ -19,7 +18,6 @@ registerFieldClass(FIELD_10_PASSWORD, class PasswordField extends fieldMixins {
 			var inputsProps = {
 				type: 'password',
 				name: 'password',
-				style: this.props.isCompact ? compactInputStyle : notCompactInputStyle,
 				defaultValue: value,
 				title: field.name,
 				maxLength: field.maxlen,
@@ -34,9 +32,7 @@ registerFieldClass(FIELD_10_PASSWORD, class PasswordField extends fieldMixins {
 			return R.input(inputsProps);
 
 		} else {
-			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
-				'********'
-			);
+			return R.span(null, '********');
 		}
 	}
 });

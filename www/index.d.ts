@@ -1,6 +1,14 @@
 
 import R from "react-dom";
-import React, { Component as C, Component, ComponentProps } from "react";
+import React, { Component as C, Component } from "react";
+import moment from "moment";
+
+interface ComponentProps {
+	className?: string;
+	onClick?: string;
+	[key: string]: any;
+}
+
 
 interface TR {
 	div: (props: ComponentProps, ...children) => Component;
@@ -34,6 +42,8 @@ interface TR {
 const TReact = typeof React;
 
 declare global {
+	moment;
+	const Datetime;
 	const Component = C;
 	const ReactDOM: TReactDOM;
 	const React: TReact;

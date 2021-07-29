@@ -1,4 +1,4 @@
-import {getData, renderIcon, sp} from "../utils.js";
+import {getData, L, renderIcon, sp} from "../utils.js";
 
 var style = {
 	display: 'inline-block',
@@ -23,19 +23,6 @@ var imgStyle = {
 	float: 'left',
 	marginRight: 10
 }
-
-var labelStyle = {
-	borderBottomLeftRadius: 4,
-	borderTopLeftRadius: 4,
-	padding: '2px 10px',
-	height: 34,
-	color: window.constants.BRAND_COLOR_LIGHT,
-	verticalAlign: 'middle',
-	display: 'inline-block',
-	border: '1px solid ' + window.constants.BRAND_COLOR_LIGHT,
-	borderRight: 0
-}
-
 
 var clearBtnStyle = {
 	borderBottomRightRadius: 4,
@@ -114,6 +101,7 @@ export default class Search extends Component {
 		var inputsProps = {
 			style: inputStyle,
 			title: 'Search',
+			placeholder: L('SEARCH'),
 			ref: (r) => {this.inputRef = r;},
 			onChange: this.onChange
 		};
@@ -203,9 +191,6 @@ export default class Search extends Component {
 			}
 		},
 			waitIcon,
-			R.span({
-				style: labelStyle
-			}, 'Search: '),
 			R.input(inputsProps),
 			R.span({
 				style: clearBtnStyle,

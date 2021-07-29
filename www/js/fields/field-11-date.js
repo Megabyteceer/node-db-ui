@@ -1,5 +1,4 @@
 import {innerDatetimeFormat, readableDateFormat, registerFieldClass, toReadableDate} from "../utils.js";
-import {compactInputStyle, notCompactInputStyle, readOnlyCompactFieldProperties, readOnlyFieldProperties} from "./field-1-text-default.js";
 import {dateFieldMixins} from "./field-4-datetime.js";
 
 registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
@@ -67,16 +66,13 @@ registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 				}
 			};
 			return R.div({
-				title: (this.props.isCompact ? field.name : ''),
-				style: this.props.isCompact ? compactInputStyle : notCompactInputStyle
+				title: (this.props.isCompact ? field.name : '')
 			},
 				React.createElement(window.Datetime, inputsProps)
 			);
 
 		} else {
-			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
-				value
-			)
+			return R.span(null, value);
 		}
 	}
 });

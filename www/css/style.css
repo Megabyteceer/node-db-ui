@@ -100,6 +100,7 @@ input{
 	font:inherit;
 	box-sizing: border-box;
 }
+
 b{
 	font-weight:bold;
 }
@@ -591,8 +592,6 @@ input[readonly]
 	width: 30%;
 }
 
-
-
 .field-wrap-value {
 	vertical-align: top;
 	width: 70%;
@@ -603,21 +602,18 @@ input[readonly]
 
 .field-wrap-value-no-label {
 	width: 100%;
-	color: var(--TEXT_COLOR);
-	font-size: 110%;
-	display: inline-block;
 }
 
 .field-wrap-label {
 	font-size: 110%;
 	font-weight: bold;
-	padding: 5px 0;
+	height: 34px;
 	width: 25%;
 	padding-right: 20px;
 	color: var(--TEXT_COLOR);
-	text-align: right;
-	vertical-align: top;
-	display: inline-block;
+	display: inline-flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .field-wrap-help-container {
@@ -694,14 +690,6 @@ input[readonly]
 	padding: 3px 10px;
 }
 
-
-
-
-
-
-
-
-
 .select-control-wrapper {
 	display: inline-block;
 	width: 100%;
@@ -753,6 +741,41 @@ input[readonly]
 	right: 2px;
 	top: 8px;
 }
+
+.field-wrap-readonly .field-wrap-value {
+	margin: 3px;
+	display: inline-block;
+	font-weight: bold;
+	font-size: 120%;
+}
+
+.middle-size-input {
+	height: 64px;
+}
+
+.large-input {
+	height: 206px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

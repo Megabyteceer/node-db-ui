@@ -1,39 +1,6 @@
 import {consoleDir, registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
-var readOnlyFieldProperties = {
-	style: {
-		margin: '3px',
-		display: 'inline-block',
-		fontWeight: 'bold',
-		fontSize: '120%'
-	}
-};
-var readOnlyCompactFieldProperties = null;
-
-var notCompactInputStyle = {
-	width: '100%',
-	maxWidth: '100%'
-};
-var notCompactLargeInputStyle = {
-	width: '100%',
-	maxWidth: '100%',
-	height: 206
-};
-var notCompactMiddleInputStyle = {
-	width: '100%',
-	maxWidth: '100%',
-	height: 64
-};
-
-var compactInputStyle = {
-	marginBottom: 4,
-	marginTop: 4,
-	display: 'inline-block',
-	width: '95%',
-	maxWidth: '95%',
-};
-
 registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 
 	setValue(val) {
@@ -64,27 +31,21 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 		}
 
 		if(this.props.isEdit) {
-			var s;
+			let className;
 			if(this.props.isCompact) {
 				if(field.maxlen > 600) {
-					s = notCompactMiddleInputStyle;
-				} else {
-					s = compactInputStyle;
+					className = 'middle-size-input';
 				}
-
 			} else {
 				if(field.maxlen > 600) {
-					s = notCompactLargeInputStyle;
-
+					className = 'large-input';
 				} else if(field.maxlen > 200) {
-					s = notCompactMiddleInputStyle;
-				} else {
-					s = notCompactInputStyle;
+					className = 'middle-size-input';
 				}
 			}
 
 			var inputsProps = {
-				style: s,
+				className,
 				defaultValue: value,
 				maxLength: this.props.maxLen || field.maxlen,
 				title: field.name,
@@ -100,19 +61,9 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 				return R.textarea(inputsProps);
 			} else {
 				return R.input(inputsProps);
-
 			}
 		} else {
-			return R.span(this.props.isCompact ? readOnlyCompactFieldProperties : readOnlyFieldProperties,
-				this.renderTextValue(value)
-			);
+			return this.renderTextValue(value);
 		}
 	}
 });
-
-export {
-	readOnlyCompactFieldProperties,
-	readOnlyFieldProperties,
-	compactInputStyle,
-	notCompactInputStyle
-}
