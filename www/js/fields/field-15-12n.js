@@ -1,9 +1,10 @@
 import FormFull from "../forms/form-full.js";
 import List from "../forms/list.js";
-import {backupCreationData, deleteRecord, getNodeData, L, renderIcon} from "../utils.js";
+import {backupCreationData, deleteRecord, getBackupData, getNodeData, L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
 
+// @ts-ignore
 registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixins {
 
 	constructor(props) {
@@ -104,12 +105,11 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 	}
 
 	render() {
-
 		var field = this.props.field;
 		var body;
 		if(this.state.creationOpened) {
 			if(this.state.itemIdToEdit) {
-				body = R.div({style: {textAlign: 'center', color: '#ccc', padding: '5px'}},
+				body = R.div({className: 'field-lookup-loading-icon-container'},
 					renderIcon('cog fa-spin fa-2x')
 				);
 			} else {

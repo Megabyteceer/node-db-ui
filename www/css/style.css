@@ -964,6 +964,12 @@ input[readonly] {
 	flex-grow: 2;
 }
 
+.rating-star {
+	color: #f54223;
+	margin-left: 0;
+	margin-right: 0;
+}
+
 
 
 

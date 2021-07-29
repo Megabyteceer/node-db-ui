@@ -367,7 +367,7 @@ export default class List extends BaseForm {
 		var node = this.state.node;
 		var data = this.state.data;
 		if(!node || !data) {
-			return R.div({style: {textAlign: 'center', color: '#ccc', padding: '5px'}},
+			return R.div({className: 'field-lookup-loading-icon-container'},
 				renderIcon('cog fa-spin fa-2x')
 			);
 		}

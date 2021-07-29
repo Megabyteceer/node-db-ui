@@ -280,7 +280,7 @@ export default class FormFull extends eventProcessingMixins {
 	render() {
 		var node = this.props.node;
 		if(!node) {
-			return R.div({style: {textAlign: 'center', color: '#ccc', padding: '5px'}},
+			return R.div({className: 'field-lookup-loading-icon-container'},
 				renderIcon('cog fa-spin fa-2x')
 			);
 		}
