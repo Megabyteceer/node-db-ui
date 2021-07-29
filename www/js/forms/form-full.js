@@ -39,6 +39,10 @@ export default class FormFull extends eventProcessingMixins {
 		super(props);
 		this.currentData = Object.assign({}, props.filters, props.initialData);
 		this.saveClick = this.saveClick.bind(this);
+
+		this.showAllDebug = false;
+		this.disableDrafting = false;
+		this.onSaveCallback = null;
 	}
 
 	componentDidMount() {

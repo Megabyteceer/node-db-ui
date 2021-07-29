@@ -970,12 +970,27 @@ input[readonly] {
 	margin-right: 0;
 }
 
+.field-color-input {
+	vertical-align: middle;
+	width: 130px;
+	display: inline-block
+}
 
+.field-color-preview-bg {
+	width: 120px;
+	vertical-align: middle;
+	display: inline-block;
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQYV2OcM2fOfwY0kJycjC7EwDgUFP7//x/DM3PnzsX0zBBQCADu1zEWG5C/XgAAAABJRU5ErkJggg==) repeat;
+}
 
+.form-compact .field-color-preview-bg {
+	width: 42px;
+}
 
-
-
-
+.field-color-preview {
+	margin: 6px;
+	height: 24px;
+}
 
 
 

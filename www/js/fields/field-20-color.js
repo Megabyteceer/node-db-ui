@@ -3,12 +3,6 @@
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
-const styleInput = {
-	verticalAlign: 'middle',
-	width: '130px',
-	display: 'inline-block'
-};
-
 const intToColor = (color, alpha) => {
 	var ret = 'rgba(' + ((color >> 16) & 255) + ',' + ((color >> 8) & 255) + ',' + (color & 255) + ',' + (alpha / 255.0).toFixed(2) + ')';
 	return ret;
@@ -51,16 +45,16 @@ registerFieldClass(FIELD_20_COLOR, class ColorField extends fieldMixins {
 
 	render() {
 		let background = intToColor(this.state.color, this.state.alpha);
-		let preview = R.div({style: styleInput},
-			R.div({style: {width: this.props.isCompact ? 42 : 120, verticalAlign: 'middle', display: 'inline-block', background: "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQYV2OcM2fOfwY0kJycjC7EwDgUFP7//x/DM3PnzsX0zBBQCADu1zEWG5C/XgAAAABJRU5ErkJggg==) repeat"}},
-				R.div({style: {margin: '6px', height: 24, background}})
+		let preview = R.div({className: 'field-color-input'},
+			R.div({className: "field-color-preview-bg"},
+				R.div({className: 'field-color-preview', style: {background}})
 			)
 		);
 		if(this.props.isEdit) {
 			return R.div(null,
-				R.input({style: styleInput, type: 'color', defaultValue: '#' + (this.state.color & 0xFFFFFF).toString(16), onChange: this.onChangeColor}),
-				R.input({style: styleInput, type: 'number', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
-				R.input({style: styleInput, type: 'range', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
+				R.input({className: 'field-color-input', type: 'color', defaultValue: '#' + (this.state.color & 0xFFFFFF).toString(16), onChange: this.onChangeColor}),
+				R.input({className: 'field-color-input', type: 'number', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
+				R.input({className: 'field-color-input', type: 'range', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
 				preview
 			);
 		} else {
