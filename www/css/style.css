@@ -1018,7 +1018,6 @@ input[readonly] {
 }
 
 .field-color-preview-bg {
-	width: 120px;
 	vertical-align: middle;
 	display: inline-block;
 	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQYV2OcM2fOfwY0kJycjC7EwDgUFP7//x/DM3PnzsX0zBBQCADu1zEWG5C/XgAAAABJRU5ErkJggg==) repeat;
@@ -1031,6 +1030,15 @@ input[readonly] {
 .field-color-preview {
 	margin: 6px;
 	height: 24px;
+	width: 108px;
+	border: 1px solid #777;
+	border-radius: 5px;
+}
+
+.form-item-row .field-color-preview {
+	width: 40px;
+	margin: 5px;
+	height: 20px;
 }
 
 .field-button {
@@ -1086,6 +1094,14 @@ input[readonly] {
 	background: #eee;
 	opacity: 0.5;
 }
+
+.form-tab-highlight {
+	margin-bottom: 10px;
+	border: 2px solid #944;
+}
+
+
+
 
 
 

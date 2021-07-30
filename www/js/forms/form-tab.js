@@ -24,7 +24,15 @@ export default class FormTab extends Component {
 	}
 
 	render() {
-		return R.div({style: {display: this.state.visible ? 'block' : 'none', marginBottom: (this.props.highlightFrame ? '10px' : 0), border: (this.props.highlightFrame ? '2px solid #944' : 0)}},
+		let className = 'form-tab';
+		if(!this.state.visible) {
+			className += ' hidden';
+		}
+		if(this.props.highlightFrame) {
+			className += ' form-tab-highlight';
+		}
+
+		return R.div({className},
 			(this.props.highlightFrame ? React.createElement(FieldAdmin, {field: this.props.field, form: this.props.form, x: 13}) : ''),
 			this.props.fields);
 	}
