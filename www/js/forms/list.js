@@ -105,7 +105,7 @@ export default class List extends BaseForm {
 		}
 	}
 
-	refreshData() {
+	async refreshData() {
 		if(!this.isSlave() && !this.props.noSetHash) {
 			updateHashLocation(this.filters);
 		}
@@ -113,39 +113,37 @@ export default class List extends BaseForm {
 		if(nodeIdToFetch !== this.currentFechingNodeId) {
 			this.currentFechingNodeId = nodeIdToFetch;
 
-			var getFilters;
 			if(this.props.editable) {
 				this.filters.p = '*';
 			}
 
-			getNodeData(nodeIdToFetch, undefined, this.filters, this.props.editable, this.props.isLookup, this.isCustomListRenering()).then((data) => {
+			let data = await getNodeData(nodeIdToFetch, undefined, this.filters, this.props.editable, this.props.isLookup, this.isCustomListRenering());
 
-				if(this.unmounted) {
-					return;
-				}
+			if(this.unmounted) {
+				return;
+			}
 
-				this.currentFechingNodeId = -1;
-				var sorting = data.items.length && data.items[0].hasOwnProperty('order');
-				if(sorting) {
-					data.items.sort(sortByOrder);
-				}
+			this.currentFechingNodeId = -1;
+			var sorting = data.items.length && data.items[0].hasOwnProperty('order');
+			if(sorting) {
+				data.items.sort(sortByOrder);
+			}
 
-				if(!this.props.node) {
-					getNode(this.props.nodeId).then((node) => {
-						if(this.isSlave()) {
-							this.props.parentForm.saveNodeDataAndFilters(node, data, this.filters);
-						}
-						this.setState({data, node});
-						this.scrollIfNeed();
-					});
-				} else {
-					if(this.isSlave()) {
-						this.props.parentForm.saveNodeDataAndFilters(this.props.node, data, this.filters);
-					}
-					this.setState({data: data});
-					this.scrollIfNeed();
+			if(!this.props.node) {
+				const node = await getNode(this.props.nodeId);
+				if(this.isSlave()) {
+					this.props.parentForm.saveNodeDataAndFilters(node, data, this.filters);
 				}
-			});
+				this.setState({data, node});
+				this.scrollIfNeed();
+			} else {
+				if(this.isSlave()) {
+					this.props.parentForm.saveNodeDataAndFilters(this.props.node, data, this.filters);
+				}
+				this.setState({data});
+				this.scrollIfNeed();
+			}
+
 		}
 	}
 

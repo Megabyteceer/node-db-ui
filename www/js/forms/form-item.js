@@ -2,31 +2,6 @@ import FieldWrap from "../fields/field-wrap.js";
 import {deleteRecord, draftRecord, L, loactionToHash, publishRecord, renderIcon, sp} from "../utils.js";
 import BaseForm from "./form-mixins.js";
 
-var rowStyle = {
-	borderBottom: '1px solid #ddd',
-	padding: '0 15px',
-	verticalAlign: 'middle',
-	overflow: 'hidden',
-	whiteSpace: 'normal'
-}
-
-var rowStyleNoWrap = {
-	borderBottom: '1px solid #ddd',
-	padding: '0 15px',
-	whiteSpace: 'nowrap',
-	verticalAlign: 'middle',
-	overflow: 'hidden'
-}
-var rowStyleNum = {
-	textAlign: 'right',
-	borderBottom: '1px solid #ddd',
-	padding: '0 15px',
-	whiteSpace: 'nowrap',
-	verticalAlign: 'middle',
-	overflow: 'hidden'
-}
-
-
 const publishClick = (draft, node, data) => {
 	if(draft) {
 		return draftRecord(node.id, data.id);
@@ -41,7 +16,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 
 			buttons = [
 				R.button({
-					key: 2, style: {background: window.constants.EDIT_COLOR}, className: 'clickable toolbtn', title: L('EDIT'), onMouseDown: (e) => {
+					key: 2, className: 'clickable toolbtn edit-btn', title: L('EDIT'), onMouseDown: (e) => {
 						sp(e);
 						formItem.props.parentForm.toggleCreateDialogue(data.id)
 					}
@@ -64,13 +39,13 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 		if(data.hasOwnProperty('isP') && (!formItem || !formItem.props.disableDrafting)) {
 			if(data.status === 1) {
 				buttons.push(
-					R.button({key: 1, style: {background: window.constants.PUBLISH_COLOR}, className: 'clickable toolbtn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data).then(refreshFunction)}},
+					R.button({key: 1, className: 'clickable toolbtn unpublish-btn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data).then(refreshFunction)}},
 						renderIcon('eye')
 					)
 				)
 			} else {
 				buttons.push(
-					R.button({key: 1, style: {background: window.constants.UNPUBLISH_COLOR}, className: 'clickable toolbtn', title: L('PUBLISH'), onClick: () => {publishClick(false, node, data).then(refreshFunction)}},
+					R.button({key: 1, className: 'clickable toolbtn publish-btn', title: L('PUBLISH'), onClick: () => {publishClick(false, node, data).then(refreshFunction)}},
 						renderIcon('eye-slash')
 					)
 				)
@@ -88,7 +63,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 								}
 							}
 						},
-							R.button({style: {background: window.constants.EDIT_COLOR}, className: 'clickable toolbtn', title: L('EDIT', itemName)},
+							R.button({className: 'clickable toolbtn edit-btn', title: L('EDIT', itemName)},
 								renderIcon('pencil')
 							)
 						)
@@ -98,18 +73,17 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 			} else if(!formItem || !formItem.props.list || !(formItem.props.list.state.noPreviewButton || formItem.props.list.props.noPreviewButton)) {
 				buttons.push(
 					R.a({key: 2, href: loactionToHash(node.id, data.id, undefined)},
-						R.button({style: {background: '#00a5bf'}, className: 'clickable toolbtn', title: L('DETAILS') + itemName},
+						R.button({className: 'clickable toolbtn view-btn', title: L('DETAILS') + itemName},
 							renderIcon('search')
 						)
 					)
 				)
-
 			}
 		}
 		if(data.hasOwnProperty('isD')) {
 			buttons.push(
 				R.button({
-					key: 3, style: {background: window.constants.DELETE_COLOR}, className: 'clickable toolbtn', title: L('DELETE') + itemName, onClick: async () => {
+					key: 3, className: 'clickable toolbtn danger-btn', title: L('DELETE') + itemName, onClick: async () => {
 						await deleteRecord(data.name, node.id, data.id);
 						if(formItem && formItem.props.parentForm) {
 							formItem.props.parentForm.valueChoosed();
@@ -146,30 +120,27 @@ export default class FormItem extends BaseForm {
 
 			var field = flds[k];
 			if(this.isVisibleField(field)) {
-				var styl;
-				if(field.fieldType === FIELD_1_TEXT || field.fieldType === FIELD_19_RICHEDITOR || field.fieldType === FIELD_7_Nto1) {
-					styl = rowStyle;
-				} else if(field.fieldType === FIELD_2_INT) {
-					styl = rowStyleNum;
-				} else {
-					styl = rowStyleNoWrap
+				let className = 'form-item-row';
+				if(field.fieldType === FIELD_2_INT) {
+					className += ' form-item-row-num';
+				} else if(field.fieldType !== FIELD_1_TEXT && field.fieldType !== FIELD_19_RICHEDITOR && field.fieldType !== FIELD_7_Nto1) {
+					className += ' form-item-row-misc'
 				}
 
 				fields.push(
-					R.td({key: field.id, style: styl},
+					R.td({key: field.id, className},
 						React.createElement(FieldWrap, {key: k, field, initialValue: data[field.fieldName], form: this, isCompact: true, isTable: true})
 					)
 				);
 			}
 		}
 
-		var itemProps;
-		if(this.props.node.draftable && (data.status !== 1)) {
-			itemProps = {style: {background: '#eee', opacity: 1}}
-		} else {
-			itemProps = {};
-		}
+		/** @type any */
+		var itemProps = {};
 		itemProps.className = 'list-item list-item-' + this.props.node.id;
+		if(this.props.node.draftable && (data.status !== 1)) {
+			itemProps.className += ' list-item-draft';
+		}
 
 		if(this.props.isLookup) {
 			itemProps.title = L('SELECT');
@@ -191,7 +162,7 @@ export default class FormItem extends BaseForm {
 		if(this.props.additionalButtons) {
 			additionalButtons = this.props.additionalButtons(this.props.node, data, this.props.list.refreshData, this);
 		}
-		fields.push(R.td({key: 'b', style: rowStyleNoWrap}, R.div({style: {textAlign: 'right'}}, buttons, additionalButtons)));
+		fields.push(R.td({key: 'b', className: 'form-item-row form-item-row-buttons'}, buttons, additionalButtons));
 
 		return R.tr(itemProps,
 			fields
