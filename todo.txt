@@ -22,8 +22,6 @@ separate server side and client side isUserHaveRole
 
 crop падает на прозрачной области. когда кроп больше картинки
 
-в релизе CodeMirror импортировать по другому
-
 требовать nodeRef поле если указано fieldType === FIELD_7_Nto1 15 14
 
 try mysql.createPool

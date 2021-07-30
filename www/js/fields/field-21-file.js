@@ -35,7 +35,7 @@ registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
 			let accept = ENV.ALLOWED_UPLOADS.map(i => '.' + i).join(', ');
 			return React.createElement(FileFormBody, {field, ref: (r) => {this.fileFormBodyRef = r;}, accept, wrapper: this.props.wrapper, parent: this, form: this.props.form, currentFileName: fileName, isCompact: this.props.isCompact});
 		}
-		return R.a({style: {color: '#227', fontWeight: 'bold'}, href: idToFileUrl(fileName), download: true}, fileName ? (fileName.split('/').pop()) : undefined);
+		return R.a({className: 'field-file-link', href: idToFileUrl(fileName), download: true}, fileName ? (fileName.split('/').pop()) : undefined);
 
 	}
 });
@@ -91,20 +91,20 @@ export default class FileFormBody extends Component {
 
 		if(this.props.currentFileName) {
 			curFile =
-				R.a({href: idToFileUrl(this.props.currentFileName), download: true, target: '_blank', style: {fontSize: '70%', color: '#00a'}},
-					L('DOWNLOAD')
+				R.a({href: idToFileUrl(this.props.currentFileName), download: true, target: '_blank', className: 'field-file-link'},
+					this.props.currentFileName.split('/').pop()
 				);
-
 		}
 
 		if(this.state.file) {
-			selFile = R.span({style: {fontSize: '70%', color: '#999', marginLeft: 10}},
-				L('FILE_SELECTED', this.state.file.name)
+			selFile = R.span({className: 'small-text'},
+				L('FILE_SELECTED', this.state.file.name),
+				"(", (this.state.file.size / 1000).toFixed(2), L("KILO_BYTES_SHORT"), ")"
 			);
 		}
 
 		select = R.button({
-			style: {background: window.constants.PUBLISH_COLOR, fontSize: '80%', marginLeft: 10, padding: '5px 20px 6px 20px'}, ref: (r) => {this.selectButtonRef = r;}, className: 'clickable', onClick: () => {
+			className: 'clickable field-button', onClick: () => {
 				this.fileInputRef.value = null;
 				this.fileInputRef.click();
 			}
@@ -114,12 +114,12 @@ export default class FileFormBody extends Component {
 
 		var recIdField, nodeIdField;
 		if(this.props.form.currentData && this.props.form.currentData.id) {
-			recIdField = R.input({name: "recId", style: {display: 'none'}, defaultValue: this.props.form.currentData.id});
-			nodeIdField = R.input({name: "nodeId", style: {display: 'none'}, defaultValue: this.props.form.props.node.id});
+			recIdField = R.input({name: "recId", className: 'hidden', defaultValue: this.props.form.currentData.id});
+			nodeIdField = R.input({name: "nodeId", className: 'hidden', defaultValue: this.props.form.props.node.id});
 		}
 
 
-		var form = R.form({ref: (r) => {this.formRef = r;}, encType: "multipart/form-data", style: {display: 'none'}},
+		var form = R.form({ref: (r) => {this.formRef = r;}, encType: "multipart/form-data", className: 'hidden'},
 			R.input({name: "all files", ref: (r) => {this.fileInputRef = r;}, type: 'file', accept: this.props.accept, onChange: this._onChange}),
 			R.input({name: "MAX_FILE_SIZE", defaultValue: 30000000}),
 			R.input({name: "fid", defaultValue: field.id}),

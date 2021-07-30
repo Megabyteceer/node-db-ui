@@ -910,10 +910,6 @@ input[readonly] {
 	box-sizing: border-box 
 }
 
-.field-lookup-right-block {
-	
-}
-
 .field-lookup-caret {
 	display: inline-block;
 	vertical-align:  middle;
@@ -1003,10 +999,35 @@ input[readonly] {
 
 .field-button {
 	padding: 5px 20px 6px 20px;
-	font-Size: 80%;
+	font-size: 80%;
 	background: var(--EDIT_COLOR);
 	color: #fff;
 }
+
+.field-file-link {
+	color: #227;
+	font-weight: bold;
+	font-size: 85%;
+	margin: 0 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .shake{
 	animation: shake-animation linear 0.3s;
