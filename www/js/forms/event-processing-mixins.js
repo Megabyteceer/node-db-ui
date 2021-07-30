@@ -8,6 +8,8 @@ export default class eventProcessingMixins extends BaseForm {
 
 	constructor(props) {
 		super(props);
+		this.currentData = null;
+		this.onSaveCallback = null;
 		this.resetFieldsProperties();
 	}
 
@@ -17,6 +19,7 @@ export default class eventProcessingMixins extends BaseForm {
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		super.UNSAFE_componentWillReceiveProps(nextProps);
+		this.showAllTabs = false;
 		if(nextProps.initialData.id !== this.props.initialData.id) {
 			this.state = {};
 			this.resetFieldsProperties(true);
@@ -36,10 +39,8 @@ export default class eventProcessingMixins extends BaseForm {
 		this.needCallOnload = needCallOnload;
 	}
 
-	async saveForm() {
-		if(this.props.editable) {
-			return this.saveClick('keepStatus');
-		}
+	isVisibleField(field) {
+		return true;
 	}
 
 	callOnTabShowEvent(tabNameToShow) {
@@ -186,12 +187,11 @@ export default class eventProcessingMixins extends BaseForm {
 		if(this.props.filters && this.props.filters.tab) {
 			this.callOnTabShowEvent(this.props.filters.tab);
 		}
-
 	}
 
 	refreshLeftBar() {
 		if(!this.isSlave()) {
-			if((typeof (this.currentData) !== 'array') && this.currentData.id && !this.showAllTabs) {
+			if(!Array.isArray(this.currentData) && this.currentData.id && !this.showAllTabs) {
 				var items = [this.currentData.name || L('NEW', this.props.node.singleName)];
 				var isDefault = true;
 				var fields = this.props.node.fields

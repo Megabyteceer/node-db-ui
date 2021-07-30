@@ -98,13 +98,13 @@ class BarItem extends Component {
 		}
 
 		var itemsIcon = R.div({className: "left-bar-item-icon"},
-			renderIcon(item.icon + (item.isDoc ? ' brand-color' : 'noicon'))
+			renderIcon(item.icon + (item.isDoc ? ' brand-color' : ' noicon'))
 		)
 
-		let className = 'left-bar-item ' + (item.isDoc ? 'left-bar-doc' : 'left-bar-group');
+		let className = 'left-bar-item ' + (item.isDoc ? 'left-bar-item-doc' : 'left-bar-group');
 
 		if(this.props.active) {
-			className += ' left-bar-active-item unclickable';
+			className += ' left-bar-item-active unclickable';
 		}
 
 		if(item.tabId) {

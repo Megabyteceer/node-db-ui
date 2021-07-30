@@ -1,6 +1,8 @@
+import Select from "../components/select.js";
+import FormFull from "../forms/form-full.js";
 import LeftBar from "../left-bar.js";
 import MainFrame from "../main-frame.js";
-import {consoleDir, getNode, getNodeData, isLitePage, popup, refreshForm, submitRecord} from "../utils.js";
+import {consoleDir, getNode, getNodeData, isLitePage, popup, refreshForm, renderIcon, submitRecord} from "../utils.js";
 
 const admin = {};
 
@@ -182,4 +184,55 @@ $('#admin-disable').on('click', admin.toggleAdminUI);
 
 admin.toggleAdminUI();
 
+
+let iconsList;
+function initIconsList(params) {
+	iconsList = [];
+	let ruleList = Array.from(document.styleSheets).filter((r) => {
+		return r.href && (r.href.indexOf('font-awesome') >= 0);
+	});
+	for(let style of ruleList) {
+		for(let rule of style.cssRules) {
+			let s = rule.cssText.split('.fa-');
+			let allNames = s.filter(s => s.indexOf('::before') > 0).map(s => s.substr(0, s.indexOf('::before')));
+			if(allNames.length) {
+				let iconName = allNames[0];
+				iconsList.push({
+					name: R.span(null, renderIcon(iconName), allNames.join(', ')),
+					value: iconName
+				});
+			}
+		}
+	}
+}
+
+/** @param {FormFull} form */
+function makeIconSelectionField(form, fieldName) {
+
+	if(!iconsList) {
+		initIconsList();
+	}
+	const $iconInput = $('.field-container-id-' + form.getField(fieldName).props.field.id + ' input');
+	$iconInput.css({
+		display: 'none'
+	});
+	$iconInput.after('<span id="icons-selector"></span>');
+
+	setTimeout(() =>
+		ReactDOM.render(
+			React.createElement(Select, {
+				isCompact: form.props.isCompact,
+				defaultValue: form.fieldValue(fieldName),
+				readOnly: form.props.fieldDisabled,
+				onChange: (value) => {
+					form.setFieldValue(fieldName, value);
+				},
+				options: iconsList
+			}),
+			document.getElementById('icons-selector')
+		),
+		10);
+}
+
 export default admin;
+export {makeIconSelectionField};

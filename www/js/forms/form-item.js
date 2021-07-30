@@ -169,7 +169,7 @@ export default class FormItem extends BaseForm {
 		} else {
 			itemProps = {};
 		}
-		itemProps.className = 'form-item-' + this.props.node.id;
+		itemProps.className = 'list-item list-item-' + this.props.node.id;
 
 		if(this.props.isLookup) {
 			itemProps.title = L('SELECT');

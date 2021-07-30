@@ -1,44 +1,9 @@
 import {iAdmin} from "../user.js";
-import {getNodeData, L, myPromt} from "../utils.js";
+import {getNodeData, L, myPromt, renderIcon} from "../utils.js";
+import {makeIconSelectionField} from "../admin/admin-utils.js";
 
 var formsEventsOnLoad = {};
 var formsEventsOnSave = {};
-
-formsEventsOnLoad[13] = function () { //form13onloadBegin_JS89DW72SISA887QKJ32IUSL
-	if(this.rec_update) {
-		this.disableField('title');
-		this.hideField('title');
-	} else if(!this.rec_creation) {
-		this.hideField('title');
-	}
-	this.disableField('help');
-
-	if(!isUserHaveRole(0) && !isUserHaveRole(4)) {
-		$('#rec_header').parent().parent().hide();
-		this.hideField('help');
-		this.hideField('name');
-	}
-} //form13onloadEnd_JS89DW72SISA887QKJ32IUSL
-
-
-
-formsEventsOnLoad[15] = function () { //form15onloadBegin_JS89DW72SISA887QKJ32IUSL
-	this.getField("values").inlineEditable();
-} //form15onloadEnd_JS89DW72SISA887QKJ32IUSL
-
-formsEventsOnLoad[85] = function () { //form85onloadBegin_JS89DW72SISA887QKJ32IUSL
-	this.hideField("data");
-	this.hideField("preview");
-	this.hideFooter();
-
-	this.focusField("name");
-} //form85onloadEnd_JS89DW72SISA887QKJ32IUSL
-
-
-
-
-
-
 
 formsEventsOnLoad[5] = function _users_onload() {//form5onloadBegin_JS89DW72SISA887QKJ32IUSL
 
@@ -49,9 +14,9 @@ formsEventsOnLoad[5] = function _users_onload() {//form5onloadBegin_JS89DW72SISA
 	}
 
 	if($('#org-edit-link').length === 0) {
-		$('.fc-63 input').css('width', '50%');
+		$('.field-container-id-63 input').css('width', '50%');
 		if(this.fieldValue('_organID')) {
-			$('.fc-63 input').after(
+			$('.field-container-id-63 input').after(
 				'<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organisation settings" href="#n/7/r/' +
 				this.fieldValue('_organID').id +
 				'/e">additional organisation settings <p class="fa fa-wrench"></p></a>'
@@ -159,6 +124,8 @@ formsEventsOnLoad[52] = function _enums_onload() {//form52onloadBegin_JS89DW72SI
 } //form52onloadEnd_JS89DW72SISA887QKJ32IUSL
 
 formsEventsOnLoad[4] = function _nodes_onload() {//form4onloadBegin_JS89DW72SISA887QKJ32IUSL
+	makeIconSelectionField(this, 'icon');
+
 	if(this.rec_update) {
 		this.disableField('isDoc');
 		this.disableField('tableName');
@@ -273,19 +240,19 @@ formsEventsOnLoad[6] = function _fields_onload() {//form6onloadBegin_JS89DW72SIS
 	this.hideField("prior");
 	this.hideField("show");
 
-	$('.fc-22').css({
+	$('.field-container-id-22').css({
 		width: '6%'
 	});
-	$('.fc-23').css({
+	$('.field-container-id-23').css({
 		width: '6%'
 	});
-	$('.fc-24').css({
+	$('.field-container-id-24').css({
 		width: '6%'
 	});
-	$('.fc-318').css({
+	$('.field-container-id-318').css({
 		width: '6%'
 	});
-	$('.fc-357').css({
+	$('.field-container-id-357').css({
 		width: '6%'
 	});
 

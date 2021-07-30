@@ -276,7 +276,7 @@ export default class FieldWrap extends Component {
 
 		var field = this.props.field;
 
-		var domId = 'fc-' + field.id;
+		var domId = 'field-container-id-' + field.id;
 
 		var fprops = {
 			field,

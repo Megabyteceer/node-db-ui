@@ -382,16 +382,16 @@ input[readonly] {
 	overflow: hidden;
 }
 
-.left-bar-doc {
+.left-bar-item-doc {
 	background: #ffffff;
-	padding: 9px 6px;
+	padding: 9px 5px;
 	font-size: 90%;
 	font-weight: bold;
 	border-bottom: 1px solid #ddd;
 }
 
 .left-bar-group {
-	padding: 5px 3px;
+	padding: 5px 4px;
 	background: var(--BRAND_COLOR);
 	font-weight: bold;
 	color: var(--BRAND_COLOR_SHINE);
@@ -400,9 +400,10 @@ input[readonly] {
 	box-shadow: 0 3px 3px -1px rgba(102,30,10,0.3);
 }
 
-.left-bar-active-item {
+.left-bar-item-active {
 	background: #dfefff;
 	border-left: 5px solid var(--BRAND_COLOR_DARK);
+	padding-left: 0;
 }
 
 .left-bar-item-icon {
@@ -550,7 +551,7 @@ input[readonly] {
 }
 
 .modal {
-	margin-top: 90px;
+	margin-top: 10%;
 	display: inline-block;
 	cursor: default;
 	max-height: 80%;
@@ -618,7 +619,6 @@ input[readonly] {
 
 .field-wrap {
 	margin: 20px 0;
-	max-width: 1124px;
 }
 
 .field-wrap-lang {
@@ -687,8 +687,9 @@ input[readonly] {
 
 .field-wrap-required-star {
 	color: red;
-	font-size: 60%;
-	vertical-align: top
+	font-size: 80%;
+	vertical-align: top;
+    margin-left: 2px;
 }
 
 .field-wrap-alert {
@@ -919,6 +920,12 @@ input[readonly] {
 	border-Radius: 5px;
 }
 
+.list-item .field-readonly-image {
+	max-height: 34px;
+	width: auto;
+	margin: 3px 10px;
+}
+
 .form-compact .field-readonly-image {
 	max-height: 34px;
 	width: auto;
@@ -1011,9 +1018,22 @@ input[readonly] {
 	margin: 0 10px;
 }
 
+.form-full {
+	margin-bottom: 7px;
+	max-width: 1124px;
+}
 
+.form-footer {
+	margin-Left: 25%;
+	padding-Left: 20px;
+	text-Align: left;
+	margin-Top: 65px
+}
 
-
+.form-header {
+	color: var(--BRAND_COLOR_HEADER);
+	margin: 10px;
+}
 
 
 

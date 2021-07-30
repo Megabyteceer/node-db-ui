@@ -253,7 +253,15 @@
 	padding: 15px 20px;
 }
 
+.field-container-id-397 .select-control-list {
+	white-space: normal;
+}
 
+.field-container-id-397 .select-control-item {
+	display: inline-block;
+	width: 120px;
+	white-space: nowrap;
+}
 
 
 

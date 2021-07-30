@@ -7,10 +7,6 @@ import eventProcessingMixins from "./event-processing-mixins.js";
 import NodeAdmin from "../admin/node-admin.js";
 import LoadingIndicator from "../loading-indicator.js";
 
-var style = {
-	marginBottom: 7
-}
-
 var backupCallback;
 
 function tryBackup() {
@@ -104,7 +100,6 @@ export default class FormFull extends eventProcessingMixins {
 			this.backupCurrentDataIfNeed();
 
 			this.needCallOnload = true;
-			this.showAllTabs = false;
 			this.currentData = Object.assign({}, nextProps.filters, nextProps.initialData);
 			this.resendDataToFields();
 		}
@@ -128,6 +123,12 @@ export default class FormFull extends eventProcessingMixins {
 		for(var k in this.fieldsRefs) {
 			var f = this.fieldsRefs[k];
 			f.forceBouncingTimeout();
+		}
+	}
+
+	async saveForm() {
+		if(this.props.editable) {
+			return this.saveClick('keepStatus');
 		}
 	}
 
@@ -278,7 +279,7 @@ export default class FormFull extends eventProcessingMixins {
 	}
 
 	isVisibleField(field) {
-		return (this.props.editable ? (field.show & 1) : (field.show & 4));
+		return (this.props.editable ? (field.show & 1) : (field.show & 4)) > 0;
 	}
 
 	render() {
@@ -294,8 +295,7 @@ export default class FormFull extends eventProcessingMixins {
 		var data = this.currentData;
 		var flds = node.fields;
 
-		var domId = 'form-full-' + node.id;
-		var className = domId;
+		var className = 'form-full form-full-' + node.id;
 		if(this.props.isCompact) {
 			className += ' form-compact';
 		}
@@ -438,7 +438,6 @@ export default class FormFull extends eventProcessingMixins {
 					} else {
 						draftButton = R.button({className: 'clickable default-button', onClick: () => {this.saveClick(true)}, title: L('SAVE_TEMPLATE')}, L('SAVE_TEMPLATE'));
 						saveButton = R.button({className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('PUBLISH')}, L('PUBLISH'));
-
 					}
 				}
 			}
@@ -447,8 +446,11 @@ export default class FormFull extends eventProcessingMixins {
 				nodeAdmin = React.createElement(NodeAdmin, {form: this, x: 320, y: -40});
 			}
 
-			if(!this.props.isCompact && (this.header || this.state.header)) {
-				header = R.h4({style: {color: window.constants.BRAND_COLOR_HEADER, margin: 10}}, this.header || this.state.header);
+
+			if(!this.props.isCompact) {
+				let headerContent = this.header || this.state.header || R.span(null, node.icon ? renderIcon(node.icon) : undefined, node.singleName);
+
+				header = R.h4({className: "form-header"}, headerContent);
 			}
 
 			if(this.props.editable) {
@@ -457,17 +459,16 @@ export default class FormFull extends eventProcessingMixins {
 				closeButton = R.button({className: 'clickable default-button', onClick: this.cancelClick}, renderIcon('caret-left'), this.isSlave() ? '' : L('BACK'));
 			}
 		}
-		return R.div({className, style: style},
+		return R.div({className},
 			nodeAdmin,
 			header,
 			tabs || fields,
-			R.div({style: {maxWidth: 1024}},
-				R.div({className: 'footer-' + domId, style: {marginLeft: '25%', paddingLeft: 22, display: (this.state.footerHidden || this.props.inlineEditable ? 'none' : undefined), textAlign: 'left', marginTop: 65}},
-					deleteButton,
-					draftButton,
-					saveButton,
-					closeButton
-				))
+			R.div({className: (this.state.footerHidden || this.props.inlineEditable) ? 'form-footer hidden' : 'form-footer'},
+				deleteButton,
+				draftButton,
+				saveButton,
+				closeButton
+			)
 		)
 	}
 }
