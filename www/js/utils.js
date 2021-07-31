@@ -272,9 +272,8 @@ function loactionToHash(nodeId, recId, filters, editable) {
 	if(retHash === 'n/' + ENV.HOME_NODE) {
 		retHash = '';
 	}
-	if(retHash) {
-		retHash = '#' + retHash;
-	}
+
+	retHash = '#' + retHash;
 
 	return retHash;
 }
