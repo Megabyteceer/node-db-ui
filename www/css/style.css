@@ -1100,6 +1100,39 @@ input[readonly] {
 	border: 2px solid #944;
 }
 
+.page-btn {
+	background: #fff;
+	color: #555;
+	margin: 0;
+	border-radius: 0;
+}
+
+.page-btn-active {
+	vertical-align: middle;
+	background: #ebe5e8;
+}
+
+.inline-editable-item {
+	display: inline-block;
+	width: 80%;
+	margin-bottom: 4px;
+	margin-top: 4px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

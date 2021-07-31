@@ -40,12 +40,12 @@ function isPresentListRenderer(nodeId) {
 
 function createPageButton(self, page, isActive) {
 	if(isActive) {
-		return R.button({key: page, style: {background: '#ebe5e8', borderBottom: '5px solid ' + window.constants.BRAND_COLOR_DARK, color: '#555', margin: 0, borderRadius: 0}},
+		return R.button({key: page, className: 'page-btn page-btn-active'},
 			page + 1
 		);
 	}
 	return R.button({
-		key: page, className: 'clickable', style: {background: '#fff', color: '#555', margin: 0, borderRadius: 0}, onClick: () => {
+		key: page, className: 'clickable page-btn', onClick: () => {
 			self.changeFilter('p', page, true);
 		}
 	},
@@ -235,21 +235,18 @@ export default class List extends BaseForm {
 				(() => {
 					var itemNum = i;
 					var item = data.items[i];
-
-
 					if(!item.__deleted_901d123f) {
-
 						lines.push(
-							R.div({key: UID(item), className: 'inline-item', style: {display: 'inline-block', width: '80%', marginBottom: 4, marginTop: 4}},
+							R.div({key: UID(item), className: 'inline-editable-item'},
 								React.createElement(FormFull, {ref: this.subFormRef, inlineEditable: true, editable: true, isCompact: true, filters: filters, parentForm: this.props.parentForm, isLookup: this.props.isLookup, list: this, node, initialData: item, overrideOrderData: sorting ? itemNum : -1})
 							)
 						);
 						var btns = [];
 
 						btns.push(R.button({
-							className: 'clickable toolbtn', title: L('DELETE'), key: 'b' + UID(item), style: {color: '#fff', background: window.constants.DELETE_COLOR}, onClick: async () => {
+							className: 'clickable toolbtn danger-btn', title: L('DELETE'), key: 'b' + UID(item), onClick: async () => {
 								if(item.hasOwnProperty('id') && !this.state.noPromptDelete) {
-									await deleteRecord(item.name, node.id, 0, undefined, false, deleteItem);
+									await deleteRecord(item.name, node.id, 0, undefined, false, deleteItem); TODO check deletion
 								}
 								item.__deleted_901d123f = true;
 								this.forceUpdate();
