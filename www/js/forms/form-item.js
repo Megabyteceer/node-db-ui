@@ -137,7 +137,7 @@ export default class FormItem extends BaseForm {
 
 		/** @type any */
 		var itemProps = {};
-		itemProps.className = 'list-item list-item-' + this.props.node.id;
+		itemProps.className = 'list-item form-node-' + this.props.node.id;
 		if(this.props.node.draftable && (data.status !== 1)) {
 			itemProps.className += ' list-item-draft';
 		}
@@ -169,3 +169,5 @@ export default class FormItem extends BaseForm {
 		);
 	}
 }
+
+export {renderItemsButtons};

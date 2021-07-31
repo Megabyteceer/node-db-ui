@@ -9,6 +9,7 @@ export default class BaseForm extends Component {
 		this.filters = Object.assign({}, this.props.filters);
 		this.fieldsRefs = {};
 		this.cancelClick = this.cancelClick.bind(this);
+		this.header = '';
 	}
 
 	UNSAFE_componentWillReceiveProps(newProps) {

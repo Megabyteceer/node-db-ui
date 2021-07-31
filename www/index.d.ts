@@ -9,34 +9,33 @@ interface ComponentProps {
 	[key: string]: any;
 }
 
-
 interface TR {
-	div: (props: ComponentProps, ...children) => Component;
-	form: (props: ComponentProps, ...children) => Component;
-	span: (props: ComponentProps, ...children) => Component;
-	p: (props: ComponentProps, ...children) => Component;
-	img: (props: ComponentProps, ...children) => Component;
-	button: (props: ComponentProps, ...children) => Component;
-	input: (props: ComponentProps, ...children) => Component;
-	label: (props: ComponentProps, ...children) => Component;
-	b: (props: ComponentProps, ...children) => Component;
-	a: (props: ComponentProps, ...children) => Component;
-	br: (props: ComponentProps, ...children) => Component;
-	hr: (props: ComponentProps, ...children) => Component;
-	svg: (props: ComponentProps, ...children) => Component;
-	td: (props: ComponentProps, ...children) => Component;
-	tr: (props: ComponentProps, ...children) => Component;
-	th: (props: ComponentProps, ...children) => Component;
-	tbody: (props: ComponentProps, ...children) => Component;
-	thead: (props: ComponentProps, ...children) => Component;
-	table: (props: ComponentProps, ...children) => Component;
-	polyline: (props: ComponentProps, ...children) => Component;
-	textarea: (props: ComponentProps, ...children) => Component;
-	iframe: (props: ComponentProps, ...children) => Component;
-	h2: (props: ComponentProps, ...children) => Component;
-	h3: (props: ComponentProps, ...children) => Component;
-	h4: (props: ComponentProps, ...children) => Component;
-	h5: (props: ComponentProps, ...children) => Component;
+	div: (props: ComponentProps = null, ...children) => Component;
+	form: (props: ComponentProps = null, ...children) => Component;
+	span: (props: ComponentProps = null, ...children) => Component;
+	p: (props: ComponentProps = null, ...children) => Component;
+	img: (props: ComponentProps = null, ...children) => Component;
+	button: (props: ComponentProps = null, ...children) => Component;
+	input: (props: ComponentProps = null, ...children) => Component;
+	label: (props: ComponentProps = null, ...children) => Component;
+	b: (props: ComponentProps = null, ...children) => Component;
+	a: (props: ComponentProps = null, ...children) => Component;
+	br: (props: ComponentProps = null, ...children) => Component;
+	hr: (props: ComponentProps = null, ...children) => Component;
+	svg: (props: ComponentProps = null, ...children) => Component;
+	td: (props: ComponentProps = null, ...children) => Component;
+	tr: (props: ComponentProps = null, ...children) => Component;
+	th: (props: ComponentProps = null, ...children) => Component;
+	tbody: (props: ComponentProps = null, ...children) => Component;
+	thead: (props: ComponentProps = null, ...children) => Component;
+	table: (props: ComponentProps = null, ...children) => Component;
+	polyline: (props: ComponentProps = null, ...children) => Component;
+	textarea: (props: ComponentProps = null, ...children) => Component;
+	iframe: (props: ComponentProps = null, ...children) => Component;
+	h2: (props: ComponentProps = null, ...children) => Component;
+	h3: (props: ComponentProps = null, ...children) => Component;
+	h4: (props: ComponentProps = null, ...children) => Component;
+	h5: (props: ComponentProps = null, ...children) => Component;
 }
 
 const TReact = typeof React;

@@ -19,6 +19,8 @@ import "./fields/field-19-rich-ditor.js";
 import "./fields/field-20-color.js";
 import "./fields/field-21-file.js";
 
+import "./views/view_5_users.js";
+
 /// #if DEBUG
 import AdminRoleprevsForm from "./admin/admin-roleprevs-form.js";
 // @ts-ignore

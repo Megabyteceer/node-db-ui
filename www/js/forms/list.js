@@ -7,20 +7,6 @@ import FormFull from "./form-full.js";
 import FormItem from "./form-item.js";
 import BaseForm from "./form-mixins.js";
 
-var headerStyle = {
-	verticalAlign: 'middle',
-	fontWeight: 'bold',
-	borderBottom: '3px solid #ddd',
-	padding: '10px 15px'
-};
-var headerStyleNum = {
-	textAlign: 'right',
-	verticalAlign: 'middle',
-	fontWeight: 'bold',
-	borderBottom: '3px solid #ddd',
-	padding: '10px 15px'
-};
-
 const sortByOrder = (a, b) => {
 	return a.order - b.order;
 }
@@ -230,7 +216,6 @@ export default class List extends BaseForm {
 		if(data.items.length > 0) {
 			var sorting = data.items[0].hasOwnProperty('order');
 
-
 			for(var i = 0; i < data.items.length; i++) {
 				(() => {
 					var itemNum = i;
@@ -246,7 +231,7 @@ export default class List extends BaseForm {
 						btns.push(R.button({
 							className: 'clickable toolbtn danger-btn', title: L('DELETE'), key: 'b' + UID(item), onClick: async () => {
 								if(item.hasOwnProperty('id') && !this.state.noPromptDelete) {
-									await deleteRecord(item.name, node.id, 0, undefined, false, deleteItem); TODO check deletion
+									await deleteRecord(item.name, node.id, 0, undefined, false);
 								}
 								item.__deleted_901d123f = true;
 								this.forceUpdate();
@@ -274,17 +259,13 @@ export default class List extends BaseForm {
 								}
 							}
 
-
-
-
-
 							if(_uidM1 !== false) {
 								(() => {
 									var uid = UID(data.items[itemNum]);
 									var itemNumM1 = _itemNumM1;
 									var uidM1 = _uidM1;
 									btns.push(R.button({
-										className: 'clickable toolbtn', title: L('MOVE_UP'), key: 'bu' + UID(item), style: {color: '#fff', background: window.constants.EDIT_COLOR}, onClick: () => {
+										className: 'clickable toolbtn edit-btn', title: L('MOVE_UP'), key: 'bu' + UID(item), onClick: () => {
 											var t = data.items[itemNum];
 											data.items[itemNum] = data.items[itemNumM1];
 											data.items[itemNumM1] = t;
@@ -293,7 +274,6 @@ export default class List extends BaseForm {
 											this.subformsRefs[uidM1].setFieldValue('order', itemNum);
 											this.subformsRefs[uidM1].saveForm();
 											this.forceUpdate();
-
 										}
 									}, renderIcon('arrow-up')));
 								})();
@@ -306,7 +286,7 @@ export default class List extends BaseForm {
 									var uidP1 = _uidP1;
 
 									btns.push(R.button({
-										className: 'clickable toolbtn', title: L('MOVE_DOWN'), key: 'bd' + UID(item), style: {color: '#fff', background: window.constants.EDIT_COLOR}, onClick: () => {
+										className: 'clickable toolbtn edit-btn', title: L('MOVE_DOWN'), key: 'bd' + UID(item), onClick: () => {
 											var t = data.items[itemNum];
 											data.items[itemNum] = data.items[itemNumP1];
 											data.items[itemNumP1] = t;
@@ -324,7 +304,7 @@ export default class List extends BaseForm {
 						}
 
 						lines.push(
-							R.span({key: UID(item) + 'btns', className: 'btns', style: {display: 'inline-block'}},
+							R.span({key: UID(item) + 'btns', className: 'btns'},
 								btns
 							)
 						);
@@ -342,7 +322,7 @@ export default class List extends BaseForm {
 		var createBtn;
 		if(node.canCreate) {
 			createBtn = R.div(null,
-				R.button({style: {background: window.constants.CREATE_COLOR}, title: L('ADD', (node.creationName || node.singleName)), className: 'clickable toolbtn', onClick: () => {data.items.push({}); this.forceUpdate();}},
+				R.button({title: L('ADD', (node.creationName || node.singleName)), className: 'clickable toolbtn create-btn', onClick: () => {data.items.push({}); this.forceUpdate();}},
 					renderIcon('plus')
 				)
 			);
@@ -385,7 +365,7 @@ export default class List extends BaseForm {
 			if(node.canCreate && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
 				if(this.isSlave()) {
 					createButton = R.button({
-						style: {padding: '5px 15px', background: window.constants.CREATE_COLOR}, className: 'clickable', onClick: async () => {
+						className: 'clickable create-button', onClick: async () => {
 							if(this.props.askToSaveParentBeforeCreation) {
 								await this.props.parentForm.saveParentFormBeforeCreation();
 								this.props.parentForm.toggleCreateDialogue();
@@ -397,7 +377,7 @@ export default class List extends BaseForm {
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				} else {
-					createButton = R.button({style: {background: window.constants.CREATE_COLOR, color: '#fff', padding: '15px 40px'}, className: 'clickable', onClick: () => {createRecord(node.id, filters);}},
+					createButton = R.button({className: 'clickable create-button', onClick: () => {createRecord(node.id, filters);}},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				}
@@ -406,10 +386,10 @@ export default class List extends BaseForm {
 			var searchPanel;
 
 			if(!this.props.hideSearch && !this.state.hideSearch && (this.filters.s || data.items.length > 2)) {
-				searchPanel = R.div({style: {display: 'block', border: '1px solid #a8a8a8', marginTop: '10px', borderRadius: '6px'}},
-					R.input({ref: (input) => {this.searchInput = input;}, style: {width: '200px', borderRadius: '6px', verticalAlign: 'middle', padding: '2px 8px', border: 'none', borderRight: '1px solid #a8a8a8', borderTopRightRadius: 0, borderBottomRightRadius: 0}, placeholder: L('SEARCH_LIST'), onChange: this.changeSearch, defaultValue: this.filters.s}),
+				searchPanel = R.div({className: 'list-search'},
+					R.input({ref: (input) => {this.searchInput = input;}, className: 'list-search-input', placeholder: L('SEARCH_LIST'), onChange: this.changeSearch, defaultValue: this.filters.s}),
 					R.a({
-						className: 'clickable', style: {color: '#ccc', verticalAlign: 'middle', fontSize: '120%'}, onClick: (e) => {
+						className: 'clickable toolbtn default-btn', onClick: (e) => {
 							this.clearSearch();
 							sp(e);
 						}
@@ -422,13 +402,9 @@ export default class List extends BaseForm {
 
 
 			if(createButton || searchPanel) {
-				header = R.div({style: {marginBottom: 30, display: 'flex', justifyContent: 'space-between'}},
-					R.div(null,
-						createButton
-					),
-					R.div({style: {}},
-						searchPanel
-					)
+				header = R.div({className: 'list-header'},
+					createButton,
+					searchPanel
 				);
 			}
 		}
@@ -450,21 +426,18 @@ export default class List extends BaseForm {
 
 					var fieldAdmin;
 					if(iAdmin()) {
-						fieldAdmin = React.createElement(FieldAdmin, {field, form: this.ref ? (this.ref.inlineList || this) : this, x: 80});
+						fieldAdmin = React.createElement(FieldAdmin, {field, form: this, x: 80});
 					}
 
 					var rowHeader;
 					if(field.forSearch === 1) {
 						rowHeader = R.span({
-							className: 'clickable', style: {
-								color: (filters.o === field.fieldName) ? '#259' : ''
-							}, onClick: () => {
+							className: (filters.o === field.fieldName) ? 'clickable list-row-header-sorting' : 'clickable', onClick: () => {
 								if(filters.o === field.fieldName) {
 									this.changeFilter('r', filters.r ? undefined : 1, true);
 								} else {
 									this.changeFilter('o', field.fieldName, true);
 								}
-
 							}
 						},
 							field.name,
@@ -476,13 +449,13 @@ export default class List extends BaseForm {
 
 
 					if(this.isVisibleField(field)) {
-						tableHeader.push(R.td({key: field.id, style: (field.fieldType === FIELD_2_INT) ? headerStyleNum : headerStyle},
+						tableHeader.push(R.td({key: field.id, className: (field.fieldType === FIELD_2_INT) ? 'list-row-header list-row-header-num' : 'list-row-header'},
 							rowHeader,
 							fieldAdmin
 						));
 					}
 				});
-				tableHeader.push(R.td({key: 'holder', style: headerStyle}, ' '));
+				tableHeader.push(R.td({key: 'holder', className: 'list-row-header'}, ' '));
 
 
 				var additionalButtons;
@@ -499,7 +472,7 @@ export default class List extends BaseForm {
 					return React.createElement(FormItem, {key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, onClick: this.props.onItemClick ? () => {this.props.onItemClick(item)} : undefined, parentForm: this.props.parentForm, additionalButtons: additionalButtons, hideControlls: hideControlls, isLookup: this.props.isLookup, list: this, node, initialData: item});
 				});
 
-				body = R.table({style: {width: '100%'}},
+				body = R.table({className: 'list-table'},
 					R.thead(null, R.tr(null, tableHeader)),
 					R.tbody({className: 'list-body'}, lines)
 				);
@@ -516,36 +489,33 @@ export default class List extends BaseForm {
 				t2 = L(this.isSlave() ? 'TO_CONTINUE' : 'TO_START');
 			} else {
 				t1 = L('LIST_EMPTY');
-
 			}
 
 			var emptyIcon;
 			if(node.icon) {
-				emptyIcon = R.div({style: {margin: '50px'}},
-					renderIcon((node.icon || 'plus') + (this.isSlave() ? ' fa-3x' : ' fa-5x'))
-				)
+				emptyIcon = renderIcon((node.icon || 'plus') + ((this.isSlave() ? ' fa-3x' : ' fa-5x') + ' list-empty-icon'))
 			}
 
-			body = R.div({style: {color: '#ccc', textAlign: 'center', fontSize: '140%'}},
+			body = R.div({className: 'list-emty'},
 				emptyIcon,
-				t1,
-				R.br(),
-				t2
+				R.div(null, t1),
+				R.div(null, t2)
 			)
 		}
 
-		var paginator = [];
+		var pages = [];
 		var recPerPage;
 		if(this.filters && this.filters.n) {
 			recPerPage = this.filters.n;
 		}
 
 		var totalPages = Math.ceil(data.total / (recPerPage || node.recPerPage));
-		var curPage = parseInt(filters.p | 0);
+		var curPage = parseInt(filters.p) || 0;
 
 		var pageNums = {0: 1, 1: 1, 2: 1};
 
-		for(var p = 0; p <= 2; p++) {
+		let p;
+		for(p = 0; p <= 2; p++) {
 			pageNums[curPage + p] = 1;
 			pageNums[curPage - p] = 1;
 			pageNums[totalPages - 1 - p] = 1;
@@ -555,35 +525,32 @@ export default class List extends BaseForm {
 			p = parseInt(p);
 			if(p >= 0 && p < totalPages) {
 				if((p - prevP) !== 1) {
-					paginator.push(R.span({key: 'dots' + p}, ' ... '));
+					pages.push(R.span({key: 'dots' + p}, ' ... '));
 				}
 				prevP = p;
-				paginator.push(createPageButton(this, p, p === curPage));
+				pages.push(createPageButton(this, p, p === curPage));
 			}
 		}
 
-		if(paginator.length > 1) {
-			paginator = R.div({style: {paddingTop: '10px', marginLeft: 15, display: 'inline-block'}},
-				paginator
+		let paginator;
+		if(pages.length > 1) {
+			paginator = R.span({className: 'list-paginator-items'},
+				pages
 			)
-		} else {
-			paginator = undefined;
 		}
 
 		var footer;
-		var footerText = L('SHOWED_LIST', data.items.length).replace('%', data.total);
+		var paginatorText = L('SHOWED_LIST', data.items.length).replace('%', data.total);
 
 		if(this.filters.s) {
-			footerText += L('SEARCH_RESULTS', this.filters.s);
+			paginatorText += L('SEARCH_RESULTS', this.filters.s);
 		}
 
 		if(data.items.length > 0 && data.items.length < data.total) {
-			footer = R.div({style: {marginTop: this.isSlave() ? 5 : 30, fontSize: '75%'}},
-				footerText,
+			footer = R.span({className: 'list-paginator'},
+				paginatorText,
 				paginator
 			)
-		} else {
-			footer = undefined;
 		}
 
 		var nodeAdmin;
@@ -595,11 +562,11 @@ export default class List extends BaseForm {
 		if(!this.props.isCompact) {
 			var hdr = this.header || this.filters.formTitle;
 			if(hdr) {
-				title = R.h4({style: {color: window.constants.BRAND_COLOR_HEADER, margin: 10}}, hdr);
+				title = R.h4({className: 'form-header'}, hdr);
 			}
 		}
 
-		return R.div(null,
+		return R.div({className: 'list-container form-node-' + node.id},
 			nodeAdmin,
 			title,
 			header,
@@ -609,4 +576,4 @@ export default class List extends BaseForm {
 		);
 	}
 }
-export {isPresentListRenderer};
+export {isPresentListRenderer, registerListRenderer};

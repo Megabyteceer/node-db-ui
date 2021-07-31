@@ -311,7 +311,7 @@ export default class FieldWrap extends Component {
 			fieldAdmin = React.createElement(FieldAdmin, {field, form: this.props.form, x: -10});
 		}
 
-		let className = domId + ' field-wrap';
+		let className = domId + ' field-wrap field-container-name-' + field.fieldName;
 		if(this.hidden
 			/// #if DEBUG
 			&& !this.props.form.showAllDebug

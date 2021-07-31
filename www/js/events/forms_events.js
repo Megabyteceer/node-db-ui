@@ -366,6 +366,10 @@ formsEventsOnLoad[12] = function _languages_onload() {//form12onloadBegin_JS89DW
 	}
 } //form12onloadEnd_JS89DW72SISA887QKJ32IUSL
 
+formsEventsOnSave[52] = async function _enums_onsave() {//form52onsaveBegin_JS89DW72SISA887QKJ32IUSL
+//TODO chec if all values unic
+} //form52onsaveEnd_JS89DW72SISA887QKJ32IUSL
+
 //insertNewhandlersHere_adsqw09
 
 export {

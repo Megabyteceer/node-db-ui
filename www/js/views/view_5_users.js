@@ -1,3 +1,5 @@
+import {renderItemsButtons} from "../forms/form-item.js";
+import {registerListRenderer} from "../forms/list.js";
 import {idToImgURL, renderIcon} from "../utils.js";
 
 (() => {
@@ -23,7 +25,7 @@ import {idToImgURL, renderIcon} from "../utils.js";
 	}
 
 
-	registerListRenderer(5, () => {
+	registerListRenderer(5, function () {
 
 		var node = this.state.node;
 		var data = this.state.data;

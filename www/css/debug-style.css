@@ -75,7 +75,7 @@
 	pointer-events: none;
 	top: 0;
 	right: 25%;
-	color:#fcc;
+	color: #fcc;
 }
 
 .admin-tools-enable-check {
@@ -86,15 +86,19 @@
 	pointer-events: all;
 }
 
-.admin-form-wrap{
+.admin-form-wrap {
 	position: absolute;
 	z-index: 3;
 	height: 34px;
-    display: inline-flex;
-    align-items: center;
+	align-items: center;
 }
 
-.left-bar-group-container>.left-bar-admin-button>.admin-form-wrap{
+.field-wrap .admin-form-wrap {
+	display: inline-flex;
+}
+
+
+.left-bar-group-container>.left-bar-admin-button>.admin-form-wrap {
 	height: 22px;
 }
 
@@ -166,8 +170,8 @@
 }
 
 .admin-controll .clickable:hover {
-	color:#def !important;
-	background:#567 !important;
+	color: #def !important;
+	background: #567 !important;
 }
 
 .debug-panel-panel {
@@ -201,7 +205,7 @@
 
 .debug-panel-background {
 	cursor: pointer;
-	background: rgba(0,0,0,0.6);
+	background: rgba(0, 0, 0, 0.6);
 	position: fixed;
 	top: 0;
 	bottom: 0;
@@ -211,15 +215,16 @@
 }
 
 .debug-panel-sql-btn {
-    padding: 2px;
-    display: inline-block;
-    margin: 2px;
+	padding: 2px;
+	display: inline-block;
+	margin: 2px;
 }
 
 .debug-panel-header {
 	font-size: 140%;
 	margin: 6px
 }
+
 .debug-panel-text {
 	font-weight: bold;
 	color: #070;
@@ -262,8 +267,3 @@
 	width: 120px;
 	white-space: nowrap;
 }
-
-
-
-
-

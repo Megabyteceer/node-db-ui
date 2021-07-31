@@ -295,7 +295,7 @@ export default class FormFull extends eventProcessingMixins {
 		var data = this.currentData;
 		var flds = node.fields;
 
-		var className = 'form-full form-full-' + node.id;
+		var className = 'form-full form-node-' + node.id;
 		if(this.props.isCompact) {
 			className += ' form-compact';
 		}
