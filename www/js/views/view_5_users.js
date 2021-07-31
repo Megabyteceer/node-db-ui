@@ -2,66 +2,44 @@ import {renderItemsButtons} from "../forms/form-item.js";
 import {registerListRenderer} from "../forms/list.js";
 import {idToImgURL, renderIcon} from "../utils.js";
 
-(() => {
 
-	var style = {
-		position: 'relative',
-		border: '1px solid #ccc',
-		borderRadius: 4,
-		marginBottom: 18,
-		marginLeft: 10,
-		padding: 10
-	}
+registerListRenderer(5, function () {
 
-	var textStyle = {
-		fontSize: '90%',
-		color: '#999',
-		marginTop: 10
-	}
-	var infoStyle = {
-		fontSize: '90%',
-		color: '#47f',
-		marginTop: 10
-	}
+	var node = this.state.node;
+	var data = this.state.data;
 
+	return data.items.map((item) => {
 
-	registerListRenderer(5, function () {
-
-		var node = this.state.node;
-		var data = this.state.data;
-
-		return data.items.map((item) => {
-
-			var imgUrl = idToImgURL(item.avatar, 'avatar');
-			var phone;
-			if(item.phone) {
-				phone = R.div({style: infoStyle}, renderIcon('phone'), ' ' + item.public_phone)
-			}
-			var email;
-			if(item.email) {
-				email = R.div({style: infoStyle}, renderIcon('envelope'), ' ',
-					R.a({href: 'mailto:' + item.public_email},
-						item.email
-					)
+		var imgUrl = idToImgURL(item.avatar, 'avatar');
+		var phone;
+		if(item.phone) {
+			phone = R.div({className: 'user-item-info'}, renderIcon('phone'), ' ' + item.public_phone)
+		}
+		var email;
+		if(item.email) {
+			email = R.div({className: 'user-item-info'}, renderIcon('envelope'), ' ',
+				R.a({href: 'mailto:' + item.public_email},
+					item.email
 				)
-			}
+			)
+		}
 
-			return R.div({key: item.id, style: style},
-				R.img({src: imgUrl, style: {height: 80, width: 'auto', borderRadius: '50%'}}),
-				R.div({style: {display: 'inline-block', verticalAlign: 'middle', marginLeft: 20, width: '40%'}},
-					R.h5(null, item.name),
-					R.div({style: textStyle}, item.company)
-				),
-				R.div({style: {display: 'inline-block', verticalAlign: 'bottom', marginLeft: 20, width: '27%'}},
-					phone,
-					email
-				),
-				R.div({style: {position: 'absolute', top: 10, right: 10}},
-					renderItemsButtons(node, item, this.refreshData)
-				)
-			);
-		});
-
+		return R.div({key: item.id, className: 'user-item'},
+			R.img({src: imgUrl, className: 'user-item-image'}),
+			R.div({className: 'user-item-block'},
+				R.h5(null, item.name),
+				R.div({className: 'user-item-text'}, item.company)
+			),
+			R.div({className: 'user-item-block user-item-block-small'},
+				phone,
+				email
+			),
+			R.div({className: 'user-item-controls'},
+				renderItemsButtons(node, item, this.refreshData)
+			)
+		);
 	});
 
-})();
+});
+
+
