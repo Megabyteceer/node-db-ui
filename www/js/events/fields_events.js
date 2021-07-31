@@ -196,6 +196,10 @@ fieldsEvents[680] = function my_records_btn_onChange() {//field680onchangebegin_
 	alert(2);
 } //field680onchangeend_wqdggft
 
+fieldsEvents[738] = function my_records_button_onChange() {//field738onchangebegin_cswhggft
+alert('Button clicked');
+} //field738onchangeend_wqdggft
+
 //insertNewhandlersHere_adsqw09
 
 

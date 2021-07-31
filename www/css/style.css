@@ -1023,14 +1023,31 @@ input[readonly] {
 .field-color-input {
 	vertical-align: middle;
 	width: 130px;
-	display: inline-block
+	display: inline-block;
+	margin: 0 5px;
 }
 
 .field-color-preview-bg {
-	vertical-align: middle;
-	display: inline-block;
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAKElEQVQYV2OcM2fOfwY0kJycjC7EwDgUFP7//x/DM3PnzsX0zBBQCADu1zEWG5C/XgAAAABJRU5ErkJggg==) repeat;
+	background: url(data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAMAAADz0U65AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRFzs7O////TowvlgAAABdJREFUeNpiYAACRiBgwMMgJA8EAAEGAATIACGnjpkGAAAAAElFTkSuQmCC) repeat;
 	border-radius: 5px;
+	width: unset;
+}
+
+.form-edit .field-color-preview-bg {
+	pointer-events: none;
+	margin-left: -135px;
+}
+
+.field-color-input-alpha-slider {
+	cursor: pointer;
+}
+
+.field-color-input-alpha-input {
+	width: 66px;
+}
+
+.field-color-input-picker {
+	cursor: pointer;
 }
 
 .form-compact .field-color-preview-bg {
@@ -1042,7 +1059,7 @@ input[readonly] {
 	-webkit-color-adjust: exact;
 	margin: 6px;
 	height: 24px;
-	width: 108px;
+	width: 116px;
 	border: 1px solid #777;
 	border-radius: 4px;
 }

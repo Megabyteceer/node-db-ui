@@ -45,17 +45,15 @@ registerFieldClass(FIELD_20_COLOR, class ColorField extends fieldMixins {
 
 	render() {
 		let background = intToColor(this.state.color, this.state.alpha);
-		let preview = R.div({className: 'field-color-input'},
-			R.div({className: "field-color-preview-bg"},
-				R.div({className: 'field-color-preview', style: {background}})
-			)
+		let preview = R.div({className: "field-color-input field-color-preview-bg"},
+			R.div({className: 'field-color-preview', style: {background}})
 		);
 		if(this.props.isEdit) {
 			return R.div(null,
-				R.input({className: 'field-color-input', type: 'color', defaultValue: '#' + (this.state.color & 0xFFFFFF).toString(16), onChange: this.onChangeColor}),
-				R.input({className: 'field-color-input', type: 'number', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
-				R.input({className: 'field-color-input', type: 'range', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
-				preview
+				R.input({className: 'field-color-input field-color-input-picker', type: 'color', defaultValue: '#' + (this.state.color & 0xFFFFFF).toString(16), onChange: this.onChangeColor}),
+				preview,
+				R.input({className: 'field-color-input field-color-input-alpha-slider', type: 'range', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha}),
+				R.input({className: 'field-color-input field-color-input-alpha-input', type: 'number', min: 0, max: 255, value: this.state.alpha, onChange: this.onChangeAlpha})
 			);
 		} else {
 			return preview;

@@ -300,6 +300,10 @@ export default class FormFull extends eventProcessingMixins {
 			className += ' form-compact';
 		}
 
+		if(this.props.editable) {
+			className += ' form-edit';
+		}
+
 		var forcedValues = this.props.filters;
 		var currentTab;
 		var currentTabName;
