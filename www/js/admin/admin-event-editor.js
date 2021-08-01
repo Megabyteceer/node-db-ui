@@ -30,48 +30,6 @@ function admin_editSource(handler, node_, field, form) {
 	}), false, false, true);
 }
 
-var ExcludedIntelliSenseTriggerKeys = {
-	"9": "tab",
-	"13": "enter",
-	"16": "shift",
-	"17": "ctrl",
-	"18": "alt",
-	"19": "pause",
-	"20": "capslock",
-	"27": "escape",
-	"33": "pageup",
-	"34": "pagedown",
-	"35": "end",
-	"36": "home",
-	"37": "left",
-	"38": "up",
-	"39": "right",
-	"40": "down",
-	"45": "insert",
-	"46": "delete",
-	"91": "left window key",
-	"92": "right window key",
-	"93": "select",
-	"107": "add",
-	"109": "subtract",
-	"111": "divide",
-	"112": "f1",
-	"113": "f2",
-	"114": "f3",
-	"115": "f4",
-	"116": "f5",
-	"117": "f6",
-	"118": "f7",
-	"119": "f8",
-	"120": "f9",
-	"121": "f10",
-	"122": "f11",
-	"123": "f12",
-	"144": "numlock",
-	"145": "scrolllock",
-	"186": "semicolon"
-};
-
 var tipProps = [
 	'rec_creation',
 	'rec_update',
@@ -96,6 +54,14 @@ var tipProps = [
 	'showFooter(',
 	'saveForm('
 ];
+
+const keysToTip = {
+	'.': true,
+	'"': true,
+	'(': true,
+	"'": true
+
+}
 
 function javascriptHint(cm, form) {
 
@@ -251,7 +217,8 @@ class AdminEventEditor extends Component {
 			});
 			this.editor.setSize('900px', '500px');
 			this.editor.on("keyup", (editor, event) => {
-				if((!event.ctrlKey || event.keyCode === 32) && !ExcludedIntelliSenseTriggerKeys[(event.keyCode || event.which).toString()]) {
+				let k = event.key.toLowerCase();
+				if((k.length === 1) && ((k === " " && event.ctrlKey) || (k >= 'a' && k <= 'z') || keysToTip[k])) {
 					// @ts-ignore
 					window.CodeMirror.commands.autocomplete(editor, null, {
 						completeSingle: false
