@@ -409,7 +409,6 @@ input[readonly] {
 .left-bar-body {
 	width: 100%;
 	box-shadow: 5px 0px 6px -3px #aaa;
-	min-height: 600px;
 	vertical-align: top;
 	overflow-x: hidden;
 }
@@ -439,7 +438,7 @@ input[readonly] {
 
 .left-bar-item-active {
 	background: #dfefff;
-	border-left: 5px solid var(--BRAND_COLOR_DARK);
+	border-left: 5px solid var(--CREATE_COLOR);
 	padding-left: 0;
 }
 
@@ -464,6 +463,17 @@ input[readonly] {
 .left-bar-collapse-button {
 	padding-top: 5px;
 	padding-bottom: 5px;
+}
+
+.left-bar-children>.left-bar-group-container {
+	opacity: 0.9;
+	margin: 5px;
+	border-radius: 5px;
+	overflow: hidden;
+}
+
+.left-bar-body a:last-of-type .left-bar-item {
+	border-bottom: hidden;
 }
 
 .back-drop {

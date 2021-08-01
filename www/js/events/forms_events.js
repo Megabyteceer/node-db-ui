@@ -154,12 +154,8 @@ formsEventsOnLoad[4] = function _nodes_onload() {//form4onloadBegin_JS89DW72SISA
 formsEventsOnSave[4] = async function _nodes_onsave() {//form4onsaveBegin_JS89DW72SISA887QKJ32IUSL
 
 	if(!this.fieldValue("isDoc")) {
-		var v = this.fieldValue("name");
-		var v2 = this.fieldValue("singleName");
-		if(v && !v2)
-			this.setFieldValue("singleName", v);
-		if(!v && v2)
-			this.setFieldValue("name", v2);
+		var name = this.fieldValue("name");
+		this.setFieldValue("singleName", name);
 	}
 	else {
 		if(/[^a-zA-Z_0-9]/.test(this.fieldValue('tableName'))) {

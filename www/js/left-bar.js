@@ -96,6 +96,10 @@ class BarItem extends Component {
 		) {
 			return R.div(null);
 		}
+		/*
+		if(item.children && item.children.length === 1) {
+			return React.createElement(BarItem, {item: item.children[0], key: this.props.key, level: this.props.level});
+		}*/
 
 		var itemsIcon = R.div({className: "left-bar-item-icon"},
 			renderIcon(item.icon + (item.isDoc ? ' brand-color' : ' noicon'))
@@ -103,7 +107,9 @@ class BarItem extends Component {
 
 		let className = 'left-bar-item ' + (item.isDoc ? 'left-bar-item-doc' : 'left-bar-group');
 
-		if(this.props.active) {
+		const isActive = isCurrentlyShowedLeftbarItem(item);
+
+		if(isActive) {
 			className += ' left-bar-item-active unclickable';
 		}
 
@@ -133,7 +139,7 @@ class BarItem extends Component {
 
 		const isMustBeExpandedVal = isMustBeExpanded(this.props.item);
 		if(!isMustBeExpandedVal) {
-			if(!this.props.active) {
+			if(!isActive) {
 				className += ' clickable';
 			}
 		} else {
@@ -197,14 +203,13 @@ function renderItemsArray(itemsArray, level, item) {
 	var ret = [];
 
 	for(var k in itemsArray) {
-		var i = itemsArray[k];
-		if(typeof i === 'string') {
+		var item = itemsArray[k];
+		if(typeof item === 'string') {
 			if(!collapsed) {
-				ret.push(R.h5({key: ret.length, className: 'left-bar-tabs-header'}, i));
+				ret.push(R.h5({key: ret.length, className: 'left-bar-tabs-header'}, item));
 			}
 		} else {
-			var itemActive = isCurrentlyShowedLeftbarItem(i);
-			ret.push(React.createElement(BarItem, {item: i, key: ret.length, level: level, active: itemActive}));
+			ret.push(React.createElement(BarItem, {item, key: ret.length, level}));
 		}
 	}
 	return ret;
