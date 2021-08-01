@@ -1,4 +1,4 @@
-import moment from "./../lib/moment/dist/moment.js";
+import moment from "./../node_modules/moment/dist/moment.js";
 import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, toReadableDate, toReadableDatetime, toReadableTime} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";

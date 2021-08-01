@@ -1,3 +1,7 @@
+Rename lib to modules removesymlink. Host modules via nginx.
+
+Build modules wrapper via webpack. Importbmodules from wrapper.
+
 Make selenium tests for basic operations
 
 модальные формы для редактирования админских вещей. (admin.popup заменить)
@@ -24,6 +28,8 @@ try mysql.createPool
 
 captcha
 
+Обернуть все клиентские хендлеры в класс - наследник фуллформы чтобы подсказки по коду работали в вскоде
+
 Generate small icons for all image fields
 
 Lookup nto1 and ntom to user gives access for user if field marked as access opener. Keep such a fields in prevsFields property. Use it in messages.
@@ -33,3 +39,10 @@ Linemaster list. render items one by one with delay
 проверить все TODO
 
 extendEditor доки
+
+Use mysql>Alter table students ADD FULLTEXT (first_name, last_name);
+mysql>Select * from students where match(first_name, last_name) AGAINST (‘Jones’);
+
+
+
+

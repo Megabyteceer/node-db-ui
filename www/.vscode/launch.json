@@ -14,7 +14,7 @@
 			"sourceMaps": false,
 			"skipFiles": [
 				"<node_internals>/**",
-				"**/lib/**"
+				"**/node_modules/**"
 			],
 			"vueComponentPaths": [],
 			"enableContentValidation": false,

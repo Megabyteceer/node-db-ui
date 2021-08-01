@@ -2,10 +2,10 @@ $(function () {
 	window.exports = {};
 	window.module = {};
 	Promise.all([
-		import('../js/lib/bootstrap/dist/js/bootstrap.js').then((m) => {
+		import('../js/node_modules/bootstrap/dist/js/bootstrap.js').then((m) => {
 			window.Bootstrap = window.module.exports;
 		}),
-		import('../js/lib/@popperjs/core/dist/umd/popper.js').then((m) => {
+		import('../js/node_modules/@popperjs/core/dist/umd/popper.js').then((m) => {
 			window.Popper = window.exports;
 		})
 	]).then(() => {

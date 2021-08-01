@@ -1,6 +1,6 @@
 ﻿
 
-import moment from "./lib/moment/dist/moment.js";
+import moment from "./node_modules/moment/dist/moment.js";
 import {clearForm, getData, goToPageByHash, L, loactionToHash, renderIcon, showForm} from "./utils.js";
 import Select from "./components/select.js";
 import admin from "./admin/admin-utils.js";

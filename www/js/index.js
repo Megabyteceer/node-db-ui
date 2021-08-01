@@ -1,19 +1,19 @@
 /// #if DEBUG
-import './lib/react/umd/react.development.js';
-import './lib/react-dom/umd/react-dom.development.js';
-import './lib/promise-polyfill/dist/polyfill.js';
+import './node_modules/react/umd/react.development.js';
+import './node_modules/react-dom/umd/react-dom.development.js';
+import './node_modules/promise-polyfill/dist/polyfill.js';
 
 //TODO:  remove
 window.constants = {};
 
 /*
 /// #endif
-import('./lib/react/umd/react.production.min.js');
-import('./lib/react-dom/umd/react-dom.production.min.js');
+import('./node_modules/react/umd/react.production.min.js');
+import('./node_modules/react-dom/umd/react-dom.production.min.js');
 //*/
 
-import './lib/jquery/dist/jquery.js'
-import Cropper from "./lib/cropperjs/dist/cropper.esm.js";
+import './node_modules/jquery/dist/jquery.js'
+import Cropper from "./node_modules/cropperjs/dist/cropper.esm.js";
 
 window.Component = React.Component;
 
@@ -43,26 +43,26 @@ window.require = function (name) {
 };
 
 Promise.all([
-	import("./lib/react-highlight-words/dist/main.umd.js").then((m) => {
+	import("./node_modules/react-highlight-words/dist/main.umd.js").then((m) => {
 		window.Highlighter = window.module.exports;
 	})
 ]).then(() => {
 	Promise.all([
-		import('./lib/codemirror/lib/codemirror.js').then(() => {
+		import('./node_modules/codemirror/lib/codemirror.js').then(() => {
 			window.CodeMirror = window.module.exports;
 		}),
-		import("./lib/moment/dist/moment.js").then((m) => {
+		import("./node_modules/moment/dist/moment.js").then((m) => {
 			window.moment = m.default;
 		})
 	]).then(() => {
 		Promise.all([
-			import('./lib/codemirror/addon/hint/javascript-hint.js'),
-			import('./lib/codemirror/addon/hint/show-hint.js'),
-			import('./lib/codemirror/mode/javascript/javascript.js'),
-			import("./lib/react-datetime/dist/react-datetime.cjs.js").then(() => {
+			import('./node_modules/codemirror/addon/hint/javascript-hint.js'),
+			import('./node_modules/codemirror/addon/hint/show-hint.js'),
+			import('./node_modules/codemirror/mode/javascript/javascript.js'),
+			import("./node_modules/react-datetime/dist/react-datetime.cjs.js").then(() => {
 				window.Datetime = window.module.exports.default;
 			}),
-			import("./lib/react-cropper/dist/react-cropper.umd.js").then(() => {
+			import("./node_modules/react-cropper/dist/react-cropper.umd.js").then(() => {
 				window.ReactCropper = window.exports.default;
 			})
 		]).then(() => {
