@@ -1,4 +1,4 @@
-import moment from "./../node_modules/moment/dist/moment.js";
+import {moment, ReactDatetimeClass} from "../libs/libs.js";
 import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, toReadableDate, toReadableDatetime, toReadableTime} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
@@ -6,7 +6,6 @@ import fieldMixins from "./field-mixins.js";
 function isSameDay(val, d) {
 	if(!d || !val) return false;
 	return d.date() === val.date() && d.month() === val.month() && d.year() === val.year();
-
 };
 
 class dateFieldMixins extends fieldMixins {
@@ -155,7 +154,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 		return val.format(innerDatetimeFormat);
 	}
 
-	focusOverride() {
+	focus() {
 		// @ts-ignore
 		ReactDOM.findDOMNode(this.timeRef).querySelector('input').focus();
 	}
@@ -242,10 +241,10 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 			},
 				R.div({
 					className: "field-date-time-time"
-				}, React.createElement(Datetime, inputsProps1)),
+				}, React.createElement(ReactDatetimeClass, inputsProps1)),
 				R.div({
 					className: "field-date-time-date"
-				}, React.createElement(Datetime, inputsProps2))
+				}, React.createElement(ReactDatetimeClass, inputsProps2))
 			);
 		} else {
 			return toReadableDatetime(value);

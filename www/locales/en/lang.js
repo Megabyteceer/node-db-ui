@@ -6,6 +6,7 @@ import {initDictionary} from "../../js/utils.js";
 		'NO_TRANSLATION': 'No translation for key "%"',
 		'OK': 'Ok',
 		'CANCEL': 'Cancel',
+		'UPLOAD_ERROR': 'Uploading error',
 		'CONNECTION_ERR': 'Connection error',
 		'CHECK_CONNECTION': 'Please check you connection.',
 		'SURE_DELETE': 'A you sure, you want to delete %',

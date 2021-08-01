@@ -1,7 +1,6 @@
 
 import R from "react-dom";
 import React, { Component as C, Component } from "react";
-import { moment as m } from "moment";
 
 interface ComponentProps {
 	className?: string;
@@ -41,8 +40,6 @@ interface TR {
 const TReact = typeof React;
 
 declare global {
-	const moment = m;
-	const Datetime;
 	const Component = C;
 	const ReactDOM: TReactDOM;
 	const React: TReact;
@@ -53,7 +50,6 @@ declare global {
 
 	interface Window {
 		reloadParentIfSomethingUpdated_qwi012d: Function;
-		ReactCropper: any;
 		currentUserData: any;
 		currentFormParameters: any;
 		__corePath: string;

@@ -1235,8 +1235,11 @@ input[readonly] {
 	font-size: 75%;
 }
 
-
-
+.user-avatar {
+	width: 50px;
+	border-radius: 50%;
+	border: 3px solid var(--BRAND_COLOR_LIGHT);
+}
 
 
 

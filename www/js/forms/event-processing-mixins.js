@@ -150,7 +150,6 @@ export default class eventProcessingMixins extends BaseForm {
 	}
 
 	focusField(fieldName) {
-
 		this.getField(fieldName).focus();
 	}
 

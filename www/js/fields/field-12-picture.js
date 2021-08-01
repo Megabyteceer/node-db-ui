@@ -2,6 +2,7 @@ import {checkFileSize, idToImgURL, L, myAlert, renderIcon, serializeForm, submit
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 import Modal from "../modal.js";
+import {ReactCropper} from "../libs/libs.js";
 
 registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
 
@@ -13,7 +14,7 @@ registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
 		return !this.cropperBody.references.fileInput.value && !this.state.value;
 	}
 
-	focusOverride() {
+	focus() {
 		this.cropperBody.references.selectButton.focus();
 	}
 
@@ -102,7 +103,9 @@ class CropperFieldBody extends Component {
 	async save() {
 		if(this.state.cropResult) {
 			let form = ReactDOM.findDOMNode(this.references.form);
-			return submitData('api/uploadImage', serializeForm(form), true);
+			return submitData('api/uploadImage', serializeForm(form), true).catch((er) => {
+				myAlert(L('UPLOAD_ERROR'));
+			});
 		} else if(this.state.cleared) {
 			return '';
 		}
@@ -130,9 +133,6 @@ class CropperFieldBody extends Component {
 
 				selectedImage.onload = () => {
 
-
-
-
 					var field = this.props.field;
 					var w = Math.floor(field.maxlen / 10000);
 					var h = field.maxlen % 10000;
@@ -150,7 +150,7 @@ class CropperFieldBody extends Component {
 						}
 
 						myAlert(R.div({className: 'image-copper-popup'},
-							React.createElement(window.ReactCropper, {
+							React.createElement(ReactCropper, {
 								zoomable: false,
 								style: {margin: 'auto', height: cropperH, width: cropperW},
 								aspectRatio: w / h,

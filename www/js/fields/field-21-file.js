@@ -18,7 +18,7 @@ registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
 		return !this.fileFormBodyRef.fileInputRef.value && !this.state.value;
 	}
 
-	focusOverride() {
+	focus() {
 		this.fileFormBodyRef.selectButtonRef.focus();
 	}
 

@@ -1,6 +1,6 @@
-Rename lib to modules removesymlink. Host modules via nginx.
+datetime clear does not work
 
-Build modules wrapper via webpack. Importbmodules from wrapper.
+Build modules wrapper via webpack. Import modules from wrapper.
 
 Make selenium tests for basic operations
 

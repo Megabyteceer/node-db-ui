@@ -1,10 +1,8 @@
-﻿
-
-import moment from "./node_modules/moment/dist/moment.js";
-import {clearForm, getData, goToPageByHash, L, loactionToHash, renderIcon, showForm} from "./utils.js";
+﻿import {clearForm, getData, goToPageByHash, idToImgURL, L, loactionToHash, renderIcon, showForm} from "./utils.js";
 import Select from "./components/select.js";
 import admin from "./admin/admin-utils.js";
 import {ENV} from "./main-frame.js";
+import {moment} from "./libs/libs.js";
 
 var currentUserData;
 
@@ -103,8 +101,9 @@ export default class User extends Component {
 					renderIcon('sign-in fa-2x')
 				)
 			} else {
+				let imgUrl = idToImgURL(this.state.avatar, 'avatar');
 				btn1 = R.a({href: loactionToHash(5, this.state.id, undefined, true), title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn'},
-					renderIcon('user fa-2x')
+					R.img({className: 'user-avatar', src: imgUrl})
 				);
 				btn2 = R.a({href: 'login', title: L('LOGOUT'), className: 'clickable top-bar-user-btn'},
 					renderIcon('sign-out fa-2x')

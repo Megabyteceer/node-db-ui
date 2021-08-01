@@ -1,3 +1,4 @@
+import {moment, ReactDatetimeClass} from "../libs/libs.js";
 import {innerDatetimeFormat, readableDateFormat, registerFieldClass, toReadableDate} from "../utils.js";
 import {dateFieldMixins} from "./field-4-datetime.js";
 
@@ -17,7 +18,8 @@ registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 		return val.format(innerDatetimeFormat);
 	}
 
-	focusOverride() {
+	focus() {
+		// @ts-ignore
 		ReactDOM.findDOMNode(this.refToInput).querySelector('input').focus();
 	}
 
@@ -47,7 +49,7 @@ registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 			return R.div({
 				title: (this.props.isCompact ? field.name : '')
 			},
-				React.createElement(Datetime, inputsProps)
+				React.createElement(ReactDatetimeClass, inputsProps)
 			);
 
 		} else {

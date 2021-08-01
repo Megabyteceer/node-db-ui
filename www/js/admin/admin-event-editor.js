@@ -1,3 +1,4 @@
+import {CodeMirror} from "../libs/libs.js";
 import Modal from "../modal.js";
 import {getData, L, myAlert, renderIcon, submitData} from "../utils.js";
 
@@ -104,13 +105,13 @@ function javascriptHint(cm, form) {
 	}
 
 	// @ts-ignore
-	let jsList = window.CodeMirror.hint.javascript.call(form, cm);
+	let jsList = CodeMirror.hint.javascript.call(form, cm);
 	if(jsList && jsList.list) {
 		list = list.concat(jsList.list);
 	}
 	return {
-		from: window.CodeMirror.Pos(cur.line, from),
-		to: window.CodeMirror.Pos(cur.line, to),
+		from: CodeMirror.Pos(cur.line, from),
+		to: CodeMirror.Pos(cur.line, to),
 		list
 	};
 }
@@ -169,7 +170,7 @@ class AdminEventEditor extends Component {
 			var ta = ReactDOM.findDOMNode(ref);
 			this.textareaRef = ref;
 			// @ts-ignore
-			this.editor = window.CodeMirror.fromTextArea(ta, {
+			this.editor = CodeMirror.fromTextArea(ta, {
 				mode: {name: "javascript", globalVars: true},
 				matchBrackets: true,
 				autofocus: true,
@@ -220,7 +221,7 @@ class AdminEventEditor extends Component {
 				let k = event.key.toLowerCase();
 				if((k.length === 1) && ((k === " " && event.ctrlKey) || (k >= 'a' && k <= 'z') || keysToTip[k])) {
 					// @ts-ignore
-					window.CodeMirror.commands.autocomplete(editor, null, {
+					CodeMirror.commands.autocomplete(editor, null, {
 						completeSingle: false
 					});
 				}

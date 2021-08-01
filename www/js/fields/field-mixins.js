@@ -1,3 +1,4 @@
+import {Highlighter} from "../libs/libs.js";
 
 export default class fieldMixins extends Component {
 
@@ -17,7 +18,7 @@ export default class fieldMixins extends Component {
 			const list = this.props.form.props.list;
 			if(list && list.filters && list.filters.s) {
 
-				return React.createElement(window.Highlighter, {
+				return React.createElement(Highlighter, {
 
 					highlightClassName: 'mark-search',
 					searchWords: [(typeof list.filters.s === 'string') ? list.filters.s : String(list.filters.s)],
@@ -30,14 +31,9 @@ export default class fieldMixins extends Component {
 	}
 
 	focus() {
-		if(this.focusOverride) {
-			this.focusOverride();
-		} else {
-			if(this.refToInput) {
-				ReactDOM.findDOMNode(this.refToInput).focus();
-			} else {
-				return false;
-			}
+		if(this.refToInput) {
+			// @ts-ignore
+			ReactDOM.findDOMNode(this.refToInput).focus();
 		}
 	}
 
