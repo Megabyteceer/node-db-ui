@@ -701,9 +701,8 @@ input[readonly] {
 	width: 25%;
 	padding-right: 20px;
 	color: var(--TEXT_COLOR);
-	display: inline-flex;
-	justify-content: flex-end;
-	align-items: center;
+	display: inline-block;
+	text-align: right;
 }
 
 .field-wrap-help-container {

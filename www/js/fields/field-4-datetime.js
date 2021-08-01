@@ -159,6 +159,11 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 		ReactDOM.findDOMNode(this.timeRef).querySelector('input').focus();
 	}
 
+	clearValue() {
+		this.setValue(null);
+		this.props.wrapper.valueListener(null, true, this);
+	}
+
 	render() {
 
 		var field = this.props.field;
@@ -201,8 +206,9 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 
 						this.setValue(concatedVal);
 						this.props.wrapper.valueListener(concatedVal, true, this);
+					} else {
+						this.clearValue();
 					}
-
 				}
 			};
 
@@ -233,6 +239,8 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 
 						this.setValue(concatedVal);
 						this.props.wrapper.valueListener(concatedVal, true, this);
+					} else {
+						this.clearValue();
 					}
 				}
 			};
