@@ -1,5 +1,5 @@
-import {moment, ReactDatetimeClass} from "../libs/libs.js";
-import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, toReadableDate, toReadableDatetime, toReadableTime} from "../utils.js";
+import {moment} from "../libs/libs.js";
+import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDatetime, toReadableTime} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 
@@ -9,6 +9,21 @@ function isSameDay(val, d) {
 };
 
 class dateFieldMixins extends fieldMixins {
+
+	constructor(props) {
+		super(props);
+		this.importReactDateTime();
+
+	}
+
+	importReactDateTime() {
+		if(!this.ReactDatetimeClass) {
+			import('../libs/react-datetime.js').then((module) => {
+				this.ReactDatetimeClass = module.ReactDatetimeClass;
+				this.forceUpdate();
+			});
+		}
+	}
 
 	setValue(val) {
 		if(val) {
@@ -165,6 +180,9 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 	}
 
 	render() {
+		if(!this.ReactDatetimeClass) {
+			return renderIcon('cog fa-spin');
+		}
 
 		var field = this.props.field;
 
@@ -249,10 +267,10 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 			},
 				R.div({
 					className: "field-date-time-time"
-				}, React.createElement(ReactDatetimeClass, inputsProps1)),
+				}, React.createElement(this.ReactDatetimeClass, inputsProps1)),
 				R.div({
 					className: "field-date-time-date"
-				}, React.createElement(ReactDatetimeClass, inputsProps2))
+				}, React.createElement(this.ReactDatetimeClass, inputsProps2))
 			);
 		} else {
 			return toReadableDatetime(value);

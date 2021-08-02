@@ -1,4 +1,3 @@
-datetime clear does not work
 
 Build modules wrapper via webpack. Import modules from wrapper.
 

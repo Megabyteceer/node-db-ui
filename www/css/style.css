@@ -1240,6 +1240,11 @@ input[readonly] {
 	border: 3px solid var(--BRAND_COLOR_LIGHT);
 }
 
+.form-item-row .field-container-id-655 img {
+	border-radius: 50%;
+
+}
+
 
 
 

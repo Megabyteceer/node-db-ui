@@ -1,4 +1,3 @@
-import {CodeMirror} from "../libs/libs.js";
 import Modal from "../modal.js";
 import {getData, L, myAlert, renderIcon, submitData} from "../utils.js";
 
@@ -115,6 +114,7 @@ function javascriptHint(cm, form) {
 		list
 	};
 }
+let CodeMirror;
 
 class AdminEventEditor extends Component {
 
@@ -122,6 +122,12 @@ class AdminEventEditor extends Component {
 		super(props);
 		this.getTextareaRef = this.getTextareaRef.bind(this);
 		this.saveClick = this.saveClick.bind(this);
+		if(!CodeMirror) {
+			import("../libs/code-mirror.js").then((module) => {
+				CodeMirror = module.CodeMirror;
+				this.forceUpdate();
+			});
+		}
 	}
 
 	getPostData() {
@@ -231,8 +237,7 @@ class AdminEventEditor extends Component {
 	}
 
 	render() {
-		var src = '';
-		if(!this.state) {
+		if(!this.state || !CodeMirror) {
 			return R.div();
 		}
 

@@ -2,7 +2,6 @@ import {checkFileSize, idToImgURL, L, myAlert, renderIcon, serializeForm, submit
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 import Modal from "../modal.js";
-import {ReactCropper} from "../libs/libs.js";
 
 registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
 
@@ -130,57 +129,59 @@ class CropperFieldBody extends Component {
 				_this.setState({waiting: 0, src: reader.result, cropResult: false});
 
 				var selectedImage = new Image();
+				const cropperLoader = import('../libs/react-cropper.js');
 
 				selectedImage.onload = () => {
+					cropperLoader.then((module) => {
+						const ReactCropper = module.ReactCropper;
+						var field = this.props.field;
+						var w = Math.floor(field.maxlen / 10000);
+						var h = field.maxlen % 10000;
 
-					var field = this.props.field;
-					var w = Math.floor(field.maxlen / 10000);
-					var h = field.maxlen % 10000;
-
-					if((w === selectedImage.width) && (h === selectedImage.height)) {
-						this._cropImage(true, reader.result);
-					} else {
+						if((w === selectedImage.width) && (h === selectedImage.height)) {
+							this._cropImage(true, reader.result);
+						} else {
 
 
-						var cropperW = 900;
-						var cropperH = 900 / w * h;
-						if(cropperH > 350) {
-							cropperH = 350;
-							cropperW = 350 / h * w;
-						}
+							var cropperW = 900;
+							var cropperH = 900 / w * h;
+							if(cropperH > 350) {
+								cropperH = 350;
+								cropperW = 350 / h * w;
+							}
 
-						myAlert(R.div({className: 'image-copper-popup'},
-							React.createElement(ReactCropper, {
-								zoomable: false,
-								style: {margin: 'auto', height: cropperH, width: cropperW},
-								aspectRatio: w / h,
-								preview: '.image-copper-preview',
-								guides: false,
-								src: reader.result,
-								ref: (ref) => {
-									this.cropper = ref;
-								}
-							}),
-							R.div({className: 'image-copper-controls'},
-								R.button(
-									{className: 'clickable image-copper-crop-btn', onClick: this._cropImage},
-									renderIcon('check'),
-									L('APPLY')
-								),
-								R.button(
-									{className: 'clickable image-copper-cancel-btn', onClick: this._cancel},
-									renderIcon('times'),
-									L('CANCEL')
-								),
-								R.div(
-									{className: 'box', style: {margin: '30px auto', width: w, height: h}},
-									L('PREVIEW'),
-									R.div({className: 'image-copper-preview', style: {width: w, height: h}})
+							myAlert(R.div({className: 'image-copper-popup'},
+								React.createElement(ReactCropper, {
+									zoomable: false,
+									style: {margin: 'auto', height: cropperH, width: cropperW},
+									aspectRatio: w / h,
+									preview: '.image-copper-preview',
+									guides: false,
+									src: reader.result,
+									ref: (ref) => {
+										this.cropper = ref;
+									}
+								}),
+								R.div({className: 'image-copper-controls'},
+									R.button(
+										{className: 'clickable image-copper-crop-btn', onClick: this._cropImage},
+										renderIcon('check'),
+										L('APPLY')
+									),
+									R.button(
+										{className: 'clickable image-copper-cancel-btn', onClick: this._cancel},
+										renderIcon('times'),
+										L('CANCEL')
+									),
+									R.div(
+										{className: 'box', style: {margin: '30px auto', width: w, height: h}},
+										L('PREVIEW'),
+										R.div({className: 'image-copper-preview', style: {width: w, height: h}})
+									)
 								)
-							)
-						), 1, 0, 1);
-					}
-
+							), 1, 0, 1);
+						}
+					});
 				};
 				// @ts-ignore
 				selectedImage.src = reader.result;
