@@ -10,6 +10,9 @@ const {isUserHaveRole} = require("./www/both-side-utils.js");
 require('./core/locale.js');
 const {mysqlDebug} = require("./core/mysql-connection.js");
 
+const Promise = require('promise-polyfill');
+global.Promise = Promise;
+
 server.on('request', (req, res) => {
 	if(req.method === 'POST') {
 		let handler = req.url.substr(6);
