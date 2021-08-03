@@ -1,6 +1,3 @@
-
-Build modules wrapper via webpack. Import modules from wrapper.
-
 Make selenium tests for basic operations
 
 модальные формы для редактирования админских вещей. (admin.popup заменить)

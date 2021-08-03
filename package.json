@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "keywords": [
+    "CRUD",
+    "database UI"
+  ],
   "scripts": {
     "build-dev-libs": "node www/webpack.build-dev-libs.js",
-    "test": "echo 'Error: no test specified' && exit 1"
+    "test": "jest --detectOpenHandles"
   },
   "author": "",
   "license": "MIT",
@@ -30,7 +34,13 @@
     "summernote": "^0.8.18"
   },
   "devDependencies": {
+    "chromedriver": "^92.0.0",
+    "jest": "^27.0.6",
     "promise-polyfill": "^8.2.0",
+    "selenium-webdriver": "^4.0.0-beta.4",
     "webpack": "^5.47.1"
+  },
+  "jest": {
+    "verbose": true
   }
 }
