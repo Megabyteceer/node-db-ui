@@ -1,3 +1,5 @@
+import {R} from "js/entry.js";
+import {Component} from "react";
 import {ENV} from "../main-frame.js";
 import Modal from "../modal.js";
 import {checkFileSize, getReadableUploadSize, idToFileUrl, L, renderIcon, serializeForm, submitData} from "../utils.js";

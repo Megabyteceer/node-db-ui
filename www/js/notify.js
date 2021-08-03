@@ -1,3 +1,6 @@
+import {Component} from "react";
+import {R} from "./entry.js";
+
 var instance;
 
 var stack = [];

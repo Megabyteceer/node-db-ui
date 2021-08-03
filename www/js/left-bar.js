@@ -1,5 +1,7 @@
+import {Component} from "react";
 import FieldAdmin from "./admin/field-admin.js";
 import NodeAdmin, {createNodeForMenuItem} from "./admin/node-admin.js";
+import {R} from "./entry.js";
 import {iAdmin} from "./user.js";
 import {isLitePage, L, loactionToHash, renderIcon, setFormFilter, sp} from "./utils.js";
 

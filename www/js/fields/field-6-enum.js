@@ -1,3 +1,4 @@
+import {R} from "js/entry.js";
 import Select from "../components/select.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";

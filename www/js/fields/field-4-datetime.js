@@ -1,3 +1,4 @@
+import {R} from "js/entry.js";
 import {moment} from "../libs/libs.js";
 import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDatetime, toReadableTime} from "../utils.js";
 import {registerFieldClass} from "../utils.js";

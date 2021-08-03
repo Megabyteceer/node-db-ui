@@ -6,6 +6,7 @@ import FormTab from "./form-tab.js";
 import eventProcessingMixins from "./event-processing-mixins.js";
 import NodeAdmin from "../admin/node-admin.js";
 import LoadingIndicator from "../loading-indicator.js";
+import {R} from "js/entry.js";
 
 var backupCallback;
 

@@ -1,3 +1,5 @@
+import {Component} from "react";
+import {R} from "../entry.js";
 import {renderIcon} from "../utils.js";
 
 var chartLoaded = false;

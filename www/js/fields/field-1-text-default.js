@@ -1,3 +1,4 @@
+import {R} from "js/entry.js";
 import {consoleDir, registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 

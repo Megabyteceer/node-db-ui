@@ -1,3 +1,5 @@
+import {R} from "js/entry.js";
+import {Component} from "react";
 import FieldAdmin from "../admin/field-admin.js";
 
 export default class FormTab extends Component {

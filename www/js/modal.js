@@ -1,3 +1,5 @@
+import {Component} from "react";
+import {R} from "./entry.js";
 import {debugError, sp} from "./utils.js";
 
 var modalStack = [];

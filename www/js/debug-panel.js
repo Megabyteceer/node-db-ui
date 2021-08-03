@@ -1,3 +1,5 @@
+import {Component} from "react";
+import {R} from "./entry.js";
 import {ENV} from "./main-frame.js";
 import {iAdmin} from "./user.js";
 import {getData, isLitePage, L, myAlert, myPromt, renderIcon, sp, strip_tags} from "./utils.js";

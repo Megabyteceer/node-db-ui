@@ -6,7 +6,6 @@ const {initNodesData, ADMIN_USER_SESSION, GUEST_USER_SESSION} = require('./core/
 const server = http.createServer();
 const performance = require('perf_hooks').performance;
 const multipart = require('parse-multipart-data');
-const {isUserHaveRole} = require("./www/both-side-utils.js");
 require('./core/locale.js');
 const {mysqlDebug} = require("./core/mysql-connection.js");
 

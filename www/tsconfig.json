@@ -1,0 +1,28 @@
+{
+	"compilerOptions": {
+		"lib": ["es2021", "DOM"],
+		"checkJs": true,
+		"allowJs": true,
+		"target": "es5",
+		"rootDir": ".",
+		"baseUrl": ".",
+		"sourceMap": true,
+		"outDir": "dist",
+		"incremental": true,
+		"module": "umd",
+		"moduleResolution": "node",
+		"diagnostics": false,
+		"skipLibCheck": true,
+		"watch": true,
+		"assumeChangesOnlyAffectDirectDependencies": true,
+		"allowUmdGlobalAccess": true,
+		"esModuleInterop":true,
+		"allowSyntheticDefaultImports": true
+	},
+	"include": ["js/index.js"],
+	"exclude": [
+		"**/dist/**",
+		"**/www/**",
+		"**/uploads/**",
+	]
+}

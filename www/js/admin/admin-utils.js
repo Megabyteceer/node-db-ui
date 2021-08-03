@@ -1,3 +1,4 @@
+import {R} from "js/entry.js";
 import Select from "../components/select.js";
 import FormFull from "../forms/form-full.js";
 import LeftBar from "../left-bar.js";
@@ -192,7 +193,7 @@ function initIconsList(params) {
 		return r.href && (r.href.indexOf('font-awesome') >= 0);
 	});
 	for(let style of ruleList) {
-		for(let rule of style.cssRules) {
+		for(let rule of Array.from(style.cssRules)) {
 			let s = rule.cssText.split('.fa-');
 			let allNames = s.filter(s => s.indexOf('::before') > 0).map(s => s.substr(0, s.indexOf('::before')));
 			if(allNames.length) {

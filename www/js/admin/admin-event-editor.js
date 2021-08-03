@@ -1,3 +1,6 @@
+import ReactDOM from "react-dom";
+import {R} from "js/entry.js";
+import {Component} from "react";
 import Modal from "../modal.js";
 import {getData, L, myAlert, renderIcon, submitData} from "../utils.js";
 
@@ -123,7 +126,7 @@ class AdminEventEditor extends Component {
 		this.getTextareaRef = this.getTextareaRef.bind(this);
 		this.saveClick = this.saveClick.bind(this);
 		if(!CodeMirror) {
-			import("../libs/code-mirror.js").then((module) => {
+			import("codemirror").then((module) => {
 				CodeMirror = module.CodeMirror;
 				this.forceUpdate();
 			});

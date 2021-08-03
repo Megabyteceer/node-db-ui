@@ -1,3 +1,5 @@
+import {R} from "js/entry.js";
+import {Component} from "react";
 import {renderIcon} from "../utils.js";
 
 export default class Select extends Component {

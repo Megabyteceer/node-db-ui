@@ -1,3 +1,5 @@
+import {R} from "js/entry.js";
+import {Component} from "react";
 import FieldAdmin from "../admin/field-admin.js";
 import {iAdmin} from "../user.js";
 import {consoleLog, debugError, getClassForField, renderIcon, scrollToVisible, setFormFilter} from "../utils.js";

@@ -14,6 +14,7 @@ import {isPresentListRenderer} from "./forms/list.js";
 import User from "./user.js";
 import Modal from "./modal.js";
 import {ENV} from "./main-frame.js";
+import {R} from "./entry.js";
 
 const headersJSON = new Headers();
 headersJSON.append("Content-Type", "application/json");

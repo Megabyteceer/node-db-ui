@@ -1,3 +1,5 @@
+import {R} from "js/entry.js";
+import {Component} from "react";
 import {formsEventsOnLoad, formsEventsOnSave} from "../events/forms_events.js";
 import {getNode, getNodeData, keepInWindow, L, loactionToHash, renderIcon, sp} from "../utils.js";
 import {admin_editSource} from "./admin-event-editor.js";
