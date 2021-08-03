@@ -1,3 +1,4 @@
+import {R} from "js/entry.js";
 import fieldsEvents from "../events/fields_events.js";
 import {renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";

@@ -1,5 +1,6 @@
 "use strict";
 
+import {R} from "js/entry.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 

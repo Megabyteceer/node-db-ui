@@ -1,4 +1,8 @@
+
+
+import {Component} from "react";
 import DebugPanel from "./debug-panel.js";
+import {R} from "./entry.js";
 import LeftBar from "./left-bar.js";
 import LoadingIndicator from "./loading-indicator.js";
 import Modal from "./modal.js";
@@ -8,6 +12,7 @@ import TopBar from "./top-bar.js";
 import {getData} from "./utils.js";
 
 const ENV = {};
+
 
 class MainFrame extends Component {
 

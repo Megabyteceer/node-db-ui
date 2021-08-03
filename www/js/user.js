@@ -3,6 +3,9 @@ import Select from "./components/select.js";
 import admin from "./admin/admin-utils.js";
 import {ENV} from "./main-frame.js";
 import {moment} from "./libs/libs.js";
+import {Component} from "react";
+import {isUserHaveRole} from "both-side-utils.js";
+import {R} from "./entry.js";
 
 var currentUserData;
 

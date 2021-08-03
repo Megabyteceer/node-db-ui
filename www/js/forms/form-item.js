@@ -1,3 +1,4 @@
+import {R} from "js/entry.js";
 import FieldWrap from "../fields/field-wrap.js";
 import {deleteRecord, draftRecord, L, loactionToHash, publishRecord, renderIcon, sp} from "../utils.js";
 import BaseForm from "./form-mixins.js";

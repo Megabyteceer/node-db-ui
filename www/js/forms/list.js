@@ -1,3 +1,4 @@
+import {R} from "js/entry.js";
 import FieldAdmin from "../admin/field-admin.js";
 import NodeAdmin from "../admin/node-admin.js";
 import LeftBar from "../left-bar.js";

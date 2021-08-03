@@ -2,6 +2,8 @@ import {checkFileSize, idToImgURL, L, myAlert, renderIcon, serializeForm, submit
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 import Modal from "../modal.js";
+import {Component} from "react";
+import {R} from "js/entry.js";
 
 registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
 

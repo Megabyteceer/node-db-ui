@@ -1,3 +1,5 @@
+import {R} from "js/entry.js";
+import {Component} from "react";
 import {L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";

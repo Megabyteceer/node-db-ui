@@ -1,3 +1,4 @@
+import {Component} from "react";
 import {goBack} from "../utils.js";
 
 

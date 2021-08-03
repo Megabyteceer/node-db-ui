@@ -1,3 +1,4 @@
+import {R} from "js/entry.js";
 import FormFull from "../forms/form-full.js";
 import List from "../forms/list.js";
 import {backupCreationData, getBackupData, getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp} from "../utils.js";

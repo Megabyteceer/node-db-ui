@@ -1,3 +1,5 @@
+import {R} from "js/entry.js";
+import {Component} from "react";
 import fieldsEvents from "../events/fields_events.js";
 import {getNodeData, keepInWindow, L, loactionToHash, renderIcon, sp} from "../utils.js";
 import {admin_editSource} from "./admin-event-editor.js";

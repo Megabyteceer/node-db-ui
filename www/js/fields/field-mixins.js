@@ -1,3 +1,4 @@
+import {Component} from "react";
 import {Highlighter} from "../libs/libs.js";
 
 export default class fieldMixins extends Component {

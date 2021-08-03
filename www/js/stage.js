@@ -1,5 +1,7 @@
 ﻿
 
+import {Component} from "react";
+import {R} from "./entry.js";
 import FormFull from "./forms/form-full.js";
 import List from "./forms/list.js";
 import LeftBar from "./left-bar.js";
