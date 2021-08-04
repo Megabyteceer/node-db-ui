@@ -2,7 +2,9 @@
 /nginx-1.20.1
 /core-php
 /cert
+/dist
 
+/www/dist
 /www/images/uploads
 /www/uploads
 /www/js/libs/libs.js
