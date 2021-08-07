@@ -1,14 +1,15 @@
-import {nodePrevs, getClientEventHandler, clearCache} from './admin/admin.js';
-import {setCurrentOrg, setMultiLang, login, resetPassword, registerUser, activateUser} from './auth.js';
-import {getNodeDesc, getNodesTree} from './desc-node.js';
-import {getRecords, deleteRecord} from './get-records.js';
-import {submitRecord, uniquCheck} from './submit.js';
-import {uploadImage, uploadFile} from './upload.js';
+import { RecordsDataResponse } from 'www/js/bs-utils.js';
+import { nodePrevs, getClientEventHandler, clearCache } from './admin/admin.js';
+import { setCurrentOrg, setMultiLang, login, resetPassword, registerUser, activateUser } from './auth.js';
+import { getNodeDesc, getNodesTree } from './desc-node.js';
+import { getRecords, deleteRecord } from './get-records.js';
+import { submitRecord, uniquCheck } from './submit.js';
+import { uploadImage, uploadFile } from './upload.js';
 
 const api = {
 	"api/": (reqData, userSession, res) => {
 		getRecords(reqData.nodeId, reqData.viewFields, reqData.recId, userSession, reqData, reqData.s).then((data) => {
-			let ret = {data};
+			let ret: RecordsDataResponse = { data };
 			if(reqData.descNode) {
 				ret.node = getNodeDesc(reqData.nodeId, userSession);
 			}

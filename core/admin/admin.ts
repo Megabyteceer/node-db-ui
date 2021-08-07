@@ -1,10 +1,10 @@
 
-import {getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc} from "../desc-node";
-import {mysqlExec} from "../mysql-connection";
+import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../desc-node";
+import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 
-import {throwError, isAdmin} from "../../www/js/bs-utils.js";
-import {join} from "path";
-import {readFileSync, writeFileSync} from "fs";
+import { throwError, isAdmin } from "../../www/js/bs-utils";
+import { join } from "path";
+import { readFileSync, writeFileSync } from "fs";
 
 async function nodePrevs(reqData, userSession) {
 	shouldBeAdmin(userSession);
@@ -16,7 +16,7 @@ async function nodePrevs(reqData, userSession) {
 		return 1;
 	} else { //get node prevs
 		const prevs = await mysqlExec('SELECT id, name, (SELECT prevs FROM _roleprevs WHERE (nodeID=' + nodeId + ') AND (_roles.id=roleID) LIMIT 1) AS prevs FROM _roles WHERE ID <>1 AND ID <> 7 AND status = 1');
-		return {prevs, isDoc: getNodeDesc(nodeId).isDoc}
+		return { prevs, isDoc: getNodeDesc(nodeId).isDoc }
 	}
 }
 
@@ -43,7 +43,7 @@ async function setRolePrevsForNode(nodeID, roleprevs, toChild, userSession) {
 	}
 	if(toChild) {
 		//apply to sub sections
-		const pgs = await mysqlExec("SELECT id FROM _nodes WHERE _nodesID =" + nodeID);
+		const pgs = await mysqlExec("SELECT id FROM _nodes WHERE _nodesID =" + nodeID) as mysqlRowsResult;
 		for(let pg of pgs) {
 			await setRolePrevsForNode(pg.id, roleprevs, toChild, userSession);
 		}
@@ -141,4 +141,4 @@ async function getClientEventHandler(reqData, userSession) {
 	}
 }
 
-export {nodePrevs, getClientEventHandler, shouldBeAdmin, clearCache};
+export { nodePrevs, getClientEventHandler, shouldBeAdmin, clearCache };

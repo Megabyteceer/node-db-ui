@@ -1,13 +1,13 @@
 
-import {createServer} from 'http';
+import { createServer } from 'http';
 import api from './api.js';
-import {startSession, authorizeUserByID, finishSession} from './auth.js';
-import {initNodesData, ADMIN_USER_SESSION, GUEST_USER_SESSION} from './desc-node.js';
-import {performance} from 'perf_hooks';
-import {getBoundary, parse} from 'parse-multipart-data';
+import { startSession, authorizeUserByID, finishSession } from './auth.js';
+import { initNodesData, ADMIN_USER_SESSION, GUEST_USER_SESSION } from './desc-node.js';
+import { performance } from 'perf_hooks';
+import { getBoundary, parse } from 'parse-multipart-data';
 import './locale.js';
-import {mysqlDebug} from "./mysql-connection.js";
-import {GUEST_ROLE_ID, assert, ADMIN_ROLE_ID, isUserHaveRole} from "./../www/js/bs-utils.js";
+import { mysqlDebug } from "./mysql-connection";
+import { GUEST_ROLE_ID, assert, ADMIN_ROLE_ID, isUserHaveRole } from "../www/js/bs-utils";
 
 const server = createServer();
 
@@ -81,7 +81,12 @@ server.on('request', (req, res) => {
 					const resHeaders = {
 						'content-type': 'application/json'
 					};
-					let ret = {result, error};
+					let ret = {
+						result, error, isGuest: false, notifications: null,
+						/// #if DEBUG
+						debug: null
+						/// #endif
+					};
 					/// #if DEBUG
 					resHeaders['Access-Control-Allow-Origin'] = '*';
 					if(mysqlDebug.debug) {
@@ -104,7 +109,7 @@ server.on('request', (req, res) => {
 					res.end(JSON.stringify(ret));
 				}
 				/// #if DEBUG
-				mysqlDebug.debug = {requestTime: new Date(), stack: []};
+				mysqlDebug.debug = { requestTime: new Date(), stack: [] };
 				/// #endif
 				startSession(body.sessionToken).then((session) => {
 					userSession = session;
@@ -156,7 +161,7 @@ initNodesData().then(async function() {
 		/// #endif
 	));
 	assert(isUserHaveRole(ADMIN_ROLE_ID, ADMIN_USER_SESSION), "User with id 1 expected to be admin.");
-	Object.assign(GUEST_USER_SESSION, await authorizeUserByID(2, true));
+	Object.assign(GUEST_USER_SESSION, await authorizeUserByID(2, true, 'guest-session'));
 	assert(isUserHaveRole(GUEST_ROLE_ID, GUEST_USER_SESSION), "User with id 2 expected to be guest.");
 	/// #if DEBUG
 	await authorizeUserByID(3, undefined, "dev-user-session-token");

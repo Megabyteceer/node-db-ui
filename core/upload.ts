@@ -1,13 +1,12 @@
 
-import {assert, throwError} from "./../www/js/bs-utils.js";
+import { assert, throwError } from "../www/js/bs-utils";
 
-import {join} from "path";
+import { join } from "path";
 import * as fs from "fs";
 import sharp from "sharp";
-import ENV from "../ENV.js";
-import {getNodeDesc, getFieldDesc} from "./desc-node";
-import {L} from "./locale.js";
-
+import ENV from "../ENV";
+import { getNodeDesc, getFieldDesc } from "./desc-node";
+import { L } from "./locale";
 
 const UPLOADS_IMAGES_PATH = join(__dirname, '../www/images/uploads');
 const UPLOADS_FILES_PATH = join(__dirname, '../www/uploads/file');
@@ -49,7 +48,7 @@ const getNewImageID = (originalFileName) => {
 		}
 		let folder = Math.floor(Math.random() * 256).toString(16);
 
-		const generateId = (err) => {
+		const generateId = (err?: NodeJS.ErrnoException) => {
 			if(err) {
 				reject(err);
 			}
@@ -167,10 +166,10 @@ async function uploadImage(reqData, userSession) {
 			H = srcH;
 		}
 
-		await img.extract({left: Math.floor(X), top: Math.floor(Y), width: Math.floor(W), height: Math.floor(H)})
+		await img.extract({ left: Math.floor(X), top: Math.floor(Y), width: Math.floor(W), height: Math.floor(H) })
 			.resize(targetW, targetH);
 		if(meta.format === 'png') {
-			await img.flatten({background: '#FFFFFF'})
+			await img.flatten({ background: '#FFFFFF' })
 		}
 	}
 
@@ -196,4 +195,4 @@ const idToImgURLServer = (imgId) => {
 	return join(UPLOADS_IMAGES_PATH, imgId);
 }
 
-export {uploadImage, uploadFile, UPLOADS_FILES_PATH, idToImgURLServer};
+export { uploadImage, uploadFile, UPLOADS_FILES_PATH, idToImgURLServer };

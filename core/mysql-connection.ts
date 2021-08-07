@@ -1,11 +1,11 @@
 
 /// #if DEBUG
-import {assert, getCurrentStack} from "./../www/js/bs-utils.js";
+import { assert, getCurrentStack } from "../www/js/bs-utils";
 /// #endif
 
-import ENV from "../ENV.js";
+import ENV from "../ENV";
 import * as mysql from 'mysql2';
-import {performance} from 'perf_hooks';
+import { performance } from 'perf_hooks';
 
 const connection = mysql.createConnection({
 	user: ENV.DB_USER,
@@ -16,13 +16,15 @@ const connection = mysql.createConnection({
 	timezone: 'Z'
 });
 
-const mysqlDebug = {};
+const mysqlDebug = {
+	debug: null
+};
 
-const mysqlExec = (query) => {
+const mysqlExec = (query: string): Promise<mysqlRowsResult | mysqlRowsResult[] | mysql.OkPacket | mysql.OkPacket[] | mysql.ResultSetHeader> => {
 	/// #if DEBUG
 	let preparedError = new Error();
 
-	let SQL = {timeElapsed_ms: performance.now(), SQL: query, stack: getCurrentStack()};
+	let SQL = { timeElapsed_ms: performance.now(), SQL: query, stack: getCurrentStack() };
 	if(mysqlDebug.debug) {
 		if(!mysqlDebug.debug.SQLs) {
 			mysqlDebug.debug.SQLs = [];
@@ -40,7 +42,8 @@ const mysqlExec = (query) => {
 				/// #endif
 				debugger;
 				reject(er);
-				console.dir(preparedError, query);
+				console.dir(preparedError);
+				console.log(query);
 			}
 			/// #if DEBUG
 			SQL.timeElapsed_ms = performance.now() - SQL.timeElapsed_ms;
@@ -101,5 +104,7 @@ async function mysqlRollback() {
 		nextTrasnsaction();
 	}
 }
-
-export {mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback, mysqlDebug};
+type mysqlInsertResult = mysql.OkPacket;
+type mysqlRowResultSingle = mysql.RowDataPacket;
+type mysqlRowsResult = mysql.RowDataPacket[];
+export { mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback, mysqlDebug, mysqlRowsResult, mysqlRowResultSingle, mysqlInsertResult };

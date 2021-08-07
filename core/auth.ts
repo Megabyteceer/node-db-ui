@@ -1,9 +1,9 @@
-import ENV from "../ENV.js";
-import {mysqlExec} from "./mysql-connection";
-import {getLangs, GUEST_USER_SESSION} from "./desc-node";
-import {throwError, GUEST_ROLE_ID, USER_ROLE_ID, assert, shouldBeAuthorized} from "./../www/js/bs-utils.js";
-import {L} from "./locale.js";
-import {pbkdf2, randomBytes} from "crypto";
+import ENV from "../ENV";
+import { mysqlExec, mysqlInsertResult, mysqlRowResultSingle, mysqlRowsResult } from "./mysql-connection";
+import { getLangs, GUEST_USER_SESSION } from "./desc-node";
+import { throwError, GUEST_ROLE_ID, USER_ROLE_ID, assert, shouldBeAuthorized, UserLangEntry, UserRoles, UserSession } from "../www/js/bs-utils";
+import { L } from "./locale";
+import { pbkdf2, randomBytes } from "crypto";
 
 
 const sessions = new Map();
@@ -112,13 +112,14 @@ async function registerUser(reqData) {
 		throwError('PASS_NOT_SAME');
 	} else {
 
-		let pgs = await mysqlExec("SELECT id FROM _users WHERE _users.status=1 AND email='" + login + "' LIMIT 1");
+		let pgs = await mysqlExec("SELECT id FROM _users WHERE _users.status=1 AND email='" + login + "' LIMIT 1") as mysqlRowsResult;
 		if(pgs.length > 0) {
 			throwError('EMAIL_ALREADY');
 		} else {
+			const salt = randomBytes(16).toString('hex');
 			let actKey = randomBytes(24).toString('base64');
 			let href = getServerHref() + '?activate_user&key=' + actKey;
-			await mysqlExec("INSERT INTO `_users` (status, `name`, `PASS`, `email`, `company`, `activation`) VALUES (2,'" + name + "','" + (await getPasswordHash(password)) + "','" + login + "','" + company + "','" + actKey + "');");
+			await mysqlExec("INSERT INTO `_users` (status, `name`, `PASS`, `salt`, `email`, `company`, `activation`) VALUES (2,'" + name + "','" + (await getPasswordHash(password, salt)) + "','" + salt + "','" + login + "','" + company + "','" + actKey + "');");
 			await mail_utf8(login, L('CONFIRM_EMAIL_SUBJ'), L('CONFIRM_EMAIL', ENV.APP_TITLE) + href);
 			return L('EMAIL_SENDED', login);
 		}
@@ -127,12 +128,12 @@ async function registerUser(reqData) {
 
 async function activateUser(key) {
 	if(key) {
-		let user = await mysqlExec("SELECT id, pass, company, email FROM _users WHERE status = 2 AND activation='" + key + "' LIMIT 1");
-		user = user[0];
+		const users = await mysqlExec("SELECT id, pass, company, email FROM _users WHERE status = 2 AND activation='" + key + "' LIMIT 1") as mysqlRowsResult;
+		const user = users[0];
 		if(user) {
 			let userID = user.id;
 			//create company for new user
-			let orgId = (await mysqlExec("INSERT INTO `_organ` (`name`, `status`, `_usersID`) VALUES ('" + user.company + "', '1', " + userID + ")")).insertId;
+			let orgId = (await mysqlExec("INSERT INTO `_organ` (`name`, `status`, `_usersID`) VALUES ('" + user.company + "', '1', " + userID + ")") as mysqlInsertResult).insertId;
 			await mysqlExec("UPDATE _users SET status=1, activation='', _organID=" + orgId + ", _usersID = " + userID + " WHERE id=" + userID);
 			await mysqlExec("UPDATE _organ SET _organID=" + orgId + " WHERE id=" + orgId);
 			return authorizeUserByID(userID);
@@ -143,8 +144,8 @@ async function activateUser(key) {
 
 async function resetPassword(key) {
 	if(key) {
-		let user = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND activation='" + key + "' AND reset_time > DATE_ADD(CURDATE(), INTERVAL -1 DAY)  LIMIT 1");
-		user = user[0];
+		const users = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND activation='" + key + "' AND reset_time > DATE_ADD(CURDATE(), INTERVAL -1 DAY)  LIMIT 1");
+		const user = users[0];
 		if(user) {
 			let userID = user.id;
 			await mysqlExec("UPDATE _users SET activation='' WHERE id='" + userID + "'");
@@ -168,7 +169,7 @@ function getPasswordHash(password, salt) {
 
 async function login(username, password) {
 
-	let user = await mysqlExec("SELECT id, activation, salt, TIMESTAMPDIFF(SECOND, NOW(), blocked_to) AS blocked, PASS, mistakes FROM _users WHERE email='" + username + "' AND _users.status=1 LIMIT 1");
+	let user = await mysqlExec("SELECT id, activation, salt, TIMESTAMPDIFF(SECOND, NOW(), blocked_to) AS blocked, PASS, mistakes FROM _users WHERE email='" + username + "' AND _users.status=1 LIMIT 1") as mysqlRowResultSingle;
 	user = user[0];
 	if(user) {
 
@@ -199,36 +200,39 @@ async function login(username, password) {
 	throwError('WRONG_PASS');
 }
 
-async function authorizeUserByID(userID, isItServerSideRole, sessionToken) {
+
+
+
+async function authorizeUserByID(userID, isItServerSideRole: boolean = false, sessionToken: string | null = null): Promise<UserSession> {
 
 	if(sessionsByUserId.has(userID)) {
 		return sessionsByUserId.get(userID);
 	}
 
 	const query = "SELECT _users.name as userName, multilangEnabled, avatar, _users._organID AS orgID, company, defaultOrg, _organ.name AS organName, email, language FROM _users LEFT JOIN _organ ON (_users._organID = _organ.id) WHERE (_users.id = " + userID + ") AND _users.status=1 LIMIT 1";
-	let pag = await mysqlExec(query);
-	pag = pag[0];
-	if(!pag) {
+	const users = await mysqlExec(query) as mysqlRowsResult;
+	const user = users[0];
+	if(!user) {
 		throwError("user activation error " + userID);
 	}
 
-	let organID = pag.orgID;
+	let organID: number = user.orgID;
 
 	// fix user's org if undefined
 	if(organID === 0) {
-		const orgId = await mysqlExec("INSERT INTO `_organ` (`name`, `status`, `_usersID`) VALUES ('" + pag.company + "', '1', " + userID + ")");
+		const orgId = await mysqlExec("INSERT INTO `_organ` (`name`, `status`, `_usersID`) VALUES ('" + user.company + "', '1', " + userID + ")");
 		await mysqlExec("UPDATE _users SET _organID=" + orgId + ", _usersID = " + userID + " WHERE id=" + userID);
 		await mysqlExec("UPDATE _organ SET _organID=" + orgId + " WHERE id=" + orgId);
 		return authorizeUserByID(userID);
 	}
 
-	let organID_def = pag.defaultOrg || organID;
-	let organName = pag.organName;
+	let organID_def = user.defaultOrg || organID;
+	let organName = user.organName;
 
-	const roles = await mysqlExec("SELECT _rolesID FROM _userroles WHERE _userroles._usersID=" + userID + " ORDER BY _rolesID");
+	const roles = await mysqlExec("SELECT _rolesID FROM _userroles WHERE _userroles._usersID=" + userID + " ORDER BY _rolesID") as mysqlRowsResult;
 
 	let cacheKeyGenerator;
-	let userRoles = {};
+	let userRoles: UserRoles = {};
 	if(userID === 2) {
 		userRoles[GUEST_ROLE_ID] = 1;
 		cacheKeyGenerator = [GUEST_ROLE_ID]
@@ -245,18 +249,19 @@ async function authorizeUserByID(userID, isItServerSideRole, sessionToken) {
 	let orgs = {
 		[organID]: organName
 	}
-	const pgs = await mysqlExec("SELECT _organ.id, _organ.name FROM `_organ__users` LEFT JOIN _organ ON (_organ.id = _organ__users._organID) WHERE _organ__users._usersID=" + userID + " ORDER BY _organ.id");
+	const pgs = await mysqlExec("SELECT _organ.id, _organ.name FROM `_organ__users` LEFT JOIN _organ ON (_organ.id = _organ__users._organID) WHERE _organ__users._usersID=" + userID + " ORDER BY _organ.id") as mysqlRowsResult;
 	for(let org of pgs) {
 		orgs[org.id] = org.name;
 	}
 
-	const lang = getLang(pag.language);
+	const lang = getLang(user.language);
 
-	const userSession = {
+	const userSession: UserSession = {
 		id: userID,
-		name: pag.userName,
-		avatar: pag.avatar,
-		email: pag.email,
+		orgId: 0,
+		name: user.userName,
+		avatar: user.avatar,
+		email: user.email,
 		userRoles,
 		orgs,
 		lang,
@@ -276,12 +281,12 @@ async function authorizeUserByID(userID, isItServerSideRole, sessionToken) {
 			Object.freeze(userSession);
 		//*/
 	} else {
-		await setMultiLang(pag.multilangEnabled, userSession);
+		await setMultiLang(user.multilangEnabled, userSession);
 	}
 	return userSession;
 }
 
-function getLang(langId) {
+function getLang(langId): UserLangEntry {
 	let ls = getLangs();
 	for(let l of ls) {
 		if(l.id === langId) {
@@ -291,10 +296,9 @@ function getLang(langId) {
 	return ls[0];
 }
 
-async function setCurrentOrg(organID, userSession, updateInBd) {
+async function setCurrentOrg(organID: number, userSession: UserSession, updateInBd?) {
 	if(userSession.orgs.hasOwnProperty(organID)) {
 		userSession.orgId = organID;
-		userSession.org = userSession.orgs[organID];
 		if(updateInBd) {
 			shouldBeAuthorized(userSession);
 			await mysqlExec("UPDATE _users SET defaultOrg=organID WHERE id=" + userSession.id);
@@ -317,7 +321,7 @@ async function setMultiLang(enable, userSession) {
 }
 
 let transporter;
-async function mail_utf8(email, subject, text) {
+async function mail_utf8(email, subject, text): Promise<void> {
 	return new Promise((resolve, rejects) => {
 		if(ENV.DEBUG) {
 			return;
@@ -350,4 +354,4 @@ function mustBeUnset(obj, fieldName) {
 	}
 }
 
-export {usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultiLang, login, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode};
+export { UserSession, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultiLang, login, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode };

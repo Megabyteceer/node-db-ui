@@ -1,5 +1,5 @@
 import R from "../r.js";
-import {FIELD_2_INT, FIELD_7_Nto1} from "../bs-utils.js";
+import {FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE} from "../bs-utils.js";
 import FieldAdmin from "../admin/field-admin.js";
 import NodeAdmin from "../admin/node-admin.js";
 import LeftBar from "../left-bar.js";
@@ -323,7 +323,7 @@ export default class List extends BaseForm {
 		}
 
 		var createBtn;
-		if(node.canCreate) {
+		if(node.prevs & PREVS_CREATE) {
 			createBtn = R.div(null,
 				R.button({title: L('ADD', (node.creationName || node.singleName)), className: 'clickable toolbtn create-btn', onClick: () => {data.items.push({}); this.forceUpdate();}},
 					renderIcon('plus')
@@ -365,7 +365,7 @@ export default class List extends BaseForm {
 
 		if(!this.props.omitHeader) {
 			var createButton;
-			if(node.canCreate && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
+			if((node.prevs & PREVS_CREATE) && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
 				if(this.isSlave()) {
 					createButton = R.button({
 						className: 'clickable create-button', onClick: async () => {

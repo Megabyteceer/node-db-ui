@@ -1,16 +1,16 @@
 /// #if DEBUG
-import {notificationOut, throwError, FIELD_14_NtoM, FIELD_4_DATETIME, FIELD_11_DATE, FIELD_7_Nto1, FIELD_17_TAB, FIELD_19_RICHEDITOR, FIELD_10_PASSWORD, FIELD_1_TEXT, FIELD_12_PICTURE, FIELD_21_FILE, FIELD_5_BOOL, FIELD_15_1toN, PREVS_ANY, PREVS_PUBLISH, isAdmin, assert} from "./../www/js/bs-utils.js";
+import { notificationOut, throwError, FIELD_14_NtoM, FIELD_4_DATETIME, FIELD_11_DATE, FIELD_7_Nto1, FIELD_17_TAB, FIELD_19_RICHEDITOR, FIELD_10_PASSWORD, FIELD_1_TEXT, FIELD_12_PICTURE, FIELD_21_FILE, FIELD_5_BOOL, FIELD_15_1toN, PREVS_ANY, PREVS_PUBLISH, isAdmin, assert, PREVS_CREATE, RecId, RecordDataWrite } from "../www/js/bs-utils";
 /// #endif
 
-import ENV from "../ENV.js";
-import {getNodeEventHandler, getNodeDesc, getFieldDesc} from "./desc-node";
-import {getRecords} from "./get-records";
-import {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit} from "./mysql-connection";
-import {UPLOADS_FILES_PATH, idToImgURLServer} from './upload';
-import {L} from "./locale.js";
-import {join} from "path";
-import {unlink} from "fs";
-
+import ENV from "../ENV";
+import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHadlersNames } from "./desc-node";
+import { getRecords } from "./get-records";
+import { mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit, mysqlRowsResult } from "./mysql-connection";
+import { UPLOADS_FILES_PATH, idToImgURLServer } from './upload';
+import { L } from "./locale";
+import { join } from "path";
+import { unlink } from "fs";
+import { UserSession } from "./auth.js";
 
 const blockTags = [];
 for(let tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
@@ -23,11 +23,11 @@ for(let tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 	});
 }
 
-async function submitRecord(nodeId, data, recId = false, userSession) {
+async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId?: RecId, userSession?: UserSession): Promise<RecId> {
 
 	let node = getNodeDesc(nodeId);
 	let currentData;
-	if(recId !== false) {
+	if(recId !== null) {
 		currentData = await getRecords(nodeId, PREVS_ANY, recId, userSession);
 	}
 
@@ -37,7 +37,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 
 	if(node.draftable) {
 		if((prevs & PREVS_PUBLISH) === 0) {
-			if(recId !== false) {
+			if(recId !== null) {
 				if(currentData.status !== 1) {
 					data.status = 2;
 				}
@@ -46,7 +46,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 			}
 		}
 		if(!data.status) {
-			if(recId === false) {
+			if(recId === null) {
 				data.status = 1;
 			}
 		}
@@ -54,12 +54,12 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		data.status = 1;
 	}
 
-	if(recId !== false) {
+	if(recId !== null) {
 		if(!currentData.isE) {
 			throwError('Update access denied.');
 		}
 	} else {
-		if(!node.canCreate) {
+		if(!(node.prevs & PREVS_CREATE)) {
 			throwError('Creation access denied: ' + node.id);
 		}
 	}
@@ -102,7 +102,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 
 		let insQ;
 
-		if(recId !== false) {
+		if(recId !== null) {
 			insQ = ["UPDATE "];
 		} else {
 			insQ = ["INSERT "];
@@ -113,7 +113,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 
 		let leastOneTablesFieldUpdated = false;
 
-		if(recId === false) {
+		if(recId === null) {
 			if(data.hasOwnProperty('_usersID')) {
 				if(userSession && !isAdmin(userSession) && (userSession.id !== data._usersID)) {
 					throwError("wrong _usersID detected");
@@ -163,10 +163,10 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 			}
 		}
 
-		if(recId !== false) {
-			await getNodeEventHandler(nodeId, 'beforeUpdate', currentData, data, userSession);
+		if(recId !== null) {
+			await getNodeEventHandler(nodeId, ServerSideEventHadlersNames.beforeUpdate, currentData, data, userSession);
 		} else {
-			await getNodeEventHandler(nodeId, 'beforeCreate', data, userSession);
+			await getNodeEventHandler(nodeId, ServerSideEventHadlersNames.beforeCreate, data, userSession);
 		}
 		let needProcess_n2m;
 		for(let f of node.fields) {
@@ -274,7 +274,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 			insQ.push(' status=', data.status);
 		}
 
-		if(recId !== false) {
+		if(recId !== null) {
 			insQ.push(" WHERE id=", recId.toString(), " LIMIT 1");
 		}
 		let qResult;
@@ -294,10 +294,10 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 
 		/// #endif
 
-		if(recId === false) {
+		if(recId === null) {
 			recId = qResult.insertId;
 			data.id = recId;
-			await getNodeEventHandler(nodeId, 'afterCreate', data, userSession);
+			await getNodeEventHandler(nodeId, ServerSideEventHadlersNames.afterCreate, data, userSession);
 		}
 		if(needProcess_n2m) {
 			for(let f of node.fields) {
@@ -358,7 +358,7 @@ async function uniquCheckInner(tableName, fieldName, val, recId) {
 	}
 	query.push(" LIMIT 1");
 
-	let exists = await mysqlExec(query.join(''));
+	let exists = await mysqlExec(query.join('')) as mysqlRowsResult;
 	return !exists.length;
 }
 
@@ -366,4 +366,4 @@ function uniquCheck(fieldId, nodeId, val, recId, userSession) {
 	return uniquCheckInner(getNodeDesc(nodeId, userSession).tableName, getFieldDesc(fieldId).fieldName, val, recId);
 }
 
-export {submitRecord, uniquCheck};
+export { submitRecord, uniquCheck };

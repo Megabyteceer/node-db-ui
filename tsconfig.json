@@ -1,8 +1,6 @@
 {
 	"compilerOptions": {
 		"lib": ["es2021"],
-		"checkJs": true,
-		"allowJs": true,
 		"noUnusedLocals": true,
 		"target": "es5",
 		"rootDir": ".",
@@ -20,8 +18,9 @@
 	"typeAcquisition": {
         "include": ["node"]
     },
-	"include": ["core/index.js"],
+	"include": ["core/index.ts", "events"],
 	"exclude": [
+		"**/www/**",
 		"**/dist/**",
 		"node_modules",
 		"**/node_modules/*",

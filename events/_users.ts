@@ -1,8 +1,8 @@
 
-import {mysqlExec} from "../core/mysql-connection";
-import {getPasswordHash} from "../core/auth";
-import crypto from 'crypto';
-import {submitRecord} from "../core/submit";
+import { mysqlExec } from "../core/mysql-connection";
+import { getPasswordHash } from "../core/auth";
+import { submitRecord } from "../core/submit";
+import { isAdmin } from "../www/js/bs-utils.js";
 
 async function clearUserParams(data, currentData, userSession) {
 
@@ -14,9 +14,8 @@ async function clearUserParams(data, currentData, userSession) {
 	if(data.hasOwnProperty('PASS')) {
 		const p = data.PASS;
 		if(p !== 'nc_l4DFn76ds5yhg') {
-			let salt = crypto.randomBytes(16).toString('hex');
-			await mysqlExec("UPDATE _users SET salt='" + salt + "' WHERE id=" + currentData.id);
-			data.PASS = await getPasswordHash(data.PASS, salt);
+			await mysqlExec("UPDATE _users SET salt='" + currentData.salt + "' WHERE id=" + currentData.id);
+			data.PASS = await getPasswordHash(data.PASS, currentData.salt);
 		} else {
 			delete data.PASS;
 		}
@@ -44,7 +43,7 @@ export default {
 
 		if(newData.hasOwnProperty('company')) {
 			if(currentData._organID.id) {
-				await submitRecord(7, {name: newData.company}, currentData._organID.id);
+				await submitRecord(7, { name: newData.company }, currentData._organID.id);
 			}
 		}
 		return clearUserParams(newData, currentData, userSession);

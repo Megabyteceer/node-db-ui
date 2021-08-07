@@ -1,12 +1,13 @@
-import {getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION} from './desc-node.js';
-import {mysqlExec} from "./mysql-connection";
-import {throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PREVS_PUBLISH, PREVS_EDIT_ALL, PREVS_EDIT_ORG, PREVS_EDIT_OWN, PREVS_VIEW_ALL, PREVS_VIEW_ORG, PREVS_VIEW_OWN, PREVS_DELETE, FIELD_15_1toN, FIELD_19_RICHEDITOR} from "./../www/js/bs-utils.js";
+import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHadlersNames } from './desc-node.js';
+import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
+import { TViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PREVS_PUBLISH, PREVS_EDIT_ALL, PREVS_EDIT_ORG, PREVS_EDIT_OWN, PREVS_VIEW_ALL, PREVS_VIEW_ORG, PREVS_VIEW_OWN, PREVS_DELETE, FIELD_15_1toN, FIELD_19_RICHEDITOR, RecordData, RecordsData, RecId } from "../www/js/bs-utils";
+import { UserSession } from './auth.js';
 
 const isASCII = (str) => {
 	return /^[\x00-\x7F]*$/.test(str);
 }
 
-const EMPTY_RATING = {all: 0};
+const EMPTY_RATING = { all: 0 };
 /*
 * @param nodeId
 * @param viewMask		bitMask for fields. 1-fields for EDIT/CREATE view; 2-fields for LIST view; 4-fields for VIEW view; 8-fields for REFERENCE/LOOKUP view; 16-custom list fields
@@ -24,8 +25,9 @@ const EMPTY_RATING = {all: 0};
 * @param search			string to full text search
 *
 */
-
-async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESSION, filterFields = undefined, search = undefined) {
+async function getRecords(nodeId: RecId, viewMask: TViewMask, recId: RecId, userSession: UserSession): Promise<RecordData>;
+async function getRecords(nodeId: RecId, viewMask: TViewMask, recId: null | RecId[], userSession: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
+async function getRecords(nodeId: RecId, viewMask: TViewMask, recId: null | RecId | number[], userSession: UserSession = ADMIN_USER_SESSION, filterFields?: any, search?: string): Promise<RecordData | RecordsData> {
 
 	let node = getNodeDesc(nodeId, userSession);
 
@@ -37,7 +39,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 		return null;
 	}
 
-	let singleSelectionById = recId && (typeof (recId) === 'number');
+	let singleSelectionById = (typeof recId === 'number');
 
 	let selQ = ['SELECT '];
 
@@ -57,7 +59,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 
 
 			if(fieldType === FIELD_16_RATING) {
-				selQ.push(tableName, '.rates_1,', tableName, '.rates_2,', tableName, '.rates_3,', tableName, '.rates_4,', tableName, '.rates_5,(SELECT rate FROM ', tableName, '_rates WHERE _recID=', tableName, '.id AND _usersID=', userSession.id, ' LIMIT 1) AS rates_y');
+				selQ.push(tableName, '.rates_1,', tableName, '.rates_2,', tableName, '.rates_3,', tableName, '.rates_4,', tableName, '.rates_5,(SELECT rate FROM ', tableName, '_rates WHERE _recID=', tableName, '.id AND _usersID=', userSession.id.toString(), ' LIMIT 1) AS rates_y');
 			} else if(fieldType === FIELD_14_NtoM) {//n2m
 				let tblTmpName = 't' + f.id;
 				if(f.icon) {
@@ -103,7 +105,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 		ordering = [' LIMIT 1'];
 	} else {
 
-		if(recId) {
+		if(Array.isArray(recId)) {
 			wheres = [" AND ", tableName, ".id IN (", recId.join(), ")"];
 		} else {
 			wheres = [''];
@@ -271,7 +273,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 	selQ.push.apply(selQ, wheres);
 	selQ.push.apply(selQ, ordering);
 
-	let items = await mysqlExec(selQ.join(''));
+	let items: RecordData[] = await mysqlExec(selQ.join('')) as mysqlRowsResult & RecordData[];
 
 	for(let pag of items) {
 
@@ -309,10 +311,10 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 							let l = a.length;
 							while(i < l) {
 								if(f.icon) {
-									val.push({id: parseInt(a[i - 1]), name: a[i], icon: a[i + 1]});
+									val.push({ id: parseInt(a[i - 1]), name: a[i], icon: a[i + 1] });
 									i += 3;
 								} else {
-									val.push({id: parseInt(a[i - 1]), name: a[i]});
+									val.push({ id: parseInt(a[i - 1]), name: a[i] });
 									i += 2;
 								}
 							}
@@ -322,12 +324,12 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 						if(pag[fieldName]) {
 							let a = pag[fieldName].split('␞');
 							if(f.icon) {
-								pag[fieldName] = {id: parseInt(a[0]), name: a[1], icon: a[2]};
+								pag[fieldName] = { id: parseInt(a[0]), name: a[1], icon: a[2] };
 							} else {
-								pag[fieldName] = {id: parseInt(a[0]), name: a[1]};
+								pag[fieldName] = { id: parseInt(a[0]), name: a[1] };
 							}
 						} else {
-							pag[fieldName] = {id: 0, name: 'deleted record.'};
+							pag[fieldName] = { id: 0, name: 'deleted record.' };
 						}
 					} else if(fieldType === FIELD_16_RATING) {
 						let r1 = pag.rates_1;
@@ -363,7 +365,7 @@ async function getRecords(nodeId, viewMask, recId, userSession = ADMIN_USER_SESS
 		countQ.push.apply(countQ, wheresBegin);
 		countQ.push.apply(countQ, wheres);
 		let total = await mysqlExec(countQ.join(''));
-		return {items, total: total[0]['COUNT(*)']};
+		return { items, total: total[0]['COUNT(*)'] };
 	} else {
 		if(items.length) {
 			return items[0];
@@ -384,10 +386,10 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 		throwError('Deletion access is denied');
 	}
 
-	await getNodeEventHandler(nodeId, 'beforeDelete', recordData, userSession);
+	await getNodeEventHandler(nodeId, ServerSideEventHadlersNames.beforeDelete, recordData, userSession);
 
 	await mysqlExec("UPDATE " + node.tableName + " SET status=0 WHERE id=" + recId + " LIMIT 1");
 	return 1;
 }
 
-export {getRecords, deleteRecord};
+export { getRecords, deleteRecord };

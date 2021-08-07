@@ -1,19 +1,19 @@
 
-import {mysqlExec} from "../core/mysql-connection";
-import {shouldBeAdmin} from "../core/admin/admin.js";
-import {reloadMetadataSchedule} from "../core/desc-node.js";
-import {throwError} from "../core/utils.js";
-import {L} from "../core/locale.js";
+import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "../core/mysql-connection";
+import { shouldBeAdmin } from "../core/admin/admin";
+import { NodeEventsHandlers, reloadMetadataSchedule } from "../core/desc-node";
+import { RecordData, RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";
+import { L } from "../core/locale";
 
-export default {
+const handlers: NodeEventsHandlers = {
 
-	beforeCreate: async function(data, userSession) {
+	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 		// shift all nodes in the same parent node
-		return mysqlExec("UPDATE _nodes SET prior=prior+10 WHERE (_nodesID =" + data._nodesID + ") AND (prior >=" + data.prior + ")");
+		await mysqlExec("UPDATE _nodes SET prior=prior+10 WHERE (_nodesID =" + data._nodesID + ") AND (prior >=" + data.prior + ")");
 	},
 
-	afterCreate: async function(data, userSession) {
+	afterCreate: async function(data: RecordDataWrite, userSession: UserSession) {
 
 		shouldBeAdmin(userSession);
 
@@ -23,7 +23,7 @@ export default {
 		const rpQ = "SELECT roleID, prevs FROM _roleprevs, _roles " +
 			"WHERE (_roleprevs.roleID = _roles.ID)AND(_roleprevs.nodeID=" + data._nodesID + ")";
 
-		const parentPrevs = await mysqlExec(rpQ);
+		const parentPrevs = await mysqlExec(rpQ) as mysqlRowsResult;
 
 		if(parentPrevs.length) {
 			await mysqlExec(parentPrevs.map((prev) => {
@@ -52,7 +52,7 @@ export default {
 
 			await mysqlExec(tblCrtQ);
 
-			const insertedId = (await mysqlExec("INSERT INTO \`" + data.tableName + "\` SET status=0, _usersID=0")).insertId;
+			const insertedId = (await mysqlExec("INSERT INTO \`" + data.tableName + "\` SET status=0, _usersID=0") as mysqlInsertResult).insertId;
 			await mysqlExec("UPDATE \`" + data.tableName + "\` SET ID=0 WHERE ID=" + insertedId);
 
 			//create default fields
@@ -65,7 +65,7 @@ export default {
 				const createdOnQ = `INSERT INTO _fields 
 				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,   selectFieldName, name,                 fdescription, maxLen, requirement, uniqu, _usersID, forSearch, nostore) VALUES
 				(${createdID},       1,        62,     2,     4,         'createdOn', '',              '${L('Created on')}', '',           0,      0,           0,     0,        1,         0);`;  //TODO add all languages
-				const dateFieldId = (await mysqlExec(createdOnQ)).insertId;
+				const dateFieldId = (await mysqlExec(createdOnQ) as mysqlInsertResult).insertId;
 				await mysqlExec('UPDATE _nodes SET _fieldsID=' + dateFieldId + ', reverse = 1 WHERE id=' + createdID);
 			}
 
@@ -86,12 +86,14 @@ export default {
 		reloadMetadataSchedule();
 	},
 
-	beforeDelete: async function(data, userSession) {
-		throwError('_nodes beforeCreate deletion event is not implemented');
-	},
-
-	beforeUpdate: (currentData, newData, userSession) => {
+	beforeUpdate: async function(currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 		reloadMetadataSchedule();
+	},
+
+	beforeDelete: async function(data: RecordData, userSession: UserSession) {
+		throwError('_nodes beforeCreate deletion event is not implemented');
 	}
 }
+
+export default handlers;

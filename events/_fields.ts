@@ -1,17 +1,15 @@
 
-import {mysqlExec} from "../core/mysql-connection";
-import {shouldBeAdmin} from "../core/admin/admin.js";
-import {mustBeUnset} from "../core/auth.js";
-import {getLangs, reloadMetadataSchedule, getNodeDesc} from "../core/desc-node.js";
-import {getRecords} from "../core/get-records.js";
-import {submitRecord} from "../core/submit.js";
-import {throwError} from "../core/utils.js";
-import {L} from "../core/locale.js";
+import { mysqlExec } from "../core/mysql-connection";
+import { shouldBeAdmin } from "../core/admin/admin";
+import { mustBeUnset } from "../core/auth";
+import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } from "../core/desc-node";
+import { getRecords } from "../core/get-records";
+import { submitRecord } from "../core/submit";
+import { L } from "../core/locale";
+import { FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_2_INT, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATICTEXT, PREVS_VIEW_ORG, RecordData, RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";
 
-export default {
-	createFieldInTable,
-
-	beforeCreate: async function(data, userSession) {
+const handlers: NodeEventsHandlers = {
+	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
 		if(data.multilang) {
@@ -33,7 +31,7 @@ export default {
 		await createFieldInTable(data);
 	},
 
-	afterCreate: async function(data, userSession) {
+	afterCreate: async function(data: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
 		const fieldType = data.fieldType;
@@ -61,7 +59,7 @@ export default {
 		reloadMetadataSchedule();
 	},
 
-	beforeUpdate: async function(currentData, newData, userSession) {
+	beforeUpdate: async function(currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
 
 		shouldBeAdmin(userSession);
 
@@ -133,11 +131,13 @@ export default {
 		reloadMetadataSchedule();
 	},
 
-	beforeDelete: async function(data, userSession) {
+	beforeDelete: async function(data: RecordData, userSession: UserSession) {
 		throwError('_fields beforeCreate deletion event is not implemented');
 	}
 }
 
+export default handlers;
+export { createFieldInTable };
 
 function getFieldTypeSQL(data) {
 	switch(data.fieldType) {
@@ -179,7 +179,7 @@ function getFieldTypeSQL(data) {
 	}
 }
 
-async function createFieldInTable(data) {
+async function createFieldInTable(data: RecordDataWrite) {
 
 	const nodeId = data.node_fields_linker;
 

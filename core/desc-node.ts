@@ -1,20 +1,20 @@
-import {existsSync} from "fs";
-import {join} from "path";
-import {mysqlExec} from "./mysql-connection";
-import ENV from "../ENV.js";
-import {setMainTainMode, usersSessionsStartedCount} from "./auth.js";
-import {throwError, isUserHaveRole, assert, PREVS_CREATE, FIELD_6_ENUM} from "./../www/js/bs-utils.js";
+import { existsSync } from "fs";
+import { join } from "path";
+import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
+import ENV from "../ENV";
+import { setMainTainMode, UserSession, usersSessionsStartedCount } from "./auth";
+import { throwError, isUserHaveRole, assert, FIELD_6_ENUM, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData } from "../www/js/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
 let fields;
 let nodes;
 let nodesById;
-let langs;
+let langs: UserLangEntry[];
 let eventsHandlers;
 
-const ADMIN_USER_SESSION = {};
-const GUEST_USER_SESSION = {};
+const ADMIN_USER_SESSION: UserSession = {} as UserSession;
+const GUEST_USER_SESSION: UserSession = {} as UserSession;
 
 const clientSideNodes = new Map();
 const nodesTreeCache = new Map();
@@ -32,7 +32,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION) {
 
 		if(srcNode && (prevs = getUserAccessToNode(srcNode, userSession))) {
 			let landQ = userSession.lang.prefix;
-			const ret = {
+			const ret: NodeDesc = {
 				id: srcNode.id,
 				singleName: srcNode["singleName" + landQ],
 				prevs,
@@ -43,7 +43,6 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION) {
 				isDoc: srcNode.isDoc,
 				staticLink: srcNode.staticLink,
 				tableName: srcNode.tableName,
-				parentf: srcNode._nodesID,
 				draftable: srcNode.draftable,
 				icon: srcNode.icon,
 				recPerPage: srcNode.recPerPage,
@@ -51,9 +50,6 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION) {
 				fields: srcNode.fields,
 				filters: srcNode.filters,
 				sortFieldName: srcNode.sortFieldName
-			}
-			if(prevs & PREVS_CREATE) {
-				ret.canCreate = 1;
 			}
 			clientSideNodes.set(nodeId, ret);
 		} else {
@@ -81,7 +77,7 @@ function getNodesTree(userSession) { // get nodes tree visible to user
 
 	if(!nodesTreeCache.has(cacheKey)) {
 		let nodesTree = [];
-		let ret = {nodesTree, options};
+		let ret = { nodesTree, options };
 		for(let nodeSrc of nodes) {
 			let prevs = getUserAccessToNode(nodeSrc, userSession);
 			if(prevs) {
@@ -131,7 +127,7 @@ async function initNodesData() { // load whole nodes data in to memory
 	let fields_new = new Map();
 	let nodes_new;
 	let nodesById_new;
-	let langs_new;
+	let langs_new: UserLangEntry[];
 	let eventsHandlers_new = new Map();
 
 	options = {
@@ -169,12 +165,11 @@ async function initNodesData() { // load whole nodes data in to memory
 
 		nodeData.rolesToAccess = rolesToAccess;
 		nodeData.prevs = 65535;
-		nodeData.canCreate = 1;
 		let sortField = nodeData._fieldsID;
 
 		if(nodeData.isDoc) {
-			let query = ("SELECT * FROM _fields WHERE node_fields_linker=" + nodeData.id + " AND status=1 ORDER BY prior");
-			let fields = await mysqlExec(query);
+			let query = "SELECT * FROM _fields WHERE node_fields_linker=" + nodeData.id + " AND status=1 ORDER BY prior";
+			let fields = await mysqlExec(query) as mysqlRowsResult;
 			for(let field of fields) {
 
 				if(field.id === sortField) {
@@ -188,7 +183,7 @@ async function initNodesData() { // load whole nodes data in to memory
 				fields_new.set(field.id, field);
 			}
 			nodeData.fields = fields;
-			const filtersRes = await mysqlExec("SELECT id,filter,name,view,hiPriority, fields FROM _filters WHERE _nodesID=" + nodeData.id);
+			const filtersRes = await mysqlExec("SELECT id,filter,name,view,hiPriority, fields FROM _filters WHERE _nodesID=" + nodeData.id) as mysqlRowsResult;
 
 			const filters = {};
 			for(let f of filtersRes) {
@@ -208,7 +203,7 @@ async function initNodesData() { // load whole nodes data in to memory
 		}
 	}
 
-	langs_new = await mysqlExec("SELECT id, name, code FROM _languages WHERE id <> 0");
+	langs_new = await mysqlExec("SELECT id, name, code FROM _languages WHERE id <> 0") as UserLangEntry[];
 	for(let l of langs_new) {
 		l.prefix = l.code ? ('$' + l.code) : '';
 	}
@@ -222,26 +217,44 @@ async function initNodesData() { // load whole nodes data in to memory
 	nodesTreeCache.clear();
 }
 
-function getLangs() {
+function getLangs(): UserLangEntry[] {
 	return langs;
 }
 
-async function getNodeEventHandler(nodeId, eventName, d1, d2, d3) {
+enum ServerSideEventHadlersNames {
+	beforeCreate = 'beforeCreate',
+	afterCreate = 'afterCreate',
+	beforeUpdate = 'beforeUpdate',
+	beforeDelete = 'beforeDelete',
+}
+
+interface NodeEventsHandlers {
+	beforeCreate?: (data: RecordDataWrite, userSession: UserSession) => Promise<void>;
+	afterCreate?: (data: RecordDataWrite, userSession: UserSession) => Promise<void>;
+	beforeUpdate?: (currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) => Promise<void>;
+	beforeDelete?: (data: RecordData, userSession: UserSession) => Promise<void>;
+}
+
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames.beforeCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames.afterCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames.beforeUpdate, currentData: RecordData, newData: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames.beforeDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames, data1, data2, data3?): Promise<void> {
 	if(eventsHandlers.has(nodeId)) {
 		const h = eventsHandlers.get(nodeId)[eventName];
 		/// #if DEBUG
-		d1 = wrapObjectToDestroy(d1);
-		d2 = wrapObjectToDestroy(d2);
-		d3 = wrapObjectToDestroy(d3);
+		data1 = wrapObjectToDestroy(data1);
+		data2 = wrapObjectToDestroy(data2);
+		data3 = wrapObjectToDestroy(data3);
 		/// #endif
 		if(h) {
-			await h(d1, d2, d3);
+			await h(data1, data2, data3);
 		}
 
 		/// #if DEBUG
-		destroyObject(d1);
-		destroyObject(d2);
-		destroyObject(d3);
+		destroyObject(data1);
+		destroyObject(data2);
+		destroyObject(data3);
 		/// #endif
 	}
 }
@@ -251,7 +264,7 @@ const wrapObjectToDestroy = (o) => {
 	let destroyed = false;
 	if(o) {
 		return new Proxy(o, {
-			set: function(obj, prop, value, a, b, c) {
+			set: function(obj, prop, value, a) {
 				if(destroyed) {
 					throwError('Attempt to assign data after axit on eventHandler. Has eventHandler not "await" for something?');
 				}
@@ -277,4 +290,8 @@ const destroyObject = (o) => {
 
 
 
-export {ENV, getNodeDesc, getFieldDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule};
+export {
+	NodeEventsHandlers,
+	ENV, getNodeDesc, getFieldDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs,
+	ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule, ServerSideEventHadlersNames
+};
