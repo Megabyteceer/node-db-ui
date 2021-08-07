@@ -3,7 +3,7 @@ import R from "../r.js";
 import React, {Component} from "react";
 import Modal from "../modal.js";
 import {getData, L, myAlert, renderIcon, submitData} from "../utils.js";
-import {FIELD_17_TAB} from "../bs-utils.js";
+import {FIELD_17_TAB} from "../bs-utils";
 
 var node;
 

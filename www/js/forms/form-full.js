@@ -6,7 +6,7 @@ import eventProcessingMixins from "./event-processing-mixins.js";
 import NodeAdmin from "../admin/node-admin.js";
 import LoadingIndicator from "../loading-indicator.js";
 import R from "../r.js";
-import {FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_5_BOOL, FIELD_7_Nto1, PREVS_PUBLISH} from "../bs-utils.js";
+import {FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_5_BOOL, FIELD_7_Nto1, PREVS_PUBLISH} from "../bs-utils";
 import React from "react";
 import {iAdmin} from "../user.js";
 

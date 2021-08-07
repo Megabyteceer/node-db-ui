@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import {FIELD_4_DATETIME} from "../bs-utils.js";
+import {FIELD_4_DATETIME} from "../bs-utils";
 import R from "../r.js";
 import moment from "moment";
 import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDatetime, toReadableTime} from "../utils.js";

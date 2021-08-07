@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import {assert} from "../bs-utils.js";
+import {assert} from "../bs-utils";
 import {Component} from "react";
 import {Highlighter} from "react-highlight-words";
 

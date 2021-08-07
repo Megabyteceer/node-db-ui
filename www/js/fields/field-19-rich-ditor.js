@@ -1,5 +1,5 @@
 import R from "../r.js";
-import {FIELD_19_RICHEDITOR} from "../bs-utils.js";
+import {FIELD_19_RICHEDITOR} from "../bs-utils";
 import {L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";

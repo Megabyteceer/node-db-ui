@@ -5,7 +5,7 @@ import List from "../forms/list.js";
 import {backupCreationData, deleteRecord, getBackupData, getNodeData, L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
-import {FIELD_15_1toN} from "../bs-utils.js";
+import {FIELD_15_1toN} from "../bs-utils";
 
 
 // @ts-ignore

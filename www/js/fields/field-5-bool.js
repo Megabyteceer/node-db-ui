@@ -1,4 +1,4 @@
-import {FIELD_5_BOOL} from "../bs-utils.js";
+import {FIELD_5_BOOL} from "../bs-utils";
 import R from "../r.js";
 import React, {Component} from "react";
 import {L, renderIcon} from "../utils.js";

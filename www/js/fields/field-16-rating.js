@@ -1,4 +1,4 @@
-import {FIELD_16_RATING} from "../bs-utils.js";
+import {FIELD_16_RATING} from "../bs-utils";
 import R from "../r.js";
 import {L} from "../utils.js";
 import {registerFieldClass} from "../utils.js";

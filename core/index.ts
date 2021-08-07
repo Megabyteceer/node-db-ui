@@ -81,8 +81,8 @@ server.on('request', (req, res) => {
 					const resHeaders = {
 						'content-type': 'application/json'
 					};
-					let ret = {
-						result, error, isGuest: false, notifications: null,
+					let ret: any = {
+						result, error, isGuest: false,
 						/// #if DEBUG
 						debug: null
 						/// #endif

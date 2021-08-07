@@ -1,7 +1,7 @@
 import Notify from "./notify.js";
 import ReactDOM from "react-dom";
 import R from "./r.js";
-import {assert, FIELD_1_TEXT, isUserHaveRole, PREVS_PUBLISH} from "./bs-utils.js";
+import {assert, FIELD_1_TEXT, isUserHaveRole, PREVS_PUBLISH} from "./bs-utils";
 import LoadingIndicator from "./loading-indicator.js";
 import User from "./user.js";
 import Modal from "./modal.js";

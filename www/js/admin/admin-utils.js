@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import React from "react";
-import {FIELD_17_TAB} from "../bs-utils.js";
+import {FIELD_17_TAB} from "../bs-utils";
 import R from "../r.js";
 import Select from "../components/select.js";
 import {consoleDir, getNode, getNodeData, isLitePage, popup, refreshForm, renderIcon, submitRecord} from "../utils.js";

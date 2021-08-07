@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import {FIELD_14_NtoM, FIELD_7_Nto1} from "../bs-utils.js";
+import {FIELD_14_NtoM, FIELD_7_Nto1} from "../bs-utils";
 import R from "../r.js";
 import {getClassForField, L, n2mValuesEqual, renderIcon, sp, UID} from "../utils.js";
 import {registerFieldClass} from "../utils.js";

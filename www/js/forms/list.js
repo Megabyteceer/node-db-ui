@@ -1,5 +1,5 @@
 import R from "../r.js";
-import {FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE} from "../bs-utils.js";
+import {FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE} from "../bs-utils";
 import FieldAdmin from "../admin/field-admin.js";
 import NodeAdmin from "../admin/node-admin.js";
 import LeftBar from "../left-bar.js";

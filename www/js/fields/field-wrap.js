@@ -1,4 +1,4 @@
-import {FIELD_14_NtoM, FIELD_15_1toN, FIELD_18_BUTTON, FIELD_7_Nto1, FIELD_8_STATICTEXT} from "../bs-utils.js";
+import {FIELD_14_NtoM, FIELD_15_1toN, FIELD_18_BUTTON, FIELD_7_Nto1, FIELD_8_STATICTEXT} from "../bs-utils";
 import R from "../r.js";
 import React, {Component} from "react";
 import FieldAdmin from "../admin/field-admin.js";

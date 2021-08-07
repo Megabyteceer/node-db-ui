@@ -1,4 +1,4 @@
-import {FIELD_18_BUTTON} from "../bs-utils.js";
+import {FIELD_18_BUTTON} from "../bs-utils";
 import R from "../r.js";
 import fieldsEvents from "../events/fields_events.js";
 import {renderIcon} from "../utils.js";

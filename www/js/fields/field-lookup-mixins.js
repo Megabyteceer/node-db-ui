@@ -1,4 +1,4 @@
-import {FIELD_15_1toN} from "../bs-utils.js";
+import {FIELD_15_1toN} from "../bs-utils";
 import fieldMixins from "./field-mixins.js";
 
 export default class fieldLookupMixins extends fieldMixins {

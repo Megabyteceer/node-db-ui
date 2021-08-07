@@ -1,4 +1,4 @@
-import {FIELD_1_TEXT} from "../bs-utils.js";
+import {FIELD_1_TEXT} from "../bs-utils";
 import R from "../r.js";
 import {consoleDir, registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";

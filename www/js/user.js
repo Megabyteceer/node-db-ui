@@ -7,7 +7,7 @@ import {ENV} from "./main-frame.js";
 import moment from "moment";
 import {Component} from "react";
 import R from "./r.js";
-import {ADMIN_ROLE_ID, isUserHaveRole} from "./bs-utils.js";
+import {ADMIN_ROLE_ID, isUserHaveRole} from "./bs-utils";
 
 
 function setUserOrg(orgId) {

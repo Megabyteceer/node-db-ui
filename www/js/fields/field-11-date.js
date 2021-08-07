@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import {FIELD_11_DATE} from "../bs-utils.js";
+import {FIELD_11_DATE} from "../bs-utils";
 import R from "../r.js";
 import moment from "moment";
 import {innerDatetimeFormat, readableDateFormat, registerFieldClass, toReadableDate} from "../utils.js";

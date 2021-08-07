@@ -1,4 +1,4 @@
-import {FIELD_7_Nto1} from "../bs-utils.js";
+import {FIELD_7_Nto1} from "../bs-utils";
 import R from "../r.js";
 import React from "react";
 import FormFull from "../forms/form-full.js";

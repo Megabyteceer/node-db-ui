@@ -3,7 +3,7 @@ import React from "react";
 
 import R from "../r.js";
 import {Component} from "react";
-import {FIELD_21_FILE} from "../bs-utils.js";
+import {FIELD_21_FILE} from "../bs-utils";
 import {ENV} from "../main-frame.js";
 import Modal from "../modal.js";
 import {checkFileSize, getReadableUploadSize, idToFileUrl, L, renderIcon, serializeForm, submitData} from "../utils.js";

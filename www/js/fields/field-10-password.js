@@ -1,4 +1,4 @@
-import {FIELD_10_PASSWORD} from "../bs-utils.js";
+import {FIELD_10_PASSWORD} from "../bs-utils";
 import R from "../r.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";

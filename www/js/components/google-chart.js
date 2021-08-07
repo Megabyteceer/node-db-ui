@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {Component} from "react";
 import R from "../r.js";
 import {renderIcon} from "../utils.js";

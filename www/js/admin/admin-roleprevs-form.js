@@ -1,4 +1,4 @@
-import {PREVS_CREATE, PREVS_DELETE, PREVS_EDIT_OWN, PREVS_PUBLISH, PREVS_VIEW_OWN} from "../bs-utils.js";
+import {PREVS_CREATE, PREVS_DELETE, PREVS_EDIT_OWN, PREVS_PUBLISH, PREVS_VIEW_OWN} from "../bs-utils";
 import R from "../r.js";
 import React, {Component} from "react";
 import BaseForm from "../forms/form-mixins.js";

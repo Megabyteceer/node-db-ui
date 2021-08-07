@@ -1,4 +1,4 @@
-import {FIELD_6_ENUM} from "../bs-utils.js";
+import {FIELD_6_ENUM} from "../bs-utils";
 import R from "../r.js";
 import React from "react";
 import Select from "../components/select.js";
