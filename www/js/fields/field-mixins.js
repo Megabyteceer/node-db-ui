@@ -1,5 +1,9 @@
+import ReactDOM from "react-dom";
+import React from "react";
+
+import {assert} from "../bs-utils.js";
 import {Component} from "react";
-import {Highlighter} from "../libs/libs.js";
+import {Highlighter} from "react-highlight-words";
 
 export default class fieldMixins extends Component {
 

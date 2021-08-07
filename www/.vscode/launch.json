@@ -11,10 +11,10 @@
 			"webRoot": "${workspaceRoot}",
 			"outFiles": [],
 			"disableNetworkCache": true,
-			"sourceMaps": false,
+			"sourceMaps": true,
 			"skipFiles": [
-				"<node_internals>/**",
-				"**/node_modules/**"
+				"<nod e_internals>/**",
+				"**/nod e_modules/**"
 			],
 			"vueComponentPaths": [],
 			"enableContentValidation": false,
@@ -22,20 +22,6 @@
 			"cleanUp": false,
 			"url": "https://node-db-ui.com:1443/#n/82/r/2/e",
 			"userDataDir": "C:\\tmp\\userdir"
-		},
-		{
-			"name": "FF",
-			"type": "firefox",
-			"request": "launch",
-			"reAttach": true,
-			"webRoot": "${workspaceFolder}",
-			"url": "https://node-db-ui.com:1443/#n/82/r/7/e",
-			"pathMappings": [
-				{
-					"url": "https://node-db-ui.com:1443",
-					"path": "${workspaceFolder}"
-				}
-			]
 		}
 	]
 }

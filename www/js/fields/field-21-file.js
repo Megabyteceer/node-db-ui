@@ -1,5 +1,9 @@
-import {R} from "js/entry.js";
+import ReactDOM from "react-dom";
+import React from "react";
+
+import R from "../r.js";
 import {Component} from "react";
+import {FIELD_21_FILE} from "../bs-utils.js";
 import {ENV} from "../main-frame.js";
 import Modal from "../modal.js";
 import {checkFileSize, getReadableUploadSize, idToFileUrl, L, renderIcon, serializeForm, submitData} from "../utils.js";
@@ -66,8 +70,6 @@ export default class FileFormBody extends Component {
 	}
 
 	_onChange(e) {
-		var _this = this;
-
 		e.preventDefault();
 		var files = undefined;
 		if(e.dataTransfer) {

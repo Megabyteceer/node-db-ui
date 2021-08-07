@@ -1,42 +1,35 @@
-$(function () {
-	window.exports = {};
-	window.module = {};
-	Promise.all([
-		import('../js/node_modules/bootstrap/dist/js/bootstrap.js').then((m) => {
-			window.Bootstrap = window.module.exports;
-		}),
-		import('../js/node_modules/@popperjs/core/dist/umd/popper.js').then((m) => {
-			window.Popper = window.exports;
-		})
-	]).then(() => {
+$(async function () {
 
-		var s = $('#summernote');
-		var iframeId = location.href.split('iframeId=').pop();
+	window.Bootstrap = await import("bootstrap");
+	window.Popper = await import("popper");
 
-		window.addEventListener("message", (event) => {
+	var s = $('#summernote');
+	var iframeId = location.href.split('iframeId=').pop();
 
-			var data = event.data;
+	window.addEventListener("message", (event) => {
 
-			if(data.hasOwnProperty('options')) {
+		var data = event.data;
 
-				data.options.callbacks = {
-					onChange: function (contents, $editable) {
-						sendValueToParent();
-					}
-				};
+		if(data.hasOwnProperty('options')) {
 
-				s.summernote(data.options);
-			}
-			if(data.hasOwnProperty('value')) {
-				s.summernote('code', data.value);
-			} else if(data.hasOwnProperty('onSaveRichEditor')) {
-				sendValueToParent();
-			}
-		}, false);
+			data.options.callbacks = {
+				onChange: function (contents, $editable) {
+					sendValueToParent();
+				}
+			};
 
-		function sendValueToParent() {
-			window.parent.postMessage({id: iframeId, value: s.summernote('code')}, '*');
+			s.summernote(data.options);
 		}
-		window.parent.postMessage({id: iframeId}, '*');
-	});
+		if(data.hasOwnProperty('value')) {
+			s.summernote('code', data.value);
+		} else if(data.hasOwnProperty('onSaveRichEditor')) {
+			sendValueToParent();
+		}
+	}, false);
+
+	function sendValueToParent() {
+		window.parent.postMessage({id: iframeId, value: s.summernote('code')}, '*');
+	}
+	window.parent.postMessage({id: iframeId}, '*');
+
 });

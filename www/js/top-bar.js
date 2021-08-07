@@ -1,5 +1,5 @@
-import {Component} from "react";
-import {R} from "./entry.js";
+import React, {Component} from "react";
+import R from "./r.js";
 import User from "./user.js";
 
 export default class TopBar extends Component {

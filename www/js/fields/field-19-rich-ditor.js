@@ -1,4 +1,5 @@
-import {R} from "js/entry.js";
+import R from "../r.js";
+import {FIELD_19_RICHEDITOR} from "../bs-utils.js";
 import {L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
@@ -55,10 +56,6 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 
 	componentWillUnmount() {
 		delete (listeners[this.iframeId]);
-		if(this.interval) {
-			clearInterval(this.interval);
-			delete (this.interval);
-		}
 	}
 
 	async getMessageIfInvalid() {

@@ -1,4 +1,4 @@
-import {R} from "js/entry.js";
+import R from "../r.js";
 import {Component} from "react";
 import {renderIcon} from "../utils.js";
 

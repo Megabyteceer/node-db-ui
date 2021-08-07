@@ -1,8 +1,8 @@
 
 
-import {Component} from "react";
+import React, {Component} from "react";
 import DebugPanel from "./debug-panel.js";
-import {R} from "./entry.js";
+import R from "./r.js";
 import LeftBar from "./left-bar.js";
 import LoadingIndicator from "./loading-indicator.js";
 import Modal from "./modal.js";

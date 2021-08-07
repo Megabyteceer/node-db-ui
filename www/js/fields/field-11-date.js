@@ -1,5 +1,9 @@
-import {R} from "js/entry.js";
-import {moment} from "../libs/libs.js";
+import ReactDOM from "react-dom";
+import React from "react";
+
+import {FIELD_11_DATE} from "../bs-utils.js";
+import R from "../r.js";
+import moment from "moment";
 import {innerDatetimeFormat, readableDateFormat, registerFieldClass, toReadableDate} from "../utils.js";
 import {dateFieldMixins} from "./field-4-datetime.js";
 

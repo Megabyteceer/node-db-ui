@@ -1,10 +1,11 @@
-import {R} from "js/entry.js";
-import {Component} from "react";
-import {formsEventsOnLoad, formsEventsOnSave} from "../events/forms_events.js";
+import R from "../r.js";
+import React, {Component} from "react";
 import {getNode, getNodeData, keepInWindow, L, loactionToHash, renderIcon, sp} from "../utils.js";
 import {admin_editSource} from "./admin-event-editor.js";
 import admin from "./admin-utils.js";
 import FieldAdmin from "./field-admin.js";
+let FormEvents;
+import("../events/forms_events.js").then(m => FormEvents = m.default);
 
 var showedNodeId;
 
@@ -93,12 +94,14 @@ export default class NodeAdmin extends Component {
 
 		var borderOnSave;
 		var borderOnLoad;
-		if(formsEventsOnSave.hasOwnProperty(nodeId)) {
+
+		//TODO: fix borders
+		if(FormEvents.prototype[node.tableName + '_onload']) {
 			borderOnSave = " admin-button-highlighted";
 		} else {
 			borderOnSave = '';
 		}
-		if(formsEventsOnLoad.hasOwnProperty(nodeId)) {
+		if(FormEvents.prototype[node.tableName + '_onsave']) {
 			borderOnLoad = " admin-button-highlighted";
 		} else {
 			borderOnLoad = '';

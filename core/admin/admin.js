@@ -1,12 +1,10 @@
-"use strict";
 
-const {isAdmin} = require("../../www/both-side-utils");
-const {getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc} = require("../desc-node");
-const {mysqlExec} = require("../mysql-connection");
-const path = require('path');
-const fs = require('fs');
-const {throwError} = require("../utils.js");
+import {getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc} from "../desc-node";
+import {mysqlExec} from "../mysql-connection";
 
+import {throwError, isAdmin} from "../../www/js/bs-utils.js";
+import {join} from "path";
+import {readFileSync, writeFileSync} from "fs";
 
 async function nodePrevs(reqData, userSession) {
 	shouldBeAdmin(userSession);
@@ -66,9 +64,11 @@ function substrCount(string, subString) {
 }
 
 function processSource(fileName, startMarker, endMarker, newSource, itemId, type, handler, functionName) {
-	fileName = path.join(__dirname, fileName);
 
-	let text = fs.readFileSync(fileName, 'utf8').replaceAll("\n", "\n");
+
+	fileName = join(__dirname, fileName);
+
+	let text = readFileSync(fileName, 'utf8').replaceAll("\r\n", "\n");
 
 	const c1 = substrCount(text, startMarker);
 	const c2 = substrCount(text, endMarker);
@@ -94,9 +94,9 @@ function processSource(fileName, startMarker, endMarker, newSource, itemId, type
 		if(start >= 0) { //replace handler
 			const re = new RegExp("[^\\n]*" + startMarker.replaceAll('/', '\\/') + ".*" + endMarker.replaceAll('/', '\\/'), 'sm');
 			if(!newSource.trim()) { // remove handler
-				fs.writeFileSync(fileName, text.replace(re, '')); //can use sync, because events update is very rare and admin only operation
+				writeFileSync(fileName, text.replace(re, '')); //can use sync, because events update is very rare and admin only operation
 			} else {
-				fs.writeFileSync(fileName, text.substring(0, start) + '\n' + newSource + '\n' + text.substring(end));
+				writeFileSync(fileName, text.substring(0, start) + '\n' + newSource + '\n' + text.substring(end));
 			}
 		} else if(newSource) {
 			//add new handler
@@ -115,7 +115,7 @@ function processSource(fileName, startMarker, endMarker, newSource, itemId, type
 					functionStart = "formsEventsOnSave[" + itemId + "] = async function " + functionName + "() {" + startMarker;
 				}
 			}
-			fs.writeFileSync(fileName, text.substring(0, start) + functionStart + '\n' + newSource + '\n' + endMarker + '\n\n' + text.substring(start));
+			writeFileSync(fileName, text.substring(0, start) + functionStart + '\n' + newSource + '\n' + endMarker + '\n\n' + text.substring(start));
 		}
 		return 1;
 	}
@@ -141,4 +141,4 @@ async function getClientEventHandler(reqData, userSession) {
 	}
 }
 
-module.exports = {nodePrevs, getClientEventHandler, shouldBeAdmin, clearCache};
+export {nodePrevs, getClientEventHandler, shouldBeAdmin, clearCache};

@@ -1,9 +1,11 @@
-import {R} from "js/entry.js";
+import ReactDOM from "react-dom";
+import React from "react";
+import {FIELD_17_TAB} from "../bs-utils.js";
+import R from "../r.js";
 import Select from "../components/select.js";
-import FormFull from "../forms/form-full.js";
-import LeftBar from "../left-bar.js";
-import MainFrame from "../main-frame.js";
 import {consoleDir, getNode, getNodeData, isLitePage, popup, refreshForm, renderIcon, submitRecord} from "../utils.js";
+import FormFull from "../forms/form-full.js";
+import MainFrame from "../main-frame.js";
 
 const admin = {};
 
@@ -136,7 +138,7 @@ admin.moveField = async (fIndex, form, node, direction = 0) => {
 
 admin.exchangeNodes = async (node1, node2) => {
 	if(node1 && node2) {
-		let ret = await Promise.all([submitRecord(4, {
+		await Promise.all([submitRecord(4, {
 			prior: node1.prior
 		}, node2.id).then(() => {
 			console.log(1);

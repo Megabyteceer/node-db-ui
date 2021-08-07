@@ -1,9 +1,8 @@
 
-const {mysqlExec} = require("../core/mysql-connection");
-const {isAdmin} = require("../www/both-side-utils");
-const {getPasswordHash} = require("../core/auth");
-const crypto = require('crypto');
-const {submitRecord} = require("../core/submit");
+import {mysqlExec} from "../core/mysql-connection";
+import {getPasswordHash} from "../core/auth";
+import crypto from 'crypto';
+import {submitRecord} from "../core/submit";
 
 async function clearUserParams(data, currentData, userSession) {
 
@@ -37,7 +36,7 @@ async function clearUserParams(data, currentData, userSession) {
 	data.public_google = currentData.show_google ? currentData.soc_google : 'hidden_91d2g7';
 }
 
-module.exports = {
+export default {
 	beforeUpdate: async function(currentData, newData, userSession) {
 		if(!isAdmin(userSession)) {
 			delete newData.email;

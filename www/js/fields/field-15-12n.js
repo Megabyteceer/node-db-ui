@@ -1,9 +1,12 @@
-import {R} from "js/entry.js";
+import R from "../r.js";
+import React from "react";
 import FormFull from "../forms/form-full.js";
 import List from "../forms/list.js";
 import {backupCreationData, deleteRecord, getBackupData, getNodeData, L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
+import {FIELD_15_1toN} from "../bs-utils.js";
+
 
 // @ts-ignore
 registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixins {
@@ -32,7 +35,6 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 			for(i = 0; i < subForms.length; i++) {
 				var form = subForms[i];
 				form.prepareToBackup();
-				var initialData = form.props.initialData;
 				ret.push(form.currentData);
 			}
 		}

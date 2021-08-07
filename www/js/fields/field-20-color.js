@@ -1,6 +1,7 @@
 "use strict";
 
-import {R} from "js/entry.js";
+import R from "../r.js";
+import {FIELD_20_COLOR} from "../bs-utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 

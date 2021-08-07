@@ -1,5 +1,5 @@
 import {Component} from "react";
-import {goBack} from "../utils.js";
+import {currentFormParameters, goBack} from "../utils.js";
 
 
 export default class BaseForm extends Component {
@@ -11,10 +11,19 @@ export default class BaseForm extends Component {
 		this.fieldsRefs = {};
 		this.cancelClick = this.cancelClick.bind(this);
 		this.header = '';
+		this.onCancelCallback = null;
 	}
 
 	UNSAFE_componentWillReceiveProps(newProps) {
 		this.filters = $.extend({}, newProps.filters);
+	}
+
+	callOnTabShowEvent(tabNameToShow) {
+
+	}
+
+	refreshData() {
+
 	}
 
 	changeFilter(name, v, refresh) {

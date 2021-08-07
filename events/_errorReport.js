@@ -1,7 +1,7 @@
-const {mail_utf8} = require("../core/auth.js");
-const ENV = require("../ENV.js");
+import {mail_utf8} from "../core/auth.js";
+import ENV from "../ENV.js";
 
-module.exports = {
+export default {
 	afterCreate: async function(data, userSession) {
 		debugger;
 		if(ENV.ERROR_NOTIFY_EMAIL) {

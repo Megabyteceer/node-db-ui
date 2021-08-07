@@ -1,8 +1,9 @@
-import {R} from "js/entry.js";
-import {Component} from "react";
+import {FIELD_14_NtoM, FIELD_15_1toN, FIELD_18_BUTTON, FIELD_7_Nto1, FIELD_8_STATICTEXT} from "../bs-utils.js";
+import R from "../r.js";
+import React, {Component} from "react";
 import FieldAdmin from "../admin/field-admin.js";
-import {iAdmin} from "../user.js";
 import {consoleLog, debugError, getClassForField, renderIcon, scrollToVisible, setFormFilter} from "../utils.js";
+import {iAdmin} from "../user.js";
 
 class FieldHelp extends Component {
 	constructor(props) {

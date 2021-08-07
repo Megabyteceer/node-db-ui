@@ -1,16 +1,15 @@
-"use strict";
 /// #if DEBUG
-const {notificationOut, throwError} = require("./utils.js");
+import {notificationOut, throwError, FIELD_14_NtoM, FIELD_4_DATETIME, FIELD_11_DATE, FIELD_7_Nto1, FIELD_17_TAB, FIELD_19_RICHEDITOR, FIELD_10_PASSWORD, FIELD_1_TEXT, FIELD_12_PICTURE, FIELD_21_FILE, FIELD_5_BOOL, FIELD_15_1toN, PREVS_ANY, PREVS_PUBLISH, isAdmin, assert} from "./../www/js/bs-utils.js";
 /// #endif
-const fs = require('fs');
-const path = require('path');
-const ENV = require("../ENV.js");
-const {isAdmin} = require("../www/both-side-utils");
-const {getNodeEventHandler, getNodeDesc, ADMIN_USER_SESSION, getFieldDesc} = require("./desc-node");
-const {getRecords} = require("./get-records");
-const {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit} = require("./mysql-connection");
-const {UPLOADS_FILES_PATH, idToImgURLServer} = require('./upload');
-const {L} = require("./locale.js");
+
+import ENV from "../ENV.js";
+import {getNodeEventHandler, getNodeDesc, getFieldDesc} from "./desc-node";
+import {getRecords} from "./get-records";
+import {mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit} from "./mysql-connection";
+import {UPLOADS_FILES_PATH, idToImgURLServer} from './upload';
+import {L} from "./locale.js";
+import {join} from "path";
+import {unlink} from "fs";
 
 
 const blockTags = [];
@@ -218,7 +217,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 									if(fieldType === FIELD_12_PICTURE) {
 										filesToDelete.push(idToImgURLServer(realDataBefore[fieldName]));
 									} else {
-										filesToDelete.push(path.join(UPLOADS_FILES_PATH, realDataBefore[fieldName]));
+										filesToDelete.push(join(UPLOADS_FILES_PATH, realDataBefore[fieldName]));
 									}
 								}
 							}
@@ -259,7 +258,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 							if(f.maxlen && fieldVal.toString().length > f.maxlen) {
 								throwError("Value -length for field '" + fieldName + "' (" + tableName + ") is longer that " + f.maxlen);
 							}
-							insQ.push(fieldVal);
+							insQ.push(fieldVal.toString());
 							break;
 					}
 				}
@@ -339,7 +338,7 @@ async function submitRecord(nodeId, data, recId = false, userSession) {
 		}
 		if(filesToDelete) {
 			for(let f of filesToDelete) {
-				fs.unlink(f, () => { });
+				unlink(f, () => { });
 			}
 		}
 		return recId;
@@ -367,4 +366,4 @@ function uniquCheck(fieldId, nodeId, val, recId, userSession) {
 	return uniquCheckInner(getNodeDesc(nodeId, userSession).tableName, getFieldDesc(fieldId).fieldName, val, recId);
 }
 
-module.exports = {submitRecord, uniquCheck};
+export {submitRecord, uniquCheck};

@@ -1,14 +1,14 @@
 
-const {mysqlExec} = require("../core/mysql-connection");
-const {shouldBeAdmin} = require("../core/admin/admin.js");
-const {mustBeUnset} = require("../core/auth.js");
-const {getLangs, reloadMetadataSchedule, getNodeDesc} = require("../core/desc-node.js");
-const {getRecords} = require("../core/get-records.js");
-const {submitRecord} = require("../core/submit.js");
-const {throwError} = require("../core/utils.js");
-const {L} = require("../core/locale.js");
+import {mysqlExec} from "../core/mysql-connection";
+import {shouldBeAdmin} from "../core/admin/admin.js";
+import {mustBeUnset} from "../core/auth.js";
+import {getLangs, reloadMetadataSchedule, getNodeDesc} from "../core/desc-node.js";
+import {getRecords} from "../core/get-records.js";
+import {submitRecord} from "../core/submit.js";
+import {throwError} from "../core/utils.js";
+import {L} from "../core/locale.js";
 
-module.exports = {
+export default {
 	createFieldInTable,
 
 	beforeCreate: async function(data, userSession) {

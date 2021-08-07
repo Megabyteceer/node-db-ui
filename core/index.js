@@ -1,16 +1,15 @@
-"use strict";
-const http = require('http');
-const api = require('./core/api.js');
-const {startSession, authorizeUserByID, finishSession, createSession} = require('./core/auth.js');
-const {initNodesData, ADMIN_USER_SESSION, GUEST_USER_SESSION} = require('./core/desc-node.js');
-const server = http.createServer();
-const performance = require('perf_hooks').performance;
-const multipart = require('parse-multipart-data');
-require('./core/locale.js');
-const {mysqlDebug} = require("./core/mysql-connection.js");
 
-const Promise = require('promise-polyfill');
-global.Promise = Promise;
+import {createServer} from 'http';
+import api from './api.js';
+import {startSession, authorizeUserByID, finishSession} from './auth.js';
+import {initNodesData, ADMIN_USER_SESSION, GUEST_USER_SESSION} from './desc-node.js';
+import {performance} from 'perf_hooks';
+import {getBoundary, parse} from 'parse-multipart-data';
+import './locale.js';
+import {mysqlDebug} from "./mysql-connection.js";
+import {GUEST_ROLE_ID, assert, ADMIN_ROLE_ID, isUserHaveRole} from "./../www/js/bs-utils.js";
+
+const server = createServer();
 
 server.on('request', (req, res) => {
 	if(req.method === 'POST') {
@@ -46,11 +45,11 @@ server.on('request', (req, res) => {
 
 
 				if(isMultipart) {
-					let boundary = multipart.getBoundary(req.headers['content-type']);
+					let boundary = getBoundary(req.headers['content-type']);
 					if(Array.isArray(body)) {
 						body = Buffer.concat(body);
 					}
-					let parts = multipart.parse(body, boundary);
+					let parts = parse(body, boundary);
 					body = {};
 					for(let part of parts) {
 						if(part.filename) {

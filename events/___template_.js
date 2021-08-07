@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 
 	beforeCreate: async function(data, userSession) {
 

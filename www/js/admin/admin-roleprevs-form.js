@@ -1,5 +1,6 @@
-import {R} from "js/entry.js";
-import {Component} from "react";
+import {PREVS_CREATE, PREVS_DELETE, PREVS_EDIT_OWN, PREVS_PUBLISH, PREVS_VIEW_OWN} from "../bs-utils.js";
+import R from "../r.js";
+import React, {Component} from "react";
 import BaseForm from "../forms/form-mixins.js";
 import {FormLoaderCog} from "../stage.js";
 import {iAdmin} from "../user.js";

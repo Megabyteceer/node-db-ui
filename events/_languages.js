@@ -1,9 +1,9 @@
-const {reloadMetadataSchedule} = require("../core/desc-node.js");
-const {getRecords} = require("../core/get-records.js");
-const {createFieldInTable} = require("./_fields.js");
-const {throwError} = require("../core/utils.js");
+import {reloadMetadataSchedule} from "../core/desc-node.js";
+import {getRecords} from "../core/get-records.js";
+import {createFieldInTable} from "./_fields.js";
+import {throwError} from "../core/utils.js";
 
-module.exports = {
+export default {
 
 	afterCreate: async function(data, userSession) {
 		debugger;

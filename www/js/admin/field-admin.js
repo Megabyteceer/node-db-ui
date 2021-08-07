@@ -1,4 +1,4 @@
-import {R} from "js/entry.js";
+import R from "../r.js";
 import {Component} from "react";
 import fieldsEvents from "../events/fields_events.js";
 import {getNodeData, keepInWindow, L, loactionToHash, renderIcon, sp} from "../utils.js";

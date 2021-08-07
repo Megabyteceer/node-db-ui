@@ -1,8 +1,9 @@
 import ReactDOM from "react-dom";
-import {R} from "js/entry.js";
-import {Component} from "react";
+import R from "../r.js";
+import React, {Component} from "react";
 import Modal from "../modal.js";
 import {getData, L, myAlert, renderIcon, submitData} from "../utils.js";
+import {FIELD_17_TAB} from "../bs-utils.js";
 
 var node;
 
@@ -127,7 +128,7 @@ class AdminEventEditor extends Component {
 		this.saveClick = this.saveClick.bind(this);
 		if(!CodeMirror) {
 			import("codemirror").then((module) => {
-				CodeMirror = module.CodeMirror;
+				CodeMirror = module.default;
 				this.forceUpdate();
 			});
 		}
@@ -142,7 +143,6 @@ class AdminEventEditor extends Component {
 	}
 
 	componentDidMount() {
-
 		getData('admin/getEventHandler', this.getPostData()).then((data) => {
 			this.setState({
 				src: data

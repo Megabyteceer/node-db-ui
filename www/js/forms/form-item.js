@@ -1,4 +1,6 @@
-import {R} from "js/entry.js";
+import R from "../r.js";
+import React from "react";
+import {FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1} from "../bs-utils.js";
 import FieldWrap from "../fields/field-wrap.js";
 import {deleteRecord, draftRecord, L, loactionToHash, publishRecord, renderIcon, sp} from "../utils.js";
 import BaseForm from "./form-mixins.js";

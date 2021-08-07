@@ -1,10 +1,9 @@
-"use strict";
-const {nodePrevs, getClientEventHandler, clearCache} = require('./admin/admin.js');
-const {setCurrentOrg, setMultiLang, login, resetPassword, registerUser, activateUser} = require('./auth.js');
-const {getNodeDesc, getNodesTree} = require('./desc-node.js');
-const {getRecords, deleteRecord} = require('./get-records.js');
-const {submitRecord, uniquCheck} = require('./submit.js');
-const {uploadImage, uploadFile} = require('./upload.js');
+import {nodePrevs, getClientEventHandler, clearCache} from './admin/admin.js';
+import {setCurrentOrg, setMultiLang, login, resetPassword, registerUser, activateUser} from './auth.js';
+import {getNodeDesc, getNodesTree} from './desc-node.js';
+import {getRecords, deleteRecord} from './get-records.js';
+import {submitRecord, uniquCheck} from './submit.js';
+import {uploadImage, uploadFile} from './upload.js';
 
 const api = {
 	"api/": (reqData, userSession, res) => {
@@ -69,4 +68,4 @@ const api = {
 	}
 };
 
-module.exports = api;
+export default api;

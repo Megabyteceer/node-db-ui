@@ -1,4 +1,8 @@
-import {R} from "js/entry.js";
+import ReactDOM from "react-dom";
+import React from "react";
+
+import {FIELD_14_NtoM, FIELD_7_Nto1} from "../bs-utils.js";
+import R from "../r.js";
 import {getClassForField, L, n2mValuesEqual, renderIcon, sp, UID} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldLookupMixins from "./field-lookup-mixins.js";
@@ -168,6 +172,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 					React.createElement(getClassForField(FIELD_7_Nto1), {
 						field, preventCreateButton: this.state.preventCreateButton, editIt, pos: i, isEdit, isN2M: true, filters: this.state.filters, ref: (ref) => {
 							if(ref) {
+								// @ts-ignore
 								ref.setLookupFilter({'exludeIDs': this.exludeIDs || this.state.filters.exludeIDs});
 							}
 						}, isNew: isNew, wrapper: this, initialValue: value, isCompact: this.props.isCompact, fieldDisabled: this.props.fieldDisabled

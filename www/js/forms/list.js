@@ -1,12 +1,14 @@
-import {R} from "js/entry.js";
+import R from "../r.js";
+import {FIELD_2_INT, FIELD_7_Nto1} from "../bs-utils.js";
 import FieldAdmin from "../admin/field-admin.js";
 import NodeAdmin from "../admin/node-admin.js";
 import LeftBar from "../left-bar.js";
-import {iAdmin} from "../user.js";
 import {consoleLog, createRecord, deleteRecord, getNode, getNodeData, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation} from "../utils.js";
 import FormFull from "./form-full.js";
 import FormItem from "./form-item.js";
 import BaseForm from "./form-mixins.js";
+import React from "react";
+import {iAdmin} from "../user.js";
 
 const sortByOrder = (a, b) => {
 	return a.order - b.order;

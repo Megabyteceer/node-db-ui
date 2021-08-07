@@ -1,4 +1,4 @@
-module.exports = {
+const ENV = {
 	SERVER_NAME: "http://distrib.ru",
 	DEBUG: true,
 	ADMIN_ENABLED_DEFAULT: true,
@@ -34,4 +34,6 @@ module.exports = {
 	ALLOWED_UPLOADS: ["gif", "jpg", "jpeg", "jpe", "png", "zip", "rar", "doc", "docx", "xls", "xlsx", "pdf", "ppt", "pptx", "txt", "wav"],
 
 	BLOCK_RICH_EDITOR_TAGS: ["script"]
-}
+};
+
+export default ENV;

@@ -1,5 +1,9 @@
-import {R} from "js/entry.js";
-import {moment} from "../libs/libs.js";
+import ReactDOM from "react-dom";
+import React from "react";
+
+import {FIELD_4_DATETIME} from "../bs-utils.js";
+import R from "../r.js";
+import moment from "moment";
 import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDatetime, toReadableTime} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
@@ -19,8 +23,8 @@ class dateFieldMixins extends fieldMixins {
 
 	importReactDateTime() {
 		if(!this.ReactDatetimeClass) {
-			import('../libs/react-datetime.js').then((module) => {
-				this.ReactDatetimeClass = module.ReactDatetimeClass;
+			import('react-datetime').then((module) => {
+				this.ReactDatetimeClass = module.default;
 				this.forceUpdate();
 			});
 		}

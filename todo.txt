@@ -1,3 +1,7 @@
+__dirname is wrong now
+
+
+
 Make selenium tests for basic operations
 
 модальные формы для редактирования админских вещей. (admin.popup заменить)

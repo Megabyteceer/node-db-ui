@@ -1,7 +1,12 @@
-"use strict";
-const ENV = require("../ENV.js");
-const mysql = require('mysql2');
-const performance = require('perf_hooks').performance;
+
+/// #if DEBUG
+import {assert, getCurrentStack} from "./../www/js/bs-utils.js";
+/// #endif
+
+import ENV from "../ENV.js";
+import * as mysql from 'mysql2';
+import {performance} from 'perf_hooks';
+
 const connection = mysql.createConnection({
 	user: ENV.DB_USER,
 	database: ENV.DB_NAME,
@@ -10,7 +15,6 @@ const connection = mysql.createConnection({
 	multipleStatements: true,
 	timezone: 'Z'
 });
-const {getCurrentStack} = require("../www/both-side-utils");
 
 const mysqlDebug = {};
 
@@ -98,4 +102,4 @@ async function mysqlRollback() {
 	}
 }
 
-module.exports = {mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback, mysqlDebug};
+export {mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback, mysqlDebug};

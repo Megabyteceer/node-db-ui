@@ -1,8 +1,9 @@
-"use strict";
-const {mysqlExec} = require("./mysql-connection");
-const fs = require('fs');
-const path = require("path");
-const {isUserHaveRole} = require("../www/both-side-utils");
+import {existsSync} from "fs";
+import {join} from "path";
+import {mysqlExec} from "./mysql-connection";
+import ENV from "../ENV.js";
+import {setMainTainMode, usersSessionsStartedCount} from "./auth.js";
+import {throwError, isUserHaveRole, assert, PREVS_CREATE, FIELD_6_ENUM} from "./../www/js/bs-utils.js";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
@@ -105,7 +106,6 @@ async function reInitNodesData() {
 		clearInterval(metadataReloadingInterval);
 		metadataReloadingInterval = null;
 	}
-	const {setMainTainMode} = require("./auth");
 	setMainTainMode(true);
 	await initNodesData();
 	setMainTainMode(false);
@@ -114,24 +114,18 @@ async function reInitNodesData() {
 let metadataReloadingInterval;
 function reloadMetadataSchedule() {
 	if(!metadataReloadingInterval) {
-		const {setMainTainMode} = require("./auth");
 		setMainTainMode(true);
 		metadataReloadingInterval = setInterval(attemptToreloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl);
 	}
 }
 
 function attemptToreloadMetadataSchedule() {
-	const {usersSessionsStartedCount} = require("./auth");
 	if(usersSessionsStartedCount() === 0) {
 		reInitNodesData().then(() => {
-			const {setMainTainMode} = require("./auth");
 			setMainTainMode(false);
 		});
 	}
 }
-
-const ENV = require("../ENV.js");
-const {throwError} = require("./utils.js");
 
 async function initNodesData() { // load whole nodes data in to memory
 	let fields_new = new Map();
@@ -206,9 +200,9 @@ async function initNodesData() { // load whole nodes data in to memory
 			nodeData.filters = filters;
 
 			//events handlers
-			let moduleFileName = path.join(__dirname, '../events/' + nodeData.tableName + '.js');
-			if(fs.existsSync(moduleFileName)) {
-				let handler = require(moduleFileName);
+			let moduleFileName = join(__dirname, '../events/' + nodeData.tableName + '.js');
+			if(existsSync(moduleFileName)) {
+				let handler = import(moduleFileName);
 				eventsHandlers_new.set(nodeData.id, handler);
 			}
 		}
@@ -283,4 +277,4 @@ const destroyObject = (o) => {
 
 
 
-module.exports = {ENV, getNodeDesc, getFieldDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule};
+export {ENV, getNodeDesc, getFieldDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs, ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule};

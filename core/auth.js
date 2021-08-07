@@ -1,12 +1,10 @@
-"use strict";
-const ENV = require("../ENV.js");
-const {mysqlExec} = require("./mysql-connection");
-const crypto = require('crypto');
-const {shouldBeAuthorized} = require("../www/both-side-utils");
-const {getLangs, GUEST_USER_SESSION} = require("./desc-node");
-const path = require("path");
-const {throwError} = require("./utils.js");
-const {L} = require("./locale.js");
+import ENV from "../ENV.js";
+import {mysqlExec} from "./mysql-connection";
+import {getLangs, GUEST_USER_SESSION} from "./desc-node";
+import {throwError, GUEST_ROLE_ID, USER_ROLE_ID, assert, shouldBeAuthorized} from "./../www/js/bs-utils.js";
+import {L} from "./locale.js";
+import {pbkdf2, randomBytes} from "crypto";
+
 
 const sessions = new Map();
 const sessionsByUserId = new Map();
@@ -15,10 +13,10 @@ function createSession(userSession, sessionToken) {
 	assert(!sessionsByUserId.has(userSession.id), "session already exists" + userSession.id);
 
 	if(!sessionToken) {
-		sessionToken = crypto.randomBytes(24).toString('base64');
+		sessionToken = randomBytes(24).toString('base64');
 	}
 	while(sessions.has(sessionToken)) {
-		sessionToken = crypto.randomBytes(24).toString('base64');
+		sessionToken = randomBytes(24).toString('base64');
 	}
 	userSession.sessionToken = sessionToken;
 	sessions.set(sessionToken, userSession);
@@ -118,7 +116,7 @@ async function registerUser(reqData) {
 		if(pgs.length > 0) {
 			throwError('EMAIL_ALREADY');
 		} else {
-			let actKey = crypto.randomBytes(24).toString('base64');
+			let actKey = randomBytes(24).toString('base64');
 			let href = getServerHref() + '?activate_user&key=' + actKey;
 			await mysqlExec("INSERT INTO `_users` (status, `name`, `PASS`, `email`, `company`, `activation`) VALUES (2,'" + name + "','" + (await getPasswordHash(password)) + "','" + login + "','" + company + "','" + actKey + "');");
 			await mail_utf8(login, L('CONFIRM_EMAIL_SUBJ'), L('CONFIRM_EMAIL', ENV.APP_TITLE) + href);
@@ -158,7 +156,7 @@ async function resetPassword(key) {
 
 function getPasswordHash(password, salt) {
 	return new Promise((resolve, rejects) => {
-		crypto.pbkdf2(password, salt, 1000, 64, `sha512`, (err, key) => {
+		pbkdf2(password, salt, 1000, 64, `sha512`, (err, key) => {
 			if(err) {
 				rejects(err);
 			} else {
@@ -239,7 +237,7 @@ async function authorizeUserByID(userID, isItServerSideRole, sessionToken) {
 		cacheKeyGenerator = [USER_ROLE_ID]
 	}
 	for(let role of roles) {
-		cacheKeyGenerator.push(role._rolesID);
+		cacheKeyGenerator.push(role._rolesID.toString());
 		userRoles[role._rolesID] = 1;
 	}
 
@@ -352,4 +350,4 @@ function mustBeUnset(obj, fieldName) {
 	}
 }
 
-module.exports = {usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultiLang, login, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode};
+export {usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultiLang, login, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode};

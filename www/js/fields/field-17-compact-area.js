@@ -1,4 +1,5 @@
-import {R} from "js/entry.js";
+import {FIELD_17_TAB} from "../bs-utils.js";
+import R from "../r.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 

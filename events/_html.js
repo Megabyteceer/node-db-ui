@@ -1,24 +1,24 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
-module.exports = {
+export default {
 
 	beforeCreate: async function(data, userSession) {
 		saveDoc(data);
 	},
 
-	afterCreate: async function(data, userSession) {
+		afterCreate: async function(data, userSession) {
 
-	},
+		},
 
-	beforeUpdate: async function(currentData, newData, userSession) {
-		currentData = Object.assign(currentData, newData);
-		saveDoc(currentData);
-	},
+beforeUpdate: async function(currentData, newData, userSession) {
+	currentData = Object.assign(currentData, newData);
+	saveDoc(currentData);
+},
 
-	beforeDelete: async function(data, userSession) {
-		fs.unlink(getDocFilename(data), emptyCallback);
-	}
+beforeDelete: async function(data, userSession) {
+	fs.unlink(getDocFilename(data), emptyCallback);
+}
 }
 
 const emptyCallback = () => { };

@@ -1,4 +1,6 @@
-import {R} from "js/entry.js";
+import {FIELD_7_Nto1} from "../bs-utils.js";
+import R from "../r.js";
+import React from "react";
 import FormFull from "../forms/form-full.js";
 import List from "../forms/list.js";
 import {backupCreationData, getBackupData, getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp} from "../utils.js";

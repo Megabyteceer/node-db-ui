@@ -470,6 +470,8 @@ input[readonly] {
 	margin: 5px;
 	border-radius: 5px;
 	overflow: hidden;
+	border: 1px solid var(--BRAND_COLOR);
+	border-top: none;
 }
 
 .left-bar-body a:last-of-type .left-bar-item {

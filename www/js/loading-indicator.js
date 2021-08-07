@@ -1,7 +1,7 @@
 
 
 import {Component} from "react";
-import {R} from "./entry.js";
+import R from "./r.js";
 import {isLitePage, renderIcon} from "./utils.js";
 
 export default class LoadingIndicator extends Component {

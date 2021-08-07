@@ -1,7 +1,6 @@
-"use strict";
-const {getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION} = require('./desc-node.js');
-const {mysqlExec} = require("./mysql-connection");
-const {throwError} = require("./utils.js");
+import {getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION} from './desc-node.js';
+import {mysqlExec} from "./mysql-connection";
+import {throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PREVS_PUBLISH, PREVS_EDIT_ALL, PREVS_EDIT_ORG, PREVS_EDIT_OWN, PREVS_VIEW_ALL, PREVS_VIEW_ORG, PREVS_VIEW_OWN, PREVS_DELETE, FIELD_15_1toN, FIELD_19_RICHEDITOR} from "./../www/js/bs-utils.js";
 
 const isASCII = (str) => {
 	return /^[\x00-\x7F]*$/.test(str);
@@ -391,4 +390,4 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 	return 1;
 }
 
-module.exports = {getRecords, deleteRecord};
+export {getRecords, deleteRecord};

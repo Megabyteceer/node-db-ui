@@ -1,8 +1,10 @@
 import {consoleLog, getData, L} from "../utils.js";
 import BaseForm from "./form-mixins.js";
-import {formsEventsOnLoad, formsEventsOnSave} from "../events/forms_events.js";
 import fieldsEvents from "../events/fields_events.js";
 import LeftBar from "../left-bar.js";
+import {assert, FIELD_17_TAB, FIELD_18_BUTTON} from "../bs-utils.js";
+let FormEvents;
+import("../events/forms_events.js").then(m => FormEvents = m.default);
 
 export default class eventProcessingMixins extends BaseForm {
 
@@ -60,7 +62,7 @@ export default class eventProcessingMixins extends BaseForm {
 				}
 			}
 
-			if(field && fieldsEvents.hasOwnProperty(field.id)) {
+			if(field) {
 				this.processFormEvent(fieldsEvents[field.id], false, false);
 			}
 		}
@@ -153,18 +155,16 @@ export default class eventProcessingMixins extends BaseForm {
 		this.getField(fieldName).focus();
 	}
 
-	onShow() {
+	async onShow() {
 		//DEBUG
-		consoleLog('onLoad ' + this.props.node.tableName);
+		consoleLog(this.props.node.tableName + '_onload',);
 		//ENDDEBUG
 		this.header = '';
 		this.currentTabName = -1;
 		this.hiddenFields = {};
 		this.disabledFields = {};
 
-		if(formsEventsOnLoad.hasOwnProperty(this.props.node.id)) {
-			this.processFormEvent(formsEventsOnLoad[this.props.node.id], false);
-		}
+		await this.processFormEvent(this.props.node.tableName + '_onload', false);
 
 		this.refreshLeftBar();
 
@@ -172,9 +172,7 @@ export default class eventProcessingMixins extends BaseForm {
 			var f = this.fieldsRefs[k];
 
 			if(f.props.field.fieldType !== FIELD_18_BUTTON && f.props.field.fieldType !== FIELD_17_TAB) { //is not button
-				if(fieldsEvents.hasOwnProperty(f.props.field.id)) {
-					this.processFormEvent(fieldsEvents[f.props.field.id], false);
-				}
+				await this.processFormEvent('field_' + f.props.field.id + '_onchange', false);
 			}
 		}
 
@@ -217,7 +215,7 @@ export default class eventProcessingMixins extends BaseForm {
 		}
 	}
 
-	setFieldValue(fieldName, val, isUserAction) {
+	async setFieldValue(fieldName, val, isUserAction) {
 
 		var f = this.getField(fieldName);
 		let field = f.props.field;
@@ -229,12 +227,8 @@ export default class eventProcessingMixins extends BaseForm {
 			var prev_value = this.currentData[fieldName];
 			this.currentData[fieldName] = val;
 
-			if(fieldsEvents.hasOwnProperty(field.id)) {
-				this.processFormEvent(fieldsEvents[field.id], isUserAction, prev_value);
-			}
-			//DEBUG
-			consoleLog('onChange ' + fieldName + '; ' + prev_value + ' -> ' + val);
-			//ENDDEBUG
+			await this.processFormEvent('field_' + f.props.field.id + '_onchange', isUserAction, prev_value);
+
 			this.checkUniquValue(field, val);
 
 			if(fieldName === 'name') {
@@ -288,14 +282,8 @@ export default class eventProcessingMixins extends BaseForm {
 		}
 
 		this.invalidAlertInOnSaveHandler = false;
-		if(formsEventsOnSave.hasOwnProperty(this.props.node.id)) {
-			var onSaveRes = await this.processFormEvent(formsEventsOnSave[this.props.node.id], false);
-			if(onSaveRes) {
-				//debugError('onSave event handler returned true. Saving operation was canceled.');
-			}
-			return onSaveRes || this.invalidAlertInOnSaveHandler;
-		}
-		return false;
+		var onSaveRes = await this.processFormEvent(this.props.node.tableName + '_onsave', false);
+		return onSaveRes || this.invalidAlertInOnSaveHandler;
 	}
 
 	fieldAlert(fieldName, text, isSuccess, focus) {
@@ -319,24 +307,31 @@ export default class eventProcessingMixins extends BaseForm {
 		}
 	}
 
-	async processFormEvent(handler, isUserAction, prev_val) {
+	async processFormEvent(handlerName, isUserAction, prev_val) {
 
-		this.prev_value = prev_val;
+		const handler = FormEvents.prototype[handlerName];
 
-		this.rec_ID = this.props.initialData.id || 'new';
-		this.rec_update = this.props.editable;
+		if(handler) {
+			/// #if DEBUG
+			console.log(handlerName);
+			/// #endif
+
+			this.prev_value = prev_val;
+
+			this.rec_ID = this.props.initialData.id || 'new';
+			this.rec_update = this.props.editable;
 
 
-		if(this.rec_update) {
-			this.rec_creation = !this.props.initialData.hasOwnProperty('id');
-			if(this.rec_creation) {
-				this.rec_update = false;
+			if(this.rec_update) {
+				this.rec_creation = !this.props.initialData.hasOwnProperty('id');
+				if(this.rec_creation) {
+					this.rec_update = false;
+				}
 			}
+
+			this.isUserEdit = isUserAction;
+
+			return handler.call(this);
 		}
-
-		this.isUserEdit = isUserAction;
-
-		return handler.call(this);
-
 	}
 }

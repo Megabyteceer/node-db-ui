@@ -1,9 +1,13 @@
+import ReactDOM from "react-dom";
+import React from "react";
+
 import {checkFileSize, idToImgURL, L, myAlert, renderIcon, serializeForm, submitData} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import fieldMixins from "./field-mixins.js";
 import Modal from "../modal.js";
 import {Component} from "react";
-import {R} from "js/entry.js";
+import R from "../r.js";
+import {FIELD_12_PICTURE} from "../bs-utils.js";
 
 registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
 
@@ -71,10 +75,12 @@ class CropperFieldBody extends Component {
 
 
 		} else {
+			// @ts-ignore
 			if(typeof this.cropper.cropper.getCroppedCanvas() === 'undefined') {
 				return;
 			}
 
+			// @ts-ignore
 			var bounds = this.cropper.cropper.getData();
 			this.references.w.value = bounds.width;
 			this.references.h.value = bounds.height;
@@ -83,6 +89,7 @@ class CropperFieldBody extends Component {
 
 			this.setState({
 				cleared: false,
+				// @ts-ignore
 				cropResult: this.cropper.cropper.getCroppedCanvas().toDataURL(),
 				src: null
 			});
@@ -131,11 +138,11 @@ class CropperFieldBody extends Component {
 				_this.setState({waiting: 0, src: reader.result, cropResult: false});
 
 				var selectedImage = new Image();
-				const cropperLoader = import('../libs/react-cropper.js');
+				const cropperLoader = import('react-cropper');
 
 				selectedImage.onload = () => {
 					cropperLoader.then((module) => {
-						const ReactCropper = module.ReactCropper;
+						const ReactCropper = module.Cropper;
 						var field = this.props.field;
 						var w = Math.floor(field.maxlen / 10000);
 						var h = field.maxlen % 10000;
@@ -159,6 +166,7 @@ class CropperFieldBody extends Component {
 									aspectRatio: w / h,
 									preview: '.image-copper-preview',
 									guides: false,
+									// @ts-ignore
 									src: reader.result,
 									ref: (ref) => {
 										this.cropper = ref;

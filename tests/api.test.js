@@ -1,5 +1,5 @@
-const {Builder, By, Key, until} = require('selenium-webdriver');
-const {Driver} = require("selenium-webdriver/chrome");
+import {Builder, By, Key, until} from 'selenium-webdriver';
+import {Driver} from "selenium-webdriver/chrome";
 
 /** @type Driver */
 let driver;
@@ -13,9 +13,9 @@ async function testMyRecordCreate() {
 
 		await click('.form-node-82 .create-button');
 
-		
-		
-	passAll = true;
+
+
+		passAll = true;
 	} finally {
 		await driver.quit();
 	}
@@ -30,7 +30,7 @@ const click = async (css) => {
 
 /** @returns */
 const findElement = async (css, timeout = 3000) => {
-	await driver.wait(function () {
+	await driver.wait(function() {
 		return driver.findElement(By.css(css));
 	}, timeout);
 	return driver.findElement(By.css(css));

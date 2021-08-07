@@ -1,15 +1,16 @@
-"use strict";
-const fs = require('fs');
-const path = require('path');
 
-const sharp = require("sharp");
-const ENV = require("../ENV.js");
-const {getNodeDesc, getFieldDesc} = require("./desc-node");
-const {L} = require("./locale.js");
-const {throwError} = require("./utils.js");
+import {assert, throwError} from "./../www/js/bs-utils.js";
 
-const UPLOADS_IMAGES_PATH = path.join(__dirname, '../www/images/uploads');
-const UPLOADS_FILES_PATH = path.join(__dirname, '../www/uploads/file');
+import {join} from "path";
+import * as fs from "fs";
+import sharp from "sharp";
+import ENV from "../ENV.js";
+import {getNodeDesc, getFieldDesc} from "./desc-node";
+import {L} from "./locale.js";
+
+
+const UPLOADS_IMAGES_PATH = join(__dirname, '../www/images/uploads');
+const UPLOADS_FILES_PATH = join(__dirname, '../www/uploads/file');
 
 const getRadomPattern = () => {
 	return Math.floor(Math.random() * 0xEffffffffffff + 0x1000000000000).toString(16);
@@ -19,7 +20,7 @@ const getNewFileDir = () => {
 	return new Promise((resolve, reject) => {
 		const generateId = () => {
 			let folder = getRadomPattern();
-			const folderName = path.join(UPLOADS_FILES_PATH, folder);
+			const folderName = join(UPLOADS_FILES_PATH, folder);
 			fs.access(folderName, fs.constants.F_OK, (err) => {
 				if(err) {
 					fs.mkdir(folderName, (err) => {
@@ -54,7 +55,7 @@ const getNewImageID = (originalFileName) => {
 			}
 			let id = folder + '/' + getRadomPattern() + '.' + ext;
 
-			fs.access(path.join(UPLOADS_IMAGES_PATH, id), fs.constants.F_OK, (err) => {
+			fs.access(join(UPLOADS_IMAGES_PATH, id), fs.constants.F_OK, (err) => {
 				if(err) {
 					resolve(id);
 				} else {
@@ -62,7 +63,7 @@ const getNewImageID = (originalFileName) => {
 				}
 			});
 		}
-		let folderName = path.join(UPLOADS_IMAGES_PATH, folder);
+		let folderName = join(UPLOADS_IMAGES_PATH, folder);
 		fs.access(folderName, fs.constants.F_OK, (err) => {
 			if(err) {
 				fs.mkdir(folderName, generateId);
@@ -80,7 +81,7 @@ async function uploadFile(reqData, userSession) {
 	if(reqData.filename.indexOf('..') >= 0) {
 		throwError(L('UPL_ERROW_WFN'));
 	}
-	const field = getFieldForUpload(reqData, userSession);
+	getFieldForUpload(reqData, userSession); //Check access to the field
 	if(!allowedUpload) {
 		allowedUpload = RegExp('\\.(' + ENV.ALLOWED_UPLOADS.join('|') + ')$', 'i');
 	}
@@ -90,7 +91,7 @@ async function uploadFile(reqData, userSession) {
 	const newFileName = (await getNewFileDir()) + '/' + reqData.filename;
 
 	return new Promise((resolve, reject) => {
-		fs.writeFile(path.join(UPLOADS_FILES_PATH, newFileName), reqData.fileContent, (err) => {
+		fs.writeFile(join(UPLOADS_FILES_PATH, newFileName), reqData.fileContent, (err) => {
 			if(err) {
 				reject(err);
 			}
@@ -135,7 +136,11 @@ async function uploadImage(reqData, userSession) {
 		let Y = parseFloat(reqData.y);
 
 		let Q = targetW / W;
+
+		//TODO: fix cropping out of image
+		//@ts-ignore
 		let targetX = 0;
+		//@ts-ignore
 		let targetY = 0;
 
 
@@ -188,7 +193,7 @@ async function uploadImage(reqData, userSession) {
 
 const idToImgURLServer = (imgId) => {
 	assert(imgId, "idToImgURLServer called for empty imageId");
-	return path.join(UPLOADS_IMAGES_PATH, imgId);
+	return join(UPLOADS_IMAGES_PATH, imgId);
 }
 
-module.exports = {uploadImage, uploadFile, UPLOADS_FILES_PATH, idToImgURLServer};
+export {uploadImage, uploadFile, UPLOADS_FILES_PATH, idToImgURLServer};
