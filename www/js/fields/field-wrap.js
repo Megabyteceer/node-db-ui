@@ -212,7 +212,7 @@ export default class FieldWrap extends Component {
 		}
 
 		this.setState({fieldAlert: text, isSucessAlert: isSucess});
-		if(focus && text) {
+		if(focus && text && !isSucess) {
 			this.focus();
 		}
 	}

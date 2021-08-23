@@ -294,16 +294,9 @@ export default class eventProcessingMixins extends BaseForm {
 		}
 		if(f) {
 			f.fieldAlert(text, isSuccess, focus);
-
-			if(text && !isSuccess && !this.invalidAlertInOnSaveHandler) {
-				this.getField(fieldName).focus();
-			}
-
 			if(!isSuccess) {
 				this.invalidAlertInOnSaveHandler = true;
 			}
-
-
 		}
 	}
 
