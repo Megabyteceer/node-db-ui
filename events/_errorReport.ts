@@ -1,7 +1,7 @@
 import { mail_utf8, UserSession } from "../core/auth";
-import { NodeEventsHandlers } from "../core/desc-node.js";
+import { NodeEventsHandlers } from "../core/desc-node";
 import ENV from "../ENV";
-import { RecordDataWrite } from "../www/js/bs-utils.js";
+import { RecordDataWrite } from "../www/js/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	afterCreate: async function(data: RecordDataWrite, userSession: UserSession) {

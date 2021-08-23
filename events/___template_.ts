@@ -1,5 +1,5 @@
-import { NodeEventsHandlers } from "../core/desc-node.js"
-import { RecordData, RecordDataWrite, UserSession } from "../www/js/bs-utils.js";
+import { NodeEventsHandlers } from "../core/desc-node"
+import { RecordData, RecordDataWrite, UserSession } from "../www/js/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 

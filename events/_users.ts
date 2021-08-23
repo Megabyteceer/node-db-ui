@@ -2,7 +2,7 @@
 import { mysqlExec } from "../core/mysql-connection";
 import { getPasswordHash } from "../core/auth";
 import { submitRecord } from "../core/submit";
-import { isAdmin } from "../www/js/bs-utils.js";
+import { isAdmin } from "../www/js/bs-utils";
 
 async function clearUserParams(data, currentData, userSession) {
 

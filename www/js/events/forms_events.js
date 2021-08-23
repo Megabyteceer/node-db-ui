@@ -1,9 +1,9 @@
-let User;
 import {getNodeData, L, myPromt} from "../utils.js";
 import {makeIconSelectionField} from "../admin/admin-utils.js";
 import {FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATICTEXT, isUserHaveRole} from "../bs-utils";
 import FormFull from "../forms/form-full.js";
 import {iAdmin} from "../user.js";
+import User from "../user.js";
 
 export default class FormEvents extends FormFull {
 

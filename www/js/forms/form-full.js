@@ -169,8 +169,9 @@ export default class FormFull extends eventProcessingMixins {
 	}
 	saveClick(isDraft) {
 		LoadingIndicator.instance.show();
-		this.saveClickInner(isDraft).catch(() => {
+		this.saveClickInner(isDraft).catch((er) => {
 			console.log('invalid form.');
+			console.dir(er);
 		}).finally(() => {
 			LoadingIndicator.instance.hide();
 		});

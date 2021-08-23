@@ -10,7 +10,7 @@ import { UPLOADS_FILES_PATH, idToImgURLServer } from './upload';
 import { L } from "./locale";
 import { join } from "path";
 import { unlink } from "fs";
-import { UserSession } from "./auth.js";
+import { UserSession } from "./auth";
 
 const blockTags = [];
 for(let tag of ENV.BLOCK_RICH_EDITOR_TAGS) {

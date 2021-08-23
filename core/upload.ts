@@ -8,8 +8,8 @@ import ENV from "../ENV";
 import { getNodeDesc, getFieldDesc } from "./desc-node";
 import { L } from "./locale";
 
-const UPLOADS_IMAGES_PATH = join(__dirname, '../www/images/uploads');
-const UPLOADS_FILES_PATH = join(__dirname, '../www/uploads/file');
+const UPLOADS_IMAGES_PATH = join(__dirname, '../../www/images/uploads');
+const UPLOADS_FILES_PATH = join(__dirname, '../../www/uploads/file');
 
 const getRadomPattern = () => {
 	return Math.floor(Math.random() * 0xEffffffffffff + 0x1000000000000).toString(16);

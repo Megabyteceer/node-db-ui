@@ -1,5 +1,3 @@
-__dirname is wrong now
-
 
 
 Make selenium tests for basic operations

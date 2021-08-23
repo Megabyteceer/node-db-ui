@@ -197,7 +197,7 @@ async function initNodesData() { // load whole nodes data in to memory
 			//events handlers
 			let moduleFileName = join(__dirname, '../events/' + nodeData.tableName + '.js');
 			if(existsSync(moduleFileName)) {
-				let handler = import(moduleFileName);
+				let handler = (await import(moduleFileName)).default;
 				eventsHandlers_new.set(nodeData.id, handler);
 			}
 		}

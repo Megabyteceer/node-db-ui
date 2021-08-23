@@ -2,7 +2,7 @@ import { reloadMetadataSchedule } from "../core/desc-node";
 import { getRecords } from "../core/get-records";
 import { createFieldInTable } from "./_fields";
 import { RecordData, RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";
-import { shouldBeAdmin } from "../core/admin/admin.js";
+import { shouldBeAdmin } from "../core/admin/admin";
 
 export default {
 

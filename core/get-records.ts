@@ -1,7 +1,7 @@
-import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHadlersNames } from './desc-node.js';
+import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHadlersNames } from './desc-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import { TViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PREVS_PUBLISH, PREVS_EDIT_ALL, PREVS_EDIT_ORG, PREVS_EDIT_OWN, PREVS_VIEW_ALL, PREVS_VIEW_ORG, PREVS_VIEW_OWN, PREVS_DELETE, FIELD_15_1toN, FIELD_19_RICHEDITOR, RecordData, RecordsData, RecId } from "../www/js/bs-utils";
-import { UserSession } from './auth.js';
+import { UserSession } from './auth';
 
 const isASCII = (str) => {
 	return /^[\x00-\x7F]*$/.test(str);

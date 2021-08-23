@@ -131,13 +131,13 @@ async function getClientEventHandler(reqData, userSession) {
 
 		const startMarker = "//field" + fieldId + "onchangebegin_cswhggft";
 		const endMarker = "} //field" + fieldId + "onchangeend_wqdggft";
-		return processSource('../../www/js/events/fields_events.js', startMarker, endMarker, newSrc, fieldId, reqData.type, undefined, node.tableName + '_' + field.fieldName + '_onChange');
+		return processSource('../../../www/js/events/fields_events.js', startMarker, endMarker, newSrc, fieldId, reqData.type, undefined, node.tableName + '_' + field.fieldName + '_onChange');
 	} else {
 		const nodeId = reqData.itemId;
 		const handler = reqData.handler;
 		const startMarker = "//form" + nodeId + handler + "Begin_JS89DW72SISA887QKJ32IUSL";
 		const endMarker = "} //form" + nodeId + handler + "End_JS89DW72SISA887QKJ32IUSL";
-		return processSource('../../www/js/events/forms_events.js', startMarker, endMarker, newSrc, nodeId, reqData.type, handler, getNodeDesc(nodeId).tableName + '_' + handler);
+		return processSource('../../../www/js/events/forms_events.js', startMarker, endMarker, newSrc, nodeId, reqData.type, handler, getNodeDesc(nodeId).tableName + '_' + handler);
 	}
 }
 

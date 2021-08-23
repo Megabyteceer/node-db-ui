@@ -1,8 +1,8 @@
 
 import { unlink, readFile, writeFile } from "fs";
 import { join } from "path";
-import { NodeEventsHandlers } from "../core/desc-node.js";
-import { RecordData, RecordDataWrite, UserSession } from "../www/js/bs-utils.js";
+import { NodeEventsHandlers } from "../core/desc-node";
+import { RecordData, RecordDataWrite, UserSession } from "../www/js/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
@@ -29,7 +29,7 @@ const emptyCallback = () => { };
 async function saveDoc(data): Promise<void> {
 	return new Promise((resolve, rejects) => {
 		debugger;
-		readFile(join(__dirname, '/../custom/html/_template.htmp'), 'utf8', (err, txt) => {
+		readFile(join(__dirname, '../../custom/html/_template.htmp'), 'utf8', (err, txt) => {
 			debugger;
 			if(err) {
 				rejects(err);
@@ -48,5 +48,5 @@ async function saveDoc(data): Promise<void> {
 }
 
 function getDocFilename(data) {
-	return join(__dirname, '../custom/html/', data.title, '.html');
+	return join(__dirname, '../../custom/html/', data.title, '.html');
 }
