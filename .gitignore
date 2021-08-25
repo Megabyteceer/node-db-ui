@@ -4,6 +4,7 @@
 /cert
 /dist
 
+/www/.cache
 /www/dist
 /www/images/uploads
 /www/uploads

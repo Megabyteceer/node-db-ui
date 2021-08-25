@@ -14,10 +14,11 @@ class FormLoaderCog extends Component {
 		);
 	}
 }
-
-if(isLitePage()) {
-	document.body.classList.add('lite-ui');
-}
+document.addEventListener('load', () => {
+	if(isLitePage()) {
+		document.body.classList.add('lite-ui');
+	}
+});
 
 class Stage extends Component {
 

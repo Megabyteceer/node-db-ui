@@ -1,10 +1,9 @@
-const throwError = (message): never => {
-	debugger;
+const throwError = (message: string): never => {
 
 	throw new Error(message);
 }
 
-const notificationOut = (userSession, text) => {
+const notificationOut = (userSession: UserSession, text: string) => {
 	if(!userSession || userSession.__temporaryServerSideSession) {
 		console.log(text);
 	} else {
@@ -17,14 +16,14 @@ const notificationOut = (userSession, text) => {
 }
 
 /// #if DEBUG
-const assert = (condition, errorTxt) => {
+const assert = (condition: any, errorTxt: string) => {
 	if(!condition) {
 		throwError(errorTxt);
 	}
 }
 /// #endif
 
-const shouldBeAuthorized = (userSession) => {
+const shouldBeAuthorized = (userSession: UserSession) => {
 	if(!userSession || userSession.__temporaryServerSideSession || isUserHaveRole(GUEST_ROLE_ID, userSession)) {
 		throwError("operation permitted for authorized user only");
 	}
@@ -35,13 +34,15 @@ const isAdmin = (userSession: UserSession) => {
 	return isUserHaveRole(ADMIN_ROLE_ID, userSession);
 }
 
-const isUserHaveRole = (roleId, userSession) => {
+const isUserHaveRole = (roleId: TRoleId, userSession: UserSession) => {
 	return userSession && userSession.userRoles[roleId];
 }
 /// #if DEBUG
 const getCurrentStack = () => {
-	let a = new Error().stack.split('\n');
-	a.splice(0, 3);
+	let a = new Error().stack?.split('\n');
+	if(a) {
+		a.splice(0, 3);
+	}
 	return a;
 }
 /// #endif
@@ -63,6 +64,8 @@ interface UserSession {
 	cacheKey: string;
 	/** file names uploaded for specified field id */
 	uploaded?: { [key: number]: string };
+	__temporaryServerSideSession?: boolean;
+	notifications?: string[];
 }
 
 interface FieldDesc {

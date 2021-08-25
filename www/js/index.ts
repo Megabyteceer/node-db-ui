@@ -38,7 +38,7 @@ window.onerror = (msg, url, line, col, error) => {
 		submitErrorReport(msg, stack);
 	};
 //*/
-/*
+
 interface Component {
 
 }
@@ -77,7 +77,7 @@ interface TR {
 	h4: (props: ComponentProps | null, ...children) => Component;
 	h5: (props: ComponentProps | null, ...children) => Component;
 }
-*/
+
 
 window.addEventListener('load', () => {
 	ReactDOM.render(

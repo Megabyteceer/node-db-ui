@@ -4,11 +4,7 @@
 		{
 			"type": "npm",
 			"script": "build",
-			"problemMatcher": [
-				"$tsc-watch"
-			],
-			"group": "build",
-			"label": "webpack - watch",
+			"label": "build",
 			"runOptions": {
 			  "runOn": "folderOpen"
 			}

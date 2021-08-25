@@ -1,0 +1,14 @@
+{
+ "presets": [
+		"@babel/preset-env",
+		"@babel/preset-typescript"
+	],
+	"sourceMaps": true,
+	"plugins": [
+		/*["transform-es2015-modules-commonjs-simple", {
+			"noMangle": true
+		}],*/
+		"@babel/plugin-transform-modules-umd",
+		"@babel/transform-runtime"
+	]
+}

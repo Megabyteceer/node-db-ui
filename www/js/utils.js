@@ -706,6 +706,7 @@ async function getData(url, params, callStack, noLoadingIndicator) {
 		if(!params) {
 			params = {};
 		}
+		debugger;
 		params.sessionToken = User.sessionToken;
 
 		__requestsOrder.push(requestRecord);

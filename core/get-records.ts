@@ -295,7 +295,7 @@ async function getRecords(nodeId: RecId, viewMask: TViewMask, recId: null | RecI
 				}
 			} else {
 				if(viewMask & 1) {
-					throwError('Access to view editabl fields denied.');
+					throwError('Access to view editable fields denied.');
 				}
 			}
 

@@ -161,32 +161,30 @@ admin.debug = (obj) => {
 	debugInfoGetter.call(obj);
 }
 
-var styleEl = document.createElement('style');
-var styleSheet;
-document.head.appendChild(styleEl);
-styleSheet = styleEl.sheet;
+document.addEventListener('load', () => {
+	var styleEl = document.createElement('style');
+	var styleSheet;
+	document.head.appendChild(styleEl);
+	styleSheet = styleEl.sheet;
+	var adminOn = !isLitePage();
 
-var adminOn = !isLitePage();
-
-admin.toggleAdminUI = () => {
-	if(adminOn) {
-		styleSheet.insertRule('.admin-controll{display:none;}', 0);
-	} else {
-		if(styleSheet.rules.length) {
-			styleSheet.removeRule(0);
+	admin.toggleAdminUI = () => {
+		if(adminOn) {
+			styleSheet.insertRule('.admin-controll{display:none;}', 0);
+		} else {
+			if(styleSheet.rules.length) {
+				styleSheet.removeRule(0);
+			}
 		}
+		$('#admin-disable').prop('checked', !adminOn);
+		adminOn = !adminOn;
 	}
 
-	$('#admin-disable').prop('checked', !adminOn);
+	$('body').append('<span class="admin-tools-enable-btn"><span>Admin tools </span><input type="checkbox" checked="' + adminOn + '" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>');
+	$('#admin-disable').on('click', admin.toggleAdminUI);
 
-	adminOn = !adminOn;
-}
-
-$('body').append('<span class="admin-tools-enable-btn"><span>Admin tools </span><input type="checkbox" checked="' + adminOn + '" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>');
-$('#admin-disable').on('click', admin.toggleAdminUI);
-
-admin.toggleAdminUI();
-
+	admin.toggleAdminUI();
+});
 
 let iconsList;
 function initIconsList(params) {
