@@ -1,11 +1,11 @@
 import ReactDOM from "react-dom";
 import React from "react";
 import {FIELD_17_TAB} from "../bs-utils";
-import R from "../r.js";
-import Select from "../components/select.js";
+import {R} from "../r.ts";
+import {Select} from "../components/select.js";
 import {consoleDir, getNode, getNodeData, isLitePage, popup, refreshForm, renderIcon, submitRecord} from "../utils.js";
-import FormFull from "../forms/form-full.js";
-import MainFrame from "../main-frame.js";
+import {FormFull} from "../forms/form-full.js";
+import {MainFrame} from "../main-frame.js";
 
 const admin = {};
 
@@ -161,30 +161,33 @@ admin.debug = (obj) => {
 	debugInfoGetter.call(obj);
 }
 
+
+var styleEl = document.createElement('style');
+var styleSheet;
+document.head.appendChild(styleEl);
+styleSheet = styleEl.sheet;
+var adminOn;
 document.addEventListener('load', () => {
-	var styleEl = document.createElement('style');
-	var styleSheet;
-	document.head.appendChild(styleEl);
-	styleSheet = styleEl.sheet;
-	var adminOn = !isLitePage();
-
-	admin.toggleAdminUI = () => {
-		if(adminOn) {
-			styleSheet.insertRule('.admin-controll{display:none;}', 0);
-		} else {
-			if(styleSheet.rules.length) {
-				styleSheet.removeRule(0);
-			}
-		}
-		$('#admin-disable').prop('checked', !adminOn);
-		adminOn = !adminOn;
-	}
-
+	adminOn = !isLitePage();
 	$('body').append('<span class="admin-tools-enable-btn"><span>Admin tools </span><input type="checkbox" checked="' + adminOn + '" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>');
 	$('#admin-disable').on('click', admin.toggleAdminUI);
 
 	admin.toggleAdminUI();
 });
+
+admin.toggleAdminUI = () => {
+	if(adminOn) {
+		styleSheet.insertRule('.admin-controll{display:none;}', 0);
+	} else {
+		if(styleSheet.rules.length) {
+			styleSheet.removeRule(0);
+		}
+	}
+	$('#admin-disable').prop('checked', !adminOn);
+	adminOn = !adminOn;
+}
+
+
 
 let iconsList;
 function initIconsList(params) {
@@ -235,5 +238,4 @@ function makeIconSelectionField(form, fieldName) {
 		10);
 }
 
-export default admin;
-export {makeIconSelectionField};
+export {makeIconSelectionField, admin};

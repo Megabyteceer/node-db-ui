@@ -1,11 +1,11 @@
 import {FIELD_5_BOOL} from "../bs-utils";
-import R from "../r.js";
+import {R} from "../r.ts";
 import React, {Component} from "react";
 import {L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {fieldMixins} from "./field-mixins.js";
 
-export default class CheckBox extends Component {
+class CheckBox extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -94,3 +94,5 @@ registerFieldClass(FIELD_5_BOOL, class BooleanField extends fieldMixins {
 		}
 	}
 });
+
+export {CheckBox};

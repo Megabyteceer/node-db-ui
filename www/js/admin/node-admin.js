@@ -1,15 +1,16 @@
-import R from "../r.js";
+import {R} from "../r.ts";
 import React, {Component} from "react";
 import {getNode, getNodeData, keepInWindow, L, loactionToHash, renderIcon, sp} from "../utils.js";
 import {admin_editSource} from "./admin-event-editor.js";
-import admin from "./admin-utils.js";
-import FieldAdmin from "./field-admin.js";
+import {admin} from "./admin-utils.js";
+import {FieldAdmin} from "./field-admin.js";
 let FormEvents;
-import("../events/forms_events.js").then(m => FormEvents = m.default);
+import("../events/forms_events.js").then(m => FormEvents = m.FormEvents);
 
 var showedNodeId;
 
-export default class NodeAdmin extends Component {
+export {NodeAdmin};
+class NodeAdmin extends Component {
 	constructor(props) {
 		super(props);
 
@@ -84,7 +85,9 @@ export default class NodeAdmin extends Component {
 		if(this.props.form) {
 			node = this.props.form.props.node || this.node;
 			form = this.props.form;
-
+			if(!node) {
+				return R.div();
+			}
 		} else {
 			node = {};
 			item = this.props.menuItem; //left-bar-item

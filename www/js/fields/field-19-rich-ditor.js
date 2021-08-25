@@ -1,8 +1,8 @@
-import R from "../r.js";
+import {R} from "../r.ts";
 import {FIELD_19_RICHEDITOR} from "../bs-utils";
 import {L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {fieldMixins} from "./field-mixins.js";
 
 var idCounter = 0;
 

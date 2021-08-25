@@ -1,12 +1,13 @@
 import {consoleLog, getData, L} from "../utils.js";
-import BaseForm from "./form-mixins.js";
-import fieldsEvents from "../events/fields_events.js";
-import LeftBar from "../left-bar.js";
+import {BaseForm} from "./form-mixins.js";
+import {fieldsEvents} from "../events/fields_events.js";
+import {LeftBar} from "../left-bar.js";
 import {assert, FIELD_17_TAB, FIELD_18_BUTTON} from "../bs-utils";
 let FormEvents;
-import("../events/forms_events.js").then(m => FormEvents = m.default);
+import("../events/forms_events.js").then(m => FormEvents = m.FormEvents);
 
-export default class eventProcessingMixins extends BaseForm {
+
+class eventProcessingMixins extends BaseForm {
 
 	constructor(props) {
 		super(props);
@@ -328,3 +329,5 @@ export default class eventProcessingMixins extends BaseForm {
 		}
 	}
 }
+
+export {eventProcessingMixins};

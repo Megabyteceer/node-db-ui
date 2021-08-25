@@ -2,11 +2,11 @@ import ReactDOM from "react-dom";
 import React from "react";
 
 import {FIELD_4_DATETIME} from "../bs-utils";
-import R from "../r.js";
+import {R} from "../r.ts";
 import moment from "moment";
 import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDatetime, toReadableTime} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {fieldMixins} from "./field-mixins.js";
 
 function isSameDay(val, d) {
 	if(!d || !val) return false;
