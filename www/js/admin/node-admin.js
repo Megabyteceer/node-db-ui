@@ -9,7 +9,7 @@ import("../events/forms_events.js").then(m => FormEvents = m.FormEvents);
 
 var showedNodeId;
 
-export {NodeAdmin};
+
 class NodeAdmin extends Component {
 	constructor(props) {
 		super(props);
@@ -359,4 +359,4 @@ function createNodeForMenuItem(item) {
 	});
 }
 
-export {createNodeForMenuItem};
+export {createNodeForMenuItem, NodeAdmin};

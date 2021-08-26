@@ -11,7 +11,7 @@
 			"webRoot": "${workspaceRoot}",
 			"outFiles": [],
 			"disableNetworkCache": true,
-			"sourceMaps": true,
+			"sourceMaps": false,
 			"skipFiles": [
 				"<nod e_internals>/**",
 				"**/nod e_modules/**"

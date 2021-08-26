@@ -38,11 +38,15 @@ window.onerror = (msg, url, line, col, error) => {
 		submitErrorReport(msg, stack);
 	};
 //*/
+import { DPromise } from "./debug-promise.js";
 
+window.Promise = DPromise;
 
 window.addEventListener('load', () => {
-	ReactDOM.render(
-		React.createElement(MainFrame),
-		document.getElementById('container')
-	);
+	setTimeout(() => {
+		ReactDOM.render(
+			React.createElement(MainFrame),
+			document.getElementById('container')
+		);
+	}, 10);
 });

@@ -1,6 +1,4 @@
 
-imported modules under .default 
-
 Replace all Promise with global DPromise without try catch. Add webpack loader which will replace promises in generators to DPromise
 
 Check handlers and make fields handlers

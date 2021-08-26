@@ -3,6 +3,7 @@ var path = require('path');
 module.exports = {
     mode: 'development',
     entry: './js/index.ts',
+    target: ['web', 'es2020'],
     watch: true,
     devtool: 'source-map',
     output: {

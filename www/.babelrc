@@ -5,10 +5,8 @@
 	],
 	"sourceMaps": true,
 	"plugins": [
-		/*["transform-es2015-modules-commonjs-simple", {
-			"noMangle": true
-		}],*/
 		"@babel/plugin-transform-modules-umd",
-		"@babel/transform-runtime"
+		"@babel/transform-runtime",
+		"@babel/plugin-transform-async-to-generator"
 	]
 }

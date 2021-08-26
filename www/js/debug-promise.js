@@ -1,20 +1,20 @@
 'use strict';
 
 /**
- * @this {Promise}
+ * @this {DPromise}
  */
 function finallyConstructor(callback) {
 	var constructor = this.constructor;
 	return this.then(
-		function(value) {
+		function (value) {
 			// @ts-ignore
-			return constructor.resolve(callback()).then(function() {
+			return constructor.resolve(callback()).then(function () {
 				return value;
 			});
 		},
-		function(reason) {
+		function (reason) {
 			// @ts-ignore
-			return constructor.resolve(callback()).then(function() {
+			return constructor.resolve(callback()).then(function () {
 				// @ts-ignore
 				return constructor.reject(reason);
 			});
@@ -24,7 +24,7 @@ function finallyConstructor(callback) {
 
 function allSettled(arr) {
 	var P = this;
-	return new P(function(resolve, reject) {
+	return new P(function (resolve, reject) {
 		if(!(arr && typeof arr.length !== 'undefined')) {
 			return reject(
 				new TypeError(
@@ -45,10 +45,10 @@ function allSettled(arr) {
 				if(typeof then === 'function') {
 					then.call(
 						val,
-						function(val) {
+						function (val) {
 							res(i, val);
 						},
-						function(e) {
+						function (e) {
 							args[i] = {status: 'rejected', reason: e};
 							if(--remaining === 0) {
 								resolve(args);
@@ -82,7 +82,7 @@ function noop() { }
 
 // Polyfill for Function.prototype.bind
 function bind(fn, thisArg) {
-	return function() {
+	return function () {
 		fn.apply(thisArg, arguments);
 	};
 }
@@ -91,15 +91,15 @@ function bind(fn, thisArg) {
  * @constructor
  * @param {Function} fn
  */
-function Promise(fn) {
-	if(!(this instanceof Promise))
+function DPromise(fn) {
+	if(!(this instanceof DPromise))
 		throw new TypeError('Promises must be constructed via new');
 	if(typeof fn !== 'function') throw new TypeError('not a function');
 	/** @type {!number} */
 	this._state = 0;
 	/** @type {!boolean} */
 	this._handled = false;
-	/** @type {Promise|undefined} */
+	/** @type {DPromise|undefined} */
 	this._value = undefined;
 	/** @type {!Array<!Function>} */
 	this._deferreds = [];
@@ -116,7 +116,7 @@ function handle(self, deferred) {
 		return;
 	}
 	self._handled = true;
-	Promise._immediateFn(function() {
+	DPromise._immediateFn(function () {
 		var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
 		if(cb === null) {
 			(self._state === 1 ? resolve : reject)(deferred.promise, self._value);
@@ -135,7 +135,7 @@ function handle(self, deferred) {
 
 function resolve(self, newValue) {
 	try {
-		// Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+		// DPromise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
 		if(newValue === self)
 			throw new TypeError('A promise cannot be resolved with itself.');
 		if(
@@ -143,7 +143,7 @@ function resolve(self, newValue) {
 			(typeof newValue === 'object' || typeof newValue === 'function')
 		) {
 			var then = newValue.then;
-			if(newValue instanceof Promise) {
+			if(newValue instanceof DPromise) {
 				self._state = 3;
 				self._value = newValue;
 				finale(self);
@@ -169,9 +169,9 @@ function reject(self, newValue) {
 
 function finale(self) {
 	if(self._state === 2 && self._deferreds.length === 0) {
-		Promise._immediateFn(function() {
+		DPromise._immediateFn(function () {
 			if(!self._handled) {
-				Promise._unhandledRejectionFn(self._value);
+				DPromise._unhandledRejectionFn(self._value);
 			}
 		});
 	}
@@ -201,12 +201,12 @@ function doResolve(fn, self) {
 	var done = false;
 	try {
 		fn(
-			function(value) {
+			function (value) {
 				if(done) return;
 				done = true;
 				resolve(self, value);
 			},
-			function(reason) {
+			function (reason) {
 				if(done) return;
 				done = true;
 				reject(self, reason);
@@ -219,11 +219,11 @@ function doResolve(fn, self) {
 	}
 }
 
-Promise.prototype['catch'] = function(onRejected) {
+DPromise.prototype['catch'] = function (onRejected) {
 	return this.then(null, onRejected);
 };
 
-Promise.prototype.then = function(onFulfilled, onRejected) {
+DPromise.prototype.then = function (onFulfilled, onRejected) {
 	// @ts-ignore
 	var prom = new this.constructor(noop);
 
@@ -231,12 +231,12 @@ Promise.prototype.then = function(onFulfilled, onRejected) {
 	return prom;
 };
 
-Promise.prototype['finally'] = finallyConstructor;
+DPromise.prototype['finally'] = finallyConstructor;
 
-Promise.all = function(arr) {
-	return new Promise(function(resolve, reject) {
+DPromise.all = function (arr) {
+	return new DPromise(function (resolve, reject) {
 		if(!isArray(arr)) {
-			return reject(new TypeError('Promise.all accepts an array'));
+			return reject(new TypeError('DPromise.all accepts an array'));
 		}
 
 		var args = Array.prototype.slice.call(arr);
@@ -250,7 +250,7 @@ Promise.all = function(arr) {
 					if(typeof then === 'function') {
 						then.call(
 							val,
-							function(val) {
+							function (val) {
 								res(i, val);
 							},
 							reject
@@ -273,52 +273,52 @@ Promise.all = function(arr) {
 	});
 };
 
-Promise.allSettled = allSettled;
+DPromise.allSettled = allSettled;
 
-Promise.resolve = function(value) {
-	if(value && typeof value === 'object' && value.constructor === Promise) {
+DPromise.resolve = function (value) {
+	if(value && typeof value === 'object' && value.constructor === DPromise) {
 		return value;
 	}
 
-	return new Promise(function(resolve) {
+	return new DPromise(function (resolve) {
 		resolve(value);
 	});
 };
 
-Promise.reject = function(value) {
-	return new Promise(function(resolve, reject) {
+DPromise.reject = function (value) {
+	return new DPromise(function (resolve, reject) {
 		reject(value);
 	});
 };
 
-Promise.race = function(arr) {
-	return new Promise(function(resolve, reject) {
+DPromise.race = function (arr) {
+	return new DPromise(function (resolve, reject) {
 		if(!isArray(arr)) {
-			return reject(new TypeError('Promise.race accepts an array'));
+			return reject(new TypeError('DPromise.race accepts an array'));
 		}
 
 		for(var i = 0, len = arr.length; i < len; i++) {
-			Promise.resolve(arr[i]).then(resolve, reject);
+			DPromise.resolve(arr[i]).then(resolve, reject);
 		}
 	});
 };
 
 // Use polyfill for setImmediate for performance gains
-Promise._immediateFn =
+DPromise._immediateFn =
 	// @ts-ignore
 	(typeof setImmediate === 'function' &&
-		function(fn) {
+		function (fn) {
 			// @ts-ignore
 			setImmediate(fn);
 		}) ||
-	function(fn) {
+	function (fn) {
 		setTimeoutFunc(fn, 0);
 	};
 
-Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
+DPromise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
 	if(typeof console !== 'undefined' && console) {
-		console.warn('Possible Unhandled Promise Rejection:', err); // eslint-disable-line no-console
+		console.warn('Possible Unhandled DPromise Rejection:', err); // eslint-disable-line no-console
 	}
 };
 
-module.exports = Promise;
+export {DPromise};

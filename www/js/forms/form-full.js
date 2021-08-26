@@ -168,6 +168,7 @@ class FormFull extends eventProcessingMixins {
 	}
 	saveClick(isDraft) {
 		LoadingIndicator.instance.show();
+
 		this.saveClickInner(isDraft).catch((er) => {
 			console.log('invalid form.');
 			console.dir(er);
@@ -179,7 +180,8 @@ class FormFull extends eventProcessingMixins {
 
 		this.forceBouncingTimeout();
 		var data = {};
-
+		debugger;
+		throw new Error('1');
 		if(isDraft !== 'keepStatus') {
 			if(this.props.initialData.isP || !this.props.initialData.id) {
 				if(isDraft === true) {

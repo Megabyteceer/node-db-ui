@@ -6,7 +6,7 @@ var instance;
 var stack = [];
 var idCounter = 0;
 
-export {Notify};
+
 class Notify extends Component {
 	componentDidMount() {
 		instance = this;
@@ -54,3 +54,4 @@ class Notify extends Component {
 		}
 	}
 }
+export {Notify};
