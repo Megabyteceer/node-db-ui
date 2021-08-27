@@ -1,7 +1,9 @@
-import fieldsEvents from "../events/fields_events.js";
+import {FIELD_18_BUTTON} from "../bs-utils";
+import {R} from "../r.ts";
+import {fieldsEvents} from "../events/fields_events.js";
 import {renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {fieldMixins} from "./field-mixins.js";
 
 registerFieldClass(FIELD_18_BUTTON, class ButtonField extends fieldMixins {
 

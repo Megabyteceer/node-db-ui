@@ -1,3 +1,4 @@
+import {R} from "../r.ts";
 import {renderItemsButtons} from "../forms/form-item.js";
 import {registerListRenderer} from "../forms/list.js";
 import {idToImgURL, renderIcon} from "../utils.js";

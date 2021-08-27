@@ -1,6 +1,11 @@
-import {Highlighter} from "../libs/libs.js";
+import ReactDOM from "react-dom";
+import React from "react";
 
-export default class fieldMixins extends Component {
+import {assert} from "../bs-utils";
+import {Component} from "react";
+import {Highlighter} from "react-highlight-words";
+
+class fieldMixins extends Component {
 
 	constructor(props) {
 		assert(props.field, '"field" property  expected.');
@@ -41,3 +46,4 @@ export default class fieldMixins extends Component {
 		this.refToInput = refToInput;
 	}
 }
+export {fieldMixins};

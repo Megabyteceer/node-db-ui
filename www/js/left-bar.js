@@ -1,7 +1,9 @@
-import FieldAdmin from "./admin/field-admin.js";
-import NodeAdmin, {createNodeForMenuItem} from "./admin/node-admin.js";
+import React, {Component} from "react";
+import {FieldAdmin} from "./admin/field-admin.js";
+import {NodeAdmin, createNodeForMenuItem} from "./admin/node-admin.js";
+import {R} from "./r.ts";
 import {iAdmin} from "./user.js";
-import {isLitePage, L, loactionToHash, renderIcon, setFormFilter, sp} from "./utils.js";
+import {currentFormParameters, isLitePage, L, loactionToHash, renderIcon, setFormFilter} from "./utils.js";
 
 let collapsed;
 
@@ -215,7 +217,7 @@ function renderItemsArray(itemsArray, level, item) {
 	return ret;
 }
 
-export default class LeftBar extends Component {
+class LeftBar extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
@@ -288,3 +290,5 @@ function renewIsCollapsable() {
 
 window.addEventListener('resize', renewIsCollapsable);
 renewIsCollapsable();
+
+export {LeftBar};

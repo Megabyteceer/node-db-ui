@@ -1,11 +1,9 @@
-import Select from "../components/select.js";
+import {FIELD_6_ENUM} from "../bs-utils";
+import {R} from "../r.ts";
+import React from "react";
+import {Select} from "../components/select.js";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
-/*
-var optionStyle = {
-	padding:'5px',
-	cursor:'pointer'
-}*/
+import {fieldMixins} from "./field-mixins.js";
 
 registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 

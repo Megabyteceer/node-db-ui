@@ -1,11 +1,14 @@
-import FieldAdmin from "../admin/field-admin.js";
-import NodeAdmin from "../admin/node-admin.js";
-import LeftBar from "../left-bar.js";
-import {iAdmin} from "../user.js";
+import {R} from "../r.ts";
+import {FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE} from "../bs-utils";
+import {FieldAdmin} from "../admin/field-admin.js";
+import {NodeAdmin} from "../admin/node-admin.js";
+import {LeftBar} from "../left-bar.js";
 import {consoleLog, createRecord, deleteRecord, getNode, getNodeData, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation} from "../utils.js";
-import FormFull from "./form-full.js";
-import FormItem from "./form-item.js";
-import BaseForm from "./form-mixins.js";
+import {FormFull} from "./form-full.js";
+import {FormItem} from "./form-item.js";
+import {BaseForm} from "./form-mixins.js";
+import React from "react";
+import {iAdmin} from "../user.js";
 
 const sortByOrder = (a, b) => {
 	return a.order - b.order;
@@ -39,7 +42,7 @@ function createPageButton(self, page, isActive) {
 	);
 }
 
-export default class List extends BaseForm {
+class List extends BaseForm {
 
 	constructor(props) {
 		super(props);
@@ -320,7 +323,7 @@ export default class List extends BaseForm {
 		}
 
 		var createBtn;
-		if(node.canCreate) {
+		if(node.prevs & PREVS_CREATE) {
 			createBtn = R.div(null,
 				R.button({title: L('ADD', (node.creationName || node.singleName)), className: 'clickable toolbtn create-btn', onClick: () => {data.items.push({}); this.forceUpdate();}},
 					renderIcon('plus')
@@ -362,7 +365,7 @@ export default class List extends BaseForm {
 
 		if(!this.props.omitHeader) {
 			var createButton;
-			if(node.canCreate && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
+			if((node.prevs & PREVS_CREATE) && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
 				if(this.isSlave()) {
 					createButton = R.button({
 						className: 'clickable create-button', onClick: async () => {
@@ -576,4 +579,4 @@ export default class List extends BaseForm {
 		);
 	}
 }
-export {isPresentListRenderer, registerListRenderer};
+export {isPresentListRenderer, registerListRenderer, List};

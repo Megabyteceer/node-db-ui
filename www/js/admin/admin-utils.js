@@ -1,8 +1,11 @@
-import Select from "../components/select.js";
-import FormFull from "../forms/form-full.js";
-import LeftBar from "../left-bar.js";
-import MainFrame from "../main-frame.js";
+import ReactDOM from "react-dom";
+import React from "react";
+import {FIELD_17_TAB} from "../bs-utils";
+import {R} from "../r.ts";
+import {Select} from "../components/select.js";
 import {consoleDir, getNode, getNodeData, isLitePage, popup, refreshForm, renderIcon, submitRecord} from "../utils.js";
+import {FormFull} from "../forms/form-full.js";
+import {MainFrame} from "../main-frame.js";
 
 const admin = {};
 
@@ -135,7 +138,7 @@ admin.moveField = async (fIndex, form, node, direction = 0) => {
 
 admin.exchangeNodes = async (node1, node2) => {
 	if(node1 && node2) {
-		let ret = await Promise.all([submitRecord(4, {
+		await Promise.all([submitRecord(4, {
 			prior: node1.prior
 		}, node2.id).then(() => {
 			console.log(1);
@@ -158,12 +161,19 @@ admin.debug = (obj) => {
 	debugInfoGetter.call(obj);
 }
 
+
 var styleEl = document.createElement('style');
 var styleSheet;
 document.head.appendChild(styleEl);
 styleSheet = styleEl.sheet;
+var adminOn;
+document.addEventListener('load', () => {
+	adminOn = !isLitePage();
+	$('body').append('<span class="admin-tools-enable-btn"><span>Admin tools </span><input type="checkbox" checked="' + adminOn + '" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>');
+	$('#admin-disable').on('click', admin.toggleAdminUI);
 
-var adminOn = !isLitePage();
+	admin.toggleAdminUI();
+});
 
 admin.toggleAdminUI = () => {
 	if(adminOn) {
@@ -173,16 +183,10 @@ admin.toggleAdminUI = () => {
 			styleSheet.removeRule(0);
 		}
 	}
-
 	$('#admin-disable').prop('checked', !adminOn);
-
 	adminOn = !adminOn;
 }
 
-$('body').append('<span class="admin-tools-enable-btn"><span>Admin tools </span><input type="checkbox" checked="' + adminOn + '" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>');
-$('#admin-disable').on('click', admin.toggleAdminUI);
-
-admin.toggleAdminUI();
 
 
 let iconsList;
@@ -192,7 +196,7 @@ function initIconsList(params) {
 		return r.href && (r.href.indexOf('font-awesome') >= 0);
 	});
 	for(let style of ruleList) {
-		for(let rule of style.cssRules) {
+		for(let rule of Array.from(style.cssRules)) {
 			let s = rule.cssText.split('.fa-');
 			let allNames = s.filter(s => s.indexOf('::before') > 0).map(s => s.substr(0, s.indexOf('::before')));
 			if(allNames.length) {
@@ -234,5 +238,4 @@ function makeIconSelectionField(form, fieldName) {
 		10);
 }
 
-export default admin;
-export {makeIconSelectionField};
+export {makeIconSelectionField, admin};

@@ -1,13 +1,18 @@
-import DebugPanel from "./debug-panel.js";
-import LeftBar from "./left-bar.js";
-import LoadingIndicator from "./loading-indicator.js";
-import Modal from "./modal.js";
-import Notify from "./notify.js";
+
+
+import React, {Component} from "react";
+import {DebugPanel} from "./debug-panel.js";
+import {R} from "./r.ts";
+import {LeftBar} from "./left-bar.js";
+import {LoadingIndicator} from "./loading-indicator.js";
+import {Modal} from "./modal.js";
+import {Notify} from "./notify.js";
 import {Stage} from "./stage.js";
-import TopBar from "./top-bar.js";
+import {TopBar} from "./top-bar.js";
 import {getData} from "./utils.js";
 
 const ENV = {};
+
 
 class MainFrame extends Component {
 
@@ -79,5 +84,4 @@ class MainFrame extends Component {
 /** @type MainFrame */
 MainFrame.instance = null;
 
-export default MainFrame;
-export {ENV};
+export {ENV, MainFrame};

@@ -1,11 +1,14 @@
 
-import FieldWrap from "../fields/field-wrap.js";
-import {iAdmin} from "../user.js";
+import {FieldWrap} from "../fields/field-wrap.js";
 import {backupCreationData, consoleLog, deleteRecord, getBackupData, goBack, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord} from "../utils.js";
-import FormTab from "./form-tab.js";
-import eventProcessingMixins from "./event-processing-mixins.js";
-import NodeAdmin from "../admin/node-admin.js";
-import LoadingIndicator from "../loading-indicator.js";
+import {FormTab} from "./form-tab.js";
+import {eventProcessingMixins} from "./event-processing-mixins.js";
+import {NodeAdmin} from "../admin/node-admin.js";
+import {LoadingIndicator} from "../loading-indicator.js";
+import {R} from "../r.ts";
+import {FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_5_BOOL, FIELD_7_Nto1, PREVS_PUBLISH} from "../bs-utils";
+import React from "react";
+import {iAdmin} from "../user.js";
 
 var backupCallback;
 
@@ -14,6 +17,7 @@ function tryBackup() {
 		backupCallback();
 	}
 }
+
 
 window.addEventListener('unload', tryBackup);
 setInterval(tryBackup, 15000);
@@ -29,8 +33,7 @@ async function callForEachField(fieldRefs, data, functionName) {
 	}));
 }
 
-
-export default class FormFull extends eventProcessingMixins {
+class FormFull extends eventProcessingMixins {
 	constructor(props) {
 		super(props);
 		this.currentData = Object.assign({}, props.filters, props.initialData);
@@ -165,11 +168,20 @@ export default class FormFull extends eventProcessingMixins {
 	}
 	saveClick(isDraft) {
 		LoadingIndicator.instance.show();
-		this.saveClickInner(isDraft).catch(() => {
-			console.log('invalid form.');
-		}).finally(() => {
-			LoadingIndicator.instance.hide();
-		});
+
+		this.saveClickInner(isDraft)
+			/// #if DEBUG
+			/*
+			/// #endif
+			.catch((er) => {
+				debugger;
+				console.log('invalid form.');
+				console.dir(er);
+			})
+			//*/
+			.finally(() => {
+				LoadingIndicator.instance.hide();
+			});
 	}
 	async saveClickInner(isDraft) {
 
@@ -476,3 +488,5 @@ export default class FormFull extends eventProcessingMixins {
 		)
 	}
 }
+
+export {FormFull};

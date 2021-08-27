@@ -1,8 +1,11 @@
 {
-	"javascript.suggest.paths": true,
+	"typescript.suggest.paths": true,
 	"editor.formatOnSave": true,
-	"javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+	"typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+	"typescript.format.insertSpaceBeforeFunctionParenthesis": false,
+	"typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": false,
 	"files.exclude": {
+		"**/dist/**": true,
 		"**/www/**": true,
 		"**/cert/**": true,
 		"**/nginx-1.20.1/**": true

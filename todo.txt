@@ -1,4 +1,13 @@
+
+Replace all Promise with global DPromise without try catch. Add webpack loader which will replace promises in generators to DPromise
+
+Check handlers and make fields handlers
+
 Make selenium tests for basic operations
+
+Separate FormEvents and CustomFormEvents. Call both of them.
+
+Events editor just create method and open it to edit at line num we want.
 
 модальные формы для редактирования админских вещей. (admin.popup заменить)
 
@@ -6,9 +15,9 @@ Make selenium tests for basic operations
 
 separate server side and client side isUserHaveRole
 
-Переводы. Стандартные - в коде, кастомные в бд. И грузить их в памать. Гет ланг. Метод возвращающий кастомные переводы.
+Переводы. Стандартные - в коде, кастомные в бд. И грузить их в память. Гет ланг. Метод возвращающий кастомные переводы.
 
-Юзеру поле языка с 0 по умолчанию. Язык стстемы.
+Юзеру поле языка с 0 по умолчанию. Язык системы.
 
 проверить сессии на глючность
 

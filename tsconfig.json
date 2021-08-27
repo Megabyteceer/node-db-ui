@@ -1,0 +1,29 @@
+{
+	"compilerOptions": {
+		"lib": ["ESNext"],
+		"noUnusedLocals": true,
+		"target": "es5",
+		"rootDir": ".",
+		"baseUrl": ".",
+		"sourceMap": true,
+		"outDir": "dist",
+		"incremental": true,
+		"module": "UMD",
+		"moduleResolution": "node",
+		"diagnostics": false,
+		"skipLibCheck": true,
+		"watch": true,
+		"assumeChangesOnlyAffectDirectDependencies": true,
+	},
+	"typeAcquisition": {
+        "include": ["node"]
+    },
+	"include": ["core/index.ts", "events/*"],
+	"exclude": [
+		"**/www/**",
+		"**/dist/**",
+		"node_modules",
+		"**/node_modules/*",
+		"**/uploads/**",
+	]
+}

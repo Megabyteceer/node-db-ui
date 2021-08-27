@@ -1,13 +1,17 @@
-﻿import {clearForm, getData, goToPageByHash, idToImgURL, L, loactionToHash, renderIcon, showForm} from "./utils.js";
-import Select from "./components/select.js";
-import admin from "./admin/admin-utils.js";
-import {ENV} from "./main-frame.js";
-import {moment} from "./libs/libs.js";
+﻿import React from "react";
 
-var currentUserData;
+import {clearForm, getData, goToPageByHash, idToImgURL, L, loactionToHash, renderIcon, showForm} from "./utils.js";
+import {Select} from "./components/select.js";
+import {admin} from "./admin/admin-utils.js";
+import {ENV} from "./main-frame.js";
+import moment from "moment";
+import {Component} from "react";
+import {R} from "./r.ts";
+import {ADMIN_ROLE_ID, isUserHaveRole} from "./bs-utils";
+
 
 function setUserOrg(orgId) {
-	if(currentUserData.orgId !== orgId) {
+	if(User.currentUserData.orgId !== orgId) {
 		getData('api/setCurrentOrg', {orgId}).then(() => {
 			User.instance.refreshUser();
 		});
@@ -15,12 +19,12 @@ function setUserOrg(orgId) {
 }
 
 function iAdmin() {
-	return isUserHaveRole(ADMIN_ROLE_ID);
+	return User.currentUserData && isUserHaveRole(ADMIN_ROLE_ID, User.currentUserData);
 }
 
 var isFirstCall = true;
 
-export default class User extends Component {
+class User extends Component {
 
 	componentDidMount() {
 		User.instance = this;
@@ -34,7 +38,7 @@ export default class User extends Component {
 			import('/locales/' + data.lang.code + '/lang.js').then(() => {
 				this.setState(data);
 
-				window.currentUserData = data;
+				User.currentUserData = data;
 				if(iAdmin()) {
 					admin.toggleAdminUI();
 				}
@@ -127,8 +131,10 @@ export default class User extends Component {
 /** @type User */
 User.instance = null;
 
+User.currentUserData = null;
+
 /// #if DEBUG
 User.sessionToken = "dev-admin-session-token";
 /// #endif
 
-export {iAdmin};
+export {iAdmin, User};

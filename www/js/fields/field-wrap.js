@@ -1,6 +1,9 @@
-import FieldAdmin from "../admin/field-admin.js";
-import {iAdmin} from "../user.js";
+import {FIELD_14_NtoM, FIELD_15_1toN, FIELD_18_BUTTON, FIELD_7_Nto1, FIELD_8_STATICTEXT} from "../bs-utils";
+import {R} from "../r.ts";
+import React, {Component} from "react";
+import {FieldAdmin} from "../admin/field-admin.js";
 import {consoleLog, debugError, getClassForField, renderIcon, scrollToVisible, setFormFilter} from "../utils.js";
+import {iAdmin} from "../user.js";
 
 class FieldHelp extends Component {
 	constructor(props) {
@@ -66,9 +69,7 @@ class FieldLabel extends Component {
 	}
 }
 
-export {FieldHelp, FieldLabel};
-
-export default class FieldWrap extends Component {
+class FieldWrap extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
@@ -209,7 +210,7 @@ export default class FieldWrap extends Component {
 		}
 
 		this.setState({fieldAlert: text, isSucessAlert: isSucess});
-		if(focus && text) {
+		if(focus && text && !isSucess) {
 			this.focus();
 		}
 	}
@@ -370,3 +371,5 @@ export default class FieldWrap extends Component {
 	}
 }
 
+
+export {FieldHelp, FieldLabel, FieldWrap};

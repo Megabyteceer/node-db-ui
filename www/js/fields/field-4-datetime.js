@@ -1,7 +1,12 @@
-import {moment} from "../libs/libs.js";
+import ReactDOM from "react-dom";
+import React from "react";
+
+import {FIELD_4_DATETIME} from "../bs-utils";
+import {R} from "../r.ts";
+import moment from "moment";
 import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDatetime, toReadableTime} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {fieldMixins} from "./field-mixins.js";
 
 function isSameDay(val, d) {
 	if(!d || !val) return false;
@@ -18,8 +23,8 @@ class dateFieldMixins extends fieldMixins {
 
 	importReactDateTime() {
 		if(!this.ReactDatetimeClass) {
-			import('../libs/react-datetime.js').then((module) => {
-				this.ReactDatetimeClass = module.ReactDatetimeClass;
+			import('react-datetime').then((module) => {
+				this.ReactDatetimeClass = module.default;
 				this.forceUpdate();
 			});
 		}

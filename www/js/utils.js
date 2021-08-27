@@ -1,19 +1,17 @@
-
-
-import Notify from "./notify.js";
+import {Notify} from "./notify.js";
+import ReactDOM from "react-dom";
+import {R} from "./r.ts";
+import {assert, FIELD_1_TEXT, isUserHaveRole, PREVS_PUBLISH} from "./bs-utils";
+import {LoadingIndicator} from "./loading-indicator.js";
+import {User} from "./user.js";
+import {Modal} from "./modal.js";
+import {ENV} from "./main-frame.js";
 import {Stage} from "./stage.js";
-
+import {isPresentListRenderer} from "./forms/list.js";
+import {DebugPanel} from "./debug-panel.js";
 
 // @ts-ignore
-window.__corePath = 'https://node-db-ui.com:1443/core/';
-
-import "../both-side-utils.js";
-import LoadingIndicator from "./loading-indicator.js";
-import DebugPanel from "./debug-panel.js";
-import {isPresentListRenderer} from "./forms/list.js";
-import User from "./user.js";
-import Modal from "./modal.js";
-import {ENV} from "./main-frame.js";
+const __corePath = 'https://node-db-ui.com:1443/core/';
 
 const headersJSON = new Headers();
 headersJSON.append("Content-Type", "application/json");
@@ -278,7 +276,7 @@ function loactionToHash(nodeId, recId, filters, editable) {
 	return retHash;
 }
 
-window.currentFormParameters = {};
+const currentFormParameters = {};
 
 function isCurrentlyShowedLeftbarItem(item) {
 
@@ -622,6 +620,7 @@ function getClassForField(type) {
 }
 
 function registerFieldClass(type, class_) {
+
 	if(_fieldClasses.hasOwnProperty(type)) {
 		throw new Error('Class for field type ' + type + ' is registered already');
 	}
@@ -636,6 +635,7 @@ function registerFieldClass(type, class_) {
 	}
 
 	_fieldClasses[type] = class_;
+
 }
 
 function decodeData(data, node) {
@@ -708,6 +708,7 @@ async function getData(url, params, callStack, noLoadingIndicator) {
 		if(!params) {
 			params = {};
 		}
+
 		params.sessionToken = User.sessionToken;
 
 		__requestsOrder.push(requestRecord);
@@ -788,7 +789,7 @@ async function draftRecord(nodeId, recId) {
 }
 
 function isAuthNeed(data) {
-	return (data.isGuest && window.isUserHaveRole && isUserHaveRole(3)) || (data.error && (data.error.message === 'auth'));
+	return (data.isGuest && isUserHaveRole(3)) || (data.error && (data.error.message === 'auth'));
 }
 
 function serializeForm(form) {
@@ -889,10 +890,6 @@ function createRecord(nodeId, parameters) {
 
 		setFormData(nodeId, emptyData, 'new', parameters, true);
 	})
-}
-
-function redirect(href) {
-	document.location.href = href;
 }
 
 function n2mValuesEqual(v1, v2) {
@@ -1040,6 +1037,7 @@ function addTranslateX(element, x) {
 function dataDidModifed() {
 	try {
 		if(window.hasOwnProperty('reloadParentIfSomethingUpdated_qwi012d')) {
+			// @ts-ignore
 			window.reloadParentIfSomethingUpdated_qwi012d();
 		}
 	} catch(e) { };
@@ -1057,6 +1055,7 @@ function popup(url, W = 900, reloadParentIfSomethingUpdated) { //new window
 		return;
 	}
 	if(reloadParentIfSomethingUpdated) {
+		// @ts-ignore
 		popUp.reloadParentIfSomethingUpdated_qwi012d = () => {
 			dataDidModifedInChildren = true;
 		}
@@ -1229,5 +1228,6 @@ export {
 	clearForm,
 	refreshForm,
 	showForm,
-	debugError
+	debugError,
+	currentFormParameters
 }

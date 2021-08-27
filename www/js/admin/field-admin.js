@@ -1,11 +1,14 @@
-import fieldsEvents from "../events/fields_events.js";
+import {R} from "../r.ts";
+import {Component} from "react";
+import {fieldsEvents} from "../events/fields_events.js";
 import {getNodeData, keepInWindow, L, loactionToHash, renderIcon, sp} from "../utils.js";
 import {admin_editSource} from "./admin-event-editor.js";
-import admin from "./admin-utils.js";
+import {admin} from "./admin-utils.js";
 
 var showedFieldId;
 
-export default class FieldAdmin extends Component {
+
+class FieldAdmin extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -193,3 +196,5 @@ export default class FieldAdmin extends Component {
 		)
 	}
 }
+
+export {FieldAdmin};

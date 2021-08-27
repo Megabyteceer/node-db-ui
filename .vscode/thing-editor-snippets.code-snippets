@@ -1,6 +1,6 @@
 {
 	"/// #if DEBUG": {
-		"scope": "javascript",
+		"scope": "typescript",
 		"prefix": "///",
 		"body": [
 			"/// #if DEBUG\n\n\n/// #endif"

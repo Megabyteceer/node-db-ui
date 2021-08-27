@@ -17,7 +17,7 @@
 				"--trace-uncaught=true",
 				"--unhandled-rejections=throw"
 			],
-			"program": "${workspaceFolder}\\index.js"
+			"program": "${workspaceFolder}\\dist\\core\\index.js"
 		}
 	]
 }

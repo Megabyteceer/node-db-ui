@@ -2,13 +2,16 @@
 /nginx-1.20.1
 /core-php
 /cert
+/dist
 
+/www/.cache
+/www/dist
 /www/images/uploads
 /www/uploads
 /www/js/libs/libs.js
 /www/js/libs.js.LICENSE.txt
 /www/js/libs/react-datetime.js
 /www/js/libs/react-cropper.js
-/www/js/libs/react-datetime.js
 /www/js/libs/code-mirror.js
 
+/www/tsconfig.tsbuildinfo

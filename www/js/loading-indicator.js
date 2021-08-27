@@ -1,8 +1,10 @@
 
 
+import {Component} from "react";
+import {R} from "./r.ts";
 import {isLitePage, renderIcon} from "./utils.js";
 
-export default class LoadingIndicator extends Component {
+class LoadingIndicator extends Component {
 
 	constructor(props) {
 		super(props);
@@ -38,3 +40,5 @@ export default class LoadingIndicator extends Component {
 }
 /** @type LoadingIndicator */
 LoadingIndicator.instance = null;
+
+export {LoadingIndicator};

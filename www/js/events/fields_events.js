@@ -1,3 +1,4 @@
+import {FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATICTEXT} from "../bs-utils";
 import {L} from "../utils.js";
 
 var fieldsEvents = {};
@@ -197,10 +198,10 @@ fieldsEvents[680] = function my_records_btn_onChange() {//field680onchangebegin_
 } //field680onchangeend_wqdggft
 
 fieldsEvents[738] = function my_records_button_onChange() {//field738onchangebegin_cswhggft
-alert('Button clicked');
+	alert('Button clicked');
 } //field738onchangeend_wqdggft
 
 //insertNewhandlersHere_adsqw09
 
 
-export default fieldsEvents;
+export {fieldsEvents};

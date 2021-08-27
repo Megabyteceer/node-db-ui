@@ -1,8 +1,10 @@
 ﻿
 
-import FormFull from "./forms/form-full.js";
-import List from "./forms/list.js";
-import LeftBar from "./left-bar.js";
+import React, {Component} from "react";
+import {R} from "./r.ts";
+import {FormFull} from "./forms/form-full.js";
+import {List} from "./forms/list.js";
+import {LeftBar} from "./left-bar.js";
 import {consoleLog, isLitePage, loadJS, myAlert, renderIcon} from "./utils.js";
 
 class FormLoaderCog extends Component {
@@ -12,10 +14,11 @@ class FormLoaderCog extends Component {
 		);
 	}
 }
-
-if(isLitePage()) {
-	document.body.classList.add('lite-ui');
-}
+document.addEventListener('load', () => {
+	if(isLitePage()) {
+		document.body.classList.add('lite-ui');
+	}
+});
 
 class Stage extends Component {
 
@@ -71,7 +74,9 @@ class Stage extends Component {
 						this.loadCustomClass();
 					}, 1);
 				} else {
-					return React.createElement(window[this.state.customClass], this.state.props);
+					//TODO custom class form
+					debugger;
+					//return React.createElement(window[this.state.customClass], this.state.props);
 				}
 			} else {
 				if(!this.state.node.staticLink) {
@@ -85,7 +90,9 @@ class Stage extends Component {
 						if(typeof window[this.state.node.tableName] === 'undefined') {
 							myAlert('Unknown react class: ' + this.state.node.tableName);
 						} else {
-							body = React.createElement(window[this.state.node.tableName], {node: this.state.node, recId: this.state.recId, filters: this.filters || {}});
+							//TODO custom class form
+							debugger;
+							//body = React.createElement(window[this.state.node.tableName], {node: this.state.node, recId: this.state.recId, filters: this.filters || {}});
 						}
 					} else {
 						location.href = this.state.node.staticLink;

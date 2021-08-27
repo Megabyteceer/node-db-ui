@@ -98,6 +98,10 @@ input {
 	box-sizing: border-box;
 }
 
+input:focus-visible {
+	outline: var(--BRAND_COLOR) auto 1px;
+}
+
 *::-webkit-scrollbar {
 	width: 10px;
 }
@@ -421,25 +425,23 @@ input[readonly] {
 
 .left-bar-item-doc {
 	background: #ffffff;
-	padding: 9px 5px;
+	padding: 15px 11px;
 	font-size: 90%;
-	font-weight: bold;
 	border-bottom: 1px solid #ddd;
 }
 
 .left-bar-group {
-	padding: 5px 4px;
+	padding: 12px 11px;
 	background: var(--BRAND_COLOR);
-	font-weight: bold;
 	color: var(--BRAND_COLOR_SHINE);
-	font-size: 70%;
+	font-size: 80%;
 	margin-top: 1px;
 }
 
 .left-bar-item-active {
 	background: #dfefff;
 	border-left: 5px solid var(--CREATE_COLOR);
-	padding-left: 0;
+	padding-left: 6px;
 }
 
 .left-bar-item-icon {
@@ -470,6 +472,11 @@ input[readonly] {
 	margin: 5px;
 	border-radius: 5px;
 	overflow: hidden;
+	border: 1px solid var(--BRAND_COLOR);
+}
+
+.left-bar-children>.left-bar-group-container>.left-bar-group {
+	margin-top: 0;
 }
 
 .left-bar-body a:last-of-type .left-bar-item {

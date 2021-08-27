@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {getData, L, renderIcon, sp} from "../utils.js";
 
 var style = {
@@ -11,7 +12,7 @@ var style = {
 var inputStyle = {
 	width: 240,
 	borderRadius: 0,
-	border: '1px solid ' + window.constants.BRAND_COLOR_LIGHT,
+	border: '1px solid ' + BRAND_COLOR_LIGHT,
 	//		borderTop:'1px solid ' + window.constants.BRAND_COLOR_LIGHT,
 	//		borderBottom:'1px solid ' + window.constants.BRAND_COLOR_LIGHT,
 	color: '#fff',
