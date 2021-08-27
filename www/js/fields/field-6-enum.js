@@ -1,9 +1,9 @@
 import {FIELD_6_ENUM} from "../bs-utils";
-import R from "../r.js";
+import {R} from "../r.ts";
 import React from "react";
-import Select from "../components/select.js";
+import {Select} from "../components/select.js";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {fieldMixins} from "./field-mixins.js";
 
 registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 

@@ -5,7 +5,7 @@ module.exports = {
     entry: './js/index.ts',
     target: ['web', 'es2020'],
     watch: true,
-    devtool: 'eval-source-map',
+    devtool: 'source-map',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js'

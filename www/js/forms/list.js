@@ -1,12 +1,12 @@
-import R from "../r.js";
+import {R} from "../r.ts";
 import {FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE} from "../bs-utils";
-import FieldAdmin from "../admin/field-admin.js";
-import NodeAdmin from "../admin/node-admin.js";
-import LeftBar from "../left-bar.js";
+import {FieldAdmin} from "../admin/field-admin.js";
+import {NodeAdmin} from "../admin/node-admin.js";
+import {LeftBar} from "../left-bar.js";
 import {consoleLog, createRecord, deleteRecord, getNode, getNodeData, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation} from "../utils.js";
-import FormFull from "./form-full.js";
-import FormItem from "./form-item.js";
-import BaseForm from "./form-mixins.js";
+import {FormFull} from "./form-full.js";
+import {FormItem} from "./form-item.js";
+import {BaseForm} from "./form-mixins.js";
 import React from "react";
 import {iAdmin} from "../user.js";
 
@@ -42,7 +42,7 @@ function createPageButton(self, page, isActive) {
 	);
 }
 
-export default class List extends BaseForm {
+class List extends BaseForm {
 
 	constructor(props) {
 		super(props);
@@ -579,4 +579,4 @@ export default class List extends BaseForm {
 		);
 	}
 }
-export {isPresentListRenderer, registerListRenderer};
+export {isPresentListRenderer, registerListRenderer, List};

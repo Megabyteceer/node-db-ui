@@ -1,14 +1,14 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import R from "../r.js";
+import {R} from "../r.ts";
 import {Component} from "react";
 import {FIELD_21_FILE} from "../bs-utils";
 import {ENV} from "../main-frame.js";
-import Modal from "../modal.js";
+import {Modal} from "../modal.js";
 import {checkFileSize, getReadableUploadSize, idToFileUrl, L, renderIcon, serializeForm, submitData} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {fieldMixins} from "./field-mixins.js";
 
 registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
 
@@ -46,7 +46,7 @@ registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
 	}
 });
 
-export default class FileFormBody extends Component {
+class FileFormBody extends Component {
 
 	constructor(props) {
 		super(props);
@@ -140,3 +140,5 @@ export default class FileFormBody extends Component {
 		);
 	}
 }
+
+export {FileFormBody};

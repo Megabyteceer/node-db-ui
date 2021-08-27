@@ -2,7 +2,8 @@ import {Component} from "react";
 import {currentFormParameters, goBack} from "../utils.js";
 
 
-export default class BaseForm extends Component {
+
+class BaseForm extends Component {
 
 	constructor(props) {
 		super(props);
@@ -80,3 +81,4 @@ export default class BaseForm extends Component {
 		}
 	}
 }
+export {BaseForm};

@@ -1,7 +1,7 @@
 import {FIELD_8_STATICTEXT} from "../bs-utils";
-import R from "../r.js";
+import {R} from "../r.ts";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {fieldMixins} from "./field-mixins.js";
 
 registerFieldClass(FIELD_8_STATICTEXT, class StaticTextField extends fieldMixins {
 

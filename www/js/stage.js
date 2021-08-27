@@ -1,10 +1,10 @@
 ﻿
 
 import React, {Component} from "react";
-import R from "./r.js";
-import FormFull from "./forms/form-full.js";
-import List from "./forms/list.js";
-import LeftBar from "./left-bar.js";
+import {R} from "./r.ts";
+import {FormFull} from "./forms/form-full.js";
+import {List} from "./forms/list.js";
+import {LeftBar} from "./left-bar.js";
 import {consoleLog, isLitePage, loadJS, myAlert, renderIcon} from "./utils.js";
 
 class FormLoaderCog extends Component {

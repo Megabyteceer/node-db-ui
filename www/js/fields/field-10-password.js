@@ -1,7 +1,7 @@
 import {FIELD_10_PASSWORD} from "../bs-utils";
-import R from "../r.js";
+import {R} from "../r.ts";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {fieldMixins} from "./field-mixins.js";
 
 registerFieldClass(FIELD_10_PASSWORD, class PasswordField extends fieldMixins {
 

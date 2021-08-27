@@ -1,7 +1,7 @@
 import {FIELD_15_1toN} from "../bs-utils";
-import fieldMixins from "./field-mixins.js";
+import {fieldMixins} from "./field-mixins.js";
 
-export default class fieldLookupMixins extends fieldMixins {
+class fieldLookupMixins extends fieldMixins {
 
 	componentDidUpdate() {
 		if(!this.state.filters) {
@@ -56,3 +56,5 @@ export default class fieldLookupMixins extends fieldMixins {
 		}
 	}
 }
+
+export {fieldLookupMixins};

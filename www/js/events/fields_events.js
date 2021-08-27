@@ -204,4 +204,4 @@ fieldsEvents[738] = function my_records_button_onChange() {//field738onchangebeg
 //insertNewhandlersHere_adsqw09
 
 
-export default fieldsEvents;
+export {fieldsEvents};

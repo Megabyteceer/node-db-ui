@@ -1,8 +1,8 @@
 import {FIELD_16_RATING} from "../bs-utils";
-import R from "../r.js";
+import {R} from "../r.ts";
 import {L} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {fieldMixins} from "./field-mixins.js";
 
 registerFieldClass(FIELD_16_RATING, class RatingField extends fieldMixins {
 

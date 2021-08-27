@@ -1,8 +1,8 @@
 import React, {Component} from "react";
-import R from "./r.js";
-import User from "./user.js";
+import {R} from "./r.ts";
+import {User} from "./user.js";
 
-export default class TopBar extends Component {
+class TopBar extends Component {
 	render() {
 		return R.div({className: 'top-bar'},
 			R.a({
@@ -17,3 +17,5 @@ export default class TopBar extends Component {
 		);
 	}
 }
+
+export {TopBar};

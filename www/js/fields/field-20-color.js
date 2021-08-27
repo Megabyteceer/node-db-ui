@@ -1,9 +1,9 @@
 "use strict";
 
-import R from "../r.js";
+import {R} from "../r.ts";
 import {FIELD_20_COLOR} from "../bs-utils";
 import {registerFieldClass} from "../utils.js";
-import fieldMixins from "./field-mixins.js";
+import {fieldMixins} from "./field-mixins.js";
 
 const intToColor = (color, alpha) => {
 	var ret = 'rgba(' + ((color >> 16) & 255) + ',' + ((color >> 8) & 255) + ',' + (color & 255) + ',' + (alpha / 255.0).toFixed(2) + ')';
