@@ -123,42 +123,37 @@ function handle(self, deferred) {
 			return;
 		}
 		var ret;
-		try {
-			ret = cb(self._value);
-		} catch(e) {
-			reject(deferred.promise, e);
-			return;
-		}
+
+		ret = cb(self._value);
+
 		resolve(deferred.promise, ret);
 	});
 }
 
 function resolve(self, newValue) {
-	try {
-		// DPromise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
-		if(newValue === self)
-			throw new TypeError('A promise cannot be resolved with itself.');
-		if(
-			newValue &&
-			(typeof newValue === 'object' || typeof newValue === 'function')
-		) {
-			var then = newValue.then;
-			if(newValue instanceof DPromise) {
-				self._state = 3;
-				self._value = newValue;
-				finale(self);
-				return;
-			} else if(typeof then === 'function') {
-				doResolve(bind(then, newValue), self);
-				return;
-			}
+
+	// DPromise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+	if(newValue === self)
+		throw new TypeError('A promise cannot be resolved with itself.');
+	if(
+		newValue &&
+		(typeof newValue === 'object' || typeof newValue === 'function')
+	) {
+		var then = newValue.then;
+		if(newValue instanceof DPromise) {
+			self._state = 3;
+			self._value = newValue;
+			finale(self);
+			return;
+		} else if(typeof then === 'function') {
+			doResolve(bind(then, newValue), self);
+			return;
 		}
-		self._state = 1;
-		self._value = newValue;
-		finale(self);
-	} catch(e) {
-		reject(self, e);
 	}
+	self._state = 1;
+	self._value = newValue;
+	finale(self);
+
 }
 
 function reject(self, newValue) {
@@ -199,24 +194,20 @@ function Handler(onFulfilled, onRejected, promise) {
  */
 function doResolve(fn, self) {
 	var done = false;
-	try {
-		fn(
-			function (value) {
-				if(done) return;
-				done = true;
-				resolve(self, value);
-			},
-			function (reason) {
-				if(done) return;
-				done = true;
-				reject(self, reason);
-			}
-		);
-	} catch(ex) {
-		if(done) return;
-		done = true;
-		reject(self, ex);
-	}
+
+	fn(
+		function (value) {
+			if(done) return;
+			done = true;
+			resolve(self, value);
+		},
+		function (reason) {
+			if(done) return;
+			done = true;
+			reject(self, reason);
+		}
+	);
+
 }
 
 DPromise.prototype['catch'] = function (onRejected) {
@@ -244,27 +235,25 @@ DPromise.all = function (arr) {
 		var remaining = args.length;
 
 		function res(i, val) {
-			try {
-				if(val && (typeof val === 'object' || typeof val === 'function')) {
-					var then = val.then;
-					if(typeof then === 'function') {
-						then.call(
-							val,
-							function (val) {
-								res(i, val);
-							},
-							reject
-						);
-						return;
-					}
+
+			if(val && (typeof val === 'object' || typeof val === 'function')) {
+				var then = val.then;
+				if(typeof then === 'function') {
+					then.call(
+						val,
+						function (val) {
+							res(i, val);
+						},
+						reject
+					);
+					return;
 				}
-				args[i] = val;
-				if(--remaining === 0) {
-					resolve(args);
-				}
-			} catch(ex) {
-				reject(ex);
 			}
+			args[i] = val;
+			if(--remaining === 0) {
+				resolve(args);
+			}
+
 		}
 
 		for(var i = 0; i < args.length; i++) {
@@ -317,6 +306,7 @@ DPromise._immediateFn =
 
 DPromise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
 	if(typeof console !== 'undefined' && console) {
+		debugger;
 		console.warn('Possible Unhandled DPromise Rejection:', err); // eslint-disable-line no-console
 	}
 };

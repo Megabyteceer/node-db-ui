@@ -169,19 +169,25 @@ class FormFull extends eventProcessingMixins {
 	saveClick(isDraft) {
 		LoadingIndicator.instance.show();
 
-		this.saveClickInner(isDraft).catch((er) => {
-			console.log('invalid form.');
-			console.dir(er);
-		}).finally(() => {
-			LoadingIndicator.instance.hide();
-		});
+		this.saveClickInner(isDraft)
+			/// #if DEBUG
+			/*
+			/// #endif
+			.catch((er) => {
+				debugger;
+				console.log('invalid form.');
+				console.dir(er);
+			})
+			//*/
+			.finally(() => {
+				LoadingIndicator.instance.hide();
+			});
 	}
 	async saveClickInner(isDraft) {
 
 		this.forceBouncingTimeout();
 		var data = {};
-		debugger;
-		throw new Error('1');
+
 		if(isDraft !== 'keepStatus') {
 			if(this.props.initialData.isP || !this.props.initialData.id) {
 				if(isDraft === true) {
