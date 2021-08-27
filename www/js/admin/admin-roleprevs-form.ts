@@ -1,11 +1,11 @@
-import {PREVS_CREATE, PREVS_DELETE, PREVS_EDIT_OWN, PREVS_PUBLISH, PREVS_VIEW_OWN} from "../bs-utils";
-import {R} from "../r.ts";
-import React, {Component} from "react";
-import {BaseForm} from "../forms/form-mixins.js";
-import {FormLoaderCog} from "../stage.js";
-import {iAdmin} from "../user.js";
-import {getData, getNode, L, myPromt, renderIcon, submitData} from "../utils.js";
-import {NodeAdmin} from "./node-admin.js";
+import { PREVS_CREATE, PREVS_DELETE, PREVS_EDIT_OWN, PREVS_PUBLISH, PREVS_VIEW_OWN } from "../bs-utils";
+import { R } from "../r";
+import React, { Component } from "react";
+import { BaseForm } from "../forms/form-mixins.js";
+import { FormLoaderCog } from "../stage.js";
+import { iAdmin } from "../user.js";
+import { getData, getNode, L, myPromt, renderIcon, submitData } from "../utils.js";
+import { NodeAdmin } from "./node-admin.js";
 
 function check() {
 	return R.span({
@@ -24,18 +24,18 @@ class PrevsEditor extends Component {
 
 		var title;
 
-		if(curVal === 0) {
+		if (curVal === 0) {
 			body = R.span({
 				className: "admin-role-prevs-disabled"
 			}, renderIcon('ban'));
 			title = L('ADM_NA');
-		} else if(this.props.bitsCount === 1) {
+		} else if (this.props.bitsCount === 1) {
 			body = R.span({
 				className: "admin-role-prevs-enabled"
 			}, check());
 			title = L('ADM_A');
 		} else {
-			switch(curVal / this.props.baseBit) {
+			switch (curVal / this.props.baseBit) {
 				case 1:
 					body = R.span({
 						className: "admin-role-prevs-enabled"
@@ -74,7 +74,7 @@ class PrevsEditor extends Component {
 			onClick: () => {
 				curVal *= 2;
 				curVal += this.props.baseBit;
-				if((curVal & mask) !== curVal) {
+				if ((curVal & mask) !== curVal) {
 					curVal = 0;
 				}
 				item.prevs = ((item.prevs & (65535 ^ mask)) | curVal);
@@ -110,8 +110,8 @@ class AdminRoleprevsForm extends BaseForm {
 			nodeId: this.props.recId
 		});
 
-		for(let i of data.prevs) {
-			if(!i.prevs) {
+		for (let i of data.prevs) {
+			if (!i.prevs) {
 				i.prevs = 0;
 			}
 		}
@@ -124,7 +124,7 @@ class AdminRoleprevsForm extends BaseForm {
 	}
 
 	async saveClick() {
-		if(JSON.stringify(this.initData) !== JSON.stringify(this.state.data.prevs)) {
+		if (JSON.stringify(this.initData) !== JSON.stringify(this.state.data.prevs)) {
 			var submit = (toChild) => {
 				this.state.data.nodeId = this.props.recId;
 				this.state.data.toChild = this.props.toChild;
@@ -133,7 +133,7 @@ class AdminRoleprevsForm extends BaseForm {
 				});
 			};
 
-			if(this.state.data.isDoc) {
+			if (this.state.data.isDoc) {
 				submit();
 			} else {
 				submit(!await myPromt(L('APPLY_CHILD'), L('TO_THIS'), L('TO_ALL'), 'check', 'check'));
@@ -144,7 +144,7 @@ class AdminRoleprevsForm extends BaseForm {
 	}
 
 	render() {
-		if(this.state && this.state.data) {
+		if (this.state && this.state.data) {
 
 			var data = this.state.data;
 			var node = this.state.node;
@@ -224,7 +224,7 @@ class AdminRoleprevsForm extends BaseForm {
 			}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
 
 			var nodeAdmin;
-			if(iAdmin()) {
+			if (iAdmin()) {
 				nodeAdmin = React.createElement(NodeAdmin, {
 					form: this,
 					x: 320,
@@ -237,7 +237,7 @@ class AdminRoleprevsForm extends BaseForm {
 				onClick: this.cancelClick
 			}, renderIcon('times'), this.isSlave() ? '' : L('CANCEL'));
 
-			return R.div({className: "admin-role-prevs-body"},
+			return R.div({ className: "admin-role-prevs-body" },
 				nodeAdmin,
 				body,
 
@@ -252,4 +252,4 @@ class AdminRoleprevsForm extends BaseForm {
 	}
 }
 
-export {AdminRoleprevsForm};
+export { AdminRoleprevsForm };
