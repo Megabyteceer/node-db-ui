@@ -25,9 +25,12 @@ import React from 'react';
 
 /// #if DEBUG
 import AdminRoleprevsForm from "./admin/admin-roleprevs-form.js";
-
 // @ts-ignore
 window.AdminRoleprevsForm = AdminRoleprevsForm;
+
+import { DPromise } from "./debug-promise.js";
+window.Promise = DPromise;
+
 /*
 /// #endif
 window.onerror = (msg, url, line, col, error) => {
