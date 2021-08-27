@@ -1,11 +1,11 @@
 import {PREVS_CREATE, PREVS_DELETE, PREVS_EDIT_OWN, PREVS_PUBLISH, PREVS_VIEW_OWN} from "../bs-utils";
-import {R} from "../r.ts";
+import R from "../r.js";
 import React, {Component} from "react";
-import {BaseForm} from "../forms/form-mixins.js";
+import BaseForm from "../forms/form-mixins.js";
 import {FormLoaderCog} from "../stage.js";
 import {iAdmin} from "../user.js";
 import {getData, getNode, L, myPromt, renderIcon, submitData} from "../utils.js";
-import {NodeAdmin} from "./node-admin.js";
+import NodeAdmin from "./node-admin.js";
 
 function check() {
 	return R.span({
@@ -87,7 +87,7 @@ class PrevsEditor extends Component {
 	}
 }
 
-class AdminRoleprevsForm extends BaseForm {
+export default class AdminRoleprevsForm extends BaseForm {
 
 	constructor(props) {
 		super(props);
@@ -251,5 +251,3 @@ class AdminRoleprevsForm extends BaseForm {
 		}
 	}
 }
-
-export {AdminRoleprevsForm};

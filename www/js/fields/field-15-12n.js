@@ -1,10 +1,10 @@
-import {R} from "../r.ts";
+import R from "../r.js";
 import React from "react";
-import {FormFull} from "../forms/form-full.js";
-import {List} from "../forms/list.js";
+import FormFull from "../forms/form-full.js";
+import List from "../forms/list.js";
 import {backupCreationData, deleteRecord, getBackupData, getNodeData, L, renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import {fieldLookupMixins} from "./field-lookup-mixins.js";
+import fieldLookupMixins from "./field-lookup-mixins.js";
 import {FIELD_15_1toN} from "../bs-utils";
 
 

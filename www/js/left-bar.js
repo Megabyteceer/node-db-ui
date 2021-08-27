@@ -1,7 +1,7 @@
 import React, {Component} from "react";
-import {FieldAdmin} from "./admin/field-admin.js";
-import {NodeAdmin, createNodeForMenuItem} from "./admin/node-admin.js";
-import {R} from "./r.ts";
+import FieldAdmin from "./admin/field-admin.js";
+import NodeAdmin, {createNodeForMenuItem} from "./admin/node-admin.js";
+import R from "./r.js";
 import {iAdmin} from "./user.js";
 import {currentFormParameters, isLitePage, L, loactionToHash, renderIcon, setFormFilter} from "./utils.js";
 
@@ -217,7 +217,7 @@ function renderItemsArray(itemsArray, level, item) {
 	return ret;
 }
 
-class LeftBar extends Component {
+export default class LeftBar extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
@@ -290,5 +290,3 @@ function renewIsCollapsable() {
 
 window.addEventListener('resize', renewIsCollapsable);
 renewIsCollapsable();
-
-export {LeftBar};

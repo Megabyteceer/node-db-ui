@@ -1,9 +1,9 @@
-import {R} from "../r.ts";
+import R from "../r.js";
 import React from "react";
 import {FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1} from "../bs-utils";
-import {FieldWrap} from "../fields/field-wrap.js";
+import FieldWrap from "../fields/field-wrap.js";
 import {deleteRecord, draftRecord, L, loactionToHash, publishRecord, renderIcon, sp} from "../utils.js";
-import {BaseForm} from "./form-mixins.js";
+import BaseForm from "./form-mixins.js";
 
 const publishClick = (draft, node, data) => {
 	if(draft) {
@@ -104,8 +104,7 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 	return buttons;
 }
 
-
-class FormItem extends BaseForm {
+export default class FormItem extends BaseForm {
 
 	isVisibleField(field) {
 		if(this.props.isLookup) {
@@ -174,4 +173,4 @@ class FormItem extends BaseForm {
 	}
 }
 
-export {renderItemsButtons, FormItem};
+export {renderItemsButtons};

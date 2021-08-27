@@ -1,4 +1,4 @@
-import { MainFrame } from "./main-frame.js";
+import MainFrame from "./main-frame.js";
 import "./fields/field-1-text-default.js";
 import "./fields/field-2-numeric.js";
 import "./fields/field-4-datetime.js";
@@ -38,15 +38,50 @@ window.onerror = (msg, url, line, col, error) => {
 		submitErrorReport(msg, stack);
 	};
 //*/
-import { DPromise } from "./debug-promise.js";
 
-window.Promise = DPromise;
+interface Component {
+
+}
+
+interface ComponentProps {
+	className?: string;
+	onClick?: Function;
+	[key: string]: any;
+}
+
+interface TR {
+	div: (props: ComponentProps | null, ...children) => Component;
+	form: (props: ComponentProps | null, ...children) => Component;
+	span: (props: ComponentProps | null, ...children) => Component;
+	p: (props: ComponentProps | null, ...children) => Component;
+	img: (props: ComponentProps | null, ...children) => Component;
+	button: (props: ComponentProps | null, ...children) => Component;
+	input: (props: ComponentProps | null, ...children) => Component;
+	label: (props: ComponentProps | null, ...children) => Component;
+	b: (props: ComponentProps | null, ...children) => Component;
+	a: (props: ComponentProps | null, ...children) => Component;
+	br: (props: ComponentProps | null, ...children) => Component;
+	hr: (props: ComponentProps | null, ...children) => Component;
+	svg: (props: ComponentProps | null, ...children) => Component;
+	td: (props: ComponentProps | null, ...children) => Component;
+	tr: (props: ComponentProps | null, ...children) => Component;
+	th: (props: ComponentProps | null, ...children) => Component;
+	tbody: (props: ComponentProps | null, ...children) => Component;
+	thead: (props: ComponentProps | null, ...children) => Component;
+	table: (props: ComponentProps | null, ...children) => Component;
+	polyline: (props: ComponentProps | null, ...children) => Component;
+	textarea: (props: ComponentProps | null, ...children) => Component;
+	iframe: (props: ComponentProps | null, ...children) => Component;
+	h2: (props: ComponentProps | null, ...children) => Component;
+	h3: (props: ComponentProps | null, ...children) => Component;
+	h4: (props: ComponentProps | null, ...children) => Component;
+	h5: (props: ComponentProps | null, ...children) => Component;
+}
+
 
 window.addEventListener('load', () => {
-	setTimeout(() => {
-		ReactDOM.render(
-			React.createElement(MainFrame),
-			document.getElementById('container')
-		);
-	}, 10);
+	ReactDOM.render(
+		React.createElement(MainFrame),
+		document.getElementById('container')
+	);
 });

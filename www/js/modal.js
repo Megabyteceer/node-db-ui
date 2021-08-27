@@ -1,11 +1,11 @@
 import {Component} from "react";
-import {R} from "./r.ts";
+import R from "./r.js";
 import {debugError, sp} from "./utils.js";
 
 var modalStack = [];
 var idCounter = 0;
 
-class Modal extends Component {
+export default class Modal extends Component {
 	constructor(props) {
 		super(props);
 		this.show = this.show.bind(this);
@@ -78,5 +78,3 @@ class Modal extends Component {
 
 /* @type = {Modal}*/// #if DEBUG
 Modal.instance = null;
-
-export {Modal};

@@ -1,14 +1,14 @@
-import {Notify} from "./notify.js";
+import Notify from "./notify.js";
 import ReactDOM from "react-dom";
-import {R} from "./r.ts";
+import R from "./r.js";
 import {assert, FIELD_1_TEXT, isUserHaveRole, PREVS_PUBLISH} from "./bs-utils";
-import {LoadingIndicator} from "./loading-indicator.js";
-import {User} from "./user.js";
-import {Modal} from "./modal.js";
+import LoadingIndicator from "./loading-indicator.js";
+import User from "./user.js";
+import Modal from "./modal.js";
 import {ENV} from "./main-frame.js";
 import {Stage} from "./stage.js";
 import {isPresentListRenderer} from "./forms/list.js";
-import {DebugPanel} from "./debug-panel.js";
+import DebugPanel from "./debug-panel.js";
 
 // @ts-ignore
 const __corePath = 'https://node-db-ui.com:1443/core/';
@@ -620,7 +620,6 @@ function getClassForField(type) {
 }
 
 function registerFieldClass(type, class_) {
-
 	if(_fieldClasses.hasOwnProperty(type)) {
 		throw new Error('Class for field type ' + type + ' is registered already');
 	}
@@ -635,7 +634,6 @@ function registerFieldClass(type, class_) {
 	}
 
 	_fieldClasses[type] = class_;
-
 }
 
 function decodeData(data, node) {
@@ -708,7 +706,7 @@ async function getData(url, params, callStack, noLoadingIndicator) {
 		if(!params) {
 			params = {};
 		}
-
+		debugger;
 		params.sessionToken = User.sessionToken;
 
 		__requestsOrder.push(requestRecord);

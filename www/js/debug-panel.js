@@ -1,6 +1,6 @@
 import {Component} from "react";
 import {ENV} from "./main-frame.js";
-import {R} from "./r.ts";
+import R from "./r.js";
 import {iAdmin} from "./user.js";
 import {getData, isLitePage, L, myAlert, myPromt, renderIcon, sp, strip_tags} from "./utils.js";
 
@@ -8,7 +8,7 @@ var currentId = 10;
 var debugInfo = [];
 
 
-class DebugPanel extends Component {
+export default class DebugPanel extends Component {
 
 	constructor(props) {
 		super(props);
@@ -188,5 +188,3 @@ class DebugPanel extends Component {
 }
 /** @type DebugPanel */
 DebugPanel.instance = null;
-
-export {DebugPanel};

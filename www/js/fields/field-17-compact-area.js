@@ -1,7 +1,7 @@
 import {FIELD_17_TAB} from "../bs-utils";
-import {R} from "../r.ts";
+import R from "../r.js";
 import {registerFieldClass} from "../utils.js";
-import {fieldMixins} from "./field-mixins.js";
+import fieldMixins from "./field-mixins.js";
 
 registerFieldClass(FIELD_17_TAB, class TabField extends fieldMixins {
 

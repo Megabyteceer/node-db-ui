@@ -1,8 +1,8 @@
-import {R} from "../r.ts";
+import R from "../r.js";
 import {Component} from "react";
 import {renderIcon} from "../utils.js";
 
-class Select extends Component {
+export default class Select extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
@@ -81,5 +81,3 @@ class Select extends Component {
 		)
 	}
 }
-
-export {Select};

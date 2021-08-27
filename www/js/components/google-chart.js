@@ -1,6 +1,6 @@
 // @ts-nocheck
 import {Component} from "react";
-import {R} from "../r.ts";
+import R from "../r.js";
 import {renderIcon} from "../utils.js";
 
 var chartLoaded = false;

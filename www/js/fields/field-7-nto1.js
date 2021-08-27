@@ -1,11 +1,11 @@
 import {FIELD_7_Nto1} from "../bs-utils";
-import {R} from "../r.ts";
+import R from "../r.js";
 import React from "react";
-import {FormFull} from "../forms/form-full.js";
-import {List} from "../forms/list.js";
+import FormFull from "../forms/form-full.js";
+import List from "../forms/list.js";
 import {backupCreationData, getBackupData, getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import {fieldLookupMixins} from "./field-lookup-mixins.js";
+import fieldLookupMixins from "./field-lookup-mixins.js";
 
 registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 

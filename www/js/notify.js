@@ -1,13 +1,12 @@
 import {Component} from "react";
-import {R} from "./r.ts";
+import R from "./r.js";
 
 var instance;
 
 var stack = [];
 var idCounter = 0;
 
-
-class Notify extends Component {
+export default class Notify extends Component {
 	componentDidMount() {
 		instance = this;
 	}
@@ -54,4 +53,3 @@ class Notify extends Component {
 		}
 	}
 }
-export {Notify};

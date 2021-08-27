@@ -1,7 +1,7 @@
 import {FIELD_14_NtoM, FIELD_15_1toN, FIELD_18_BUTTON, FIELD_7_Nto1, FIELD_8_STATICTEXT} from "../bs-utils";
-import {R} from "../r.ts";
+import R from "../r.js";
 import React, {Component} from "react";
-import {FieldAdmin} from "../admin/field-admin.js";
+import FieldAdmin from "../admin/field-admin.js";
 import {consoleLog, debugError, getClassForField, renderIcon, scrollToVisible, setFormFilter} from "../utils.js";
 import {iAdmin} from "../user.js";
 
@@ -69,7 +69,9 @@ class FieldLabel extends Component {
 	}
 }
 
-class FieldWrap extends Component {
+export {FieldHelp, FieldLabel};
+
+export default class FieldWrap extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {};
@@ -371,5 +373,3 @@ class FieldWrap extends Component {
 	}
 }
 
-
-export {FieldHelp, FieldLabel, FieldWrap};

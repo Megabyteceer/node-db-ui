@@ -1,9 +1,8 @@
-import {R} from "../r.ts";
+import R from "../r.js";
 import React, {Component} from "react";
-import {FieldAdmin} from "../admin/field-admin.js";
+import FieldAdmin from "../admin/field-admin.js";
 
-
-class FormTab extends Component {
+export default class FormTab extends Component {
 
 	constructor(props) {
 		super(props);
@@ -40,5 +39,3 @@ class FormTab extends Component {
 			this.props.fields);
 	}
 }
-
-export {FormTab};

@@ -1,11 +1,11 @@
 
-import {FieldWrap} from "../fields/field-wrap.js";
+import FieldWrap from "../fields/field-wrap.js";
 import {backupCreationData, consoleLog, deleteRecord, getBackupData, goBack, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord} from "../utils.js";
-import {FormTab} from "./form-tab.js";
-import {eventProcessingMixins} from "./event-processing-mixins.js";
-import {NodeAdmin} from "../admin/node-admin.js";
-import {LoadingIndicator} from "../loading-indicator.js";
-import {R} from "../r.ts";
+import FormTab from "./form-tab.js";
+import eventProcessingMixins from "./event-processing-mixins.js";
+import NodeAdmin from "../admin/node-admin.js";
+import LoadingIndicator from "../loading-indicator.js";
+import R from "../r.js";
 import {FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_5_BOOL, FIELD_7_Nto1, PREVS_PUBLISH} from "../bs-utils";
 import React from "react";
 import {iAdmin} from "../user.js";
@@ -33,7 +33,8 @@ async function callForEachField(fieldRefs, data, functionName) {
 	}));
 }
 
-class FormFull extends eventProcessingMixins {
+
+export default class FormFull extends eventProcessingMixins {
 	constructor(props) {
 		super(props);
 		this.currentData = Object.assign({}, props.filters, props.initialData);
@@ -488,5 +489,3 @@ class FormFull extends eventProcessingMixins {
 		)
 	}
 }
-
-export {FormFull};

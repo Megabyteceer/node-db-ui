@@ -5,7 +5,7 @@ import {assert} from "../bs-utils";
 import {Component} from "react";
 import {Highlighter} from "react-highlight-words";
 
-class fieldMixins extends Component {
+export default class fieldMixins extends Component {
 
 	constructor(props) {
 		assert(props.field, '"field" property  expected.');
@@ -46,4 +46,3 @@ class fieldMixins extends Component {
 		this.refToInput = refToInput;
 	}
 }
-export {fieldMixins};

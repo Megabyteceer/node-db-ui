@@ -3,10 +3,10 @@ import React from "react";
 
 import {checkFileSize, idToImgURL, L, myAlert, renderIcon, serializeForm, submitData} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
-import {fieldMixins} from "./field-mixins.js";
-import {Modal} from "../modal.js";
+import fieldMixins from "./field-mixins.js";
+import Modal from "../modal.js";
 import {Component} from "react";
-import {R} from "../r.ts";
+import R from "../r.js";
 import {FIELD_12_PICTURE} from "../bs-utils";
 
 registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
