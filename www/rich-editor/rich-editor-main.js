@@ -1,7 +1,7 @@
 $(async function () {
 
 	window.Bootstrap = await import("bootstrap");
-	window.Popper = await import("popper");
+	window.Popper = await import("popper.js");
 
 	var s = $('#summernote');
 	var iframeId = location.href.split('iframeId=').pop();

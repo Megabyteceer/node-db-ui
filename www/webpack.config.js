@@ -2,14 +2,21 @@ var path = require('path');
 
 module.exports = {
     mode: 'development',
-    entry: './js/index.ts',
+    entry: {
+        main: './js/index.ts',
+        "rich-editor": {
+            //dependOn: 'main',
+            import: './rich-editor/rich-editor-main.js',
+        },
+    },
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js'
+    },
+
     target: ['web', 'es2020'],
     watch: true,
     devtool: 'source-map',
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.js'
-    },
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.json']
     },
