@@ -1,11 +1,21 @@
 import {consoleLog, getData, L} from "../utils.js";
 import {BaseForm} from "./form-mixins.js";
-import {fieldsEvents} from "../events/fields_events.js";
 import {LeftBar} from "../left-bar.js";
 import {assert, FIELD_17_TAB, FIELD_18_BUTTON} from "../bs-utils";
-let FormEvents;
-import("../events/forms_events.js").then(m => FormEvents = m.FormEvents);
 
+let FormEvents;
+let FieldsEvents;
+
+import("../events/forms_events.js").then((m) => {
+	FormEvents = m.FormEvents;
+});
+import("../events/fields_events.js").then((m) => {
+	FieldsEvents = m.FieldsEvents;
+});
+
+const ON_FORM_SAVE = 'onsave';
+const ON_FORM_LOAD = 'onload';
+const ON_FIELD_CHANGE = 'onchange';
 
 class eventProcessingMixins extends BaseForm {
 
@@ -64,7 +74,7 @@ class eventProcessingMixins extends BaseForm {
 			}
 
 			if(field) {
-				this.processFormEvent(fieldsEvents[field.id], false, false);
+				this.processFieldEvent(field.id, false, false);
 			}
 		}
 	}
@@ -157,23 +167,17 @@ class eventProcessingMixins extends BaseForm {
 	}
 
 	async onShow() {
-		//DEBUG
-		consoleLog(this.props.node.tableName + '_onload',);
-		//ENDDEBUG
 		this.header = '';
 		this.currentTabName = -1;
 		this.hiddenFields = {};
 		this.disabledFields = {};
-
-		await this.processFormEvent(this.props.node.tableName + '_onload', false);
-
+		await this.processFormEvent(ON_FORM_LOAD, false);
 		this.refreshLeftBar();
 
 		for(var k in this.fieldsRefs) {
 			var f = this.fieldsRefs[k];
-
 			if(f.props.field.fieldType !== FIELD_18_BUTTON && f.props.field.fieldType !== FIELD_17_TAB) { //is not button
-				await this.processFormEvent('field_' + f.props.field.id + '_onchange', false);
+				await this.processFormEvent(ON_FIELD_CHANGE, false);
 			}
 		}
 
@@ -228,7 +232,7 @@ class eventProcessingMixins extends BaseForm {
 			var prev_value = this.currentData[fieldName];
 			this.currentData[fieldName] = val;
 
-			await this.processFormEvent('field_' + f.props.field.id + '_onchange', isUserAction, prev_value);
+			await this.processFieldEvent(ON_FIELD_CHANGE, isUserAction, prev_value);
 
 			this.checkUniquValue(field, val);
 
@@ -283,7 +287,7 @@ class eventProcessingMixins extends BaseForm {
 		}
 
 		this.invalidAlertInOnSaveHandler = false;
-		var onSaveRes = await this.processFormEvent(this.props.node.tableName + '_onsave', false);
+		var onSaveRes = await this.processFormEvent(ON_FORM_SAVE, false);
 		return onSaveRes || this.invalidAlertInOnSaveHandler;
 	}
 
@@ -301,33 +305,37 @@ class eventProcessingMixins extends BaseForm {
 		}
 	}
 
-	async processFormEvent(handlerName, isUserAction, prev_val) {
+	_getFormEventHandler(eventName) {
+		return FormEvents.prototype[this.props.node.tableName + '_' + eventName];
+	}
 
-		const handler = FormEvents.prototype[handlerName];
+	_getFieldEventHandler(field) {
+		return FieldsEvents.prototype[this.props.node.tableName + '_' + field.fieldName + '_onChange'];
+	}
 
+	async processFieldEvent(field, isUserAction, prev_val) {
+		return this.processEvent(this._getFieldEventHandler(field), isUserAction, prev_val);
+	}
+
+	async processFormEvent(eventName) {
+		return this.processEvent(this._getFormEventHandler(eventName));
+	}
+
+	async processEvent(handler, isUserAction = false, prev_val = undefined) {
 		if(handler) {
-			/// #if DEBUG
-			console.log(handlerName);
-			/// #endif
-
 			this.prev_value = prev_val;
-
 			this.rec_ID = this.props.initialData.id || 'new';
 			this.rec_update = this.props.editable;
-
-
 			if(this.rec_update) {
 				this.rec_creation = !this.props.initialData.hasOwnProperty('id');
 				if(this.rec_creation) {
 					this.rec_update = false;
 				}
 			}
-
 			this.isUserEdit = isUserAction;
-
 			return handler.call(this);
 		}
 	}
 }
 
-export {eventProcessingMixins};
+export {eventProcessingMixins, ON_FIELD_CHANGE, ON_FORM_LOAD, ON_FORM_SAVE};

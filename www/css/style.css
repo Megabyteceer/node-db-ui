@@ -281,10 +281,6 @@ img {
 	background-color: rgba(0, 255, 0, .15)
 }
 
-.CodeMirror-selection-highlight-scrollbar {
-	background-color: #ada
-}
-
 .disabled {
 	background: rgb(235, 235, 228);
 	cursor: default !important;

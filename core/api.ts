@@ -64,7 +64,7 @@ const api = {
 	"admin/cache_info": (reqData, userSession, res) => {
 		clearCache(userSession).then(res);
 	},
-	"admin/getEventHandler": (reqData, userSession, res) => {
+	"admin/editEventHandler": (reqData, userSession, res) => {
 		getClientEventHandler(reqData, userSession).then(res);
 	}
 };

@@ -69,7 +69,8 @@ interface UserSession {
 }
 
 interface FieldDesc {
-
+	id: RecId;
+	fieldName: string;
 
 
 }
@@ -171,6 +172,9 @@ const PREVS_DELETE: TPrevsMask = 128;
 const PREVS_PUBLISH: TPrevsMask = 256;
 const PREVS_ANY: TPrevsMask = 65535;
 
+const EVENT_HANDLER_TYPE_NODE = 'node';
+const EVENT_HANDLER_TYPE_FIELD = 'field';
+
 export {
 	isUserHaveRole, shouldBeAuthorized, isAdmin, throwError,
 	/// #if DEBUG
@@ -187,6 +191,9 @@ export {
 	FIELD_8_STATICTEXT, FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM,
 	FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR,
 	FIELD_20_COLOR, FIELD_21_FILE,
+
+	EVENT_HANDLER_TYPE_NODE, EVENT_HANDLER_TYPE_FIELD,
+
 	TViewMask, RecId, UserRoles,
-	TPrevsMask, UserLangEntry, TRoleId, NodeDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
+	TPrevsMask, UserLangEntry, TRoleId, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
 };

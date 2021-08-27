@@ -16,7 +16,6 @@
   "dependencies": {
     "@popperjs/core": "^2.9.2",
     "bootstrap": "^3.4.1",
-    "codemirror": "^5.62.0",
     "font-awesome": "^4.7.0",
     "jquery": "^3.6.0",
     "moment": "^2.29.1",
@@ -41,7 +40,6 @@
     "@babel/preset-env": "^7.8.3",
     "@babel/preset-typescript": "^7.8.3",
     "babel-loader": "^8.2.2",
-    "babel-plugin-transform-es2015-modules-commonjs-simple": "^6.7.4",
     "typescript": "^3.7.5",
     "webpack": "^5.50.0",
     "webpack-cli": "^4.7.2",

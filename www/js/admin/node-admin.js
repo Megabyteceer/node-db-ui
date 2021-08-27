@@ -1,14 +1,12 @@
 import {R} from "../r.ts";
 import React, {Component} from "react";
-import {getNode, getNodeData, keepInWindow, L, loactionToHash, renderIcon, sp} from "../utils.js";
+import {getNode, getNodeData, keepInWindow, L, loactionToHash, popup, renderIcon, sp} from "../utils.js";
 import {admin_editSource} from "./admin-event-editor.js";
 import {admin} from "./admin-utils.js";
 import {FieldAdmin} from "./field-admin.js";
-let FormEvents;
-import("../events/forms_events.js").then(m => FormEvents = m.FormEvents);
+import {ON_FORM_LOAD, ON_FORM_SAVE} from "../forms/event-processing-mixins.js";
 
 var showedNodeId;
-
 
 class NodeAdmin extends Component {
 	constructor(props) {
@@ -98,18 +96,17 @@ class NodeAdmin extends Component {
 		var borderOnSave;
 		var borderOnLoad;
 
-		//TODO: fix borders
-		if(FormEvents.prototype[node.tableName + '_onload']) {
+		if(form && form._getFormEventHandler && form._getFormEventHandler(ON_FORM_SAVE)) {
 			borderOnSave = " admin-button-highlighted";
 		} else {
 			borderOnSave = '';
 		}
-		if(FormEvents.prototype[node.tableName + '_onsave']) {
+
+		if(form && form._getFormEventHandler && form._getFormEventHandler(ON_FORM_LOAD)) {
 			borderOnLoad = " admin-button-highlighted";
 		} else {
 			borderOnLoad = '';
 		}
-
 
 		var body;
 
@@ -185,7 +182,7 @@ class NodeAdmin extends Component {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('FLD_ADD'),
 						onClick: () => {
-							admin.popup(loactionToHash(6, 'new', {
+							popup(loactionToHash(6, 'new', {
 								node_fields_linker: {
 									id: node.id,
 									name: node.singleName
@@ -296,7 +293,7 @@ class NodeAdmin extends Component {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_NODE'),
 						onClick: () => {
-							admin.popup(loactionToHash(4, nodeId, undefined, true), 900, true);
+							popup(loactionToHash(4, nodeId, undefined, true), 900, true);
 
 						}
 					},
@@ -306,7 +303,7 @@ class NodeAdmin extends Component {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_ACCESS'),
 						onClick: () => {
-							admin.popup(loactionToHash(1, nodeId, undefined, true), 1100);
+							popup(loactionToHash(1, nodeId, undefined, true), 1100);
 						}
 					},
 						renderIcon('user')
@@ -349,7 +346,7 @@ class NodeAdmin extends Component {
 
 function createNodeForMenuItem(item) {
 	getNodeData(4, item.isDoc ? item.parent : item.id).then((data) => {
-		admin.popup(loactionToHash(4, 'new', {
+		popup(loactionToHash(4, 'new', {
 			prior: data.prior,
 			_nodesID: {
 				id: data.id,

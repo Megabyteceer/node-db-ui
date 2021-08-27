@@ -1,6 +1,5 @@
 import {FIELD_18_BUTTON} from "../bs-utils";
 import {R} from "../r.ts";
-import {fieldsEvents} from "../events/fields_events.js";
 import {renderIcon} from "../utils.js";
 import {registerFieldClass} from "../utils.js";
 import {fieldMixins} from "./field-mixins.js";
@@ -13,12 +12,11 @@ registerFieldClass(FIELD_18_BUTTON, class ButtonField extends fieldMixins {
 	}
 
 	setValue(val) {
+		throw new Error('Cant set value for button');
 	}
 
 	onClick() {
-		if(fieldsEvents.hasOwnProperty(this.props.field.id)) {
-			this.props.form.processFormEvent.call(this.props.form, fieldsEvents[this.props.field.id], true);
-		}
+		this.props.form.processFieldEvent(this.props.field, true);
 	}
 
 	render() {

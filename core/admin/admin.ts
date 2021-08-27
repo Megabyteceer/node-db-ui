@@ -2,7 +2,7 @@
 import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../desc-node";
 import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 
-import { throwError, isAdmin } from "../../www/js/bs-utils";
+import { throwError, isAdmin, EVENT_HANDLER_TYPE_FIELD } from "../../www/js/bs-utils";
 import { join } from "path";
 import { readFileSync, writeFileSync } from "fs";
 
@@ -63,9 +63,15 @@ function substrCount(string, subString) {
 	return n;
 }
 
-function processSource(fileName, startMarker, endMarker, newSource, itemId, type, handler, functionName) {
+function editFunction(fileName, functionName) {
+	/// #if DEBUG
 
 
+
+
+	// TODO: add function and got to source
+
+	/*
 	fileName = join(__dirname, fileName);
 
 	let text = readFileSync(fileName, 'utf8').replaceAll("\r\n", "\n");
@@ -118,26 +124,26 @@ function processSource(fileName, startMarker, endMarker, newSource, itemId, type
 			writeFileSync(fileName, text.substring(0, start) + functionStart + '\n' + newSource + '\n' + endMarker + '\n\n' + text.substring(start));
 		}
 		return 1;
-	}
+	}*/
+
+
+	/// #endif
+
 }
 
-async function getClientEventHandler(reqData, userSession) {
+async function getClientEventHandler({
+	handler,
+	nodeId,
+	fieldId
+}, userSession) {
 	shouldBeAdmin(userSession);
-	const newSrc = reqData.__UNSAFE_UNESCAPED ? reqData.__UNSAFE_UNESCAPED.src : false;
-	if(reqData.type === 'field') {
-		const fieldId = reqData.itemId;
-		const field = getFieldDesc(fieldId);
-		const node = getNodeDesc(field.node_fields_linker);
 
-		const startMarker = "//field" + fieldId + "onchangebegin_cswhggft";
-		const endMarker = "} //field" + fieldId + "onchangeend_wqdggft";
-		return processSource('../../../www/js/events/fields_events.js', startMarker, endMarker, newSrc, fieldId, reqData.type, undefined, node.tableName + '_' + field.fieldName + '_onChange');
+	let node = getNodeDesc(nodeId);
+	if(fieldId) {
+		let field = getFieldDesc(fieldId);
+		return editFunction('../../../www/js/events/fields_events.js', node.tableName + '_' + field.fieldName + '_' + handler);
 	} else {
-		const nodeId = reqData.itemId;
-		const handler = reqData.handler;
-		const startMarker = "//form" + nodeId + handler + "Begin_JS89DW72SISA887QKJ32IUSL";
-		const endMarker = "} //form" + nodeId + handler + "End_JS89DW72SISA887QKJ32IUSL";
-		return processSource('../../../www/js/events/forms_events.js', startMarker, endMarker, newSrc, nodeId, reqData.type, handler, getNodeDesc(nodeId).tableName + '_' + handler);
+		return editFunction('../../../www/js/events/fields_events.js', node.tableName + '_' + handler);
 	}
 }
 

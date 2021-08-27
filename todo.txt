@@ -1,15 +1,12 @@
+rename all to .ts
 
-Replace all Promise with global DPromise without try catch. Add webpack loader which will replace promises in generators to DPromise
-
-Check handlers and make fields handlers
 
 Make selenium tests for basic operations
 
-Separate FormEvents and CustomFormEvents. Call both of them.
 
 Events editor just create method and open it to edit at line num we want.
 
-модальные формы для редактирования админских вещей. (admin.popup заменить)
+модальные формы для редактирования админских вещей. (popup заменить)
 
 регистрация/активация/логин/сброс формы (через ноды, которые не хранят свои данные а только обрабатывают хендлеры)
 
@@ -48,6 +45,7 @@ extendEditor доки
 Use mysql>Alter table students ADD FULLTEXT (first_name, last_name);
 mysql>Select * from students where match(first_name, last_name) AGAINST (‘Jones’);
 
+Separate FormEvents and CustomFormEvents. Call both of them.
 
 
 

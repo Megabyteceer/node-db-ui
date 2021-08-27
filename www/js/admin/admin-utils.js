@@ -152,8 +152,6 @@ admin.exchangeNodes = async (node1, node2) => {
 	}
 }
 
-admin.popup = popup;
-
 function debugInfoGetter() {
 	consoleDir(this);
 }

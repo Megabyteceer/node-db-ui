@@ -3,7 +3,7 @@ import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import ENV from "../ENV";
 import { setMainTainMode, UserSession, usersSessionsStartedCount } from "./auth";
-import { throwError, isUserHaveRole, assert, FIELD_6_ENUM, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData } from "../www/js/bs-utils";
+import { throwError, isUserHaveRole, assert, FIELD_6_ENUM, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc } from "../www/js/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
@@ -19,12 +19,12 @@ const GUEST_USER_SESSION: UserSession = {} as UserSession;
 const clientSideNodes = new Map();
 const nodesTreeCache = new Map();
 
-function getFieldDesc(fieldId) {
+function getFieldDesc(fieldId): FieldDesc {
 	assert(fields.has(fieldId), "Unknown field id " + fieldId);
 	return fields.get(fieldId);
 }
 
-function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION) {
+function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 	assert(!isNaN(nodeId), 'nodeId expected');
 	if(!clientSideNodes.has(userSession.cacheKey)) {
 		const srcNode = nodesById.get(nodeId);

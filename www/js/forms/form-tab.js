@@ -2,7 +2,6 @@ import {R} from "../r.ts";
 import React, {Component} from "react";
 import {FieldAdmin} from "../admin/field-admin.js";
 
-
 class FormTab extends Component {
 
 	constructor(props) {

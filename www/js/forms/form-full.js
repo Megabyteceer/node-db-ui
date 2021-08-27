@@ -117,7 +117,9 @@ class FormFull extends eventProcessingMixins {
 		if(this.props.editable) {
 			for(var k in this.fieldsRefs) {
 				var f = this.fieldsRefs[k];
-				f.setValue(this.currentData[k] || '');
+				if(this.currentData.hasOwnProperty(k)) {
+					f.setValue(this.currentData[k]);
+				}
 			}
 		}
 	}

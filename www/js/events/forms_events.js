@@ -7,7 +7,7 @@ import {User} from "../user.js";
 
 class FormEvents extends FormFull {
 
-	async _users_onload() {//form5onloadBegin_JS89DW72SISA887QKJ32IUSL
+	async _users_onload() {
 
 		const isHiddenField = (fn) => {
 			if(this.fieldValue(fn) === 'hidden_91d2g7') {
@@ -80,9 +80,9 @@ class FormEvents extends FormFull {
 			this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
 			this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
 		}
-	} //form5onloadEnd_JS89DW72SISA887QKJ32IUSL
+	}
 
-	async _users_onsave() {//form5onsaveBegin_JS89DW72SISA887QKJ32IUSL
+	async _users_onsave() {
 		var pass = this.fieldValue('PASS');
 
 		if(pass.length < 6) {
@@ -112,20 +112,20 @@ class FormEvents extends FormFull {
 				};
 			}
 		}
-	} //form5onsaveEnd_JS89DW72SISA887QKJ32IUSL
+	}
 
-	async _roles_onload() {//form8onloadBegin_JS89DW72SISA887QKJ32IUSL
+	async _roles_onload() {
 		if((this.rec_ID === 2) || (this.rec_ID === 3)) {
 			this.hideField('_userroles');
 		}
 
-	} //form8onloadEnd_JS89DW72SISA887QKJ32IUSL
+	}
 
-	async _enums_onload() {//form52onloadBegin_JS89DW72SISA887QKJ32IUSL
+	async _enums_onload() {
 		this.getField("values").inlineEditable();
-	} //form52onloadEnd_JS89DW72SISA887QKJ32IUSL
+	}
 
-	async _nodes_onload() {//form4onloadBegin_JS89DW72SISA887QKJ32IUSL
+	async _nodes_onload() {
 		makeIconSelectionField(this, 'icon');
 
 		if(this.rec_update) {
@@ -150,10 +150,9 @@ class FormEvents extends FormFull {
 			node_fields_linker: this.rec_ID,
 			forSearch: 1
 		});
+	}
 
-	} //form4onloadEnd_JS89DW72SISA887QKJ32IUSL
-
-	async _nodes_onsave() {//form4onsaveBegin_JS89DW72SISA887QKJ32IUSL
+	async _nodes_onsave() {
 
 		if(!this.fieldValue("isDoc")) {
 			var name = this.fieldValue("name");
@@ -169,9 +168,9 @@ class FormEvents extends FormFull {
 			}
 		}
 
-	} //form4onsaveEnd_JS89DW72SISA887QKJ32IUSL
+	}
 
-	async _fields_onload() {//form6onloadBegin_JS89DW72SISA887QKJ32IUSL
+	async _fields_onload() {
 
 		this.getField('fieldType').fieldRef.setFilterValues([16]);
 
@@ -300,9 +299,9 @@ class FormEvents extends FormFull {
 			}
 		};
 
-	} //form6onloadEnd_JS89DW72SISA887QKJ32IUSL
+	}
 
-	async _fields_onsave() {//form6onsaveBegin_JS89DW72SISA887QKJ32IUSL
+	async _fields_onsave() {
 		var fieldType = this.fieldValue("fieldType");
 
 		if(fieldType === FIELD_7_Nto1 || fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) {
@@ -356,20 +355,19 @@ class FormEvents extends FormFull {
 		if(this.nameIsBad) {
 			this.fieldAlert('fieldName', L('FLD_EXISTS'));
 		}
-	} //form6onsaveEnd_JS89DW72SISA887QKJ32IUSL
+	}
 
-	async _languages_onload() {//form12onloadBegin_JS89DW72SISA887QKJ32IUSL
+	async _languages_onload() {
 		if(this.rec_update) {
 			this.disableField("code");
 		}
-	} //form12onloadEnd_JS89DW72SISA887QKJ32IUSL
+	}
 
-	async _enums_onsave() {//form52onsaveBegin_JS89DW72SISA887QKJ32IUSL
-		//TODO chec if all values unic
-	} //form52onsaveEnd_JS89DW72SISA887QKJ32IUSL
+	async _enums_onsave() {
+		//TODO check if all values unique
+	}
 
-	//insertNewhandlersHere_adsqw09
-
+	//_insertNewHandlersHere_
 }
 
 export {FormEvents};

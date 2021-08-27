@@ -1,7 +1,6 @@
 import {R} from "../r.ts";
 import {Component} from "react";
-import {fieldsEvents} from "../events/fields_events.js";
-import {getNodeData, keepInWindow, L, loactionToHash, renderIcon, sp} from "../utils.js";
+import {getNodeData, keepInWindow, L, loactionToHash, popup, renderIcon, sp} from "../utils.js";
 import {admin_editSource} from "./admin-event-editor.js";
 import {admin} from "./admin-utils.js";
 
@@ -52,11 +51,10 @@ class FieldAdmin extends Component {
 		var field = this.props.field;
 		var node = field.node;
 		var form = this.props.form;
-
 		var body;
-
 		var border;
-		if(fieldsEvents.hasOwnProperty(field.id)) {
+
+		if(form._getFieldEventHandler && form._getFieldEventHandler(field)) {
 			border = " admin-button-highlighted";
 		} else {
 			border = "";
@@ -137,7 +135,7 @@ class FieldAdmin extends Component {
 						onClick: () => {
 
 							getNodeData(6, field.id).then((data) => {
-								admin.popup(loactionToHash(6, 'new', {
+								popup(loactionToHash(6, 'new', {
 									prior: data.prior,
 									node_fields_linker: {
 										id: node.id,
@@ -152,7 +150,7 @@ class FieldAdmin extends Component {
 					),
 					R.button({
 						onClick: () => {
-							admin.popup(loactionToHash(6, field.id, undefined, true), 900, true);
+							popup(loactionToHash(6, field.id, undefined, true), 900, true);
 						},
 						className: 'clickable toolbtn admin-form-btn',
 						title: "Edit field properties"
