@@ -4,10 +4,10 @@ const throwError = (message: string): never => {
 }
 
 const notificationOut = (userSession: UserSession, text: string) => {
-	if(!userSession || userSession.__temporaryServerSideSession) {
+	if (!userSession || userSession.__temporaryServerSideSession) {
 		console.log(text);
 	} else {
-		if(!userSession.notifications) {
+		if (!userSession.notifications) {
 			userSession.notifications = [text];
 		} else {
 			userSession.notifications.push(text);
@@ -17,14 +17,14 @@ const notificationOut = (userSession: UserSession, text: string) => {
 
 /// #if DEBUG
 const assert = (condition: any, errorTxt: string) => {
-	if(!condition) {
+	if (!condition) {
 		throwError(errorTxt);
 	}
 }
 /// #endif
 
 const shouldBeAuthorized = (userSession: UserSession) => {
-	if(!userSession || userSession.__temporaryServerSideSession || isUserHaveRole(GUEST_ROLE_ID, userSession)) {
+	if (!userSession || userSession.__temporaryServerSideSession || isUserHaveRole(GUEST_ROLE_ID, userSession)) {
 		throwError("operation permitted for authorized user only");
 	}
 }
@@ -40,7 +40,7 @@ const isUserHaveRole = (roleId: TRoleId, userSession: UserSession) => {
 /// #if DEBUG
 const getCurrentStack = () => {
 	let a = new Error().stack?.split('\n');
-	if(a) {
+	if (a) {
 		a.splice(0, 3);
 	}
 	return a;
@@ -69,11 +69,46 @@ interface UserSession {
 }
 
 interface FieldDesc {
+	/** readable name */
+	name: string;
+
 	id: RecId;
+
+	/** field's name in database table */
 	fieldName: string;
+	/** maximal data length in database */
+	maxlen: number;
 
+	show: ViewMask;
 
+	/** value is required for form. */
+	requirement: BoolNum;
+
+	/** value of the fied should be unique for whole database table. */
+	uniqu: BoolNum;
+
+	/** if true - field data do not go to the server on form save. */
+	clientOnly: BoolNum;
+
+	/** fields data go to the server, but has no store in database table. */
+	nostore: BoolNum;
+
+	/** fields will have index in database, and search will be processed in this field */
+	forSearch: BoolNum;
+
+	fieldType: FieldType;
+
+	/** name of picture field in relative table. Thin picture will be used as icon in Lookup fields. */
+	icon: string;
+
+	/** owner node id */
+	nodeRef: RecId;
+
+	/** SERVER SIDE FIELD ONLY. If it not empty - content of this field goes in to fieldName in SQL query to retrieve data not from direct table's field */
+	selectFieldName?: string;
 }
+
+
 
 interface FilterDesc {
 
@@ -83,7 +118,7 @@ interface FilterDesc {
 interface NodeDesc {
 	id: RecId;
 	singleName: string;
-	prevs: TPrevsMask;
+	prevs: PrevsMask;
 	reverse: BoolNum;
 	creationName: string;
 	matchName: string;
@@ -133,44 +168,45 @@ interface RecordsDataResponse {
 
 type BoolNum = 0 | 1;
 type TRoleId = number;
+type FieldType = number;
 
 const ADMIN_ROLE_ID: TRoleId = 1;
 const GUEST_ROLE_ID: TRoleId = 2;
 const USER_ROLE_ID: TRoleId = 3;
 
 
-const FIELD_1_TEXT = 1;
-const FIELD_2_INT = 2;
-const FIELD_4_DATETIME = 4;
-const FIELD_5_BOOL = 5;
-const FIELD_6_ENUM = 6;
-const FIELD_7_Nto1 = 7;
-const FIELD_8_STATICTEXT = 8;
-const FIELD_10_PASSWORD = 10;
-const FIELD_11_DATE = 11;
-const FIELD_12_PICTURE = 12;
-const FIELD_14_NtoM = 14;
-const FIELD_15_1toN = 15;
-const FIELD_16_RATING = 16;
-const FIELD_17_TAB = 17;
-const FIELD_18_BUTTON = 18;
-const FIELD_19_RICHEDITOR = 19;
-const FIELD_20_COLOR = 20;
-const FIELD_21_FILE = 21;
+const FIELD_1_TEXT: FieldType = 1;
+const FIELD_2_INT: FieldType = 2;
+const FIELD_4_DATETIME: FieldType = 4;
+const FIELD_5_BOOL: FieldType = 5;
+const FIELD_6_ENUM: FieldType = 6;
+const FIELD_7_Nto1: FieldType = 7;
+const FIELD_8_STATICTEXT: FieldType = 8;
+const FIELD_10_PASSWORD: FieldType = 10;
+const FIELD_11_DATE: FieldType = 11;
+const FIELD_12_PICTURE: FieldType = 12;
+const FIELD_14_NtoM: FieldType = 14;
+const FIELD_15_1toN: FieldType = 15;
+const FIELD_16_RATING: FieldType = 16;
+const FIELD_17_TAB: FieldType = 17;
+const FIELD_18_BUTTON: FieldType = 18;
+const FIELD_19_RICHEDITOR: FieldType = 19;
+const FIELD_20_COLOR: FieldType = 20;
+const FIELD_21_FILE: FieldType = 21;
 
-type TPrevsMask = number;
-type TViewMask = number;
+type PrevsMask = number;
+type ViewMask = number;
 
-const PREVS_VIEW_OWN: TPrevsMask = 1;
-const PREVS_VIEW_ORG: TPrevsMask = 2;
-const PREVS_VIEW_ALL: TPrevsMask = 4;
-const PREVS_CREATE: TPrevsMask = 8;
-const PREVS_EDIT_OWN: TPrevsMask = 16;
-const PREVS_EDIT_ORG: TPrevsMask = 32;
-const PREVS_EDIT_ALL: TPrevsMask = 64;
-const PREVS_DELETE: TPrevsMask = 128;
-const PREVS_PUBLISH: TPrevsMask = 256;
-const PREVS_ANY: TPrevsMask = 65535;
+const PREVS_VIEW_OWN: PrevsMask = 1;
+const PREVS_VIEW_ORG: PrevsMask = 2;
+const PREVS_VIEW_ALL: PrevsMask = 4;
+const PREVS_CREATE: PrevsMask = 8;
+const PREVS_EDIT_OWN: PrevsMask = 16;
+const PREVS_EDIT_ORG: PrevsMask = 32;
+const PREVS_EDIT_ALL: PrevsMask = 64;
+const PREVS_DELETE: PrevsMask = 128;
+const PREVS_PUBLISH: PrevsMask = 256;
+const PREVS_ANY: PrevsMask = 65535;
 
 const EVENT_HANDLER_TYPE_NODE = 'node';
 const EVENT_HANDLER_TYPE_FIELD = 'field';
@@ -194,6 +230,6 @@ export {
 
 	EVENT_HANDLER_TYPE_NODE, EVENT_HANDLER_TYPE_FIELD,
 
-	TViewMask, RecId, UserRoles,
-	TPrevsMask, UserLangEntry, TRoleId, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
+	ViewMask, RecId, UserRoles,
+	PrevsMask, UserLangEntry, TRoleId, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
 };

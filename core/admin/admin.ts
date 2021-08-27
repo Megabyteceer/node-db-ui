@@ -2,7 +2,7 @@
 import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../desc-node";
 import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 
-import { throwError, isAdmin, EVENT_HANDLER_TYPE_FIELD } from "../../www/js/bs-utils";
+import { throwError, isAdmin } from "../../www/js/bs-utils";
 import { join } from "path";
 import { readFileSync, writeFileSync } from "fs";
 
@@ -69,62 +69,64 @@ function editFunction(fileName, functionName) {
 
 
 
-	// TODO: add function and got to source
 
-	/*
+
 	fileName = join(__dirname, fileName);
 
 	let text = readFileSync(fileName, 'utf8').replaceAll("\r\n", "\n");
 
-	const c1 = substrCount(text, startMarker);
-	const c2 = substrCount(text, endMarker);
-	if((c1 !== c2) || (c1 > 1)) {
-		throwError("Begin or end marker for handler is corrupted or duplicated. Begin entries (" + startMarker + "): " + c1 + " End entries (" + endMarker + "): " + c2);
+	const c1 = substrCount(text, functionName);
+
+	if(c1 > 1) {
+		throwError("function )" + functionName + ") present more that once in file: " + fileName);
+	} else if(!c1) {
+		// TODO: add function and got to source
+
 	}
-
-	let start = text.indexOf(startMarker);
-	let end = text.indexOf(endMarker);
-
-	if(start >= 0) {
-		start += startMarker.length;
-	}
-
-	if(newSource === false) {
+	// TODO: open function to edit
+	return;
+	/*
+		let start = text.indexOf(startMarker);
+		let end = text.indexOf(endMarker);
+	
 		if(start >= 0) {
-			return text.substring(start + 1, end - 1);
+			start += startMarker.length;
+		}
+	
+		if(newSource === false) {
+			if(start >= 0) {
+				return text.substring(start + 1, end - 1);
+			} else {
+				return '';
+			}
 		} else {
-			return '';
+	
+			if(start >= 0) { //replace handler*/
+	writeFileSync(fileName, text); //can use sync, because events update is very rare and admin only operation
+	/*	} else {
+			writeFileSync(fileName, text.substring(0, start) + '\n' + newSource + '\n' + text.substring(end));
 		}
-	} else {
-
-		if(start >= 0) { //replace handler
-			const re = new RegExp("[^\\n]*" + startMarker.replaceAll('/', '\\/') + ".*" + endMarker.replaceAll('/', '\\/'), 'sm');
-			if(!newSource.trim()) { // remove handler
-				writeFileSync(fileName, text.replace(re, '')); //can use sync, because events update is very rare and admin only operation
-			} else {
-				writeFileSync(fileName, text.substring(0, start) + '\n' + newSource + '\n' + text.substring(end));
-			}
-		} else if(newSource) {
-			//add new handler
-
-			start = text.indexOf("//insertNewhandlersHere_adsqw09");
-			if(start < 0) {
-				throwError('new handlers marker is corrupted.');
-			}
-			let functionStart;
-			if(type === 'field') {
-				functionStart = "fieldsEvents[" + itemId + "] = function " + functionName + "() {" + startMarker;
-			} else {
-				if(handler === 'onload') {
-					functionStart = "formsEventsOnLoad[" + itemId + "] = function " + functionName + "() {" + startMarker;
-				} else {
-					functionStart = "formsEventsOnSave[" + itemId + "] = async function " + functionName + "() {" + startMarker;
-				}
-			}
-			writeFileSync(fileName, text.substring(0, start) + functionStart + '\n' + newSource + '\n' + endMarker + '\n\n' + text.substring(start));
+	} else if(newSource) {
+		//add new handler
+	
+		start = text.indexOf("//insertNewhandlersHere_adsqw09");
+		if(start < 0) {
+			throwError('new handlers marker is corrupted.');
 		}
-		return 1;
-	}*/
+		let functionStart;
+		if(type === 'field') {
+			functionStart = "function " + functionName + "() {";
+		} else {
+			if(handler === 'onload') {
+				functionStart = "formsEventsOnLoad[" + itemId + "] = function " + functionName + "() {" + startMarker;
+			} else {
+				functionStart = "formsEventsOnSave[" + itemId + "] = async function " + functionName + "() {" + startMarker;
+			}
+		}
+		writeFileSync(fileName, text.substring(0, start) + functionStart + '\n' + newSource + '\n' + endMarker + '\n\n' + text.substring(start));
+	}
+	return 1;
+}*/
 
 
 	/// #endif

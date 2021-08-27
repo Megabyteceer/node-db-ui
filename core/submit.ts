@@ -88,7 +88,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId?: RecId,
 
 				if(f.uniqu) {
 					if(!(await uniquCheckInner(tableName, fieldName, data[fieldName], recId))) {
-						throwError('Record ' + f.label + ' with value "' + data[fieldName] + '" already exist.');
+						throwError('Record ' + f.name + ' with value "' + data[fieldName] + '" already exist.');
 					}
 				}
 			}
@@ -258,7 +258,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId?: RecId,
 							if(f.maxlen && fieldVal.toString().length > f.maxlen) {
 								throwError("Value -length for field '" + fieldName + "' (" + tableName + ") is longer that " + f.maxlen);
 							}
-							insQ.push(fieldVal.toString());
+							insQ.push(fieldVal as unknown as string);
 							break;
 					}
 				}
@@ -275,7 +275,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId?: RecId,
 		}
 
 		if(recId !== null) {
-			insQ.push(" WHERE id=", recId.toString(), " LIMIT 1");
+			insQ.push(" WHERE id=", recId as unknown as string, " LIMIT 1");
 		}
 		let qResult;
 		if(leastOneTablesFieldUpdated) {
@@ -324,7 +324,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId?: RecId,
 									await getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to refered item
 								}
 
-								n2miQ.push("(", recId, ',', id, ")");
+								n2miQ.push("(", recId as unknown as string, ',', id, ")");
 								isNotFirst = true;
 							}
 							await mysqlExec(n2miQ.join(''));

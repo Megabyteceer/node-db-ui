@@ -1,6 +1,6 @@
 import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHadlersNames } from './desc-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
-import { TViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PREVS_PUBLISH, PREVS_EDIT_ALL, PREVS_EDIT_ORG, PREVS_EDIT_OWN, PREVS_VIEW_ALL, PREVS_VIEW_ORG, PREVS_VIEW_OWN, PREVS_DELETE, FIELD_15_1toN, FIELD_19_RICHEDITOR, RecordData, RecordsData, RecId } from "../www/js/bs-utils";
+import { ViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PREVS_PUBLISH, PREVS_EDIT_ALL, PREVS_EDIT_ORG, PREVS_EDIT_OWN, PREVS_VIEW_ALL, PREVS_VIEW_ORG, PREVS_VIEW_OWN, PREVS_DELETE, FIELD_15_1toN, FIELD_19_RICHEDITOR, RecordData, RecordsData, RecId } from "../www/js/bs-utils";
 import { UserSession } from './auth';
 
 const isASCII = (str) => {
@@ -25,9 +25,9 @@ const EMPTY_RATING = { all: 0 };
 * @param search			string to full text search
 *
 */
-async function getRecords(nodeId: RecId, viewMask: TViewMask, recId: RecId, userSession: UserSession): Promise<RecordData>;
-async function getRecords(nodeId: RecId, viewMask: TViewMask, recId: null | RecId[], userSession: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
-async function getRecords(nodeId: RecId, viewMask: TViewMask, recId: null | RecId | number[], userSession: UserSession = ADMIN_USER_SESSION, filterFields?: any, search?: string): Promise<RecordData | RecordsData> {
+async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: RecId, userSession: UserSession): Promise<RecordData>;
+async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId[], userSession: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
+async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId | number[], userSession: UserSession = ADMIN_USER_SESSION, filterFields?: any, search?: string): Promise<RecordData | RecordsData> {
 
 	let node = getNodeDesc(nodeId, userSession);
 
@@ -59,7 +59,7 @@ async function getRecords(nodeId: RecId, viewMask: TViewMask, recId: null | RecI
 
 
 			if(fieldType === FIELD_16_RATING) {
-				selQ.push(tableName, '.rates_1,', tableName, '.rates_2,', tableName, '.rates_3,', tableName, '.rates_4,', tableName, '.rates_5,(SELECT rate FROM ', tableName, '_rates WHERE _recID=', tableName, '.id AND _usersID=', userSession.id.toString(), ' LIMIT 1) AS rates_y');
+				selQ.push(tableName, '.rates_1,', tableName, '.rates_2,', tableName, '.rates_3,', tableName, '.rates_4,', tableName, '.rates_5,(SELECT rate FROM ', tableName, '_rates WHERE _recID=', tableName, '.id AND _usersID=', userSession.id as unknown as string, ' LIMIT 1) AS rates_y');
 			} else if(fieldType === FIELD_14_NtoM) {//n2m
 				let tblTmpName = 't' + f.id;
 				if(f.icon) {
@@ -74,8 +74,8 @@ async function getRecords(nodeId: RecId, viewMask: TViewMask, recId: null | RecI
 					selQ.push("(SELECT CONCAT(id,'␞',name) FROM ", selectFieldName + " AS t", fieldName, " WHERE ", tableName, ".", fieldName, "=t", fieldName, ".id LIMIT 1) AS `", fieldName, "`");
 				}
 			} else if(selectFieldName) {
-				selQ.push('(', selectFieldName.replaceAll('@userid', userSession.id), ')AS `', fieldName, '`');
-			} else if((viewMask === 2 || viewMask === 16) && (fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICHEDITOR) && f.maxLen > 500) {
+				selQ.push('(', selectFieldName.replaceAll('@userid', userSession.id.toString()), ')AS `', fieldName, '`');
+			} else if((viewMask === 2 || viewMask === 16) && (fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICHEDITOR) && f.maxlen > 500) {
 				selQ.push('SUBSTRING(', tableName, '.', fieldName, ',1,500) AS `', fieldName, '`');
 			} else {
 				selQ.push(tableName, '.', fieldName);
@@ -255,12 +255,12 @@ async function getRecords(nodeId: RecId, viewMask: TViewMask, recId: null | RecI
 		if(prevs & PREVS_VIEW_ALL) {
 
 		} else if((prevs & PREVS_VIEW_ORG) && (userSession.orgId !== 0)) {
-			wheresBegin.push(" AND (", tableName, "._organID=", userSession.orgId, ')');
+			wheresBegin.push(" AND (", tableName, "._organID=", userSession.orgId as unknown as string, ')');
 		} else if(prevs & PREVS_VIEW_OWN) {
 			if(tableName !== '_messages') {
-				wheresBegin.push(" AND (", tableName, "._usersID=", userSession.id, ')');
+				wheresBegin.push(" AND (", tableName, "._usersID=", userSession.id as unknown as string, ')');
 			} else {
-				wheresBegin.push(" AND ((", tableName, "._usersID=", userSession.id, ")OR(", tableName, "._receiverID=", userSession.id, '))');
+				wheresBegin.push(" AND ((", tableName, "._usersID=", userSession.id as unknown as string, ")OR(", tableName, "._receiverID=", userSession.id as unknown as string, '))');
 			}
 		} else {
 			throwError('Access denied 3.');

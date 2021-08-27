@@ -241,7 +241,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 		cacheKeyGenerator = [USER_ROLE_ID]
 	}
 	for(let role of roles) {
-		cacheKeyGenerator.push(role._rolesID.toString());
+		cacheKeyGenerator.push(role._rolesID);
 		userRoles[role._rolesID] = 1;
 	}
 
