@@ -46,6 +46,13 @@ interface UserSession {
 	notifications?: string[];
 }
 
+interface EnumListItem {
+	value: number;
+	name: string
+}
+
+type EnumList = EnumListItem[];
+
 interface FieldDesc {
 	/** readable name */
 	name: string;
@@ -93,7 +100,7 @@ interface FieldDesc {
 	/** index in parent's node 'fields' list */
 	index: number;
 
-	enum?: { value: number, name: string }[];
+	enum?: EnumList;
 	enumNamesById: { [key: number]: string };
 
 	/** contains language id, if field is multilingual and refers to non default language */
@@ -101,6 +108,9 @@ interface FieldDesc {
 
 	/** field tip. or html content for FIELD_8_STATICTEXT fields */
 	fdescription: string;
+
+	/** uset to group fields together in compactArea */
+	isCompactNested: boolean;
 }
 
 
@@ -234,6 +244,6 @@ export {
 
 	EVENT_HANDLER_TYPE_NODE, EVENT_HANDLER_TYPE_FIELD,
 
-	ViewMask, RecId, UserRoles, BoolNum, GetRecordsParams, Filters,
+	ViewMask, RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList,
 	PrevsMask, UserLangEntry, TRoleId, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
 };

@@ -20,6 +20,7 @@ class LoadingIndicator extends Component<any, any> {
 	show() {
 
 		if(isLitePage()) return;
+		//@ts-ignore
 		this.state.showCount++;
 		if(this.state.showCount === 1) {
 			this.forceUpdate();

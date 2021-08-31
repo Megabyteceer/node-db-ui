@@ -1,10 +1,11 @@
 import React from "react";
-import { FieldDesc, FIELD_15_1toN, NodeDesc, RecId, RecordData } from "../bs-utils";
+import { FIELD_15_1toN, NodeDesc, RecId, RecordData } from "../bs-utils";
+import { FormItem } from "../forms/form-item.js";
 import { Filters } from "../utils.js";
 import { LookupNtoMField } from "./field-14-n2m.js";
 import { fieldMixins, FieldState, FiledProps } from "./field-mixins";
 
-type AdditionalButtonsRenderer = (field: FieldDesc, value: any, index: number, form: LookupNtoMField) => React.Component;
+type AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormItem | LookupNtoMField, editButtonFilters?: Filters) => React.Component[];
 
 interface LookupFieldState extends FieldState {
 	filters?: Filters;
@@ -95,4 +96,4 @@ class fieldLookupMixins extends fieldMixins<LookupFiledProps, LookupFieldState> 
 	}
 }
 
-export { fieldLookupMixins };
+export { fieldLookupMixins, AdditionalButtonsRenderer };

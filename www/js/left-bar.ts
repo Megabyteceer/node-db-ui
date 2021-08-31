@@ -230,10 +230,6 @@ class LeftBar extends Component<any, any> {
 		this.toggleCollapse = this.toggleCollapse.bind(this);
 	}
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-
-	}
-
 	toggleCollapse() {
 		collapsed = !collapsed;
 		this.forceUpdate();

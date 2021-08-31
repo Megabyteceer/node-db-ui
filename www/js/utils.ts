@@ -684,7 +684,7 @@ function addMixins(Class, mixins) {
 	Object.assign(Class.prototype, mixins);
 }
 
-async function submitRecord(nodeId: RecId, data: RecordData, recId?: RecId) {
+async function submitRecord(nodeId: RecId, data: RecordData, recId?: RecId): Promise<RecId> {
 	if(Object.keys(data).length === 0) {
 		throw 'Tried to submit emty object';
 	}
@@ -842,21 +842,14 @@ function serializeForm(form): FormData {
 	return formData;
 }
 
-interface SubmitRecordData {
-	nodeId: RecId;
-	recId: RecId;
-	data?: RecordData;
-	sessionToken?: string;
-}
-
 function submitData(url: string, dataToSend: FormData, noProcessData): Promise<RecId>;
-function submitData(url: string, dataToSend: SubmitRecordData): Promise<RecId>;
-function submitData(url: string, dataToSend: SubmitRecordData | FormData, noProcessData?: boolean): Promise<RecId> {
+function submitData(url: string, dataToSend: any): Promise<RecId>;
+function submitData(url: string, dataToSend: any, noProcessData?: boolean): Promise<RecId> {
 	LoadingIndicator.instance.show();
 
 	if(!noProcessData) {
-		(dataToSend as SubmitRecordData).sessionToken = User.sessionToken;
-		dataToSend = JSON.stringify(dataToSend) as unknown as SubmitRecordData;
+		dataToSend.sessionToken = User.sessionToken;
+		dataToSend = JSON.stringify(dataToSend);
 	}
 
 	var callStack = new Error('submitData called from: ').stack;

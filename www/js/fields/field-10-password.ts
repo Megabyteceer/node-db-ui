@@ -7,6 +7,7 @@ registerFieldClass(FIELD_10_PASSWORD, class PasswordField extends fieldMixins {
 
 	setValue(val) {
 		this.refToInput.value = val;
+		//@ts-ignore
 		this.state.value = val;
 	}
 

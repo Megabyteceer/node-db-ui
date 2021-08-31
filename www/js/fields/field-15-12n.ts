@@ -5,11 +5,9 @@ import { List } from "../forms/list";
 import { deleteRecord, getNodeData, L, renderIcon } from "../utils";
 import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
-import { FIELD_15_1toN } from "../bs-utils";
+import { FIELD_15_1toN, RecId, RecordData } from "../bs-utils";
 
-
-// @ts-ignore
-registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixins {
+class Lookup1toNField extends fieldLookupMixins {
 
 	inlineListRef: List;
 
@@ -43,12 +41,13 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 		return ret;
 	}
 
+	valueChoosed(recordData?: RecordData, isNewCreated?: boolean, noToggleList?: boolean);
 	valueChoosed() {
 		this.saveNodeDataAndFilters(this.savedNode, undefined, this.savedFilters);
 		this.setState({ creationOpened: false });
 	}
 
-	toggleCreateDialogue(itemIdToEdit) {
+	toggleCreateDialogue(itemIdToEdit?: RecId) {
 		this.setState({ creationOpened: !this.state.creationOpened, dataToEdit: undefined, itemIdToEdit: itemIdToEdit });
 		if(typeof itemIdToEdit !== 'undefined') {
 			getNodeData(this.props.field.nodeRef, itemIdToEdit, undefined, true).then((data) => {
@@ -125,4 +124,8 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 		}
 		return body;
 	}
-});
+}
+
+registerFieldClass(FIELD_15_1toN, Lookup1toNField);
+
+export { Lookup1toNField };

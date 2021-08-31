@@ -4,6 +4,7 @@ import { FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, Filters, 
 import { FieldWrap } from "../fields/field-wrap";
 import { deleteRecord, draftRecord, L, locationToHash, publishRecord, renderIcon, sp } from "../utils";
 import { BaseForm } from "./form-mixins";
+import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins.js";
 
 const publishClick = (draft, node, data) => {
 	if(draft) {
@@ -13,10 +14,9 @@ const publishClick = (draft, node, data) => {
 	}
 }
 
-const renderItemsButtons = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormItem, editButtonFilters?: Filters) => {
+const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormItem, editButtonFilters?: Filters): React.Component[] => {
 	if(formItem && formItem.props.isLookup) {
 		if(data.hasOwnProperty('isE')) {
-
 			buttons = [
 				R.button({
 					key: 2, className: 'clickable toolbtn edit-btn', title: L('EDIT'), onMouseDown: (e) => {
@@ -27,7 +27,6 @@ const renderItemsButtons = (node: NodeDesc, data: RecordData, refreshFunction?: 
 					renderIcon('pencil')
 				)
 			];
-
 		}
 	} else {
 
@@ -42,13 +41,21 @@ const renderItemsButtons = (node: NodeDesc, data: RecordData, refreshFunction?: 
 		if(data.hasOwnProperty('isP') && (!formItem || !formItem.props.disableDrafting)) {
 			if(data.status === 1) {
 				buttons.push(
-					R.button({ key: 1, className: 'clickable toolbtn unpublish-btn', title: L('UNPUBLISH'), onClick: () => { publishClick(true, node, data).then(refreshFunction) } },
+					R.button({
+						key: 1, className: 'clickable toolbtn unpublish-btn', title: L('UNPUBLISH'), onClick: () => {
+							publishClick(true, node, data).then(refreshFunction);
+						}
+					},
 						renderIcon('eye')
 					)
 				)
 			} else {
 				buttons.push(
-					R.button({ key: 1, className: 'clickable toolbtn publish-btn', title: L('PUBLISH'), onClick: () => { publishClick(false, node, data).then(refreshFunction) } },
+					R.button({
+						key: 1, className: 'clickable toolbtn publish-btn', title: L('PUBLISH'), onClick: () => {
+							publishClick(false, node, data).then(refreshFunction);
+						}
+					},
 						renderIcon('eye-slash')
 					)
 				)
@@ -87,7 +94,7 @@ const renderItemsButtons = (node: NodeDesc, data: RecordData, refreshFunction?: 
 				R.button({
 					key: 3, className: 'clickable toolbtn danger-btn', title: L('DELETE') + itemName, onClick: async () => {
 						await deleteRecord(data.name, node.id, data.id);
-						if(formItem && formItem.props.parentForm) {
+						if(formItem && formItem.isSubForm()) {
 							formItem.props.parentForm.valueChoosed();
 						} else {
 							refreshFunction();
@@ -148,12 +155,9 @@ class FormItem extends BaseForm {
 		if(this.props.isLookup) {
 			itemProps.title = L('SELECT');
 			itemProps.className += ' clickable';
-			itemProps.onClick = () => { this.props.parentForm.valueChoosed(data) };
-		} else {
-			if(this.props.onClick) {
-				itemProps.className = 'clickable';
-				itemProps.onClick = this.props.onClick;
-			}
+			itemProps.onClick = () => {
+				this.props.parentForm.valueChoosed(data);
+			};
 		}
 
 		var buttons;

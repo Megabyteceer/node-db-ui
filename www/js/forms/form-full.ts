@@ -293,7 +293,7 @@ class FormFull extends eventProcessingMixins {
 			}
 		}
 
-		if(this.isSlave()) {
+		if(this.isSubForm()) {
 			this.props.parentForm.valueChoosed(this.currentData, true);
 		} else {
 			this.cancelClick();
@@ -336,7 +336,7 @@ class FormFull extends eventProcessingMixins {
 		for(var k in flds) {
 			var field = flds[k];
 			if(this.isVisibleField(field)) {
-				if((field.fieldType === FIELD_17_TAB) && (field.maxlen === 0) && !this.isSlave()) {//tab
+				if((field.fieldType === FIELD_17_TAB) && (field.maxlen === 0) && !this.isSubForm()) {//tab
 					currentCompactAreaCounter = 0;//terminate compact area nesting
 					var isDefaultTab;
 					if(!tabs) {
@@ -379,7 +379,7 @@ class FormFull extends eventProcessingMixins {
 					});
 
 
-					if((field.fieldType === FIELD_17_TAB) && (field.maxlen >= 0) && !this.isSlave()) {//compact area
+					if((field.fieldType === FIELD_17_TAB) && (field.maxlen >= 0) && !this.isSubForm()) {//compact area
 						currentCompactAreaCounter = 0;//terminate compact area nesting
 					}
 
@@ -394,7 +394,7 @@ class FormFull extends eventProcessingMixins {
 					} else {
 						fields.push(tf);
 					}
-					if((field.fieldType === FIELD_17_TAB) && (field.maxlen >= 0) && !this.isSlave()) {//compact area
+					if((field.fieldType === FIELD_17_TAB) && (field.maxlen >= 0) && !this.isSubForm()) {//compact area
 						currentCompactAreaCounter = field.maxlen;
 						currentCompactAreaName = field.fieldName;
 					}
@@ -445,18 +445,18 @@ class FormFull extends eventProcessingMixins {
 				deleteButton = R.button({
 					className: 'clickable danger-button', onClick: async () => {
 						await deleteRecord(data.name, node.id, data.id);
-						if(this.isSlave()) {
+						if(this.isSubForm()) {
 							this.props.parentForm.valueChoosed();
 						} else {
 							goBack(true);
 						}
 					}, title: L('DELETE')
-				}, renderIcon('trash'), this.isSlave() ? '' : L('DELETE'));
+				}, renderIcon('trash'), this.isSubForm() ? '' : L('DELETE'));
 			}
 
 			if(this.props.editable) {
 				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.prevs & PREVS_PUBLISH)) {
-					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('SAVE') }, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
+					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('SAVE') }, this.isSubForm() ? renderIcon('check') : renderIcon('floppy-o'), this.isSubForm() ? '' : L('SAVE'));
 				} else {
 					if(data.status === 1) {
 						draftButton = R.button({ className: 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
@@ -480,9 +480,9 @@ class FormFull extends eventProcessingMixins {
 			}
 
 			if(this.props.editable) {
-				closeButton = R.button({ className: 'clickable default-button', onClick: this.cancelClick, title: L('CANCEL') }, renderIcon('caret-left'), this.isSlave() ? '' : L('CANCEL'));
+				closeButton = R.button({ className: 'clickable default-button', onClick: this.cancelClick, title: L('CANCEL') }, renderIcon('caret-left'), this.isSubForm() ? '' : L('CANCEL'));
 			} else {
-				closeButton = R.button({ className: 'clickable default-button', onClick: this.cancelClick }, renderIcon('caret-left'), this.isSlave() ? '' : L('BACK'));
+				closeButton = R.button({ className: 'clickable default-button', onClick: this.cancelClick }, renderIcon('caret-left'), this.isSubForm() ? '' : L('BACK'));
 			}
 		}
 		return R.div({ className },

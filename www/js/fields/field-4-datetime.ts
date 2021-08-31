@@ -61,13 +61,14 @@ class dateFieldMixins extends fieldMixins<FiledProps, DatetimeFieldState> {
 				selectedDate: val,
 			});
 		}
-
+		//@ts-ignore
 		this.state.value = val;
 		this.props.wrapper.valueListener(val, false, this);
 
 	}
 
 	setMin(moment) {
+		//@ts-ignore
 		this.state.minDate = moment;
 		if(moment && (this.state.focused)) {
 			if(!this.state.value) {
@@ -80,6 +81,7 @@ class dateFieldMixins extends fieldMixins<FiledProps, DatetimeFieldState> {
 	}
 
 	setMax(moment) {
+		//@ts-ignore
 		this.state.maxDate = moment;
 		if(moment && (this.state.focused)) {
 			if(!this.state.value) {

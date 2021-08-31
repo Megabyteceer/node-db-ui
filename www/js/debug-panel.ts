@@ -36,7 +36,7 @@ class DebugPanel extends Component<any, any> {
 		this.hide();
 	}
 
-	addEntry(entry: any, expand?: Boolean, url?: string) {
+	addEntry(entry: any, expand?: boolean, url?: string) {
 
 		if(typeof (entry) === 'string') {
 			entry = { message: entry }

@@ -223,7 +223,7 @@ class AdminRoleprevsForm extends BaseForm {
 			var saveButton = R.button({
 				className: 'clickable success-button',
 				onClick: this.saveClick
-			}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
+			}, this.isSubForm() ? renderIcon('check') : renderIcon('floppy-o'), this.isSubForm() ? '' : L('SAVE'));
 
 			var nodeAdmin;
 			if(iAdmin()) {
@@ -237,7 +237,7 @@ class AdminRoleprevsForm extends BaseForm {
 			var closeButton = R.button({
 				className: 'clickable default-button',
 				onClick: this.cancelClick
-			}, renderIcon('times'), this.isSlave() ? '' : L('CANCEL'));
+			}, renderIcon('times'), this.isSubForm() ? '' : L('CANCEL'));
 
 			return R.div({ className: "admin-role-prevs-body" },
 				nodeAdmin,

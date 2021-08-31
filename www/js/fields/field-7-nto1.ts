@@ -3,11 +3,11 @@ import { R } from "../r";
 import React from "react";
 import { FormFull } from "../forms/form-full";
 import { List } from "../forms/list";
-import { backupCreationData, getBackupData, getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp } from "../utils";
+import { getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp } from "../utils";
 import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
 
-registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
+registerFieldClass(FIELD_7_Nto1, class LookupNto1Field extends fieldLookupMixins {
 	isEnterCreateThroughList: boolean;
 	private leaveTimout: NodeJS.Timeout;
 
@@ -72,7 +72,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 		}
 	}
 
-	valueChoosed(recordData, isNewCreated, noToggleList) {
+	valueChoosed(recordData: RecordData, isNewCreated?: boolean, noToggleList?: boolean) {
 		if(recordData) {
 			if(!noToggleList) {
 
@@ -101,7 +101,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 		}
 	}
 
-	toggleCreateDialogue(itemIdToEdit: RecId) {
+	toggleCreateDialogue(itemIdToEdit?: RecId) {
 
 		this.clearLeaveTimeout();
 		let isOpened = this.state.creationOpened;

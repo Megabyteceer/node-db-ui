@@ -75,7 +75,6 @@ class LookupNtoMField extends fieldLookupMixins {
 
 					dragList.state.value.some((i) => {
 						var el = ReactDOM.findDOMNode(refs[UID(i)]);
-						// @ts-ignore
 						var ey = el.getBoundingClientRect();
 						ey = (ey.top + ey.bottom) / 2;
 

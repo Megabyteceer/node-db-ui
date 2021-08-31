@@ -8,6 +8,7 @@ registerFieldClass(FIELD_16_RATING, class RatingField extends fieldMixins {
 
 	setValue(val) {
 		this.refToInput.value = val;
+		//@ts-ignore
 		this.state.value = val;
 	}
 

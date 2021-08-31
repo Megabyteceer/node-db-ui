@@ -67,6 +67,7 @@ class eventProcessingMixins extends BaseForm {
 		super.UNSAFE_componentWillReceiveProps(nextProps);
 		this.showAllTabs = false;
 		if(nextProps.initialData.id !== this.props.initialData.id) {
+			//@ts-ignore
 			this.state = {};
 			this.resetFieldsProperties(true);
 			this.forceUpdate();
@@ -226,7 +227,7 @@ class eventProcessingMixins extends BaseForm {
 	}
 
 	refreshLeftBar() {
-		if(!this.isSlave()) {
+		if(!this.isSubForm()) {
 			if(!Array.isArray(this.currentData) && this.currentData.id && !this.showAllTabs) {
 				var items = [this.currentData.name || L('NEW', this.props.node.singleName)];
 				var isDefault = true;

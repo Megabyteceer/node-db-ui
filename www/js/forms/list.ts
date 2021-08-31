@@ -6,10 +6,11 @@ import { LeftBar } from "../left-bar";
 import { consoleLog, createRecord, deleteRecord, getNode, getNodeData, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
 import { FormFull } from "./form-full";
 import { FormItem } from "./form-item";
-import { BaseForm } from "./form-mixins";
+import { BaseForm, FormProps, FormState } from "./form-mixins";
 import React from "react";
 import { iAdmin } from "../user";
 import { RefToInput } from "../fields/field-mixins.js";
+import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins.js";
 
 const sortByOrder = (a, b) => {
 	return a.order - b.order;
@@ -43,7 +44,24 @@ function createPageButton(self, page, isActive) {
 	);
 }
 
-class List extends BaseForm {
+interface ListProps extends FormProps {
+	omitHeader?: boolean;
+	preventCreateButton?: boolean;
+	askToSaveParentBeforeCreation?: boolean;
+	hideSearch?: boolean;
+	additionalButtons?: AdditionalButtonsRenderer;
+	noPreviewButton?: boolean;
+}
+
+interface ListState extends FormState {
+	noEditButton?: boolean;
+	hideSearch?: boolean;
+	additionalButtons?: AdditionalButtonsRenderer;
+	hideControlls?: boolean;
+	noPreviewButton?: boolean;
+}
+
+class List extends BaseForm<ListProps, ListState> {
 
 	private searchInput: RefToInput;
 	private subformsRefs: { [key: number]: FormFull };
@@ -92,7 +110,7 @@ class List extends BaseForm {
 			});
 		}
 
-		if(!this.isSlave() && !this.props.noSetHash) {
+		if(!this.isSubForm()) {
 			LeftBar.instance.setLeftBar();
 		}
 	}
@@ -106,7 +124,7 @@ class List extends BaseForm {
 	}
 
 	async refreshData() {
-		if(!this.isSlave() && !this.props.noSetHash) {
+		if(!this.isSubForm()) {
 			updateHashLocation(this.filters);
 		}
 		var nodeIdToFetch = this.props.nodeId || this.props.node.id;
@@ -131,13 +149,13 @@ class List extends BaseForm {
 
 			if(!this.props.node) {
 				const node = await getNode(this.props.nodeId);
-				if(this.isSlave()) {
+				if(this.isSubForm()) {
 					this.props.parentForm.saveNodeDataAndFilters(node, data, this.filters);
 				}
 				this.setState({ data, node });
 				this.scrollIfNeed();
 			} else {
-				if(this.isSlave()) {
+				if(this.isSubForm()) {
 					this.props.parentForm.saveNodeDataAndFilters(this.props.node, data, this.filters);
 				}
 				this.setState({ data });
@@ -148,7 +166,7 @@ class List extends BaseForm {
 	}
 
 	scrollIfNeed() {
-		if(this.isSlave() && this.props.parentForm.props.field.fieldType === FIELD_7_Nto1) {
+		if(this.isSubForm() && this.props.parentForm.props.field.fieldType === FIELD_7_Nto1) {
 			scrollToVisible(this, true);
 		}
 	}
@@ -219,7 +237,7 @@ class List extends BaseForm {
 	}
 
 	isCustomListRenering() {
-		return (!this.props.onItemClick && !this.props.filters.noCustomList && !this.props.isLookup && isPresentListRenderer(parseInt(this.props.nodeId || this.props.node.id)));
+		return (!this.props.filters.noCustomList && !this.props.isLookup && isPresentListRenderer(this.props.nodeId || this.props.node.id));
 	}
 
 	renderEditableList() {
@@ -244,7 +262,7 @@ class List extends BaseForm {
 
 						btns.push(R.button({
 							className: 'clickable toolbtn danger-btn', title: L('DELETE'), key: 'b' + UID(item), onClick: async () => {
-								if(item.hasOwnProperty('id') && !this.state.noPromptDelete) {
+								if(item.hasOwnProperty('id')) {
 									//TODO: check deletion in 1toN lookup list
 									await deleteRecord(item.name, node.id, 0, false, () => {
 										item.__deleted_901d123f = true;
@@ -379,7 +397,7 @@ class List extends BaseForm {
 		if(!this.props.omitHeader) {
 			var createButton;
 			if((node.prevs & PREVS_CREATE) && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
-				if(this.isSlave()) {
+				if(this.isSubForm()) {
 					createButton = R.button({
 						className: 'clickable create-button', onClick: async () => {
 							if(this.props.askToSaveParentBeforeCreation) {
@@ -485,7 +503,7 @@ class List extends BaseForm {
 				var hideControlls = this.props.hideControlls || this.state.hideControlls || (this.props.filters && this.props.filters.hideControlls);
 
 				var lines = data.items.map((item) => {
-					return React.createElement(FormItem, { key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, onClick: this.props.onItemClick ? () => { this.props.onItemClick(item) } : undefined, parentForm: this.props.parentForm, additionalButtons: additionalButtons, hideControlls: hideControlls, isLookup: this.props.isLookup, list: this, node, initialData: item });
+					return React.createElement(FormItem, { key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, parentForm: this.props.parentForm, additionalButtons, hideControlls: hideControlls, isLookup: this.props.isLookup, list: this, node, initialData: item });
 				});
 
 				body = R.table({ className: 'list-table' },
@@ -494,7 +512,7 @@ class List extends BaseForm {
 				);
 			}
 
-		} else if(!this.props.hideIfEmpty) {
+		} else {
 
 			var t1, t2;
 			if(filters.s || filters.s === 0) {
@@ -502,14 +520,14 @@ class List extends BaseForm {
 				t2 = '';
 			} else if(createButton) {
 				t1 = L('PUSH_CREATE', (node.creationName || node.singleName));
-				t2 = L(this.isSlave() ? 'TO_CONTINUE' : 'TO_START');
+				t2 = L(this.isSubForm() ? 'TO_CONTINUE' : 'TO_START');
 			} else {
 				t1 = L('LIST_EMPTY');
 			}
 
 			var emptyIcon;
 			if(node.icon) {
-				emptyIcon = renderIcon((node.icon || 'plus') + ((this.isSlave() ? ' fa-3x' : ' fa-5x') + ' list-empty-icon'))
+				emptyIcon = renderIcon((node.icon || 'plus') + ((this.isSubForm() ? ' fa-3x' : ' fa-5x') + ' list-empty-icon'))
 			}
 
 			body = R.div({ className: 'list-emty' },

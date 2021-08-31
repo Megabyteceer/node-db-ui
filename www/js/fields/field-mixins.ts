@@ -98,7 +98,6 @@ class fieldMixins<T extends FiledProps = FiledProps, T2 extends FieldState = Fie
 
 	focus() {
 		if(this.refToInput) {
-			// @ts-ignore
 			ReactDOM.findDOMNode(this.refToInput).focus();
 		}
 	}

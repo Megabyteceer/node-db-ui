@@ -226,7 +226,7 @@ class FieldWrap extends Component<any, any> {
 		/// #if DEBUG
 		consoleLog('focus set ' + this.props.field.fieldName);
 		/// #endif
-		if(this.props.parentTabName && !this.props.form.isSlave()) {
+		if(this.props.parentTabName && !this.props.form.isSubForm()) {
 			setFormFilter('tab', this.props.parentTabName);
 		}
 		setTimeout(() => {

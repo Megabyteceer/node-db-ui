@@ -1,4 +1,4 @@
-import { FIELD_6_ENUM } from "../bs-utils";
+import { EnumList, FIELD_6_ENUM } from "../bs-utils";
 import { R } from "../r";
 import React from "react";
 import { Select } from "../components/select";
@@ -7,9 +7,10 @@ import { fieldMixins } from "./field-mixins";
 
 class EnumField extends fieldMixins {
 
-	enum;
+	enum: EnumList;
 
 	setValue(val) {
+		//@ts-ignore
 		this.state.value = val;
 	}
 
