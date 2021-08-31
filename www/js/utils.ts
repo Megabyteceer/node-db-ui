@@ -1,22 +1,26 @@
-import {Notify} from "./notify.js";
+import { Notify } from "./notify";
 import ReactDOM from "react-dom";
-import {R} from "./r.ts";
-import {assert, FIELD_1_TEXT, isUserHaveRole, PREVS_PUBLISH} from "./bs-utils";
-import {LoadingIndicator} from "./loading-indicator.js";
-import {User} from "./user.js";
-import {Modal} from "./modal.js";
-import {ENV} from "./main-frame.js";
-import {Stage} from "./stage.js";
-import {isPresentListRenderer} from "./forms/list.js";
-import {DebugPanel} from "./debug-panel.js";
+import { R } from "./r";
+import { ADMIN_ROLE_ID, assert, FIELD_1_TEXT, Filters, GetRecordsParams, NodeDesc, PREVS_PUBLISH, RecId, RecordData, RecordsData, RecordsDataResponse, TRoleId } from "./bs-utils";
+import { LoadingIndicator } from "./loading-indicator";
+import { User } from "./user";
+import { Modal } from "./modal";
+import { ENV } from "./main-frame";
+import { Stage } from "./stage";
+import { isPresentListRenderer } from "./forms/list";
+import { DebugPanel } from "./debug-panel";
+import React from "react";
 
-// @ts-ignore
+const ON_FORM_SAVE = 'onsave';
+const ON_FORM_LOAD = 'onload';
+const ON_FIELD_CHANGE = 'onChange';
+
 const __corePath = 'https://node-db-ui.com:1443/core/';
 
 const headersJSON = new Headers();
 headersJSON.append("Content-Type", "application/json");
 
-function myAlert(txt, isSucess, autoHide, noDiscardByBackdrop) {
+function myAlert(txt: string | React.Component, isSucess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean) {
 	if(!Modal.instance) {
 		alert(txt);
 	} else {
@@ -27,7 +31,7 @@ function myAlert(txt, isSucess, autoHide, noDiscardByBackdrop) {
 			className = "alert-bg alert-bg-danger";
 		}
 
-		var modalId = Modal.instance.show(R.div({className}, txt), noDiscardByBackdrop);
+		var modalId = Modal.instance.show(R.div({ className }, txt), noDiscardByBackdrop);
 
 		if(autoHide) {
 			setTimeout(() => {
@@ -38,7 +42,7 @@ function myAlert(txt, isSucess, autoHide, noDiscardByBackdrop) {
 
 }
 
-async function myPromt(txt, yesLabel, noLabel, yesIcon, noIcon, discardByOutsideClick) {
+async function myPromt(txt: string | Comment, yesLabel?: string, noLabel?: string, yesIcon?: string, noIcon?: string, discardByOutsideClick?: boolean) {
 	return new Promise((resolve) => {
 		if(!yesLabel) {
 			yesLabel = L('OK');
@@ -64,9 +68,9 @@ async function myPromt(txt, yesLabel, noLabel, yesIcon, noIcon, discardByOutside
 			}, className: 'clickable prompt-no-button'
 		}, renderIcon(noIcon), ' ', noLabel);
 
-		var body = R.span({className: 'prompt-body'},
+		var body = R.span({ className: 'prompt-body' },
 			txt,
-			R.div({className: 'prompt-footer'},
+			R.div({ className: 'prompt-footer' },
 				noButton,
 				R.button({
 					onClick: () => {
@@ -216,15 +220,13 @@ function goToHome() {
 }
 
 
-function loactionToHash(nodeId, recId, filters, editable) {
-
-
+function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, editable?: boolean) {
 	var newHash = [
 		'n', encodeURIComponent(nodeId)];
 
 	if(recId || recId === 0) {
 		newHash.push('r');
-		newHash.push(recId);
+		newHash.push(recId as unknown as string);
 	}
 	if(editable) {
 		newHash.push('e');
@@ -254,7 +256,7 @@ function loactionToHash(nodeId, recId, filters, editable) {
 					if((k !== 'p') || (filters[k] !== 0)) {
 						var v = filters[k];
 						filtersHash.push(k);
-						filtersHash.push(encodeURIComponent(filters[k]));
+						filtersHash.push(encodeURIComponent(filters[k] as string));
 					}
 				}
 			}
@@ -276,7 +278,17 @@ function loactionToHash(nodeId, recId, filters, editable) {
 	return retHash;
 }
 
-const currentFormParameters = {};
+const currentFormParameters: {
+	filters: Filters;
+	nodeId: RecId;
+	recId: RecId | 'new';
+	editable: boolean;
+} = {
+	filters: {},
+	nodeId: 0,
+	recId: 0,
+	editable: false
+};
 
 function isCurrentlyShowedLeftbarItem(item) {
 
@@ -351,7 +363,7 @@ function goToPageByHash() {
 };
 
 
-function goBack(isAfterDelete) {
+function goBack(isAfterDelete?: boolean) {
 	if(isLitePage() && window.history.length < 2) {
 		if(window.location.href.indexOf('#n/28/f/p/*/formTitle') > 0) {
 			refreshForm();
@@ -376,7 +388,7 @@ function goBack(isAfterDelete) {
 var hashUpdateTimeout;
 let isHistoryChanging = false;
 
-function updateHashLocation(filters) {
+function updateHashLocation(filters?: Filters) {
 
 	if(hashUpdateTimeout) {
 		consoleLog('Hash updated more that once');
@@ -391,7 +403,7 @@ function updateHashLocation(filters) {
 			filters = currentFormParameters.filters;
 		}
 
-		var newHash = loactionToHash(currentFormParameters.nodeId, currentFormParameters.recId, filters, currentFormParameters.editable);
+		var newHash = locationToHash(currentFormParameters.nodeId, currentFormParameters.recId, filters, currentFormParameters.editable);
 
 		if((location.hash != newHash) && !isHistoryChanging) {
 
@@ -418,7 +430,7 @@ function refreshForm() {
 	showForm(currentFormParameters.nodeId, currentFormParameters.recId, currentFormParameters.filters, currentFormParameters.editable);
 }
 
-function showForm(nodeId, recId, filters, editable) {
+function showForm(nodeId: RecId, recId?: RecId | 'new', filters?: Filters, editable?: boolean) {
 
 	if(typeof nodeId === 'undefined') {
 		Stage.instance.setCustomClass(filters.c, filters);
@@ -431,9 +443,14 @@ function showForm(nodeId, recId, filters, editable) {
 		if(recId === 'new') {
 			createRecord(nodeId, filters);
 		} else {
-			getNodeData(nodeId, recId, (!recId && recId !== 0) ? filters : undefined, editable, false, isPresentListRenderer(nodeId)).then((data) => {
+			let res;
+			if(recId || (recId === 0)) {
+				res = getNodeData(nodeId, recId, undefined, editable, false, isPresentListRenderer(nodeId));
+			} else {
+				res = getNodeData(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
+			}
+			res.then((data) => {
 				setFormData(nodeId, data, recId, filters, editable);
-
 			})
 		}
 	}
@@ -491,7 +508,7 @@ async function waitForNode(nodeId) {
 	});
 }
 
-async function getNode(nodeId, forceRefresh, callStack) {
+async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string) {
 
 	if(!callStack) {
 		callStack = new Error('getNode called from: ').stack;
@@ -509,7 +526,7 @@ async function getNode(nodeId, forceRefresh, callStack) {
 			return waitForNode(nodeId);
 		} else {
 			nodesRequested[nodeId] = true;
-			let data = await getData('api/descNode', {nodeId});
+			let data = await getData('api/descNode', { nodeId });
 			normalizeNode(data);
 			nodes[nodeId] = data;
 			return data;
@@ -517,7 +534,7 @@ async function getNode(nodeId, forceRefresh, callStack) {
 	}
 }
 
-function normalizeNode(node) {
+function normalizeNode(node: NodeDesc) {
 	node.fieldsById = [];
 	if(node.fields) {
 		node.fields.forEach((f, i) => {
@@ -534,7 +551,9 @@ function normalizeNode(node) {
 	}
 }
 
-async function getNodeData(nodeId, recId, filters, editable, isForRefList, isForCustomList, noLoadingIndicator, onError) {
+async function getNodeData(nodeId: RecId, recId: undefined, filters?: { [key: string]: any }, editable?: boolean, isForRefList?: boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordsData>;
+async function getNodeData(nodeId: RecId, recId: RecId, filters?: undefined, editable?: boolean, isForRefList?: boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordData>;
+async function getNodeData(nodeId: RecId, recId: RecId | undefined, filters?: undefined, editable?: boolean, isForRefList?: boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordData | RecordsData> {
 
 	/// #if DEBUG
 	if(typeof (recId) !== 'undefined' && typeof (filters) !== 'undefined') {
@@ -544,7 +563,7 @@ async function getNodeData(nodeId, recId, filters, editable, isForRefList, isFor
 
 	var callStack = new Error('getNodeData called from: ').stack;
 
-	let params = {nodeId};
+	let params: GetRecordsParams = { nodeId };
 
 	if(typeof (recId) !== 'undefined') {
 		params.recId = recId;
@@ -665,16 +684,16 @@ function addMixins(Class, mixins) {
 	Object.assign(Class.prototype, mixins);
 }
 
-async function submitRecord(nodeId, data, recId) {
+async function submitRecord(nodeId: RecId, data: RecordData, recId?: RecId) {
 	if(Object.keys(data).length === 0) {
 		throw 'Tried to submit emty object';
 	}
 	let node = await getNode(nodeId);
-	return submitData('api/submit', {nodeId, recId, data: encodeData(data, node)});
+	return submitData('api/submit', { nodeId, recId, data: encodeData(data, node) });
 }
 
-var UID_counter = 0;
-function UID(obj) {
+var UID_counter = 1;
+function UID(obj): number {
 	if(!obj.hasOwnProperty('__uid109Hd')) {
 		obj.__uid109Hd = UID_counter++;
 	}
@@ -694,15 +713,19 @@ function idToFileUrl(fileId) {
 
 let __requestsOrder = [];
 
-async function getData(url, params, callStack, noLoadingIndicator) {
+async function getData(url: string, params?: { [key: string]: any }, callStack?: string, noLoadingIndicator?: boolean): Promise<any> {
 	return new Promise((resolve) => {
 		assert(url.indexOf('?') < 0, 'More parameters to data');
 
-		var requestRecord = {
+		var requestRecord: {
+			url: string;
+			resolve: (value: unknown) => void;
+			result?: any
+		} = {
 			/// #if DEBUG
 			url: url,
 			/// #endif
-			resolve,
+			resolve
 		}
 
 		if(!params) {
@@ -780,12 +803,20 @@ async function getData(url, params, callStack, noLoadingIndicator) {
 	});
 }
 
+const isUserHaveRole = (roleId: TRoleId) => {
+	return User.currentUserData && User.currentUserData.userRoles[roleId];
+}
+
+const isAdmin = () => {
+	return isUserHaveRole(ADMIN_ROLE_ID);
+}
+
 async function publishRecord(nodeId, recId) {
-	return submitRecord(nodeId, {status: 1}, recId);
+	return submitRecord(nodeId, { status: 1 }, recId);
 }
 
 async function draftRecord(nodeId, recId) {
-	return submitRecord(nodeId, {status: 2}, recId);
+	return submitRecord(nodeId, { status: 2 }, recId);
 }
 
 function isAuthNeed(data) {
@@ -811,20 +842,24 @@ function serializeForm(form) {
 	return formData;
 }
 
-function submitData(url, dataToSend, noProcessData) {
+function submitData(url, dataToSend: string, noProcessData?: true): Promise<RecId>;
+function submitData(url, dataToSend: RecordData, noProcessData?: boolean): Promise<RecId>;
+function submitData(url, dataToSend: RecordData | string, noProcessData?: boolean): Promise<RecId> {
 	LoadingIndicator.instance.show();
 
 	if(!noProcessData) {
+		//@ts-ignore
 		dataToSend.sessionToken = User.sessionToken;
 		dataToSend = JSON.stringify(dataToSend);
 	}
 
 	var callStack = new Error('submitData called from: ').stack;
-	let options = {
+	let options: RequestInit = {
 		method: 'POST',
-		body: dataToSend
+		body: dataToSend as string
 	}
 	if(!noProcessData) {
+		//@ts-ignore
 		options.headers = headersJSON;
 	}
 	return fetch(__corePath + url, options)
@@ -861,12 +896,12 @@ function submitData(url, dataToSend, noProcessData) {
 }
 
 
-async function deleteRecord(name, nodeId, recId, noPromt, onYes) {
+async function deleteRecord(name, nodeId: RecId, recId: RecId, noPromt?: boolean, onYes?: () => void) {
 	if(noPromt) {
 		if(onYes) {
 			onYes();
 		} else {
-			await submitData('api/delete', {nodeId, recId});
+			await submitData('api/delete', { nodeId, recId });
 			dataDidModifed();
 		}
 	} else {
@@ -883,7 +918,7 @@ function createRecord(nodeId, parameters) {
 		parameters = {};
 	}
 	getNode(nodeId).then((node) => {
-		var emptyData = {};
+		var emptyData: RecordData = {};
 		if(node.draftable && (node.prevs & PREVS_PUBLISH)) { //access to publish records
 			emptyData.isP = 1;
 		}
@@ -928,7 +963,7 @@ function renderIcon(name) {
 	if(!name) {
 		name = 'circle-o';
 	}
-	return R.p({className: 'fa fa-' + name});
+	return R.p({ className: 'fa fa-' + name });
 }
 
 function isLitePage() {
@@ -950,9 +985,9 @@ function scrollToVisible(elem, doNotShake = false) {
 		var elemBottom = elemTop + $elem.height() + 40;
 
 		if(elemTop < docViewTop) {
-			$('html,body').animate({scrollTop: elemTop}, 300, undefined, () => {!doNotShake && shakeDomElement($elem);});
+			$('html,body').animate({ scrollTop: elemTop }, 300, undefined, () => { !doNotShake && shakeDomElement($elem); });
 		} else if(elemBottom > docViewBottom) {
-			$('html,body').animate({scrollTop: Math.min(elemBottom - $window.height(), elemTop)}, 300, undefined, () => {!doNotShake && shakeDomElement($elem)});
+			$('html,body').animate({ scrollTop: Math.min(elemBottom - $window.height(), elemTop) }, 300, undefined, () => { !doNotShake && shakeDomElement($elem) });
 		} else {
 			!doNotShake && shakeDomElement($elem);
 		}
@@ -969,7 +1004,7 @@ function shakeDomElement(e) {
 	}, 1000);
 };
 
-function getItem(name, def) {
+function getItem(name: string, def?: any) {
 	if(typeof (Storage) !== "undefined") {
 		if(localStorage.hasOwnProperty(name)) {
 			return JSON.parse(localStorage[name]);
@@ -990,16 +1025,19 @@ function removeItem(name) {
 	}
 }
 
-function backupCreationData(nodeId, data, backupPrefix) {
-	setItem('backup_for_node' + nodeId + (backupPrefix ? backupPrefix : ''), data);
+function backupCreationData(nodeId, data) {
+	// TODO: get prefix of all parent nodes
+	setItem('backup_for_node' + nodeId, data);
 }
 
-function getBackupData(nodeId, backupPrefix) {
-	return getItem('backup_for_node' + nodeId + (backupPrefix ? backupPrefix : '')) || {};
+function getBackupData(nodeId) {
+	// TODO: get prefix of all parent nodes
+	return getItem('backup_for_node' + nodeId) || {};
 }
 
-function removeBackup(nodeId, backupPrefix) {
-	removeItem('backup_for_node' + nodeId + (backupPrefix ? backupPrefix : ''));
+function removeBackup(nodeId) {
+	// TODO: get prefix of all parent nodes
+	removeItem('backup_for_node' + nodeId);
 }
 
 function keepInWindow(body) {
@@ -1030,7 +1068,7 @@ function addTranslateX(element, x) {
 		curMatrix = ['matrix(1', 0, 0, 1, x, '0)'];
 	}
 
-	element.css({'transform': curMatrix.join(',')});
+	element.css({ 'transform': curMatrix.join(',') });
 }
 
 
@@ -1043,7 +1081,7 @@ function dataDidModifed() {
 	} catch(e) { };
 }
 
-function popup(url, W = 900, reloadParentIfSomethingUpdated) { //new window
+function popup(url: string, W = 900, reloadParentIfSomethingUpdated?: boolean) { //new window
 
 	var dataDidModifedInChildren;
 
@@ -1080,7 +1118,7 @@ async function loadJS(name) {
 		return;
 	}
 	if(!loadedScripts[name]) {
-		loadedScripts[name] = new Promise((resolve) => {
+		loadedScripts[name] = new Promise<void>((resolve) => {
 			LoadingIndicator.instance.show();
 			var script = document.createElement('script');
 			script.onload = () => {
@@ -1159,7 +1197,7 @@ function initDictionary(o) {
 	dictionary_0u23hiewf = Object.assign(dictionary_0u23hiewf, o);
 }
 
-function L(key, param) {
+function L(key: string, param?: any) {
 	if(dictionary_0u23hiewf.hasOwnProperty(key)) {
 		if(typeof (param) !== 'undefined') {
 			return dictionary_0u23hiewf[key].replace('%', param);
@@ -1173,6 +1211,7 @@ function L(key, param) {
 }
 
 export {
+	Filters,
 	isLitePage,
 	renderIcon,
 	getClassForField,
@@ -1205,7 +1244,7 @@ export {
 	idToFileUrl,
 	isCurrentlyShowedLeftbarItem,
 	addMixins,
-	loactionToHash,
+	locationToHash,
 	goToPageByHash,
 	consoleLog,
 	consoleDir,
@@ -1229,5 +1268,10 @@ export {
 	refreshForm,
 	showForm,
 	debugError,
-	currentFormParameters
+	currentFormParameters,
+	isUserHaveRole,
+	isAdmin,
+	ON_FORM_SAVE,
+	ON_FORM_LOAD,
+	ON_FIELD_CHANGE
 }

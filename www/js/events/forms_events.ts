@@ -1,9 +1,10 @@
-import {getNodeData, L, myPromt} from "../utils.js";
-import {makeIconSelectionField} from "../admin/admin-utils.js";
-import {FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATICTEXT, isUserHaveRole} from "../bs-utils";
-import {FormFull} from "../forms/form-full.js";
-import {iAdmin} from "../user.js";
-import {User} from "../user.js";
+import { Filters, getNodeData, isAdmin, L, myPromt } from "../utils";
+import { makeIconSelectionField } from "../admin/admin-utils";
+import { ADMIN_ROLE_ID, FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATICTEXT } from "../bs-utils";
+import { FormFull } from "../forms/form-full";
+import { iAdmin } from "../user";
+import { User } from "../user";
+import { EnumField } from "../fields/field-6-enum.js";
 
 class FormEvents extends FormFull {
 
@@ -39,13 +40,13 @@ class FormEvents extends FormFull {
 		var myname = this.fieldValue('name');
 
 
-		if(!isUserHaveRole(1)) {
+		if(!isAdmin()) {
 			this.disableField('email');
 		}
 
 		if(this.rec_update || this.rec_creation) {
 			this.addLookupFilters('_userroles', {
-				exludeIDs: [2, 3]
+				excludeIDs: [2, 3]
 			});
 			this.hideField('public_phone');
 			this.hideField('public_vk');
@@ -109,7 +110,7 @@ class FormEvents extends FormFull {
 							window.location.href = 'login';
 						}
 					});
-				};
+				}
 			}
 		}
 	}
@@ -143,7 +144,7 @@ class FormEvents extends FormFull {
 			this.hideField('_fieldsID');
 		}
 		if(!this.rec_creation) {
-			this.addLookupFilters('_nodesID', 'exludeIDs', [this.rec_ID]);
+			this.addLookupFilters('_nodesID', 'excludeIDs', [this.rec_ID]);
 		}
 		this.addLookupFilters('_nodesID', 'isDoc', 0);
 		this.addLookupFilters('_fieldsID', {
@@ -170,9 +171,11 @@ class FormEvents extends FormFull {
 
 	}
 
+	_fieldsNameIsBad: boolean;
+
 	async _fields_onload() {
 
-		this.getField('fieldType').fieldRef.setFilterValues([16]);
+		(this.getField('fieldType').fieldRef as EnumField).setFilterValues([16]);
 
 		if(this.rec_creation) {
 			if(isNaN(this.fieldValue("show"))) {
@@ -252,53 +255,52 @@ class FormEvents extends FormFull {
 		$('.field-container-id-357').css({
 			width: '6%'
 		});
+	}
 
-		this.check12nFieldName = () => {
-			if(this.rec_creation) {
-				this.nameIsBad = false;
+	check12nFieldName() {
+		if(this.rec_creation) {
+			this._fieldsNameIsBad = false;
 
-				var checkFieldExists = (fName, nodeId) => {
-					let fieldsFilter = {
-						fieldName: fName
-					}
-					if(this.fieldValue('fieldType') !== FIELD_14_NtoM) {
-						fieldsFilter.node_fields_linker = nodeId;
-					}
-					getNodeData(6, undefined, fieldsFilter).then((data) => {
-						if(this.nameIsBad) return;
-						if(data.items.length > 0) {
-							if(this.fieldValue('fieldType') === FIELD_14_NtoM) {
-								this.fieldAlert('fieldName', L('LOOKUP_NAME_NOT_UNIC'));
-							} else {
-								this.fieldAlert('fieldName', L('FLD_EXISTS'));
-							}
-							this.nameIsBad = true;
+			var checkFieldExists = (fName, nodeId) => {
+				let fieldsFilter: Filters = {
+					fieldName: fName
+				}
+				if(this.fieldValue('fieldType') !== FIELD_14_NtoM) {
+					fieldsFilter.node_fields_linker = nodeId;
+				}
+				getNodeData(6, undefined, fieldsFilter).then((data) => {
+					if(this._fieldsNameIsBad) return;
+					if(data.items.length > 0) {
+						if(this.fieldValue('fieldType') === FIELD_14_NtoM) {
+							this.fieldAlert('fieldName', L('LOOKUP_NAME_NOT_UNIC'));
 						} else {
-							this.fieldAlert('fieldName', '', true);
+							this.fieldAlert('fieldName', L('FLD_EXISTS'));
 						}
-					});
-				};
-
-				var fn = this.fieldValue('fieldName');
-				var nodeId = this.fieldValue('node_fields_linker');
-				if(nodeId && nodeId.id) {
-					nodeId = nodeId.id;
-				}
-				var nodeRef = this.fieldValue('nodeRef');
-				if(nodeRef && nodeRef.id) {
-					nodeRef = nodeRef.id;
-				}
-
-				if(nodeId && fn && fn.length >= 3) {
-					if((this.fieldValue("fieldType") === FIELD_15_1toN) && nodeRef) {
-						checkFieldExists(fn + '_linker', nodeRef);
+						this._fieldsNameIsBad = true;
 					} else {
-						checkFieldExists(fn, nodeId);
+						this.fieldAlert('fieldName', undefined, true);
 					}
+				});
+			};
+
+			var fn = this.fieldValue('fieldName');
+			var nodeId = this.fieldValue('node_fields_linker');
+			if(nodeId && nodeId.id) {
+				nodeId = nodeId.id;
+			}
+			var nodeRef = this.fieldValue('nodeRef');
+			if(nodeRef && nodeRef.id) {
+				nodeRef = nodeRef.id;
+			}
+
+			if(nodeId && fn && fn.length >= 3) {
+				if((this.fieldValue("fieldType") === FIELD_15_1toN) && nodeRef) {
+					checkFieldExists(fn + '_linker', nodeRef);
+				} else {
+					checkFieldExists(fn, nodeId);
 				}
 			}
-		};
-
+		}
 	}
 
 	async _fields_onsave() {
@@ -352,7 +354,7 @@ class FormEvents extends FormFull {
 		if((fieldType === FIELD_8_STATICTEXT) || (fieldType === FIELD_17_TAB) || (fieldType === FIELD_18_BUTTON)) {
 			this.setFieldValue('nostore', true);
 		}
-		if(this.nameIsBad) {
+		if(this._fieldsNameIsBad) {
 			this.fieldAlert('fieldName', L('FLD_EXISTS'));
 		}
 	}
@@ -370,4 +372,4 @@ class FormEvents extends FormFull {
 	//_insertNewHandlersHere_
 }
 
-export {FormEvents};
+export { FormEvents };

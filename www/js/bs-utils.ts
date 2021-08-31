@@ -1,46 +1,24 @@
-const throwError = (message: string): never => {
-
-	throw new Error(message);
+interface Filters {
+	[key: string]: string | number | {};
+	excludeIDs?: RecId[];
 }
 
-const notificationOut = (userSession: UserSession, text: string) => {
-	if (!userSession || userSession.__temporaryServerSideSession) {
-		console.log(text);
-	} else {
-		if (!userSession.notifications) {
-			userSession.notifications = [text];
-		} else {
-			userSession.notifications.push(text);
-		}
-	}
+const throwError = (message: string): never => {
+	throw new Error(message);
 }
 
 /// #if DEBUG
 const assert = (condition: any, errorTxt: string) => {
-	if (!condition) {
+	if(!condition) {
 		throwError(errorTxt);
 	}
 }
 /// #endif
 
-const shouldBeAuthorized = (userSession: UserSession) => {
-	if (!userSession || userSession.__temporaryServerSideSession || isUserHaveRole(GUEST_ROLE_ID, userSession)) {
-		throwError("operation permitted for authorized user only");
-	}
-}
-
-
-const isAdmin = (userSession: UserSession) => {
-	return isUserHaveRole(ADMIN_ROLE_ID, userSession);
-}
-
-const isUserHaveRole = (roleId: TRoleId, userSession: UserSession) => {
-	return userSession && userSession.userRoles[roleId];
-}
 /// #if DEBUG
 const getCurrentStack = () => {
 	let a = new Error().stack?.split('\n');
-	if (a) {
+	if(a) {
 		a.splice(0, 3);
 	}
 	return a;
@@ -106,6 +84,23 @@ interface FieldDesc {
 
 	/** SERVER SIDE FIELD ONLY. If it not empty - content of this field goes in to fieldName in SQL query to retrieve data not from direct table's field */
 	selectFieldName?: string;
+
+	/** order of the field in the form */
+	prior: number;
+
+	node: NodeDesc;
+
+	/** index in parent's node 'fields' list */
+	index: number;
+
+	enum?: { value: number, name: string }[];
+	enumNamesById: { [key: number]: string };
+
+	/** contains language id, if field is multilingual and refers to non default language */
+	lang?: string;
+
+	/** field tip. or html content for FIELD_8_STATICTEXT fields */
+	fdescription: string;
 }
 
 
@@ -133,6 +128,8 @@ interface NodeDesc {
 	fields: FieldDesc[];
 	filters: FilterDesc[];
 	sortFieldName: string;
+	/** CLIENT SIDE ONLY */
+	fieldsById?: { [key: number]: FieldDesc };
 }
 
 interface UserLangEntry {
@@ -149,11 +146,11 @@ interface RecordDataWrite {
 interface RecordData extends RecordDataWrite {
 
 	/** **edit** access to the record */
-	isE: BoolNum;
+	isE?: BoolNum;
 	/** **publish** access to the record */
-	isP: BoolNum;
+	isP?: BoolNum;
 	/** **delete** access to the record */
-	isD: BoolNum;
+	isD?: BoolNum;
 }
 
 interface RecordsData {
@@ -164,6 +161,14 @@ interface RecordsData {
 interface RecordsDataResponse {
 	data: RecordsData;
 	node?: NodeDesc;
+}
+
+interface GetRecordsParams {
+	nodeId: RecId;
+	viewFields?: ViewMask;
+	recId?: RecId;
+	s?: string;
+	descNode?: boolean;
 }
 
 type BoolNum = 0 | 1;
@@ -212,13 +217,12 @@ const EVENT_HANDLER_TYPE_NODE = 'node';
 const EVENT_HANDLER_TYPE_FIELD = 'field';
 
 export {
-	isUserHaveRole, shouldBeAuthorized, isAdmin, throwError,
+	throwError,
 	/// #if DEBUG
 	getCurrentStack,
 	assert,
 	/// #endif
 
-	notificationOut,
 	USER_ROLE_ID, ADMIN_ROLE_ID, GUEST_ROLE_ID,
 
 	PREVS_VIEW_OWN, PREVS_VIEW_ORG, PREVS_VIEW_ALL, PREVS_CREATE, PREVS_EDIT_OWN, PREVS_EDIT_ORG, PREVS_EDIT_ALL,
@@ -230,6 +234,6 @@ export {
 
 	EVENT_HANDLER_TYPE_NODE, EVENT_HANDLER_TYPE_FIELD,
 
-	ViewMask, RecId, UserRoles,
+	ViewMask, RecId, UserRoles, BoolNum, GetRecordsParams, Filters,
 	PrevsMask, UserLangEntry, TRoleId, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
 };

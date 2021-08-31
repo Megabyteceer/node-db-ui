@@ -1,4 +1,4 @@
-import {initDictionary} from "../../js/utils.js";
+import { initDictionary } from "../../js/utils";
 
 (() => {
 	initDictionary({
@@ -117,9 +117,6 @@ import {initDictionary} from "../../js/utils.js";
 		'SAVE_TOADDSUB': 'Save form before create %',
 		'APPLY_CHILD': 'Apply settings for all sub sections?',
 		'TO_THIS': 'To this section only',
-		'TO_ALL': 'To all sub sections',
-		'': '',
-		'': ''
-
+		'TO_ALL': 'To all sub sections'
 	});
 })();

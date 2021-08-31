@@ -1,10 +1,12 @@
-import {FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATICTEXT} from "../bs-utils";
-import {FormFull} from "../forms/form-full.js";
-import {L} from "../utils.js";
+import { FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATICTEXT } from "../bs-utils";
 
-class FieldsEvents extends FormFull {
+import { L } from "../utils";
+import { FormEvents } from "./forms_events";
+
+class FieldsEvents extends FormEvents {
 
 	_html_title_onChange() {
+		let pv = this.fieldValue('title');
 		if(pv) {
 			var newv = pv.replace(/ /g, '_').replace(/[^0-9a-zA-Z_]/g, '');
 
@@ -66,9 +68,9 @@ class FieldsEvents extends FormFull {
 		this.hideField("selectFieldName", "show", "nodeRef", "enum", "width", "height", "icon");
 		this.enableField("vis_list");
 		if(fieldType === FIELD_14_NtoM) {
-			this.getField('nodeRef').setLookupFilter('exludeIDs', [this.fieldValue("node_fields_linker").id]);
+			this.getField('nodeRef').setLookupFilter('excludeIDs', [this.fieldValue("node_fields_linker").id]);
 		} else {
-			this.getField('nodeRef').setLookupFilter('exludeIDs', undefined);
+			this.getField('nodeRef').setLookupFilter('excludeIDs', undefined);
 		}
 		switch(fieldType) {
 			case FIELD_8_STATICTEXT:
@@ -198,4 +200,4 @@ class FieldsEvents extends FormFull {
 	//_insertNewHandlersHere_
 }
 
-export {FieldsEvents};
+export { FieldsEvents };

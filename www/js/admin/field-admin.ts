@@ -1,13 +1,17 @@
-import {R} from "../r.ts";
-import {Component} from "react";
-import {getNodeData, keepInWindow, L, loactionToHash, popup, renderIcon, sp} from "../utils.js";
-import {admin_editSource} from "./admin-event-editor.js";
-import {admin} from "./admin-utils.js";
+import { R } from "../r";
+import { Component } from "react";
+import { getNodeData, keepInWindow, L, locationToHash, ON_FIELD_CHANGE, popup, renderIcon, sp } from "../utils";
+import { admin_editSource } from "./admin-event-editor";
+import { admin } from "./admin-utils";
+import { FieldDesc, NodeDesc } from "../bs-utils.js";
 
 var showedFieldId;
 
 
-class FieldAdmin extends Component {
+class FieldAdmin extends Component<any, any> {
+
+	private timeout: NodeJS.Timeout;
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -48,8 +52,8 @@ class FieldAdmin extends Component {
 
 	render() {
 
-		var field = this.props.field;
-		var node = field.node;
+		var field: FieldDesc = this.props.field;
+		var node: NodeDesc = field.node;
 		var form = this.props.form;
 		var body;
 		var border;
@@ -86,7 +90,7 @@ class FieldAdmin extends Component {
 				}
 			},
 				L('FLD_SETTINGS'),
-				R.b({className: "admin-form-header"},
+				R.b({ className: "admin-form-header" },
 					field.fieldName
 				),
 				R.div(null,
@@ -99,7 +103,7 @@ class FieldAdmin extends Component {
 						className: 'clickable toolbtn admin-form-btn' + border,
 						onClick: () => {
 
-							admin_editSource('onchange', node, field, form);
+							admin_editSource(ON_FIELD_CHANGE, node, field);
 
 						},
 						title: "Edit client side script which execute on field value change."
@@ -135,7 +139,7 @@ class FieldAdmin extends Component {
 						onClick: () => {
 
 							getNodeData(6, field.id).then((data) => {
-								popup(loactionToHash(6, 'new', {
+								popup(locationToHash(6, 'new', {
 									prior: data.prior,
 									node_fields_linker: {
 										id: node.id,
@@ -150,7 +154,7 @@ class FieldAdmin extends Component {
 					),
 					R.button({
 						onClick: () => {
-							popup(loactionToHash(6, field.id, undefined, true), 900, true);
+							popup(locationToHash(6, field.id, undefined, true), 900, true);
 						},
 						className: 'clickable toolbtn admin-form-btn',
 						title: "Edit field properties"
@@ -195,4 +199,4 @@ class FieldAdmin extends Component {
 	}
 }
 
-export {FieldAdmin};
+export { FieldAdmin };

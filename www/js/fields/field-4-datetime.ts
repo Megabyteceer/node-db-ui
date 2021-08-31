@@ -1,19 +1,27 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import {FIELD_4_DATETIME} from "../bs-utils";
-import {R} from "../r.ts";
+import { FIELD_4_DATETIME } from "../bs-utils";
+import { R } from "../r";
 import moment from "moment";
-import {innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDatetime, toReadableTime} from "../utils.js";
-import {registerFieldClass} from "../utils.js";
-import {fieldMixins} from "./field-mixins.js";
+import { innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDatetime, toReadableTime } from "../utils";
+import { registerFieldClass } from "../utils";
+import { fieldMixins, FieldState, FiledProps, RefToInput } from "./field-mixins";
 
 function isSameDay(val, d) {
 	if(!d || !val) return false;
 	return d.date() === val.date() && d.month() === val.month() && d.year() === val.year();
 };
 
-class dateFieldMixins extends fieldMixins {
+interface DatetimeFieldState extends FieldState {
+	minDate?: moment.Moment;
+	maxDate?: moment.Moment;
+	allowedDays?: moment.Moment[];
+}
+
+class dateFieldMixins extends fieldMixins<FiledProps, DatetimeFieldState> {
+
+	ReactDatetimeClass: typeof import('react-datetime');
 
 	constructor(props) {
 		super(props);
@@ -43,10 +51,7 @@ class dateFieldMixins extends fieldMixins {
 			inputValue: toReadableDate(val),
 			selectedDate: val,
 		}
-		if(val) {
-			props.viewDate = val.clone().startOf("day");
 
-		}
 		this.refToInput.setState(props);
 		// @ts-ignore
 		if(this.timeRef) {
@@ -101,7 +106,7 @@ class dateFieldMixins extends fieldMixins {
 		}
 	}
 
-	validateDate(val, doFix) {
+	validateDate(val, doFix?: boolean) {
 		if(this.state.allowedDays) {
 			var isValid = this.state.allowedDays.some((d) => {
 				return isSameDay(val, d);
@@ -159,6 +164,7 @@ class dateFieldMixins extends fieldMixins {
 }
 
 registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins {
+	timeRef: RefToInput;
 
 	static decodeValue(val) {
 		if(val) {

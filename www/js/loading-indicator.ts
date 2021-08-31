@@ -1,19 +1,20 @@
 
 
-import {Component} from "react";
-import {R} from "./r.ts";
-import {isLitePage, renderIcon} from "./utils.js";
+import { Component } from "react";
+import { R } from "./r";
+import { isLitePage, renderIcon } from "./utils";
 
-class LoadingIndicator extends Component {
+class LoadingIndicator extends Component<any, any> {
+	static instance: LoadingIndicator;
 
 	constructor(props) {
 		super(props);
-		this.state = {showCount: 0};
+		this.state = { showCount: 0 };
 		LoadingIndicator.instance = this;
 	}
 
 	hide() {
-		this.setState({showCount: Math.max(0, this.state.showCount - 1)});
+		this.setState({ showCount: Math.max(0, this.state.showCount - 1) });
 	}
 
 	show() {
@@ -28,9 +29,9 @@ class LoadingIndicator extends Component {
 	render() {
 		let active = this.state.showCount > 0;
 
-		return R.div({className: active ? 'back-drop' : null},
-			R.div({className: active ? "loading-spinner-container" : "loading-spinner-container-inactive"},
-				active ? R.div({className: "loading-spinner"},
+		return R.div({ className: active ? 'back-drop' : null },
+			R.div({ className: active ? "loading-spinner-container" : "loading-spinner-container-inactive" },
+				active ? R.div({ className: "loading-spinner" },
 					renderIcon('cog fa-spin')
 				) : undefined
 			)
@@ -41,4 +42,4 @@ class LoadingIndicator extends Component {
 /** @type LoadingIndicator */
 LoadingIndicator.instance = null;
 
-export {LoadingIndicator};
+export { LoadingIndicator };

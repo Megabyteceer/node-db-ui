@@ -1,8 +1,5 @@
 import React from "react";
 
-interface Component {
-
-}
 
 interface ComponentProps {
 	className?: string;
@@ -11,35 +8,35 @@ interface ComponentProps {
 }
 
 class R {
-	div: (props: ComponentProps | null, ...children) => Component;
-	form: (props: ComponentProps | null, ...children) => Component;
-	span: (props: ComponentProps | null, ...children) => Component;
-	p: (props: ComponentProps | null, ...children) => Component;
-	img: (props: ComponentProps | null, ...children) => Component;
-	button: (props: ComponentProps | null, ...children) => Component;
-	input: (props: ComponentProps | null, ...children) => Component;
-	label: (props: ComponentProps | null, ...children) => Component;
-	b: (props: ComponentProps | null, ...children) => Component;
-	a: (props: ComponentProps | null, ...children) => Component;
-	br: (props: ComponentProps | null, ...children) => Component;
-	hr: (props: ComponentProps | null, ...children) => Component;
-	svg: (props: ComponentProps | null, ...children) => Component;
-	td: (props: ComponentProps | null, ...children) => Component;
-	tr: (props: ComponentProps | null, ...children) => Component;
-	th: (props: ComponentProps | null, ...children) => Component;
-	tbody: (props: ComponentProps | null, ...children) => Component;
-	thead: (props: ComponentProps | null, ...children) => Component;
-	table: (props: ComponentProps | null, ...children) => Component;
-	polyline: (props: ComponentProps | null, ...children) => Component;
-	textarea: (props: ComponentProps | null, ...children) => Component;
-	iframe: (props: ComponentProps | null, ...children) => Component;
-	h2: (props: ComponentProps | null, ...children) => Component;
-	h3: (props: ComponentProps | null, ...children) => Component;
-	h4: (props: ComponentProps | null, ...children) => Component;
-	h5: (props: ComponentProps | null, ...children) => Component;
+	static div: (props?: ComponentProps, ...children) => React.Component;
+	static form: (props?: ComponentProps, ...children) => React.Component;
+	static span: (props?: ComponentProps, ...children) => React.Component;
+	static p: (props?: ComponentProps, ...children) => React.Component;
+	static img: (props?: ComponentProps, ...children) => React.Component;
+	static button: (props?: ComponentProps, ...children) => React.Component;
+	static input: (props?: ComponentProps, ...children) => React.Component;
+	static label: (props?: ComponentProps, ...children) => React.Component;
+	static b: (props?: ComponentProps, ...children) => React.Component;
+	static a: (props?: ComponentProps, ...children) => React.Component;
+	static br: (props?: ComponentProps, ...children) => React.Component;
+	static hr: (props?: ComponentProps, ...children) => React.Component;
+	static svg: (props?: ComponentProps, ...children) => React.Component;
+	static td: (props?: ComponentProps, ...children) => React.Component;
+	static tr: (props?: ComponentProps, ...children) => React.Component;
+	static th: (props?: ComponentProps, ...children) => React.Component;
+	static tbody: (props?: ComponentProps, ...children) => React.Component;
+	static thead: (props?: ComponentProps, ...children) => React.Component;
+	static table: (props?: ComponentProps, ...children) => React.Component;
+	static polyline: (props?: ComponentProps, ...children) => React.Component;
+	static textarea: (props?: ComponentProps, ...children) => React.Component;
+	static iframe: (props?: ComponentProps, ...children) => React.Component;
+	static h2: (props?: ComponentProps, ...children) => React.Component;
+	static h3: (props?: ComponentProps, ...children) => React.Component;
+	static h4: (props?: ComponentProps, ...children) => React.Component;
+	static h5: (props?: ComponentProps, ...children) => React.Component;
 }
 
-for (let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'label',
+for(let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'label',
 	'b', 'a', 'br', 'hr', 'svg', 'td', 'tr', 'th', 'tbody', 'thead', 'table', 'polyline',
 	'textarea', 'iframe', 'h2', 'h3', 'h4', 'h5']) {
 	R[factoryType] = (...theArgs) => {
@@ -47,4 +44,4 @@ for (let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', '
 	};
 }
 
-export { R };
+export { R, ComponentProps };

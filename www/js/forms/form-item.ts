@@ -1,9 +1,9 @@
-import {R} from "../r.ts";
+import { ComponentProps, R } from "../r";
 import React from "react";
-import {FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1} from "../bs-utils";
-import {FieldWrap} from "../fields/field-wrap.js";
-import {deleteRecord, draftRecord, L, loactionToHash, publishRecord, renderIcon, sp} from "../utils.js";
-import {BaseForm} from "./form-mixins.js";
+import { FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, Filters, NodeDesc, RecordData } from "../bs-utils";
+import { FieldWrap } from "../fields/field-wrap";
+import { deleteRecord, draftRecord, L, locationToHash, publishRecord, renderIcon, sp } from "../utils";
+import { BaseForm } from "./form-mixins";
 
 const publishClick = (draft, node, data) => {
 	if(draft) {
@@ -13,7 +13,7 @@ const publishClick = (draft, node, data) => {
 	}
 }
 
-const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFilters) => {
+const renderItemsButtons = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormItem, editButtonFilters?: Filters) => {
 	if(formItem && formItem.props.isLookup) {
 		if(data.hasOwnProperty('isE')) {
 
@@ -42,47 +42,46 @@ const renderItemsButtons = (node, data, refreshFunction, formItem, editButtonFil
 		if(data.hasOwnProperty('isP') && (!formItem || !formItem.props.disableDrafting)) {
 			if(data.status === 1) {
 				buttons.push(
-					R.button({key: 1, className: 'clickable toolbtn unpublish-btn', title: L('UNPUBLISH'), onClick: () => {publishClick(true, node, data).then(refreshFunction)}},
+					R.button({ key: 1, className: 'clickable toolbtn unpublish-btn', title: L('UNPUBLISH'), onClick: () => { publishClick(true, node, data).then(refreshFunction) } },
 						renderIcon('eye')
 					)
 				)
 			} else {
 				buttons.push(
-					R.button({key: 1, className: 'clickable toolbtn publish-btn', title: L('PUBLISH'), onClick: () => {publishClick(false, node, data).then(refreshFunction)}},
+					R.button({ key: 1, className: 'clickable toolbtn publish-btn', title: L('PUBLISH'), onClick: () => { publishClick(false, node, data).then(refreshFunction) } },
 						renderIcon('eye-slash')
 					)
 				)
 			}
 		}
-		if(editButtonFilters != 'noed') {
-			if(data.hasOwnProperty('isE')) {
-				if(!formItem || !formItem.props.list || !formItem.props.list.state.noEditButton) {
-					buttons.push(
-						R.a({
-							key: 2, href: loactionToHash(node.id, data.id, editButtonFilters, true), onClick: (e) => {
-								if(formItem && formItem.props.parentForm) {
-									sp(e);
-									formItem.props.parentForm.toggleCreateDialogue(data.id)
-								}
-							}
-						},
-							R.button({className: 'clickable toolbtn edit-btn', title: L('EDIT', itemName)},
-								renderIcon('pencil')
-							)
-						)
-					)
-				}
 
-			} else if(!formItem || !formItem.props.list || !(formItem.props.list.state.noPreviewButton || formItem.props.list.props.noPreviewButton)) {
+		if(data.hasOwnProperty('isE')) {
+			if(!formItem || !formItem.props.list || !formItem.props.list.state.noEditButton) {
 				buttons.push(
-					R.a({key: 2, href: loactionToHash(node.id, data.id, undefined)},
-						R.button({className: 'clickable toolbtn view-btn', title: L('DETAILS') + itemName},
-							renderIcon('search')
+					R.a({
+						key: 2, href: locationToHash(node.id, data.id, editButtonFilters, true), onClick: (e) => {
+							if(formItem && formItem.props.parentForm) {
+								sp(e);
+								formItem.props.parentForm.toggleCreateDialogue(data.id)
+							}
+						}
+					},
+						R.button({ className: 'clickable toolbtn edit-btn', title: L('EDIT', itemName) },
+							renderIcon('pencil')
 						)
 					)
 				)
 			}
+		} else if(!formItem || !formItem.props.list || !(formItem.props.list.state.noPreviewButton || formItem.props.list.props.noPreviewButton)) {
+			buttons.push(
+				R.a({ key: 2, href: locationToHash(node.id, data.id) },
+					R.button({ className: 'clickable toolbtn view-btn', title: L('DETAILS') + itemName },
+						renderIcon('search')
+					)
+				)
+			)
 		}
+
 		if(data.hasOwnProperty('isD')) {
 			buttons.push(
 				R.button({
@@ -132,15 +131,15 @@ class FormItem extends BaseForm {
 				}
 
 				fields.push(
-					R.td({key: field.id, className},
-						React.createElement(FieldWrap, {key: k, field, initialValue: data[field.fieldName], form: this, isCompact: true, isTable: true})
+					R.td({ key: field.id, className },
+						React.createElement(FieldWrap, { key: k, field, initialValue: data[field.fieldName], form: this, isCompact: true, isTable: true })
 					)
 				);
 			}
 		}
 
 		/** @type any */
-		var itemProps = {};
+		var itemProps: ComponentProps = {};
 		itemProps.className = 'list-item list-item-id-' + data.id;
 		if(this.props.node.draftable && (data.status !== 1)) {
 			itemProps.className += ' list-item-draft';
@@ -149,7 +148,7 @@ class FormItem extends BaseForm {
 		if(this.props.isLookup) {
 			itemProps.title = L('SELECT');
 			itemProps.className += ' clickable';
-			itemProps.onClick = () => {this.props.parentForm.valueChoosed(data)};
+			itemProps.onClick = () => { this.props.parentForm.valueChoosed(data) };
 		} else {
 			if(this.props.onClick) {
 				itemProps.className = 'clickable';
@@ -166,7 +165,7 @@ class FormItem extends BaseForm {
 		if(this.props.additionalButtons) {
 			additionalButtons = this.props.additionalButtons(this.props.node, data, this.props.list.refreshData, this);
 		}
-		fields.push(R.td({key: 'b', className: 'form-item-row form-item-row-buttons'}, buttons, additionalButtons));
+		fields.push(R.td({ key: 'b', className: 'form-item-row form-item-row-buttons' }, buttons, additionalButtons));
 
 		return R.tr(itemProps,
 			fields
@@ -174,4 +173,4 @@ class FormItem extends BaseForm {
 	}
 }
 
-export {renderItemsButtons, FormItem};
+export { renderItemsButtons, FormItem };

@@ -1,14 +1,14 @@
 
-import {FieldWrap} from "../fields/field-wrap.js";
-import {backupCreationData, consoleLog, deleteRecord, getBackupData, goBack, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord} from "../utils.js";
-import {FormTab} from "./form-tab.js";
-import {eventProcessingMixins} from "./event-processing-mixins.js";
-import {NodeAdmin} from "../admin/node-admin.js";
-import {LoadingIndicator} from "../loading-indicator.js";
-import {R} from "../r.ts";
-import {FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_5_BOOL, FIELD_7_Nto1, PREVS_PUBLISH} from "../bs-utils";
+import { FieldWrap } from "../fields/field-wrap";
+import { backupCreationData, consoleLog, deleteRecord, getBackupData, goBack, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord } from "../utils";
+import { FormTab } from "./form-tab";
+import { eventProcessingMixins } from "./event-processing-mixins";
+import { NodeAdmin } from "../admin/node-admin";
+import { LoadingIndicator } from "../loading-indicator";
+import { R } from "../r";
+import { FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_5_BOOL, FIELD_7_Nto1, PREVS_PUBLISH, RecId, RecordData } from "../bs-utils";
 import React from "react";
-import {iAdmin} from "../user.js";
+import { iAdmin } from "../user";
 
 var backupCallback;
 
@@ -34,6 +34,7 @@ async function callForEachField(fieldRefs, data, functionName) {
 }
 
 class FormFull extends eventProcessingMixins {
+
 	constructor(props) {
 		super(props);
 		this.currentData = Object.assign({}, props.filters, props.initialData);
@@ -57,16 +58,16 @@ class FormFull extends eventProcessingMixins {
 	}
 
 	componentDidUpdate() {
-		if(this.needCallOnload) {
+		if(this._isNeedCallOnload) {
 			this.recoveryBackupIfNeed();
 			this.onShow();
-			delete (this.needCallOnload);
+			this._isNeedCallOnload = false;
 		}
 	}
 
 	recoveryBackupIfNeed() {
 		if(!this.currentData.id && !this.props.inlineEditable) {
-			var backup = getBackupData(this.props.node.id, this.props.backupPrefix);
+			var backup = getBackupData(this.props.node.id);
 			if(backup) {
 				this.currentData = Object.assign(backup, this.filters);
 				this.resendDataToFields();
@@ -87,12 +88,12 @@ class FormFull extends eventProcessingMixins {
 	backupCurrentDataIfNeed() {
 		if(!this.currentData.id && !this.props.inlineEditable) {
 			this.prepareToBackup();
-			backupCreationData(this.props.node.id, this.currentData, this.props.backupPrefix);
+			backupCreationData(this.props.node.id, this.currentData);
 		}
 	}
 
 	deteleBackup() {
-		removeBackup(this.props.node.id, this.props.backupPrefix);
+		removeBackup(this.props.node.id);
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
@@ -102,7 +103,7 @@ class FormFull extends eventProcessingMixins {
 
 			this.backupCurrentDataIfNeed();
 
-			this.needCallOnload = true;
+			this._isNeedCallOnload = true;
 			this.currentData = Object.assign({}, nextProps.filters, nextProps.initialData);
 			this.resendDataToFields();
 		}
@@ -138,11 +139,10 @@ class FormFull extends eventProcessingMixins {
 	}
 
 	async validate() {
+		this.formIsValid = true;
 		if(await this.onSave()) {
 			throw false;
 		}
-
-		var formIsValid = true;
 
 		for(let k in this.fieldsRefs) {
 			var fieldRef = this.fieldsRefs[k];
@@ -153,19 +153,23 @@ class FormFull extends eventProcessingMixins {
 			}
 
 			if(field.requirement && fieldRef.isEmpty()) {
-				this.fieldAlert(field.fieldName, L('REQUIRED_FLD'), false, formIsValid);
-				formIsValid = false;
+				this.fieldAlert(field.fieldName, L('REQUIRED_FLD'), false, this.formIsValid);
+				this.formIsValid = false;
 			} else {
-				this.fieldAlert(field.fieldName, '');
+				this.fieldAlert(field.fieldName);
 				let isValid = await this.checkUniquValue(field, (!fieldRef.isEmpty()) && this.currentData[field.fieldName]);
-				let isValid2 = await fieldRef.checkValidityBeforeSave(formIsValid);
+				let isValid2 = await fieldRef.checkValidityBeforeSave(this.formIsValid);
 				if(!isValid || !isValid2) {
-					formIsValid = false;
+					this.formIsValid = false;
 				}
 			}
 		}
-		if(!formIsValid) {
+		if(!this.formIsValid) {
+			/// #if DEBUG
+			/*
+			/// #endif
 			throw false;
+			//*/
 		}
 	}
 	saveClick(isDraft) {
@@ -188,7 +192,7 @@ class FormFull extends eventProcessingMixins {
 	async saveClickInner(isDraft) {
 
 		this.forceBouncingTimeout();
-		var data = {};
+		var data: RecordData = {};
 
 		if(isDraft !== 'keepStatus') {
 			if(this.props.initialData.isP || !this.props.initialData.id) {
@@ -205,6 +209,10 @@ class FormFull extends eventProcessingMixins {
 		}
 
 		await this.validate();
+
+		if(!this.formIsValid) {
+			return;
+		}
 
 		for(var k in this.fieldsRefs) {
 			var fieldRef = this.fieldsRefs[k];
@@ -299,7 +307,7 @@ class FormFull extends eventProcessingMixins {
 	render() {
 		var node = this.props.node;
 		if(!node) {
-			return R.div({className: 'field-lookup-loading-icon-container'},
+			return R.div({ className: 'field-lookup-loading-icon-container' },
 				renderIcon('cog fa-spin fa-2x')
 			);
 		}
@@ -367,7 +375,7 @@ class FormFull extends eventProcessingMixins {
 						parentCompactAreaName: currentCompactAreaName,
 						isCompact: this.props.isCompact || (currentCompactAreaCounter > 0),
 						hidden: (this.hiddenFields.hasOwnProperty(field.fieldName) || (forcedValues.hasOwnProperty(field.fieldName))),
-						fieldDisabled: this.disabledFields.hasOwnProperty(field.fieldName) || forcedValues.hasOwnProperty(field.fieldName)
+						fieldDisabled: this.isFieldDisabled(field.fieldName) || forcedValues.hasOwnProperty(field.fieldName)
 					});
 
 
@@ -448,40 +456,40 @@ class FormFull extends eventProcessingMixins {
 
 			if(this.props.editable) {
 				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.prevs & PREVS_PUBLISH)) {
-					saveButton = R.button({className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('SAVE')}, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
+					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('SAVE') }, this.isSlave() ? renderIcon('check') : renderIcon('floppy-o'), this.isSlave() ? '' : L('SAVE'));
 				} else {
 					if(data.status === 1) {
-						draftButton = R.button({className: 'clickable default-button', onClick: () => {this.saveClick(true)}, title: L('UNPUBLISH')}, L('UNPUBLISH'));
-						saveButton = R.button({className: 'clickable success-button save-btn', onClick: this.saveClick}, L('SAVE'));
+						draftButton = R.button({ className: 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
+						saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick }, L('SAVE'));
 					} else {
-						draftButton = R.button({className: 'clickable default-button', onClick: () => {this.saveClick(true)}, title: L('SAVE_TEMPLATE')}, L('SAVE_TEMPLATE'));
-						saveButton = R.button({className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('PUBLISH')}, L('PUBLISH'));
+						draftButton = R.button({ className: 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('SAVE_TEMPLATE') }, L('SAVE_TEMPLATE'));
+						saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('PUBLISH') }, L('PUBLISH'));
 					}
 				}
 			}
 
 			if(iAdmin()) {
-				nodeAdmin = React.createElement(NodeAdmin, {form: this, x: 320, y: -40});
+				nodeAdmin = React.createElement(NodeAdmin, { form: this, x: 320, y: -40 });
 			}
 
 
 			if(!this.props.isCompact) {
 				let headerContent = this.header || this.state.header || R.span(null, node.icon ? renderIcon(node.icon) : undefined, node.singleName);
 
-				header = R.h4({className: "form-header"}, headerContent);
+				header = R.h4({ className: "form-header" }, headerContent);
 			}
 
 			if(this.props.editable) {
-				closeButton = R.button({className: 'clickable default-button', onClick: this.cancelClick, title: L('CANCEL')}, renderIcon('caret-left'), this.isSlave() ? '' : L('CANCEL'));
+				closeButton = R.button({ className: 'clickable default-button', onClick: this.cancelClick, title: L('CANCEL') }, renderIcon('caret-left'), this.isSlave() ? '' : L('CANCEL'));
 			} else {
-				closeButton = R.button({className: 'clickable default-button', onClick: this.cancelClick}, renderIcon('caret-left'), this.isSlave() ? '' : L('BACK'));
+				closeButton = R.button({ className: 'clickable default-button', onClick: this.cancelClick }, renderIcon('caret-left'), this.isSlave() ? '' : L('BACK'));
 			}
 		}
-		return R.div({className},
+		return R.div({ className },
 			nodeAdmin,
 			header,
 			tabs || fields,
-			R.div({className: (this.state.footerHidden || this.props.inlineEditable) ? 'form-footer hidden' : 'form-footer'},
+			R.div({ className: (this.state.footerHidden || this.props.inlineEditable) ? 'form-footer hidden' : 'form-footer' },
 				deleteButton,
 				draftButton,
 				saveButton,
@@ -491,4 +499,4 @@ class FormFull extends eventProcessingMixins {
 	}
 }
 
-export {FormFull};
+export { FormFull };

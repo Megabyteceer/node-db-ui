@@ -1,7 +1,7 @@
 // @ts-nocheck
-import {Component} from "react";
-import {R} from "../r.ts";
-import {renderIcon} from "../utils.js";
+import { Component } from "react";
+import { R } from "../r";
+import { renderIcon } from "../utils";
 
 var chartLoaded = false;
 var all = [];
@@ -28,7 +28,7 @@ var init = () => {
 }
 init();
 
-class GoogleChart extends Component {
+class GoogleChart extends Component<any, any> {
 
 	constructor(props) {
 		super(props);

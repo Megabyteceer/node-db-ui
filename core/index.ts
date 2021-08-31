@@ -1,13 +1,13 @@
 
 import { createServer } from 'http';
 import api from './api';
-import { startSession, authorizeUserByID, finishSession } from './auth';
+import { startSession, authorizeUserByID, finishSession, isUserHaveRole } from './auth';
 import { initNodesData, ADMIN_USER_SESSION, GUEST_USER_SESSION } from './desc-node';
 import { performance } from 'perf_hooks';
 import { getBoundary, parse } from 'parse-multipart-data';
 import './locale';
 import { mysqlDebug } from "./mysql-connection";
-import { GUEST_ROLE_ID, assert, ADMIN_ROLE_ID, isUserHaveRole } from "../www/js/bs-utils";
+import { GUEST_ROLE_ID, assert, ADMIN_ROLE_ID } from "../www/js/bs-utils";
 
 const server = createServer();
 

@@ -1,7 +1,7 @@
-import {FIELD_2_INT} from "../bs-utils";
-import {R} from "../r.ts";
-import {registerFieldClass} from "../utils.js";
-import {fieldMixins} from "./field-mixins.js";
+import { FIELD_2_INT } from "../bs-utils";
+import { R } from "../r";
+import { registerFieldClass } from "../utils";
+import { fieldMixins } from "./field-mixins";
 
 registerFieldClass(FIELD_2_INT, class NumericField extends fieldMixins {
 
@@ -37,7 +37,7 @@ registerFieldClass(FIELD_2_INT, class NumericField extends fieldMixins {
 				ref: this.refGetter,
 				onChange: () => {
 					let value = parseInt(this.refToInput.value.substr(0, field.maxlen));
-					this.setState({value});
+					this.setState({ value });
 					this.props.wrapper.valueListener(value, true, this);
 				}
 			};

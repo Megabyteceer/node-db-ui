@@ -1,14 +1,18 @@
-import {R} from "../r.ts";
-import React, {Component} from "react";
-import {getNode, getNodeData, keepInWindow, L, loactionToHash, popup, renderIcon, sp} from "../utils.js";
-import {admin_editSource} from "./admin-event-editor.js";
-import {admin} from "./admin-utils.js";
-import {FieldAdmin} from "./field-admin.js";
-import {ON_FORM_LOAD, ON_FORM_SAVE} from "../forms/event-processing-mixins.js";
+import { R } from "../r";
+import React, { Component } from "react";
+import { getNode, getNodeData, keepInWindow, L, locationToHash, ON_FORM_LOAD, ON_FORM_SAVE, popup, renderIcon, sp } from "../utils";
+import { admin_editSource } from "./admin-event-editor";
+import { admin } from "./admin-utils";
+import { FieldAdmin } from "./field-admin";
+import { NodeDesc } from "../bs-utils.js";
 
 var showedNodeId;
 
-class NodeAdmin extends Component {
+class NodeAdmin extends Component<any, any> {
+
+	private timeout: NodeJS.Timeout;
+	node: NodeDesc;
+
 	constructor(props) {
 		super(props);
 
@@ -163,7 +167,7 @@ class NodeAdmin extends Component {
 					R.button({
 						className: 'clickable toolbtn admin-form-btn' + borderOnLoad,
 						onClick: () => {
-							admin_editSource('onload', node, undefined, form);
+							admin_editSource('onload', node, undefined);
 						},
 						title: "Edit client side script which execute on form open."
 					},
@@ -172,7 +176,7 @@ class NodeAdmin extends Component {
 					R.button({
 						className: 'clickable toolbtn admin-form-btn' + borderOnSave,
 						onClick: () => {
-							admin_editSource('onsave', node, undefined, form);
+							admin_editSource('onsave', node, undefined);
 						},
 						title: "Edit client side script which execute on form save."
 					},
@@ -182,7 +186,7 @@ class NodeAdmin extends Component {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('FLD_ADD'),
 						onClick: () => {
-							popup(loactionToHash(6, 'new', {
+							popup(locationToHash(6, 'new', {
 								node_fields_linker: {
 									id: node.id,
 									name: node.singleName
@@ -251,6 +255,7 @@ class NodeAdmin extends Component {
 							getNodeData(4, undefined, {
 								_nodesID: item.parent
 							}).then((data) => {
+								debugger;
 								for(var k in data.items) {
 									if(data.items[k].id === item.id) {
 										admin.exchangeNodes(data.items[parseInt(k)], data.items[parseInt(k) - 1]);
@@ -279,7 +284,7 @@ class NodeAdmin extends Component {
 				}
 			},
 				L('NODE_SETTINGS'),
-				R.b({className: "admin-form-header"},
+				R.b({ className: "admin-form-header" },
 					node.tableName
 				),
 				R.span(null,
@@ -293,7 +298,7 @@ class NodeAdmin extends Component {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_NODE'),
 						onClick: () => {
-							popup(loactionToHash(4, nodeId, undefined, true), 900, true);
+							popup(locationToHash(4, nodeId, undefined, true), 900, true);
 
 						}
 					},
@@ -303,7 +308,7 @@ class NodeAdmin extends Component {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_ACCESS'),
 						onClick: () => {
-							popup(loactionToHash(1, nodeId, undefined, true), 1100);
+							popup(locationToHash(1, nodeId, undefined, true), 1100);
 						}
 					},
 						renderIcon('user')
@@ -345,8 +350,8 @@ class NodeAdmin extends Component {
 }
 
 function createNodeForMenuItem(item) {
-	getNodeData(4, item.isDoc ? item.parent : item.id).then((data) => {
-		popup(loactionToHash(4, 'new', {
+	getNodeData(4, (item.isDoc ? item.parent : item.id) as number).then((data) => {
+		popup(locationToHash(4, 'new', {
 			prior: data.prior,
 			_nodesID: {
 				id: data.id,
@@ -356,4 +361,4 @@ function createNodeForMenuItem(item) {
 	});
 }
 
-export {createNodeForMenuItem, NodeAdmin};
+export { createNodeForMenuItem, NodeAdmin };

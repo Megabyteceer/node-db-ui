@@ -1,13 +1,15 @@
-import {FIELD_7_Nto1} from "../bs-utils";
-import {R} from "../r.ts";
+import { FIELD_7_Nto1, RecId, RecordData } from "../bs-utils";
+import { R } from "../r";
 import React from "react";
-import {FormFull} from "../forms/form-full.js";
-import {List} from "../forms/list.js";
-import {backupCreationData, getBackupData, getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp} from "../utils.js";
-import {registerFieldClass} from "../utils.js";
-import {fieldLookupMixins} from "./field-lookup-mixins.js";
+import { FormFull } from "../forms/form-full";
+import { List } from "../forms/list";
+import { backupCreationData, getBackupData, getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp } from "../utils";
+import { registerFieldClass } from "../utils";
+import { fieldLookupMixins } from "./field-lookup-mixins";
 
 registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
+	isEnterCreateThroughList: boolean;
+	private leaveTimout: NodeJS.Timeout;
 
 	constructor(props) {
 		super(props);
@@ -46,11 +48,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			if(!this.state.filters) {
 				this.state.filters = {};
 			}
-			for(var k in this.props.filters) {
-				if(this.props.filters.hasOwnProperty(k)) {
-					this.state.filters[k] = this.props.filters[k];
-				}
-			}
+			Object.assign(this.state.filters, this.props.filters);
 		}
 	}
 
@@ -80,7 +78,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 				this.toggleList();
 			}
 			if(!this.state.value || (this.state.value.id !== recordData.id) || (this.state.value.name !== recordData.name) || (this.state.value.icon !== recordData[this.props.field.icon])) {
-				var newVal = {
+				var newVal: any = {
 					id: recordData.id,
 					name: recordData.name
 				};
@@ -102,17 +100,12 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 		}
 	}
 
-	toggleCreateDialogue(itemIdToEdit, defaultCreationData, backupPrefix) {
+	toggleCreateDialogue(itemIdToEdit: RecId) {
 
-		if(defaultCreationData) {
-			var curBackup = getBackupData(this.props.field.nodeRef, backupPrefix);
-			backupCreationData(this.props.field.nodeRef, Object.assign(curBackup, defaultCreationData), backupPrefix);
-		}
 		this.clearLeaveTimeout();
 		let isOpened = this.state.creationOpened;
 		this.setState({
 			creationOpened: !isOpened,
-			backupPrefix: backupPrefix,
 			dataToEdit: undefined,
 			itemIdToEdit: itemIdToEdit
 		});
@@ -141,7 +134,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 
 	onMouseLeave() {
 		if(this.state.expanded && !this.state.creationOpened) {
-			this.leaveTimout = setTimeout(() => {this.toggleList();}, 400);
+			this.leaveTimout = setTimeout(() => { this.toggleList(); }, 400);
 		}
 	}
 
@@ -193,7 +186,6 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 							preventDeleteButton: true,
 							node: this.savedNode,
 							nodeId: field.nodeRef,
-							backupPrefix: this.state.backupPrefix,
 							initialData: this.state.dataToEdit || {},
 							isCompact: true,
 							parentForm: this,
@@ -252,7 +244,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 			} else {
 				valLabel = R.span({
 					className: 'field-lookup-value-label'
-				}, this.props.noBorder ? L('+ADD') : L('SELECT'))
+				}, this.props.isN2M ? L('+ADD') : L('SELECT'))
 			}
 
 			return R.div({
@@ -271,7 +263,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 						iconPic,
 						valLabel
 					),
-					R.span({className: 'field-lookup-right-block'},
+					R.span({ className: 'field-lookup-right-block' },
 						R.span({
 							className: 'field-lookup-caret'
 						},

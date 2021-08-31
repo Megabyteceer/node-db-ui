@@ -1,28 +1,30 @@
-import {R} from "../r.ts";
+import { R } from "../r";
 import React from "react";
-import {FormFull} from "../forms/form-full.js";
-import {List} from "../forms/list.js";
-import {backupCreationData, deleteRecord, getBackupData, getNodeData, L, renderIcon} from "../utils.js";
-import {registerFieldClass} from "../utils.js";
-import {fieldLookupMixins} from "./field-lookup-mixins.js";
-import {FIELD_15_1toN} from "../bs-utils";
+import { FormFull } from "../forms/form-full";
+import { List } from "../forms/list";
+import { deleteRecord, getNodeData, L, renderIcon } from "../utils";
+import { registerFieldClass } from "../utils";
+import { fieldLookupMixins } from "./field-lookup-mixins";
+import { FIELD_15_1toN } from "../bs-utils";
 
 
 // @ts-ignore
 registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixins {
 
+	inlineListRef: List;
+
 	constructor(props) {
 		super(props);
 		if(!props.form.props.initialData.id) {
-			this.savedData = {items: []};
+			this.savedData = { items: [] };
 		}
 		var filters = this.generateDefaultFiltersByProps(props);
-		this.state = {filters};
+		this.state = { filters };
 	}
 
 	setValue(val) {
 		if(this.state.inlineEditing) {
-			this.savedData = {items: val};
+			this.savedData = { items: val };
 			this.forceUpdate();
 		}
 	}
@@ -43,27 +45,23 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 
 	valueChoosed() {
 		this.saveNodeDataAndFilters(this.savedNode, undefined, this.savedFilters);
-		this.setState({creationOpened: false});
+		this.setState({ creationOpened: false });
 	}
 
-	toggleCreateDialogue(itemIdToEdit, defaultCreationData, backupPrefix) {
-		if(defaultCreationData) {
-			var curBackup = getBackupData(this.props.field.nodeRef, backupPrefix);
-			backupCreationData(this.props.field.nodeRef, Object.assign(curBackup, defaultCreationData), backupPrefix);
-		}
-		this.setState({creationOpened: !this.state.creationOpened, backupPrefix: backupPrefix, dataToEdit: undefined, itemIdToEdit: itemIdToEdit});
+	toggleCreateDialogue(itemIdToEdit) {
+		this.setState({ creationOpened: !this.state.creationOpened, dataToEdit: undefined, itemIdToEdit: itemIdToEdit });
 		if(typeof itemIdToEdit !== 'undefined') {
 			getNodeData(this.props.field.nodeRef, itemIdToEdit, undefined, true).then((data) => {
-				this.setState({dataToEdit: data, itemIdToEdit: undefined});
+				this.setState({ dataToEdit: data, itemIdToEdit: undefined });
 			});
 		}
 	}
 
 	inlineEditable() {
-		this.setState({inlineEditing: true});
+		this.setState({ inlineEditing: true });
 	}
 
-	async getMessageIfInvalid() {
+	async getMessageIfInvalid(): Promise<string | false> {
 		if(this.state.inlineEditing) {
 			let ret;
 			await Promise.all(this.inlineListRef.getSubforms().map((subForm) => {
@@ -93,7 +91,7 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 				} else {
 					var ln = field.fieldName + '_linker';
 					if(!initialData.hasOwnProperty(ln) || initialData[ln] === 'new') {
-						form.currentData[ln] = {id: this.props.form.currentData.id};
+						form.currentData[ln] = { id: this.props.form.currentData.id };
 					}
 					await form.saveForm();
 				}
@@ -112,17 +110,17 @@ registerFieldClass(FIELD_15_1toN, class Lookup1toNField extends fieldLookupMixin
 		var body;
 		if(this.state.creationOpened) {
 			if(this.state.itemIdToEdit) {
-				body = R.div({className: 'field-lookup-loading-icon-container'},
+				body = R.div({ className: 'field-lookup-loading-icon-container' },
 					renderIcon('cog fa-spin fa-2x')
 				);
 			} else {
-				body = React.createElement(FormFull, {node: this.savedNode, backupPrefix: this.state.backupPrefix, initialData: this.state.dataToEdit || {}, parentForm: this, isLookup: true, filters: this.state.filters, editable: true});
+				body = React.createElement(FormFull, { node: this.savedNode, initialData: this.state.dataToEdit || {}, parentForm: this, isLookup: true, filters: this.state.filters, editable: true });
 			}
 
 		} else {
 			var askToSaveParentBeforeCreation = !this.props.form.props.initialData.hasOwnProperty('id');
 			body = R.div(null,
-				React.createElement(List, {ref: (r) => {this.inlineListRef = r;}, hideControlls: this.state.hideControlls, noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton, disableDrafting: this.state.disableDrafting, additionalButtons: this.state.additionalButtons || this.props.additionalButtons, node: this.savedNode, omitHeader: this.state.creationOpened, initialData: this.savedData, preventCreateButton: this.state.preventCreateButton, askToSaveParentBeforeCreation, editable: this.state.inlineEditing, nodeId: field.nodeRef, parentForm: this, filters: this.savedFilters || this.state.filters})
+				React.createElement(List, { ref: (r) => { this.inlineListRef = r; }, hideControlls: this.state.hideControlls, noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton, disableDrafting: this.state.disableDrafting, additionalButtons: this.state.additionalButtons || this.props.additionalButtons, node: this.savedNode, omitHeader: this.state.creationOpened, initialData: this.savedData, preventCreateButton: this.state.preventCreateButton, askToSaveParentBeforeCreation, editable: this.state.inlineEditing, nodeId: field.nodeRef, parentForm: this, filters: this.savedFilters || this.state.filters })
 			);
 		}
 		return body;

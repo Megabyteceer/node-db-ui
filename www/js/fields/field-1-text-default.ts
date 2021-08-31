@@ -1,7 +1,7 @@
-import {FIELD_1_TEXT} from "../bs-utils";
-import {R} from "../r.ts";
-import {consoleDir, registerFieldClass} from "../utils.js";
-import {fieldMixins} from "./field-mixins.js";
+import { FIELD_1_TEXT } from "../bs-utils";
+import { R } from "../r";
+import { consoleDir, registerFieldClass } from "../utils";
+import { fieldMixins } from "./field-mixins";
 
 registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 

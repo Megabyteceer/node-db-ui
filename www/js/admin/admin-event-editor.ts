@@ -1,4 +1,4 @@
-import {getData, L} from "../utils.js";
+import { getData, L } from "../utils";
 
 function admin_editSource(handler, node, field) {
 	var nodeId, fieldId;

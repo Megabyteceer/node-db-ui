@@ -1,15 +1,16 @@
 ﻿
 
-import React, {Component} from "react";
-import {R} from "./r.ts";
-import {FormFull} from "./forms/form-full.js";
-import {List} from "./forms/list.js";
-import {LeftBar} from "./left-bar.js";
-import {consoleLog, isLitePage, loadJS, myAlert, renderIcon} from "./utils.js";
+import React, { Component } from "react";
+import { R } from "./r";
+import { FormFull } from "./forms/form-full";
+import { List } from "./forms/list";
+import { LeftBar } from "./left-bar";
+import { consoleLog, Filters, isLitePage, loadJS, myAlert, renderIcon } from "./utils";
+import { NodeDesc, RecId, RecordData } from "./bs-utils.js";
 
-class FormLoaderCog extends Component {
+class FormLoaderCog extends Component<any, any> {
 	render() {
-		return R.div({className: "fade-in loading-icon"},
+		return R.div({ className: "fade-in loading-icon" },
 			renderIcon('cog fa-spin fa-5x')
 		);
 	}
@@ -20,23 +21,26 @@ document.addEventListener('load', () => {
 	}
 });
 
-class Stage extends Component {
+class Stage extends Component<any, any> {
+
+	static instance: Stage;
+	filters: Filters;
 
 	componentDidMount() {
 		Stage.instance = this;
 	}
 
 	setCustomClass(className, props) {
-		this.setState({customClass: className, props: props});
+		this.setState({ customClass: className, props: props });
 	}
 
-	_setFormData(node, data, recId, filters, editable) {
+	_setFormData(node?: NodeDesc, data?: RecordData, recId?: RecId, filters?: Filters, editable?: boolean) {
 		consoleLog('set form data');
 		if(typeof (node) !== 'undefined') {
 			this.state = null;
 			setTimeout(() => {
 				this.filters = filters;
-				this.setState({node, data, recId, editable});
+				this.setState({ node, data, recId, editable });
 			});
 		} else {
 			this.state = null;
@@ -81,9 +85,9 @@ class Stage extends Component {
 			} else {
 				if(!this.state.node.staticLink) {
 					if(typeof (this.state.recId) !== 'undefined') {
-						body = React.createElement(FormFull, {node: this.state.node, initialData: this.state.data, filters: this.filters || {}, editable: this.state.editable});
+						body = React.createElement(FormFull, { node: this.state.node, initialData: this.state.data, filters: this.filters || {}, editable: this.state.editable });
 					} else {
-						body = React.createElement(List, {node: this.state.node, initialData: this.state.data, filters: this.filters || {}});
+						body = React.createElement(List, { node: this.state.node, initialData: this.state.data, filters: this.filters || {} });
 					}
 				} else {
 					if(this.state.node.staticLink === 'reactClass') {
@@ -104,7 +108,7 @@ class Stage extends Component {
 			body = React.createElement(FormLoaderCog);
 		}
 
-		return R.div({className: 'stage'},
+		return R.div({ className: 'stage' },
 			body
 		);
 	}
@@ -112,4 +116,4 @@ class Stage extends Component {
 /** @type Stage */
 Stage.instance = null;
 
-export {Stage, FormLoaderCog}
+export { Stage, FormLoaderCog }

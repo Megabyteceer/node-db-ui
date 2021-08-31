@@ -1,7 +1,7 @@
 import ENV from "../ENV";
 import { mysqlExec, mysqlInsertResult, mysqlRowResultSingle, mysqlRowsResult } from "./mysql-connection";
 import { getLangs, GUEST_USER_SESSION } from "./desc-node";
-import { throwError, GUEST_ROLE_ID, USER_ROLE_ID, assert, shouldBeAuthorized, UserLangEntry, UserRoles, UserSession } from "../www/js/bs-utils";
+import { throwError, GUEST_ROLE_ID, USER_ROLE_ID, assert, UserLangEntry, UserRoles, UserSession, TRoleId, ADMIN_ROLE_ID } from "../www/js/bs-utils";
 import { L } from "./locale";
 import { pbkdf2, randomBytes } from "crypto";
 
@@ -354,4 +354,30 @@ function mustBeUnset(obj, fieldName) {
 	}
 }
 
-export { UserSession, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultiLang, login, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode };
+const notificationOut = (userSession: UserSession, text: string) => {
+	if(!userSession || userSession.__temporaryServerSideSession) {
+		console.log(text);
+	} else {
+		if(!userSession.notifications) {
+			userSession.notifications = [text];
+		} else {
+			userSession.notifications.push(text);
+		}
+	}
+}
+
+const shouldBeAuthorized = (userSession: UserSession) => {
+	if(!userSession || userSession.__temporaryServerSideSession || isUserHaveRole(GUEST_ROLE_ID, userSession)) {
+		throwError("operation permitted for authorized user only");
+	}
+}
+
+const isAdmin = (userSession: UserSession) => {
+	return isUserHaveRole(ADMIN_ROLE_ID, userSession);
+}
+
+const isUserHaveRole = (roleId: TRoleId, userSession: UserSession) => {
+	return userSession && userSession.userRoles[roleId];
+}
+
+export { UserSession, notificationOut, shouldBeAuthorized, isAdmin, isUserHaveRole, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultiLang, login, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode };

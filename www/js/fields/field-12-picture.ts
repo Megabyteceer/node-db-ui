@@ -1,18 +1,20 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import {checkFileSize, idToImgURL, L, myAlert, renderIcon, serializeForm, submitData} from "../utils.js";
-import {registerFieldClass} from "../utils.js";
-import {fieldMixins} from "./field-mixins.js";
-import {Modal} from "../modal.js";
-import {Component} from "react";
-import {R} from "../r.ts";
-import {FIELD_12_PICTURE} from "../bs-utils";
+import { checkFileSize, idToImgURL, L, myAlert, renderIcon, serializeForm, submitData } from "../utils";
+import { registerFieldClass } from "../utils";
+import { fieldMixins, RefToInput } from "./field-mixins";
+import { Modal } from "../modal";
+import { Component } from "react";
+import { R } from "../r";
+import { FIELD_12_PICTURE } from "../bs-utils";
 
 registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
 
+	cropperBody: CropperFieldBody;
+
 	setValue(value) {
-		this.setState({value});
+		this.setState({ value });
 	}
 
 	isEmpty() {
@@ -33,14 +35,18 @@ registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
 		var imgUrl = idToImgURL(this.props.initialValue, this.props.field.fieldName);
 
 		if(this.props.isEdit) {
-			return React.createElement(CropperFieldBody, {field, ref: (r) => {this.cropperBody = r;}, parent: this, imageRenderer: this.props.form.imageRenderer, form: this.props.form, currentPicUrl: imgUrl, isCompact: this.props.isCompact});
+			return React.createElement(CropperFieldBody, { field, ref: (r) => { this.cropperBody = r; }, parent: this, form: this.props.form, currentPicUrl: imgUrl, isCompact: this.props.isCompact });
 		} else {
-			return R.img({src: imgUrl, className: "field-readonly-image"})
+			return R.img({ src: imgUrl, className: "field-readonly-image" })
 		}
 	}
 });
 
-class CropperFieldBody extends Component {
+
+class CropperFieldBody extends Component<any, any> {
+
+	references: { [key: string]: RefToInput };
+	cropper: any;
 
 	constructor(props) {
 		super(props);
@@ -135,7 +141,7 @@ class CropperFieldBody extends Component {
 			}
 			var reader = new FileReader();
 			reader.onload = () => {
-				_this.setState({waiting: 0, src: reader.result, cropResult: false});
+				_this.setState({ waiting: 0, src: reader.result, cropResult: false });
 
 				var selectedImage = new Image();
 				const cropperLoader = import('react-cropper');
@@ -159,10 +165,10 @@ class CropperFieldBody extends Component {
 								cropperW = 350 / h * w;
 							}
 
-							myAlert(R.div({className: 'image-copper-popup'},
+							myAlert(R.div({ className: 'image-copper-popup' },
 								React.createElement(ReactCropper, {
 									zoomable: false,
-									style: {margin: 'auto', height: cropperH, width: cropperW},
+									style: { margin: 'auto', height: cropperH, width: cropperW },
 									aspectRatio: w / h,
 									preview: '.image-copper-preview',
 									guides: false,
@@ -172,31 +178,31 @@ class CropperFieldBody extends Component {
 										this.cropper = ref;
 									}
 								}),
-								R.div({className: 'image-copper-controls'},
+								R.div({ className: 'image-copper-controls' },
 									R.button(
-										{className: 'clickable image-copper-crop-btn', onClick: this._cropImage},
+										{ className: 'clickable image-copper-crop-btn', onClick: this._cropImage },
 										renderIcon('check'),
 										L('APPLY')
 									),
 									R.button(
-										{className: 'clickable image-copper-cancel-btn', onClick: this._cancel},
+										{ className: 'clickable image-copper-cancel-btn', onClick: this._cancel },
 										renderIcon('times'),
 										L('CANCEL')
 									),
 									R.div(
-										{className: 'box', style: {margin: '30px auto', width: w, height: h}},
+										{ className: 'box', style: { margin: '30px auto', width: w, height: h } },
 										L('PREVIEW'),
-										R.div({className: 'image-copper-preview', style: {width: w, height: h}})
+										R.div({ className: 'image-copper-preview', style: { width: w, height: h } })
 									)
 								)
-							), 1, 0, 1);
+							), true, false, true);
 						}
 					});
 				};
 				// @ts-ignore
 				selectedImage.src = reader.result;
 			};
-			this.setState({waiting: 1});
+			this.setState({ waiting: 1 });
 			reader.readAsDataURL(files[0]);
 		}
 	}
@@ -219,7 +225,7 @@ class CropperFieldBody extends Component {
 
 		var clrBtn;
 		if(this.state.cropResult || this.state.src || this.props.currentPicUrl && this.props.currentPicUrl !== 'images/placeholder_' + field.fieldName + '.png') {
-			clrBtn = R.button({className: 'clickable toolbtn clear-btn', onClick: this.clear},
+			clrBtn = R.button({ className: 'clickable toolbtn clear-btn', onClick: this.clear },
 				renderIcon('times')
 			)
 		}
@@ -236,17 +242,14 @@ class CropperFieldBody extends Component {
 				if(this.state.cleared) {
 					imgSrc = idToImgURL(0, field.fieldName);
 				}
-				if(this.props.imageRenderer) {
-					preview = this.props.imageRenderer(imgSrc, this.props.form);
 
-				} else {
-					preview = R.img({
-						ref: (r) => {this.references.img = r;}, style: {borderRadius: '5px', width: w / 2, height: h / 2}, src: imgSrc, className: 'clickable', onClick: () => {
-							this.references.fileInput.value = null;
-							this.references.fileInput.click();
-						}
-					});
-				}
+				preview = R.img({
+					ref: (r) => { this.references.img = r; }, style: { borderRadius: '5px', width: w / 2, height: h / 2 }, src: imgSrc, className: 'clickable', onClick: () => {
+						this.references.fileInput.value = null;
+						this.references.fileInput.click();
+					}
+				});
+
 
 				select = R.div(null,
 					R.button({
@@ -262,22 +265,22 @@ class CropperFieldBody extends Component {
 			}
 		}
 
-		var form = R.form({ref: (r) => {this.references.form = r;}, encType: "multipart/form-data", className: 'hidden'},
-			R.input({name: "picture", ref: (r) => {this.references.fileInput = r;}, type: 'file', accept: ".jpg, .jpeg, .png, .gif", onChange: this._onChange}),
-			R.input({name: "MAX_FILE_SIZE", defaultValue: 3000000}),
-			R.input({name: "fid", defaultValue: field.id}),
-			R.input({name: "nid", defaultValue: field.node.id}),
-			R.input({name: "w", ref: (r) => {this.references.w = r;}}),
-			R.input({name: "h", ref: (r) => {this.references.h = r;}}),
-			R.input({name: "x", ref: (r) => {this.references.x = r;}}),
-			R.input({name: "y", ref: (r) => {this.references.y = r;}})
+		var form = R.form({ ref: (r) => { this.references.form = r; }, encType: "multipart/form-data", className: 'hidden' },
+			R.input({ name: "picture", ref: (r) => { this.references.fileInput = r; }, type: 'file', accept: ".jpg, .jpeg, .png, .gif", onChange: this._onChange }),
+			R.input({ name: "MAX_FILE_SIZE", defaultValue: 3000000 }),
+			R.input({ name: "fid", defaultValue: field.id }),
+			R.input({ name: "nid", defaultValue: field.node.id }),
+			R.input({ name: "w", ref: (r) => { this.references.w = r; } }),
+			R.input({ name: "h", ref: (r) => { this.references.h = r; } }),
+			R.input({ name: "x", ref: (r) => { this.references.x = r; } }),
+			R.input({ name: "y", ref: (r) => { this.references.y = r; } })
 		);
 
 		return R.div(null,
 			R.div(null,
 				preview,
 				body,
-				R.div({className: 'small-text'}, L('RECOMEND_SIZE', recW).replace('%', recH)),
+				R.div({ className: 'small-text' }, L('RECOMEND_SIZE', recW).replace('%', recH)),
 				form
 			),
 			select

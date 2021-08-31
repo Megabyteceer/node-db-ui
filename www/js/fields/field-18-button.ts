@@ -1,8 +1,8 @@
-import {FIELD_18_BUTTON} from "../bs-utils";
-import {R} from "../r.ts";
-import {renderIcon} from "../utils.js";
-import {registerFieldClass} from "../utils.js";
-import {fieldMixins} from "./field-mixins.js";
+import { FIELD_18_BUTTON } from "../bs-utils";
+import { R } from "../r";
+import { renderIcon } from "../utils";
+import { registerFieldClass } from "../utils";
+import { fieldMixins } from "./field-mixins";
 
 registerFieldClass(FIELD_18_BUTTON, class ButtonField extends fieldMixins {
 
@@ -28,7 +28,7 @@ registerFieldClass(FIELD_18_BUTTON, class ButtonField extends fieldMixins {
 			bIcon = renderIcon(field.icon);
 		}
 
-		return R.button({className: (this.props.disabled ? 'unclickable field-button' : 'clickable field-button'), onClick: this.onClick},
+		return R.button({ className: (this.props.disabled ? 'unclickable field-button' : 'clickable field-button'), onClick: this.onClick },
 			bIcon,
 			field.name
 		);

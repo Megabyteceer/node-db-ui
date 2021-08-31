@@ -1,14 +1,15 @@
-import {R} from "../r.ts";
-import {FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE} from "../bs-utils";
-import {FieldAdmin} from "../admin/field-admin.js";
-import {NodeAdmin} from "../admin/node-admin.js";
-import {LeftBar} from "../left-bar.js";
-import {consoleLog, createRecord, deleteRecord, getNode, getNodeData, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation} from "../utils.js";
-import {FormFull} from "./form-full.js";
-import {FormItem} from "./form-item.js";
-import {BaseForm} from "./form-mixins.js";
+import { R } from "../r";
+import { FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE } from "../bs-utils";
+import { FieldAdmin } from "../admin/field-admin";
+import { NodeAdmin } from "../admin/node-admin";
+import { LeftBar } from "../left-bar";
+import { consoleLog, createRecord, deleteRecord, getNode, getNodeData, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
+import { FormFull } from "./form-full";
+import { FormItem } from "./form-item";
+import { BaseForm } from "./form-mixins";
 import React from "react";
-import {iAdmin} from "../user.js";
+import { iAdmin } from "../user";
+import { RefToInput } from "../fields/field-mixins.js";
 
 const sortByOrder = (a, b) => {
 	return a.order - b.order;
@@ -29,7 +30,7 @@ function isPresentListRenderer(nodeId) {
 
 function createPageButton(self, page, isActive) {
 	if(isActive) {
-		return R.button({key: page, className: 'page-btn page-btn-active'},
+		return R.button({ key: page, className: 'page-btn page-btn-active' },
 			page + 1
 		);
 	}
@@ -43,6 +44,12 @@ function createPageButton(self, page, isActive) {
 }
 
 class List extends BaseForm {
+
+	private searchInput: RefToInput;
+	private subformsRefs: { [key: number]: FormFull };
+	private currentFechingNodeId: number;
+	private unmounted: boolean;
+	private searchTimeout: NodeJS.Timeout;
 
 	constructor(props) {
 		super(props);
@@ -63,7 +70,7 @@ class List extends BaseForm {
 		super.UNSAFE_componentWillReceiveProps(newProps);
 		consoleLog('LIST receive props');
 		this.filters = $.extend({}, newProps.filters);
-		this.setSearchInputValue(this.filters.s);
+		this.setSearchInputValue(this.filters.s as string);
 		this.state.node = newProps.node;
 		this.state.data = newProps.initialData;
 		this.onShow();
@@ -71,10 +78,10 @@ class List extends BaseForm {
 
 	onShow() {
 		if(!this.state.data) {
-			setTimeout(() => {this.refreshData();}, 1);
+			setTimeout(() => { this.refreshData(); }, 1);
 		} else if(!this.props.node) {
 			getNode(this.props.nodeId).then((node) => {
-				this.setState({node});
+				this.setState({ node });
 				if(this.props.parentForm) {
 					this.props.parentForm.savedNode = node;
 				}
@@ -123,13 +130,13 @@ class List extends BaseForm {
 				if(this.isSlave()) {
 					this.props.parentForm.saveNodeDataAndFilters(node, data, this.filters);
 				}
-				this.setState({data, node});
+				this.setState({ data, node });
 				this.scrollIfNeed();
 			} else {
 				if(this.isSlave()) {
 					this.props.parentForm.saveNodeDataAndFilters(this.props.node, data, this.filters);
 				}
-				this.setState({data});
+				this.setState({ data });
 				this.scrollIfNeed();
 			}
 
@@ -168,7 +175,7 @@ class List extends BaseForm {
 		this.clearSearchInterval();
 	}
 
-	setSearchInputValue(v) {
+	setSearchInputValue(v?: string) {
 		if(this.searchInput) {
 			if(!v) {
 				v = '';
@@ -194,7 +201,7 @@ class List extends BaseForm {
 		}
 	}
 
-	getSubforms(includeDeleted) {
+	getSubforms(includeDeleted?: boolean) {
 		var ret = [];
 		for(var k in this.subformsRefs) {
 			if(this.subformsRefs.hasOwnProperty(k)) {
@@ -225,8 +232,8 @@ class List extends BaseForm {
 					var item = data.items[i];
 					if(!item.__deleted_901d123f) {
 						lines.push(
-							R.div({key: UID(item), className: 'inline-editable-item'},
-								React.createElement(FormFull, {ref: this.subFormRef, inlineEditable: true, editable: true, isCompact: true, filters: filters, parentForm: this.props.parentForm, isLookup: this.props.isLookup, list: this, node, initialData: item, overrideOrderData: sorting ? itemNum : -1})
+							R.div({ key: UID(item), className: 'inline-editable-item' },
+								React.createElement(FormFull, { ref: this.subFormRef, inlineEditable: true, editable: true, isCompact: true, filters: filters, parentForm: this.props.parentForm, isLookup: this.props.isLookup, list: this, node, initialData: item, overrideOrderData: sorting ? itemNum : -1 })
 							)
 						);
 						var btns = [];
@@ -234,16 +241,18 @@ class List extends BaseForm {
 						btns.push(R.button({
 							className: 'clickable toolbtn danger-btn', title: L('DELETE'), key: 'b' + UID(item), onClick: async () => {
 								if(item.hasOwnProperty('id') && !this.state.noPromptDelete) {
-									await deleteRecord(item.name, node.id, 0, undefined, false);
+									//TODO: check deletion in 1toN lookup list
+									await deleteRecord(item.name, node.id, 0, false, () => {
+										item.__deleted_901d123f = true;
+										this.forceUpdate();
+									});
 								}
-								item.__deleted_901d123f = true;
-								this.forceUpdate();
 							}
 						}, renderIcon('times')));
 
 						if(sorting) {
-							var _uidM1 = false;
-							var _uidP1 = false;
+							var _uidM1: number = 0;
+							var _uidP1: number = 0;
 							var _itemNumM1;
 							var _itemNumP1;
 							for(var j = itemNum - 1; j >= 0; j--) {
@@ -262,7 +271,7 @@ class List extends BaseForm {
 								}
 							}
 
-							if(_uidM1 !== false) {
+							if(_uidM1) {
 								(() => {
 									var uid = UID(data.items[itemNum]);
 									var itemNumM1 = _itemNumM1;
@@ -281,7 +290,7 @@ class List extends BaseForm {
 									}, renderIcon('arrow-up')));
 								})();
 							}
-							if(_uidP1 !== false) {
+							if(_uidP1) {
 
 								(() => {
 									var uid = UID(data.items[itemNum]);
@@ -307,7 +316,7 @@ class List extends BaseForm {
 						}
 
 						lines.push(
-							R.span({key: UID(item) + 'btns', className: 'btns'},
+							R.span({ key: UID(item) + 'btns', className: 'btns' },
 								btns
 							)
 						);
@@ -319,13 +328,13 @@ class List extends BaseForm {
 
 		var nodeAdmin;
 		if(iAdmin()) {
-			nodeAdmin = React.createElement(NodeAdmin, {form: this, x: 400, y: 0});
+			nodeAdmin = React.createElement(NodeAdmin, { form: this, x: 400, y: 0 });
 		}
 
 		var createBtn;
 		if(node.prevs & PREVS_CREATE) {
 			createBtn = R.div(null,
-				R.button({title: L('ADD', (node.creationName || node.singleName)), className: 'clickable toolbtn create-btn', onClick: () => {data.items.push({}); this.forceUpdate();}},
+				R.button({ title: L('ADD', (node.creationName || node.singleName)), className: 'clickable toolbtn create-btn', onClick: () => { data.items.push({}); this.forceUpdate(); } },
 					renderIcon('plus')
 				)
 			);
@@ -345,7 +354,7 @@ class List extends BaseForm {
 		var node = this.state.node;
 		var data = this.state.data;
 		if(!node || !data) {
-			return R.div({className: 'field-lookup-loading-icon-container'},
+			return R.div({ className: 'field-lookup-loading-icon-container' },
 				renderIcon('cog fa-spin fa-2x')
 			);
 		}
@@ -380,7 +389,7 @@ class List extends BaseForm {
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				} else {
-					createButton = R.button({className: 'clickable create-button', onClick: () => {createRecord(node.id, filters);}},
+					createButton = R.button({ className: 'clickable create-button', onClick: () => { createRecord(node.id, filters); } },
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				}
@@ -389,8 +398,8 @@ class List extends BaseForm {
 			var searchPanel;
 
 			if(!this.props.hideSearch && !this.state.hideSearch && (this.filters.s || data.items.length > 2)) {
-				searchPanel = R.div({className: 'list-search'},
-					R.input({ref: (input) => {this.searchInput = input;}, className: 'list-search-input', placeholder: L('SEARCH_LIST'), onChange: this.changeSearch, defaultValue: this.filters.s}),
+				searchPanel = R.div({ className: 'list-search' },
+					R.input({ ref: (input) => { this.searchInput = input; }, className: 'list-search-input', placeholder: L('SEARCH_LIST'), onChange: this.changeSearch, defaultValue: this.filters.s }),
 					R.a({
 						className: 'clickable toolbtn default-btn', onClick: (e) => {
 							this.clearSearch();
@@ -405,7 +414,7 @@ class List extends BaseForm {
 
 
 			if(createButton || searchPanel) {
-				header = R.div({className: 'list-header'},
+				header = R.div({ className: 'list-header' },
 					createButton,
 					searchPanel
 				);
@@ -429,7 +438,7 @@ class List extends BaseForm {
 
 					var fieldAdmin;
 					if(iAdmin()) {
-						fieldAdmin = React.createElement(FieldAdmin, {field, form: this, x: 80});
+						fieldAdmin = React.createElement(FieldAdmin, { field, form: this, x: 80 });
 					}
 
 					var rowHeader;
@@ -452,13 +461,13 @@ class List extends BaseForm {
 
 
 					if(this.isVisibleField(field)) {
-						tableHeader.push(R.td({key: field.id, className: (field.fieldType === FIELD_2_INT) ? 'list-row-header list-row-header-num' : 'list-row-header'},
+						tableHeader.push(R.td({ key: field.id, className: (field.fieldType === FIELD_2_INT) ? 'list-row-header list-row-header-num' : 'list-row-header' },
 							rowHeader,
 							fieldAdmin
 						));
 					}
 				});
-				tableHeader.push(R.td({key: 'holder', className: 'list-row-header'}, ' '));
+				tableHeader.push(R.td({ key: 'holder', className: 'list-row-header' }, ' '));
 
 
 				var additionalButtons;
@@ -472,12 +481,12 @@ class List extends BaseForm {
 				var hideControlls = this.props.hideControlls || this.state.hideControlls || (this.props.filters && this.props.filters.hideControlls);
 
 				var lines = data.items.map((item) => {
-					return React.createElement(FormItem, {key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, onClick: this.props.onItemClick ? () => {this.props.onItemClick(item)} : undefined, parentForm: this.props.parentForm, additionalButtons: additionalButtons, hideControlls: hideControlls, isLookup: this.props.isLookup, list: this, node, initialData: item});
+					return React.createElement(FormItem, { key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, onClick: this.props.onItemClick ? () => { this.props.onItemClick(item) } : undefined, parentForm: this.props.parentForm, additionalButtons: additionalButtons, hideControlls: hideControlls, isLookup: this.props.isLookup, list: this, node, initialData: item });
 				});
 
-				body = R.table({className: 'list-table'},
+				body = R.table({ className: 'list-table' },
 					R.thead(null, R.tr(null, tableHeader)),
-					R.tbody({className: 'list-body'}, lines)
+					R.tbody({ className: 'list-body' }, lines)
 				);
 			}
 
@@ -499,7 +508,7 @@ class List extends BaseForm {
 				emptyIcon = renderIcon((node.icon || 'plus') + ((this.isSlave() ? ' fa-3x' : ' fa-5x') + ' list-empty-icon'))
 			}
 
-			body = R.div({className: 'list-emty'},
+			body = R.div({ className: 'list-emty' },
 				emptyIcon,
 				R.div(null, t1),
 				R.div(null, t2)
@@ -513,9 +522,9 @@ class List extends BaseForm {
 		}
 
 		var totalPages = Math.ceil(data.total / (recPerPage || node.recPerPage));
-		var curPage = parseInt(filters.p) || 0;
+		var curPage = parseInt(filters.p as string) || 0;
 
-		var pageNums = {0: 1, 1: 1, 2: 1};
+		var pageNums = { 0: 1, 1: 1, 2: 1 };
 
 		let p;
 		for(p = 0; p <= 2; p++) {
@@ -528,7 +537,7 @@ class List extends BaseForm {
 			p = parseInt(p);
 			if(p >= 0 && p < totalPages) {
 				if((p - prevP) !== 1) {
-					pages.push(R.span({key: 'dots' + p}, ' ... '));
+					pages.push(R.span({ key: 'dots' + p }, ' ... '));
 				}
 				prevP = p;
 				pages.push(createPageButton(this, p, p === curPage));
@@ -537,7 +546,7 @@ class List extends BaseForm {
 
 		let paginator;
 		if(pages.length > 1) {
-			paginator = R.span({className: 'list-paginator-items'},
+			paginator = R.span({ className: 'list-paginator-items' },
 				pages
 			)
 		}
@@ -550,7 +559,7 @@ class List extends BaseForm {
 		}
 
 		if(data.items.length > 0 && data.items.length < data.total) {
-			footer = R.span({className: 'list-paginator'},
+			footer = R.span({ className: 'list-paginator' },
 				paginatorText,
 				paginator
 			)
@@ -558,18 +567,18 @@ class List extends BaseForm {
 
 		var nodeAdmin;
 		if(iAdmin()) {
-			nodeAdmin = React.createElement(NodeAdmin, {form: this, x: 400, y: 0});
+			nodeAdmin = React.createElement(NodeAdmin, { form: this, x: 400, y: 0 });
 		}
 
 		var title;
 		if(!this.props.isCompact) {
 			var hdr = this.header || this.filters.formTitle;
 			if(hdr) {
-				title = R.h4({className: 'form-header'}, hdr);
+				title = R.h4({ className: 'form-header' }, hdr);
 			}
 		}
 
-		return R.div({className: 'list-container form-node-' + node.id},
+		return R.div({ className: 'list-container form-node-' + node.id },
 			nodeAdmin,
 			title,
 			header,
@@ -579,4 +588,4 @@ class List extends BaseForm {
 		);
 	}
 }
-export {isPresentListRenderer, registerListRenderer, List};
+export { isPresentListRenderer, registerListRenderer, List };

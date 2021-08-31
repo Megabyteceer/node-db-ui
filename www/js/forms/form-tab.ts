@@ -1,27 +1,27 @@
-import {R} from "../r.ts";
-import React, {Component} from "react";
-import {FieldAdmin} from "../admin/field-admin.js";
+import { R } from "../r";
+import React, { Component } from "react";
+import { FieldAdmin } from "../admin/field-admin";
 
-class FormTab extends Component {
+class FormTab extends Component<any, any> {
 
 	constructor(props) {
 		super(props);
-		this.state = {visible: this.props.visible};
+		this.state = { visible: this.props.visible };
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
-		this.state.visible = nextProps.visible;
+		this.setState({ visible: nextProps.visible });
 	}
 
 	show(val) {
 		if(!this.state.visible) {
-			this.setState({visible: true});
+			this.setState({ visible: true });
 		}
 	}
 
 	hide(val) {
 		if(this.state.visible) {
-			this.setState({visible: false});
+			this.setState({ visible: false });
 		}
 	}
 
@@ -34,10 +34,10 @@ class FormTab extends Component {
 			className += ' form-tab-highlight';
 		}
 
-		return R.div({className},
-			(this.props.highlightFrame ? React.createElement(FieldAdmin, {field: this.props.field, form: this.props.form, x: 13}) : ''),
+		return R.div({ className },
+			(this.props.highlightFrame ? React.createElement(FieldAdmin, { field: this.props.field, form: this.props.form, x: 13 }) : ''),
 			this.props.fields);
 	}
 }
 
-export {FormTab};
+export { FormTab };

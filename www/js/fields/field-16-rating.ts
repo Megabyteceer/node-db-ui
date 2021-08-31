@@ -1,8 +1,8 @@
-import {FIELD_16_RATING} from "../bs-utils";
-import {R} from "../r.ts";
-import {L} from "../utils.js";
-import {registerFieldClass} from "../utils.js";
-import {fieldMixins} from "./field-mixins.js";
+import { FIELD_16_RATING } from "../bs-utils";
+import { R } from "../r";
+import { L } from "../utils";
+import { registerFieldClass } from "../utils";
+import { fieldMixins } from "./field-mixins";
 
 registerFieldClass(FIELD_16_RATING, class RatingField extends fieldMixins {
 
@@ -21,14 +21,14 @@ registerFieldClass(FIELD_16_RATING, class RatingField extends fieldMixins {
 			var stars = [];
 			for(var i = 1; i < 6; i++) {
 				if(i <= (rate + 0.1)) {
-					stars.push(R.p({key: i, className: 'fa fa-star rating-star'}));
+					stars.push(R.p({ key: i, className: 'fa fa-star rating-star' }));
 				} else if(i <= rate + 0.6) {
-					stars.push(R.p({key: i, className: 'fa fa-star-half-o rating-star'}));
+					stars.push(R.p({ key: i, className: 'fa fa-star-half-o rating-star' }));
 				} else {
-					stars.push(R.p({key: i, className: 'fa fa-star-o rating-star'}));
+					stars.push(R.p({ key: i, className: 'fa fa-star-o rating-star' }));
 				}
 			}
-			return R.span({title: rate.toFixed(2)},
+			return R.span({ title: rate.toFixed(2) },
 				stars,
 				' (' + this.state.value.all + ')'
 			);

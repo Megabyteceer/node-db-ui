@@ -1,5 +1,6 @@
 // @ts-nocheck
-import {getData, L, renderIcon, sp} from "../utils.js";
+import { Component } from "react";
+import { getData, L, renderIcon, sp } from "../utils";
 
 var style = {
 	display: 'inline-block',
@@ -58,7 +59,7 @@ var itemStyle = {
 
 
 
-export default class Search extends Component {
+export default class Search extends Component<any, any> {
 
 	clearTimeout() {
 		if(this.timeout) {
@@ -76,7 +77,7 @@ export default class Search extends Component {
 
 	onChange() {
 		this.clearTimeout();
-		this.timeout = setTimeout(() => {this.doSearch();}, 400);
+		this.timeout = setTimeout(() => { this.doSearch(); }, 400);
 	}
 
 	doSearch() {
@@ -103,7 +104,7 @@ export default class Search extends Component {
 			style: inputStyle,
 			title: 'Search',
 			placeholder: L('SEARCH'),
-			ref: (r) => {this.inputRef = r;},
+			ref: (r) => { this.inputRef = r; },
 			onChange: this.onChange
 		};
 

@@ -1,11 +1,13 @@
-import {FIELD_14_NtoM, FIELD_15_1toN, FIELD_18_BUTTON, FIELD_7_Nto1, FIELD_8_STATICTEXT} from "../bs-utils";
-import {R} from "../r.ts";
-import React, {Component} from "react";
-import {FieldAdmin} from "../admin/field-admin.js";
-import {consoleLog, debugError, getClassForField, renderIcon, scrollToVisible, setFormFilter} from "../utils.js";
-import {iAdmin} from "../user.js";
+import { FIELD_14_NtoM, FIELD_15_1toN, FIELD_18_BUTTON, FIELD_7_Nto1, FIELD_8_STATICTEXT } from "../bs-utils";
+import { R } from "../r";
+import React, { Component } from "react";
+import { FieldAdmin } from "../admin/field-admin";
+import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible, setFormFilter } from "../utils";
+import { iAdmin } from "../user";
+import { fieldMixins } from "./field-mixins.js";
 
-class FieldHelp extends Component {
+class FieldHelp extends Component<any, any> {
+
 	constructor(props) {
 		super(props);
 		this.mouseOut = this.mouseOut.bind(this);
@@ -13,32 +15,32 @@ class FieldHelp extends Component {
 	}
 
 	mouseOut() {
-		this.setState({hovered: false});
+		this.setState({ hovered: false });
 	}
 
 	mouseOver() {
-		this.setState({hovered: true});
+		this.setState({ hovered: true });
 	}
 
 	render() {
 		var body;
 		if(this.state && this.state.hovered) {
-			body = R.div({className: 'field-wrap-help field-wrap-help-open'},
+			body = R.div({ className: 'field-wrap-help field-wrap-help-open' },
 				this.props.text
 			);
 		} else {
-			body = R.div({className: 'field-wrap-help'}, renderIcon('question-circle'));
+			body = R.div({ className: 'field-wrap-help' }, renderIcon('question-circle'));
 		}
-		return R.div({onMouseOver: this.mouseOver, onMouseOut: this.mouseOut, className: 'field-wrap-help-container'}, body);
+		return R.div({ onMouseOver: this.mouseOver, onMouseOut: this.mouseOut, className: 'field-wrap-help-container' }, body);
 	}
 }
 
-class FieldLabel extends Component {
+class FieldLabel extends Component<any, any> {
 	render() {
 		var field = this.props.field;
 		var star;
 		if(this.props.isEdit && field.requirement) {
-			star = R.span({className: 'field-wrap-required-star'}, '*');
+			star = R.span({ className: 'field-wrap-required-star' }, '*');
 		} else {
 			star = '';
 		}
@@ -46,22 +48,22 @@ class FieldLabel extends Component {
 		var alertBody;
 		if(this.props.fieldAlert) {
 			if(this.props.isSucessAlert) {
-				alertBody = R.div({className: 'fade-in field-wrap-alert field-wrap-alert-success'}, this.props.fieldAlert);
+				alertBody = R.div({ className: 'fade-in field-wrap-alert field-wrap-alert-success' }, this.props.fieldAlert);
 			} else {
-				alertBody = R.div({className: 'fade-in field-wrap-alert'}, this.props.fieldAlert);
+				alertBody = R.div({ className: 'fade-in field-wrap-alert' }, this.props.fieldAlert);
 			}
 		}
 
 		var body;
 		if(field.lang) {
-			body = R.span({className: 'field-wrap-label-lang'},
+			body = R.span({ className: 'field-wrap-label-lang' },
 				field.lang
 			)
 		} else {
 			body = (field.fieldType !== FIELD_18_BUTTON) ? (this.props.labelOwerride || field.name) : '';
 		}
 
-		return R.div({className: 'field-wrap-label'},
+		return R.div({ className: 'field-wrap-label' },
 			body,
 			star,
 			alertBody
@@ -69,7 +71,14 @@ class FieldLabel extends Component {
 	}
 }
 
-class FieldWrap extends Component {
+class FieldWrap extends Component<any, any> {
+	fieldRef: fieldMixins;
+	hidden: boolean;
+	fieldDisabled: boolean;
+	private labelOwerride: string;
+	private currentValue: any;
+	private onChangeTimeout: NodeJS.Timeout;
+
 	constructor(props) {
 		super(props);
 		this.state = {};
@@ -88,7 +97,7 @@ class FieldWrap extends Component {
 
 	hideTooltip() {
 		if(this.state.showtooltip)
-			this.setState({showtooltip: false});
+			this.setState({ showtooltip: false });
 	}
 
 	componentWillUnmount() {
@@ -99,11 +108,7 @@ class FieldWrap extends Component {
 	}
 
 	isEmpty() {
-		if(this.fieldRef.isEmpty) {
-			return this.fieldRef.isEmpty();
-		}
-		var val = this.props.form.currentData[this.props.field.fieldName];
-		return !val;
+		return this.fieldRef.isEmpty();
 	}
 
 	hide() {
@@ -117,11 +122,11 @@ class FieldWrap extends Component {
 		return this.fieldRef.getBackupData();
 	}
 
-	setMin(val) {
+	setMin(val: number) {
 		this.fieldRef.setMin(val);
 	}
 
-	setMax(val) {
+	setMax(val: number) {
 		this.fieldRef.setMax(val);
 	}
 
@@ -158,7 +163,7 @@ class FieldWrap extends Component {
 		}
 	}
 
-	setLabel(label) {
+	setLabel(label: string) {
 		if(this.labelOwerride !== label) {
 			this.labelOwerride = label;
 			this.forceUpdate();
@@ -173,9 +178,11 @@ class FieldWrap extends Component {
 	}
 
 	async checkValidityBeforeSave(focusIfInvalid) {
+
 		if(!this.fieldRef || !this.fieldRef.getMessageIfInvalid) {
 			return true;
 		} else {
+
 			let invalidMessage = await this.fieldRef.getMessageIfInvalid();
 			if(!invalidMessage) {
 				this.fieldAlert();
@@ -199,7 +206,7 @@ class FieldWrap extends Component {
 		}
 	}
 
-	fieldAlert(text, isSucess, focus) {
+	fieldAlert(text?: string, isSucess?: boolean, focus?: boolean) {
 
 		if(text) {
 			if(this.hidden) {
@@ -209,7 +216,7 @@ class FieldWrap extends Component {
 			}
 		}
 
-		this.setState({fieldAlert: text, isSucessAlert: isSucess});
+		this.setState({ fieldAlert: text, isSucessAlert: isSucess });
 		if(focus && text && !isSucess) {
 			this.focus();
 		}
@@ -244,15 +251,15 @@ class FieldWrap extends Component {
 	}
 
 	clearChangeTimout() {
-		if(this.ChangeTimeout) {
+		if(this.onChangeTimeout) {
 			console.log('clearChangeTimout: ' + this.props.field.fieldName);
-			clearTimeout(this.ChangeTimeout);
-			delete (this.ChangeTimeout);
+			clearTimeout(this.onChangeTimeout);
+			delete (this.onChangeTimeout);
 		}
 	}
 
 	forceBouncingTimeout() {
-		if(this.ChangeTimeout) {
+		if(this.onChangeTimeout) {
 			console.log('forceBouncingTimeout: ' + this.props.field.fieldName);
 			this.clearChangeTimout();
 			this.sendCurrentValueToForm();
@@ -264,8 +271,8 @@ class FieldWrap extends Component {
 		this.currentValue = newVal;
 		if(withBounceDelay) {
 			this.clearChangeTimout();
-			this.ChangeTimeout = setTimeout(() => {
-				delete (this.ChangeTimeout);
+			this.onChangeTimeout = setTimeout(() => {
+				delete (this.onChangeTimeout);
 				this.sendCurrentValueToForm();
 			}, 600);
 		} else {
@@ -304,12 +311,12 @@ class FieldWrap extends Component {
 
 		var help;
 		if(field.fdescription && field.fieldType !== FIELD_8_STATICTEXT) {
-			help = React.createElement(FieldHelp, {text: R.div(null, R.h4(null, field.name), field.fdescription)});
+			help = React.createElement(FieldHelp, { text: R.div(null, R.h4(null, field.name), field.fdescription) });
 		}
 
 		var fieldAdmin;
 		if(iAdmin() && !field.lang && (!this.props.isCompact || this.props.parentCompactAreaName)) {
-			fieldAdmin = React.createElement(FieldAdmin, {field, form: this.props.form, x: -10});
+			fieldAdmin = React.createElement(FieldAdmin, { field, form: this.props.form, x: -10 });
 		}
 
 		let className = domId + ' field-wrap field-container-name-' + field.fieldName;
@@ -331,18 +338,18 @@ class FieldWrap extends Component {
 			}
 			var tooltip;
 			if(this.state.showtooltip) {
-				tooltip = R.span({className: 'field-wrap-tooltip'},
-					R.span({className: 'fa fa-caret-left field-wrap-tooltip-arrow'}),
-					R.span({className: 'field-wrap-tooltip-body'}, field.name, (field.lang ? (' (' + field.lang + ')') : undefined), (this.state && this.state.fieldAlert) ? (' (' + this.state.fieldAlert + ')') : '')
+				tooltip = R.span({ className: 'field-wrap-tooltip' },
+					R.span({ className: 'fa fa-caret-left field-wrap-tooltip-arrow' }),
+					R.span({ className: 'field-wrap-tooltip-body' }, field.name, (field.lang ? (' (' + field.lang + ')') : undefined), (this.state && this.state.fieldAlert) ? (' (' + this.state.fieldAlert + ')') : '')
 				)
 			}
 			return R.span({
 				className,
 				onFocus: () => {
-					this.setState({showtooltip: true});
+					this.setState({ showtooltip: true });
 				},
 				onBlur: () => {
-					this.setState({showtooltip: false});
+					this.setState({ showtooltip: false });
 				},
 			},
 				fieldTypedBody,
@@ -356,11 +363,11 @@ class FieldWrap extends Component {
 			}
 			var label;
 			if(!noLabel) {
-				label = React.createElement(FieldLabel, {field, isEdit: this.props.isEdit, labelOwerride: this.labelOwerride, fieldAlert: this.state ? this.state.fieldAlert : undefined, isSucessAlert: this.state ? this.state.isSucessAlert : undefined});
+				label = React.createElement(FieldLabel, { field, isEdit: this.props.isEdit, labelOwerride: this.labelOwerride, fieldAlert: this.state ? this.state.fieldAlert : undefined, isSucessAlert: this.state ? this.state.isSucessAlert : undefined });
 			}
-			return R.div({className},
+			return R.div({ className },
 				label,
-				R.div({className: noLabel ? 'field-wrap-value field-wrap-value-no-label' : 'field-wrap-value'},
+				R.div({ className: noLabel ? 'field-wrap-value field-wrap-value-no-label' : 'field-wrap-value' },
 					fieldTypedBody,
 					fieldCustomBody
 				),
@@ -372,4 +379,4 @@ class FieldWrap extends Component {
 }
 
 
-export {FieldHelp, FieldLabel, FieldWrap};
+export { FieldHelp, FieldLabel, FieldWrap };

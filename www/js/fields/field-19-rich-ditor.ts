@@ -1,8 +1,8 @@
-import {R} from "../r.ts";
-import {FIELD_19_RICHEDITOR} from "../bs-utils";
-import {L, renderIcon} from "../utils.js";
-import {registerFieldClass} from "../utils.js";
-import {fieldMixins} from "./field-mixins.js";
+import { R } from "../r";
+import { FIELD_19_RICHEDITOR } from "../bs-utils";
+import { L, renderIcon } from "../utils";
+import { registerFieldClass } from "../utils";
+import { fieldMixins } from "./field-mixins";
 
 var idCounter = 0;
 
@@ -16,8 +16,12 @@ window.addEventListener('message', (e) => {
 
 registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixins {
 
-	getSummernote() {
-		return this.viewportRef.contentWindow;
+	viewportRef: HTMLIFrameElement;
+	iframeId: number;
+	summerNoteIsInited: boolean;
+
+	getSummernote(): Window {
+		return this.viewportRef.contentWindow as Window;
 	}
 
 	componentDidMount() {
@@ -44,10 +48,10 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 					this.setValue(data.value, false);
 					this.props.wrapper.valueListener(this.state.value, true, this);
 				} else {
-					s.postMessage({options: options, value: this.state.value}, '*');
+					s.postMessage({ options: options, value: this.state.value }, '*');
 				}
 				if(this.onSaveCallback) {
-					this.onSaveCallback(data.value);
+					this.onSaveCallback();
 					delete this.onSaveCallback;
 				}
 			};
@@ -58,24 +62,24 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 		delete (listeners[this.iframeId]);
 	}
 
-	async getMessageIfInvalid() {
+	async getMessageIfInvalid(): Promise<string | false> {
 		if(this.state.value) {
 			var val = this.state.value;
 			if(val.length > 4000000) {
 				return L('RICH_ED_SIZE', this.props.field.name);
 			}
 		}
-		return (false);
+		return false;
 	}
 
-	setValue(val, sendToEditor) {
+	setValue(val, sendToEditor?: boolean) {
 		if($('<div>' + val + '</div>').text() === '') {
 			val = '';
 		}
 		if(this.state.value !== val) {
 			if(sendToEditor !== false) {
 				var s = this.getSummernote();
-				s.postMessage({value: val}, '*');
+				s.postMessage({ value: val }, '*');
 			}
 			this.state.value = val;
 		}
@@ -84,8 +88,8 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 	async beforeSave() {
 		return new Promise((resolve) => {
 			var s = this.getSummernote();
-			this.onSaveCallback = resolve;
-			s.postMessage({onSaveRichEditor: true}, '*');
+			this.onSaveCallback = resolve as () => void;
+			s.postMessage({ onSaveRichEditor: true }, '*');
 		});
 	}
 
@@ -96,15 +100,15 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 			var w = Math.floor(field.maxlen / 10000) + 230;
 			var h = (field.maxlen % 10000) + 30;
 
-			var style = {width: w, height: h + 100};
+			var style = { width: w, height: h + 100 };
 			var cog;
 			if(!this.summerNoteIsInited) {
 				cog = R.div(null, renderIcon('cog fa-spin'));
 			}
 
-			return R.div(null, cog, R.iframe({ref: (r) => {this.viewportRef = r;}, allowFullScreen: true, sandbox: 'allow-scripts allow-forms allow-same-origin', style, src: 'rich-editor/index.html?iframeId=' + this.iframeId}));
+			return R.div(null, cog, R.iframe({ ref: (r) => { this.viewportRef = r; }, allowFullScreen: true, sandbox: 'allow-scripts allow-forms allow-same-origin', style, src: 'rich-editor/index.html?iframeId=' + this.iframeId }));
 		} else {
-			return R.div({dangerouslySetInnerHTML: {__html: this.props.initialValue}});
+			return R.div({ dangerouslySetInnerHTML: { __html: this.props.initialValue } });
 		}
 	}
 });

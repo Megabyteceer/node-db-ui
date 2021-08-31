@@ -1,11 +1,11 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import {FIELD_14_NtoM, FIELD_7_Nto1} from "../bs-utils";
-import {R} from "../r.ts";
-import {getClassForField, L, n2mValuesEqual, renderIcon, sp, UID} from "../utils.js";
-import {registerFieldClass} from "../utils.js";
-import {fieldLookupMixins} from "./field-lookup-mixins.js";
+import { FIELD_14_NtoM, FIELD_7_Nto1, RecId } from "../bs-utils";
+import { R } from "../r";
+import { getClassForField, L, n2mValuesEqual, renderIcon, sp, UID } from "../utils";
+import { registerFieldClass } from "../utils";
+import { fieldLookupMixins } from "./field-lookup-mixins";
 
 var keyCounter = 0;
 var dragItem;
@@ -14,10 +14,13 @@ var dragListenersInited;
 
 var refs = [];
 
-registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixins {
+class LookupNtoMField extends fieldLookupMixins {
+	uidToEdit: number;
+	excludeIDs: RecId[];
 
 	constructor(props) {
 		super(props);
+		// @ts-ignore
 		this.state.filters = this.generateDefaultFiltersByProps(this.props);
 	}
 
@@ -26,12 +29,12 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 			val = [];
 		}
 		if(!n2mValuesEqual(val, this.state.value)) {
-			this.setState({value: val});
+			this.setState({ value: val });
 		}
 	}
 
 	extendEditor() {
-		this.setState({extendedEditor: true});
+		this.setState({ extendedEditor: true });
 	}
 
 	valueListener(newVal, withBounceDelay, sender) {
@@ -113,9 +116,10 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 		if(!value) {
 			isNew = 'n';
 		}
-		var additionalButtonsN2M = this.state.additionalButtonsN2M || this.props.additionalButtonsN2M;
-		if(additionalButtonsN2M) {
-			additionalButtonsN2M = additionalButtonsN2M(field, value, i, this);
+		var additionalButtonsN2M;
+		var additionalButtonsN2MRenderer = this.state.additionalButtonsN2MRenderer || this.props.additionalButtonsN2MRenderer;
+		if(additionalButtonsN2MRenderer) {
+			additionalButtonsN2M = additionalButtonsN2MRenderer(field, value, i, this);
 		}
 
 		if(isEdit) {
@@ -131,7 +135,7 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 					}, renderIcon('reorder'));
 				}
 
-				buttons = R.span({className: 'field-lookup-right-block'},
+				buttons = R.span({ className: 'field-lookup-right-block' },
 					additionalButtonsN2M,
 					R.button({
 						title: L('EDIT'),
@@ -167,13 +171,13 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 					key = 'emp' + keyCounter;
 					keyCounter++;
 				}
-				var body = R.div({key: key, ref: value ? (ref) => {refs[UID(value)] = ref;} : undefined, className: isDrag ? 'lookup-n2m-item lookup-n2m-item-drag' : 'lookup-n2m-item'},
+				var body = R.div({ key: key, ref: value ? (ref) => { refs[UID(value)] = ref; } : undefined, className: isDrag ? 'lookup-n2m-item lookup-n2m-item-drag' : 'lookup-n2m-item' },
 
 					React.createElement(getClassForField(FIELD_7_Nto1), {
 						field, preventCreateButton: this.state.preventCreateButton, editIt, pos: i, isEdit, isN2M: true, filters: this.state.filters, ref: (ref) => {
 							if(ref) {
 								// @ts-ignore
-								ref.setLookupFilter({'exludeIDs': this.exludeIDs || this.state.filters.exludeIDs});
+								ref.setLookupFilter({ 'excludeIDs': this.excludeIDs || this.state.filters.excludeIDs });
 							}
 						}, isNew: isNew, wrapper: this, initialValue: value, isCompact: this.props.isCompact, fieldDisabled: this.props.fieldDisabled
 					}),
@@ -188,23 +192,23 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 
 	render() {
 		if(!this.state.value) {
-			this.state.value = [];
+			this.setValue({ value: [] });
 		}
 		var value = this.state.value;
 		var field = this.props.field;
 
-		var exludeIDs = this.state.filters.exludeIDs ? this.state.filters.exludeIDs.slice() : undefined;
+		var excludeIDs = this.state.filters && (this.state.filters.excludeIDs ? this.state.filters.excludeIDs.slice() : undefined);
 
 		for(let v of value) {
 			if(v && v.id) {
-				if(!exludeIDs) {
-					exludeIDs = [];
+				if(!excludeIDs) {
+					excludeIDs = [];
 				}
-				exludeIDs.push(v.id);
+				excludeIDs.push(v.id);
 			}
 		}
 
-		this.exludeIDs = exludeIDs;
+		this.excludeIDs = excludeIDs;
 
 		var lines = [];
 		value.forEach((value, i) => {
@@ -218,4 +222,8 @@ registerFieldClass(FIELD_14_NtoM, class LookupNtoMField extends fieldLookupMixin
 		);
 
 	}
-});
+}
+
+registerFieldClass(FIELD_14_NtoM, LookupNtoMField);
+
+export { LookupNtoMField };

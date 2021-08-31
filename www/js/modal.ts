@@ -1,11 +1,13 @@
-import {Component} from "react";
-import {R} from "./r.ts";
-import {debugError, sp} from "./utils.js";
+import { Component } from "react";
+import { R } from "./r";
+import { debugError, sp } from "./utils";
 
 var modalStack = [];
 var idCounter = 0;
 
-class Modal extends Component {
+class Modal extends Component<any, any> {
+	static instance: Modal;
+
 	constructor(props) {
 		super(props);
 		this.show = this.show.bind(this);
@@ -23,7 +25,7 @@ class Modal extends Component {
 		}
 		idCounter++;
 		if(content) {
-			modalStack.push({content: content, noDiscardByBackdrop: noDiscardByBackdrop, id: idCounter});
+			modalStack.push({ content: content, noDiscardByBackdrop: noDiscardByBackdrop, id: idCounter });
 		}
 		this.forceUpdate();
 		return idCounter;
@@ -33,7 +35,7 @@ class Modal extends Component {
 		return modalStack.length > 0;
 	}
 
-	hide(idTohide) {
+	hide(idTohide?) {
 		if(typeof (idTohide) !== 'number') {
 			/// #if DEBUG
 			if(modalStack.length < 1) {
@@ -64,7 +66,7 @@ class Modal extends Component {
 							}
 						}
 					},
-						R.div({className: "modal", onClick: sp},
+						R.div({ className: "modal", onClick: sp },
 							m.content
 						)
 					);
@@ -79,4 +81,4 @@ class Modal extends Component {
 /* @type = {Modal}*/// #if DEBUG
 Modal.instance = null;
 
-export {Modal};
+export { Modal };

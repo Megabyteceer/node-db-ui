@@ -1,30 +1,33 @@
 ﻿import React from "react";
 
-import {clearForm, getData, goToPageByHash, idToImgURL, L, loactionToHash, renderIcon, showForm} from "./utils.js";
-import {Select} from "./components/select.js";
-import {admin} from "./admin/admin-utils.js";
-import {ENV} from "./main-frame.js";
+import { clearForm, getData, goToPageByHash, idToImgURL, isAdmin, L, locationToHash, renderIcon, showForm } from "./utils";
+import { Select } from "./components/select";
+import { admin } from "./admin/admin-utils";
+import { ENV } from "./main-frame";
 import moment from "moment";
-import {Component} from "react";
-import {R} from "./r.ts";
-import {ADMIN_ROLE_ID, isUserHaveRole} from "./bs-utils";
+import { Component } from "react";
+import { R } from "./r";
+import { ADMIN_ROLE_ID, UserSession } from "./bs-utils";
 
 
 function setUserOrg(orgId) {
 	if(User.currentUserData.orgId !== orgId) {
-		getData('api/setCurrentOrg', {orgId}).then(() => {
+		getData('api/setCurrentOrg', { orgId }).then(() => {
 			User.instance.refreshUser();
 		});
 	}
 }
 
 function iAdmin() {
-	return User.currentUserData && isUserHaveRole(ADMIN_ROLE_ID, User.currentUserData);
+	return User.currentUserData && isAdmin();
 }
 
 var isFirstCall = true;
 
-class User extends Component {
+class User extends Component<any, any> {
+	static sessionToken: string;
+	static instance: User;
+	static currentUserData: UserSession;
 
 	componentDidMount() {
 		User.instance = this;
@@ -35,7 +38,7 @@ class User extends Component {
 		getData('api/getMe').then((data) => {
 			data.lang.code = data.lang.code || 'en';
 			moment.locale(data.lang.code);
-			import('/locales/' + data.lang.code + '/lang.js').then(() => {
+			import('/locales/' + data.lang.code + '/lang').then(() => {
 				this.setState(data);
 
 				User.currentUserData = data;
@@ -80,7 +83,7 @@ class User extends Component {
 
 			var multilangBtn;
 			if(ENV.ENABLE_MULTILANG) {
-				multilangBtn = R.div({className, onClick: this.toggleMultilang},
+				multilangBtn = R.div({ className, onClick: this.toggleMultilang },
 					renderIcon(iconName + 'square-o'), L('MULTILANG')
 				);
 			}
@@ -91,25 +94,25 @@ class User extends Component {
 
 				for(var k in this.state.orgs) {
 					var name = this.state.orgs[k];
-					options.push({value: k, name});
+					options.push({ value: k, name });
 				};
 
-				org = React.createElement(Select, {options, className: "top-bar-user-org-select", isCompact: true, defaultValue: this.state.orgId, onChange: this.changeOrg});
+				org = React.createElement(Select, { options, className: "top-bar-user-org-select", isCompact: true, defaultValue: this.state.orgId, onChange: this.changeOrg });
 			} else {
 				org = this.state.org;
 			}
 
 			var btn1, btn2;
 			if(this.state.id === 2) {
-				btn2 = R.a({href: 'login', title: L('LOGIN'), className: 'clickable top-bar-user-btn'},
+				btn2 = R.a({ href: 'login', title: L('LOGIN'), className: 'clickable top-bar-user-btn' },
 					renderIcon('sign-in fa-2x')
 				)
 			} else {
 				let imgUrl = idToImgURL(this.state.avatar, 'avatar');
-				btn1 = R.a({href: loactionToHash(5, this.state.id, undefined, true), title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn'},
-					R.img({className: 'user-avatar', src: imgUrl})
+				btn1 = R.a({ href: locationToHash(5, this.state.id, undefined, true), title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn' },
+					R.img({ className: 'user-avatar', src: imgUrl })
 				);
-				btn2 = R.a({href: 'login', title: L('LOGOUT'), className: 'clickable top-bar-user-btn'},
+				btn2 = R.a({ href: 'login', title: L('LOGOUT'), className: 'clickable top-bar-user-btn' },
 					renderIcon('sign-out fa-2x')
 				);
 			}
@@ -123,7 +126,7 @@ class User extends Component {
 			body = renderIcon('cog fa-spin');
 		}
 
-		return R.div({className: "top-bar-user-container"},
+		return R.div({ className: "top-bar-user-container" },
 			body
 		)
 	}
@@ -137,4 +140,4 @@ User.currentUserData = null;
 User.sessionToken = "dev-admin-session-token";
 /// #endif
 
-export {iAdmin, User};
+export { iAdmin, User };

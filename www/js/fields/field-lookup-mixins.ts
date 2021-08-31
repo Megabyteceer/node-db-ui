@@ -1,11 +1,49 @@
-import {FIELD_15_1toN} from "../bs-utils";
-import {fieldMixins} from "./field-mixins.js";
+import React from "react";
+import { FieldDesc, FIELD_15_1toN, NodeDesc, RecId, RecordData } from "../bs-utils";
+import { Filters } from "../utils.js";
+import { LookupNtoMField } from "./field-14-n2m.js";
+import { fieldMixins, FieldState, FiledProps } from "./field-mixins";
 
-class fieldLookupMixins extends fieldMixins {
+type AdditionalButtonsRenderer = (field: FieldDesc, value: any, index: number, form: LookupNtoMField) => React.Component;
+
+interface LookupFieldState extends FieldState {
+	filters?: Filters;
+	expanded?: boolean;
+	dataToEdit?: RecordData;
+	creationOpened?: boolean;
+	itemIdToEdit?: RecId;
+	preventCreateButton?: boolean;
+	extendedEditor?: boolean;
+	inlineEditing?: boolean;
+	noPreviewButton?: boolean;
+	disableDrafting?: boolean;
+	hideControlls?: boolean;
+	additionalButtons?: AdditionalButtonsRenderer;
+	additionalButtonsN2MRenderer?: AdditionalButtonsRenderer;
+}
+
+interface LookupFiledProps extends FiledProps {
+	filters?: Filters;
+	expanded?: boolean;
+	hideIcon?: boolean;
+	noPreviewButton?: boolean;
+	preventCreateButton?: boolean;
+	/** true - if this 1toM field is a item in NtoM lookup list */
+	isN2M?: boolean;
+	additionalButtonsN2MRenderer?: AdditionalButtonsRenderer;
+	additionalButtons?: AdditionalButtonsRenderer;
+}
+
+class fieldLookupMixins extends fieldMixins<LookupFiledProps, LookupFieldState> {
+
+	savedNode: NodeDesc;
+
+	savedData: RecordData;
+	savedFilters: Filters;
 
 	componentDidUpdate() {
 		if(!this.state.filters) {
-			this.setState({filters: this.generateDefaultFiltersByProps(this.props)});
+			this.setState({ filters: this.generateDefaultFiltersByProps(this.props) });
 			this.saveNodeDataAndFilters();
 		}
 	}
@@ -24,7 +62,7 @@ class fieldLookupMixins extends fieldMixins {
 		return ret;
 	}
 
-	saveNodeDataAndFilters(node, data, filters) {
+	saveNodeDataAndFilters(node?: NodeDesc, data?: RecordData, filters?: Filters) {
 		if(node) {
 			this.savedNode = node;
 		}
@@ -32,8 +70,8 @@ class fieldLookupMixins extends fieldMixins {
 		this.savedFilters = filters;
 	}
 
-	setLookupFilter(filtersObjOrName, val) {
-		if((typeof filtersObjOrName) === 'string') {
+	setLookupFilter(filtersObjOrName: string | Filters, val) {
+		if(typeof filtersObjOrName === 'string') {
 			if(this.state.filters[filtersObjOrName] !== val) {
 				this.state.filters[filtersObjOrName] = val;
 				this.forceUpdate();
@@ -57,4 +95,4 @@ class fieldLookupMixins extends fieldMixins {
 	}
 }
 
-export {fieldLookupMixins};
+export { fieldLookupMixins };

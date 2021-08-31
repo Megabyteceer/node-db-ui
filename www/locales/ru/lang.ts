@@ -1,4 +1,4 @@
-import {initDictionary} from "../../js/utils.js";
+import { initDictionary } from "../../js/utils";
 
 (() => {
 	initDictionary({
@@ -98,7 +98,6 @@ import {initDictionary} from "../../js/utils.js";
 		'FILE_SELECTED': 'выбран файл: % ',
 		'FILE_SELECT': 'Выбрать... (% макс.)',
 		'RICH_ED_SIZE': 'Суммарный размер изображений в поле "%" не должен превышать 2 мегабайта.',
-		'NO_TRANSLATION': 'Нет перевода для ключа "%"',
 		'RESTARTNOW': 'Чтобы изменения вступили в силу нужно заново войти на сайт. Вы хотите сделать это сейчас?',
 		'INVALID_DATA_LIST': 'Дополните список данными',
 		'SAVE_SUB_FIRST': 'Сперва сохраните вложенную форму',
@@ -109,12 +108,6 @@ import {initDictionary} from "../../js/utils.js";
 		'SAVE_TOADDSUB': 'Сохраните форму прежде чем добавить %',
 		'APPLY_CHILD': 'Применить настройки для всех подразделов?',
 		'TO_THIS': 'Только для этого раздела',
-		'TO_ALL': 'Для всех подразделов',
-		'': '',
-		'': '',
-		'': '',
-		'': ''
-
-
+		'TO_ALL': 'Для всех подразделов'
 	});
 })();

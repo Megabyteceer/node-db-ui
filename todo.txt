@@ -1,10 +1,12 @@
-rename all to .ts
+Left bar smooth collapse via delays
 
+Validate return true instead of throw
 
-Make selenium tests for basic operations
-
+N2m fields validate all subforms before save
 
 Events editor just create method and open it to edit at line num we want.
+
+Make selenium tests for basic operations
 
 модальные формы для редактирования админских вещей. (popup заменить)
 

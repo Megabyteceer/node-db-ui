@@ -1,11 +1,13 @@
-import {FIELD_6_ENUM} from "../bs-utils";
-import {R} from "../r.ts";
+import { FIELD_6_ENUM } from "../bs-utils";
+import { R } from "../r";
 import React from "react";
-import {Select} from "../components/select.js";
-import {registerFieldClass} from "../utils.js";
-import {fieldMixins} from "./field-mixins.js";
+import { Select } from "../components/select";
+import { registerFieldClass } from "../utils";
+import { fieldMixins } from "./field-mixins";
 
-registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
+class EnumField extends fieldMixins {
+
+	enum;
 
 	setValue(val) {
 		this.state.value = val;
@@ -47,4 +49,8 @@ registerFieldClass(FIELD_6_ENUM, class EnumField extends fieldMixins {
 			}, field.enumNamesById[value]);
 		}
 	}
-});
+}
+
+registerFieldClass(FIELD_6_ENUM, EnumField);
+
+export { EnumField };

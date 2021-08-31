@@ -1,5 +1,5 @@
-import {Component} from "react";
-import {R} from "./r.ts";
+import { Component } from "react";
+import { R } from "./r";
 
 var instance;
 
@@ -7,7 +7,7 @@ var stack = [];
 var idCounter = 0;
 
 
-class Notify extends Component {
+class Notify extends Component<any, any> {
 	componentDidMount() {
 		instance = this;
 	}
@@ -19,7 +19,7 @@ class Notify extends Component {
 	add(content) {
 		var id = idCounter++;
 		if(content) {
-			stack.push({content: content, id: id});
+			stack.push({ content: content, id: id });
 		}
 		setTimeout(() => {
 			this.hideById(id);
@@ -36,7 +36,7 @@ class Notify extends Component {
 
 	render() {
 		if(stack.length > 0) {
-			return R.div({className: "notify-area"},
+			return R.div({ className: "notify-area" },
 				stack.map((m) => {
 					return R.div({
 						key: m.id, className: 'fade-in notify-block', onClick: () => {
@@ -44,7 +44,7 @@ class Notify extends Component {
 						}
 					},
 						m.content.split('\n').map((l, i) => {
-							return R.div({key: i}, l)
+							return R.div({ key: i }, l)
 						})
 					);
 				})
@@ -54,4 +54,4 @@ class Notify extends Component {
 		}
 	}
 }
-export {Notify};
+export { Notify };

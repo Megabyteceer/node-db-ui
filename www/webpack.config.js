@@ -6,7 +6,7 @@ module.exports = {
         main: './js/index.ts',
         "rich-editor": {
             //dependOn: 'main',
-            import: './rich-editor/rich-editor-main.js',
+            import: './rich-editor/rich-editor-main.ts',
         },
     },
     output: {

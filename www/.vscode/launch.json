@@ -13,8 +13,9 @@
 			"disableNetworkCache": true,
 			"sourceMaps": true,
 			"skipFiles": [
-				"<nod e_internals>/**",
-				"**/nod e_modules/**"
+				"<node_internals>/**",
+				"**/node_modules/**",
+				"**/debug-promise.ts"
 			],
 			"vueComponentPaths": [],
 			"enableContentValidation": false,

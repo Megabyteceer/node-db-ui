@@ -1,18 +1,19 @@
-import {Component} from "react";
-import {ENV} from "./main-frame.js";
-import {R} from "./r.ts";
-import {iAdmin} from "./user.js";
-import {getData, isLitePage, L, myAlert, myPromt, renderIcon, sp, strip_tags} from "./utils.js";
+import { Component } from "react";
+import { ENV } from "./main-frame";
+import { R } from "./r";
+import { iAdmin } from "./user";
+import { getData, isLitePage, L, myAlert, myPromt, renderIcon, sp, strip_tags } from "./utils";
 
 var currentId = 10;
 var debugInfo = [];
 
 
-class DebugPanel extends Component {
+class DebugPanel extends Component<any, any> {
+	static instance: DebugPanel;
 
 	constructor(props) {
 		super(props);
-		this.state = {expanded: false};
+		this.state = { expanded: false };
 		DebugPanel.instance = this;
 		this.clear = this.clear.bind(this);
 		this.show = this.show.bind(this);
@@ -21,12 +22,12 @@ class DebugPanel extends Component {
 
 	show() {
 		if(debugInfo.length > 0) {
-			this.setState({expanded: true});
+			this.setState({ expanded: true });
 		}
 	}
 
 	hide() {
-		this.setState({expanded: false});
+		this.setState({ expanded: false });
 	}
 
 	clear() {
@@ -35,10 +36,10 @@ class DebugPanel extends Component {
 		this.hide();
 	}
 
-	addEntry(entry, expand, url) {
+	addEntry(entry: any, expand?: Boolean, url?: string) {
 
 		if(typeof (entry) === 'string') {
-			entry = {message: entry}
+			entry = { message: entry }
 		}
 		if(url) {
 			entry.request = url;
@@ -60,11 +61,11 @@ class DebugPanel extends Component {
 		if(await myPromt(L('DEPLOY_TO', ENV.DEPLOY_TO))) {
 			let testResult = await getData('test_uyas87dq8qwdqw/test');
 			if(testResult === 'ok') {
-				let deployData = await getData('/deploy/api/deploy', {commitmessage: 'no message'});
-				let data = await getData('test_uyas87dq8qwdqw/test', {remote: true});
+				let deployData = await getData('/deploy/api/deploy', { commitmessage: 'no message' });
+				let data = await getData('test_uyas87dq8qwdqw/test', { remote: true });
 				if(data === 'ok') {
 					myAlert(R.span(renderIcon('thumbs-up'), 'Changes aplied to ',
-						R.a({href: ENV.DEPLOY_TO, target: '_blank', onClick: (ev) => {ev.stopPropagation();}},
+						R.a({ href: ENV.DEPLOY_TO, target: '_blank', onClick: (ev) => { ev.stopPropagation(); } },
 							ENV.DEPLOY_TO
 						),
 						R.br(), JSON.stringify(deployData)), true);
@@ -82,17 +83,17 @@ class DebugPanel extends Component {
 
 		var deployBtn;
 		var cacheClearBtn;
-		let clearBtn = R.a({className: 'clickable admin-controll', onClick: this.clear},
+		let clearBtn = R.a({ className: 'clickable admin-controll', onClick: this.clear },
 			renderIcon('trash')
 		)
 		if(iAdmin()) {
-			deployBtn = R.a({className: 'clickable admin-controll', title: L('DEPLOY'), onClick: this.deployClick},
+			deployBtn = R.a({ className: 'clickable admin-controll', title: L('DEPLOY'), onClick: this.deployClick },
 				renderIcon('upload')
 			);
 			cacheClearBtn = R.a({
 				className: 'clickable admin-controll', title: L('CLEAR_CACHE'), onClick: (ev) => {
 					sp(ev);
-					getData('admin/cache_info', {clear: 1, json: 1}).then(() => {location.reload();});
+					getData('admin/cache_info', { clear: 1, json: 1 }).then(() => { location.reload(); });
 				}
 			},
 				renderIcon('refresh')
@@ -111,14 +112,14 @@ class DebugPanel extends Component {
 
 					if(i.hasOwnProperty('SQLs')) {
 						entryBody = i.SQLs.map((SQL, key) => {
-							return R.div({key: key},
+							return R.div({ key: key },
 
-								R.div({className: 'debug-panel-header'},
+								R.div({ className: 'debug-panel-header' },
 									SQL.SQL
 								),
-								R.div({className: 'debug-panel-text'}, 'time (ms): ' + (SQL.timeElapsed_ms || -99999).toFixed(4)),
+								R.div({ className: 'debug-panel-text' }, 'time (ms): ' + (SQL.timeElapsed_ms || -99999).toFixed(4)),
 								SQL.stack.map((i, key) => {
-									return R.p({key: key, className: 'debug-panel-entry'}, i);
+									return R.p({ key: key, className: 'debug-panel-entry' }, i);
 								})
 							)
 						})
@@ -129,30 +130,30 @@ class DebugPanel extends Component {
 					var stackBody;
 					if(i.hasOwnProperty('stack')) {
 						stackBody = i.stack.map((i, key) => {
-							return R.p({key: key, className: 'debug-panel-entry'}, i);
+							return R.p({ key: key, className: 'debug-panel-entry' }, i);
 						});
 					} else {
 						stackBody = '';
 					}
 
-					return R.div({className: "debug-panel-item", key: i.id},
-						R.span({className: "debug-panel-request-header"}, i.request + ': '),
+					return R.div({ className: "debug-panel-item", key: i.id },
+						R.span({ className: "debug-panel-request-header" }, i.request + ': '),
 
-						R.b({className: "debug-panel-message"}, R.div({dangerouslySetInnerHTML: {__html: strip_tags(i.message)}})),
-						R.div({className: "debug-panel-time"}, 'time elapsed (ms): ' + (i.timeElapsed_ms || -9999).toFixed(4)),
+						R.b({ className: "debug-panel-message" }, R.div({ dangerouslySetInnerHTML: { __html: strip_tags(i.message) } })),
+						R.div({ className: "debug-panel-time" }, 'time elapsed (ms): ' + (i.timeElapsed_ms || -9999).toFixed(4)),
 						stackBody,
 						R.hr(),
 						entryBody
 					)
 				});
 
-				body = R.div({className: "admin-controll"},
-					R.div({className: "debug-panel-background", onClick: this.hide}),
-					R.div({className: "debug-panel-panel"},
-						R.a({className: 'clickable admin-controll', title: L('CLEAR_DEBUG'), onClick: this.clear},
+				body = R.div({ className: "admin-controll" },
+					R.div({ className: "debug-panel-background", onClick: this.hide }),
+					R.div({ className: "debug-panel-panel" },
+						R.a({ className: 'clickable admin-controll', title: L('CLEAR_DEBUG'), onClick: this.clear },
 							renderIcon('trash')
 						),
-						R.div({className: "debug-panel-scroll"},
+						R.div({ className: "debug-panel-scroll" },
 							items
 						)
 					)
@@ -161,12 +162,12 @@ class DebugPanel extends Component {
 				if(isLitePage()) {
 					body = R.span();
 				} else {
-					body = R.div({className: "admin-controll debug-panel-panel"},
+					body = R.div({ className: "admin-controll debug-panel-panel" },
 						cacheClearBtn,
 						deployBtn,
 						clearBtn,
 						R.br(),
-						R.span({className: 'debug-panel-sql-btn admin-controll clickable', onClick: this.show},
+						R.span({ className: 'debug-panel-sql-btn admin-controll clickable', onClick: this.show },
 							'requests ' + debugInfo.length,
 							R.br(),
 							'SQL ' + debugInfo.reduce((pc, i) => {
@@ -189,4 +190,4 @@ class DebugPanel extends Component {
 /** @type DebugPanel */
 DebugPanel.instance = null;
 
-export {DebugPanel};
+export { DebugPanel };

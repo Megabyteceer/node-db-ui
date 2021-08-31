@@ -1,9 +1,17 @@
-import {Component} from "react";
-import {currentFormParameters, goBack} from "../utils.js";
+import { Component } from "react";
+import { BoolNum, RecId } from "../bs-utils.js";
+import { FieldWrap } from "../fields/field-wrap.js";
+import { currentFormParameters, goBack } from "../utils";
 
 
 
-class BaseForm extends Component {
+class BaseForm extends Component<any, any> {
+
+	filters: { [key: string]: string | number };
+	fieldsRefs: { [key: string]: FieldWrap };
+	header: string;
+	onCancelCallback: () => void | null;
+	hiddenFields: { [key: string]: BoolNum };
 
 	constructor(props) {
 		super(props);
@@ -27,7 +35,7 @@ class BaseForm extends Component {
 
 	}
 
-	changeFilter(name, v, refresh) {
+	changeFilter(name: string, v?: any, refresh?: boolean) {
 		if(name === 'tab') {
 			this.callOnTabShowEvent(v);
 		}
@@ -81,4 +89,4 @@ class BaseForm extends Component {
 		}
 	}
 }
-export {BaseForm};
+export { BaseForm };

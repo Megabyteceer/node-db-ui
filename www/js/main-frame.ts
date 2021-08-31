@@ -1,20 +1,21 @@
 
 
-import React, {Component} from "react";
-import {DebugPanel} from "./debug-panel.js";
-import {R} from "./r.ts";
-import {LeftBar} from "./left-bar.js";
-import {LoadingIndicator} from "./loading-indicator.js";
-import {Modal} from "./modal.js";
-import {Notify} from "./notify.js";
-import {Stage} from "./stage.js";
-import {TopBar} from "./top-bar.js";
-import {getData} from "./utils.js";
+import React, { Component } from "react";
+import { DebugPanel } from "./debug-panel";
+import { R } from "./r";
+import { LeftBar } from "./left-bar";
+import { LoadingIndicator } from "./loading-indicator";
+import { Modal } from "./modal";
+import { Notify } from "./notify";
+import { Stage } from "./stage";
+import { TopBar } from "./top-bar";
+import { getData } from "./utils";
 
-const ENV = {};
+const ENV: any = {};
 
 
-class MainFrame extends Component {
+class MainFrame extends Component<any, any> {
+	static instance: MainFrame;
 
 	constructor(props) {
 		super(props);
@@ -31,7 +32,7 @@ class MainFrame extends Component {
 		ENV.nodesTree = nodesTree;
 
 		/// #if DEBUG
-		if(!ENV.DEBUG) {throw "DEBUG directives nad not cutted of in PRODUCTION mode"};
+		if(!ENV.DEBUG) { throw "DEBUG directives nad not cutted of in PRODUCTION mode" };
 		/// #endif
 
 
@@ -62,17 +63,17 @@ class MainFrame extends Component {
 		}
 		return R.div(null,
 			React.createElement(TopBar),
-			R.table({className: "root-table"},
+			R.table({ className: "root-table" },
 				R.tbody(null,
 					R.tr(null,
-						React.createElement(LeftBar, {staticItems: ENV.rootItem.children}),
-						R.td({className: "stage-container"},
+						React.createElement(LeftBar, { staticItems: ENV.rootItem.children }),
+						R.td({ className: "stage-container" },
 							React.createElement(Stage)
 						)
 					)
 				)
 			),
-			R.div({className: "footer"}, ENV.APP_TITLE),
+			R.div({ className: "footer" }, ENV.APP_TITLE),
 			React.createElement(Modal),
 			React.createElement(Notify),
 			debug,
@@ -84,4 +85,4 @@ class MainFrame extends Component {
 /** @type MainFrame */
 MainFrame.instance = null;
 
-export {ENV, MainFrame};
+export { ENV, MainFrame };

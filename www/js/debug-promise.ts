@@ -49,7 +49,7 @@ function allSettled(arr) {
 							res(i, val);
 						},
 						function (e) {
-							args[i] = {status: 'rejected', reason: e};
+							args[i] = { status: 'rejected', reason: e };
 							if(--remaining === 0) {
 								resolve(args);
 							}
@@ -58,7 +58,7 @@ function allSettled(arr) {
 					return;
 				}
 			}
-			args[i] = {status: 'fulfilled', value: val};
+			args[i] = { status: 'fulfilled', value: val };
 			if(--remaining === 0) {
 				resolve(args);
 			}
@@ -311,4 +311,4 @@ DPromise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
 	}
 };
 
-export {DPromise};
+export { DPromise };

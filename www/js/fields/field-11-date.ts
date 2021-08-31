@@ -1,11 +1,11 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import {FIELD_11_DATE} from "../bs-utils";
-import {R} from "../r.ts";
+import { FIELD_11_DATE } from "../bs-utils";
+import { R } from "../r";
 import moment from "moment";
-import {innerDatetimeFormat, readableDateFormat, registerFieldClass, toReadableDate} from "../utils.js";
-import {dateFieldMixins} from "./field-4-datetime.js";
+import { innerDatetimeFormat, readableDateFormat, registerFieldClass, toReadableDate } from "../utils";
+import { dateFieldMixins } from "./field-4-datetime";
 
 registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 

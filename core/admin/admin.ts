@@ -2,16 +2,17 @@
 import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../desc-node";
 import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 
-import { throwError, isAdmin } from "../../www/js/bs-utils";
+import { throwError } from "../../www/js/bs-utils";
 import { join } from "path";
 import { readFileSync, writeFileSync } from "fs";
+import { isAdmin } from "../auth.js";
 
 async function nodePrevs(reqData, userSession) {
 	shouldBeAdmin(userSession);
 	const nodeId = reqData.nodeId;
 	if(reqData.prevs) {//set node prevs
 		const prevs = reqData.prevs;
-		await setRolePrevsForNode(nodeId, prevs, reqData.hasOwnProperty('toChild'), userSession);
+		await setRolePrevsForNode(nodeId, prevs, reqData.toChild, userSession);
 		reloadMetadataSchedule();
 		return 1;
 	} else { //get node prevs

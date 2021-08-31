@@ -7,6 +7,8 @@ const isASCII = (str) => {
 	return /^[\x00-\x7F]*$/.test(str);
 }
 
+const EMPTY_FILTERS = {};
+
 const EMPTY_RATING = { all: 0 };
 /*
 * @param nodeId
@@ -17,7 +19,7 @@ const EMPTY_RATING = { all: 0 };
 *									special fields:
 										['p'] = 5; - page of records to retrevie;
 										['n'] = 5; - number of records per page;
-										['exludeIDs'] = [3,5,64,5,45]; - exclude records with these IDs;
+										['excludeIDs'] = [3,5,64,5,45]; - exclude records with these IDs;
 										['onlyIDs'] = '3,5,64,5,45'; - filter by IDs;
 										['o'] = fieldName for order;
 										['r'] = reverse order;
@@ -27,7 +29,7 @@ const EMPTY_RATING = { all: 0 };
 */
 async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: RecId, userSession: UserSession): Promise<RecordData>;
 async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId[], userSession: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
-async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId | number[], userSession: UserSession = ADMIN_USER_SESSION, filterFields?: any, search?: string): Promise<RecordData | RecordsData> {
+async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId | number[], userSession: UserSession = ADMIN_USER_SESSION, filterFields: any = EMPTY_FILTERS, search?: string): Promise<RecordData | RecordsData> {
 
 	let node = getNodeDesc(nodeId, userSession);
 
@@ -119,7 +121,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 
 		const isAsciiSearch = search && isASCII(search);
 
-		if(filterFields && filterFields.o) {
+		if(filterFields.o) {
 			sortFieldName = filterFields.o;
 		}
 
@@ -147,7 +149,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 				}
 			}
 
-			if(filterFields && filterFields.hasOwnProperty(fieldName)) {
+			if(filterFields.hasOwnProperty(fieldName)) {
 				if(f.forSearch) {
 					const fltVal = filterFields[fieldName];
 					if(f.fieldType === FIELD_1_TEXT) {
@@ -170,9 +172,9 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 
 
 
-		if(filterFields.exludeIDs) {
-			assert(filterFields.exludeIDs.length > 0, "Empty array for 'exludeIDs' received.");
-			wheres.push('AND(', tableName, '.id NOT IN (', filterFields.exludeIDs.join(), '))');
+		if(filterFields.excludeIDs) {
+			assert(filterFields.excludeIDs.length > 0, "Empty array for 'excludeIDs' received.");
+			wheres.push('AND(', tableName, '.id NOT IN (', filterFields.excludeIDs.join(), '))');
 		}
 		if(filterFields.onlyIDs) {
 			wheres.push('AND(', tableName, '.id IN (', filterFields.onlyIDs, '))');

@@ -1,6 +1,8 @@
-/// #if DEBUG
-import { notificationOut, throwError, FIELD_14_NtoM, FIELD_4_DATETIME, FIELD_11_DATE, FIELD_7_Nto1, FIELD_17_TAB, FIELD_19_RICHEDITOR, FIELD_10_PASSWORD, FIELD_1_TEXT, FIELD_12_PICTURE, FIELD_21_FILE, FIELD_5_BOOL, FIELD_15_1toN, PREVS_ANY, PREVS_PUBLISH, isAdmin, assert, PREVS_CREATE, RecId, RecordDataWrite } from "../www/js/bs-utils";
-/// #endif
+import {
+	throwError, FIELD_14_NtoM, FIELD_4_DATETIME, FIELD_11_DATE, FIELD_7_Nto1, FIELD_17_TAB, FIELD_19_RICHEDITOR,
+	FIELD_10_PASSWORD, FIELD_1_TEXT, FIELD_12_PICTURE, FIELD_21_FILE, FIELD_5_BOOL, FIELD_15_1toN, PREVS_ANY,
+	PREVS_PUBLISH, assert, PREVS_CREATE, RecId, RecordDataWrite
+} from "../www/js/bs-utils";
 
 import ENV from "../ENV";
 import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHadlersNames } from "./desc-node";
@@ -10,7 +12,7 @@ import { UPLOADS_FILES_PATH, idToImgURLServer } from './upload';
 import { L } from "./locale";
 import { join } from "path";
 import { unlink } from "fs";
-import { UserSession } from "./auth";
+import { isAdmin, notificationOut, UserSession } from "./auth";
 
 const blockTags = [];
 for(let tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
@@ -23,7 +25,7 @@ for(let tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 	});
 }
 
-async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId?: RecId, userSession?: UserSession): Promise<RecId> {
+async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId | null = null, userSession?: UserSession): Promise<RecId> {
 
 	let node = getNodeDesc(nodeId);
 	let currentData;
@@ -353,7 +355,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId?: RecId,
 
 async function uniquCheckInner(tableName, fieldName, val, recId) {
 	let query = ["SELECT id FROM ", tableName, " WHERE ", fieldName, " ='", val, "'"];
-	if(recId !== false) {
+	if(recId !== null) {
 		query.push(" AND id<>", recId);
 	}
 	query.push(" LIMIT 1");

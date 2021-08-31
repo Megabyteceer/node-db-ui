@@ -1,23 +1,56 @@
-import {consoleLog, getData, L} from "../utils.js";
-import {BaseForm} from "./form-mixins.js";
-import {LeftBar} from "../left-bar.js";
-import {assert, FIELD_17_TAB, FIELD_18_BUTTON} from "../bs-utils";
+import { consoleLog, Filters, getData, L, ON_FIELD_CHANGE, ON_FORM_LOAD, ON_FORM_SAVE } from "../utils";
+import { BaseForm } from "./form-mixins";
+import { LeftBar } from "../left-bar";
+import { assert, FieldDesc, FIELD_17_TAB, FIELD_18_BUTTON, RecId, RecordData } from "../bs-utils";
+import { FieldWrap } from "../fields/field-wrap.js";
 
 let FormEvents;
 let FieldsEvents;
 
-import("../events/forms_events.js").then((m) => {
+import("../events/forms_events").then((m) => {
 	FormEvents = m.FormEvents;
 });
-import("../events/fields_events.js").then((m) => {
+import("../events/fields_events").then((m) => {
 	FieldsEvents = m.FieldsEvents;
 });
 
-const ON_FORM_SAVE = 'onsave';
-const ON_FORM_LOAD = 'onload';
-const ON_FIELD_CHANGE = 'onchange';
-
 class eventProcessingMixins extends BaseForm {
+	/** true if form opened for new record creation */
+	rec_creation: boolean;
+	/** true if form opened for editing existing form */
+	rec_update: boolean;
+
+	/** id of current edited/shown record. 'new' - if record is not saved yet.*/
+	rec_ID: RecId | 'new';
+
+	/** previous value of changed field. Can be used in onChage event of field */
+	prev_value: any;
+
+	/**  says if field was changed by user's action. Can be used in onChage event of field */
+	isUserEdit: boolean;
+
+	currentData: RecordData;
+
+	/** show all fields for debug purposes (hidden and field of another tabs) */
+	showAllDebug: boolean;
+
+	showAllTabs: boolean;
+
+	/** set *true* - to make drafting buttons invisible. It is still possible do draft/publish records via api. */
+	disableDrafting: boolean;
+
+	/** contains validate() result */
+	formIsValid: boolean;
+
+	protected _isNeedCallOnload: boolean;
+
+	onSaveCallback: () => void;
+
+	currentTabName: string;
+
+	private invalidAlertInOnSaveHandler: boolean;
+
+	private disabledFields: { [key: string]: 1 | null };
 
 	constructor(props) {
 		super(props);
@@ -40,16 +73,15 @@ class eventProcessingMixins extends BaseForm {
 		}
 		setTimeout(() => {
 			this.callOnTabShowEvent(nextProps.filters.tab);
-			this.timeout = null;
 		}, 0);
 	}
 
-	resetFieldsProperties(needCallOnload) {
+	resetFieldsProperties(_isNeedCallOnload?: boolean) {
 		this.hiddenFields = {};
 		this.disabledFields = {};
-		this.currentTabName = -1;
-		delete (this.onSaveCallback);
-		this.needCallOnload = needCallOnload;
+		this.currentTabName = null;
+		this.onSaveCallback = null;
+		this._isNeedCallOnload = _isNeedCallOnload;
 	}
 
 	isVisibleField(field) {
@@ -83,7 +115,7 @@ class eventProcessingMixins extends BaseForm {
 		return this.fieldsRefs.hasOwnProperty(fieldName)
 	}
 
-	getField(fieldName) {
+	getField(fieldName): FieldWrap {
 		if(this.hasField(fieldName)) {
 			return this.fieldsRefs[fieldName];
 		} else {
@@ -95,7 +127,7 @@ class eventProcessingMixins extends BaseForm {
 		this.getField(fieldName).setLabel(label);
 	}
 
-	_fieldsFromArgs(a) {
+	_fieldsFromArgs(a: IArguments): string[] {
 		let fields = Array.from(a);
 		if(!fields.length) {
 			fields = this.props.node.fields.map(i => i.fieldName);
@@ -103,7 +135,7 @@ class eventProcessingMixins extends BaseForm {
 		return fields;
 	}
 
-	hideField() {
+	hideField(...fieldsNames: string[]) {
 		let fields = this._fieldsFromArgs(arguments);
 		for(let fieldName of fields) {
 			var f = this.getField(fieldName);
@@ -114,7 +146,7 @@ class eventProcessingMixins extends BaseForm {
 		}
 	}
 
-	showField() {
+	showField(...fieldsNames: string[]) {
 		let fields = this._fieldsFromArgs(arguments);
 		for(let fieldName of fields) {
 			if(this.hiddenFields[fieldName] === 1) {
@@ -129,11 +161,11 @@ class eventProcessingMixins extends BaseForm {
 	}
 
 	hideFooter() {
-		this.setState({footerHidden: true});
+		this.setState({ footerHidden: true });
 	}
 
 	showFooter() {
-		this.setState({footerHidden: false});
+		this.setState({ footerHidden: false });
 	}
 
 	disableField(fieldName) {
@@ -158,7 +190,9 @@ class eventProcessingMixins extends BaseForm {
 		return (this.disabledFields[fieldName] === 1);
 	}
 
-	addLookupFilters(fieldName, filtersObjOrName, val) {
+	addLookupFilters(fieldName: string, filtersObjOrName: Filters);
+	addLookupFilters(fieldName: string, filtersObjOrName: string, val: any);
+	addLookupFilters(fieldName: string, filtersObjOrName: string | Filters, val?: any) {
 		this.getField(fieldName).setLookupFilter(filtersObjOrName, val);
 	}
 
@@ -168,22 +202,22 @@ class eventProcessingMixins extends BaseForm {
 
 	async onShow() {
 		this.header = '';
-		this.currentTabName = -1;
+		this.currentTabName = null;
 		this.hiddenFields = {};
 		this.disabledFields = {};
-		await this.processFormEvent(ON_FORM_LOAD, false);
+		await this.processFormEvent(ON_FORM_LOAD);
 		this.refreshLeftBar();
 
 		for(var k in this.fieldsRefs) {
 			var f = this.fieldsRefs[k];
-			if(f.props.field.fieldType !== FIELD_18_BUTTON && f.props.field.fieldType !== FIELD_17_TAB) { //is not button
-				await this.processFormEvent(ON_FIELD_CHANGE, false);
+			if(f.props.field.fieldType !== FIELD_18_BUTTON && f.props.field.fieldType !== FIELD_17_TAB) {
+				await this.processFieldEvent(f.props.field, false);
 			}
 		}
 
 		var hdr = this.header;
 		if(this.state.header !== hdr) {
-			this.setState({header: hdr});
+			this.setState({ header: hdr });
 		}
 
 		if(this.props.filters && this.props.filters.tab) {
@@ -204,7 +238,7 @@ class eventProcessingMixins extends BaseForm {
 
 						if(this.isVisibleField(f)) {
 
-							items.push({icon: f.icon, name: f.name, field: f, form: this, id: false, isDoc: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName});
+							items.push({ icon: f.icon, name: f.name, field: f, form: this, id: false, isDoc: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName });
 							isDefault = false;
 
 						}
@@ -220,7 +254,7 @@ class eventProcessingMixins extends BaseForm {
 		}
 	}
 
-	async setFieldValue(fieldName, val, isUserAction) {
+	async setFieldValue(fieldName: string, val: any, isUserAction = false) {
 
 		var f = this.getField(fieldName);
 		let field = f.props.field;
@@ -232,7 +266,7 @@ class eventProcessingMixins extends BaseForm {
 			var prev_value = this.currentData[fieldName];
 			this.currentData[fieldName] = val;
 
-			await this.processFieldEvent(ON_FIELD_CHANGE, isUserAction, prev_value);
+			await this.processFieldEvent(field, isUserAction, prev_value);
 
 			this.checkUniquValue(field, val);
 
@@ -254,7 +288,7 @@ class eventProcessingMixins extends BaseForm {
 				this.fieldAlert(field.fieldName, L('VALUE_EXISTS'), false, true);
 				return false;
 			} else {
-				this.fieldAlert(field.fieldName, '', true);
+				this.fieldAlert(field.fieldName, undefined, true);
 			}
 		}
 		return true;
@@ -287,11 +321,11 @@ class eventProcessingMixins extends BaseForm {
 		}
 
 		this.invalidAlertInOnSaveHandler = false;
-		var onSaveRes = await this.processFormEvent(ON_FORM_SAVE, false);
+		var onSaveRes = await this.processFormEvent(ON_FORM_SAVE);
 		return onSaveRes || this.invalidAlertInOnSaveHandler;
 	}
 
-	fieldAlert(fieldName, text, isSuccess, focus) {
+	fieldAlert(fieldName: string, text: string = '', isSuccess?: boolean, focus?: boolean) {
 		assert(fieldName, "fieldName expected");
 		var f = this.getField(fieldName);
 		if(f && f.props.parentCompactAreaName) {
@@ -309,11 +343,11 @@ class eventProcessingMixins extends BaseForm {
 		return FormEvents.prototype[this.props.node.tableName + '_' + eventName];
 	}
 
-	_getFieldEventHandler(field) {
-		return FieldsEvents.prototype[this.props.node.tableName + '_' + field.fieldName + '_onChange'];
+	_getFieldEventHandler(field: FieldDesc) {
+		return FieldsEvents.prototype[this.props.node.tableName + '_' + field.fieldName + '_' + ON_FIELD_CHANGE];
 	}
 
-	async processFieldEvent(field, isUserAction, prev_val) {
+	async processFieldEvent(field: FieldDesc, isUserAction?: boolean, prev_val?) {
 		return this.processEvent(this._getFieldEventHandler(field), isUserAction, prev_val);
 	}
 
@@ -338,4 +372,4 @@ class eventProcessingMixins extends BaseForm {
 	}
 }
 
-export {eventProcessingMixins, ON_FIELD_CHANGE, ON_FORM_LOAD, ON_FORM_SAVE};
+export { eventProcessingMixins };

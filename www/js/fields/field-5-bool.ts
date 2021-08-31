@@ -1,11 +1,11 @@
-import {FIELD_5_BOOL} from "../bs-utils";
-import {R} from "../r.ts";
-import React, {Component} from "react";
-import {L, renderIcon} from "../utils.js";
-import {registerFieldClass} from "../utils.js";
-import {fieldMixins} from "./field-mixins.js";
+import { FIELD_5_BOOL } from "../bs-utils";
+import { R } from "../r";
+import React, { Component } from "react";
+import { L, renderIcon } from "../utils";
+import { registerFieldClass } from "../utils";
+import { fieldMixins } from "./field-mixins";
 
-class CheckBox extends Component {
+class CheckBox extends Component<any, any> {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -84,10 +84,10 @@ registerFieldClass(FIELD_5_BOOL, class BooleanField extends fieldMixins {
 						renderIcon('check')
 					)
 				} else {
-					return R.span({className: 'field-boolean-read-only-compact'});
+					return R.span({ className: 'field-boolean-read-only-compact' });
 				}
 			} else {
-				return R.span({className: 'field-boolean-read-only'},
+				return R.span({ className: 'field-boolean-read-only' },
 					value ? L('YES') : L('NO')
 				);
 			}
@@ -95,4 +95,4 @@ registerFieldClass(FIELD_5_BOOL, class BooleanField extends fieldMixins {
 	}
 });
 
-export {CheckBox};
+export { CheckBox };
