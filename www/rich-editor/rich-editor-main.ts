@@ -4,33 +4,31 @@ $(async function () {
 	//@ts-ignore
 	window.Popper = await import("popper.js");
 
-	var s = $('#summernote');
+	//@ts-ignore
+	var s: { summernote: (...params: any[]) => void } = $('#summernote');
 	var iframeId = location.href.split('iframeId=').pop();
 
 	window.addEventListener("message", (event) => {
 
 		var data = event.data;
 
-		if (data.hasOwnProperty('options')) {
+		if(data.hasOwnProperty('options')) {
 
 			data.options.callbacks = {
 				onChange: function (contents, $editable) {
 					sendValueToParent();
 				}
 			};
-			//@ts-ignore
 			s.summernote(data.options);
 		}
-		if (data.hasOwnProperty('value')) {
-			//@ts-ignore
+		if(data.hasOwnProperty('value')) {
 			s.summernote('code', data.value);
-		} else if (data.hasOwnProperty('onSaveRichEditor')) {
+		} else if(data.hasOwnProperty('onSaveRichEditor')) {
 			sendValueToParent();
 		}
 	}, false);
 
 	function sendValueToParent() {
-		//@ts-ignore
 		window.parent.postMessage({ id: iframeId, value: s.summernote('code') }, '*');
 	}
 	window.parent.postMessage({ id: iframeId }, '*');

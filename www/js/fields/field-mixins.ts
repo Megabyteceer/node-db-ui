@@ -43,7 +43,7 @@ class fieldMixins<T extends FiledProps = FiledProps, T2 extends FieldState = Fie
 		if(Array.isArray(value)) {
 			value = value.slice();
 		}
-
+		//@ts-ignore
 		this.state = { value };
 		this.refGetter = this.refGetter.bind(this);
 	}
@@ -80,9 +80,7 @@ class fieldMixins<T extends FiledProps = FiledProps, T2 extends FieldState = Fie
 	extendEditor?(): void;
 
 	renderTextValue(txt) {
-		//@ts-ignore
 		if(this.props.field.forSearch) {
-			//@ts-ignore
 			const list = this.props.form.props.list;
 			if(list && list.filters && list.filters.s) {
 

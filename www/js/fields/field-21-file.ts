@@ -16,6 +16,7 @@ registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
 
 	setValue(val) {
 		if(typeof val === 'string') {
+			//@ts-ignore
 			this.state.value = val;
 		} else {
 			this.props.form.currentData[this.props.field.fieldName] = undefined;
@@ -70,7 +71,8 @@ class FileFormBody extends Component<any, any> {
 
 	save(): Promise<void> {
 		if(this.state.file) {
-			return submitData('api/uploadFile', serializeForm(ReactDOM.findDOMNode(this.formRef)), true) as Promise<unknown> as Promise<void>;
+			let n = ReactDOM.findDOMNode(this.formRef);
+			return submitData('api/uploadFile', serializeForm(n), true) as Promise<unknown> as Promise<void>;
 		}
 	}
 

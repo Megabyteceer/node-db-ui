@@ -46,6 +46,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 
 		if(this.props.filters) {
 			if(!this.state.filters) {
+				//@ts-ignore
 				this.state.filters = {};
 			}
 			Object.assign(this.state.filters, this.props.filters);
@@ -155,6 +156,7 @@ registerFieldClass(FIELD_7_Nto1, class EnumField extends fieldLookupMixins {
 	}
 
 	setValue(val) {
+		//@ts-ignore
 		this.state.value = val;
 		this.forceUpdate();
 	}

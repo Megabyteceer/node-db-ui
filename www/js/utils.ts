@@ -667,7 +667,7 @@ function decodeData(data, node) {
 		}
 	}
 }
-function encodeData(data, node) {
+function encodeData(data, node): RecordData {
 	var ret = Object.assign({}, data);
 	for(var k in node.fields) {
 		var f = node.fields[k];
@@ -823,7 +823,7 @@ function isAuthNeed(data) {
 	return (data.isGuest && isUserHaveRole(3)) || (data.error && (data.error.message === 'auth'));
 }
 
-function serializeForm(form) {
+function serializeForm(form): FormData {
 	var obj = $(form);
 	/* ADD FILE TO PARAM AJAX */
 	var formData = new FormData();
@@ -842,24 +842,29 @@ function serializeForm(form) {
 	return formData;
 }
 
-function submitData(url, dataToSend: string, noProcessData?: true): Promise<RecId>;
-function submitData(url, dataToSend: RecordData, noProcessData?: boolean): Promise<RecId>;
-function submitData(url, dataToSend: RecordData | string, noProcessData?: boolean): Promise<RecId> {
+interface SubmitRecordData {
+	nodeId: RecId;
+	recId: RecId;
+	data?: RecordData;
+	sessionToken?: string;
+}
+
+function submitData(url: string, dataToSend: FormData, noProcessData): Promise<RecId>;
+function submitData(url: string, dataToSend: SubmitRecordData): Promise<RecId>;
+function submitData(url: string, dataToSend: SubmitRecordData | FormData, noProcessData?: boolean): Promise<RecId> {
 	LoadingIndicator.instance.show();
 
 	if(!noProcessData) {
-		//@ts-ignore
-		dataToSend.sessionToken = User.sessionToken;
-		dataToSend = JSON.stringify(dataToSend);
+		(dataToSend as SubmitRecordData).sessionToken = User.sessionToken;
+		dataToSend = JSON.stringify(dataToSend) as unknown as SubmitRecordData;
 	}
 
 	var callStack = new Error('submitData called from: ').stack;
 	let options: RequestInit = {
 		method: 'POST',
-		body: dataToSend as string
+		body: dataToSend as FormData
 	}
 	if(!noProcessData) {
-		//@ts-ignore
 		options.headers = headersJSON;
 	}
 	return fetch(__corePath + url, options)

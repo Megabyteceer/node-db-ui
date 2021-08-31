@@ -54,7 +54,9 @@ class List extends BaseForm {
 	constructor(props) {
 		super(props);
 		this.filters = Object.assign({}, props.filters);
+		//@ts-ignore
 		this.state.node = props.node;
+		//@ts-ignore
 		this.state.data = props.initialData;
 		this.refreshData = this.refreshData.bind(this);
 		this.changeSearch = this.changeSearch.bind(this);
@@ -71,7 +73,9 @@ class List extends BaseForm {
 		consoleLog('LIST receive props');
 		this.filters = $.extend({}, newProps.filters);
 		this.setSearchInputValue(this.filters.s as string);
+		//@ts-ignore
 		this.state.node = newProps.node;
+		//@ts-ignore
 		this.state.data = newProps.initialData;
 		this.onShow();
 	}

@@ -7,6 +7,7 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
 
 	setValue(val) {
 		this.refToInput.value = val;
+		//@ts-ignore
 		this.state.value = val;
 	}
 
