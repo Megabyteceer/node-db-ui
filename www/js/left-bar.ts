@@ -66,12 +66,60 @@ function isStrictlySelected(item) {
 
 class BarItem extends Component<any, any> {
 
+	constructor(prosp) {
+		super(prosp);
+		this.state = {};
+	}
+
 	toggle(ev) {
-		if(!this.state) {
-			this.setState({ expanded: true });
+		let group = ev.target.closest('.left-bar-group-container').querySelector('.left-bar-children');
+		if(!this.state.expanded) {
+			group.classList.remove('hidden');
+			group.style.transition = 'unset';
+			group.style.opacity = 0.001;
+			group.style.position = 'absolute';
+			group.style.maxHeight = 'unset';
+			group.style.transform = 'scaleY(0)';
+			group.style.transformOrigin = 'top left';
+			let height;
+			let timer = setInterval(() => {
+				height = group.clientHeight;
+				if(height > 0) {
+					clearInterval(timer);
+					group.style.maxHeight = '0px';
+					group.style.position = 'unset';
+					group.style.opacity = 1;
+					group.style.transition = 'all 0.1s';
+					timer = setInterval(() => {
+						if(group.clientHeight <= 6) {
+							clearInterval(timer);
+							group.style.transform = 'scaleY(1)';
+							group.style.maxHeight = height + 'px';
+							setTimeout(() => {
+								group.style.maxHeight = 'unset';
+							}, 114);
+						}
+					}, 1);
+				}
+			}, 1);
 		} else {
-			this.setState({ expanded: !this.state.expanded });
+			group.style.transform = 'scaleY(1)';
+			group.style.transformOrigin = 'top left';
+			group.style.transition = 'unset';
+			group.style.maxHeight = group.clientHeight + 'px';
+			group.style.transition = 'all 0.1s';
+			setTimeout(() => {
+				group.style.transform = 'scaleY(0)';
+				group.style.maxHeight = '0px';
+			}, 1);
+			setTimeout(() => {
+				group.classList.add('hidden');
+			}, 114);
 		}
+
+		//@ts-ignore
+		this.state.expanded = !this.state.expanded;
+
 	}
 
 	closeMenuIfNeed() {
@@ -125,12 +173,17 @@ class BarItem extends Component<any, any> {
 		var caret;
 
 		var children;
+
+		const isExpanded = this.state.expanded || isMustBeExpanded(this.props.item);
+		if(isExpanded) {
+			//@ts-ignore
+			this.state.expanded = isExpanded;
+		}
+
 		if(!item.isDoc) {
-			if((this.state && this.state.expanded) || isMustBeExpanded(this.props.item)) {
+			if(isExpanded) {
 				caret = 'up';
-				children = R.div({ className: 'left-bar-children' },
-					renderItemsArray(item.children, this.props.level + 1, item)
-				)
+
 			} else if(!item.isDoc) {
 				caret = 'down';
 			}
@@ -140,6 +193,9 @@ class BarItem extends Component<any, any> {
 					renderIcon('caret-' + caret)
 				)
 			}
+			children = R.div({ className: isExpanded ? 'left-bar-children' : 'left-bar-children hidden' },
+				renderItemsArray(item.children, this.props.level + 1, item)
+			)
 		}
 
 		const isMustBeExpandedVal = isMustBeExpanded(this.props.item);
