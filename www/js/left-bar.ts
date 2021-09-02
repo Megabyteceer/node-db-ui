@@ -1,8 +1,10 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import { FieldAdmin } from "./admin/field-admin";
 import { NodeAdmin, createNodeForMenuItem } from "./admin/node-admin";
+import { assert } from "./bs-utils";
 import { R } from "./r";
-import { iAdmin } from "./user";
+import { iAdmin, User } from "./user";
 import { currentFormParameters, isLitePage, L, locationToHash, renderIcon, setFormFilter } from "./utils";
 
 let collapsed;
@@ -21,7 +23,9 @@ function isMustBeExpanded(i) {
 	}
 }
 
-interface LeftBarItem {
+const allGropus: BarItem[] = [];
+
+interface LeftBarItemData {
 
 }
 
@@ -35,29 +39,20 @@ function isCurrentlyShowedLeftbarItem(item) {
 	}
 
 	if(!item.staticLink) {
-
-		var allItems = LeftBar.instance.props.staticItems.concat(LeftBar.instance.state.items);
-		excludeItem = item;
-		if(allItems.some(isStrictlySelected)) {
-			return false;
-		}
-
 		return currentFormParameters.nodeId === item.id &&
 			currentFormParameters.recId === item.recId &&
 			currentFormParameters.editable === item.editable;
 	} else {
-		excludeItem = null;
 		return isStrictlySelected(item);
 	}
 }
 
-var excludeItem;
 function isStrictlySelected(item) {
 	if(item) {
 		if(item.hasOwnProperty('children')) {
 			return item.children.some(isStrictlySelected);
 		} else {
-			if(item !== excludeItem && item.staticLink) {
+			if(item.staticLink) {
 				return location.hash === item.staticLink;
 			}
 		}
@@ -69,57 +64,92 @@ class BarItem extends Component<any, any> {
 	constructor(prosp) {
 		super(prosp);
 		this.state = {};
+		this.collapseOtherGroups = this.collapseOtherGroups.bind(this);
+	}
+
+	componentDidMount() {
+		if(!this.props.item.isDoc) {
+			allGropus.push(this);
+		}
+	}
+
+	componentWillUnmount() {
+		if(!this.props.item.isDoc) {
+			let i = allGropus.indexOf(this);
+			assert(i >= 0, 'BarItem registration is corrupted.');
+			allGropus.splice(i, 1);
+		}
+	}
+
+	collapseOtherGroups() {
+		for(let g of allGropus) {
+			if(g.props.item.children.indexOf(this.props.item) < 0) {
+				g.collapse();
+			}
+		}
+	}
+
+	expand() {
+		const element = this._findGroupContainer();
+		element.classList.remove('hidden');
+		this.setState({ expanded: true });
+		element.style.transition = 'unset';
+		element.style.opacity = '0.001';
+		element.style.position = 'absolute';
+		element.style.maxHeight = 'unset';
+		element.style.transform = 'scaleY(0)';
+		element.style.transformOrigin = 'top left';
+		let height;
+		let timer = setInterval(() => {
+			height = element.clientHeight;
+			if(height > 0) {
+				clearInterval(timer);
+				element.style.maxHeight = '0px';
+				element.style.position = 'unset';
+				element.style.opacity = '1';
+				element.style.transition = 'all 0.1s';
+				timer = setInterval(() => {
+					if(element.clientHeight <= 6) {
+						clearInterval(timer);
+						element.style.transform = 'scaleY(1)';
+						element.style.maxHeight = height + 'px';
+						setTimeout(() => {
+							element.style.maxHeight = 'unset';
+						}, 114);
+					}
+				}, 1);
+			}
+		}, 1);
+	}
+
+	collapse() {
+		const element = this._findGroupContainer();
+		element.style.transform = 'scaleY(1)';
+		element.style.transformOrigin = 'top left';
+		element.style.transition = 'unset';
+		element.style.maxHeight = element.clientHeight + 'px';
+		element.style.transition = 'all 0.1s';
+		setTimeout(() => {
+			element.style.transform = 'scaleY(0)';
+			element.style.maxHeight = '0px';
+		}, 1);
+		setTimeout(() => {
+			element.classList.add('hidden');
+			this.setState({ expanded: false });
+		}, 114);
+	}
+
+	_findGroupContainer(): HTMLElement {
+		return (ReactDOM.findDOMNode(this) as HTMLDivElement).querySelector('.left-bar-children');
 	}
 
 	toggle(ev) {
-		let group = ev.target.closest('.left-bar-group-container').querySelector('.left-bar-children');
-		if(!this.state.expanded) {
-			group.classList.remove('hidden');
-			group.style.transition = 'unset';
-			group.style.opacity = 0.001;
-			group.style.position = 'absolute';
-			group.style.maxHeight = 'unset';
-			group.style.transform = 'scaleY(0)';
-			group.style.transformOrigin = 'top left';
-			let height;
-			let timer = setInterval(() => {
-				height = group.clientHeight;
-				if(height > 0) {
-					clearInterval(timer);
-					group.style.maxHeight = '0px';
-					group.style.position = 'unset';
-					group.style.opacity = 1;
-					group.style.transition = 'all 0.1s';
-					timer = setInterval(() => {
-						if(group.clientHeight <= 6) {
-							clearInterval(timer);
-							group.style.transform = 'scaleY(1)';
-							group.style.maxHeight = height + 'px';
-							setTimeout(() => {
-								group.style.maxHeight = 'unset';
-							}, 114);
-						}
-					}, 1);
-				}
-			}, 1);
+		let group: HTMLDivElement = ev.target.closest('.left-bar-group-container').querySelector('.left-bar-children');
+		if(group.classList.contains('hidden')) {
+			this.expand();
 		} else {
-			group.style.transform = 'scaleY(1)';
-			group.style.transformOrigin = 'top left';
-			group.style.transition = 'unset';
-			group.style.maxHeight = group.clientHeight + 'px';
-			group.style.transition = 'all 0.1s';
-			setTimeout(() => {
-				group.style.transform = 'scaleY(0)';
-				group.style.maxHeight = '0px';
-			}, 1);
-			setTimeout(() => {
-				group.classList.add('hidden');
-			}, 114);
+			this.collapse();
 		}
-
-		//@ts-ignore
-		this.state.expanded = !this.state.expanded;
-
 	}
 
 	closeMenuIfNeed() {
@@ -174,23 +204,17 @@ class BarItem extends Component<any, any> {
 
 		var children;
 
-		const isExpanded = this.state.expanded || isMustBeExpanded(this.props.item);
+		const _isMustBeExpanded = isMustBeExpanded(this.props.item);
+		const isExpanded = this.state.expanded || _isMustBeExpanded;
 		if(isExpanded) {
 			//@ts-ignore
 			this.state.expanded = isExpanded;
 		}
 
 		if(!item.isDoc) {
-			if(isExpanded) {
-				caret = 'up';
-
-			} else if(!item.isDoc) {
-				caret = 'down';
-			}
-
-			if(caret) {
+			if(!_isMustBeExpanded) {
 				caret = R.div({ className: "left-bar-group-caret" },
-					renderIcon('caret-' + caret)
+					renderIcon('caret-' + (isExpanded ? 'up' : 'down'))
 				)
 			}
 			children = R.div({ className: isExpanded ? 'left-bar-children' : 'left-bar-children hidden' },
@@ -236,7 +260,7 @@ class BarItem extends Component<any, any> {
 			} else {
 				href = locationToHash(item.id, item.recId, item.filters, item.editable);
 			}
-			return R.a({ href: href },
+			return R.a({ href: href, onClick: this.collapseOtherGroups },
 				adminControl,
 				itemBody
 			)
@@ -295,12 +319,12 @@ class LeftBar extends Component<any, any> {
 		this.forceUpdate();
 	}
 
-	setLeftBar(menuData?: LeftBarItem[]) {
+	setLeftBar(menuData?: LeftBarItemData[]) {
 		this.setState({ items: menuData });
 	}
 
 	render() {
-		if(isLitePage()) {
+		if(isLitePage() || !User.currentUserData) {
 			return R.td(null);
 		}
 

@@ -7,7 +7,7 @@ import { ENV } from "./main-frame";
 import moment from "moment";
 import { Component } from "react";
 import { R } from "./r";
-import { ADMIN_ROLE_ID, UserSession } from "./bs-utils";
+import { UserSession } from "./bs-utils";
 
 
 function setUserOrg(orgId) {
