@@ -88,7 +88,6 @@ class List extends BaseForm<ListProps, ListState> {
 
 	UNSAFE_componentWillReceiveProps(newProps) {
 		super.UNSAFE_componentWillReceiveProps(newProps);
-		consoleLog('LIST receive props');
 		this.filters = $.extend({}, newProps.filters);
 		this.setSearchInputValue(this.filters.s as string);
 		//@ts-ignore

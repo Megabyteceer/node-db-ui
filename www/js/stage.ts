@@ -35,7 +35,6 @@ class Stage extends Component<any, any> {
 	}
 
 	_setFormData(node?: NodeDesc, data?: RecordData, recId?: RecId, filters?: Filters, editable?: boolean) {
-		consoleLog('set form data');
 		if(typeof (node) !== 'undefined') {
 			this.state = null;
 			setTimeout(() => {
