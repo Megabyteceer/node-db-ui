@@ -488,34 +488,36 @@ input[readonly] {
 	border-bottom: hidden;
 }
 
-.back-drop {
+.loader-back-drop {
 	position: fixed;
 	top: 0;
 	bottom: 0;
-	background: #00102000;
 	right: 0;
 	left: 0;
-	z-index: 15;
+	z-index: 15000;
 	cursor: wait;
 }
 
-.loading-spinner-container-inactive {
-	height: 0px;
-	transition: 0.3s;
-}
-
 .loading-spinner-container {
-	margin: auto;
-	position: relative;
+	margin-left: -45px;
+	position: fixed;
+	top: 0;
+	left: 50%;
 	border: 2px solid #fff;
 	border-top: 0;
 	height: 40px;
 	width: 90px;
-	transition: 0.3s;
+	transition: height 0.3s, opacity 0.3s;
 	overflow: hidden;
 	background: #999;
 	border-bottom-left-radius: 4px;
 	border-bottom-right-radius: 4px;
+	opacity: 1;
+}
+
+.loading-spinner-container-inactive {
+	height: 0px;
+	opacity: 0;
 }
 
 .loading-spinner {
@@ -524,7 +526,7 @@ input[readonly] {
 	text-align: center;
 	color: #fff;
 	font-size: 170%;
-	bottom: 3px;
+	bottom: 5px;
 }
 
 .top-bar {
@@ -1049,7 +1051,7 @@ input[readonly] {
 	vertical-align: middle;
 	width: 130px;
 	display: inline-block;
-	margin: 0 5px;
+	margin-right: 5px;
 }
 
 .field-color-preview-bg {
@@ -1106,7 +1108,7 @@ input[readonly] {
 	color: #227;
 	font-weight: bold;
 	font-size: 85%;
-	margin: 0 10px;
+	margin-right: 10px;
 }
 
 .form-full {

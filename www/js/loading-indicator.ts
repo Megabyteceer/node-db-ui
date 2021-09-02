@@ -18,7 +18,6 @@ class LoadingIndicator extends Component<any, any> {
 	}
 
 	show() {
-
 		if(isLitePage()) return;
 		//@ts-ignore
 		this.state.showCount++;
@@ -30,14 +29,13 @@ class LoadingIndicator extends Component<any, any> {
 	render() {
 		let active = this.state.showCount > 0;
 
-		return R.div({ className: active ? 'back-drop' : null },
-			R.div({ className: active ? "loading-spinner-container" : "loading-spinner-container-inactive" },
+		return R.div({ className: active ? 'loader-back-drop' : null },
+			R.div({ className: active ? "loading-spinner-container" : "loading-spinner-container loading-spinner-container-inactive" },
 				active ? R.div({ className: "loading-spinner" },
 					renderIcon('cog fa-spin')
 				) : undefined
 			)
 		);
-
 	}
 }
 /** @type LoadingIndicator */
