@@ -1,6 +1,3 @@
-Left bar smooth collapse via delays
-
-Validate return true instead of throw
 
 N2m fields validate all subforms before save
 

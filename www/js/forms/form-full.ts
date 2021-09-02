@@ -141,7 +141,8 @@ class FormFull extends eventProcessingMixins {
 	async validate() {
 		this.formIsValid = true;
 		if(await this.onSave()) {
-			throw false;
+			this.formIsValid = false;
+			return
 		}
 
 		for(let k in this.fieldsRefs) {
@@ -164,13 +165,7 @@ class FormFull extends eventProcessingMixins {
 				}
 			}
 		}
-		if(!this.formIsValid) {
-			/// #if DEBUG
-			/*
-			/// #endif
-			throw false;
-			//*/
-		}
+		return this.formIsValid;
 	}
 	saveClick(isDraft) {
 		LoadingIndicator.instance.show();
@@ -208,9 +203,7 @@ class FormFull extends eventProcessingMixins {
 			}
 		}
 
-		await this.validate();
-
-		if(!this.formIsValid) {
+		if(!await this.validate()) {
 			return;
 		}
 
