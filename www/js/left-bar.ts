@@ -213,7 +213,7 @@ class BarItem extends Component<any, any> {
 
 		if(!item.isDoc) {
 			if(!_isMustBeExpanded) {
-				caret = R.div({ className: "left-bar-group-caret" },
+				caret = R.span({ className: "left-bar-group-caret" },
 					renderIcon('caret-' + (isExpanded ? 'up' : 'down'))
 				)
 			}
@@ -248,8 +248,10 @@ class BarItem extends Component<any, any> {
 			}, className
 		},
 			itemsIcon,
-			collapsed ? undefined : item.name,
-			collapsed ? undefined : caret
+			collapsed ? undefined : R.div({ className: 'left-bar-item-body' },
+				item.name,
+				caret
+			)
 		);
 
 
