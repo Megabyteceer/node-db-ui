@@ -11,6 +11,12 @@ import { GUEST_ROLE_ID, assert, ADMIN_ROLE_ID } from "../www/js/bs-utils";
 
 const server = createServer();
 
+/// #if DEBUG
+import { DPromise } from "../www/js/debug-promise";
+//@ts-ignore
+global.Promise = DPromise;
+/// #endif
+
 server.on('request', (req, res) => {
 	if(req.method === 'POST') {
 		let handler = req.url.substr(6);

@@ -26,6 +26,11 @@ import React from 'react';
 /// #if DEBUG
 import { AdminRoleprevsForm } from "./admin/admin-roleprevs-form";
 
+import { DPromise } from "./debug-promise";
+
+//@ts-ignore
+window.Promise = DPromise;
+
 // @ts-ignore
 window.AdminRoleprevsForm = AdminRoleprevsForm;
 /*
@@ -38,10 +43,7 @@ window.onerror = (msg, url, line, col, error) => {
 		submitErrorReport(msg, stack);
 	};
 //*/
-import { DPromise } from "./debug-promise";
 
-//@ts-ignore
-window.Promise = DPromise;
 
 window.addEventListener('load', () => {
 	setTimeout(() => {

@@ -6,6 +6,7 @@ import { throwError } from "../../www/js/bs-utils";
 import { join } from "path";
 import { readFileSync, writeFileSync } from "fs";
 import { isAdmin } from "../auth.js";
+const open = require("open");
 
 async function nodePrevs(reqData, userSession) {
 	shouldBeAdmin(userSession);
@@ -20,6 +21,8 @@ async function nodePrevs(reqData, userSession) {
 		return { prevs, isDoc: getNodeDesc(nodeId).isDoc }
 	}
 }
+
+const NEW_FUNCTION_MARKER = '//_insertNewHandlersHere_';
 
 async function clearCache(userSession) {
 	shouldBeAdmin(userSession);
@@ -65,73 +68,45 @@ function substrCount(string, subString) {
 }
 
 function editFunction(fileName, functionName) {
-	/// #if DEBUG
-
-
-
-
-
 
 	fileName = join(__dirname, fileName);
 
 	let text = readFileSync(fileName, 'utf8').replaceAll("\r\n", "\n");
 
-	const c1 = substrCount(text, functionName);
+	const c1 = substrCount(text, functionName + '() {');
 
 	if(c1 > 1) {
-		throwError("function )" + functionName + ") present more that once in file: " + fileName);
+		throwError("function (" + functionName + ") present more that once in file: " + fileName);
 	} else if(!c1) {
 		// TODO: add function and got to source
+		let i = text.indexOf(NEW_FUNCTION_MARKER);
+		if(i < 0) {
+			throwError("marker (" + NEW_FUNCTION_MARKER + ") is not detected in file: " + fileName);
+		}
+		text = text.substr(0, i) + 'async ' + functionName + `() {
+		
+	}
 
+	` + text.substr(i);
+		writeFileSync(fileName, text);
 	}
-	// TODO: open function to edit
-	return;
-	/*
-		let start = text.indexOf(startMarker);
-		let end = text.indexOf(endMarker);
-	
-		if(start >= 0) {
-			start += startMarker.length;
-		}
-	
-		if(newSource === false) {
-			if(start >= 0) {
-				return text.substring(start + 1, end - 1);
-			} else {
-				return '';
+
+	let a = text.split('\n');
+	let line = a.findIndex(s => s.indexOf(functionName + '() {') >= 0);
+	line += 2;
+	try {
+		//open(fileName);
+		let arg = fileName + ':' + line + ':2';
+		open('', {
+			app: {
+				name: 'code',
+				arguments: ['-r', '-g', arg]
 			}
-		} else {
-	
-			if(start >= 0) { //replace handler*/
-	writeFileSync(fileName, text); //can use sync, because events update is very rare and admin only operation
-	/*	} else {
-			writeFileSync(fileName, text.substring(0, start) + '\n' + newSource + '\n' + text.substring(end));
-		}
-	} else if(newSource) {
-		//add new handler
-	
-		start = text.indexOf("//insertNewhandlersHere_adsqw09");
-		if(start < 0) {
-			throwError('new handlers marker is corrupted.');
-		}
-		let functionStart;
-		if(type === 'field') {
-			functionStart = "function " + functionName + "() {";
-		} else {
-			if(handler === 'onload') {
-				functionStart = "formsEventsOnLoad[" + itemId + "] = function " + functionName + "() {" + startMarker;
-			} else {
-				functionStart = "formsEventsOnSave[" + itemId + "] = async function " + functionName + "() {" + startMarker;
-			}
-		}
-		writeFileSync(fileName, text.substring(0, start) + functionStart + '\n' + newSource + '\n' + endMarker + '\n\n' + text.substring(start));
-	}
+		});
+	} catch(err) {
+		return 'Can not open file to edit: ' + fileName
+	};
 	return 1;
-}*/
-
-
-	/// #endif
-
 }
 
 async function getClientEventHandler({
@@ -144,9 +119,9 @@ async function getClientEventHandler({
 	let node = getNodeDesc(nodeId);
 	if(fieldId) {
 		let field = getFieldDesc(fieldId);
-		return editFunction('../../../www/js/events/fields_events.js', node.tableName + '_' + field.fieldName + '_' + handler);
+		return editFunction('../../../www/js/events/fields_events.ts', node.tableName + '_' + field.fieldName + '_' + handler);
 	} else {
-		return editFunction('../../../www/js/events/fields_events.js', node.tableName + '_' + handler);
+		return editFunction('../../../www/js/events/forms_events.ts', node.tableName + '_' + handler);
 	}
 }
 

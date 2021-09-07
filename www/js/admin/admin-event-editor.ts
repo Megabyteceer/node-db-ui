@@ -11,7 +11,7 @@ function admin_editSource(handler, node, field) {
 		nodeId,
 		fieldId
 	}
-	getData('admin/editEventHandler', this.getPostData(data));
+	getData('admin/editEventHandler', data);
 }
 
 export {
