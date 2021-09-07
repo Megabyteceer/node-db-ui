@@ -1,8 +1,4 @@
 
-N2m fields validate all subforms before save
-
-Events editor just create method and open it to edit at line num we want.
-
 Make selenium tests for basic operations
 
 модальные формы для редактирования админских вещей. (popup заменить)
@@ -29,8 +25,6 @@ try mysql.createPool
 
 captcha
 
-Обернуть все клиентские хендлеры в класс - наследник фуллформы чтобы подсказки по коду работали в вскоде
-
 Generate small icons for all image fields
 
 Lookup nto1 and ntom to user gives access for user if field marked as access opener. Keep such a fields in prevsFields property. Use it in messages.
@@ -38,8 +32,6 @@ Lookup nto1 and ntom to user gives access for user if field marked as access ope
 Linemaster list. render items one by one with delay
 
 проверить все TODO
-
-extendEditor доки
 
 Use mysql>Alter table students ADD FULLTEXT (first_name, last_name);
 mysql>Select * from students where match(first_name, last_name) AGAINST (‘Jones’);

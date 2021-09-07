@@ -188,7 +188,9 @@ class FieldWrap extends Component<any, any> {
 				this.fieldAlert();
 				return true;
 			} else {
-				this.fieldAlert(invalidMessage, false, focusIfInvalid);
+				if(typeof invalidMessage === 'string') {
+					this.fieldAlert(invalidMessage, false, focusIfInvalid);
+				}
 				return false;
 			}
 		}

@@ -132,7 +132,7 @@ class FormFull extends eventProcessingMixins {
 		}
 	}
 
-	async saveForm() {
+	async saveForm(): Promise<boolean> {
 		if(this.props.editable) {
 			return this.saveClick('keepStatus');
 		}
@@ -167,10 +167,10 @@ class FormFull extends eventProcessingMixins {
 		}
 		return this.formIsValid;
 	}
-	saveClick(isDraft) {
+	async saveClick(isDraft): Promise<boolean> {
 		LoadingIndicator.instance.show();
 
-		this.saveClickInner(isDraft)
+		let ret = this.saveClickInner(isDraft)
 			/// #if DEBUG
 			/*
 			/// #endif
@@ -183,8 +183,9 @@ class FormFull extends eventProcessingMixins {
 			.finally(() => {
 				LoadingIndicator.instance.hide();
 			});
+		return ret;
 	}
-	async saveClickInner(isDraft) {
+	async saveClickInner(isDraft): Promise<boolean> {
 
 		this.forceBouncingTimeout();
 		var data: RecordData = {};
@@ -204,7 +205,7 @@ class FormFull extends eventProcessingMixins {
 		}
 
 		if(!await this.validate()) {
-			return;
+			return true;
 		}
 
 		for(var k in this.fieldsRefs) {

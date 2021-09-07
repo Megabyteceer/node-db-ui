@@ -108,7 +108,6 @@ import { initDictionary } from "../../js/utils";
 		'RICH_ED_SIZE': 'Total size of images in field "%" should be less that 2 megabytes.',
 		'RESTARTNOW': 'To aplly changes you have to relogin. Do you want to do it now?',
 		'INVALID_DATA_LIST': 'List is not complete',
-		'SAVE_SUB_FIRST': 'Please save subform first',
 		'PASS_LEN': 'Password length should be at leas % symbols.',
 		'PASS_NOT_MACH': 'Passwords dont mach.',
 		'LATIN_ONLY': 'Latin symbols only',

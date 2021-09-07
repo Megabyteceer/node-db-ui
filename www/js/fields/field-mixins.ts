@@ -3,7 +3,7 @@ import React from "react";
 
 import { assert, FieldDesc, RecordData } from "../bs-utils";
 import { Component } from "react";
-import { Highlighter } from "react-highlight-words";
+import Highlighter from "react-highlight-words";
 import { FormFull } from "../forms/form-full.js";
 import { FieldWrap } from "./field-wrap.js";
 
@@ -73,7 +73,7 @@ class fieldMixins<T extends FiledProps = FiledProps, T2 extends FieldState = Fie
 		throw "class " + this.constructor.name + " has no setValue() method.";
 	}
 
-	async getMessageIfInvalid?(): Promise<string | false>;
+	async getMessageIfInvalid?(): Promise<string | false | true>;
 	async beforeSave?(): Promise<unknown>;
 	async afterSave?(): Promise<unknown>;
 	inlineEditable?(): void;
@@ -83,9 +83,7 @@ class fieldMixins<T extends FiledProps = FiledProps, T2 extends FieldState = Fie
 		if(this.props.field.forSearch) {
 			const list = this.props.form.props.list;
 			if(list && list.filters && list.filters.s) {
-
 				return React.createElement(Highlighter, {
-
 					highlightClassName: 'mark-search',
 					searchWords: [(typeof list.filters.s === 'string') ? list.filters.s : String(list.filters.s)],
 					autoEscape: true,
@@ -98,6 +96,7 @@ class fieldMixins<T extends FiledProps = FiledProps, T2 extends FieldState = Fie
 
 	focus() {
 		if(this.refToInput) {
+			//@ts-ignore
 			ReactDOM.findDOMNode(this.refToInput).focus();
 		}
 	}

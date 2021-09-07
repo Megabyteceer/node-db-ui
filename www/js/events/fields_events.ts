@@ -83,7 +83,10 @@ class FieldsEvents extends FormEvents {
 			case FIELD_14_NtoM:
 			case FIELD_15_1toN:
 				this.disableField("vis_list");
+				this.disableField("nostore");
+				this.setFieldValue('nostore', 0);
 				this.setFieldValue("vis_list", 0);
+				this.hideField('forSearch', 'requirement', 'uniqu');
 			case FIELD_7_Nto1:
 				this.hideField("maxlen", "uniqu");
 				this.setFieldValue("uniqu", false);

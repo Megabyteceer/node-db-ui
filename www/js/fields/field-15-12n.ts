@@ -10,6 +10,7 @@ import { FIELD_15_1toN, RecId, RecordData } from "../bs-utils";
 class Lookup1toNField extends fieldLookupMixins {
 
 	inlineListRef: List;
+	openedCreationForm: FormFull;
 
 	constructor(props) {
 		super(props);
@@ -60,7 +61,7 @@ class Lookup1toNField extends fieldLookupMixins {
 		this.setState({ inlineEditing: true });
 	}
 
-	async getMessageIfInvalid(): Promise<string | false> {
+	async getMessageIfInvalid(): Promise<string | false | true> {
 		if(this.state.inlineEditing) {
 			let ret;
 			await Promise.all(this.inlineListRef.getSubforms().map((subForm) => {
@@ -71,9 +72,10 @@ class Lookup1toNField extends fieldLookupMixins {
 			return ret;
 		}
 		else if(this.state.creationOpened) {
-			return L("SAVE_SUB_FIRST");
-		} else {
-			return false;
+			let subFormResult = await this.openedCreationForm.saveForm();
+			if(subFormResult) {
+				return true;
+			}
 		}
 	}
 
@@ -113,7 +115,11 @@ class Lookup1toNField extends fieldLookupMixins {
 					renderIcon('cog fa-spin fa-2x')
 				);
 			} else {
-				body = React.createElement(FormFull, { node: this.savedNode, initialData: this.state.dataToEdit || {}, parentForm: this, isLookup: true, filters: this.state.filters, editable: true });
+				body = React.createElement(FormFull, {
+					ref: (form) => {
+						this.openedCreationForm = form;
+					}, node: this.savedNode, initialData: this.state.dataToEdit || {}, parentForm: this, isLookup: true, filters: this.state.filters, editable: true
+				});
 			}
 
 		} else {

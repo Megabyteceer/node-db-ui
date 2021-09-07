@@ -14,6 +14,8 @@ import("../events/fields_events").then((m) => {
 	FieldsEvents = m.FieldsEvents;
 });
 
+let isHandlersInitialized;
+
 class eventProcessingMixins extends BaseForm {
 	/** true if form opened for new record creation */
 	rec_creation: boolean;
@@ -54,6 +56,27 @@ class eventProcessingMixins extends BaseForm {
 
 	constructor(props) {
 		super(props);
+
+		if(!isHandlersInitialized) {
+
+			for(let h of [FormEvents, FieldsEvents]) {
+				const proto = h.prototype;
+				const names = Object.getOwnPropertyNames(proto);
+				for(let name of names) {
+					if(name !== 'constructor') {
+						const method = proto[name];
+						if(typeof method === 'function') {
+							assert(!eventProcessingMixins.prototype[name], FormEvents.name + " contains wrong method name: " + name);
+							eventProcessingMixins.prototype[name] = method;
+						}
+					}
+				}
+				FieldsEvents.prototype;
+				isHandlersInitialized = true;
+			}
+		}
+
+
 		this.currentData = null;
 		this.onSaveCallback = null;
 		this.resetFieldsProperties();

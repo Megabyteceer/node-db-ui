@@ -146,21 +146,15 @@ class List extends BaseForm<ListProps, ListState> {
 				data.items.sort(sortByOrder);
 			}
 
-			if(!this.props.node) {
-				const node = await getNode(this.props.nodeId);
-				if(this.isSubForm()) {
-					this.props.parentForm.saveNodeDataAndFilters(node, data, this.filters);
-				}
-				this.setState({ data, node });
-				this.scrollIfNeed();
-			} else {
-				if(this.isSubForm()) {
-					this.props.parentForm.saveNodeDataAndFilters(this.props.node, data, this.filters);
-				}
-				this.setState({ data });
-				this.scrollIfNeed();
+			let node = this.props.node;
+			if(!node) {
+				node = await getNode(this.props.nodeId);
 			}
-
+			if(this.isSubForm()) {
+				this.props.parentForm.saveNodeDataAndFilters(node, data, this.filters);
+			}
+			this.setState({ data, node });
+			this.scrollIfNeed();
 		}
 	}
 

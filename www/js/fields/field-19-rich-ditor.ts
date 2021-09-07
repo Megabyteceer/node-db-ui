@@ -62,7 +62,7 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixin
 		delete (listeners[this.iframeId]);
 	}
 
-	async getMessageIfInvalid(): Promise<string | false> {
+	async getMessageIfInvalid(): Promise<string | false | true> {
 		if(this.state.value) {
 			var val = this.state.value;
 			if(val.length > 4000000) {
