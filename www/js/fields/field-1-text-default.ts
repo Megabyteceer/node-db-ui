@@ -1,9 +1,9 @@
 import { FIELD_1_TEXT } from "../bs-utils";
 import { R } from "../r";
 import { consoleDir, registerFieldClass } from "../utils";
-import { fieldMixins } from "./field-mixins";
+import { BaseField } from "./base-field";
 
-registerFieldClass(FIELD_1_TEXT, class TextField extends fieldMixins {
+registerFieldClass(FIELD_1_TEXT, class TextField extends BaseField {
 
 	setValue(val) {
 		this.refToInput.value = val;

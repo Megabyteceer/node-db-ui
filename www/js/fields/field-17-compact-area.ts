@@ -1,9 +1,9 @@
 import { FIELD_17_TAB } from "../bs-utils";
 import { R } from "../r";
 import { registerFieldClass } from "../utils";
-import { fieldMixins } from "./field-mixins";
+import { BaseField } from "./base-field";
 
-registerFieldClass(FIELD_17_TAB, class TabField extends fieldMixins {
+registerFieldClass(FIELD_17_TAB, class TabField extends BaseField {
 
 	setValue(val) {
 	}

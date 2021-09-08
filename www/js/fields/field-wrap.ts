@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import { FieldAdmin } from "../admin/field-admin";
 import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible, setFormFilter } from "../utils";
 import { iAdmin } from "../user";
-import { fieldMixins } from "./field-mixins.js";
+import { BaseField } from "./base-field.js";
 
 class FieldHelp extends Component<any, any> {
 
@@ -72,7 +72,7 @@ class FieldLabel extends Component<any, any> {
 }
 
 class FieldWrap extends Component<any, any> {
-	fieldRef: fieldMixins;
+	fieldRef: BaseField;
 	hidden: boolean;
 	fieldDisabled: boolean;
 	private labelOwerride: string;

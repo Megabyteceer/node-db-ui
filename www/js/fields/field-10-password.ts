@@ -1,9 +1,9 @@
 import { FIELD_10_PASSWORD } from "../bs-utils";
 import { R } from "../r";
 import { registerFieldClass } from "../utils";
-import { fieldMixins } from "./field-mixins";
+import { BaseField } from "./base-field";
 
-registerFieldClass(FIELD_10_PASSWORD, class PasswordField extends fieldMixins {
+registerFieldClass(FIELD_10_PASSWORD, class PasswordField extends BaseField {
 
 	setValue(val) {
 		this.refToInput.value = val;

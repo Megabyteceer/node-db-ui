@@ -3,7 +3,7 @@
 import { R } from "../r";
 import { FIELD_20_COLOR } from "../bs-utils";
 import { registerFieldClass } from "../utils";
-import { fieldMixins, FieldState, FiledProps } from "./field-mixins";
+import { BaseField, FieldState, FiledProps } from "./base-field";
 
 const intToColor = (color, alpha) => {
 	var ret = 'rgba(' + ((color >> 16) & 255) + ',' + ((color >> 8) & 255) + ',' + (color & 255) + ',' + (alpha / 255.0).toFixed(2) + ')';
@@ -19,7 +19,7 @@ interface ColorFieldState extends FieldState {
 	alpha: number;
 }
 
-registerFieldClass(FIELD_20_COLOR, class ColorField extends fieldMixins<FiledProps, ColorFieldState> {
+registerFieldClass(FIELD_20_COLOR, class ColorField extends BaseField<FiledProps, ColorFieldState> {
 
 	constructor(props) {
 		super(props);

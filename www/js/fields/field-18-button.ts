@@ -2,9 +2,9 @@ import { FIELD_18_BUTTON } from "../bs-utils";
 import { R } from "../r";
 import { renderIcon } from "../utils";
 import { registerFieldClass } from "../utils";
-import { fieldMixins } from "./field-mixins";
+import { BaseField } from "./base-field";
 
-registerFieldClass(FIELD_18_BUTTON, class ButtonField extends fieldMixins {
+registerFieldClass(FIELD_18_BUTTON, class ButtonField extends BaseField {
 
 	constructor(props) {
 		super(props);

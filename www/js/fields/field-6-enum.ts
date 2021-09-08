@@ -3,9 +3,9 @@ import { R } from "../r";
 import React from "react";
 import { Select } from "../components/select";
 import { registerFieldClass } from "../utils";
-import { fieldMixins } from "./field-mixins";
+import { BaseField } from "./base-field";
 
-class EnumField extends fieldMixins {
+class EnumField extends BaseField {
 
 	enum: EnumList;
 

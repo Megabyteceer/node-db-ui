@@ -3,13 +3,13 @@ import React from "react";
 
 import { checkFileSize, idToImgURL, L, myAlert, renderIcon, serializeForm, submitData } from "../utils";
 import { registerFieldClass } from "../utils";
-import { fieldMixins, RefToInput } from "./field-mixins";
+import { BaseField, RefToInput } from "./base-field";
 import { Modal } from "../modal";
 import { Component } from "react";
 import { R } from "../r";
 import { FIELD_12_PICTURE } from "../bs-utils";
 
-registerFieldClass(FIELD_12_PICTURE, class PictureField extends fieldMixins {
+registerFieldClass(FIELD_12_PICTURE, class PictureField extends BaseField {
 
 	cropperBody: CropperFieldBody;
 

@@ -8,9 +8,9 @@ import { ENV } from "../main-frame";
 import { Modal } from "../modal";
 import { checkFileSize, getReadableUploadSize, idToFileUrl, L, renderIcon, serializeForm, submitData } from "../utils";
 import { registerFieldClass } from "../utils";
-import { fieldMixins, RefToInput } from "./field-mixins";
+import { BaseField, RefToInput } from "./base-field";
 
-registerFieldClass(FIELD_21_FILE, class FileField extends fieldMixins {
+registerFieldClass(FIELD_21_FILE, class FileField extends BaseField {
 
 	fileFormBodyRef: FileFormBody;
 

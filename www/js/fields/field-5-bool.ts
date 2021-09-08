@@ -3,7 +3,7 @@ import { R } from "../r";
 import React, { Component } from "react";
 import { L, renderIcon } from "../utils";
 import { registerFieldClass } from "../utils";
-import { fieldMixins } from "./field-mixins";
+import { BaseField } from "./base-field";
 
 class CheckBox extends Component<any, any> {
 	constructor(props) {
@@ -38,7 +38,7 @@ class CheckBox extends Component<any, any> {
 	}
 }
 
-registerFieldClass(FIELD_5_BOOL, class BooleanField extends fieldMixins {
+registerFieldClass(FIELD_5_BOOL, class BooleanField extends BaseField {
 
 	setValue(val) {
 		val = (val !== 0) && Boolean(val);

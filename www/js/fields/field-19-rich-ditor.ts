@@ -2,7 +2,7 @@ import { R } from "../r";
 import { FIELD_19_RICHEDITOR } from "../bs-utils";
 import { L, renderIcon } from "../utils";
 import { registerFieldClass } from "../utils";
-import { fieldMixins } from "./field-mixins";
+import { BaseField } from "./base-field";
 
 var idCounter = 0;
 
@@ -14,7 +14,7 @@ window.addEventListener('message', (e) => {
 	}
 });
 
-registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends fieldMixins {
+registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends BaseField {
 
 	viewportRef: HTMLIFrameElement;
 	iframeId: number;

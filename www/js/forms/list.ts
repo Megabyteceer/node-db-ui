@@ -9,7 +9,7 @@ import { FormItem } from "./form-item";
 import { BaseForm, FormProps, FormState } from "./form-mixins";
 import React from "react";
 import { iAdmin } from "../user";
-import { RefToInput } from "../fields/field-mixins.js";
+import { RefToInput } from "../fields/base-field.js";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins.js";
 
 const sortByOrder = (a, b) => {

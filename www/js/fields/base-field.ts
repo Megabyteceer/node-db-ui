@@ -32,7 +32,7 @@ interface RefToInput extends Component {
 }
 
 
-class fieldMixins<T extends FiledProps = FiledProps, T2 extends FieldState = FieldState> extends Component<T, T2> {
+class BaseField<T extends FiledProps = FiledProps, T2 extends FieldState = FieldState> extends Component<T, T2> {
 	onSaveCallback: () => void;
 	refToInput: RefToInput;
 
@@ -105,4 +105,4 @@ class fieldMixins<T extends FiledProps = FiledProps, T2 extends FieldState = Fie
 		this.refToInput = refToInput;
 	}
 }
-export { fieldMixins, RefToInput, FieldState, FiledProps };
+export { BaseField, RefToInput, FieldState, FiledProps };
