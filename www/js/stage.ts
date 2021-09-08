@@ -4,9 +4,10 @@ import React, { Component } from "react";
 import { R } from "./r";
 import { FormFull } from "./forms/form-full";
 import { List } from "./forms/list";
-import { LeftBar } from "./left-bar";
-import { consoleLog, Filters, isLitePage, loadJS, myAlert, renderIcon } from "./utils";
-import { NodeDesc, RecId, RecordData } from "./bs-utils.js";
+import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, renderIcon } from "./utils";
+import { RecId } from "./bs-utils";
+import { BaseForm } from "./forms/base-form";
+import ReactDOM from 'react-dom';
 
 class FormLoaderCog extends Component<any, any> {
 	render() {
@@ -15,104 +16,96 @@ class FormLoaderCog extends Component<any, any> {
 		);
 	}
 }
+
 document.addEventListener('load', () => {
 	if(isLitePage()) {
 		document.body.classList.add('lite-ui');
 	}
 });
 
+let stage: Stage;
+
+interface FormEntry {
+	form?: BaseForm;
+	container: HTMLDivElement;
+	onModified?: () => void;
+}
+
+let forms: FormEntry[] = [];
+
 class Stage extends Component<any, any> {
 
-	static instance: Stage;
-	filters: Filters;
+	static rootForm: FormFull;
+	static currentForm: BaseForm;
+	static currentFormEntry: FormEntry;
 
-	componentDidMount() {
-		Stage.instance = this;
+	static refreshForm() {
+		Stage.showForm(
+			Stage.currentForm.formParameters.nodeId,
+			Stage.currentForm.formParameters.recId,
+			Stage.currentForm.formParameters.filters,
+			Stage.currentForm.formParameters.editable
+		);
 	}
 
-	setCustomClass(className, props) {
-		this.setState({ customClass: className, props: props });
+	static closeTopForm() {
+		forms.pop();
 	}
 
-	_setFormData(node?: NodeDesc, data?: RecordData, recId?: RecId, filters?: Filters, editable?: boolean) {
-		if(typeof (node) !== 'undefined') {
-			this.state = null;
-			setTimeout(() => {
-				this.filters = filters;
-				this.setState({ node, data, recId, editable });
-			});
-		} else {
-			this.state = null;
-			this.forceUpdate()
+	static dataDidModifed() {
+		if(Stage.currentFormEntry.onModified) {
+			Stage.currentFormEntry.onModified();
 		}
 	}
 
-	setFormFilter(name, val) {
-		if(!this.filters) {
-			this.filters = {};
+	static async showForm(nodeId: RecId, recId?: RecId | 'new', filters: Filters = {}, editable?: boolean, modal?: boolean, onModified?: () => void) {
+		if(!Stage.rootForm || modal) {
+			addFormEntry();
 		}
-		if(this.filters[name] !== val) {
-			this.filters[name] = val;
-			this.forceUpdate();
-			if(name === 'tab') {
-				LeftBar.instance.refreshLeftBarActive();
+		Stage.currentFormEntry.onModified = onModified;
+
+		let data;
+		if(recId !== 'new') {
+			if(typeof recId === 'number') {
+				data = await getNodeData(nodeId, recId, undefined, editable, false, isPresentListRenderer(nodeId));
+			} else {
+				data = await getNodeData(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
 			}
-			return true;
 		}
+		let node = await getNode(nodeId);
+		const ref = (form: BaseForm) => {
+			if(!Stage.rootForm) {
+				Stage.rootForm = form as FormFull;
+			}
+			Stage.currentForm = form;
+			Stage.currentFormEntry.form = form;
+		};
+		let formType = typeof recId === 'number' ? FormFull : List;
+		ReactDOM.render(
+			React.createElement(formType, { ref, node, initialData: data, filters, editable }),
+			Stage.currentFormEntry.container
+		);
 	}
 
-	loadCustomClass() {
-		loadJS('js/custom/' + this.state.customClass.toLowerCase() + '.js').then(() => {
-			this.forceUpdate();
-		});
+	constructor(props) {
+		super(props);
+		stage = this;
 	}
 
 	render() {
-		var body;
-		if(this.state) {
-
-			if(this.state.customClass) {
-				if(!window[this.state.customClass]) {
-					setTimeout(() => {
-						this.loadCustomClass();
-					}, 1);
-				} else {
-					//TODO custom class form
-					debugger;
-					//return React.createElement(window[this.state.customClass], this.state.props);
-				}
-			} else {
-				if(!this.state.node.staticLink) {
-					if(typeof (this.state.recId) !== 'undefined') {
-						body = React.createElement(FormFull, { node: this.state.node, initialData: this.state.data, filters: this.filters || {}, editable: this.state.editable });
-					} else {
-						body = React.createElement(List, { node: this.state.node, initialData: this.state.data, filters: this.filters || {} });
-					}
-				} else {
-					if(this.state.node.staticLink === 'reactClass') {
-						if(typeof window[this.state.node.tableName] === 'undefined') {
-							myAlert('Unknown react class: ' + this.state.node.tableName);
-						} else {
-							//TODO custom class form
-							debugger;
-							//body = React.createElement(window[this.state.node.tableName], {node: this.state.node, recId: this.state.recId, filters: this.filters || {}});
-						}
-					} else {
-						location.href = this.state.node.staticLink;
-					}
-				}
-			}
-
-		} else {
-			body = React.createElement(FormLoaderCog);
-		}
-
-		return R.div({ className: 'stage' },
-			body
-		);
+		return R.div({ id: 'stage' });
 	}
 }
-/** @type Stage */
-Stage.instance = null;
+
+function addFormEntry() {
+	let container = document.createElement('div');
+	container.className = 'form-layer';
+	document.querySelector('#stage').appendChild(container);
+	let entry = {
+		container
+	}
+	forms.push(entry);
+	Stage.currentFormEntry = entry;
+}
 
 export { Stage, FormLoaderCog }

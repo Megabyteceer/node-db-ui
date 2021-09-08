@@ -4,15 +4,15 @@ import React from "react";
 import { assert, FieldDesc, RecordData } from "../bs-utils";
 import { Component } from "react";
 import Highlighter from "react-highlight-words";
-import { FormFull } from "../forms/form-full.js";
-import { FieldWrap } from "./field-wrap.js";
+import { FormFull } from "../forms/form-full";
+import { FieldWrap } from "./field-wrap";
 
 let autoFocusNow = true;
 const resetAutofocus = () => {
 	autoFocusNow = true;
 }
 
-interface FiledProps {
+interface FieldProps {
 	field: FieldDesc;
 	form: FormFull;
 	isEdit: boolean;
@@ -22,7 +22,7 @@ interface FiledProps {
 	fieldDisabled?: boolean;
 	wrapper: FieldWrap;
 	initialValue: any;
-
+	parentTabName?: string;
 }
 
 interface FieldState {
@@ -37,7 +37,7 @@ interface RefToInput extends Component {
 }
 
 
-class BaseField<T extends FiledProps = FiledProps, T2 extends FieldState = FieldState> extends Component<T, T2> {
+class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = FieldState> extends Component<T, T2> {
 	onSaveCallback: () => void;
 	refToInput: RefToInput;
 
@@ -120,4 +120,4 @@ class BaseField<T extends FiledProps = FiledProps, T2 extends FieldState = Field
 		this.refToInput = refToInput;
 	}
 }
-export { BaseField, RefToInput, FieldState, FiledProps };
+export { BaseField, RefToInput, FieldState, FieldProps };

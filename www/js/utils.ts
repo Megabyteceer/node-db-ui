@@ -7,7 +7,6 @@ import { User } from "./user";
 import { Modal } from "./modal";
 import { ENV } from "./main-frame";
 import { Stage } from "./stage";
-import { isPresentListRenderer } from "./forms/list";
 import { DebugPanel } from "./debug-panel";
 import React from "react";
 
@@ -94,8 +93,11 @@ function debugError(txt) {
 }
 
 var triesGotoHome = 0;
-var oneFormShowed;
 
+var _oneFormShowed; //TODO set true after one form rendered with data
+const onOneFormShowed = () => {
+	_oneFormShowed = true;
+}
 
 function handleError(error, url, callStack) {
 
@@ -124,7 +126,7 @@ function handleError(error, url, callStack) {
 
 
 
-	if(!oneFormShowed) {
+	if(!_oneFormShowed) {
 		if(triesGotoHome < 5) {
 			triesGotoHome++;
 			goToHome();
@@ -176,10 +178,6 @@ function handleAdditionalData(data, url) {
 
 }
 
-function clearForm() {
-	Stage.instance._setFormData();
-}
-
 var innerDatetimeFormat = 'YYYY-MM-DD HH:mm:ss';
 var readableDateFormat = 'D MMMM YYYY';
 var readableTimeFormat = 'H:mm';
@@ -213,7 +211,7 @@ function toReadableTime(d) {
 
 function goToHome() {
 	if(typeof (ENV.HOME_NODE) !== 'undefined') {
-		showForm(ENV.HOME_NODE);
+		Stage.showForm(ENV.HOME_NODE);
 	} else {
 		location.href = '/';
 	}
@@ -354,7 +352,7 @@ function goToPageByHash() {
 				recId = parseInt(recId);
 			}
 		}
-		showForm(nodeId, recId, filters, editable);
+		Stage.showForm(nodeId, recId, filters, editable);
 
 	} else {
 		goToHome();
@@ -366,7 +364,7 @@ function goToPageByHash() {
 function goBack(isAfterDelete?: boolean) {
 	if(isLitePage() && window.history.length < 2) {
 		if(window.location.href.indexOf('#n/28/f/p/*/formTitle') > 0) {
-			refreshForm();
+			Stage.refreshForm();
 		} else {
 			window.close();
 		}
@@ -375,13 +373,13 @@ function goBack(isAfterDelete?: boolean) {
 		if(window.history.length > 0) {
 			window.history.back();
 		} else {
-			showForm(ENV.HOME_NODE);
+			Stage.showForm(ENV.HOME_NODE);
 		}
 
 	} else if(currentFormParameters.recId) {
-		showForm(currentFormParameters.nodeId, undefined, currentFormParameters.filters);
+		Stage.showForm(currentFormParameters.nodeId, undefined, currentFormParameters.filters);
 	} else if(isAfterDelete) {
-		refreshForm();
+		Stage.refreshForm();
 	}
 }
 
@@ -425,66 +423,6 @@ $(window).on('hashchange', () => {
 	isHistoryChanging = true;
 	goToPageByHash();
 });
-
-function refreshForm() {
-	showForm(currentFormParameters.nodeId, currentFormParameters.recId, currentFormParameters.filters, currentFormParameters.editable);
-}
-
-function showForm(nodeId: RecId, recId?: RecId | 'new', filters?: Filters, editable?: boolean) {
-
-	if(typeof nodeId === 'undefined') {
-		Stage.instance.setCustomClass(filters.c, filters);
-		currentFormParameters.nodeId = nodeId;
-		currentFormParameters.recId = recId;
-		currentFormParameters.filters = filters;
-		currentFormParameters.editable = editable;
-	} else {
-		if(!filters) filters = {};
-		if(recId === 'new') {
-			createRecord(nodeId, filters);
-		} else {
-			let res;
-			if(recId || (recId === 0)) {
-				res = getNodeData(nodeId, recId, undefined, editable, false, isPresentListRenderer(nodeId));
-			} else {
-				res = getNodeData(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
-			}
-			res.then((data) => {
-				setFormData(nodeId, data, recId, filters, editable);
-			})
-		}
-	}
-}
-
-function setFormData(nodeId, data, recId, filters, editable) {
-
-	if(!filters) {
-		throw 'filters must be an object.';
-	}
-
-	if(currentFormParameters.nodeId && ((currentFormParameters.nodeId !== nodeId) || (currentFormParameters.recId !== recId))) {
-		window.scrollTo(0, 0);
-	}
-
-	currentFormParameters.nodeId = nodeId;
-	currentFormParameters.recId = recId;
-	currentFormParameters.filters = filters;
-	currentFormParameters.editable = editable;
-	updateHashLocation();
-
-	getNode(nodeId).then((node) => {
-		Stage.instance._setFormData(node, data, recId, filters, editable);
-		oneFormShowed = true;
-	});
-}
-
-function setFormFilter(name, val) {
-	if(Stage.instance.setFormFilter(name, val)) {
-		updateHashLocation();
-	}
-	oneFormShowed = true;
-}
-
 
 var nodes = {};
 var nodesRequested = {};
@@ -865,7 +803,7 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 			return res.json();
 		})
 		.then((data) => {
-			dataDidModifed();
+			Stage.dataDidModifed();
 			handleAdditionalData(data, url);
 			if(isAuthNeed(data)) {
 				alert('authHerePopup');
@@ -900,7 +838,7 @@ async function deleteRecord(name, nodeId: RecId, recId: RecId, noPromt?: boolean
 			onYes();
 		} else {
 			await submitData('api/delete', { nodeId, recId });
-			dataDidModifed();
+			Stage.dataDidModifed();
 		}
 	} else {
 		let node = await getNode(nodeId);
@@ -911,17 +849,13 @@ async function deleteRecord(name, nodeId: RecId, recId: RecId, noPromt?: boolean
 	}
 }
 
-function createRecord(nodeId, parameters) {
-	if(!parameters) {
-		parameters = {};
-	}
+function createRecord(nodeId, parameters = {}) {
 	getNode(nodeId).then((node) => {
 		var emptyData: RecordData = {};
 		if(node.draftable && (node.prevs & PREVS_PUBLISH)) { //access to publish records
 			emptyData.isP = 1;
 		}
-
-		setFormData(nodeId, emptyData, 'new', parameters, true);
+		Stage.showForm(nodeId, 'new', parameters, true);
 	})
 }
 
@@ -1069,69 +1003,6 @@ function addTranslateX(element, x) {
 	element.css({ 'transform': curMatrix.join(',') });
 }
 
-
-function dataDidModifed() {
-	try {
-		if(window.hasOwnProperty('reloadParentIfSomethingUpdated_qwi012d')) {
-			// @ts-ignore
-			window.reloadParentIfSomethingUpdated_qwi012d();
-		}
-	} catch(e) { };
-}
-
-function popup(url: string, W = 900, reloadParentIfSomethingUpdated?: boolean) { //new window
-
-	var dataDidModifedInChildren;
-
-	var leftVal = (screen.width - W) / 2;
-	var topVal = (screen.height - 820) / 2;
-	var popUp = window.open('?liteUI' + url, '', 'width=' + W + ',height=820,resizable=yes,scrollbars=yes,status=yes,menubar=no,toolbar=no,left=' + leftVal + ',top=' + topVal);
-	if(!popUp) {
-		myAlert(L('ALLOW_POPUPS'));
-		return;
-	}
-	if(reloadParentIfSomethingUpdated) {
-		// @ts-ignore
-		popUp.reloadParentIfSomethingUpdated_qwi012d = () => {
-			dataDidModifedInChildren = true;
-		}
-		var intr = setInterval(() => {
-			if(popUp.closed) {
-				if(dataDidModifedInChildren) {
-					location.reload();
-				}
-				clearInterval(intr);
-			}
-		}, 100);
-	}
-}
-
-let loadedScripts;
-
-async function loadJS(name) {
-	if(!loadedScripts) {
-		loadedScripts = {};
-	}
-	if(loadedScripts[name] === true) {
-		return;
-	}
-	if(!loadedScripts[name]) {
-		loadedScripts[name] = new Promise<void>((resolve) => {
-			LoadingIndicator.instance.show();
-			var script = document.createElement('script');
-			script.onload = () => {
-				LoadingIndicator.instance.hide();
-				loadedScripts[name] = true;
-				resolve();
-			}
-			script.src = name;
-			script.type = "module";
-			document.head.appendChild(script);
-		});
-	}
-	return loadedScripts[name];
-}
-
 function strip_tags(input) {
 	if(typeof (input !== 'string')) return input;
 	var allowed = '<p><a><img><b><i><div><span>';
@@ -1208,7 +1079,27 @@ function L(key: string, param?: any) {
 	return ('#' + key);
 }
 
+var listRenderers = [];
+
+function registerListRenderer(nodeId, renderFunction) {
+	if(listRenderers.hasOwnProperty(nodeId)) {
+		throw 'List renderer redifinition for node ' + nodeId;
+	}
+	listRenderers[nodeId] = renderFunction;
+}
+
+function isPresentListRenderer(nodeId) {
+	return listRenderers.hasOwnProperty(nodeId);
+}
+
+function getListRenderer(nodeId) {
+	return listRenderers[nodeId];
+}
+
 export {
+	registerListRenderer,
+	isPresentListRenderer,
+	getListRenderer,
 	Filters,
 	isLitePage,
 	renderIcon,
@@ -1221,8 +1112,6 @@ export {
 	getReadableUploadSize,
 	checkFileSize,
 	strip_tags,
-	loadJS,
-	popup,
 	keepInWindow,
 	removeBackup,
 	getBackupData,
@@ -1253,7 +1142,6 @@ export {
 	toReadableDatetime,
 	updateHashLocation,
 	goBack,
-	setFormFilter,
 	getNodeData,
 	getNode,
 	myPromt,
@@ -1262,14 +1150,12 @@ export {
 	serializeForm,
 	readableTimeFormat,
 	readableDateFormat,
-	clearForm,
-	refreshForm,
-	showForm,
 	debugError,
 	currentFormParameters,
 	isUserHaveRole,
 	isAdmin,
 	ON_FORM_SAVE,
 	ON_FORM_LOAD,
-	ON_FIELD_CHANGE
+	ON_FIELD_CHANGE,
+	onOneFormShowed
 }

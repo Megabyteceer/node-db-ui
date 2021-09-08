@@ -1,10 +1,10 @@
 import { R } from "../r";
 import React, { Component } from "react";
-import { getNode, getNodeData, keepInWindow, L, locationToHash, ON_FORM_LOAD, ON_FORM_SAVE, popup, renderIcon, sp } from "../utils";
+import { getNode, getNodeData, keepInWindow, L, ON_FORM_LOAD, ON_FORM_SAVE, renderIcon, showForm, sp } from "../utils";
 import { admin_editSource } from "./admin-event-editor";
-import { admin } from "./admin-utils";
+import { admin, reloadLocation } from "./admin-utils";
 import { FieldAdmin } from "./field-admin";
-import { NodeDesc } from "../bs-utils.js";
+import { NodeDesc } from "../bs-utils";
 
 var showedNodeId;
 
@@ -186,12 +186,12 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('FLD_ADD'),
 						onClick: () => {
-							popup(locationToHash(6, 'new', {
+							showForm(6, 'new', {
 								node_fields_linker: {
 									id: node.id,
 									name: node.singleName
 								}
-							}, true), 900, true);
+							}, true, true, reloadLocation);
 						}
 					},
 						renderIcon('plus')
@@ -298,7 +298,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_NODE'),
 						onClick: () => {
-							popup(locationToHash(4, nodeId, undefined, true), 900, true);
+							showForm(4, nodeId, undefined, true, true, reloadLocation);
 
 						}
 					},
@@ -308,7 +308,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_ACCESS'),
 						onClick: () => {
-							popup(locationToHash(1, nodeId, undefined, true), 1100);
+							showForm(1, nodeId, undefined, true, true, reloadLocation);
 						}
 					},
 						renderIcon('user')
@@ -351,13 +351,13 @@ class NodeAdmin extends Component<any, any> {
 
 function createNodeForMenuItem(item) {
 	getNodeData(4, (item.isDoc ? item.parent : item.id) as number).then((data) => {
-		popup(locationToHash(4, 'new', {
+		showForm(4, 'new', {
 			prior: data.prior,
 			_nodesID: {
 				id: data.id,
 				name: data.name
 			}
-		}, true), 900, true);
+		}, true, true, reloadLocation);
 	});
 }
 

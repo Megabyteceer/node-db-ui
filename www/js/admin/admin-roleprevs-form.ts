@@ -1,7 +1,7 @@
 import { PREVS_CREATE, PREVS_DELETE, PREVS_EDIT_OWN, PREVS_PUBLISH, PREVS_VIEW_OWN, RecordData } from "../bs-utils";
 import { R } from "../r";
 import React, { Component } from "react";
-import { BaseForm } from "../forms/form-mixins";
+import { BaseForm } from "../forms/base-form";
 import { FormLoaderCog } from "../stage";
 import { iAdmin } from "../user";
 import { getData, getNode, L, myPromt, renderIcon, submitData } from "../utils";

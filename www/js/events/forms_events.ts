@@ -4,7 +4,7 @@ import { ADMIN_ROLE_ID, FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIEL
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
-import { EnumField } from "../fields/field-6-enum.js";
+import { EnumField } from "../fields/field-6-enum";
 
 class FormEvents extends FormFull {
 

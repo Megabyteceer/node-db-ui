@@ -1,8 +1,8 @@
 import { consoleLog, Filters, getData, L, ON_FIELD_CHANGE, ON_FORM_LOAD, ON_FORM_SAVE } from "../utils";
-import { BaseForm } from "./form-mixins";
+import { BaseForm } from "./base-form";
 import { LeftBar } from "../left-bar";
 import { assert, FieldDesc, FIELD_17_TAB, FIELD_18_BUTTON, RecId, RecordData } from "../bs-utils";
-import { FieldWrap } from "../fields/field-wrap.js";
+import { FieldWrap } from "../fields/field-wrap";
 
 let FormEvents;
 let FieldsEvents;

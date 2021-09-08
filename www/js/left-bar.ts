@@ -4,8 +4,9 @@ import { FieldAdmin } from "./admin/field-admin";
 import { NodeAdmin, createNodeForMenuItem } from "./admin/node-admin";
 import { assert } from "./bs-utils";
 import { R } from "./r";
+import { Stage } from "./stage";
 import { iAdmin, User } from "./user";
-import { currentFormParameters, isLitePage, L, locationToHash, renderIcon, setFormFilter } from "./utils";
+import { currentFormParameters, isLitePage, L, locationToHash, renderIcon } from "./utils";
 
 let collapsed;
 
@@ -236,7 +237,8 @@ class BarItem extends Component<any, any> {
 				if(!isMustBeExpandedVal) {
 					if(item.isDoc) {
 						if(item.id === false) {
-							setFormFilter('tab', item.tab);
+
+							Stage.rootForm.setFormFilter('tab', item.tab);
 							return;
 						}
 					} else {

@@ -3,30 +3,17 @@ import { FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE } from "../bs-utils";
 import { FieldAdmin } from "../admin/field-admin";
 import { NodeAdmin } from "../admin/node-admin";
 import { LeftBar } from "../left-bar";
-import { consoleLog, createRecord, deleteRecord, getNode, getNodeData, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
+import { consoleLog, createRecord, deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
 import { FormFull } from "./form-full";
 import { FormItem } from "./form-item";
-import { BaseForm, FormProps, FormState } from "./form-mixins";
+import { BaseForm, FormProps, FormState } from "./base-form";
 import React from "react";
 import { iAdmin } from "../user";
-import { RefToInput } from "../fields/base-field.js";
-import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins.js";
+import { RefToInput } from "../fields/base-field";
+import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 
 const sortByOrder = (a, b) => {
 	return a.order - b.order;
-}
-
-var listRenderers = [];
-
-function registerListRenderer(nodeId, renderFunction) {
-	if(listRenderers.hasOwnProperty(nodeId)) {
-		throw 'List renderer redifinition for node ' + nodeId;
-	}
-	listRenderers[nodeId] = renderFunction;
-}
-
-function isPresentListRenderer(nodeId) {
-	return listRenderers.hasOwnProperty(nodeId);
 }
 
 function createPageButton(self, page, isActive) {
@@ -439,7 +426,7 @@ class List extends BaseForm<ListProps, ListState> {
 		if(data.total > 0) {
 
 			if(this.isCustomListRenering()) {
-				body = listRenderers[node.id].call(this);
+				body = getListRenderer(node.id).call(this);
 			}
 			if(!body) {
 
@@ -601,4 +588,4 @@ class List extends BaseForm<ListProps, ListState> {
 		);
 	}
 }
-export { isPresentListRenderer, registerListRenderer, List };
+export { List };

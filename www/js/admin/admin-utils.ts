@@ -3,12 +3,16 @@ import React from "react";
 import { FieldDesc, FIELD_17_TAB } from "../bs-utils";
 import { R } from "../r";
 import { Select } from "../components/select";
-import { consoleDir, getNode, getNodeData, isLitePage, popup, refreshForm, renderIcon, submitRecord } from "../utils";
+import { consoleDir, getNode, getNodeData, isLitePage, refreshForm, renderIcon, submitRecord } from "../utils";
 import { FormFull } from "../forms/form-full";
 import { MainFrame } from "../main-frame";
 
 function debugInfoGetter() {
 	consoleDir(this);
+}
+
+function reloadLocation() {
+	location.reload();
 }
 
 var styleEl = document.createElement('style');
@@ -235,4 +239,4 @@ function makeIconSelectionField(form, fieldName) {
 		10);
 }
 
-export { makeIconSelectionField, admin };
+export { makeIconSelectionField, admin, reloadLocation };

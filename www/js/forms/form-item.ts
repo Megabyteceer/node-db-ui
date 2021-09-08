@@ -3,8 +3,8 @@ import React from "react";
 import { FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, Filters, NodeDesc, RecordData } from "../bs-utils";
 import { FieldWrap } from "../fields/field-wrap";
 import { deleteRecord, draftRecord, L, locationToHash, publishRecord, renderIcon, sp } from "../utils";
-import { BaseForm } from "./form-mixins";
-import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins.js";
+import { BaseForm } from "./base-form";
+import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 
 const publishClick = (draft, node, data) => {
 	if(draft) {
@@ -67,6 +67,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 				buttons.push(
 					R.a({
 						key: 2, href: locationToHash(node.id, data.id, editButtonFilters, true), onClick: (e) => {
+							// TODO go to edit on current level
 							if(formItem && formItem.props.parentForm) {
 								sp(e);
 								formItem.props.parentForm.toggleCreateDialogue(data.id)
@@ -81,6 +82,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 			}
 		} else if(!formItem || !formItem.props.list || !(formItem.props.list.state.noPreviewButton || formItem.props.list.props.noPreviewButton)) {
 			buttons.push(
+				// TODO go to watch on current level
 				R.a({ key: 2, href: locationToHash(node.id, data.id) },
 					R.button({ className: 'clickable toolbtn view-btn', title: L('DETAILS') + itemName },
 						renderIcon('search')

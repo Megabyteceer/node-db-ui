@@ -6,7 +6,7 @@ import { R } from "../r";
 import moment from "moment";
 import { innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDatetime, toReadableTime } from "../utils";
 import { registerFieldClass } from "../utils";
-import { BaseField, FieldState, FiledProps, RefToInput } from "./base-field";
+import { BaseField, FieldState, FieldProps, RefToInput } from "./base-field";
 
 function isSameDay(val, d) {
 	if(!d || !val) return false;
@@ -19,7 +19,7 @@ interface DatetimeFieldState extends FieldState {
 	allowedDays?: moment.Moment[];
 }
 
-class dateFieldMixins extends BaseField<FiledProps, DatetimeFieldState> {
+class dateFieldMixins extends BaseField<FieldProps, DatetimeFieldState> {
 
 	ReactDatetimeClass: typeof import('react-datetime');
 

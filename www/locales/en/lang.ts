@@ -10,7 +10,6 @@ import { initDictionary } from "../../js/utils";
 		'CONNECTION_ERR': 'Connection error',
 		'CHECK_CONNECTION': 'Please check you connection.',
 		'SURE_DELETE': 'A you sure, you want to delete %',
-		'ALLOW_POPUPS': 'Please allow popup windows for this website.',
 		'TYPES_ALLOWED': 'Only next file types allowed for uploading: %',
 		'FILE_BIG': 'File too big (% Mb). Available size is ',
 		'MB': ' Mb',

@@ -2,9 +2,9 @@ import { FIELD_14_NtoM, FIELD_15_1toN, FIELD_18_BUTTON, FIELD_7_Nto1, FIELD_8_ST
 import { R } from "../r";
 import React, { Component } from "react";
 import { FieldAdmin } from "../admin/field-admin";
-import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible, setFormFilter } from "../utils";
+import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible } from "../utils";
 import { iAdmin } from "../user";
-import { BaseField, FieldProps } from "./base-field.js";
+import { BaseField, FieldProps } from "./base-field";
 
 class FieldHelp extends Component<any, any> {
 
@@ -228,8 +228,8 @@ class FieldWrap extends Component<FieldProps, any> {
 		/// #if DEBUG
 		consoleLog('focus set ' + this.props.field.fieldName);
 		/// #endif
-		if(this.props.parentTabName && !this.props.form.isSubForm()) {
-			setFormFilter('tab', this.props.parentTabName);
+		if(this.props.parentTabName) {
+			this.props.form.setFormFilter('tab', this.props.parentTabName);
 		}
 		setTimeout(() => {
 			scrollToVisible(this);

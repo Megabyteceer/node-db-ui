@@ -1,18 +1,20 @@
 import { Component } from "react";
-import { BoolNum, Filters, NodeDesc, RecId, RecordData } from "../bs-utils.js";
-import { Lookup1toNField } from "../fields/field-15-12n.js";
-import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins.js";
-import { FieldWrap } from "../fields/field-wrap.js";
-import { currentFormParameters, goBack } from "../utils";
-import { List } from "./list";
+import { BoolNum, Filters, NodeDesc, RecId, RecordData } from "../bs-utils";
+import { Lookup1toNField } from "../fields/field-15-12n";
+import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
+import { FieldWrap } from "../fields/field-wrap";
+import { LeftBar } from "../left-bar";
+import { currentFormParameters, getNode, getNodeData, goBack, isPresentListRenderer, onOneFormShowed, updateHashLocation } from "../utils";
 
 interface FormProps {
 	initialData?: RecordData;
-	list?: List;
+	/** List */
+	list?: any;
 	onCancel?: () => void;
 	parentForm?: Lookup1toNField;
 	filters?: Filters;
 	node: NodeDesc;
+	isRootForm?: boolean;
 	nodeId: RecId;
 	recId: RecId;
 	isLookup?: boolean;
@@ -37,8 +39,16 @@ interface FormState {
 	hideControlls?: boolean;
 }
 
+interface FormParameters {
+	nodeId: RecId,
+	recId: RecId | 'new',
+	editable: boolean,
+	filters: Filters
+}
+
 class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState> extends Component<T, T2> {
 
+	formParameters: FormParameters;
 	filters: Filters;
 	fieldsRefs: { [key: string]: FieldWrap };
 	header: string;
@@ -47,6 +57,12 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 
 	constructor(props) {
 		super(props);
+		this.formParameters = {
+			nodeId: this.props.nodeId,
+			recId: this.props.recId,
+			filters: this.props.filters,
+			editable: this.props.editable
+		};
 		//@ts-ignore
 		this.state = {};
 		this.filters = Object.assign({}, this.props.filters);
@@ -120,6 +136,50 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		} else {
 			goBack();
 		}
+	}
+
+	setFormFilter(name, val) {
+		if(!this.filters) {
+			this.filters = {};
+		}
+		if(this.filters[name] !== val) {
+			this.filters[name] = val;
+			this.forceUpdate();
+			if(name === 'tab' && this.props.isRootForm) {
+				LeftBar.instance.refreshLeftBarActive();
+			}
+			return true;
+		}
+	}
+
+	async setFormData(nodeId: RecId, recId: RecId | 'new', filters: Filters, editable: boolean) {
+		let data;
+		debugger;
+		if(typeof recId === 'number') {
+			data = await getNodeData(nodeId, recId, undefined, editable, false, isPresentListRenderer(nodeId));
+		} else if(recId !== 'new') {
+			data = await getNodeData(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
+		}
+
+		if(!filters) {
+			throw 'filters must be an object.';
+		}
+
+		if(this.formParameters.nodeId && ((this.formParameters.nodeId !== nodeId) || (this.formParameters.recId !== recId))) {
+			window.scrollTo(0, 0);
+		}
+
+		this.formParameters.nodeId = nodeId;
+		this.formParameters.recId = recId;
+		this.formParameters.filters = filters;
+		this.formParameters.editable = editable;
+		if(this.props.isRootForm) {
+			updateHashLocation();
+		}
+
+		getNode(nodeId).then((node) => {
+			onOneFormShowed();
+		});
 	}
 }
 export { BaseForm, FormProps, FormState };

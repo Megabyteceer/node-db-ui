@@ -1,8 +1,8 @@
 ﻿import React from "react";
 
-import { clearForm, getData, goToPageByHash, idToImgURL, isAdmin, L, locationToHash, renderIcon, showForm } from "./utils";
+import { getData, goToPageByHash, idToImgURL, isAdmin, L, locationToHash, renderIcon, showForm } from "./utils";
 import { Select } from "./components/select";
-import { admin } from "./admin/admin-utils";
+import { admin, reloadLocation } from "./admin/admin-utils";
 import { ENV } from "./main-frame";
 import moment from "moment";
 import { Component } from "react";
@@ -54,7 +54,6 @@ class User extends Component<any, any> {
 	}
 
 	changeOrg(value) {
-		clearForm();
 		setTimeout(() => {
 			setUserOrg(value);
 			showForm(14);
@@ -109,6 +108,7 @@ class User extends Component<any, any> {
 				)
 			} else {
 				let imgUrl = idToImgURL(this.state.avatar, 'avatar');
+				// TODO go to edit in showForm modal level
 				btn1 = R.a({ href: locationToHash(5, this.state.id, undefined, true), title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn' },
 					R.img({ className: 'user-avatar', src: imgUrl })
 				);
