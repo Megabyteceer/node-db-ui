@@ -3,7 +3,7 @@ import { FIELD_15_1toN, NodeDesc, RecId, RecordData } from "../bs-utils";
 import { FormItem } from "../forms/form-item.js";
 import { Filters } from "../utils.js";
 import { LookupNtoMField } from "./field-14-n2m.js";
-import { BaseField, FieldState, FiledProps } from "./base-field";
+import { BaseField, FieldProps, FieldState } from "./base-field";
 
 type AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormItem | LookupNtoMField, editButtonFilters?: Filters) => React.Component[];
 
@@ -23,7 +23,7 @@ interface LookupFieldState extends FieldState {
 	additionalButtonsN2MRenderer?: AdditionalButtonsRenderer;
 }
 
-interface LookupFiledProps extends FiledProps {
+interface LookupFiledProps extends FieldProps {
 	filters?: Filters;
 	expanded?: boolean;
 	hideIcon?: boolean;
@@ -71,7 +71,7 @@ class fieldLookupMixins extends BaseField<LookupFiledProps, LookupFieldState> {
 		this.savedFilters = filters;
 	}
 
-	setLookupFilter(filtersObjOrName: string | Filters, val) {
+	setLookupFilter(filtersObjOrName: string | Filters, val?: any) {
 		if(typeof filtersObjOrName === 'string') {
 			if(this.state.filters[filtersObjOrName] !== val) {
 				this.state.filters[filtersObjOrName] = val;

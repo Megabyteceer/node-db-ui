@@ -334,6 +334,10 @@ input[readonly] {
 	background: var(--CREATE_COLOR);
 }
 
+.field-container-type-15 .create-button {
+	padding: 7px 12px;
+}
+
 .default-btn {
 	color: #bbb;
 }

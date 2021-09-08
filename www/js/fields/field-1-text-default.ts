@@ -49,6 +49,7 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends BaseField {
 
 			var inputsProps = {
 				className,
+				autoFocus: this.isAutoFocus(),
 				defaultValue: value,
 				maxLength: this.props.maxLen || field.maxlen,
 				title: field.name,

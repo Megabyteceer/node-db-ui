@@ -7,6 +7,11 @@ import Highlighter from "react-highlight-words";
 import { FormFull } from "../forms/form-full.js";
 import { FieldWrap } from "./field-wrap.js";
 
+let autoFocusNow = true;
+const resetAutofocus = () => {
+	autoFocusNow = true;
+}
+
 interface FiledProps {
 	field: FieldDesc;
 	form: FormFull;
@@ -46,6 +51,16 @@ class BaseField<T extends FiledProps = FiledProps, T2 extends FieldState = Field
 		//@ts-ignore
 		this.state = { value };
 		this.refGetter = this.refGetter.bind(this);
+	}
+
+	/** returns true only for first call at one render time */
+	isAutoFocus() {
+		let ret = autoFocusNow;
+		if(autoFocusNow) {
+			autoFocusNow = undefined;
+			setTimeout(resetAutofocus, 10);
+		}
+		return ret;
 	}
 
 	isEmpty(): boolean {

@@ -970,27 +970,25 @@ function isLitePage() {
 
 function scrollToVisible(elem, doNotShake = false) {
 	if(elem) {
-		setTimeout(() => {
-			var $elem = $(ReactDOM.findDOMNode(elem));
-			if(!$elem.is(":visible")) {
-				return;
-			}
-			var $window = $(window);
+		var $elem = $(ReactDOM.findDOMNode(elem));
+		if(!$elem.is(":visible")) {
+			return;
+		}
+		var $window = $(window);
 
-			var docViewTop = $window.scrollTop();
-			var docViewBottom = docViewTop + $window.height();
+		var docViewTop = $window.scrollTop();
+		var docViewBottom = docViewTop + $window.height();
 
-			var elemTop = $elem.offset().top - 40;
-			var elemBottom = elemTop + $elem.height() + 40;
+		var elemTop = $elem.offset().top - 40;
+		var elemBottom = elemTop + $elem.height() + 40;
 
-			if(elemTop < docViewTop) {
-				$('html,body').animate({ scrollTop: elemTop }, 300, undefined, () => { !doNotShake && shakeDomElement($elem); });
-			} else if(elemBottom > docViewBottom) {
-				$('html,body').animate({ scrollTop: Math.min(elemBottom - $window.height(), elemTop) }, 300, undefined, () => { !doNotShake && shakeDomElement($elem) });
-			} else {
-				!doNotShake && shakeDomElement($elem);
-			}
-		}, 1);
+		if(elemTop < docViewTop) {
+			$('html,body').animate({ scrollTop: elemTop }, 300, undefined, () => { !doNotShake && shakeDomElement($elem); });
+		} else if(elemBottom > docViewBottom) {
+			$('html,body').animate({ scrollTop: Math.min(elemBottom - $window.height(), elemTop) }, 300, undefined, () => { !doNotShake && shakeDomElement($elem) });
+		} else {
+			!doNotShake && shakeDomElement($elem);
+		}
 	}
 }
 

@@ -125,7 +125,23 @@ class Lookup1toNField extends fieldLookupMixins {
 		} else {
 			var askToSaveParentBeforeCreation = !this.props.form.props.initialData.hasOwnProperty('id');
 			body = R.div(null,
-				React.createElement(List, { ref: (r) => { this.inlineListRef = r; }, hideControlls: this.state.hideControlls, noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton, disableDrafting: this.state.disableDrafting, additionalButtons: this.state.additionalButtons || this.props.additionalButtons, node: this.savedNode, omitHeader: this.state.creationOpened, initialData: this.savedData, preventCreateButton: this.state.preventCreateButton, askToSaveParentBeforeCreation, editable: this.state.inlineEditing, nodeId: field.nodeRef, parentForm: this, filters: this.savedFilters || this.state.filters })
+				React.createElement(List, {
+					ref: (r) => { this.inlineListRef = r; },
+					hideControlls: this.state.hideControlls,
+					noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton,
+					disableDrafting: this.state.disableDrafting,
+					additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
+					node: this.savedNode,
+					isLookup: true,
+					omitHeader: this.state.creationOpened,
+					initialData: this.savedData,
+					preventCreateButton: this.state.preventCreateButton,
+					askToSaveParentBeforeCreation,
+					editable: this.state.inlineEditing,
+					nodeId: field.nodeRef,
+					parentForm: this,
+					filters: this.savedFilters || this.state.filters
+				})
 			);
 		}
 		return body;

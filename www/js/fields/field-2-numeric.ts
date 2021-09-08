@@ -32,6 +32,7 @@ registerFieldClass(FIELD_2_INT, class NumericField extends BaseField {
 				type: 'number',
 				value: value,
 				title: field.name,
+				autoFocus: this.isAutoFocus(),
 				maxLength: field.maxlen,
 				placeholder: field.name,
 				readOnly: this.props.fieldDisabled,

@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import { FieldAdmin } from "../admin/field-admin";
 import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible, setFormFilter } from "../utils";
 import { iAdmin } from "../user";
-import { BaseField } from "./base-field.js";
+import { BaseField, FieldProps } from "./base-field.js";
 
 class FieldHelp extends Component<any, any> {
 
@@ -71,7 +71,7 @@ class FieldLabel extends Component<any, any> {
 	}
 }
 
-class FieldWrap extends Component<any, any> {
+class FieldWrap extends Component<FieldProps, any> {
 	fieldRef: BaseField;
 	hidden: boolean;
 	fieldDisabled: boolean;
@@ -304,10 +304,6 @@ class FieldWrap extends Component<any, any> {
 
 		var fieldTypedBody = React.createElement(getClassForField(field.fieldType), fprops);
 		var fieldCustomBody;
-		if(field.customRender) {
-			fieldCustomBody = field.customRender(fprops);
-		}
-
 
 		var noLabel = !field.name;// (field.fieldType===FIELD_14_NtoM)||(field.fieldType===FIELD_15_1toN);
 
@@ -321,7 +317,7 @@ class FieldWrap extends Component<any, any> {
 			fieldAdmin = React.createElement(FieldAdmin, { field, form: this.props.form, x: -10 });
 		}
 
-		let className = domId + ' field-wrap field-container-name-' + field.fieldName;
+		let className = domId + ' field-wrap field-container-type-' + field.fieldType + ' field-container-name-' + field.fieldName;
 		if(this.hidden
 			/// #if DEBUG
 			&& !this.props.form.showAllDebug

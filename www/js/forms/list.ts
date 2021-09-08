@@ -395,10 +395,8 @@ class List extends BaseForm<ListProps, ListState> {
 						className: 'clickable create-button', onClick: async () => {
 							if(this.props.askToSaveParentBeforeCreation) {
 								await this.props.parentForm.saveParentFormBeforeCreation();
-								this.props.parentForm.toggleCreateDialogue();
-							} else {
-								this.props.parentForm.toggleCreateDialogue();
 							}
+							this.props.parentForm.toggleCreateDialogue();
 						}
 					},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
@@ -505,7 +503,7 @@ class List extends BaseForm<ListProps, ListState> {
 				);
 			}
 
-		} else {
+		} else if(!this.props.isLookup) {
 
 			var t1, t2;
 			if(filters.s || filters.s === 0) {
