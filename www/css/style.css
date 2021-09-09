@@ -1130,11 +1130,13 @@ input[readonly] {
 	max-width: 1124px;
 }
 
-.form-layer-modal .form-full {
+.form-layer-modal .form-modal-container {
+	position: relative;
+	max-width: 1124px;
 	margin: 30px auto;
 	padding: 30px;
 	overflow-y: auto;
-	height: calc(100% - 120px);
+	max-height: calc(100% - 120px);
 	background-color: white;
 	border: 1px solid var(--BRAND_COLOR_LIGHT);
 	border-radius: 6px;

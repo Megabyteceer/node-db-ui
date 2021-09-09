@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import { R } from "./r";
 import { FormFull } from "./forms/form-full";
 import { List } from "./forms/list";
-import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, renderIcon } from "./utils";
+import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, myAlert, renderIcon } from "./utils";
 import { RecId } from "./bs-utils";
 import { BaseForm } from "./forms/base-form";
 import ReactDOM from 'react-dom';
@@ -82,16 +82,32 @@ class Stage extends Component<any, any> {
 		}
 		let node = await getNode(nodeId);
 		const ref = (form: BaseForm) => {
-			if(isRootForm) {
-				Stage.rootForm = form as FormFull;
+			if(form) {
+				if(isRootForm) {
+					Stage.rootForm = form as FormFull;
+				}
+				Stage.currentForm = form;
+				Stage.currentFormEntry.form = form;
 			}
-			Stage.currentForm = form;
-			Stage.currentFormEntry.form = form;
 		};
-		let formType = (recId || (recId === 0)) ? FormFull : List;
+		let formType;
+		if(!node.staticLink) {
+			formType = (recId || (recId === 0)) ? FormFull : List;
+		} else if(node.staticLink === 'reactClass') {
+			if(typeof window[node.tableName] === 'undefined') {
+				myAlert('Unknown react class: ' + node.tableName);
+				formType = 'div';
+			} else {
+				formType = window[node.tableName];
+			}
+		} else {
+			location.href = node.staticLink;
+		}
 
 		ReactDOM.render(
-			React.createElement(formType, { ref, node, recId, isRootForm, initialData: data || {}, filters, editable }),
+			R.div({ className: isRootForm ? undefined : 'form-modal-container' },
+				React.createElement(formType, { ref, node, recId, isRootForm, initialData: data || {}, filters, editable })
+			),
 			Stage.currentFormEntry.container
 		);
 	}
