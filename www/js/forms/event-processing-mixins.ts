@@ -335,7 +335,7 @@ class eventProcessingMixins extends BaseForm {
 
 	async onSave() {
 		//DEBUG
-		consoleLog('onSave ' + this.props.node.tableName);
+		consoleLog('onSave ' + this.props.node.tableName + ': ' + this.props.initialData.id);
 		//ENDDEBUG			
 
 		for(var k in this.props.node.fields) {

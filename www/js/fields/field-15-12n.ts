@@ -66,11 +66,13 @@ class Lookup1toNField extends fieldLookupMixins {
 	async getMessageIfInvalid(): Promise<string | false | true> {
 		if(this.state.inlineEditing) {
 			let ret;
-			await Promise.all(this.inlineListRef.getSubforms().map((subForm) => {
-				return subForm.validate().catch(() => {
-					ret = L('INVALID_DATA_LIST')
-				});
-			}));
+			let forms = this.inlineListRef.getSubforms();
+			for(let subForm of forms) {
+				let res = await subForm.validate();
+				if(!res) {
+					ret = L('INVALID_DATA_LIST');
+				}
+			}
 			return ret;
 		}
 		else if(this.state.creationOpened) {

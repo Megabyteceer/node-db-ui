@@ -23,14 +23,16 @@ window.addEventListener('unload', tryBackup);
 setInterval(tryBackup, 15000);
 
 async function callForEachField(fieldRefs, data, functionName) {
-	await Promise.all(Object.keys(fieldRefs).map(async (k) => {
+	for(let k of Object.keys(fieldRefs)) {
 		let f = fieldRefs[k];
-		var fieldName = f.props.field.fieldName;
-		let newValue = await f[functionName]();
-		if((typeof newValue !== 'undefined') && (f.props.initialValue !== newValue)) {
-			data[fieldName] = newValue;
+		if(f.fieldRef[functionName]) {
+			var fieldName = f.props.field.fieldName;
+			let newValue = await f.fieldRef[functionName]();
+			if((typeof newValue !== 'undefined') && (f.props.initialValue !== newValue)) {
+				data[fieldName] = newValue;
+			}
 		}
-	}));
+	}
 }
 
 class FormFull extends eventProcessingMixins {
@@ -138,11 +140,11 @@ class FormFull extends eventProcessingMixins {
 		}
 	}
 
-	async validate() {
+	async validate(): Promise<boolean> {
 		this.formIsValid = true;
 		if(await this.onSave()) {
 			this.formIsValid = false;
-			return
+			return false;
 		}
 
 		for(let k in this.fieldsRefs) {

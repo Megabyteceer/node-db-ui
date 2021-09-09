@@ -6,72 +6,10 @@ import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible }
 import { iAdmin } from "../user";
 import { BaseField, FieldProps } from "./base-field";
 
-class FieldHelp extends Component<any, any> {
-
-	constructor(props) {
-		super(props);
-		this.mouseOut = this.mouseOut.bind(this);
-		this.mouseOver = this.mouseOver.bind(this);
-	}
-
-	mouseOut() {
-		this.setState({ hovered: false });
-	}
-
-	mouseOver() {
-		this.setState({ hovered: true });
-	}
-
-	render() {
-		var body;
-		if(this.state && this.state.hovered) {
-			body = R.div({ className: 'field-wrap-help field-wrap-help-open' },
-				this.props.text
-			);
-		} else {
-			body = R.div({ className: 'field-wrap-help' }, renderIcon('question-circle'));
-		}
-		return R.div({ onMouseOver: this.mouseOver, onMouseOut: this.mouseOut, className: 'field-wrap-help-container' }, body);
-	}
-}
-
-class FieldLabel extends Component<any, any> {
-	render() {
-		var field = this.props.field;
-		var star;
-		if(this.props.isEdit && field.requirement) {
-			star = R.span({ className: 'field-wrap-required-star' }, '*');
-		} else {
-			star = '';
-		}
-
-		var alertBody;
-		if(this.props.fieldAlert) {
-			if(this.props.isSucessAlert) {
-				alertBody = R.div({ className: 'fade-in field-wrap-alert field-wrap-alert-success' }, this.props.fieldAlert);
-			} else {
-				alertBody = R.div({ className: 'fade-in field-wrap-alert' }, this.props.fieldAlert);
-			}
-		}
-
-		var body;
-		if(field.lang) {
-			body = R.span({ className: 'field-wrap-label-lang' },
-				field.lang
-			)
-		} else {
-			body = (field.fieldType !== FIELD_18_BUTTON) ? (this.props.labelOwerride || field.name) : '';
-		}
-
-		return R.div({ className: 'field-wrap-label' },
-			body,
-			star,
-			alertBody
-		);
-	}
-}
 
 class FieldWrap extends Component<FieldProps, any> {
+
+	afterSave: () => Promise<any>;
 	fieldRef: BaseField;
 	hidden: boolean;
 	fieldDisabled: boolean;
@@ -193,18 +131,6 @@ class FieldWrap extends Component<FieldProps, any> {
 				}
 				return false;
 			}
-		}
-	}
-
-	async beforeSave() {
-		if(this.fieldRef.beforeSave) {
-			return this.fieldRef.beforeSave();
-		}
-	}
-
-	async afterSave() {
-		if(this.fieldRef.afterSave) {
-			return this.fieldRef.afterSave();
 		}
 	}
 
@@ -376,5 +302,69 @@ class FieldWrap extends Component<FieldProps, any> {
 	}
 }
 
+class FieldHelp extends Component<any, any> {
+
+	constructor(props) {
+		super(props);
+		this.mouseOut = this.mouseOut.bind(this);
+		this.mouseOver = this.mouseOver.bind(this);
+	}
+
+	mouseOut() {
+		this.setState({ hovered: false });
+	}
+
+	mouseOver() {
+		this.setState({ hovered: true });
+	}
+
+	render() {
+		var body;
+		if(this.state && this.state.hovered) {
+			body = R.div({ className: 'field-wrap-help field-wrap-help-open' },
+				this.props.text
+			);
+		} else {
+			body = R.div({ className: 'field-wrap-help' }, renderIcon('question-circle'));
+		}
+		return R.div({ onMouseOver: this.mouseOver, onMouseOut: this.mouseOut, className: 'field-wrap-help-container' }, body);
+	}
+}
+
+class FieldLabel extends Component<any, any> {
+	render() {
+		var field = this.props.field;
+		var star;
+		if(this.props.isEdit && field.requirement) {
+			star = R.span({ className: 'field-wrap-required-star' }, '*');
+		} else {
+			star = '';
+		}
+
+		var alertBody;
+		if(this.props.fieldAlert) {
+			if(this.props.isSucessAlert) {
+				alertBody = R.div({ className: 'fade-in field-wrap-alert field-wrap-alert-success' }, this.props.fieldAlert);
+			} else {
+				alertBody = R.div({ className: 'fade-in field-wrap-alert' }, this.props.fieldAlert);
+			}
+		}
+
+		var body;
+		if(field.lang) {
+			body = R.span({ className: 'field-wrap-label-lang' },
+				field.lang
+			)
+		} else {
+			body = (field.fieldType !== FIELD_18_BUTTON) ? (this.props.labelOwerride || field.name) : '';
+		}
+
+		return R.div({ className: 'field-wrap-label' },
+			body,
+			star,
+			alertBody
+		);
+	}
+}
 
 export { FieldHelp, FieldLabel, FieldWrap };

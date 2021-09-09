@@ -163,7 +163,7 @@ function sp(event) {
 }
 
 function handleAdditionalData(data, url) {
-	if(data.hasOwnProperty('debug')) {
+	if(data.hasOwnProperty('debug') && data.debug) {
 		/// #if DEBUG
 		data.debug.request = url;
 		DebugPanel.instance.addEntry(data.debug);

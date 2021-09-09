@@ -195,10 +195,8 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 	}
 
-	subFormRef(ref) {
-		if(ref) {
-			this.subformsRefs[UID(ref.props.initialData)] = (ref);
-		}
+	subFormRef(ref, itemNum) {
+		this.subformsRefs[itemNum] = ref;
 	}
 
 	getSubforms(includeDeleted?: boolean): FormFull[] {
@@ -225,15 +223,19 @@ class List extends BaseForm<ListProps, ListState> {
 		var lines = [];
 		if(data.items.length > 0) {
 			var sorting = data.items[0].hasOwnProperty('order');
-
 			for(var i = 0; i < data.items.length; i++) {
 				(() => {
-					var itemNum = i;
+					let itemNum = i;
 					var item = data.items[i];
 					if(!item.__deleted_901d123f) {
+
 						lines.push(
 							R.div({ key: UID(item), className: 'inline-editable-item' },
-								React.createElement(FormFull, { ref: this.subFormRef, inlineEditable: true, editable: true, isCompact: true, filters: filters, parentForm: this.props.parentForm, isLookup: this.props.isLookup, list: this, node, initialData: item, overrideOrderData: sorting ? itemNum : -1 })
+								React.createElement(FormFull, {
+									ref: (ref) => {
+										this.subFormRef(ref, itemNum);
+									}, inlineEditable: true, editable: true, isCompact: true, filters: filters, parentForm: this.props.parentForm, isLookup: this.props.isLookup, list: this, node, initialData: item, overrideOrderData: sorting ? itemNum : -1
+								})
 							)
 						);
 						var btns = [];
@@ -251,38 +253,35 @@ class List extends BaseForm<ListProps, ListState> {
 						}, renderIcon('times')));
 
 						if(sorting) {
-							var _uidM1: number = 0;
-							var _uidP1: number = 0;
-							var _itemNumM1;
-							var _itemNumP1;
+							var uidM1: number;
+							var uidP1: number;
+							var itemNumM1;
+							var itemNumP1;
 							for(var j = itemNum - 1; j >= 0; j--) {
 								if(!data.items[j].__deleted_901d123f) {
-									_itemNumM1 = j;
-									_uidM1 = UID(data.items[j]);
+									itemNumM1 = j;
+									uidM1 = j;
 									break;
 								}
 							}
 
 							for(var j = itemNum + 1; j < (data.items.length); j++) {
 								if(!data.items[j].__deleted_901d123f) {
-									_itemNumP1 = j;
-									_uidP1 = UID(data.items[j]);
+									itemNumP1 = j;
+									uidP1 = j;
 									break;
 								}
 							}
 
-							if(_uidM1) {
+							if(uidM1) {
 								(() => {
-									var uid = UID(data.items[itemNum]);
-									var itemNumM1 = _itemNumM1;
-									var uidM1 = _uidM1;
 									btns.push(R.button({
 										className: 'clickable toolbtn edit-btn', title: L('MOVE_UP'), key: 'bu' + UID(item), onClick: () => {
 											var t = data.items[itemNum];
 											data.items[itemNum] = data.items[itemNumM1];
 											data.items[itemNumM1] = t;
-											this.subformsRefs[uid].setFieldValue('order', itemNumM1);
-											this.subformsRefs[uid].saveForm();
+											this.subformsRefs[itemNum].setFieldValue('order', itemNumM1);
+											this.subformsRefs[itemNum].saveForm();
 											this.subformsRefs[uidM1].setFieldValue('order', itemNum);
 											this.subformsRefs[uidM1].saveForm();
 											this.forceUpdate();
@@ -290,21 +289,17 @@ class List extends BaseForm<ListProps, ListState> {
 									}, renderIcon('arrow-up')));
 								})();
 							}
-							if(_uidP1) {
+							if(uidP1) {
 
 								(() => {
-									var uid = UID(data.items[itemNum]);
-									var itemNumP1 = _itemNumP1;
-									var uidP1 = _uidP1;
-
 									btns.push(R.button({
 										className: 'clickable toolbtn edit-btn', title: L('MOVE_DOWN'), key: 'bd' + UID(item), onClick: () => {
 											var t = data.items[itemNum];
 											data.items[itemNum] = data.items[itemNumP1];
 											data.items[itemNumP1] = t;
 
-											this.subformsRefs[uid].setFieldValue('order', itemNumP1);
-											this.subformsRefs[uid].saveForm();
+											this.subformsRefs[itemNum].setFieldValue('order', itemNumP1);
+											this.subformsRefs[itemNum].saveForm();
 											this.subformsRefs[uidP1].setFieldValue('order', itemNum);
 											this.subformsRefs[uidP1].saveForm();
 											this.forceUpdate();
