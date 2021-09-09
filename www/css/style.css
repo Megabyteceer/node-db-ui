@@ -1133,9 +1133,15 @@ input[readonly] {
 .form-layer-modal .form-full {
 	margin: 30px auto;
 	padding: 30px;
+	overflow-y: auto;
+	height: calc(100% - 120px);
 	background-color: white;
-	border: 2px solid var(--BRAND_COLOR);
-	border-radius: 13px;
+	border: 1px solid var(--BRAND_COLOR_LIGHT);
+	border-radius: 6px;
+}
+
+.form {
+	position: relative;
 }
 
 .form-footer {

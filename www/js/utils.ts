@@ -6,9 +6,11 @@ import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
 import { ENV } from "./main-frame";
-import { Stage } from "./stage";
+import { Stage as Stg } from "./stage";
 import { DebugPanel } from "./debug-panel";
 import React from "react";
+
+declare const Stage: typeof Stg;
 
 const ON_FORM_SAVE = 'onsave';
 const ON_FORM_LOAD = 'onload';

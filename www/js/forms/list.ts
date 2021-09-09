@@ -571,7 +571,7 @@ class List extends BaseForm<ListProps, ListState> {
 			}
 		}
 
-		return R.div({ className: 'list-container form-node-' + node.id },
+		return R.div({ className: 'form list-container form-node-' + node.id },
 			nodeAdmin,
 			title,
 			header,

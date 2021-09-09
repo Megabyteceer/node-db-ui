@@ -200,6 +200,14 @@ class FieldsEvents extends FormEvents {
 		alert('Button clicked');
 	}
 
+	async my_records_lookup7__onChange() {
+		
+	}
+
+	async my_records_datetime_onChange() {
+		
+	}
+
 	//_insertNewHandlersHere_
 }
 

@@ -53,6 +53,8 @@ class Stage extends Component<any, any> {
 			let e = forms.pop();
 			ReactDOM.render(React.createElement(React.Fragment), e.container);
 			e.container.remove();
+			Stage.currentFormEntry = forms[forms.length - 1];
+			Stage.currentForm = Stage.currentFormEntry.form;
 			return true;
 		}
 	}
@@ -114,5 +116,8 @@ function addFormEntry() {
 	forms.push(entry);
 	Stage.currentFormEntry = entry;
 }
+
+//@ts-ignore
+window.Stage = Stage;
 
 export { Stage, FormLoaderCog }

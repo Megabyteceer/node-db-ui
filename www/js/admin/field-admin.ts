@@ -1,6 +1,6 @@
 import { R } from "../r";
 import { Component } from "react";
-import { getNodeData, keepInWindow, L, ON_FIELD_CHANGE, renderIcon, showForm, sp } from "../utils";
+import { getNodeData, keepInWindow, L, ON_FIELD_CHANGE, renderIcon, sp } from "../utils";
 import { admin_editSource } from "./admin-event-editor";
 import { admin, reloadLocation } from "./admin-utils";
 import { FieldDesc, NodeDesc } from "../bs-utils";
@@ -139,7 +139,7 @@ class FieldAdmin extends Component<any, any> {
 						onClick: () => {
 
 							getNodeData(6, field.id).then((data) => {
-								showForm(6, 'new', {
+								window.Stage.showForm(6, 'new', {
 									prior: data.prior,
 									node_fields_linker: {
 										id: node.id,
@@ -154,7 +154,7 @@ class FieldAdmin extends Component<any, any> {
 					),
 					R.button({
 						onClick: () => {
-							showForm(6, field.id, undefined, true, true, reloadLocation);
+							window.Stage.showForm(6, field.id, undefined, true, true, reloadLocation);
 						},
 						className: 'clickable toolbtn admin-form-btn',
 						title: "Edit field properties"

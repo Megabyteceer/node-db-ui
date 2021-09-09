@@ -1,6 +1,6 @@
 import { R } from "../r";
 import React, { Component } from "react";
-import { getNode, getNodeData, keepInWindow, L, ON_FORM_LOAD, ON_FORM_SAVE, renderIcon, showForm, sp } from "../utils";
+import { getNode, getNodeData, keepInWindow, L, ON_FORM_LOAD, ON_FORM_SAVE, renderIcon, sp } from "../utils";
 import { admin_editSource } from "./admin-event-editor";
 import { admin, reloadLocation } from "./admin-utils";
 import { FieldAdmin } from "./field-admin";
@@ -186,7 +186,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('FLD_ADD'),
 						onClick: () => {
-							showForm(6, 'new', {
+							window.Stage.showForm(6, 'new', {
 								node_fields_linker: {
 									id: node.id,
 									name: node.singleName
@@ -298,7 +298,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_NODE'),
 						onClick: () => {
-							showForm(4, nodeId, undefined, true, true, reloadLocation);
+							window.Stage.showForm(4, nodeId, undefined, true, true, reloadLocation);
 
 						}
 					},
@@ -308,7 +308,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_ACCESS'),
 						onClick: () => {
-							showForm(1, nodeId, undefined, true, true, reloadLocation);
+							window.Stage.showForm(1, nodeId, undefined, true, true, reloadLocation);
 						}
 					},
 						renderIcon('user')
@@ -351,7 +351,7 @@ class NodeAdmin extends Component<any, any> {
 
 function createNodeForMenuItem(item) {
 	getNodeData(4, (item.isDoc ? item.parent : item.id) as number).then((data) => {
-		showForm(4, 'new', {
+		window.Stage.showForm(4, 'new', {
 			prior: data.prior,
 			_nodesID: {
 				id: data.id,

@@ -6,6 +6,7 @@ import { Component } from "react";
 import Highlighter from "react-highlight-words";
 import { FormFull } from "../forms/form-full";
 import { FieldWrap } from "./field-wrap";
+import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 
 let autoFocusNow = true;
 const resetAutofocus = () => {
@@ -23,6 +24,9 @@ interface FieldProps {
 	wrapper: FieldWrap;
 	initialValue: any;
 	parentTabName?: string;
+	parentCompactAreaName?: string;
+	additionalButtons?: AdditionalButtonsRenderer;
+	isTable?: boolean;
 }
 
 interface FieldState {

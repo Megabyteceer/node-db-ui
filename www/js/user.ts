@@ -1,14 +1,13 @@
 ﻿import React from "react";
 
-import { getData, goToPageByHash, idToImgURL, isAdmin, L, locationToHash, renderIcon, showForm } from "./utils";
+import { getData, goToPageByHash, idToImgURL, isAdmin, L, locationToHash, renderIcon } from "./utils";
 import { Select } from "./components/select";
-import { admin, reloadLocation } from "./admin/admin-utils";
+import { admin } from "./admin/admin-utils";
 import { ENV } from "./main-frame";
 import moment from "moment";
 import { Component } from "react";
 import { R } from "./r";
 import { UserSession } from "./bs-utils";
-
 
 function setUserOrg(orgId) {
 	if(User.currentUserData.orgId !== orgId) {
@@ -56,7 +55,7 @@ class User extends Component<any, any> {
 	changeOrg(value) {
 		setTimeout(() => {
 			setUserOrg(value);
-			showForm(14);
+			//Stage.showForm(14, undefined, undefined, undefined, true);
 		}, 10);
 	}
 
