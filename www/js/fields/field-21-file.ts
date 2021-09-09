@@ -28,7 +28,7 @@ registerFieldClass(FIELD_21_FILE, class FileField extends BaseField {
 	}
 
 	focus() {
-		this.fileFormBodyRef.selectButtonRef.focus();
+		this.fileFormBodyRef.fileInputRef.focus();
 	}
 
 	async beforeSave() {

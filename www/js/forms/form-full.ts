@@ -186,7 +186,6 @@ class FormFull extends eventProcessingMixins {
 		return ret;
 	}
 	async saveClickInner(isDraft): Promise<boolean> {
-
 		this.forceBouncingTimeout();
 		var data: RecordData = {};
 
@@ -285,9 +284,12 @@ class FormFull extends eventProcessingMixins {
 			if(this.onSaveCallback) {
 				await this.onSaveCallback();
 			}
+		} else {
+			await callForEachField(this.fieldsRefs, data, 'afterSave');
 		}
 
 		if(this.isSubForm()) {
+
 			this.props.parentForm.valueChoosed(this.currentData, true);
 		} else {
 			this.cancelClick();

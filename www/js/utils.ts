@@ -276,20 +276,8 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, 
 	return retHash;
 }
 
-const currentFormParameters: {
-	filters: Filters;
-	nodeId: RecId;
-	recId: RecId | 'new';
-	editable: boolean;
-} = {
-	filters: {},
-	nodeId: 0,
-	recId: 0,
-	editable: false
-};
-
 function isCurrentlyShowedLeftbarItem(item) {
-
+	const currentFormParameters = Stage.currentForm.formParameters;
 	if(item.id === false) {
 		if(!currentFormParameters.filters || (Object.keys(currentFormParameters.filters).length === 0)) {
 			return item.isDefault;
@@ -362,6 +350,10 @@ function goToPageByHash() {
 
 
 function goBack(isAfterDelete?: boolean) {
+	const currentFormParameters = Stage.currentForm.formParameters;
+	if(Stage.goBackIfModal()) {
+		return;
+	}
 	if(isLitePage() && window.history.length < 2) {
 		if(window.location.href.indexOf('#n/28/f/p/*/formTitle') > 0) {
 			Stage.refreshForm();
@@ -395,6 +387,7 @@ function updateHashLocation(filters?: Filters) {
 	}
 
 	hashUpdateTimeout = setTimeout(() => {
+		const currentFormParameters = Stage.currentForm.formParameters;
 		hashUpdateTimeout = false;
 
 		if(!filters) {
@@ -1151,7 +1144,6 @@ export {
 	readableTimeFormat,
 	readableDateFormat,
 	debugError,
-	currentFormParameters,
 	isUserHaveRole,
 	isAdmin,
 	ON_FORM_SAVE,

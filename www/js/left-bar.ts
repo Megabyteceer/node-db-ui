@@ -6,7 +6,7 @@ import { assert } from "./bs-utils";
 import { R } from "./r";
 import { Stage } from "./stage";
 import { iAdmin, User } from "./user";
-import { currentFormParameters, isLitePage, L, locationToHash, renderIcon } from "./utils";
+import { isLitePage, L, locationToHash, renderIcon } from "./utils";
 
 let collapsed;
 
@@ -31,7 +31,7 @@ interface LeftBarItemData {
 }
 
 function isCurrentlyShowedLeftbarItem(item) {
-
+	const currentFormParameters = Stage.currentForm.formParameters;
 	if(item.id === false) {
 		if(!currentFormParameters.filters || (Object.keys(currentFormParameters.filters).length === 0)) {
 			return item.isDefault;

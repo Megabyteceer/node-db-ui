@@ -74,11 +74,12 @@ class LookupNtoMField extends fieldLookupMixins {
 					var closestItem = undefined;
 
 					dragList.state.value.some((i) => {
-						var el = ReactDOM.findDOMNode(refs[UID(i)]);
-						var ey = el.getBoundingClientRect();
-						ey = (ey.top + ey.bottom) / 2;
+						var el = ReactDOM.findDOMNode(refs[UID(i)]) as HTMLDivElement;
 
-						var d = Math.abs(y - ey);
+						var bounds = el.getBoundingClientRect();
+						let elementY = (bounds.top + bounds.bottom) / 2;
+
+						var d = Math.abs(y - elementY);
 						if(d < closestD) {
 							closestD = d;
 							closestItem = i;
@@ -191,7 +192,8 @@ class LookupNtoMField extends fieldLookupMixins {
 
 	render() {
 		if(!this.state.value) {
-			this.setValue({ value: [] });
+			//@ts-ignore
+			this.state.value = [];
 		}
 		var value = this.state.value;
 		var field = this.props.field;

@@ -4,7 +4,7 @@ import { Lookup1toNField } from "../fields/field-15-12n";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import { FieldWrap } from "../fields/field-wrap";
 import { LeftBar } from "../left-bar";
-import { currentFormParameters, getNode, getNodeData, goBack, isPresentListRenderer, onOneFormShowed, updateHashLocation } from "../utils";
+import { getNode, getNodeData, goBack, isPresentListRenderer, onOneFormShowed, updateHashLocation } from "../utils";
 
 interface FormProps {
 	initialData?: RecordData;
@@ -55,10 +55,10 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	onCancelCallback: () => void | null;
 	hiddenFields: { [key: string]: BoolNum };
 
-	constructor(props) {
-		super(props);
+	constructor(props: FormProps) {
+		super(props as T);
 		this.formParameters = {
-			nodeId: this.props.nodeId,
+			nodeId: this.props.nodeId || this.props.node.id,
 			recId: this.props.recId,
 			filters: this.props.filters,
 			editable: this.props.editable
@@ -70,6 +70,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		this.cancelClick = this.cancelClick.bind(this);
 		this.header = '';
 		this.onCancelCallback = null;
+		this.updateHashLocation();
 	}
 
 	UNSAFE_componentWillReceiveProps(newProps) {
@@ -98,14 +99,10 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		if(p !== v) {
 
 			if(typeof (v) === 'undefined') {
-				if(!this.isSubForm()) {
-					delete (currentFormParameters.filters[name]);
-				}
+				delete (this.formParameters.filters[name]);
 				delete (this.filters[name]);
 			} else {
-				if(!this.isSubForm()) {
-					currentFormParameters.filters[name] = v;
-				}
+				this.formParameters.filters[name] = v;
 				this.filters[name] = v;
 			}
 			if(refresh) {
@@ -173,13 +170,17 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		this.formParameters.recId = recId;
 		this.formParameters.filters = filters;
 		this.formParameters.editable = editable;
-		if(this.props.isRootForm) {
-			updateHashLocation();
-		}
+
 
 		getNode(nodeId).then((node) => {
 			onOneFormShowed();
 		});
+	}
+
+	updateHashLocation() {
+		if(this.props.isRootForm) {
+			updateHashLocation();
+		}
 	}
 }
 export { BaseForm, FormProps, FormState };

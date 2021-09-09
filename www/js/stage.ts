@@ -48,8 +48,13 @@ class Stage extends Component<any, any> {
 		);
 	}
 
-	static closeTopForm() {
-		forms.pop();
+	static goBackIfModal() {
+		if(forms.length > 1) {
+			let e = forms.pop();
+			ReactDOM.render(React.createElement(React.Fragment), e.container);
+			e.container.remove();
+			return true;
+		}
 	}
 
 	static dataDidModifed() {
@@ -59,9 +64,10 @@ class Stage extends Component<any, any> {
 	}
 
 	static async showForm(nodeId: RecId, recId?: RecId | 'new', filters: Filters = {}, editable?: boolean, modal?: boolean, onModified?: () => void) {
-		if(!Stage.rootForm || modal) {
+		if(!forms.length || modal) {
 			addFormEntry();
 		}
+		const isRootForm = forms.length === 1;
 		Stage.currentFormEntry.onModified = onModified;
 
 		let data;
@@ -74,15 +80,16 @@ class Stage extends Component<any, any> {
 		}
 		let node = await getNode(nodeId);
 		const ref = (form: BaseForm) => {
-			if(!Stage.rootForm) {
+			if(isRootForm) {
 				Stage.rootForm = form as FormFull;
 			}
 			Stage.currentForm = form;
 			Stage.currentFormEntry.form = form;
 		};
-		let formType = typeof recId === 'number' ? FormFull : List;
+		let formType = (recId || (recId === 0)) ? FormFull : List;
+
 		ReactDOM.render(
-			React.createElement(formType, { ref, node, initialData: data, filters, editable }),
+			React.createElement(formType, { ref, node, recId, isRootForm, initialData: data || {}, filters, editable }),
 			Stage.currentFormEntry.container
 		);
 	}
@@ -99,7 +106,7 @@ class Stage extends Component<any, any> {
 
 function addFormEntry() {
 	let container = document.createElement('div');
-	container.className = 'form-layer';
+	container.className = forms.length === 0 ? 'form-layer' : 'form-layer form-layer-modal';
 	document.querySelector('#stage').appendChild(container);
 	let entry = {
 		container
