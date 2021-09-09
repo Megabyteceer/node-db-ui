@@ -255,7 +255,6 @@ class NodeAdmin extends Component<any, any> {
 							getNodeData(4, undefined, {
 								_nodesID: item.parent
 							}).then((data) => {
-								debugger;
 								for(var k in data.items) {
 									if(data.items[k].id === item.id) {
 										admin.exchangeNodes(data.items[parseInt(k)], data.items[parseInt(k) - 1]);
