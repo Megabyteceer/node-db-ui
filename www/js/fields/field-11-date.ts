@@ -5,7 +5,7 @@ import { FIELD_11_DATE } from "../bs-utils";
 import { R } from "../r";
 import moment from "moment";
 import { innerDatetimeFormat, readableDateFormat, registerFieldClass, toReadableDate } from "../utils";
-import { dateFieldMixins } from "./field-4-datetime";
+import { dateFieldMixins, ReactDatetimeClassHolder } from "./field-4-datetime";
 
 registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 
@@ -54,7 +54,7 @@ registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 			return R.div({
 				title: (this.props.isCompact ? field.name : '')
 			},
-				React.createElement(this.ReactDatetimeClass, inputsProps)
+				React.createElement(ReactDatetimeClassHolder.ReactDatetimeClass, inputsProps)
 			);
 
 		} else {

@@ -19,9 +19,12 @@ interface DatetimeFieldState extends FieldState {
 	allowedDays?: moment.Moment[];
 }
 
+let ReactDatetimeClassHolder: { ReactDatetimeClass?: typeof import('react-datetime') } = {
+}
+
 class dateFieldMixins extends BaseField<FieldProps, DatetimeFieldState> {
 
-	ReactDatetimeClass: typeof import('react-datetime');
+
 
 	constructor(props) {
 		super(props);
@@ -30,9 +33,9 @@ class dateFieldMixins extends BaseField<FieldProps, DatetimeFieldState> {
 	}
 
 	importReactDateTime() {
-		if(!this.ReactDatetimeClass) {
+		if(!ReactDatetimeClassHolder.ReactDatetimeClass) {
 			import('react-datetime').then((module) => {
-				this.ReactDatetimeClass = module.default;
+				ReactDatetimeClassHolder.ReactDatetimeClass = module.default;
 				this.forceUpdate();
 			});
 		}
@@ -193,7 +196,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 	}
 
 	render() {
-		if(!this.ReactDatetimeClass) {
+		if(!ReactDatetimeClassHolder) {
 			return renderIcon('cog fa-spin');
 		}
 
@@ -280,10 +283,10 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 			},
 				R.div({
 					className: "field-date-time-time"
-				}, React.createElement(this.ReactDatetimeClass, inputsProps1)),
+				}, React.createElement(ReactDatetimeClassHolder.ReactDatetimeClass, inputsProps1)),
 				R.div({
 					className: "field-date-time-date"
-				}, React.createElement(this.ReactDatetimeClass, inputsProps2))
+				}, React.createElement(ReactDatetimeClassHolder.ReactDatetimeClass, inputsProps2))
 			);
 		} else {
 			return toReadableDatetime(value);
@@ -292,5 +295,5 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 });
 
 export {
-	dateFieldMixins
+	dateFieldMixins, ReactDatetimeClassHolder
 };
