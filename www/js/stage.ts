@@ -39,10 +39,10 @@ class Stage extends Component<any, any> {
 
 	static refreshForm() {
 		Stage.showForm(
-			Stage.currentForm.formParameters.nodeId,
-			Stage.currentForm.formParameters.recId,
-			Stage.currentForm.formParameters.filters,
-			Stage.currentForm.formParameters.editable
+			Stage.currentForm.nodeId,
+			Stage.currentForm.recId,
+			Stage.currentForm.filters,
+			Stage.currentForm.editable
 		);
 	}
 
@@ -69,7 +69,7 @@ class Stage extends Component<any, any> {
 			addFormEntry();
 		} else {
 			if(Stage.currentForm) {
-				const formParameters = Stage.currentForm.formParameters;
+				const formParameters = Stage.currentForm;
 				formParameters.nodeId = nodeId;
 				formParameters.recId = recId;
 				formParameters.filters = filters;
@@ -116,7 +116,7 @@ class Stage extends Component<any, any> {
 			Stage.currentFormEntry.container
 		);
 		if(isRootForm && Stage.rootForm) {
-			const formParameters = Stage.rootForm.formParameters;
+			const formParameters = Stage.rootForm;
 			if(formParameters.nodeId && ((formParameters.nodeId !== nodeId) || (formParameters.recId !== recId))) {
 				window.scrollTo(0, 0);
 			}

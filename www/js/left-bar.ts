@@ -31,7 +31,7 @@ interface LeftBarItemData {
 }
 
 function isCurrentlyShowedLeftbarItem(item) {
-	const currentFormParameters = Stage.currentForm.formParameters;
+	const currentFormParameters = Stage.currentForm;
 	if(item.id === false) {
 		if(!currentFormParameters.filters || (Object.keys(currentFormParameters.filters).length === 0)) {
 			return item.isDefault;
@@ -237,7 +237,6 @@ class BarItem extends Component<any, any> {
 				if(!isMustBeExpandedVal) {
 					if(item.isDoc) {
 						if(item.id === false) {
-
 							Stage.rootForm.setFormFilter('tab', item.tab);
 							return;
 						}

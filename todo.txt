@@ -1,6 +1,4 @@
 
-left bar current tab highlight
-
 declare all globals "declare global"
 
 редактирование лукап значения в попапе. не ренедерить в поле

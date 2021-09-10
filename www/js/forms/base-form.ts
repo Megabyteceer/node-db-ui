@@ -42,16 +42,11 @@ interface FormState {
 	hideControlls?: boolean;
 }
 
-interface FormParameters {
-	nodeId: RecId,
-	recId: RecId | 'new',
-	editable: boolean,
-	filters: Filters
-}
-
 class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState> extends Component<T, T2> {
 
-	formParameters: FormParameters;
+	nodeId: RecId;
+	recId: RecId | 'new';
+	editable: boolean;
 	filters: Filters;
 	fieldsRefs: { [key: string]: FieldWrap };
 	header: string;
@@ -60,12 +55,11 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 
 	constructor(props: FormProps) {
 		super(props as T);
-		this.formParameters = {
-			nodeId: this.props.nodeId || this.props.node.id,
-			recId: this.props.recId,
-			filters: this.props.filters,
-			editable: this.props.editable
-		};
+		this.nodeId = this.props.nodeId || this.props.node.id;
+		this.recId = this.props.recId;
+		this.filters = this.props.filters;
+		this.editable = this.props.editable;
+
 		//@ts-ignore
 		this.state = {};
 		this.filters = Object.assign({}, this.props.filters);
@@ -102,10 +96,10 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		if(p !== v) {
 
 			if(typeof (v) === 'undefined') {
-				delete (this.formParameters.filters[name]);
+				delete (this.filters[name]);
 				delete (this.filters[name]);
 			} else {
-				this.formParameters.filters[name] = v;
+				this.filters[name] = v;
 				this.filters[name] = v;
 			}
 			if(refresh) {
@@ -148,6 +142,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 			if(name === 'tab' && this.props.isRootForm) {
 				LeftBar.instance.refreshLeftBarActive();
 			}
+			this.updateHashLocation();
 			return true;
 		}
 	}

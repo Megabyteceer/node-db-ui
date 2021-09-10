@@ -279,7 +279,7 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, 
 }
 
 function isCurrentlyShowedLeftbarItem(item) {
-	const currentFormParameters = Stage.currentForm.formParameters;
+	const currentFormParameters = Stage.currentForm;
 	if(item.id === false) {
 		if(!currentFormParameters.filters || (Object.keys(currentFormParameters.filters).length === 0)) {
 			return item.isDefault;
@@ -352,7 +352,7 @@ function goToPageByHash() {
 
 
 function goBack(isAfterDelete?: boolean) {
-	const currentFormParameters = Stage.currentForm.formParameters;
+	const currentFormParameters = Stage.currentForm;
 	if(Stage.goBackIfModal()) {
 		return;
 	}
@@ -380,7 +380,7 @@ function goBack(isAfterDelete?: boolean) {
 var hashUpdateTimeout;
 let isHistoryChanging = false;
 
-function updateHashLocation(filters?: Filters) {
+function updateHashLocation() {
 
 	if(hashUpdateTimeout) {
 		consoleLog('Hash updated more that once');
@@ -389,12 +389,10 @@ function updateHashLocation(filters?: Filters) {
 	}
 
 	hashUpdateTimeout = setTimeout(() => {
-		const currentFormParameters = Stage.currentForm.formParameters;
+		const currentFormParameters = Stage.currentForm;
 		hashUpdateTimeout = false;
 
-		if(!filters) {
-			filters = currentFormParameters.filters;
-		}
+		const filters = currentFormParameters.filters;
 
 		var newHash = locationToHash(currentFormParameters.nodeId, currentFormParameters.recId, filters, currentFormParameters.editable);
 
