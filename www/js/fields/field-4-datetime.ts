@@ -19,7 +19,7 @@ interface DatetimeFieldState extends FieldState {
 	allowedDays?: moment.Moment[];
 }
 
-let ReactDatetimeClassHolder: { ReactDatetimeClass?: typeof import('react-datetime') } = {
+let ReactDatetimeClassHolder: { isRequired?: boolean, ReactDatetimeClass?: typeof import('react-datetime') } = {
 }
 
 class dateFieldMixins extends BaseField<FieldProps, DatetimeFieldState> {
@@ -33,10 +33,11 @@ class dateFieldMixins extends BaseField<FieldProps, DatetimeFieldState> {
 	}
 
 	importReactDateTime() {
-		if(!ReactDatetimeClassHolder.ReactDatetimeClass) {
+		if(!ReactDatetimeClassHolder.isRequired) {
+			ReactDatetimeClassHolder.isRequired = true;
 			import('react-datetime').then((module) => {
 				ReactDatetimeClassHolder.ReactDatetimeClass = module.default;
-				this.forceUpdate();
+				window.crudJs.Stage.currentForm.forceUpdate();
 			});
 		}
 	}
@@ -196,7 +197,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 	}
 
 	render() {
-		if(!ReactDatetimeClassHolder) {
+		if(!ReactDatetimeClassHolder.ReactDatetimeClass) {
 			return renderIcon('cog fa-spin');
 		}
 

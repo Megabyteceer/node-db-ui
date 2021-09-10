@@ -4,7 +4,7 @@ import React from "react";
 import { FIELD_11_DATE } from "../bs-utils";
 import { R } from "../r";
 import moment from "moment";
-import { innerDatetimeFormat, readableDateFormat, registerFieldClass, toReadableDate } from "../utils";
+import { innerDatetimeFormat, readableDateFormat, registerFieldClass, renderIcon, toReadableDate } from "../utils";
 import { dateFieldMixins, ReactDatetimeClassHolder } from "./field-4-datetime";
 
 registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
@@ -29,7 +29,9 @@ registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 	}
 
 	render() {
-
+		if(!ReactDatetimeClassHolder.ReactDatetimeClass) {
+			return renderIcon('cog fa-spin');
+		}
 		var field = this.props.field;
 		var value = toReadableDate(this.state.value);
 		if(this.props.isEdit) {
