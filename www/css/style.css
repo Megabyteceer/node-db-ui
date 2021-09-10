@@ -614,7 +614,6 @@ input[readonly] {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background-color: #00112280;
 }
 
 .lite-ui #stage {
@@ -711,6 +710,7 @@ input[readonly] {
 }
 
 .field-wrap-value {
+	position: relative;
 	vertical-align: top;
 	width: 70%;
 	color: var(--TEXT_COLOR);

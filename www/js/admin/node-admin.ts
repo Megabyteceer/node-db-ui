@@ -301,7 +301,7 @@ class NodeAdmin extends Component<any, any> {
 
 						}
 					},
-						renderIcon('wrench')
+						renderIcon('pencil')
 					),
 					R.button({
 						className: 'clickable toolbtn admin-form-btn',
@@ -334,7 +334,7 @@ class NodeAdmin extends Component<any, any> {
 
 		return R.div({
 			ref: keepInWindow,
-			className: 'admin-controll admin-form-wrap' + (bodyVisible ? 'admin-form-wrap-visible' : ''),
+			className: 'admin-controll admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
 			R.span({

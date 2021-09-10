@@ -158,7 +158,7 @@ class FieldAdmin extends Component<any, any> {
 						className: 'clickable toolbtn admin-form-btn',
 						title: "Edit field properties"
 					},
-						renderIcon('wrench')
+						renderIcon('pencil')
 					),
 					R.span({
 						className: 'clickable admin-form-lock-btn',
@@ -183,7 +183,7 @@ class FieldAdmin extends Component<any, any> {
 
 		return R.span({
 			ref: keepInWindow,
-			className: 'admin-controll admin-form-wrap' + (bodyVisible ? 'admin-form-wrap-visible' : ''),
+			className: 'admin-controll admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
 			R.span({

@@ -376,7 +376,7 @@ class List extends BaseForm<ListProps, ListState> {
 							if(this.props.askToSaveParentBeforeCreation) {
 								await this.props.parentForm.saveParentFormBeforeCreation();
 							}
-							this.props.parentForm.toggleCreateDialogue();
+							this.props.parentForm.toggleCreateDialogue('new');
 						}
 					},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)

@@ -1,6 +1,4 @@
-﻿
-
-import React, { Component } from "react";
+﻿import React, { Component } from "react";
 import { R } from "./r";
 import { FormFull } from "./forms/form-full";
 import { List } from "./forms/list";
@@ -8,6 +6,14 @@ import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, myAle
 import { RecId } from "./bs-utils";
 import { BaseForm } from "./forms/base-form";
 import ReactDOM from 'react-dom';
+
+let mouseX: number;
+let mouseY: number;
+
+window.document.addEventListener('pointerdown', (ev) => {
+	mouseX = ev.clientX;
+	mouseY = ev.clientY;
+}, true);
 
 class FormLoaderCog extends Component<any, any> {
 	render() {
@@ -25,6 +31,7 @@ document.addEventListener('load', () => {
 
 interface FormEntry {
 	form?: BaseForm;
+	formContainer: HTMLDivElement;
 	container: HTMLDivElement;
 	onModified?: () => void;
 }
@@ -49,8 +56,16 @@ class Stage extends Component<any, any> {
 	static goBackIfModal() {
 		if(forms.length > 1) {
 			let e = forms.pop();
-			ReactDOM.render(React.createElement(React.Fragment), e.container);
-			e.container.remove();
+			const formContainer = e.formContainer;
+			formContainer.style.transform = 'scale(0.01)';
+			e.container.style.backgroundColor = '#00112200'
+			setTimeout(() => {
+				ReactDOM.render(React.createElement(React.Fragment), formContainer);
+				formContainer.remove();
+				if(formContainer !== e.container) {
+					e.container.remove();
+				}
+			}, 300);
 			Stage.currentFormEntry = forms[forms.length - 1];
 			Stage.currentForm = Stage.currentFormEntry.form;
 			return true;
@@ -113,7 +128,7 @@ class Stage extends Component<any, any> {
 			React.createElement('div', { className: isRootForm ? undefined : 'form-modal-container' },
 				React.createElement(formType, { ref, node, recId, isRootForm, initialData: data || {}, filters, editable })
 			),
-			Stage.currentFormEntry.container
+			Stage.currentFormEntry.formContainer
 		);
 		if(isRootForm && Stage.rootForm) {
 			const formParameters = Stage.rootForm;
@@ -134,11 +149,31 @@ class Stage extends Component<any, any> {
 }
 
 function addFormEntry() {
+	const isRoot = forms.length === 0;
 	let container = document.createElement('div');
-	container.className = forms.length === 0 ? 'form-layer' : 'form-layer form-layer-modal';
+	container.className = isRoot ? 'form-layer' : 'form-layer form-layer-modal';
+	let formContainer;
+	if(!isRoot) {
+		container.style.transition = 'background-color 0.3s';
+		container.style.backgroundColor = '#00112200'
+		formContainer = document.createElement('div');
+		formContainer.className = 'form-layer-modal';
+		container.appendChild(formContainer);
+		formContainer.style.transformOrigin = mouseX + 'px ' + mouseY + 'px';
+		formContainer.style.transform = 'scale(0.01)';
+		formContainer.style.transition = 'transform 0.3s';
+		formContainer.style.transitionTimingFunction = 'ease-in-out';
+		setTimeout(() => {
+			formContainer.style.transform = 'scale(1)';
+			container.style.backgroundColor = '#00112280'
+		}, 10);
+	} else {
+		formContainer = container;
+	}
 	document.querySelector('#stage').appendChild(container);
-	let entry = {
-		container
+	let entry: FormEntry = {
+		container,
+		formContainer
 	}
 	forms.push(entry);
 	Stage.currentFormEntry = entry;

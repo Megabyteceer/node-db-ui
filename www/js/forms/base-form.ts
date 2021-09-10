@@ -126,11 +126,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		if(this.onCancelCallback) {
 			this.onCancelCallback();
 		}
-		if(this.isSubForm()) {
-			this.props.parentForm.toggleCreateDialogue();
-		} else {
-			goBack();
-		}
+		goBack();
 	}
 
 	setFormFilter(name, val) {

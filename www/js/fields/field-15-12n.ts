@@ -1,6 +1,5 @@
 import { R } from "../r";
 import React from "react";
-import { FormFull } from "../forms/form-full";
 import { List } from "../forms/list";
 import { deleteRecord, getNodeData, L, renderIcon } from "../utils";
 import { registerFieldClass } from "../utils";
@@ -10,7 +9,6 @@ import { FIELD_15_1toN, RecId, RecordData } from "../bs-utils";
 class Lookup1toNField extends fieldLookupMixins {
 
 	inlineListRef: List;
-	openedCreationForm: FormFull;
 
 	constructor(props) {
 		super(props);
@@ -45,19 +43,15 @@ class Lookup1toNField extends fieldLookupMixins {
 	valueChoosed(recordData?: RecordData, isNewCreated?: boolean, noToggleList?: boolean);
 	valueChoosed() {
 		this.saveNodeDataAndFilters(this.savedNode, undefined, this.savedFilters);
-
-		if(this.state.creationOpened) {
-			this.setState({ creationOpened: false });
-		}
 	}
 
-	toggleCreateDialogue(itemIdToEdit?: RecId) {
-		this.setState({ creationOpened: !this.state.creationOpened, dataToEdit: undefined, itemIdToEdit: itemIdToEdit });
-		if(typeof itemIdToEdit !== 'undefined') {
-			getNodeData(this.props.field.nodeRef, itemIdToEdit, undefined, true).then((data) => {
-				this.setState({ dataToEdit: data, itemIdToEdit: undefined });
-			});
-		}
+	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
+		let filters = {
+			[this.getLinkerFieldName()]: { id: this.props.form.recId }
+		};
+		window.crudJs.Stage.showForm(this.props.field.nodeRef, recIdToEdit, filters, true, true, () => {
+			this.inlineListRef.refreshData();
+		});
 	}
 
 	inlineEditable() {
@@ -76,12 +70,6 @@ class Lookup1toNField extends fieldLookupMixins {
 			}
 			return ret;
 		}
-		else if(this.state.creationOpened) {
-			let subFormResult = await this.openedCreationForm.saveForm();
-			if(subFormResult) {
-				return true;
-			}
-		}
 	}
 
 	async afterSave() {
@@ -95,9 +83,9 @@ class Lookup1toNField extends fieldLookupMixins {
 						await deleteRecord('', field.nodeRef, initialData.id, true);
 					}
 				} else {
-					var ln = field.fieldName + '_linker';
-					if(!initialData.hasOwnProperty(ln) || initialData[ln] === 'new') {
-						form.currentData[ln] = { id: this.props.form.currentData.id };
+					var linkerName = this.getLinkerFieldName();
+					if(!initialData.hasOwnProperty(linkerName) || initialData[linkerName] === 'new') {
+						form.currentData[linkerName] = { id: this.props.form.currentData.id };
 					}
 					await form.saveForm();
 				}
@@ -105,51 +93,37 @@ class Lookup1toNField extends fieldLookupMixins {
 		}
 	}
 
+	getLinkerFieldName() {
+		return this.props.field.fieldName + '_linker';
+	}
+
 	async saveParentFormBeforeCreation() {
 		await this.props.form.saveForm();
-		const linkerFieldName = this.props.field.fieldName + '_linker';
+		const linkerFieldName = this.getLinkerFieldName();
 		this.state.filters[linkerFieldName] = this.props.form.currentData.id;
 	}
 
 	render() {
 		var field = this.props.field;
-		var body;
-		if(this.state.creationOpened) {
-			if(this.state.itemIdToEdit) {
-				body = R.div({ className: 'field-lookup-loading-icon-container' },
-					renderIcon('cog fa-spin fa-2x')
-				);
-			} else {
-				body = React.createElement(FormFull, {
-					ref: (form) => {
-						this.openedCreationForm = form;
-					}, node: this.savedNode, initialData: this.state.dataToEdit || {}, parentForm: this, isLookup: true, filters: this.state.filters, editable: true
-				});
-			}
-
-		} else {
-			var askToSaveParentBeforeCreation = !this.props.form.props.initialData.hasOwnProperty('id');
-			body = R.div(null,
-				React.createElement(List, {
-					ref: (r) => { this.inlineListRef = r; },
-					hideControlls: this.state.hideControlls,
-					noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton,
-					disableDrafting: this.state.disableDrafting,
-					additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
-					node: this.savedNode,
-					isLookup: true,
-					omitHeader: this.state.creationOpened,
-					initialData: this.savedData,
-					preventCreateButton: this.state.preventCreateButton,
-					askToSaveParentBeforeCreation,
-					editable: this.state.inlineEditing,
-					nodeId: field.nodeRef,
-					parentForm: this,
-					filters: this.savedFilters || this.state.filters
-				})
-			);
-		}
-		return body;
+		var askToSaveParentBeforeCreation = !this.props.form.props.initialData.hasOwnProperty('id');
+		return R.div(null,
+			React.createElement(List, {
+				ref: (r) => { this.inlineListRef = r; },
+				hideControlls: this.state.hideControlls,
+				noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton,
+				disableDrafting: this.state.disableDrafting,
+				additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
+				node: this.savedNode,
+				isLookup: true,
+				initialData: this.savedData,
+				preventCreateButton: this.state.preventCreateButton,
+				askToSaveParentBeforeCreation,
+				editable: this.state.inlineEditing,
+				nodeId: field.nodeRef,
+				parentForm: this,
+				filters: this.savedFilters || this.state.filters
+			})
+		);
 	}
 }
 

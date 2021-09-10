@@ -10,9 +10,6 @@ type AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunct
 interface LookupFieldState extends FieldState {
 	filters?: Filters;
 	expanded?: boolean;
-	dataToEdit?: RecordData;
-	creationOpened?: boolean;
-	itemIdToEdit?: RecId;
 	preventCreateButton?: boolean;
 	extendedEditor?: boolean;
 	inlineEditing?: boolean;
