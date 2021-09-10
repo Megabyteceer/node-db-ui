@@ -1300,21 +1300,10 @@ input[readonly] {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.form-node-8 .field-container-id-288 .lookup-n2m-item-rec-1 .danger-btn {
+	opacity: 0.3;
+	pointer-events: none;
+}
 
 .shake {
 	animation: shake-animation linear 0.3s;

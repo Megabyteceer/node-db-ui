@@ -30,6 +30,9 @@ class FormEvents extends FormFull {
 		if(!iAdmin()) {
 			this.hideField('_userroles');
 		}
+		if(this.recId < 4) {
+			this.hideField('_userroles');
+		}
 
 		this.disableField('_organID');
 
@@ -116,10 +119,10 @@ class FormEvents extends FormFull {
 	}
 
 	async _roles_onload() {
-		if((this.rec_ID === 2) || (this.rec_ID === 3)) {
+		this.getField('_userroles').setLookupFilter('excludeIDs', [1, 2, 3]);
+		if((this.recId === 2) || (this.recId === 3)) {
 			this.hideField('_userroles');
 		}
-
 	}
 
 	async _enums_onload() {
@@ -144,11 +147,11 @@ class FormEvents extends FormFull {
 			this.hideField('_fieldsID');
 		}
 		if(!this.rec_creation) {
-			this.addLookupFilters('_nodesID', 'excludeIDs', [this.rec_ID]);
+			this.addLookupFilters('_nodesID', 'excludeIDs', [this.recId]);
 		}
 		this.addLookupFilters('_nodesID', 'isDoc', 0);
 		this.addLookupFilters('_fieldsID', {
-			node_fields_linker: this.rec_ID,
+			node_fields_linker: this.recId,
 			forSearch: 1
 		});
 	}

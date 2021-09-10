@@ -22,8 +22,6 @@ class eventProcessingMixins extends BaseForm {
 	/** true if form opened for editing existing form */
 	rec_update: boolean;
 
-	/** id of current edited/shown record. 'new' - if record is not saved yet.*/
-	rec_ID: RecId | 'new';
 
 	/** previous value of changed field. Can be used in onChage event of field */
 	prev_value: any;
@@ -309,7 +307,7 @@ class eventProcessingMixins extends BaseForm {
 			let data = await getData('api/uniquCheck', {
 				fieldId: field.id,
 				nodeId: field.node.id,
-				recId: (this.rec_ID !== 'new') && this.rec_ID,
+				recId: (this.recId !== 'new') && this.recId,
 				val
 			}, undefined, true);
 			if(!data) {
@@ -386,7 +384,7 @@ class eventProcessingMixins extends BaseForm {
 	async processEvent(handler, isUserAction = false, prev_val = undefined) {
 		if(handler) {
 			this.prev_value = prev_val;
-			this.rec_ID = this.props.initialData.id || 'new';
+			this.recId = this.props.initialData.id || 'new';
 			this.rec_update = this.props.editable;
 			if(this.rec_update) {
 				this.rec_creation = !this.props.initialData.hasOwnProperty('id');

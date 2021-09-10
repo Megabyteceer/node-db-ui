@@ -171,7 +171,16 @@ class LookupNtoMField extends fieldLookupMixins {
 					key = 'emp' + keyCounter;
 					keyCounter++;
 				}
-				var body = R.div({ key: key, ref: value ? (ref) => { refs[UID(value)] = ref; } : undefined, className: isDrag ? 'lookup-n2m-item lookup-n2m-item-drag' : 'lookup-n2m-item' },
+
+				let className = 'lookup-n2m-item'
+				if(value) {
+					className += ' lookup-n2m-item-rec-' + value.id;
+				}
+				if(isDrag) {
+					className += ' lookup-n2m-item-drag';
+				}
+
+				var body = R.div({ key: key, ref: value ? (ref) => { refs[UID(value)] = ref; } : undefined, className },
 
 					React.createElement(getClassForField(FIELD_7_Nto1), {
 						field, preventCreateButton: this.state.preventCreateButton, editIt, pos: i, isEdit, isN2M: true, filters: this.state.filters, ref: (ref) => {

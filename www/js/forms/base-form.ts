@@ -45,6 +45,7 @@ interface FormState {
 class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState> extends Component<T, T2> {
 
 	nodeId: RecId;
+	/** id of current edited/shown record. 'new' - if record is not saved yet.*/
 	recId: RecId | 'new';
 	editable: boolean;
 	filters: Filters;

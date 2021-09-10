@@ -281,7 +281,7 @@ class FormFull extends eventProcessingMixins {
 
 			await callForEachField(this.fieldsRefs, data, 'afterSave');
 
-			this.rec_ID = this.currentData.id;
+			this.recId = this.currentData.id;
 			this.deteleBackup();
 			if(this.onSaveCallback) {
 				await this.onSaveCallback();
