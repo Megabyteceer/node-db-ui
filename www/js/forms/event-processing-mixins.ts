@@ -54,6 +54,8 @@ class eventProcessingMixins extends BaseForm {
 
 	private disabledFields: { [key: string]: 1 | null };
 
+	isListItem?: boolean;
+
 	constructor(props) {
 		super(props);
 
@@ -83,7 +85,9 @@ class eventProcessingMixins extends BaseForm {
 	}
 
 	componentDidMount() {
-		this.callOnTabShowEvent(this.props.filters.tab);
+		if(!this.isListItem) {
+			this.callOnTabShowEvent(this.props.filters.tab);
+		}
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {

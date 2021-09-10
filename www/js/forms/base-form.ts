@@ -7,7 +7,7 @@ import { LeftBar } from "../left-bar";
 import { goBack, updateHashLocation } from "../utils";
 
 /// #if EDITOR
-import { List } from "./list.js";
+import { List } from "./list";
 /// #endif
 
 interface FormProps {

@@ -3,8 +3,8 @@ import React from "react";
 import { FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, Filters, NodeDesc, RecordData } from "../bs-utils";
 import { FieldWrap } from "../fields/field-wrap";
 import { deleteRecord, draftRecord, L, locationToHash, publishRecord, renderIcon, sp } from "../utils";
-import { BaseForm } from "./base-form";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
+import { eventProcessingMixins } from "./event-processing-mixins";
 
 const publishClick = (draft, node, data) => {
 	if(draft) {
@@ -113,13 +113,18 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 }
 
 
-class FormItem extends BaseForm {
+class FormItem extends eventProcessingMixins {
+
+	constructor(props) {
+		super(props);
+		this.isListItem = true;
+	}
 
 	isVisibleField(field) {
 		if(this.props.isLookup) {
-			return field.show & 8;
+			return (field.show & 8) > 0;
 		} else {
-			return field.show & 2;
+			return (field.show & 2) > 0;
 		}
 	}
 
