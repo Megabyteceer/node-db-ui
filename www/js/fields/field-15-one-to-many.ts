@@ -6,7 +6,7 @@ import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
 import { FIELD_15_1toN, RecId, RecordData } from "../bs-utils";
 
-class Lookup1toNField extends fieldLookupMixins {
+class LookpuOneToManyFiled extends fieldLookupMixins {
 
 	inlineListRef: List;
 
@@ -127,6 +127,6 @@ class Lookup1toNField extends fieldLookupMixins {
 	}
 }
 
-registerFieldClass(FIELD_15_1toN, Lookup1toNField);
+registerFieldClass(FIELD_15_1toN, LookpuOneToManyFiled);
 
-export { Lookup1toNField };
+export { LookpuOneToManyFiled };

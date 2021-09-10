@@ -7,7 +7,7 @@ import { getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp } 
 import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
 
-registerFieldClass(FIELD_7_Nto1, class LookupNto1Field extends fieldLookupMixins {
+registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupMixins {
 	isEnterCreateThroughList: boolean;
 	private leaveTimout: NodeJS.Timeout;
 

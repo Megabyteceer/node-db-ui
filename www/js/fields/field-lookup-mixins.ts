@@ -2,10 +2,10 @@ import React from "react";
 import { FIELD_15_1toN, NodeDesc, RecId, RecordData } from "../bs-utils";
 import { FormItem } from "../forms/form-item";
 import { Filters } from "../utils";
-import { LookupNtoMField } from "./field-14-n2m";
+import { LookpuManyToManyFiled } from "./field-14-many-to-many";
 import { BaseField, FieldProps, FieldState } from "./base-field";
 
-type AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormItem | LookupNtoMField, editButtonFilters?: Filters) => React.Component[];
+type AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormItem | LookpuManyToManyFiled, editButtonFilters?: Filters) => React.Component[];
 
 interface LookupFieldState extends FieldState {
 	filters?: Filters;

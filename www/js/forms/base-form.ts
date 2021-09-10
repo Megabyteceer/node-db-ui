@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { BoolNum, Filters, NodeDesc, RecId, RecordData } from "../bs-utils";
-import { Lookup1toNField } from "../fields/field-15-12n";
+import { LookpuOneToManyFiled } from "../fields/field-15-one-to-many";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import { FieldWrap } from "../fields/field-wrap";
 import { LeftBar } from "../left-bar";
@@ -14,7 +14,7 @@ interface FormProps {
 	initialData?: RecordData;
 	list?: List;
 	onCancel?: () => void;
-	parentForm?: Lookup1toNField;
+	parentForm?: LookpuOneToManyFiled;
 	filters?: Filters;
 	node: NodeDesc;
 	isRootForm?: boolean;

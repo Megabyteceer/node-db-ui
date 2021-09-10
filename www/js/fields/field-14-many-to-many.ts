@@ -14,7 +14,7 @@ var dragListenersInited;
 
 var refs = [];
 
-class LookupNtoMField extends fieldLookupMixins {
+class LookpuManyToManyFiled extends fieldLookupMixins {
 	uidToEdit: number;
 	excludeIDs: RecId[];
 
@@ -234,6 +234,6 @@ class LookupNtoMField extends fieldLookupMixins {
 	}
 }
 
-registerFieldClass(FIELD_14_NtoM, LookupNtoMField);
+registerFieldClass(FIELD_14_NtoM, LookpuManyToManyFiled);
 
-export { LookupNtoMField };
+export { LookpuManyToManyFiled };
