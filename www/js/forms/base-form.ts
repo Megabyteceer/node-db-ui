@@ -4,12 +4,15 @@ import { Lookup1toNField } from "../fields/field-15-12n";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import { FieldWrap } from "../fields/field-wrap";
 import { LeftBar } from "../left-bar";
-import { getNode, getNodeData, goBack, isPresentListRenderer, onOneFormShowed, updateHashLocation } from "../utils";
+import { goBack, updateHashLocation } from "../utils";
+
+/// #if EDITOR
+import { List } from "./list.js";
+/// #endif
 
 interface FormProps {
 	initialData?: RecordData;
-	/** List */
-	list?: any;
+	list?: List;
 	onCancel?: () => void;
 	parentForm?: Lookup1toNField;
 	filters?: Filters;
@@ -147,34 +150,6 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 			}
 			return true;
 		}
-	}
-
-	async setFormData(nodeId: RecId, recId: RecId | 'new', filters: Filters, editable: boolean) {
-		let data;
-		debugger;
-		if(typeof recId === 'number') {
-			data = await getNodeData(nodeId, recId, undefined, editable, false, isPresentListRenderer(nodeId));
-		} else if(recId !== 'new') {
-			data = await getNodeData(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
-		}
-
-		if(!filters) {
-			throw 'filters must be an object.';
-		}
-
-		if(this.formParameters.nodeId && ((this.formParameters.nodeId !== nodeId) || (this.formParameters.recId !== recId))) {
-			window.scrollTo(0, 0);
-		}
-
-		this.formParameters.nodeId = nodeId;
-		this.formParameters.recId = recId;
-		this.formParameters.filters = filters;
-		this.formParameters.editable = editable;
-
-
-		getNode(nodeId).then((node) => {
-			onOneFormShowed();
-		});
 	}
 
 	updateHashLocation() {

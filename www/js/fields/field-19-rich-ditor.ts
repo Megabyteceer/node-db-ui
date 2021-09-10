@@ -81,6 +81,7 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends BaseField 
 				var s = this.getSummernote();
 				s.postMessage({ value: val }, '*');
 			}
+			///@ts-ignore
 			this.state.value = val;
 		}
 	}

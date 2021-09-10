@@ -7,7 +7,6 @@ import { FieldDesc, NodeDesc } from "../bs-utils";
 
 var showedFieldId;
 
-
 class FieldAdmin extends Component<any, any> {
 
 	private timeout: NodeJS.Timeout;

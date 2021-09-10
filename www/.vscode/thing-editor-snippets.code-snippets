@@ -1,18 +1,18 @@
 {
 	"/// #if DEBUG": {
-		"scope": "javascript",
+		"scope": "typescript",
 		"prefix": "///",
 		"body": [
 			"/// #if DEBUG\n\n\n/// #endif"
 		],
 		"description": "Debug build only code block."
 	},
-	"/** @type  */": {
-		"scope": "javascript",
-		"prefix": "/**",
+	"/// #if EDITOR": {
+		"scope": "typescript",
+		"prefix": "///",
 		"body": [
-			"/** @type ${1:type} */"
+			"/// #if EDITOR\n\n\n/// #endif"
 		],
-		"description": "Debug build only code block."
+		"description": "Code editor only code block."
 	}
 }

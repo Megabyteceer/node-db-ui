@@ -21,9 +21,11 @@ class Select extends Component<any, any> {
 	setValue(v) {
 		if(this.state.curVal !== v) {
 			this.props.onChange(v);
-			this.setState({
-				curVal: v
-			});
+			if(this.state.curVal !== v) {
+				this.setState({
+					curVal: v
+				});
+			}
 		}
 	}
 

@@ -45,6 +45,7 @@ class Lookup1toNField extends fieldLookupMixins {
 	valueChoosed(recordData?: RecordData, isNewCreated?: boolean, noToggleList?: boolean);
 	valueChoosed() {
 		this.saveNodeDataAndFilters(this.savedNode, undefined, this.savedFilters);
+
 		if(this.state.creationOpened) {
 			this.setState({ creationOpened: false });
 		}

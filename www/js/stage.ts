@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import { R } from "./r";
 import { FormFull } from "./forms/form-full";
 import { List } from "./forms/list";
-import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, myAlert, renderIcon } from "./utils";
+import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon } from "./utils";
 import { RecId } from "./bs-utils";
 import { BaseForm } from "./forms/base-form";
 import ReactDOM from 'react-dom';
@@ -22,8 +22,6 @@ document.addEventListener('load', () => {
 		document.body.classList.add('lite-ui');
 	}
 });
-
-let stage: Stage;
 
 interface FormEntry {
 	form?: BaseForm;
@@ -66,12 +64,20 @@ class Stage extends Component<any, any> {
 	}
 
 	static async showForm(nodeId: RecId, recId?: RecId | 'new', filters: Filters = {}, editable?: boolean, modal?: boolean, onModified?: () => void) {
+
 		if(!forms.length || modal) {
 			addFormEntry();
+		} else {
+			if(Stage.currentForm) {
+				const formParameters = Stage.currentForm.formParameters;
+				formParameters.nodeId = nodeId;
+				formParameters.recId = recId;
+				formParameters.filters = filters;
+				formParameters.editable = editable;
+			}
 		}
 		const isRootForm = forms.length === 1;
 		Stage.currentFormEntry.onModified = onModified;
-
 		let data;
 		if(recId !== 'new') {
 			if(typeof recId === 'number') {
@@ -103,18 +109,23 @@ class Stage extends Component<any, any> {
 		} else {
 			location.href = node.staticLink;
 		}
-
 		ReactDOM.render(
-			R.div({ className: isRootForm ? undefined : 'form-modal-container' },
+			React.createElement('div', { className: isRootForm ? undefined : 'form-modal-container' },
 				React.createElement(formType, { ref, node, recId, isRootForm, initialData: data || {}, filters, editable })
 			),
 			Stage.currentFormEntry.container
 		);
+		if(isRootForm && Stage.rootForm) {
+			const formParameters = Stage.rootForm.formParameters;
+			if(formParameters.nodeId && ((formParameters.nodeId !== nodeId) || (formParameters.recId !== recId))) {
+				window.scrollTo(0, 0);
+			}
+		}
+		onOneFormShowed();
 	}
 
 	constructor(props) {
 		super(props);
-		stage = this;
 	}
 
 	render() {
@@ -132,8 +143,14 @@ function addFormEntry() {
 	forms.push(entry);
 	Stage.currentFormEntry = entry;
 }
+type Stg = typeof Stage;
 
-//@ts-ignore
+declare global {
+	interface Window {
+		Stage: Stg;
+	}
+}
+
 window.Stage = Stage;
 
 export { Stage, FormLoaderCog }

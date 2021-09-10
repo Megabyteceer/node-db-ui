@@ -1,4 +1,4 @@
-import { FIELD_5_BOOL } from "../bs-utils";
+import { assert, FIELD_5_BOOL } from "../bs-utils";
 import { R } from "../r";
 import React, { Component } from "react";
 import { L, renderIcon } from "../utils";
@@ -42,9 +42,11 @@ registerFieldClass(FIELD_5_BOOL, class BooleanField extends BaseField {
 
 	setValue(val) {
 		val = (val !== 0) && Boolean(val);
-		this.setState({
-			value: val
-		});
+		if(this.state.value !== val) {
+			this.setState({
+				value: val
+			});
+		}
 	}
 
 	static decodeValue(val) {

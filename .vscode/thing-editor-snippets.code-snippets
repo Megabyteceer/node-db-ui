@@ -6,6 +6,13 @@
 			"/// #if DEBUG\n\n\n/// #endif"
 		],
 		"description": "Debug build only code block."
+	},
+	"/// #if EDITOR": {
+		"scope": "typescript",
+		"prefix": "///",
+		"body": [
+			"/// #if EDITOR\n\n\n/// #endif"
+		],
+		"description": "Code editor only code block."
 	}
 }
-
