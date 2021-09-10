@@ -100,11 +100,11 @@ class Stage extends Component<any, any> {
 		if(!node.staticLink) {
 			formType = (recId || (recId === 0)) ? FormFull : List;
 		} else if(node.staticLink === 'reactClass') {
-			if(typeof window[node.tableName] === 'undefined') {
+			if(typeof window.crudJs.customClasses[node.tableName] === 'undefined') {
 				myAlert('Unknown react class: ' + node.tableName);
 				formType = 'div';
 			} else {
-				formType = window[node.tableName];
+				formType = window.crudJs.customClasses[node.tableName];
 			}
 		} else {
 			location.href = node.staticLink;
@@ -143,14 +143,21 @@ function addFormEntry() {
 	forms.push(entry);
 	Stage.currentFormEntry = entry;
 }
-type Stg = typeof Stage;
 
 declare global {
 	interface Window {
-		Stage: Stg;
+		crudJs: {
+			customClasses: {
+				[key: string]: Function
+			};
+			Stage: typeof Stage;
+		}
 	}
 }
 
-window.Stage = Stage;
+window.crudJs = {
+	Stage,
+	customClasses: {}
+}
 
 export { Stage, FormLoaderCog }

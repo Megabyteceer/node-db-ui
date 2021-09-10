@@ -31,8 +31,7 @@ import { DPromise } from "./debug-promise";
 //@ts-ignore
 window.Promise = DPromise;
 
-// @ts-ignore
-window.AdminRoleprevsForm = AdminRoleprevsForm;
+window.crudJs.customClasses.AdminRoleprevsForm = AdminRoleprevsForm;
 /*
 /// #endif
 window.onerror = (msg, url, line, col, error) => {

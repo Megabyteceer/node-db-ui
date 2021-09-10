@@ -10,8 +10,6 @@ import { Stage as Stg } from "./stage";
 import { DebugPanel } from "./debug-panel";
 import React from "react";
 
-declare const Stage: typeof Stg;
-
 const ON_FORM_SAVE = 'onsave';
 const ON_FORM_LOAD = 'onload';
 const ON_FIELD_CHANGE = 'onChange';
@@ -213,7 +211,7 @@ function toReadableTime(d) {
 
 function goToHome() {
 	if(typeof (ENV.HOME_NODE) !== 'undefined') {
-		Stage.showForm(ENV.HOME_NODE);
+		window.crudJs.Stage.showForm(ENV.HOME_NODE);
 	} else {
 		location.href = '/';
 	}
@@ -279,7 +277,7 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, 
 }
 
 function isCurrentlyShowedLeftbarItem(item) {
-	const currentFormParameters = Stage.currentForm;
+	const currentFormParameters = window.crudJs.Stage.currentForm;
 	if(item.id === false) {
 		if(!currentFormParameters.filters || (Object.keys(currentFormParameters.filters).length === 0)) {
 			return item.isDefault;
@@ -342,7 +340,7 @@ function goToPageByHash() {
 				recId = parseInt(recId);
 			}
 		}
-		Stage.showForm(nodeId, recId, filters, editable);
+		window.crudJs.Stage.showForm(nodeId, recId, filters, editable);
 
 	} else {
 		goToHome();
@@ -352,13 +350,13 @@ function goToPageByHash() {
 
 
 function goBack(isAfterDelete?: boolean) {
-	const currentFormParameters = Stage.currentForm;
-	if(Stage.goBackIfModal()) {
+	const currentFormParameters = window.crudJs.Stage.currentForm;
+	if(window.crudJs.Stage.goBackIfModal()) {
 		return;
 	}
 	if(isLitePage() && window.history.length < 2) {
 		if(window.location.href.indexOf('#n/28/f/p/*/formTitle') > 0) {
-			Stage.refreshForm();
+			window.crudJs.Stage.refreshForm();
 		} else {
 			window.close();
 		}
@@ -367,13 +365,13 @@ function goBack(isAfterDelete?: boolean) {
 		if(window.history.length > 0) {
 			window.history.back();
 		} else {
-			Stage.showForm(ENV.HOME_NODE);
+			window.crudJs.Stage.showForm(ENV.HOME_NODE);
 		}
 
 	} else if(currentFormParameters.recId) {
-		Stage.showForm(currentFormParameters.nodeId, undefined, currentFormParameters.filters);
+		window.crudJs.Stage.showForm(currentFormParameters.nodeId, undefined, currentFormParameters.filters);
 	} else if(isAfterDelete) {
-		Stage.refreshForm();
+		window.crudJs.Stage.refreshForm();
 	}
 }
 
@@ -389,7 +387,7 @@ function updateHashLocation() {
 	}
 
 	hashUpdateTimeout = setTimeout(() => {
-		const currentFormParameters = Stage.currentForm;
+		const currentFormParameters = window.crudJs.Stage.currentForm;
 		hashUpdateTimeout = false;
 
 		const filters = currentFormParameters.filters;
@@ -796,7 +794,7 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 			return res.json();
 		})
 		.then((data) => {
-			Stage.dataDidModifed();
+			window.crudJs.Stage.dataDidModifed();
 			handleAdditionalData(data, url);
 			if(isAuthNeed(data)) {
 				alert('authHerePopup');
@@ -831,7 +829,7 @@ async function deleteRecord(name, nodeId: RecId, recId: RecId, noPromt?: boolean
 			onYes();
 		} else {
 			await submitData('api/delete', { nodeId, recId });
-			Stage.dataDidModifed();
+			window.crudJs.Stage.dataDidModifed();
 		}
 	} else {
 		let node = await getNode(nodeId);
@@ -848,7 +846,7 @@ function createRecord(nodeId, parameters = {}) {
 		if(node.draftable && (node.prevs & PREVS_PUBLISH)) { //access to publish records
 			emptyData.isP = 1;
 		}
-		Stage.showForm(nodeId, 'new', parameters, true);
+		window.crudJs.Stage.showForm(nodeId, 'new', parameters, true);
 	})
 }
 

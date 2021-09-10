@@ -138,7 +138,7 @@ class FieldAdmin extends Component<any, any> {
 						onClick: () => {
 
 							getNodeData(6, field.id).then((data) => {
-								window.Stage.showForm(6, 'new', {
+								window.crudJs.Stage.showForm(6, 'new', {
 									prior: data.prior,
 									node_fields_linker: {
 										id: node.id,
@@ -153,7 +153,7 @@ class FieldAdmin extends Component<any, any> {
 					),
 					R.button({
 						onClick: () => {
-							window.Stage.showForm(6, field.id, undefined, true, true, reloadLocation);
+							window.crudJs.Stage.showForm(6, field.id, undefined, true, true, reloadLocation);
 						},
 						className: 'clickable toolbtn admin-form-btn',
 						title: "Edit field properties"

@@ -186,7 +186,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('FLD_ADD'),
 						onClick: () => {
-							window.Stage.showForm(6, 'new', {
+							window.crudJs.Stage.showForm(6, 'new', {
 								node_fields_linker: {
 									id: node.id,
 									name: node.singleName
@@ -297,7 +297,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_NODE'),
 						onClick: () => {
-							window.Stage.showForm(4, nodeId, undefined, true, true, reloadLocation);
+							window.crudJs.Stage.showForm(4, nodeId, undefined, true, true, reloadLocation);
 
 						}
 					},
@@ -307,7 +307,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable toolbtn admin-form-btn',
 						title: L('EDIT_ACCESS'),
 						onClick: () => {
-							window.Stage.showForm(1, nodeId, undefined, true, true, reloadLocation);
+							window.crudJs.Stage.showForm(1, nodeId, undefined, true, true, reloadLocation);
 						}
 					},
 						renderIcon('user')
@@ -350,7 +350,7 @@ class NodeAdmin extends Component<any, any> {
 
 function createNodeForMenuItem(item) {
 	getNodeData(4, (item.isDoc ? item.parent : item.id) as number).then((data) => {
-		window.Stage.showForm(4, 'new', {
+		window.crudJs.Stage.showForm(4, 'new', {
 			prior: data.prior,
 			_nodesID: {
 				id: data.id,
