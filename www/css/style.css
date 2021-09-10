@@ -930,6 +930,12 @@ input[readonly] {
 	vertical-align: middle;
 }
 
+.field-lookup-icon-pic-empty {
+	display: inline-block;
+	background-color: #ccc;
+	width: 30px;
+}
+
 .field-lookup-loading-icon-container {
 	text-align: center;
 	color: #ccc;

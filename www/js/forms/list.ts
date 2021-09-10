@@ -3,7 +3,7 @@ import { FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE } from "../bs-utils";
 import { FieldAdmin } from "../admin/field-admin";
 import { NodeAdmin } from "../admin/node-admin";
 import { LeftBar } from "../left-bar";
-import { consoleLog, createRecord, deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, L, renderIcon, scrollToVisible, sp, UID } from "../utils";
+import { createRecord, deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, L, renderIcon, scrollToVisible, sp, UID } from "../utils";
 import { FormFull } from "./form-full";
 import { FormItem } from "./form-item";
 import { BaseForm, FormProps, FormState } from "./base-form";
