@@ -18,10 +18,27 @@ import "./fields/field-19-rich-ditor";
 import "./fields/field-20-color";
 import "./fields/field-21-file";
 import "./views/view_5_users";
-
+import { Stage } from "./stage";
 
 import ReactDOM from 'react-dom';
 import React from 'react';
+
+
+declare global {
+	interface Window {
+		crudJs: { // helps to avoid circular imports
+			customClasses: {
+				[key: string]: Function
+			};
+			Stage: typeof Stage;
+		}
+	}
+}
+
+window.crudJs = {
+	Stage,
+	customClasses: {}
+}
 
 /// #if DEBUG
 import { AdminRoleprevsForm } from "./admin/admin-roleprevs-form";

@@ -144,20 +144,4 @@ function addFormEntry() {
 	Stage.currentFormEntry = entry;
 }
 
-declare global {
-	interface Window {
-		crudJs: { // helps to avoid circular imports
-			customClasses: {
-				[key: string]: Function
-			};
-			Stage: typeof Stage;
-		}
-	}
-}
-
-window.crudJs = {
-	Stage,
-	customClasses: {}
-}
-
 export { Stage, FormLoaderCog }
