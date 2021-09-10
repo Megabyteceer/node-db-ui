@@ -146,7 +146,7 @@ function addFormEntry() {
 
 declare global {
 	interface Window {
-		crudJs: {
+		crudJs: { // helps to avoid circular imports
 			customClasses: {
 				[key: string]: Function
 			};

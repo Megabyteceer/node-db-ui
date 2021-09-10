@@ -462,14 +462,7 @@ class List extends BaseForm<ListProps, ListState> {
 				});
 				tableHeader.push(R.td({ key: 'holder', className: 'list-row-header' }, ' '));
 
-
-				var additionalButtons;
-				if(this.state.additionalButtons || this.props.additionalButtons) {
-					additionalButtons = this.props.additionalButtons;
-					if(typeof (additionalButtons) !== 'function') {
-						additionalButtons = window[additionalButtons];
-					}
-				}
+				var additionalButtons = this.state.additionalButtons || this.props.additionalButtons || undefined;
 
 				var hideControlls = this.props.hideControlls || this.state.hideControlls || (this.props.filters && this.props.filters.hideControlls);
 

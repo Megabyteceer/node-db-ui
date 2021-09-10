@@ -9,10 +9,10 @@ registerFieldClass(FIELD_8_STATICTEXT, class StaticTextField extends BaseField {
 
 	render() {
 		var field = this.props.field;
-		if(window[field.fdescription]) {
+		if(window.crudJs.customClasses[field.fdescription]) {
 			//TODO: custom class forms
 			debugger;
-			//return React.createElement(window[field.fdescription], this.props);
+			//return React.createElement(window.crudJs.customClasses[field.fdescription], this.props);
 		} else {
 			return R.span({
 				dangerouslySetInnerHTML: {
