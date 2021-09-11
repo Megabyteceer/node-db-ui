@@ -258,10 +258,11 @@ class FormFull extends eventProcessingMixins {
 				this.currentData.id = recId;
 				this.props.initialData.id = recId;
 			}
-
 			//renew current data
 			this.currentData = Object.assign(this.currentData, data);
 			//renew initial data;
+			window.crudJs.Stage.dataDidModifed(this.currentData);
+
 			for(var k in data) {
 				var val = data[k];
 				if(typeof val === 'object') {
@@ -315,7 +316,7 @@ class FormFull extends eventProcessingMixins {
 		var data = this.currentData;
 		var flds = node.fields;
 
-		var className = 'form form-full form-node-' + node.id;
+		var className = 'form form-full form-node-' + node.id + ' form-rec-' + this.recId;
 		if(this.props.isCompact) {
 			className += ' form-compact';
 		}

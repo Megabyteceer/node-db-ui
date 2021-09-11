@@ -161,6 +161,9 @@ interface RecordData extends RecordDataWrite {
 	isP?: BoolNum;
 	/** **delete** access to the record */
 	isD?: BoolNum;
+
+	id?: RecId;
+	name?: string;
 }
 
 interface RecordsData {

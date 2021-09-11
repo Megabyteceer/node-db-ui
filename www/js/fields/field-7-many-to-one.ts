@@ -1,9 +1,8 @@
 import { FIELD_7_Nto1, RecId, RecordData } from "../bs-utils";
 import { R } from "../r";
 import React from "react";
-import { FormFull } from "../forms/form-full";
 import { List } from "../forms/list";
-import { getNode, getNodeData, idToImgURL, L, renderIcon, scrollToVisible, sp } from "../utils";
+import { idToImgURL, L, renderIcon, scrollToVisible, sp } from "../utils";
 import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
 
@@ -35,15 +34,6 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
-		if(nextProps.editIt) { //edit item in extended n2m list
-			if(!this.state.expanded) {
-				this.setState({
-					expanded: true
-				});
-			}
-			this.toggleCreateDialogue(nextProps.editIt);
-		}
-
 		if(this.props.filters) {
 			if(!this.state.filters) {
 				//@ts-ignore
@@ -59,15 +49,11 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 
 	toggleList() {
 		if(!this.props.fieldDisabled || this.state.expanded) {
-
 			if(this.state.expanded) {
 				scrollToVisible(this, true);
 			}
-
 			this.setState({
-				expanded: !this.state.expanded,
-				dataToEdit: undefined,
-				creationOpened: false
+				expanded: !this.state.expanded
 			});
 		}
 	}
@@ -95,46 +81,39 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 			}
 		} else {
 			this.saveNodeDataAndFilters(this.savedNode, undefined, this.savedFilters);
-			this.setState({
-				creationOpened: false
-			});
 		}
 	}
 
-	toggleCreateDialogue(itemIdToEdit?: RecId) {
+	collapseList() {
+		if(this.state.expanded) {
+			this.toggleList();
+		}
+	}
 
-		this.clearLeaveTimeout();
-		let isOpened = this.state.creationOpened;
-		this.setState({
-			creationOpened: !isOpened,
-			dataToEdit: undefined,
-			itemIdToEdit: itemIdToEdit
+	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
+		this.collapseList();
+		const filters = {
+			[this.getLinkerFieldName()]: { id: this.props.form.recId }
+		};
+		window.crudJs.Stage.showForm(this.props.field.nodeRef, recIdToEdit, filters, true, true, (newData: RecordData) => {
+			const value = this.state.value;
+			if(recIdToEdit === value.id) {
+				this.savedData = null;
+				if(!newData) {
+					this.clearValue();
+				} else {
+					this.setValue(newData);
+				}
+				scrollToVisible(this);
+			} else if(recIdToEdit === 'new' && newData) {
+				this.valueChoosed(newData, true, true);
+				scrollToVisible(this);
+			}
 		});
-		if(isOpened) {
-			this.setState({
-				expanded: this.isEnterCreateThroughList
-			});
-		}
-		if(typeof itemIdToEdit !== 'undefined') {
-			this.isEnterCreateThroughList = this.state.expanded;
-			getNodeData(this.props.field.nodeRef, itemIdToEdit, undefined, true).then((data) => {
-				getNode(this.props.field.nodeRef).then((node) => {
-					this.saveNodeDataAndFilters(node);
-					this.setState({
-						dataToEdit: data,
-						itemIdToEdit: undefined
-					});
-				});
-			});
-		} else {
-			this.setState({
-				dataToEdit: {}
-			});
-		}
 	}
 
 	onMouseLeave() {
-		if(this.state.expanded && !this.state.creationOpened) {
+		if(this.state.expanded) {
 			this.leaveTimout = setTimeout(() => { this.toggleList(); }, 400);
 		}
 	}
@@ -161,6 +140,14 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 		this.forceUpdate();
 	}
 
+	clearValue() {
+		this.valueChoosed({
+			id: 0,
+			name: ''
+		}, false, true);
+		this.collapseList();
+	}
+
 	render() {
 
 		var field = this.props.field;
@@ -181,37 +168,17 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 			var list;
 			var clearBtn;
 			if(this.state.expanded) {
-				if(this.state.creationOpened) {
-					if(this.state.itemIdToEdit) {
-						list = R.div({
-							className: 'field-lookup-loading-icon-container'
-						},
-							renderIcon('cog fa-spin fa-2x')
-						);
-					} else {
-						list = React.createElement(FormFull, {
-							preventDeleteButton: true,
-							node: this.savedNode,
-							nodeId: field.nodeRef,
-							initialData: this.state.dataToEdit || {},
-							isCompact: true,
-							parentForm: this,
-							isLookup: true,
-							filters: this.savedFilters || this.state.filters,
-							editable: true
-						});
-					}
-				} else {
-					list = React.createElement(List, {
-						node: this.savedNode,
-						preventCreateButton: this.state.preventCreateButton || this.props.preventCreateButton,
-						initialData: this.savedData,
-						nodeId: field.nodeRef,
-						isLookup: true,
-						parentForm: this,
-						filters: this.savedFilters || this.state.filters
-					})
-				}
+
+				list = React.createElement(List, {
+					node: this.savedNode,
+					preventCreateButton: this.state.preventCreateButton || this.props.preventCreateButton,
+					initialData: this.savedData,
+					nodeId: field.nodeRef,
+					isLookup: true,
+					parentForm: this,
+					filters: this.savedFilters || this.state.filters
+				})
+
 			}
 
 			if(list) {
@@ -231,13 +198,7 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 					className: 'clickable clear-btn',
 					onClick: (e) => {
 						sp(e);
-						this.valueChoosed({
-							id: 0,
-							name: ''
-						}, false, true);
-						if(this.state.expanded) {
-							this.toggleList();
-						}
+						this.clearValue();
 					}
 				},
 					renderIcon('times')

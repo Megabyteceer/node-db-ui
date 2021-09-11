@@ -776,15 +776,18 @@ function submitData(url: string, dataToSend: any): Promise<RecId>;
 function submitData(url: string, dataToSend: any, noProcessData?: boolean): Promise<RecId> {
 	LoadingIndicator.instance.show();
 
+	let body: FormData;
 	if(!noProcessData) {
 		dataToSend.sessionToken = User.sessionToken;
-		dataToSend = JSON.stringify(dataToSend);
+		body = JSON.stringify(dataToSend) as unknown as FormData;
+	} else {
+		body = dataToSend;
 	}
 
 	var callStack = new Error('submitData called from: ').stack;
 	let options: RequestInit = {
 		method: 'POST',
-		body: dataToSend as FormData
+		body
 	}
 	if(!noProcessData) {
 		options.headers = headersJSON;
@@ -794,7 +797,6 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 			return res.json();
 		})
 		.then((data) => {
-			window.crudJs.Stage.dataDidModifed();
 			handleAdditionalData(data, url);
 			if(isAuthNeed(data)) {
 				alert('authHerePopup');
@@ -829,7 +831,7 @@ async function deleteRecord(name, nodeId: RecId, recId: RecId, noPromt?: boolean
 			onYes();
 		} else {
 			await submitData('api/delete', { nodeId, recId });
-			window.crudJs.Stage.dataDidModifed();
+			window.crudJs.Stage.dataDidModifed(null);
 		}
 	} else {
 		let node = await getNode(nodeId);
@@ -838,16 +840,6 @@ async function deleteRecord(name, nodeId: RecId, recId: RecId, noPromt?: boolean
 			return deleteRecord(null, nodeId, recId, true, onYes);
 		}
 	}
-}
-
-function createRecord(nodeId, parameters = {}) {
-	getNode(nodeId).then((node) => {
-		var emptyData: RecordData = {};
-		if(node.draftable && (node.prevs & PREVS_PUBLISH)) { //access to publish records
-			emptyData.isP = 1;
-		}
-		window.crudJs.Stage.showForm(nodeId, 'new', parameters, true);
-	})
 }
 
 function n2mValuesEqual(v1, v2) {
@@ -1112,7 +1104,6 @@ export {
 	removeItem,
 	scrollToVisible,
 	n2mValuesEqual,
-	createRecord,
 	deleteRecord,
 	submitData,
 	submitRecord,

@@ -57,7 +57,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	constructor(props: FormProps) {
 		super(props as T);
 		this.nodeId = this.props.nodeId || this.props.node.id;
-		this.recId = this.props.recId;
+		this.recId = this.props.initialData ? this.props.initialData.id : this.props.recId;
 		this.filters = this.props.filters;
 		this.editable = this.props.editable;
 

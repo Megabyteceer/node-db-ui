@@ -905,11 +905,6 @@ input[readonly] {
 	background: #fff;
 }
 
-.disabled .field-boolean {
-	opacity: 0.3;
-	pointer-events: none;
-}
-
 .field-boolean-check {
 	display: inline-block;
 	position: absolute;
@@ -1219,6 +1214,10 @@ input[readonly] {
 	display: none;
 }
 
+.inline-editable-item .form {
+	display: inline-block;
+}
+
 .list-search {
 	display: block;
 	border: 1px solid #a8a8a8;
@@ -1297,12 +1296,6 @@ input[readonly] {
 .form-item-row .field-container-id-655 img {
 	border-radius: 50%;
 
-}
-
-
-.form-node-8 .field-container-id-288 .lookup-n2m-item-rec-1 .danger-btn {
-	opacity: 0.3;
-	pointer-events: none;
 }
 
 .shake {

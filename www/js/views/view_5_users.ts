@@ -24,7 +24,7 @@ registerListRenderer(5, function () {
 			)
 		}
 
-		return R.div({ key: item.id, className: 'user-item' },
+		return R.div({ key: item.id, className: 'user-item user-item-id-' + item.id },
 			R.img({ src: imgUrl, className: 'user-item-image' }),
 			R.div({ className: 'user-item-block' },
 				R.h5(null, item.name),

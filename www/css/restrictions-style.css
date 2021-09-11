@@ -1,0 +1,46 @@
+/* makes boolean checkboxes disabled */
+.disabled .field-boolean,
+
+/* disable critical sections  deletion/hidding*/
+.form-node-4 .list-item-id-2 .unpublish-btn,
+.form-node-4 .list-item-id-2 .danger-btn,
+.form-node-4 .list-item-id-4 .unpublish-btn,
+.form-node-4 .list-item-id-4 .danger-btn,
+.form-node-4 .list-item-id-10 .unpublish-btn,
+.form-node-4 .list-item-id-10 .danger-btn,
+
+/* disable field type enum deletion*/
+.form-node-52 .list-item-id-1 .danger-btn,
+.form-node-52.form-rec-1 .form-footer .danger-button,
+
+.editable-list-node-53 .inline-editable-item-rec-id-1 .danger-btn,
+.form-node-53 .form-rec-1 .form-footer .danger-button,
+
+/* disable critical roles deletion*/
+.form-node-8 .list-item-id-1 .danger-btn,
+.form-node-8 .list-item-id-2 .danger-btn,
+.form-node-8 .list-item-id-3 .danger-btn,
+.form-node-8.form-rec-1 .form-footer .danger-button,
+.form-node-8.form-rec-2 .form-footer .danger-button,
+.form-node-8.form-rec-3 .form-footer .danger-button,
+
+/* disable critical organizations deletion*/
+.form-node-7 .list-item-id-1 .danger-btn,
+.form-node-7 .list-item-id-2 .danger-btn,
+.form-node-7 .list-item-id-3 .danger-btn,
+.form-node-7.form-rec-1 .form-footer .danger-button,
+.form-node-7.form-rec-2 .form-footer .danger-button,
+.form-node-7.form-rec-3 .form-footer .danger-button,
+
+
+/*disable admin,user,guest deletion */
+.form-node-5 .user-item-id-1 .danger-btn,
+.form-node-5 .user-item-id-2 .danger-btn,
+.form-node-5 .user-item-id-3 .danger-btn,
+.form-node-5.form-rec-1 .form-footer .danger-button,
+.form-node-5.form-rec-2 .form-footer .danger-button,
+.form-node-5.form-rec-3 .form-footer .danger-button,
+.form-node-8 .field-container-id-288 .lookup-n2m-item-rec-1 .danger-btn {
+	opacity: 0.3;
+	pointer-events: none;
+}

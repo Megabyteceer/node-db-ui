@@ -3,7 +3,7 @@ import { R } from "./r";
 import { FormFull } from "./forms/form-full";
 import { List } from "./forms/list";
 import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon } from "./utils";
-import { RecId } from "./bs-utils";
+import { RecId, RecordData } from "./bs-utils";
 import { BaseForm } from "./forms/base-form";
 import ReactDOM from 'react-dom';
 
@@ -33,7 +33,7 @@ interface FormEntry {
 	form?: BaseForm;
 	formContainer: HTMLDivElement;
 	container: HTMLDivElement;
-	onModified?: () => void;
+	onModified?: (dataToSend: RecordData | null) => void;
 }
 
 let forms: FormEntry[] = [];
@@ -68,17 +68,21 @@ class Stage extends Component<any, any> {
 			}, 300);
 			Stage.currentFormEntry = forms[forms.length - 1];
 			Stage.currentForm = Stage.currentFormEntry.form;
+			if(forms.length === 1) { // enable scrolling
+				document.body.style.overflowY = '';
+			}
 			return true;
 		}
 	}
 
-	static dataDidModifed() {
+	/** null - deleted.*/
+	static dataDidModifed(newRecordData: RecordData | null) {
 		if(Stage.currentFormEntry.onModified) {
-			Stage.currentFormEntry.onModified();
+			Stage.currentFormEntry.onModified(newRecordData);
 		}
 	}
 
-	static async showForm(nodeId: RecId, recId?: RecId | 'new', filters: Filters = {}, editable?: boolean, modal?: boolean, onModified?: () => void) {
+	static async showForm(nodeId: RecId, recId?: RecId | 'new', filters: Filters = {}, editable?: boolean, modal?: boolean, onModified?: (dataToSend: RecordData) => void) {
 
 		if(!forms.length || modal) {
 			addFormEntry();
@@ -174,6 +178,9 @@ function addFormEntry() {
 	let entry: FormEntry = {
 		container,
 		formContainer
+	}
+	if(forms.length === 1) { // disable scrolling
+		document.body.style.overflowY = 'hidden';
 	}
 	forms.push(entry);
 	Stage.currentFormEntry = entry;

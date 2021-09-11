@@ -1,5 +1,5 @@
 import React from "react";
-import { FIELD_15_1toN, NodeDesc, RecId, RecordData } from "../bs-utils";
+import { FIELD_15_1toN, NodeDesc, RecId, RecordData, RecordsData } from "../bs-utils";
 import { FormItem } from "../forms/form-item";
 import { Filters } from "../utils";
 import { LookpuManyToManyFiled } from "./field-14-many-to-many";
@@ -36,7 +36,8 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 
 	savedNode: NodeDesc;
 
-	savedData: RecordData;
+
+	savedData: RecordsData;
 	savedFilters: Filters;
 
 	componentDidUpdate() {
@@ -44,6 +45,10 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 			this.setState({ filters: this.generateDefaultFiltersByProps(this.props) });
 			this.saveNodeDataAndFilters();
 		}
+	}
+
+	getLinkerFieldName() {
+		return this.props.field.fieldName + '_linker';
 	}
 
 	generateDefaultFiltersByProps(props) {
@@ -60,7 +65,7 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 		return ret;
 	}
 
-	saveNodeDataAndFilters(node?: NodeDesc, data?: RecordData, filters?: Filters) {
+	saveNodeDataAndFilters(node?: NodeDesc, data?: RecordsData, filters?: Filters) {
 		if(node) {
 			this.savedNode = node;
 		}

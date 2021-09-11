@@ -1,7 +1,7 @@
 import { R } from "../r";
 import React from "react";
 import { List } from "../forms/list";
-import { deleteRecord, getNodeData, L, renderIcon } from "../utils";
+import { deleteRecord, L } from "../utils";
 import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
 import { FIELD_15_1toN, RecId, RecordData } from "../bs-utils";
@@ -13,7 +13,7 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 	constructor(props) {
 		super(props);
 		if(!props.form.props.initialData.id) {
-			this.savedData = { items: [] };
+			this.savedData = { items: [], total: 0 };
 		}
 		var filters = this.generateDefaultFiltersByProps(props);
 		this.state = { filters };
@@ -21,7 +21,7 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 
 	setValue(val) {
 		if(this.state.inlineEditing) {
-			this.savedData = { items: val };
+			this.savedData = { items: val, total: val.length };
 			this.forceUpdate();
 		}
 	}
@@ -46,7 +46,7 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 	}
 
 	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
-		let filters = {
+		const filters = {
 			[this.getLinkerFieldName()]: { id: this.props.form.recId }
 		};
 		window.crudJs.Stage.showForm(this.props.field.nodeRef, recIdToEdit, filters, true, true, () => {
@@ -91,10 +91,6 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 				}
 			}
 		}
-	}
-
-	getLinkerFieldName() {
-		return this.props.field.fieldName + '_linker';
 	}
 
 	async saveParentFormBeforeCreation() {
