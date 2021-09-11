@@ -34,6 +34,7 @@ import { initDictionary } from "../../js/utils";
 		'MULTILANG': 'Multilangual',
 		'LOGIN': 'Login',
 		'USER_PROFILE': 'User profile',
+		'EDIT_USER_PROFILE': 'Edit user\'s profile %',
 		'LOGOUT': 'Logout',
 		'NOT_IMPLEMENTED': 'Not implemented',
 		'DEPLOY_TO': 'Deploy changes to %?',

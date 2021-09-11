@@ -9,7 +9,9 @@
 			"request": "launch",
 			"name": "Server",
 			"skipFiles": [
-				"<node_internals>/**"
+				"<node_internals>/**",
+				"**/node_modules/**",
+				"**/debug-promise.ts"
 			],
 			"args": [
 				"--abort-on-uncaught-exception=true",

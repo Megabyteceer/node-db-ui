@@ -12,16 +12,12 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 
 	constructor(props) {
 		super(props);
-		if(!props.form.props.initialData.id) {
-			this.savedData = { items: [], total: 0 };
-		}
 		var filters = this.generateDefaultFiltersByProps(props);
 		this.state = { filters };
 	}
 
 	setValue(val) {
 		if(this.state.inlineEditing) {
-			this.savedData = { items: val, total: val.length };
 			this.forceUpdate();
 		}
 	}
@@ -42,7 +38,6 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 
 	valueChoosed(recordData?: RecordData, isNewCreated?: boolean, noToggleList?: boolean);
 	valueChoosed() {
-		this.saveNodeDataAndFilters(this.savedNode, undefined, this.savedFilters);
 	}
 
 	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
@@ -109,15 +104,13 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 				noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton,
 				disableDrafting: this.state.disableDrafting,
 				additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
-				node: this.savedNode,
 				isLookup: true,
-				initialData: this.savedData,
 				preventCreateButton: this.state.preventCreateButton,
 				askToSaveParentBeforeCreation,
 				editable: this.state.inlineEditing,
 				nodeId: field.nodeRef,
 				parentForm: this,
-				filters: this.savedFilters || this.state.filters
+				filters: this.state.filters
 			})
 		);
 	}

@@ -27,6 +27,7 @@ import { initDictionary } from "../../js/utils";
 		'MULTILANG': 'Мультиязычность',
 		'LOGIN': 'Вход',
 		'USER_PROFILE': 'Профиль пользователя',
+		'EDIT_USER_PROFILE': 'Профиль пользователя %',
 		'LOGOUT': 'Выход',
 		'NOT_IMPLEMENTED': 'В разработке',
 		'DEPLOY_TO': 'Загрузить изменения на %?',

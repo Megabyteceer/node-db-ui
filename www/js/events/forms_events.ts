@@ -68,7 +68,7 @@ class FormEvents extends FormFull {
 
 
 		if(this.rec_update) {
-			this.header = 'Edit user\'s profile ' + myname;
+			this.header = L('EDIT_USER_PROFILE', myname);
 			this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
 			this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
 			this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
@@ -79,7 +79,6 @@ class FormEvents extends FormFull {
 			this.hideField('PHONE');
 			//this.hideField('desc');
 			this.hideField('_organID');
-			this.header = ('Registration:');
 			this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
 			this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
 			this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';

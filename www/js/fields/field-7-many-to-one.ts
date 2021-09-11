@@ -74,13 +74,7 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 				}
 				this.setValue(newVal);
 				this.props.wrapper.valueListener(newVal, false, this);
-
-				if(isNewCreated) {
-					this.saveNodeDataAndFilters(this.savedNode);
-				}
 			}
-		} else {
-			this.saveNodeDataAndFilters(this.savedNode, undefined, this.savedFilters);
 		}
 	}
 
@@ -92,13 +86,12 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 
 	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
 		this.collapseList();
-		const filters = {
+		const filters = this.props.form ? {
 			[this.getLinkerFieldName()]: { id: this.props.form.recId }
-		};
+		} : undefined;
 		window.crudJs.Stage.showForm(this.props.field.nodeRef, recIdToEdit, filters, true, true, (newData: RecordData) => {
 			const value = this.state.value;
 			if(recIdToEdit === value.id) {
-				this.savedData = null;
 				if(!newData) {
 					this.clearValue();
 				} else {
@@ -170,13 +163,11 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 			if(this.state.expanded) {
 
 				list = React.createElement(List, {
-					node: this.savedNode,
 					preventCreateButton: this.state.preventCreateButton || this.props.preventCreateButton,
-					initialData: this.savedData,
 					nodeId: field.nodeRef,
 					isLookup: true,
 					parentForm: this,
-					filters: this.savedFilters || this.state.filters
+					filters: this.state.filters
 				})
 
 			}

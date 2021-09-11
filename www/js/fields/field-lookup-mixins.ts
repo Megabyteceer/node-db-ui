@@ -34,16 +34,9 @@ interface LookupFieldProps extends FieldProps {
 
 class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 
-	savedNode: NodeDesc;
-
-
-	savedData: RecordsData;
-	savedFilters: Filters;
-
 	componentDidUpdate() {
 		if(!this.state.filters) {
 			this.setState({ filters: this.generateDefaultFiltersByProps(this.props) });
-			this.saveNodeDataAndFilters();
 		}
 	}
 
@@ -63,14 +56,6 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 		}*/
 
 		return ret;
-	}
-
-	saveNodeDataAndFilters(node?: NodeDesc, data?: RecordsData, filters?: Filters) {
-		if(node) {
-			this.savedNode = node;
-		}
-		this.savedData = data;
-		this.savedFilters = filters;
 	}
 
 	setLookupFilter(filtersObjOrName: string | Filters, val?: any) {

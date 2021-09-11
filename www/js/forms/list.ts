@@ -91,9 +91,6 @@ class List extends BaseForm<ListProps, ListState> {
 		} else if(!this.props.node) {
 			getNode(this.props.nodeId).then((node) => {
 				this.setState({ node });
-				if(this.props.parentForm) {
-					this.props.parentForm.savedNode = node;
-				}
 			});
 		}
 
@@ -135,9 +132,6 @@ class List extends BaseForm<ListProps, ListState> {
 			let node = this.props.node;
 			if(!node) {
 				node = await getNode(this.props.nodeId);
-			}
-			if(this.isSubForm()) {
-				this.props.parentForm.saveNodeDataAndFilters(node, data, this.filters);
 			}
 			this.setState({ data, node });
 			this.scrollIfNeed();

@@ -241,14 +241,15 @@ async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadl
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames.beforeDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames, data1, data2, data3?): Promise<void> {
 	if(eventsHandlers.has(nodeId)) {
-		const h = eventsHandlers.get(nodeId)[eventName];
+		const serverSideNodeEventHandler = eventsHandlers.get(nodeId)[eventName];
 		/// #if DEBUG
 		data1 = wrapObjectToDestroy(data1);
 		data2 = wrapObjectToDestroy(data2);
 		data3 = wrapObjectToDestroy(data3);
 		/// #endif
-		if(h) {
-			await h(data1, data2, data3);
+		if(serverSideNodeEventHandler) {
+			// call node server side event handler
+			await serverSideNodeEventHandler(data1, data2, data3);
 		}
 
 		/// #if DEBUG
