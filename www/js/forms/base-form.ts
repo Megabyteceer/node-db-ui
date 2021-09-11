@@ -119,6 +119,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	}
 
 	cancelClick() {
+		//TODO: check if data is modified and ask if user is sure to exit
 		if(this.props.onCancel) {
 			this.props.onCancel();
 			return;

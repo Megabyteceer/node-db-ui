@@ -8,6 +8,7 @@ import { Modal } from "./modal";
 import { ENV } from "./main-frame";
 import { DebugPanel } from "./debug-panel";
 import React from "react";
+import { HotkeyButton } from "./components/hotkey-button";
 
 const ON_FORM_SAVE = 'onsave';
 const ON_FORM_LOAD = 'onload';
@@ -98,23 +99,28 @@ async function myPromt(txt: string | Comment, yesLabel?: string, noLabel?: strin
 			noIcon = 'times';
 		}
 
-		noButton = R.button({
+		noButton = React.createElement(HotkeyButton, {
+			hotkey: 27,
 			onClick: () => {
 				Modal.instance.hide();
 				resolve(false);
-			}, className: 'clickable prompt-no-button'
-		}, renderIcon(noIcon), ' ', noLabel);
+			},
+			className: 'clickable prompt-no-button',
+			label: R.span(null, renderIcon(noIcon), ' ', noLabel)
+		});
 
 		var body = R.span({ className: 'prompt-body' },
 			txt,
 			R.div({ className: 'prompt-footer' },
 				noButton,
-				R.button({
+				React.createElement(HotkeyButton, {
+					hotkey: 13,
 					onClick: () => {
 						Modal.instance.hide();
 						resolve(true);
-					}, className: 'clickable prompt-yes-button'
-				}, renderIcon(yesIcon), ' ', yesLabel)
+					}, className: 'clickable prompt-yes-button',
+					label: R.span(null, renderIcon(yesIcon), ' ', yesLabel)
+				})
 			)
 		);
 		Modal.instance.show(body, !discardByOutsideClick);
@@ -870,11 +876,12 @@ async function deleteRecord(name, nodeId: RecId, recId: RecId, noPromt?: boolean
 		} else {
 			await submitData('api/delete', { nodeId, recId });
 			window.crudJs.Stage.dataDidModifed(null);
+			return true;
 		}
 	} else {
 		let node = await getNode(nodeId);
-		if(!await myPromt(L('SURE_DELETE', (node.creationName || node.singleName)) + ' "' + name + '"?', L('CANCEL'),
-			L('DELETE'), 'caret-left', 'times', true)) {
+		if(await myPromt(L('SURE_DELETE', (node.creationName || node.singleName)) + ' "' + name + '"?',
+			L('DELETE'), L('CANCEL'), 'times', 'caret-left', true)) {
 			return deleteRecord(null, nodeId, recId, true, onYes);
 		}
 	}
@@ -995,16 +1002,26 @@ function removeBackup(nodeId) {
 
 function keepInWindow(body) {
 	if(body) {
+		body = ReactDOM.findDOMNode(body);
 
-		body = $(ReactDOM.findDOMNode(body));
-		var x = body.offset().left;
-		var w = body.outerWidth();
-		var screenW = window.innerWidth;
+		let modalContainer = body.closest('.form-modal-container');
+		var screenR = window.innerWidth;
+		var screenL = 0;
+		if(modalContainer) {
+			const cRect = modalContainer.getBoundingClientRect()
+			screenR = cRect.right;
+			screenL = cRect.left;
+		}
 
-		if(x < 0) {
-			addTranslateX(body, -x);
+		const bodyRect = body.getBoundingClientRect()
+		var l = bodyRect.left;
+		var r = bodyRect.right;
+
+
+		if(l < screenL) {
+			addTranslateX(body, -l);
 		} else {
-			var out = (x + w) - screenW;
+			var out = r - screenR + 10;
 			if(out > 0) {
 				addTranslateX(body, -out);
 			}
@@ -1013,15 +1030,16 @@ function keepInWindow(body) {
 }
 
 function addTranslateX(element, x) {
-	var curMatrix = element.css('transform');
-	if(curMatrix !== 'none') {
+	x = Math.round(x);
+	var curMatrix = element.style.transform;
+	if(curMatrix && (curMatrix !== 'none')) {
 		curMatrix = curMatrix.split(',');
 		curMatrix[4] = parseInt(curMatrix[4]) + x;
 	} else {
 		curMatrix = ['matrix(1', 0, 0, 1, x, '0)'];
 	}
 
-	element.css({ 'transform': curMatrix.join(',') });
+	element.style.transform = curMatrix.join(',');
 }
 
 function strip_tags(input) {

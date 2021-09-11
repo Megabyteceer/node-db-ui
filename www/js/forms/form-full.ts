@@ -9,6 +9,7 @@ import { R } from "../r";
 import { FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_5_BOOL, FIELD_7_Nto1, PREVS_PUBLISH, RecId, RecordData } from "../bs-utils";
 import React from "react";
 import { iAdmin } from "../user";
+import { HotkeyButton } from "../components/hotkey-button";
 
 var backupCallback;
 
@@ -292,7 +293,6 @@ class FormFull extends eventProcessingMixins {
 		}
 
 		if(this.isSubForm()) {
-
 			this.props.parentForm.valueChoosed(this.currentData, true);
 		} else {
 			this.cancelClick();
@@ -444,11 +444,12 @@ class FormFull extends eventProcessingMixins {
 			if(data.isD && isMainTab && !this.props.preventDeleteButton) {
 				deleteButton = R.button({
 					className: isRestricted ? 'restricted clickable danger-button' : 'clickable danger-button', onClick: async () => {
-						await deleteRecord(data.name, node.id, data.id);
-						if(this.isSubForm()) {
-							this.props.parentForm.valueChoosed();
-						} else {
-							goBack(true);
+						if(await deleteRecord(data.name, node.id, data.id)) {
+							if(this.isSubForm()) {
+								this.props.parentForm.valueChoosed();
+							} else {
+								goBack(true);
+							}
 						}
 					}, title: L('DELETE')
 				}, renderIcon('trash'), this.isSubForm() ? '' : L('DELETE'));
@@ -480,9 +481,9 @@ class FormFull extends eventProcessingMixins {
 			}
 
 			if(this.props.editable) {
-				closeButton = R.button({ className: 'clickable default-button', onClick: this.cancelClick, title: L('CANCEL') }, renderIcon('caret-left'), this.isSubForm() ? '' : L('CANCEL'));
+				closeButton = React.createElement(HotkeyButton, { hotkey: 27, className: 'clickable default-button', onClick: this.cancelClick, title: L('CANCEL'), label: R.span(null, renderIcon('caret-left'), this.isSubForm() ? '' : L('CANCEL')) });
 			} else {
-				closeButton = R.button({ className: 'clickable default-button', onClick: this.cancelClick }, renderIcon('caret-left'), this.isSubForm() ? '' : L('BACK'));
+				closeButton = React.createElement(HotkeyButton, { hotkey: 27, className: 'clickable default-button', onClick: this.cancelClick, label: R.span(null, renderIcon('caret-left'), this.isSubForm() ? '' : L('BACK')) });
 			}
 		}
 		return R.div({ className },

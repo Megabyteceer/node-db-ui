@@ -56,6 +56,7 @@ class Stage extends Component<any, any> {
 	static goBackIfModal() {
 		if(forms.length > 1) {
 			let e = forms.pop();
+			forms[forms.length - 1].container.classList.remove('blocked-layer');
 			const formContainer = e.formContainer;
 			formContainer.style.transform = 'scale(0.01)';
 			e.container.style.backgroundColor = '#00112200'
@@ -158,6 +159,7 @@ function addFormEntry() {
 	container.className = isRoot ? 'form-layer' : 'form-layer form-layer-modal';
 	let formContainer;
 	if(!isRoot) {
+		forms[forms.length - 1].container.classList.add('blocked-layer');
 		container.style.transition = 'background-color 0.3s';
 		container.style.backgroundColor = '#00112200'
 		formContainer = document.createElement('div');

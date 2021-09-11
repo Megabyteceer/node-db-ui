@@ -687,12 +687,12 @@ input[readonly] {
 }
 
 .prompt-yes-button {
-	background: #A8A9AD;
+	background: #f84c4c;
 	padding: 10px 55px 10px 40px;
 }
 
 .prompt-no-button {
-	background: #f84c4c;
+	background: #A8A9AD;
 	padding: 10px 45px 10px 40px;
 }
 
