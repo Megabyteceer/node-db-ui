@@ -136,9 +136,14 @@ input::placeholder {
 	color: #aaa;
 }
 
-
 img {
 	vertical-align: middle;
+}
+
+.disabled .field-boolean,
+.restricted {
+	opacity: 0.3;
+	pointer-events: none;
 }
 
 .left-bar a:link {

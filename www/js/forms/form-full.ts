@@ -1,6 +1,6 @@
 
 import { FieldWrap } from "../fields/field-wrap";
-import { backupCreationData, consoleLog, deleteRecord, getBackupData, goBack, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord } from "../utils";
+import { backupCreationData, consoleLog, deleteRecord, getBackupData, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord } from "../utils";
 import { FormTab } from "./form-tab";
 import { eventProcessingMixins } from "./event-processing-mixins";
 import { NodeAdmin } from "../admin/node-admin";
@@ -439,10 +439,11 @@ class FormFull extends eventProcessingMixins {
 		var saveButton;
 		var draftButton;
 		var nodeAdmin;
+		const isRestricted = isRecordRestrictedForDeletion(node.id, data.id);
 		if(!this.props.inlineEditable) {
 			if(data.isD && isMainTab && !this.props.preventDeleteButton) {
 				deleteButton = R.button({
-					className: 'clickable danger-button', onClick: async () => {
+					className: isRestricted ? 'restricted clickable danger-button' : 'clickable danger-button', onClick: async () => {
 						await deleteRecord(data.name, node.id, data.id);
 						if(this.isSubForm()) {
 							this.props.parentForm.valueChoosed();
@@ -458,7 +459,7 @@ class FormFull extends eventProcessingMixins {
 					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('SAVE') }, this.isSubForm() ? renderIcon('check') : renderIcon('floppy-o'), this.isSubForm() ? '' : L('SAVE'));
 				} else {
 					if(data.status === 1) {
-						draftButton = R.button({ className: 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
+						draftButton = R.button({ className: isRestricted ? 'clickable default-button restricted' : 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
 						saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick }, L('SAVE'));
 					} else {
 						draftButton = R.button({ className: 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('SAVE_TEMPLATE') }, L('SAVE_TEMPLATE'));

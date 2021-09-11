@@ -2,7 +2,7 @@ import { ComponentProps, R } from "../r";
 import React from "react";
 import { FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, Filters, NodeDesc, RecordData } from "../bs-utils";
 import { FieldWrap } from "../fields/field-wrap";
-import { deleteRecord, draftRecord, L, locationToHash, publishRecord, renderIcon, sp } from "../utils";
+import { deleteRecord, draftRecord, isRecordRestrictedForDeletion, L, locationToHash, publishRecord, renderIcon, sp } from "../utils";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import { eventProcessingMixins } from "./event-processing-mixins";
 
@@ -36,13 +36,13 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 		} else {
 			itemName = '';
 		}
-
+		const isRestricted = isRecordRestrictedForDeletion(node.id, data.id);
 		var buttons = [];
 		if(data.hasOwnProperty('isP') && (!formItem || !formItem.props.disableDrafting)) {
 			if(data.status === 1) {
 				buttons.push(
 					R.button({
-						key: 1, className: 'clickable toolbtn unpublish-btn', title: L('UNPUBLISH'), onClick: () => {
+						key: 1, className: isRestricted ? 'clickable toolbtn unpublish-btn restricted' : 'clickable toolbtn unpublish-btn', title: L('UNPUBLISH'), onClick: () => {
 							publishClick(true, node, data).then(refreshFunction);
 						}
 					},
@@ -94,7 +94,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 		if(data.hasOwnProperty('isD')) {
 			buttons.push(
 				R.button({
-					key: 3, className: 'clickable toolbtn danger-btn', title: L('DELETE') + itemName, onClick: async () => {
+					key: 3, className: isRestricted ? 'clickable toolbtn danger-btn restricted' : 'clickable toolbtn danger-btn', title: L('DELETE') + itemName, onClick: async () => {
 						await deleteRecord(data.name, node.id, data.id);
 						if(formItem && formItem.isSubForm()) {
 							formItem.props.parentForm.valueChoosed();

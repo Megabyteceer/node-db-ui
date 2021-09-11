@@ -6,7 +6,6 @@ import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
 import { ENV } from "./main-frame";
-import { Stage as Stg } from "./stage";
 import { DebugPanel } from "./debug-panel";
 import React from "react";
 
@@ -18,6 +17,45 @@ const __corePath = 'https://node-db-ui.com:1443/core/';
 
 const headersJSON = new Headers();
 headersJSON.append("Content-Type", "application/json");
+
+const restrictedRecords = new Map();
+
+interface RestrictDeletionData {
+	[nodeId: number]: RecId[];
+}
+
+function restrictRecordsDeletion(nodes: RestrictDeletionData) {
+	for(let nodeId in nodes) {
+		if(nodeId) {
+			const recordsIds = nodes[nodeId];
+			//@ts-ignore
+			nodeId = parseInt(nodeId);
+			if(!restrictedRecords.has(nodeId)) {
+				restrictedRecords.set(nodeId, new Map);
+			}
+			let nodeMap = restrictedRecords.get(nodeId);
+			for(var recordId of recordsIds) {
+				nodeMap.set(recordId, 1);
+			}
+		}
+	}
+}
+
+restrictRecordsDeletion({
+	4: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 50, 52, 53], /* disable critical sections  deletion/hidding*/
+	5: [1, 2, 3], /* disable admin,user,guest deletion*/
+	7: [1, 2, 3], /* disable critical organizations deletion*/
+	8: [1, 2, 3], /* disable critical roles deletion*/
+	12: [1], /* disable default language deletion*/
+	52: [1], /* disable field type enum deletion*/
+	53: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 30, 43], /* disable field type enum deletion*/
+});
+
+function isRecordRestrictedForDeletion(nodeId, recordId) {
+	if(restrictedRecords.has(nodeId)) {
+		return restrictedRecords.get(nodeId).has(recordId);
+	}
+}
 
 function myAlert(txt: string | React.Component, isSucess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean) {
 	if(!Modal.instance) {
@@ -1138,5 +1176,6 @@ export {
 	ON_FORM_SAVE,
 	ON_FORM_LOAD,
 	ON_FIELD_CHANGE,
-	onOneFormShowed
+	onOneFormShowed,
+	isRecordRestrictedForDeletion
 }

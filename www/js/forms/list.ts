@@ -3,7 +3,7 @@ import { FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE, RecordsData } from "../bs-util
 import { FieldAdmin } from "../admin/field-admin";
 import { NodeAdmin } from "../admin/node-admin";
 import { LeftBar } from "../left-bar";
-import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, L, renderIcon, scrollToVisible, sp, UID } from "../utils";
+import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID } from "../utils";
 import { FormFull } from "./form-full";
 import { FormItem } from "./form-item";
 import { BaseForm, FormProps, FormState } from "./base-form";
@@ -228,12 +228,13 @@ class List extends BaseForm<ListProps, ListState> {
 				(() => {
 					let itemNum = i;
 					var item = data.items[i];
+					const isRestricted = isRecordRestrictedForDeletion(node.id, item.id);
 					if(!item.__deleted_901d123f) {
 
 						var btns = [];
 
 						btns.push(R.button({
-							className: 'clickable toolbtn danger-btn', title: L('DELETE'), key: 'b' + UID(item), onClick: async () => {
+							className: isRestricted ? 'clickable toolbtn danger-btn restricted' : 'clickable toolbtn danger-btn', title: L('DELETE'), key: 'b' + UID(item), onClick: async () => {
 								if(item.hasOwnProperty('id')) {
 									//TODO: check deletion in 1toN lookup list
 									await deleteRecord(item.name, node.id, 0, false, () => {
@@ -265,7 +266,7 @@ class List extends BaseForm<ListProps, ListState> {
 								}
 							}
 
-							if(uidM1) {
+							if(typeof uidM1 === 'number') {
 								(() => {
 									btns.push(R.button({
 										className: 'clickable toolbtn edit-btn', title: L('MOVE_UP'), key: 'bu' + UID(item), onClick: () => {
