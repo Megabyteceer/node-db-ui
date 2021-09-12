@@ -1099,18 +1099,18 @@ function submitErrorReport(name, stack) {
 
 }
 
-var dictionary_0u23hiewf = {};
+var dictionary = {};
 
 function initDictionary(o) {
-	dictionary_0u23hiewf = Object.assign(dictionary_0u23hiewf, o);
+	dictionary = Object.assign(dictionary, o);
 }
 
 function L(key: string, param?: any) {
-	if(dictionary_0u23hiewf.hasOwnProperty(key)) {
+	if(dictionary.hasOwnProperty(key)) {
 		if(typeof (param) !== 'undefined') {
-			return dictionary_0u23hiewf[key].replace('%', param);
+			return dictionary[key].replace('%', param);
 		}
-		return dictionary_0u23hiewf[key];
+		return dictionary[key];
 	}
 	/// #if DEBUG
 	throw new Error(L('NO_TRANSLATION', key));
