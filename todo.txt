@@ -1,6 +1,3 @@
-
-требовать nodeRef поле если указано fieldType === FIELD_7_Nto1 15 14
-
 separate server side and client side isUserHaveRole
 
 Переводы. Стандартные - в коде, кастомные в бд. И грузить их в память. Гет ланг. Метод возвращающий кастомные переводы.
@@ -8,6 +5,8 @@ separate server side and client side isUserHaveRole
 Юзеру поле языка с 0 по умолчанию. Язык системы.
 
 проверить сессии на глючность
+
+видимость полей в поле и ноде пересчет сделать попольно
 
 убрать <a href="/login
 

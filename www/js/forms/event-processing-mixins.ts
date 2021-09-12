@@ -351,7 +351,7 @@ class eventProcessingMixins extends BaseForm {
 		return onSaveRes || this.invalidAlertInOnSaveHandler;
 	}
 
-	fieldAlert(fieldName: string, text: string = '', isSuccess?: boolean, focus?: boolean) {
+	fieldAlert(fieldName: string, text: string = '', isSuccess?: boolean, focus: boolean = !isSuccess) {
 		assert(fieldName, "fieldName expected");
 		var f = this.getField(fieldName);
 		if(f && f.props.parentCompactAreaName) {
