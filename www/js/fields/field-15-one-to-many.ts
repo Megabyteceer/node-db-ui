@@ -69,21 +69,23 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 
 	async afterSave() {
 		if(this.state.inlineEditing) {
-			var subForms = this.inlineListRef.getSubforms(true);
+			var listData = this.inlineListRef.state.data;
 			var field = this.props.field;
+			for(let item of listData.items) {
+				if(item.hasOwnProperty('__deleted_901d123f')) {
+					if(item.hasOwnProperty('id')) {
+						await deleteRecord('', field.nodeRef, item.id, true);
+					}
+				}
+			}
+			var subForms = this.inlineListRef.getSubforms();
 			for(let form of subForms) {
 				var initialData = form.props.initialData;
-				if(initialData.hasOwnProperty('__deleted_901d123f')) {
-					if(initialData.hasOwnProperty('id')) {
-						await deleteRecord('', field.nodeRef, initialData.id, true);
-					}
-				} else {
-					var linkerName = this.getLinkerFieldName();
-					if(!initialData.hasOwnProperty(linkerName) || initialData[linkerName] === 'new') {
-						form.currentData[linkerName] = { id: this.props.form.currentData.id };
-					}
-					await form.saveForm();
+				var linkerName = this.getLinkerFieldName();
+				if(!initialData.hasOwnProperty(linkerName) || initialData[linkerName] === 'new') {
+					form.currentData[linkerName] = { id: this.props.form.currentData.id };
 				}
+				await form.saveForm();
 			}
 		}
 	}

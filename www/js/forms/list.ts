@@ -79,16 +79,16 @@ class List extends BaseForm<ListProps, ListState> {
 		this.filters = $.extend({}, newProps.filters);
 		this.setSearchInputValue(this.filters.s as string);
 		//@ts-ignore
-		this.state.node = newProps.node;
+		this.state.node = newProps.node || this.state.node;
 		//@ts-ignore
-		this.state.data = newProps.initialData;
+		this.state.data = newProps.initialData || this.state.data;
 		this.onShow();
 	}
 
 	onShow() {
 		if(!this.state.data) {
 			setTimeout(() => { this.refreshData(); }, 1);
-		} else if(!this.props.node) {
+		} else if(!this.state.node) {
 			getNode(this.props.nodeId).then((node) => {
 				this.setState({ node });
 			});
@@ -194,12 +194,12 @@ class List extends BaseForm<ListProps, ListState> {
 		this.subformsRefs[itemNum] = ref;
 	}
 
-	getSubforms(includeDeleted?: boolean): FormFull[] {
+	getSubforms(): FormFull[] {
 		var ret = [];
 		for(var k in this.subformsRefs) {
 			if(this.subformsRefs.hasOwnProperty(k)) {
 				var f = this.subformsRefs[k];
-				if(includeDeleted || !f.props.initialData.__deleted_901d123f) {
+				if(f) {
 					ret.push(f);
 				}
 			}
@@ -229,13 +229,10 @@ class List extends BaseForm<ListProps, ListState> {
 
 						btns.push(R.button({
 							className: isRestricted ? 'clickable toolbtn danger-btn restricted' : 'clickable toolbtn danger-btn', title: L('DELETE'), key: 'b' + UID(item), onClick: async () => {
-								if(item.hasOwnProperty('id')) {
-									//TODO: check deletion in 1toN lookup list
-									await deleteRecord(item.name, node.id, 0, false, () => {
-										item.__deleted_901d123f = true;
-										this.forceUpdate();
-									});
-								}
+								await deleteRecord(item.name, node.id, 0, false, () => {
+									item.__deleted_901d123f = true;
+									this.forceUpdate();
+								});
 							}
 						}, renderIcon('times')));
 

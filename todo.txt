@@ -1,5 +1,5 @@
 
-регистрация/активация/логин/сброс формы (через ноды, которые не хранят свои данные а только обрабатывают хендлеры)
+требовать nodeRef поле если указано fieldType === FIELD_7_Nto1 15 14
 
 separate server side and client side isUserHaveRole
 
@@ -13,8 +13,6 @@ separate server side and client side isUserHaveRole
 
 crop падает на прозрачной области. когда кроп больше картинки
 
-требовать nodeRef поле если указано fieldType === FIELD_7_Nto1 15 14
-
 try mysql.createPool
 
 в разделе добавить выбор ссылки на _html
@@ -25,9 +23,13 @@ Generate small icons for all image fields
 
 Lookup nto1 and ntom to user gives access for user if field marked as access opener. Keep such a fields in prevsFields property. Use it in messages.
 
-Linemaster list. render items one by one with delay
-
 проверить все TODO
+
+регистрация/активация/логин/сброс формы (через ноды, которые не хранят свои данные а только обрабатывают хендлеры)
+
+просить вход если ответ нет прав и юзер гость
+
+Linemaster list. render items one by one with delay
 
 Use mysql>Alter table students ADD FULLTEXT (first_name, last_name);
 mysql>Select * from students where match(first_name, last_name) AGAINST (‘Jones’);
