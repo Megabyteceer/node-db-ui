@@ -4,7 +4,7 @@ import { List } from "../forms/list";
 import { deleteRecord, L } from "../utils";
 import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
-import { FIELD_15_1toN, RecId, RecordData } from "../bs-utils";
+import { FIELD_15_1toN, RecId, RecordData, RecordsData } from "../bs-utils";
 
 class LookpuOneToManyFiled extends fieldLookupMixins {
 
@@ -99,6 +99,10 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 	render() {
 		var field = this.props.field;
 		var askToSaveParentBeforeCreation = !this.props.form.props.initialData.hasOwnProperty('id');
+		let initialData: RecordsData = (typeof this.props.form.recId === 'number') ? undefined : {
+			items: [],
+			total: 0
+		};
 		return R.div(null,
 			React.createElement(List, {
 				ref: (r) => { this.inlineListRef = r; },
@@ -107,6 +111,7 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 				disableDrafting: this.state.disableDrafting,
 				additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
 				isLookup: true,
+				initialData,
 				preventCreateButton: this.state.preventCreateButton,
 				askToSaveParentBeforeCreation,
 				editable: this.state.inlineEditing,
