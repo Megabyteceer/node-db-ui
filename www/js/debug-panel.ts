@@ -2,7 +2,7 @@ import { Component } from "react";
 import { ENV } from "./main-frame";
 import { R } from "./r";
 import { iAdmin } from "./user";
-import { getData, isLitePage, L, myAlert, myPromt, renderIcon, sp, strip_tags } from "./utils";
+import { getData, isLitePage, L, myAlert, myPromt, reloadLocation, renderIcon, sp, strip_tags } from "./utils";
 
 var currentId = 10;
 var debugInfo = [];
@@ -93,7 +93,7 @@ class DebugPanel extends Component<any, any> {
 			cacheClearBtn = R.a({
 				className: 'clickable admin-controll', title: L('CLEAR_CACHE'), onClick: (ev) => {
 					sp(ev);
-					getData('admin/cache_info', { clear: 1, json: 1 }).then(() => { location.reload(); });
+					getData('admin/cache_info', { clear: 1, json: 1 }).then(() => { reloadLocation(); });
 				}
 			},
 				renderIcon('refresh')

@@ -1,10 +1,11 @@
-import { Filters, getNodeData, isAdmin, L, myPromt } from "../utils";
+import { Filters, getNodeData, isAdmin, L, myPromt, reloadLocation } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { ADMIN_ROLE_ID, FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATICTEXT } from "../bs-utils";
+import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATICTEXT } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
 import { EnumField } from "../fields/field-6-enum";
+import { R } from "../r";
 
 class FormEvents extends FormFull {
 
@@ -68,7 +69,7 @@ class FormEvents extends FormFull {
 
 
 		if(this.rec_update) {
-			this.header = 'Edit user\'s profile ' + myname;
+			this.header = L('EDIT_USER_PROFILE', myname);
 			this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
 			this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
 			this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
@@ -79,7 +80,6 @@ class FormEvents extends FormFull {
 			this.hideField('PHONE');
 			//this.hideField('desc');
 			this.hideField('_organID');
-			this.header = ('Registration:');
 			this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
 			this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
 			this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
@@ -365,6 +365,14 @@ class FormEvents extends FormFull {
 	async _languages_onload() {
 		if(this.rec_update) {
 			this.disableField("code");
+		} else if(this.editable) {
+			this.header = R.span({ className: 'danger' }, L("NEW_LANGUAGE_WARNING"));
+		}
+	}
+
+	async _languages_onsave() {
+		if(this.rec_creation && !this.fieldValue('code')) {
+			this.fieldAlert('code', L('REQUIRED_FLD'));
 		}
 	}
 

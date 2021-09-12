@@ -29,12 +29,14 @@ registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 	}
 
 	render() {
-		if(!ReactDatetimeClassHolder.ReactDatetimeClass) {
-			return renderIcon('cog fa-spin');
-		}
+
 		var field = this.props.field;
 		var value = toReadableDate(this.state.value);
 		if(this.props.isEdit) {
+			if(!ReactDatetimeClassHolder.ReactDatetimeClass) {
+				ReactDatetimeClassHolder.importReactDateTime();
+				return renderIcon('cog fa-spin');
+			}
 			var inputsProps = {
 				closeOnSelect: true,
 				defaultValue: value,

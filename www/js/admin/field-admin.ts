@@ -1,8 +1,8 @@
 import { R } from "../r";
 import { Component } from "react";
-import { getNodeData, keepInWindow, L, ON_FIELD_CHANGE, renderIcon, sp } from "../utils";
+import { getNodeData, keepInWindow, L, ON_FIELD_CHANGE, reloadLocation, renderIcon, sp } from "../utils";
 import { admin_editSource } from "./admin-event-editor";
-import { admin, reloadLocation } from "./admin-utils";
+import { admin } from "./admin-utils";
 import { FieldDesc, NodeDesc } from "../bs-utils";
 
 var showedFieldId;
@@ -158,7 +158,7 @@ class FieldAdmin extends Component<any, any> {
 						className: 'clickable toolbtn admin-form-btn',
 						title: "Edit field properties"
 					},
-						renderIcon('wrench')
+						renderIcon('pencil')
 					),
 					R.span({
 						className: 'clickable admin-form-lock-btn',
@@ -183,7 +183,7 @@ class FieldAdmin extends Component<any, any> {
 
 		return R.span({
 			ref: keepInWindow,
-			className: 'admin-controll admin-form-wrap' + (bodyVisible ? 'admin-form-wrap-visible' : ''),
+			className: 'admin-controll admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
 			R.span({

@@ -1,6 +1,6 @@
 
 import { FieldWrap } from "../fields/field-wrap";
-import { backupCreationData, consoleLog, deleteRecord, getBackupData, goBack, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord } from "../utils";
+import { backupCreationData, consoleLog, deleteRecord, getBackupData, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord } from "../utils";
 import { FormTab } from "./form-tab";
 import { eventProcessingMixins } from "./event-processing-mixins";
 import { NodeAdmin } from "../admin/node-admin";
@@ -9,6 +9,7 @@ import { R } from "../r";
 import { FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_5_BOOL, FIELD_7_Nto1, PREVS_PUBLISH, RecId, RecordData } from "../bs-utils";
 import React from "react";
 import { iAdmin } from "../user";
+import { HotkeyButton } from "../components/hotkey-button";
 
 var backupCallback;
 
@@ -258,10 +259,11 @@ class FormFull extends eventProcessingMixins {
 				this.currentData.id = recId;
 				this.props.initialData.id = recId;
 			}
-
 			//renew current data
 			this.currentData = Object.assign(this.currentData, data);
 			//renew initial data;
+			window.crudJs.Stage.dataDidModifed(this.currentData);
+
 			for(var k in data) {
 				var val = data[k];
 				if(typeof val === 'object') {
@@ -291,7 +293,6 @@ class FormFull extends eventProcessingMixins {
 		}
 
 		if(this.isSubForm()) {
-
 			this.props.parentForm.valueChoosed(this.currentData, true);
 		} else {
 			this.cancelClick();
@@ -315,7 +316,7 @@ class FormFull extends eventProcessingMixins {
 		var data = this.currentData;
 		var flds = node.fields;
 
-		var className = 'form form-full form-node-' + node.id;
+		var className = 'form form-full form-node-' + node.id + ' form-rec-' + this.recId;
 		if(this.props.isCompact) {
 			className += ' form-compact';
 		}
@@ -438,15 +439,17 @@ class FormFull extends eventProcessingMixins {
 		var saveButton;
 		var draftButton;
 		var nodeAdmin;
+		const isRestricted = isRecordRestrictedForDeletion(node.id, data.id);
 		if(!this.props.inlineEditable) {
 			if(data.isD && isMainTab && !this.props.preventDeleteButton) {
 				deleteButton = R.button({
-					className: 'clickable danger-button', onClick: async () => {
-						await deleteRecord(data.name, node.id, data.id);
-						if(this.isSubForm()) {
-							this.props.parentForm.valueChoosed();
-						} else {
-							goBack(true);
+					className: isRestricted ? 'restricted clickable danger-button' : 'clickable danger-button', onClick: async () => {
+						if(await deleteRecord(data.name, node.id, data.id)) {
+							if(this.isSubForm()) {
+								this.props.parentForm.valueChoosed();
+							} else {
+								goBack(true);
+							}
 						}
 					}, title: L('DELETE')
 				}, renderIcon('trash'), this.isSubForm() ? '' : L('DELETE'));
@@ -457,7 +460,7 @@ class FormFull extends eventProcessingMixins {
 					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('SAVE') }, this.isSubForm() ? renderIcon('check') : renderIcon('floppy-o'), this.isSubForm() ? '' : L('SAVE'));
 				} else {
 					if(data.status === 1) {
-						draftButton = R.button({ className: 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
+						draftButton = R.button({ className: isRestricted ? 'clickable default-button restricted' : 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
 						saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick }, L('SAVE'));
 					} else {
 						draftButton = R.button({ className: 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('SAVE_TEMPLATE') }, L('SAVE_TEMPLATE'));
@@ -478,9 +481,9 @@ class FormFull extends eventProcessingMixins {
 			}
 
 			if(this.props.editable) {
-				closeButton = R.button({ className: 'clickable default-button', onClick: this.cancelClick, title: L('CANCEL') }, renderIcon('caret-left'), this.isSubForm() ? '' : L('CANCEL'));
+				closeButton = React.createElement(HotkeyButton, { hotkey: 27, className: 'clickable default-button', onClick: this.cancelClick, title: L('CANCEL'), label: R.span(null, renderIcon('caret-left'), this.isSubForm() ? '' : L('CANCEL')) });
 			} else {
-				closeButton = R.button({ className: 'clickable default-button', onClick: this.cancelClick }, renderIcon('caret-left'), this.isSubForm() ? '' : L('BACK'));
+				closeButton = React.createElement(HotkeyButton, { hotkey: 27, className: 'clickable default-button', onClick: this.cancelClick, label: R.span(null, renderIcon('caret-left'), this.isSubForm() ? '' : L('BACK')) });
 			}
 		}
 		return R.div({ className },

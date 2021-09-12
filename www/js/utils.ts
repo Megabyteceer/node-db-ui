@@ -1,3 +1,6 @@
+/// #if EDITOR
+import { LANG_KEYS } from "../locales/en/lang.js";
+/// #endif
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
@@ -6,9 +9,9 @@ import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
 import { ENV } from "./main-frame";
-import { Stage as Stg } from "./stage";
 import { DebugPanel } from "./debug-panel";
 import React from "react";
+import { HotkeyButton } from "./components/hotkey-button";
 
 const ON_FORM_SAVE = 'onsave';
 const ON_FORM_LOAD = 'onload';
@@ -18,6 +21,45 @@ const __corePath = 'https://node-db-ui.com:1443/core/';
 
 const headersJSON = new Headers();
 headersJSON.append("Content-Type", "application/json");
+
+const restrictedRecords = new Map();
+
+interface RestrictDeletionData {
+	[nodeId: number]: RecId[];
+}
+
+function restrictRecordsDeletion(nodes: RestrictDeletionData) {
+	for(let nodeId in nodes) {
+		if(nodeId) {
+			const recordsIds = nodes[nodeId];
+			//@ts-ignore
+			nodeId = parseInt(nodeId);
+			if(!restrictedRecords.has(nodeId)) {
+				restrictedRecords.set(nodeId, new Map);
+			}
+			let nodeMap = restrictedRecords.get(nodeId);
+			for(var recordId of recordsIds) {
+				nodeMap.set(recordId, 1);
+			}
+		}
+	}
+}
+
+restrictRecordsDeletion({
+	4: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 50, 52, 53], /* disable critical sections  deletion/hidding*/
+	5: [1, 2, 3], /* disable admin,user,guest deletion*/
+	7: [1, 2, 3], /* disable critical organizations deletion*/
+	8: [1, 2, 3], /* disable critical roles deletion*/
+	12: [1], /* disable default language deletion*/
+	52: [1], /* disable field type enum deletion*/
+	53: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 30, 43], /* disable field type enum deletion*/
+});
+
+function isRecordRestrictedForDeletion(nodeId, recordId) {
+	if(restrictedRecords.has(nodeId)) {
+		return restrictedRecords.get(nodeId).has(recordId);
+	}
+}
 
 function myAlert(txt: string | React.Component, isSucess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean) {
 	if(!Modal.instance) {
@@ -60,23 +102,28 @@ async function myPromt(txt: string | Comment, yesLabel?: string, noLabel?: strin
 			noIcon = 'times';
 		}
 
-		noButton = R.button({
+		noButton = React.createElement(HotkeyButton, {
+			hotkey: 27,
 			onClick: () => {
 				Modal.instance.hide();
 				resolve(false);
-			}, className: 'clickable prompt-no-button'
-		}, renderIcon(noIcon), ' ', noLabel);
+			},
+			className: 'clickable prompt-no-button',
+			label: R.span(null, renderIcon(noIcon), ' ', noLabel)
+		});
 
 		var body = R.span({ className: 'prompt-body' },
 			txt,
 			R.div({ className: 'prompt-footer' },
 				noButton,
-				R.button({
+				React.createElement(HotkeyButton, {
+					hotkey: 13,
 					onClick: () => {
 						Modal.instance.hide();
 						resolve(true);
-					}, className: 'clickable prompt-yes-button'
-				}, renderIcon(yesIcon), ' ', yesLabel)
+					}, className: 'clickable prompt-yes-button',
+					label: R.span(null, renderIcon(yesIcon), ' ', yesLabel)
+				})
 			)
 		);
 		Modal.instance.show(body, !discardByOutsideClick);
@@ -776,15 +823,18 @@ function submitData(url: string, dataToSend: any): Promise<RecId>;
 function submitData(url: string, dataToSend: any, noProcessData?: boolean): Promise<RecId> {
 	LoadingIndicator.instance.show();
 
+	let body: FormData;
 	if(!noProcessData) {
 		dataToSend.sessionToken = User.sessionToken;
-		dataToSend = JSON.stringify(dataToSend);
+		body = JSON.stringify(dataToSend) as unknown as FormData;
+	} else {
+		body = dataToSend;
 	}
 
 	var callStack = new Error('submitData called from: ').stack;
 	let options: RequestInit = {
 		method: 'POST',
-		body: dataToSend as FormData
+		body
 	}
 	if(!noProcessData) {
 		options.headers = headersJSON;
@@ -794,7 +844,6 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 			return res.json();
 		})
 		.then((data) => {
-			window.crudJs.Stage.dataDidModifed();
 			handleAdditionalData(data, url);
 			if(isAuthNeed(data)) {
 				alert('authHerePopup');
@@ -829,25 +878,16 @@ async function deleteRecord(name, nodeId: RecId, recId: RecId, noPromt?: boolean
 			onYes();
 		} else {
 			await submitData('api/delete', { nodeId, recId });
-			window.crudJs.Stage.dataDidModifed();
+			window.crudJs.Stage.dataDidModifed(null);
+			return true;
 		}
 	} else {
 		let node = await getNode(nodeId);
-		if(!await myPromt(L('SURE_DELETE', (node.creationName || node.singleName)) + ' "' + name + '"?', L('CANCEL'),
-			L('DELETE'), 'caret-left', 'times', true)) {
+		if(await myPromt(L('SURE_DELETE', (node.creationName || node.singleName)) + ' "' + name + '"?',
+			L('DELETE'), L('CANCEL'), 'times', 'caret-left', true)) {
 			return deleteRecord(null, nodeId, recId, true, onYes);
 		}
 	}
-}
-
-function createRecord(nodeId, parameters = {}) {
-	getNode(nodeId).then((node) => {
-		var emptyData: RecordData = {};
-		if(node.draftable && (node.prevs & PREVS_PUBLISH)) { //access to publish records
-			emptyData.isP = 1;
-		}
-		window.crudJs.Stage.showForm(nodeId, 'new', parameters, true);
-	})
 }
 
 function n2mValuesEqual(v1, v2) {
@@ -965,16 +1005,26 @@ function removeBackup(nodeId) {
 
 function keepInWindow(body) {
 	if(body) {
+		body = ReactDOM.findDOMNode(body);
 
-		body = $(ReactDOM.findDOMNode(body));
-		var x = body.offset().left;
-		var w = body.outerWidth();
-		var screenW = window.innerWidth;
+		let modalContainer = body.closest('.form-modal-container');
+		var screenR = window.innerWidth;
+		var screenL = 0;
+		if(modalContainer) {
+			const cRect = modalContainer.getBoundingClientRect()
+			screenR = cRect.right;
+			screenL = cRect.left;
+		}
 
-		if(x < 0) {
-			addTranslateX(body, -x);
+		const bodyRect = body.getBoundingClientRect()
+		var l = bodyRect.left;
+		var r = bodyRect.right;
+
+
+		if(l < screenL) {
+			addTranslateX(body, -l);
 		} else {
-			var out = (x + w) - screenW;
+			var out = r - screenR + 10;
 			if(out > 0) {
 				addTranslateX(body, -out);
 			}
@@ -983,15 +1033,16 @@ function keepInWindow(body) {
 }
 
 function addTranslateX(element, x) {
-	var curMatrix = element.css('transform');
-	if(curMatrix !== 'none') {
+	x = Math.round(x);
+	var curMatrix = element.style.transform;
+	if(curMatrix && (curMatrix !== 'none')) {
 		curMatrix = curMatrix.split(',');
 		curMatrix[4] = parseInt(curMatrix[4]) + x;
 	} else {
 		curMatrix = ['matrix(1', 0, 0, 1, x, '0)'];
 	}
 
-	element.css({ 'transform': curMatrix.join(',') });
+	element.style.transform = curMatrix.join(',');
 }
 
 function strip_tags(input) {
@@ -1051,18 +1102,22 @@ function submitErrorReport(name, stack) {
 
 }
 
-var dictionary_0u23hiewf = {};
+var dictionary = {};
 
 function initDictionary(o) {
-	dictionary_0u23hiewf = Object.assign(dictionary_0u23hiewf, o);
+	dictionary = Object.assign(dictionary, o);
 }
 
-function L(key: string, param?: any) {
-	if(dictionary_0u23hiewf.hasOwnProperty(key)) {
+function reloadLocation() {
+	location.reload();
+}
+
+function L(key: LANG_KEYS, param?: any) {
+	if(dictionary.hasOwnProperty(key)) {
 		if(typeof (param) !== 'undefined') {
-			return dictionary_0u23hiewf[key].replace('%', param);
+			return dictionary[key].replace('%', param);
 		}
-		return dictionary_0u23hiewf[key];
+		return dictionary[key];
 	}
 	/// #if DEBUG
 	throw new Error(L('NO_TRANSLATION', key));
@@ -1112,7 +1167,6 @@ export {
 	removeItem,
 	scrollToVisible,
 	n2mValuesEqual,
-	createRecord,
 	deleteRecord,
 	submitData,
 	submitRecord,
@@ -1147,5 +1201,7 @@ export {
 	ON_FORM_SAVE,
 	ON_FORM_LOAD,
 	ON_FIELD_CHANGE,
-	onOneFormShowed
+	onOneFormShowed,
+	isRecordRestrictedForDeletion,
+	reloadLocation
 }

@@ -1,6 +1,6 @@
-import { Component } from "react";
+import React, { Component } from "react";
 import { BoolNum, Filters, NodeDesc, RecId, RecordData } from "../bs-utils";
-import { Lookup1toNField } from "../fields/field-15-12n";
+import { LookpuOneToManyFiled } from "../fields/field-15-one-to-many";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import { FieldWrap } from "../fields/field-wrap";
 import { LeftBar } from "../left-bar";
@@ -14,7 +14,7 @@ interface FormProps {
 	initialData?: RecordData;
 	list?: List;
 	onCancel?: () => void;
-	parentForm?: Lookup1toNField;
+	parentForm?: LookpuOneToManyFiled;
 	filters?: Filters;
 	node: NodeDesc;
 	isRootForm?: boolean;
@@ -47,17 +47,18 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	nodeId: RecId;
 	/** id of current edited/shown record. 'new' - if record is not saved yet.*/
 	recId: RecId | 'new';
+	/** true if form is editable or read only */
 	editable: boolean;
 	filters: Filters;
 	fieldsRefs: { [key: string]: FieldWrap };
-	header: string;
-	onCancelCallback: () => void | null;
+	/** set content of form header */
+	header: string | React.Component;
 	hiddenFields: { [key: string]: BoolNum };
 
 	constructor(props: FormProps) {
 		super(props as T);
 		this.nodeId = this.props.nodeId || this.props.node.id;
-		this.recId = this.props.recId;
+		this.recId = this.props.initialData ? this.props.initialData.id : this.props.recId;
 		this.filters = this.props.filters;
 		this.editable = this.props.editable;
 
@@ -67,7 +68,6 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		this.fieldsRefs = {};
 		this.cancelClick = this.cancelClick.bind(this);
 		this.header = '';
-		this.onCancelCallback = null;
 		this.updateHashLocation();
 	}
 
@@ -119,18 +119,12 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	}
 
 	cancelClick() {
+		//TODO: check if data is modified and ask if user is sure to exit
 		if(this.props.onCancel) {
 			this.props.onCancel();
 			return;
 		}
-		if(this.onCancelCallback) {
-			this.onCancelCallback();
-		}
-		if(this.isSubForm()) {
-			this.props.parentForm.toggleCreateDialogue();
-		} else {
-			goBack();
-		}
+		goBack();
 	}
 
 	setFormFilter(name, val) {

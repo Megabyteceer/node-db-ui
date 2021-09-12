@@ -137,7 +137,7 @@ async function initNodesData() { // load whole nodes data in to memory
 		HOME_NODE: ENV.HOME_NODE,
 		REQUIRE_COMPANY: ENV.REQUIRE_COMPANY,
 		REQUIRE_NAME: ENV.REQUIRE_NAME,
-		DEFAULT_LANG: ENV.DEFAULT_LANG,
+		DEFAULT_LANG_ID: ENV.DEFAULT_LANG_ID,
 		MAX_FILESIZE_TO_UPLOAD: ENV.MAX_FILESIZE_TO_UPLOAD,
 		ENABLE_MULTILANG: ENV.ENABLE_MULTILANG,
 		GOOGLE_PLUS: ENV.GOOGLE_PLUS,
@@ -241,14 +241,15 @@ async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadl
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames.beforeDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames, data1, data2, data3?): Promise<void> {
 	if(eventsHandlers.has(nodeId)) {
-		const h = eventsHandlers.get(nodeId)[eventName];
+		const serverSideNodeEventHandler = eventsHandlers.get(nodeId)[eventName];
 		/// #if DEBUG
 		data1 = wrapObjectToDestroy(data1);
 		data2 = wrapObjectToDestroy(data2);
 		data3 = wrapObjectToDestroy(data3);
 		/// #endif
-		if(h) {
-			await h(data1, data2, data3);
+		if(serverSideNodeEventHandler) {
+			// call node server side event handler
+			await serverSideNodeEventHandler(data1, data2, data3);
 		}
 
 		/// #if DEBUG

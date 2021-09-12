@@ -3,6 +3,7 @@ import { FIELD_19_RICHEDITOR } from "../bs-utils";
 import { L, renderIcon } from "../utils";
 import { registerFieldClass } from "../utils";
 import { BaseField } from "./base-field";
+import { User } from "../user";
 
 var idCounter = 0;
 
@@ -33,7 +34,7 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends BaseField 
 			var options = {
 				width: w,
 				height: h,
-				lang: 'ru-RU'
+				lang: User.currentUserData.lang.code
 			};
 
 			listeners[this.iframeId] = (data) => {

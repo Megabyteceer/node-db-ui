@@ -1,9 +1,9 @@
 import { R } from "../r";
-import { FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE } from "../bs-utils";
+import { FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE, RecordsData } from "../bs-utils";
 import { FieldAdmin } from "../admin/field-admin";
 import { NodeAdmin } from "../admin/node-admin";
 import { LeftBar } from "../left-bar";
-import { createRecord, deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, L, renderIcon, scrollToVisible, sp, UID } from "../utils";
+import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID } from "../utils";
 import { FormFull } from "./form-full";
 import { FormItem } from "./form-item";
 import { BaseForm, FormProps, FormState } from "./base-form";
@@ -40,12 +40,13 @@ interface ListProps extends FormProps {
 	noPreviewButton?: boolean;
 }
 
-interface ListState extends FormState {
+interface ListState extends Omit<FormState, 'data'> {
 	noEditButton?: boolean;
 	hideSearch?: boolean;
 	additionalButtons?: AdditionalButtonsRenderer;
 	hideControlls?: boolean;
 	noPreviewButton?: boolean;
+	data: RecordsData;
 }
 
 class List extends BaseForm<ListProps, ListState> {
@@ -78,21 +79,18 @@ class List extends BaseForm<ListProps, ListState> {
 		this.filters = $.extend({}, newProps.filters);
 		this.setSearchInputValue(this.filters.s as string);
 		//@ts-ignore
-		this.state.node = newProps.node;
+		this.state.node = newProps.node || this.state.node;
 		//@ts-ignore
-		this.state.data = newProps.initialData;
+		this.state.data = newProps.initialData || this.state.data;
 		this.onShow();
 	}
 
 	onShow() {
 		if(!this.state.data) {
 			setTimeout(() => { this.refreshData(); }, 1);
-		} else if(!this.props.node) {
+		} else if(!this.state.node) {
 			getNode(this.props.nodeId).then((node) => {
 				this.setState({ node });
-				if(this.props.parentForm) {
-					this.props.parentForm.savedNode = node;
-				}
 			});
 		}
 
@@ -134,9 +132,6 @@ class List extends BaseForm<ListProps, ListState> {
 			let node = this.props.node;
 			if(!node) {
 				node = await getNode(this.props.nodeId);
-			}
-			if(this.isSubForm()) {
-				this.props.parentForm.saveNodeDataAndFilters(node, data, this.filters);
 			}
 			this.setState({ data, node });
 			this.scrollIfNeed();
@@ -199,12 +194,12 @@ class List extends BaseForm<ListProps, ListState> {
 		this.subformsRefs[itemNum] = ref;
 	}
 
-	getSubforms(includeDeleted?: boolean): FormFull[] {
+	getSubforms(): FormFull[] {
 		var ret = [];
 		for(var k in this.subformsRefs) {
 			if(this.subformsRefs.hasOwnProperty(k)) {
 				var f = this.subformsRefs[k];
-				if(includeDeleted || !f.props.initialData.__deleted_901d123f) {
+				if(f) {
 					ret.push(f);
 				}
 			}
@@ -227,28 +222,17 @@ class List extends BaseForm<ListProps, ListState> {
 				(() => {
 					let itemNum = i;
 					var item = data.items[i];
+					const isRestricted = isRecordRestrictedForDeletion(node.id, item.id);
 					if(!item.__deleted_901d123f) {
 
-						lines.push(
-							R.div({ key: UID(item), className: 'inline-editable-item' },
-								React.createElement(FormFull, {
-									ref: (ref) => {
-										this.subFormRef(ref, itemNum);
-									}, inlineEditable: true, editable: true, isCompact: true, filters: filters, parentForm: this.props.parentForm, isLookup: this.props.isLookup, list: this, node, initialData: item, overrideOrderData: sorting ? itemNum : -1
-								})
-							)
-						);
 						var btns = [];
 
 						btns.push(R.button({
-							className: 'clickable toolbtn danger-btn', title: L('DELETE'), key: 'b' + UID(item), onClick: async () => {
-								if(item.hasOwnProperty('id')) {
-									//TODO: check deletion in 1toN lookup list
-									await deleteRecord(item.name, node.id, 0, false, () => {
-										item.__deleted_901d123f = true;
-										this.forceUpdate();
-									});
-								}
+							className: isRestricted ? 'clickable toolbtn danger-btn restricted' : 'clickable toolbtn danger-btn', title: L('DELETE'), key: 'b' + UID(item), onClick: async () => {
+								await deleteRecord(item.name, node.id, 0, false, () => {
+									item.__deleted_901d123f = true;
+									this.forceUpdate();
+								});
 							}
 						}, renderIcon('times')));
 
@@ -273,7 +257,7 @@ class List extends BaseForm<ListProps, ListState> {
 								}
 							}
 
-							if(uidM1) {
+							if(typeof uidM1 === 'number') {
 								(() => {
 									btns.push(R.button({
 										className: 'clickable toolbtn edit-btn', title: L('MOVE_UP'), key: 'bu' + UID(item), onClick: () => {
@@ -311,9 +295,17 @@ class List extends BaseForm<ListProps, ListState> {
 						}
 
 						lines.push(
-							R.span({ key: UID(item) + 'btns', className: 'btns' },
-								btns
+							R.div({ key: UID(item), className: 'inline-editable-item inline-editable-item-rec-id-' + item.id },
+								React.createElement(FormFull, {
+									ref: (ref) => {
+										this.subFormRef(ref, itemNum);
+									}, inlineEditable: true, editable: true, isCompact: true, filters: filters, parentForm: this.props.parentForm, isLookup: this.props.isLookup, list: this, node, initialData: item, overrideOrderData: sorting ? itemNum : -1
+								}),
+								R.span({ key: UID(item) + 'btns', className: 'btns' },
+									btns
+								)
 							)
+
 						);
 					}
 				})()
@@ -335,7 +327,7 @@ class List extends BaseForm<ListProps, ListState> {
 			);
 		}
 
-		return R.div(null,
+		return R.div({ className: 'editable-list editable-list-node-' + node.id },
 			nodeAdmin,
 			lines,
 			createBtn
@@ -376,13 +368,17 @@ class List extends BaseForm<ListProps, ListState> {
 							if(this.props.askToSaveParentBeforeCreation) {
 								await this.props.parentForm.saveParentFormBeforeCreation();
 							}
-							this.props.parentForm.toggleCreateDialogue();
+							this.props.parentForm.toggleCreateDialogue('new');
 						}
 					},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				} else {
-					createButton = R.button({ className: 'clickable create-button', onClick: () => { createRecord(node.id, filters); } },
+					createButton = R.button({
+						className: 'clickable create-button', onClick: () => {
+							window.crudJs.Stage.showForm(node.id, 'new', filters, true);
+						}
+					},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				}
@@ -415,9 +411,7 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 
 		var body;
-		data.total = parseInt(data.total);
 		if(data.total > 0) {
-
 			if(this.isCustomListRenering()) {
 				body = getListRenderer(node.id).call(this);
 			}

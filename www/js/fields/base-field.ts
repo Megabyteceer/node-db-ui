@@ -72,7 +72,7 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 		return !val;
 	}
 
-	getBackupData(): RecordData {
+	getBackupData(): any {
 		throw "class " + this.constructor.name + " has no getBackupData() method.";
 	}
 

@@ -174,6 +174,10 @@
 	background: #567 !important;
 }
 
+.blocked-layer .admin-controll {
+	display: none;
+}
+
 .debug-panel-panel {
 	position: fixed;
 	top: 130px;
@@ -268,13 +272,7 @@
 	white-space: nowrap;
 }
 
-/* disable critical sections  deletion/hidding*/
-.form-node-4 .list-item-id-2 .unpublish-btn,
-.form-node-4 .list-item-id-2 .danger-btn,
-.form-node-4 .list-item-id-4 .unpublish-btn,
-.form-node-4 .list-item-id-4 .danger-btn,
-.form-node-4 .list-item-id-10 .unpublish-btn,
-.form-node-4 .list-item-id-10 .danger-btn {
-	opacity: 0.3;
-	pointer-events: none;
+
+.field-container-id-299 .admin-form-wrap {
+	bottom: 32px;
 }

@@ -293,6 +293,11 @@ function getLang(langId): UserLangEntry {
 			return l;
 		}
 	}
+	for(let l of ls) {
+		if(l.id === ENV.DEFAULT_LANG_ID) {
+			return l;
+		}
+	}
 	return ls[0];
 }
 

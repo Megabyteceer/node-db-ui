@@ -1,18 +1,15 @@
 import React from "react";
-import { FIELD_15_1toN, NodeDesc, RecId, RecordData } from "../bs-utils";
+import { FIELD_15_1toN, NodeDesc, RecId, RecordData, RecordsData } from "../bs-utils";
 import { FormItem } from "../forms/form-item";
 import { Filters } from "../utils";
-import { LookupNtoMField } from "./field-14-n2m";
+import { LookpuManyToManyFiled } from "./field-14-many-to-many";
 import { BaseField, FieldProps, FieldState } from "./base-field";
 
-type AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormItem | LookupNtoMField, editButtonFilters?: Filters) => React.Component[];
+type AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormItem | LookpuManyToManyFiled, editButtonFilters?: Filters) => React.Component[];
 
 interface LookupFieldState extends FieldState {
 	filters?: Filters;
 	expanded?: boolean;
-	dataToEdit?: RecordData;
-	creationOpened?: boolean;
-	itemIdToEdit?: RecId;
 	preventCreateButton?: boolean;
 	extendedEditor?: boolean;
 	inlineEditing?: boolean;
@@ -37,16 +34,14 @@ interface LookupFieldProps extends FieldProps {
 
 class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 
-	savedNode: NodeDesc;
-
-	savedData: RecordData;
-	savedFilters: Filters;
-
 	componentDidUpdate() {
 		if(!this.state.filters) {
 			this.setState({ filters: this.generateDefaultFiltersByProps(this.props) });
-			this.saveNodeDataAndFilters();
 		}
+	}
+
+	getLinkerFieldName() {
+		return this.props.field.fieldName + '_linker';
 	}
 
 	generateDefaultFiltersByProps(props) {
@@ -61,14 +56,6 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 		}*/
 
 		return ret;
-	}
-
-	saveNodeDataAndFilters(node?: NodeDesc, data?: RecordData, filters?: Filters) {
-		if(node) {
-			this.savedNode = node;
-		}
-		this.savedData = data;
-		this.savedFilters = filters;
 	}
 
 	setLookupFilter(filtersObjOrName: string | Filters, val?: any) {

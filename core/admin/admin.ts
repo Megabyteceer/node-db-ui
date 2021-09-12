@@ -6,7 +6,7 @@ import { throwError } from "../../www/js/bs-utils";
 import { join } from "path";
 import { readFileSync, writeFileSync } from "fs";
 import { isAdmin } from "../auth.js";
-const open = require("open");
+const { exec } = require('child_process');
 
 async function nodePrevs(reqData, userSession) {
 	shouldBeAdmin(userSession);
@@ -95,14 +95,8 @@ function editFunction(fileName, functionName) {
 	let line = a.findIndex(s => s.indexOf(functionName + '() {') >= 0);
 	line += 2;
 	try {
-		//open(fileName);
 		let arg = fileName + ':' + line + ':2';
-		open('', {
-			app: {
-				name: 'code',
-				arguments: ['-r', '-g', arg]
-			}
-		});
+		exec('code -r -g "' + arg + '"');
 	} catch(err) {
 		return 'Can not open file to edit: ' + fileName
 	};

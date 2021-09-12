@@ -14,8 +14,8 @@ var dragListenersInited;
 
 var refs = [];
 
-class LookupNtoMField extends fieldLookupMixins {
-	uidToEdit: number;
+class LookpuManyToManyFiled extends fieldLookupMixins {
+
 	excludeIDs: RecId[];
 
 	constructor(props) {
@@ -140,8 +140,29 @@ class LookupNtoMField extends fieldLookupMixins {
 					R.button({
 						title: L('EDIT'),
 						className: 'clickable toolbtn edit-btn', onClick: () => {
-							this.uidToEdit = UID(this.state.value[i]);
-							this.forceUpdate();
+							const recId = this.props.form.recId;
+							const filters = {
+								[this.getLinkerFieldName()]: { id: recId }
+							};
+							window.crudJs.Stage.showForm(
+								this.props.field.nodeRef,
+								recId,
+								filters,
+								true,
+								true,
+								(newData: object) => {
+									if(!newData) { //deleted
+										this.deleteItemByIndex(i);
+									} else {
+										for(let fName in value) {
+											if(newData.hasOwnProperty(fName)) {
+												value[fName] = newData[fName];
+											}
+										}
+									}
+									this.forceUpdate();
+								}
+							);
 						}
 					},
 						renderIcon('pencil')
@@ -159,11 +180,6 @@ class LookupNtoMField extends fieldLookupMixins {
 			}
 
 			if(isEdit || value) {
-				var editIt = value && this.uidToEdit === UID(value);
-				if(editIt) {
-					delete (this.uidToEdit);
-					editIt = value.id;
-				}
 				var key;
 				if(value) {
 					key = UID(value);
@@ -183,7 +199,7 @@ class LookupNtoMField extends fieldLookupMixins {
 				var body = R.div({ key: key, ref: value ? (ref) => { refs[UID(value)] = ref; } : undefined, className },
 
 					React.createElement(getClassForField(FIELD_7_Nto1), {
-						field, preventCreateButton: this.state.preventCreateButton, editIt, pos: i, isEdit, isN2M: true, filters: this.state.filters, ref: (ref) => {
+						field, preventCreateButton: this.state.preventCreateButton, pos: i, isEdit, isN2M: true, filters: this.state.filters, ref: (ref) => {
 							if(ref) {
 								// @ts-ignore
 								ref.setLookupFilter({ 'excludeIDs': this.excludeIDs || this.state.filters.excludeIDs });
@@ -234,6 +250,6 @@ class LookupNtoMField extends fieldLookupMixins {
 	}
 }
 
-registerFieldClass(FIELD_14_NtoM, LookupNtoMField);
+registerFieldClass(FIELD_14_NtoM, LookpuManyToManyFiled);
 
-export { LookupNtoMField };
+export { LookpuManyToManyFiled };
