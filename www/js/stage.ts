@@ -71,6 +71,8 @@ class Stage extends Component<any, any> {
 			Stage.currentForm = Stage.currentFormEntry.form;
 			if(forms.length === 1) { // enable scrolling
 				document.body.style.overflowY = '';
+				document.body.style.paddingRight = '';
+				document.body.style.boxSizing = '';
 			}
 			return true;
 		}
@@ -182,6 +184,10 @@ function addFormEntry() {
 		formContainer
 	}
 	if(forms.length === 1) { // disable scrolling
+		if(document.body.scrollHeight > document.body.clientHeight) {
+			document.body.style.paddingRight = '10px';
+			document.body.style.boxSizing = 'border-box';
+		}
 		document.body.style.overflowY = 'hidden';
 	}
 	forms.push(entry);

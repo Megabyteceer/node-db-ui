@@ -1,9 +1,5 @@
 
-проверить мультиязычность
-
-не выбирать значения для поля lang если у юзера не вкл мультиязычность.
-
-Юзеру поле языка с 0 по умолчанию. Язык системы.
+language add ui field to retrevie code from. Filter user lang by ui not empty only. Add filter type ui onlyU=name user lang field ad ui lang
 
 проверить сессии на глючность
 
