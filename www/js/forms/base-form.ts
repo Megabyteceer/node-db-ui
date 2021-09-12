@@ -1,4 +1,4 @@
-import { Component } from "react";
+import React, { Component } from "react";
 import { BoolNum, Filters, NodeDesc, RecId, RecordData } from "../bs-utils";
 import { LookpuOneToManyFiled } from "../fields/field-15-one-to-many";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
@@ -47,11 +47,12 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	nodeId: RecId;
 	/** id of current edited/shown record. 'new' - if record is not saved yet.*/
 	recId: RecId | 'new';
+	/** true if form is editable or read only */
 	editable: boolean;
 	filters: Filters;
 	fieldsRefs: { [key: string]: FieldWrap };
-	header: string;
-	onCancelCallback: () => void | null;
+	/** set content of form header */
+	header: string | React.Component;
 	hiddenFields: { [key: string]: BoolNum };
 
 	constructor(props: FormProps) {
@@ -67,7 +68,6 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		this.fieldsRefs = {};
 		this.cancelClick = this.cancelClick.bind(this);
 		this.header = '';
-		this.onCancelCallback = null;
 		this.updateHashLocation();
 	}
 
@@ -123,9 +123,6 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		if(this.props.onCancel) {
 			this.props.onCancel();
 			return;
-		}
-		if(this.onCancelCallback) {
-			this.onCancelCallback();
 		}
 		goBack();
 	}

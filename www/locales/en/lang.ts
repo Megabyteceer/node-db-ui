@@ -116,6 +116,7 @@ initDictionary({
 	'SAVE_TOADDSUB': 'Save form before create %',
 	'APPLY_CHILD': 'Apply settings for all sub sections?',
 	'TO_THIS': 'To this section only',
-	'TO_ALL': 'To all sub sections'
+	'TO_ALL': 'To all sub sections',
+	'NEW_LANGUAGE_WARNING': 'Warning! Adding a new language will modify all database tables. Additional columns will be created for all fields marked as multilingual.'
 });
 

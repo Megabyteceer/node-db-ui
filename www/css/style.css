@@ -228,6 +228,10 @@ img {
 	display: none;
 }
 
+.danger {
+	color: #aa0000;
+}
+
 
 
 /* CHECKBOX */
@@ -848,7 +852,7 @@ input[readonly] {
 .select-control-list {
 	position: absolute;
 	margin-top: -2px;
-	z-index: 2;
+	z-index: 4;
 	background: #fff;
 	color: #333;
 	border: 1px solid #ddd;

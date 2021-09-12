@@ -1,10 +1,11 @@
 import { Filters, getNodeData, isAdmin, L, myPromt } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { ADMIN_ROLE_ID, FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATICTEXT } from "../bs-utils";
+import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATICTEXT } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
 import { EnumField } from "../fields/field-6-enum";
+import { R } from "../r";
 
 class FormEvents extends FormFull {
 
@@ -364,6 +365,8 @@ class FormEvents extends FormFull {
 	async _languages_onload() {
 		if(this.rec_update) {
 			this.disableField("code");
+		} else if(this.editable) {
+			this.header = R.span({ className: 'danger' }, L("NEW_LANGUAGE_WARNING"));
 		}
 	}
 
