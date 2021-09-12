@@ -140,7 +140,7 @@ img {
 	vertical-align: middle;
 }
 
-.disabled .field-boolean,
+.field-wrap-disabled .field-boolean,
 .restricted {
 	opacity: 0.3;
 	pointer-events: none;

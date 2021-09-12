@@ -24,10 +24,6 @@ const handlers: NodeEventsHandlers = {
 			data.fieldName = fn;
 		}
 
-		if(data.enum) { //TODO: rename nodeRef field to enum?
-			data.nodeRef = data.enum;
-		}
-
 		await createFieldInTable(data);
 	},
 
@@ -70,10 +66,6 @@ const handlers: NodeEventsHandlers = {
 		mustBeUnset(newData, 'fieldName');
 		mustBeUnset(newData, 'nostore');
 		mustBeUnset(newData, 'node_fields_linker');
-
-		if(newData.enum) { //TODO: rename nodeRef field to enum?
-			newData.nodeRef = newData.enum;
-		}
 
 		if(!currentData.nostore) {
 

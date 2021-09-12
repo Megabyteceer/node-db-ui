@@ -120,7 +120,7 @@ class FormItem extends eventProcessingMixins {
 		this.isListItem = true;
 	}
 
-	isVisibleField(field) {
+	isFieldVisibleByFormViewMask(field) {
 		if(this.props.isLookup) {
 			return (field.show & 8) > 0;
 		} else {
@@ -136,7 +136,7 @@ class FormItem extends eventProcessingMixins {
 		for(var k in flds) {
 
 			var field = flds[k];
-			if(this.isVisibleField(field)) {
+			if(this.isFieldVisibleByFormViewMask(field)) {
 				let className = 'form-item-row';
 				if(field.fieldType === FIELD_2_INT) {
 					className += ' form-item-row-num';

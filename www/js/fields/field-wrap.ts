@@ -53,6 +53,12 @@ class FieldWrap extends Component<FieldProps, any> {
 		if(!this.hidden) {
 			this.hidden = true;
 			this.forceUpdate();
+			const childrenFields = this.props.field.childrenFields;
+			if(childrenFields) {
+				for(let childField of childrenFields) {
+					this.props.form.getField(childField.fieldName).hide();
+				}
+			}
 		}
 	}
 
@@ -84,6 +90,12 @@ class FieldWrap extends Component<FieldProps, any> {
 		if(this.hidden) {
 			this.hidden = false;
 			this.forceUpdate();
+			const childrenFields = this.props.field.childrenFields;
+			if(childrenFields) {
+				for(let childField of childrenFields) {
+					this.props.form.getField(childField.fieldName).show();
+				}
+			}
 		}
 	}
 
@@ -91,6 +103,12 @@ class FieldWrap extends Component<FieldProps, any> {
 		if(!this.fieldDisabled) {
 			this.fieldDisabled = true;
 			this.forceUpdate();
+			const childrenFields = this.props.field.childrenFields;
+			if(childrenFields) {
+				for(let childField of childrenFields) {
+					this.props.form.getField(childField.fieldName).disable();
+				}
+			}
 		}
 	}
 
@@ -98,6 +116,12 @@ class FieldWrap extends Component<FieldProps, any> {
 		if(this.fieldDisabled) {
 			this.fieldDisabled = false;
 			this.forceUpdate();
+			const childrenFields = this.props.field.childrenFields;
+			if(childrenFields) {
+				for(let childField of childrenFields) {
+					this.props.form.getField(childField.fieldName).enable();
+				}
+			}
 		}
 	}
 
@@ -250,6 +274,10 @@ class FieldWrap extends Component<FieldProps, any> {
 			className += ' hidden';
 		}
 
+		if(this.fieldDisabled) {
+			className += ' field-wrap-disabled';
+		}
+
 		if(!this.props.isEdit) {
 			className += ' field-wrap-readonly';
 		}
@@ -281,7 +309,7 @@ class FieldWrap extends Component<FieldProps, any> {
 			);
 		} else {
 			if(field.lang) {
-				className += 'field-wrap-lang';
+				className += ' field-wrap-lang';
 			}
 			var label;
 			if(!noLabel) {

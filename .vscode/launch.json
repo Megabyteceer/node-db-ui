@@ -8,6 +8,7 @@
 			"type": "pwa-node",
 			"request": "launch",
 			"name": "Server",
+			"sourceMaps": true,
 			"skipFiles": [
 				"<node_internals>/**",
 				"**/node_modules/**",

@@ -138,6 +138,9 @@ class FormEvents extends FormFull {
 			this.hideField('createdby_field');
 			this.hideField('createdon_field');
 			this.hideField('createUserFld');
+			if(!this.fieldValue('isDoc')) {
+				this.hideField('t_fields');
+			}
 		}
 
 		if(this.rec_creation) {

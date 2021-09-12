@@ -67,10 +67,9 @@ registerFieldClass(FIELD_5_BOOL, class BooleanField extends BaseField {
 		if(this.props.isEdit) {
 
 			return React.createElement(CheckBox, {
-				disable: this.props.fieldDisabled,
 				title: this.props.isCompact ? field.name : '',
 				defaultValue: value,
-				onClick: (val) => {
+				onClick: this.props.fieldDisabled ? undefined : (val) => {
 					this.setValue(val);
 					this.props.wrapper.valueListener(val, false, this);
 				}

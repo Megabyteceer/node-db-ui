@@ -3,7 +3,7 @@ import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import ENV from "../ENV";
 import { isUserHaveRole, setMainTainMode, UserSession, usersSessionsStartedCount } from "./auth";
-import { throwError, assert, FIELD_6_ENUM, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc } from "../www/js/bs-utils";
+import { throwError, assert, FIELD_6_ENUM, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_DROPDOWN_LOOKUP } from "../www/js/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
@@ -32,6 +32,57 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 
 		if(srcNode && (prevs = getUserAccessToNode(srcNode, userSession))) {
 			let landQ = userSession.lang.prefix;
+
+
+			let fields = [];
+			for(let srcField of srcNode.fields) {
+				const field: FieldDesc = {
+					id: srcField.id,
+					name: srcField['name' + landQ],
+					fdescription: srcField['fdescription' + landQ],
+					show: srcField.show,
+					prior: srcField.prior,
+					fieldType: srcField.fieldType,
+					fieldName: srcField.fieldName,
+					selectFieldName: srcField.selectFieldName,
+					maxlen: srcField.maxlen,
+					requirement: srcField.requirement,
+					uniqu: srcField.uniqu,
+					enum: srcField.enum,
+					forSearch: srcField.forSearch,
+					nostore: srcField.nostore,
+					nodeRef: srcField.nodeRef,
+					clientOnly: srcField.clientOnly,
+					icon: srcField.icon
+				};
+
+				if(field.enum) {
+					field.enum = field.enum.map((item) => {
+						return {
+							name: item['name' + userSession.lang.prefix],
+							value: item.value
+						};
+					});
+				}
+
+				fields.push(field);
+				if(srcField.multilang && userSession.langs) {
+
+					const fieldName = field.fieldName;
+					const fieldId = field.id;
+					const langs = userSession.langs;
+					for(const l of langs) {
+						if(l.prefix) {
+							const langFiled = Object.assign({}, field);
+							langFiled.show = field.show & (VIEW_MASK_ALL - VIEW_MASK_LIST - VIEW_MASK_DROPDOWN_LOOKUP);
+							langFiled.fieldName = fieldName + l.prefix;
+							langFiled.id = fieldId + l.prefix;
+							langFiled.lang = l.name;
+							fields.push(langFiled);
+						}
+					}
+				}
+			}
 			const ret: NodeDesc = {
 				id: srcNode.id,
 				singleName: srcNode["singleName" + landQ],
@@ -47,7 +98,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				icon: srcNode.icon,
 				recPerPage: srcNode.recPerPage,
 				defaultFilterId: srcNode.defaultFilterId,
-				fields: srcNode.fields,
+				fields,
 				filters: srcNode.filters,
 				sortFieldName: srcNode.sortFieldName
 			}
@@ -150,6 +201,11 @@ async function initNodesData() { // load whole nodes data in to memory
 	await mysqlExec('-- ======== NODES RELOADING STARTED ===================================================================================================================== --');
 	/// #endif
 
+	langs_new = await mysqlExec("SELECT id, name, code FROM _languages WHERE id <> 0") as UserLangEntry[];
+	for(let l of langs_new) {
+		l.prefix = l.code ? ('$' + l.code) : '';
+	}
+
 	let query = "SELECT * FROM _nodes WHERE status=1 ORDER BY prior";
 	nodes_new = await mysqlExec(query);
 
@@ -177,7 +233,9 @@ async function initNodesData() { // load whole nodes data in to memory
 				}
 
 				if(field.fieldType === FIELD_6_ENUM && field.show) {
-					let enums = await mysqlExec("SELECT value,name FROM _enum_values WHERE values_linker=" + field.nodeRef + " ORDER BY `order`");
+					let enums = await mysqlExec("SELECT value," + langs_new.map((l) => {
+						return 'name' + l.prefix;
+					}).join() + " FROM _enum_values WHERE status = 1 AND values_linker=" + field.enum + " ORDER BY `order`");
 					field.enum = enums;
 				}
 				fields_new.set(field.id, field);
@@ -201,11 +259,6 @@ async function initNodesData() { // load whole nodes data in to memory
 				eventsHandlers_new.set(nodeData.id, handler);
 			}
 		}
-	}
-
-	langs_new = await mysqlExec("SELECT id, name, code FROM _languages WHERE id <> 0") as UserLangEntry[];
-	for(let l of langs_new) {
-		l.prefix = l.code ? ('$' + l.code) : '';
 	}
 
 	fields = fields_new;

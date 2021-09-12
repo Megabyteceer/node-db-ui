@@ -4,7 +4,7 @@ import { LANG_KEYS } from "../locales/en/lang.js";
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
-import { ADMIN_ROLE_ID, assert, FIELD_1_TEXT, Filters, GetRecordsParams, NodeDesc, PREVS_PUBLISH, RecId, RecordData, RecordsData, RecordsDataResponse, TRoleId } from "./bs-utils";
+import { ADMIN_ROLE_ID, assert, FieldDesc, FIELD_1_TEXT, Filters, GetRecordsParams, NodeDesc, RecId, RecordData, RecordsData, TRoleId } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
@@ -513,7 +513,7 @@ async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string) 
 function normalizeNode(node: NodeDesc) {
 	node.fieldsById = [];
 	if(node.fields) {
-		node.fields.forEach((f, i) => {
+		node.fields.forEach((f: FieldDesc, i) => {
 			f.index = i;
 			f.node = node;
 			node.fieldsById[f.id] = f;
@@ -522,6 +522,17 @@ function normalizeNode(node: NodeDesc) {
 				for(let e of f.enum) {
 					f.enumNamesById[e.value] = e.name;
 				}
+			}
+			if(f.lang) {
+				const fieldId = f.id as string;
+				const parentField: FieldDesc = node.fieldsById[fieldId.substr(0, fieldId.indexOf('$'))];
+				if(!parentField.childrenFields) {
+					parentField.childrenFields = [];
+				}
+				parentField.childrenFields.push(f);
+				f.fieldNamePure = parentField.fieldName;
+			} else {
+				f.fieldNamePure = f.fieldName;
 			}
 		});
 	}

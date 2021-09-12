@@ -124,7 +124,7 @@ class NodeAdmin extends Component<any, any> {
 				if(this.state.allFieldsVisible) {
 					allFields = [];
 					for(let f of node.fields) {
-						if(f.lang) return undefined;
+						if(f.lang) continue;
 
 						allFields.push(R.span({
 							key: f.id + 'a',

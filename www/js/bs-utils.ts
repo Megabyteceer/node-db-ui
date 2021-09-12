@@ -44,6 +44,8 @@ interface UserSession {
 	uploaded?: { [key: number]: string };
 	__temporaryServerSideSession?: boolean;
 	notifications?: string[];
+	/** not empty if user have multilangEnabled */
+	langs?: UserLangEntry[];
 }
 
 interface EnumListItem {
@@ -57,7 +59,8 @@ interface FieldDesc {
 	/** readable name */
 	name: string;
 
-	id: RecId;
+	/** could be string for multilingual fields */
+	id: RecId | string;
 
 	/** field's name in database table */
 	fieldName: string;
@@ -95,25 +98,33 @@ interface FieldDesc {
 	/** order of the field in the form */
 	prior: number;
 
-	node: NodeDesc;
+	/** field tip. or html content for FIELD_8_STATICTEXT fields */
+	fdescription: string;
 
-	/** index in parent's node 'fields' list */
-	index: number;
+	/** client side only field */
+	node?: NodeDesc;
 
+	/** index in parent's node 'fields' list. Client side only field */
+	index?: number;
+
+	/** client side only field */
 	enum?: EnumList;
-	enumNamesById: { [key: number]: string };
+
+	/** client side only field */
+	enumNamesById?: { [key: number]: string };
 
 	/** contains language id, if field is multilingual and refers to non default language */
 	lang?: string;
 
-	/** field tip. or html content for FIELD_8_STATICTEXT fields */
-	fdescription: string;
+	/** field name without language prefix */
+	fieldNamePure?: string;/** field name without language prefix */
 
-	/** uset to group fields together in compactArea */
-	isCompactNested: boolean;
+	/** fields which contains other languages data for that field */
+	childrenFields?: FieldDesc[];
+
+	/** used to group fields together in compactArea. Client side only field  */
+	isCompactNested?: boolean;
 }
-
-
 
 interface FilterDesc {
 
@@ -215,6 +226,14 @@ const FIELD_21_FILE: FieldType = 21;
 type PrevsMask = number;
 type ViewMask = number;
 
+const VIEW_MASK_ALL = 65535;
+const VIEW_MASK_EDIT_CREATE = 1;
+const VIEW_MASK_LIST = 2;
+const VIEW_MASK_READONLY = 4;
+const VIEW_MASK_DROPDOWN_LOOKUP = 8;
+const VIEW_MASK_CUSTOM_LIST = 16;
+
+
 const PREVS_VIEW_OWN: PrevsMask = 1;
 const PREVS_VIEW_ORG: PrevsMask = 2;
 const PREVS_VIEW_ALL: PrevsMask = 4;
@@ -246,6 +265,9 @@ export {
 	FIELD_20_COLOR, FIELD_21_FILE,
 
 	EVENT_HANDLER_TYPE_NODE, EVENT_HANDLER_TYPE_FIELD,
+
+	VIEW_MASK_EDIT_CREATE, VIEW_MASK_LIST, VIEW_MASK_READONLY,
+	VIEW_MASK_DROPDOWN_LOOKUP, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_ALL,
 
 	ViewMask, RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList,
 	PrevsMask, UserLangEntry, TRoleId, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession

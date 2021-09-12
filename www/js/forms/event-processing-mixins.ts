@@ -110,7 +110,7 @@ class eventProcessingMixins extends BaseForm {
 		this._isNeedCallOnload = _isNeedCallOnload;
 	}
 
-	isVisibleField(field) {
+	isFieldVisibleByFormViewMask(field) {
 		return true;
 	}
 
@@ -121,7 +121,7 @@ class eventProcessingMixins extends BaseForm {
 			var flds = this.props.node.fields;
 			for(var k in flds) {
 				var f = flds[k];
-				if(this.isVisibleField(f)) {
+				if(this.isFieldVisibleByFormViewMask(f)) {
 					if((f.fieldType === FIELD_17_TAB) && (f.maxlen === 0)) {//tab
 						if((tabNameToShow === f.fieldName) || !tabNameToShow) {
 							field = f;
@@ -164,12 +164,15 @@ class eventProcessingMixins extends BaseForm {
 	hideField(...fieldsNames: string[]) {
 		let fields = this._fieldsFromArgs(arguments);
 		for(let fieldName of fields) {
-			var f = this.getField(fieldName);
-			if(f && (this.hiddenFields[fieldName] !== 1)) {
+			if(this.hiddenFields[fieldName] !== 1) {
 				this.hiddenFields[fieldName] = 1;
-				f.hide();
+				var f = this.getField(fieldName);
+				if(f) {
+					f.hide();
+				}
 			}
 		}
+		this.refreshLeftBar();
 	}
 
 	showField(...fieldsNames: string[]) {
@@ -177,12 +180,16 @@ class eventProcessingMixins extends BaseForm {
 		for(let fieldName of fields) {
 			if(this.hiddenFields[fieldName] === 1) {
 				delete (this.hiddenFields[fieldName]);
-				this.getField(fieldName).show();
+				var f = this.getField(fieldName);
+				if(f) {
+					f.show();
+				}
 			}
 		}
+		this.refreshLeftBar();
 	}
 
-	isFieldVisible(fieldName) {
+	isFieldVisible(fieldName: string) {
 		return this.hiddenFields[fieldName] !== 1;
 	}
 
@@ -259,20 +266,13 @@ class eventProcessingMixins extends BaseForm {
 				var fields = this.props.node.fields
 				for(var k in fields) {
 					var f = fields[k];
-
 					if((f.fieldType === FIELD_17_TAB) && (f.maxlen === 0)) {//tab
-
-						if(this.isVisibleField(f)) {
-
+						if(this.isFieldVisible(f.fieldNamePure)) {
 							items.push({ icon: f.icon, name: f.name, field: f, form: this, id: false, isDoc: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName });
 							isDefault = false;
-
 						}
-
 					}
-
 				}
-
 				LeftBar.instance.setLeftBar(items);
 			} else {
 				LeftBar.instance.setLeftBar();

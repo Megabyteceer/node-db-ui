@@ -231,14 +231,14 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 
 	const roles = await mysqlExec("SELECT _rolesID FROM _userroles WHERE _userroles._usersID=" + userID + " ORDER BY _rolesID") as mysqlRowsResult;
 
-	let cacheKeyGenerator;
+	let cacheKeyGenerator: string[];
 	let userRoles: UserRoles = {};
 	if(userID === 2) {
 		userRoles[GUEST_ROLE_ID] = 1;
-		cacheKeyGenerator = [GUEST_ROLE_ID]
+		cacheKeyGenerator = [GUEST_ROLE_ID as unknown as string]
 	} else {
 		userRoles[USER_ROLE_ID] = 1;
-		cacheKeyGenerator = [USER_ROLE_ID]
+		cacheKeyGenerator = [USER_ROLE_ID as unknown as string]
 	}
 	for(let role of roles) {
 		cacheKeyGenerator.push(role._rolesID);
@@ -256,6 +256,9 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 
 	const lang = getLang(user.language);
 
+	cacheKeyGenerator.push('l', lang.prefix);
+	cacheKeyGenerator.push('m', user.multilangEnabled);
+
 	const userSession: UserSession = {
 		id: userID,
 		orgId: 0,
@@ -265,8 +268,12 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 		userRoles,
 		orgs,
 		lang,
-		cacheKey: cacheKeyGenerator.join() + lang.prefix
+		cacheKey: cacheKeyGenerator.join()
 	};
+
+	if(user.multilangEnabled) {
+		userSession.langs = getLangs();
+	}
 
 	if(!await setCurrentOrg(organID_def, userSession)) {
 		await setCurrentOrg(organID, userSession, true);
@@ -316,7 +323,6 @@ async function setCurrentOrg(organID: number, userSession: UserSession, updateIn
 async function setMultiLang(enable, userSession) {
 	shouldBeAuthorized(userSession);
 	if(enable && ENV.ENABLE_MULTILANG) {
-		debugger;
 		userSession.langs = getLangs();
 	} else {
 		delete userSession.langs;

@@ -26,7 +26,7 @@ const ENV = {
 
 	DEFAULT_LANG_ID: 1,
 	ALLOW_GUEST: true,
-	ENABLE_MULTILANG: false,
+	ENABLE_MULTILANG: true,
 	GOOGLE_PLUS: true,
 	TERMS_URL: "https: //org.uforum.pro/custom/html/terms_of_use.html",
 	MAX_FILESIZE_TO_UPLOAD: 3000000,

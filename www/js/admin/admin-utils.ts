@@ -33,7 +33,7 @@ class admin {
 			if(i === fIndex) {
 				fieldIndex = j;
 			}
-			if(form.isVisibleField(f) && !f.lang) {
+			if(form.isFieldVisibleByFormViewMask(f) && !f.lang) {
 				j++;
 				return true;
 			}

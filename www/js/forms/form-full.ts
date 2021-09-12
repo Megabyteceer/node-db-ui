@@ -82,7 +82,7 @@ class FormFull extends eventProcessingMixins {
 		var fields = this.props.node.fields;
 		for(var k in fields) {
 			var f = fields[k];
-			if((f.fieldType === FIELD_15_1toN) && this.isVisibleField(f)) {
+			if((f.fieldType === FIELD_15_1toN) && this.isFieldVisibleByFormViewMask(f)) {
 				this.currentData[f.fieldName] = this.getField(f.fieldName).getBackupData();
 			}
 		}
@@ -299,7 +299,7 @@ class FormFull extends eventProcessingMixins {
 		}
 	}
 
-	isVisibleField(field) {
+	isFieldVisibleByFormViewMask(field) {
 		return (this.props.editable ? (field.show & 1) : (field.show & 4)) > 0;
 	}
 
@@ -334,7 +334,7 @@ class FormFull extends eventProcessingMixins {
 
 		for(var k in flds) {
 			var field = flds[k];
-			if(this.isVisibleField(field)) {
+			if(this.isFieldVisibleByFormViewMask(field)) {
 				if((field.fieldType === FIELD_17_TAB) && (field.maxlen === 0) && !this.isSubForm()) {//tab
 					currentCompactAreaCounter = 0;//terminate compact area nesting
 					var isDefaultTab;
@@ -373,8 +373,8 @@ class FormFull extends eventProcessingMixins {
 						subFields: currentCompactAreaFields,
 						parentCompactAreaName: currentCompactAreaName,
 						isCompact: this.props.isCompact || (currentCompactAreaCounter > 0),
-						hidden: (this.hiddenFields.hasOwnProperty(field.fieldName) || (forcedValues.hasOwnProperty(field.fieldName))),
-						fieldDisabled: this.isFieldDisabled(field.fieldName) || forcedValues.hasOwnProperty(field.fieldName)
+						hidden: (this.hiddenFields.hasOwnProperty(field.fieldNamePure) || (forcedValues.hasOwnProperty(field.fieldNamePure))),
+						fieldDisabled: this.isFieldDisabled(field.fieldNamePure) || forcedValues.hasOwnProperty(field.fieldNamePure)
 					});
 
 

@@ -99,7 +99,7 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 	}
 
-	isVisibleField(field) {
+	isFieldVisibleByFormViewMask(field) {
 		if(this.props.isLookup) {
 			return field.show & 8;
 		} else {
@@ -447,7 +447,7 @@ class List extends BaseForm<ListProps, ListState> {
 					}
 
 
-					if(this.isVisibleField(field)) {
+					if(this.isFieldVisibleByFormViewMask(field)) {
 						tableHeader.push(R.td({ key: field.id, className: (field.fieldType === FIELD_2_INT) ? 'list-row-header list-row-header-num' : 'list-row-header' },
 							rowHeader,
 							fieldAdmin

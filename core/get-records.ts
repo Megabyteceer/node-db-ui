@@ -11,21 +11,15 @@ const EMPTY_FILTERS = {};
 
 const EMPTY_RATING = { all: 0 };
 /*
-* @param nodeId
-* @param viewMask		bitMask for fields. 1-fields for EDIT/CREATE view; 2-fields for LIST view; 4-fields for VIEW view; 8-fields for REFERENCE/LOOKUP view; 16-custom list fields
-* @param recId
-* @param ignorePrevs	select data ignore current user's privileges
 * @param filterFields	array with fieldname=>value filters. Only numeric fields is support
 *									special fields:
-										['p'] = 5; - page of records to retrevie;
+										['p'] = 5; - page of records to retrieve; * - retrieve all
 										['n'] = 5; - number of records per page;
 										['excludeIDs'] = [3,5,64,5,45]; - exclude records with these IDs;
 										['onlyIDs'] = '3,5,64,5,45'; - filter by IDs;
 										['o'] = fieldName for order;
 										['r'] = reverse order;
 										['flt_id'] = filter's id to be applied on result;
-* @param search			string to full text search
-*
 */
 async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: RecId, userSession: UserSession): Promise<RecordData>;
 async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId[], userSession: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
