@@ -110,7 +110,6 @@ class FieldWrap extends Component<FieldProps, any> {
 
 	sendCurrentValueToForm() {
 		if(this.props.form.setFieldValue) {
-			console.log('sendCurrentValueToForm: ' + this.props.field.fieldName + '=' + this.currentValue);
 			this.props.form.setFieldValue(this.props.field.fieldName, this.currentValue, true);
 		}
 	}
@@ -195,7 +194,6 @@ class FieldWrap extends Component<FieldProps, any> {
 	}
 
 	valueListener(newVal, withBounceDelay, sender) {
-		console.log('valueListener: ' + this.props.field.fieldName + ': ' + newVal);
 		this.currentValue = newVal;
 		if(withBounceDelay) {
 			this.clearChangeTimout();

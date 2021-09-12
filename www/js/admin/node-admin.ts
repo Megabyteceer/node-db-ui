@@ -1,8 +1,8 @@
 import { R } from "../r";
 import React, { Component } from "react";
-import { getNode, getNodeData, keepInWindow, L, ON_FORM_LOAD, ON_FORM_SAVE, renderIcon, sp } from "../utils";
+import { getNode, getNodeData, keepInWindow, L, ON_FORM_LOAD, ON_FORM_SAVE, reloadLocation, renderIcon, sp } from "../utils";
 import { admin_editSource } from "./admin-event-editor";
-import { admin, reloadLocation } from "./admin-utils";
+import { admin } from "./admin-utils";
 import { FieldAdmin } from "./field-admin";
 import { NodeDesc } from "../bs-utils";
 

@@ -1,8 +1,8 @@
 import { R } from "../r";
 import { Component } from "react";
-import { getNodeData, keepInWindow, L, ON_FIELD_CHANGE, renderIcon, sp } from "../utils";
+import { getNodeData, keepInWindow, L, ON_FIELD_CHANGE, reloadLocation, renderIcon, sp } from "../utils";
 import { admin_editSource } from "./admin-event-editor";
-import { admin, reloadLocation } from "./admin-utils";
+import { admin } from "./admin-utils";
 import { FieldDesc, NodeDesc } from "../bs-utils";
 
 var showedFieldId;

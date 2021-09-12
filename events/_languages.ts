@@ -8,7 +8,7 @@ export default {
 
 	afterCreate: async function(data: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin();
-		const fieldsData = await getRecords(6, 1, null, null, { multilang: 1, p: '*' });
+		const fieldsData = await getRecords(6, 1, null, undefined, { multilang: 1, p: '*' });
 		const fields = fieldsData.items;
 		for(let f of fields) {
 			f.node_fields_linker = f.node_fields_linker.id;
@@ -20,7 +20,9 @@ export default {
 	},
 
 	beforeUpdate: async function(currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
-		throwError('_languages beforeUpdate event is not implemented');
+		if(newData.hasOwnProperty('code')) {
+			throwError("Cant change 'code' of language.");
+		}
 	},
 
 	beforeDelete: async function(data: RecordData, userSession: UserSession) {

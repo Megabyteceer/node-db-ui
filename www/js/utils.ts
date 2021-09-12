@@ -1,3 +1,6 @@
+/// #if EDITOR
+import { LANG_KEYS } from "../locales/en/lang.js";
+/// #endif
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
@@ -1105,7 +1108,11 @@ function initDictionary(o) {
 	dictionary = Object.assign(dictionary, o);
 }
 
-function L(key: string, param?: any) {
+function reloadLocation() {
+	location.reload();
+}
+
+function L(key: LANG_KEYS, param?: any) {
 	if(dictionary.hasOwnProperty(key)) {
 		if(typeof (param) !== 'undefined') {
 			return dictionary[key].replace('%', param);
@@ -1195,5 +1202,6 @@ export {
 	ON_FORM_LOAD,
 	ON_FIELD_CHANGE,
 	onOneFormShowed,
-	isRecordRestrictedForDeletion
+	isRecordRestrictedForDeletion,
+	reloadLocation
 }

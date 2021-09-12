@@ -1,4 +1,4 @@
-import { Filters, getNodeData, isAdmin, L, myPromt } from "../utils";
+import { Filters, getNodeData, isAdmin, L, myPromt, reloadLocation } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
 import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATICTEXT } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
@@ -367,6 +367,12 @@ class FormEvents extends FormFull {
 			this.disableField("code");
 		} else if(this.editable) {
 			this.header = R.span({ className: 'danger' }, L("NEW_LANGUAGE_WARNING"));
+		}
+	}
+
+	async _languages_onsave() {
+		if(this.rec_creation && !this.fieldValue('code')) {
+			this.fieldAlert('code', L('REQUIRED_FLD'));
 		}
 	}
 

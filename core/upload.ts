@@ -3,7 +3,7 @@ import { assert, throwError } from "../www/js/bs-utils";
 
 import { join } from "path";
 import * as fs from "fs";
-import sharp from "sharp";
+const sharp = require("sharp");
 import ENV from "../ENV";
 import { getNodeDesc, getFieldDesc } from "./desc-node";
 import { L } from "./locale";

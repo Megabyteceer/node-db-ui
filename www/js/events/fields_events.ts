@@ -196,18 +196,6 @@ class FieldsEvents extends FormEvents {
 		this.check12nFieldName();
 	}
 
-	my_records_button_onChange() {
-		alert('Button clicked');
-	}
-
-	async my_records_lookup7__onChange() {
-		
-	}
-
-	async my_records_datetime_onChange() {
-		
-	}
-
 	//_insertNewHandlersHere_
 }
 

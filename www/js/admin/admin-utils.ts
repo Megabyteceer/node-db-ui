@@ -3,16 +3,11 @@ import React from "react";
 import { FieldDesc, FIELD_17_TAB } from "../bs-utils";
 import { R } from "../r";
 import { Select } from "../components/select";
-import { consoleDir, getNode, getNodeData, isLitePage, refreshForm, renderIcon, submitRecord } from "../utils";
-import { FormFull } from "../forms/form-full";
+import { consoleDir, getNode, getNodeData, isLitePage, renderIcon, submitRecord } from "../utils";
 import { MainFrame } from "../main-frame";
 
 function debugInfoGetter() {
 	consoleDir(this);
-}
-
-function reloadLocation() {
-	location.reload();
 }
 
 var styleEl = document.createElement('style');
@@ -154,7 +149,7 @@ class admin {
 				return submitRecord(6, { prior: f.prior }, f.id);
 			}));
 			await getNode(node.id, true);
-			refreshForm();
+			window.crudJs.Stage.refreshForm();
 		}
 	}
 
@@ -239,4 +234,4 @@ function makeIconSelectionField(form, fieldName) {
 		10);
 }
 
-export { makeIconSelectionField, admin, reloadLocation };
+export { makeIconSelectionField, admin };
