@@ -180,7 +180,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 		if(filterId && node.filters[filterId]) { //user selected filter
 			filter = node.filters[filterId];
 		} else {
-			filter = node.defaultFilterId;
+			filter = node.filters[node.defaultFilterId];
 		}
 
 

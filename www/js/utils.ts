@@ -1035,7 +1035,7 @@ function keepInWindow(body) {
 		if(l < screenL) {
 			addTranslateX(body, -l);
 		} else {
-			var out = r - screenR + 10;
+			var out = r - screenR;
 			if(out > 0) {
 				addTranslateX(body, -out);
 			}

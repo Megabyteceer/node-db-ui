@@ -1,9 +1,4 @@
-
-проверить добалвение мультиязычного поля
-
-проверить преобразование поля в мультиязычное и обратно
-
-language add ui field to retrevie code from. Filter user lang by ui not empty only. Add filter type ui onlyU=name user lang field ad ui lang
+поиск в лукапах сбивает курсор и закрыввает дроплист
 
 очистить базу от мультиязычности. удалть язык и колонки из таблиц. откл. мультиязычность.
 

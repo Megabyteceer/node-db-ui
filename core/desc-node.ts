@@ -2,8 +2,8 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import ENV from "../ENV";
-import { isUserHaveRole, setMainTainMode, UserSession, usersSessionsStartedCount } from "./auth";
-import { throwError, assert, FIELD_6_ENUM, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_DROPDOWN_LOOKUP } from "../www/js/bs-utils";
+import { authorizeUserByID, isUserHaveRole, setMainTainMode, UserSession, usersSessionsStartedCount } from "./auth";
+import { throwError, assert, FIELD_6_ENUM, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_DROPDOWN_LOOKUP, GUEST_ROLE_ID, ADMIN_ROLE_ID } from "../www/js/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
@@ -38,8 +38,8 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 			for(let srcField of srcNode.fields) {
 				const field: FieldDesc = {
 					id: srcField.id,
-					name: srcField['name' + landQ],
-					fdescription: srcField['fdescription' + landQ],
+					name: srcField['name' + landQ] || srcField.name,
+					fdescription: srcField['fdescription' + landQ] || srcField.fdescription,
 					show: srcField.show,
 					prior: srcField.prior,
 					fieldType: srcField.fieldType,
@@ -201,7 +201,7 @@ async function initNodesData() { // load whole nodes data in to memory
 	await mysqlExec('-- ======== NODES RELOADING STARTED ===================================================================================================================== --');
 	/// #endif
 
-	langs_new = await mysqlExec("SELECT id, name, code FROM _languages WHERE id <> 0") as UserLangEntry[];
+	langs_new = await mysqlExec("SELECT id, name, code, uiCode FROM _languages WHERE id <> 0") as UserLangEntry[];
 	for(let l of langs_new) {
 		l.prefix = l.code ? ('$' + l.code) : '';
 	}
@@ -268,6 +268,19 @@ async function initNodesData() { // load whole nodes data in to memory
 	eventsHandlers = eventsHandlers_new;
 	clientSideNodes.clear();
 	nodesTreeCache.clear();
+
+	Object.assign(ADMIN_USER_SESSION, await authorizeUserByID(1, true
+		/// #if DEBUG
+		, "dev-admin-session-token"
+		/// #endif
+	));
+	assert(isUserHaveRole(ADMIN_ROLE_ID, ADMIN_USER_SESSION), "User with id 1 expected to be admin.");
+	Object.assign(GUEST_USER_SESSION, await authorizeUserByID(2, true, 'guest-session'));
+	assert(isUserHaveRole(GUEST_ROLE_ID, GUEST_USER_SESSION), "User with id 2 expected to be guest.");
+	/// #if DEBUG
+	await authorizeUserByID(3, undefined, "dev-user-session-token");
+	/// #endif
+
 }
 
 function getLangs(): UserLangEntry[] {

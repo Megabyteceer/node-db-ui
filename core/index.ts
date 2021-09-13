@@ -1,13 +1,13 @@
 
 import { createServer } from 'http';
 import api from './api';
-import { startSession, authorizeUserByID, finishSession, isUserHaveRole } from './auth';
-import { initNodesData, ADMIN_USER_SESSION, GUEST_USER_SESSION } from './desc-node';
+import { startSession, finishSession, isUserHaveRole } from './auth';
+import { initNodesData } from './desc-node';
 import { performance } from 'perf_hooks';
 import { getBoundary, parse } from 'parse-multipart-data';
 import './locale';
 import { mysqlDebug } from "./mysql-connection";
-import { GUEST_ROLE_ID, assert, ADMIN_ROLE_ID } from "../www/js/bs-utils";
+import { GUEST_ROLE_ID } from "../www/js/bs-utils";
 
 const server = createServer();
 
@@ -161,18 +161,6 @@ server.on('request', (req, res) => {
 });
 
 initNodesData().then(async function() {
-	Object.assign(ADMIN_USER_SESSION, await authorizeUserByID(1, true
-		/// #if DEBUG
-		, "dev-admin-session-token"
-		/// #endif
-	));
-	assert(isUserHaveRole(ADMIN_ROLE_ID, ADMIN_USER_SESSION), "User with id 1 expected to be admin.");
-	Object.assign(GUEST_USER_SESSION, await authorizeUserByID(2, true, 'guest-session'));
-	assert(isUserHaveRole(GUEST_ROLE_ID, GUEST_USER_SESSION), "User with id 2 expected to be guest.");
-	/// #if DEBUG
-	await authorizeUserByID(3, undefined, "dev-user-session-token");
-	/// #endif
-
 	server.listen(7778);
 	console.log('HTTPS listen 7778...');
 });

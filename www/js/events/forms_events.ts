@@ -17,6 +17,10 @@ class FormEvents extends FormFull {
 			}
 		}
 
+		this.addLookupFilters('language', {
+			flt_id: 6
+		});
+
 		if($('#org-edit-link').length === 0) {
 			$('.field-container-id-63 input').css('width', '50%');
 			if(this.fieldValue('_organID')) {
@@ -381,6 +385,13 @@ class FormEvents extends FormFull {
 
 	async _enums_onsave() {
 		//TODO check if all values unique
+	}
+
+	async _filters_onload() {
+		this.addLookupFilters('_nodesID', {
+			flt_id: 8,
+			excludeIDs: [9]
+		});
 	}
 
 	//_insertNewHandlersHere_

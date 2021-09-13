@@ -23,6 +23,7 @@ export default {
 		if(newData.hasOwnProperty('code')) {
 			throwError("Cant change 'code' of language.");
 		}
+		reloadMetadataSchedule();
 	},
 
 	beforeDelete: async function(data: RecordData, userSession: UserSession) {

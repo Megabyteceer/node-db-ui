@@ -1,6 +1,24 @@
 interface Filters {
 	[key: string]: string | number | {};
+
 	excludeIDs?: RecId[];
+
+	onlyIDs?: RecId[];
+
+	/** filter id to apply to query */
+	flt_id?: RecId;
+
+	/** page number. '*' - to retrieve all */
+	p?: number | '*';
+
+	/** items per page */
+	n?: number;
+
+	/** field name to order by */
+	o?: string;
+
+	/** reverse order */
+	r?: boolean;
 }
 
 const throwError = (message: string): never => {

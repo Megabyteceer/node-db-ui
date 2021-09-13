@@ -16,8 +16,8 @@ const handlers: NodeEventsHandlers = {
 			const langs = getLangs();
 			const fn = data.fieldName;
 			for(let l of langs) {
-				if(l.code) {
-					data.fieldName = fn + '$' + l.code;
+				if(l.prefix) {
+					data.fieldName = fn + l.prefix;
 					await createFieldInTable(data);
 				}
 			}
@@ -69,7 +69,7 @@ const handlers: NodeEventsHandlers = {
 
 		if(!currentData.nostore) {
 
-			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxlen')) {
+			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxlen') || newData.hasOwnProperty('multilang')) {
 
 				const multilangChanged = newData.hasOwnProperty('multilang') && currentData.multilang !== newData.multilang;
 
@@ -93,24 +93,23 @@ const handlers: NodeEventsHandlers = {
 							if(multilangChanged) {
 								if(currentData.multilang) {
 									for(let l of langs) {
-										debugger;
-										if(l.code) {
-											currentData.fieldName = realBDFNAme + '$' + l.code;
+										if(l.prefix) {
+											currentData.fieldName = realBDFNAme + l.prefix;
 											await createFieldInTable(currentData);
 										}
 									}
 									currentData.fieldName = realBDFNAme;
 								} else {
 									for(let l of langs) {
-										if(l.code) {
-											await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realBDFNAme + '$' + l.code);
+										if(l.prefix) {
+											await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realBDFNAme + l.prefix);
 										}
 									}
 								}
 							} else if(currentData.multilang) {
 								for(let l of langs) {
-									if(l.code) {
-										await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realBDFNAme + '$' + l.code + ' ' + typeQ);
+									if(l.prefix) {
+										await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realBDFNAme + l.prefix + ' ' + typeQ);
 									}
 								}
 							}
@@ -173,7 +172,10 @@ function getFieldTypeSQL(data) {
 
 async function createFieldInTable(data: RecordDataWrite) {
 
-	const nodeId = data.node_fields_linker;
+	let nodeId = data.node_fields_linker;
+	if(typeof nodeId !== 'number') {
+		nodeId = nodeId.id;
+	}
 
 	// prepare space for field
 	await mysqlExec("UPDATE _fields SET prior=prior+20 WHERE (node_fields_linker =" + nodeId + ") AND (prior >" + data.prior + ")");
