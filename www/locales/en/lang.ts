@@ -121,8 +121,5 @@ const LANGS = {
 
 initDictionary(LANGS);
 
-/// #if EDITOR
 type LANG_KEYS = keyof typeof LANGS;
 export { LANG_KEYS }
-/// #endif
-

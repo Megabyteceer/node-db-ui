@@ -4,5 +4,6 @@
 		"**/dist/**": true,
 		"**/uploads/**": true,
 		"**/fonts/**": true
-	}
+	},
+	"typescript.preferences.importModuleSpecifierEnding":"auto"
 }

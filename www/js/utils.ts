@@ -1,6 +1,6 @@
-/// #if EDITOR
-import { LANG_KEYS } from "../locales/en/lang.js";
-/// #endif
+
+import type { LANG_KEYS } from "../locales/en/lang";
+
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
