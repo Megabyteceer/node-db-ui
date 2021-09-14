@@ -18,9 +18,9 @@ let isHandlersInitialized;
 
 class eventProcessingMixins extends BaseForm {
 	/** true if form opened for new record creation */
-	rec_creation: boolean;
+	isNewRecord: boolean;
 	/** true if form opened for editing existing form */
-	rec_update: boolean;
+	isUpdateRecord: boolean;
 
 
 	/** previous value of changed field. Can be used in onChage event of field */
@@ -385,11 +385,11 @@ class eventProcessingMixins extends BaseForm {
 		if(handler) {
 			this.prev_value = prev_val;
 			this.recId = this.props.initialData.id || 'new';
-			this.rec_update = this.props.editable;
-			if(this.rec_update) {
-				this.rec_creation = !this.props.initialData.hasOwnProperty('id');
-				if(this.rec_creation) {
-					this.rec_update = false;
+			this.isUpdateRecord = this.props.editable;
+			if(this.isUpdateRecord) {
+				this.isNewRecord = !this.props.initialData.hasOwnProperty('id');
+				if(this.isNewRecord) {
+					this.isUpdateRecord = false;
 				}
 			}
 			this.isUserEdit = isUserAction;

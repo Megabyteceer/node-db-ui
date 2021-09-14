@@ -84,7 +84,7 @@ class BarItem extends Component<any, any> {
 
 	collapseOtherGroups() {
 		for(let g of allGropus) {
-			if(g.props.item.children.indexOf(this.props.item) < 0) {
+			if(g.props.item.children && g.props.item.children.indexOf(this.props.item) < 0) {
 				g.collapse();
 			}
 		}
@@ -281,6 +281,7 @@ function renderItemsArray(itemsArray, level, item?) {
 	/// #if DEBUG
 	if((!itemsArray || itemsArray.length === 0) && (level > 0)) {
 		return [R.div({
+			key: 'empty-section',
 			className: 'clickable left-bar-empty-section', onClick: () => {
 				createNodeForMenuItem(item);
 			}

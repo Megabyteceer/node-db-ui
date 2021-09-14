@@ -245,9 +245,6 @@ async function initNodesData() { // load whole nodes data in to memory
 
 			const filters = {};
 			for(let f of filtersRes) {
-				if(!nodeData.defaultFilterId) {
-					nodeData.defaultFilterId = f.id;
-				}
 				filters[f.id] = f;
 			}
 			nodeData.filters = filters;

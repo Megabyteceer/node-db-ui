@@ -6,7 +6,7 @@ interface Filters {
 	onlyIDs?: RecId[];
 
 	/** filter id to apply to query */
-	flt_id?: RecId;
+	filterId?: RecId;
 
 	/** page number. '*' - to retrieve all */
 	p?: number | '*';

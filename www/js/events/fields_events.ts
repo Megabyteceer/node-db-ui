@@ -36,13 +36,13 @@ class FieldsEvents extends FormEvents {
 			if(this.hasField('creationName_en')) {
 				this.showField("creationName_en", "singleName_en");
 			}
-			if(!this.rec_creation) {
+			if(!this.isNewRecord) {
 				this.showField("_fieldsID", "reverse");
 			} else {
 				this.hideField("_fieldsID", "reverse");
 			}
 
-			if(!this.rec_update) {
+			if(!this.isUpdateRecord) {
 				this.showField("createdon_field", "createUserFld", "createdby_field",
 					"staticLink");
 			}

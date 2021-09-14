@@ -19,7 +19,7 @@ const EMPTY_RATING = { all: 0 };
 										['onlyIDs'] = '3,5,64,5,45'; - filter by IDs;
 										['o'] = fieldName for order;
 										['r'] = reverse order;
-										['flt_id'] = filter's id to be applied on result;
+										['filterId'] = filter's id to be applied on result;
 */
 async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: RecId, userSession: UserSession): Promise<RecordData>;
 async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId[], userSession: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
@@ -174,12 +174,20 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 			wheres.push('AND(', tableName, '.id IN (', filterFields.onlyIDs, '))');
 		}
 
-		const filterId = filterFields.flt_id;
+		const filterId = filterFields.filterId;
 		let filter;
+
+
+		/// #if DEBUG
+		const availableFilters = Object.keys(node.filters).join();
+		assert(!filterId || node.filters[filterId],
+			"Unknown filterId " + filterId + ' for node ' + node.tableName +
+			(availableFilters ? ('. Available values is: ' + availableFilters) : ' node has no filters.'));
+		/// #endif
 
 		if(filterId && node.filters[filterId]) { //user selected filter
 			filter = node.filters[filterId];
-		} else {
+		} else if(node.defaultFilterId) {
 			filter = node.filters[node.defaultFilterId];
 		}
 
