@@ -1,6 +1,7 @@
 import { FIELD_7_Nto1, RecId, RecordData } from "../bs-utils";
 import { R } from "../r";
 import React from "react";
+import ReactDOM from "react-dom";
 import { List } from "../forms/list";
 import { idToImgURL, L, renderIcon, scrollToVisible, sp } from "../utils";
 import { registerFieldClass } from "../utils";
@@ -8,7 +9,6 @@ import { fieldLookupMixins } from "./field-lookup-mixins";
 
 registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupMixins {
 	isEnterCreateThroughList: boolean;
-	private leaveTimout: NodeJS.Timeout;
 
 	constructor(props) {
 		super(props);
@@ -25,13 +25,30 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 			filters: this.generateDefaultFiltersByProps(this.props),
 			value: val
 		};
-		this.clearLeaveTimeout = this.clearLeaveTimeout.bind(this);
-		this.onMouseLeave = this.onMouseLeave.bind(this);
 		this.toggleList = this.toggleList.bind(this);
 		this.valueChoosed = this.valueChoosed.bind(this);
 		this.toggleCreateDialogue = this.toggleCreateDialogue.bind(this);
 		this.setValue = this.setValue.bind(this);
+
+		this.handleClickOutside = this.handleClickOutside.bind(this);
 	}
+
+	componentDidMount() {
+		document.addEventListener('mousedown', this.handleClickOutside, true);
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener('mousedown', this.handleClickOutside, true);
+	}
+
+	handleClickOutside(event) {
+		const domNode = ReactDOM.findDOMNode(this);
+		if(!domNode || !domNode.contains(event.target)) {
+			this.collapseList();
+		}
+	}
+
+
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		if(this.props.filters) {
@@ -41,10 +58,6 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 			}
 			Object.assign(this.state.filters, this.props.filters);
 		}
-	}
-
-	componentWillUnmount() {
-		this.clearLeaveTimeout();
 	}
 
 	toggleList() {
@@ -105,18 +118,7 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 		});
 	}
 
-	onMouseLeave() {
-		if(this.state.expanded) {
-			this.leaveTimout = setTimeout(() => { this.toggleList(); }, 400);
-		}
-	}
 
-	clearLeaveTimeout() {
-		if(this.leaveTimout) {
-			clearTimeout(this.leaveTimout);
-			delete (this.leaveTimout);
-		}
-	}
 
 	static encodeValue(val) {
 
@@ -207,9 +209,7 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 			}
 
 			return R.div({
-				className: 'field-lookup-wrapper',
-				onMouseLeave: this.onMouseLeave,
-				onMouseEnter: this.clearLeaveTimeout
+				className: 'field-lookup-wrapper'
 			},
 				R.div({
 					className: this.props.fieldDisabled ? 'field-lookup-chooser unclickable disabled' : 'field-lookup-chooser clickable',
