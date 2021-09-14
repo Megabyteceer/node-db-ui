@@ -104,7 +104,6 @@ class FormFull extends eventProcessingMixins {
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		super.UNSAFE_componentWillReceiveProps(nextProps); //TODO merge with super class
-		consoleLog('receive props; ' + this.props.node.tableName);
 		if((this.currentData.id !== nextProps.initialData.id) || (this.props.node !== nextProps.node) || (this.props.editable !== nextProps.editable)) {
 
 			this.backupCurrentDataIfNeed();
@@ -349,6 +348,15 @@ class FormFull extends eventProcessingMixins {
 		for(var k in flds) {
 			let field = flds[k];
 			if(this.isFieldVisibleByFormViewMask(field)) {
+
+				const ref = (ref) => {
+					if(ref) {
+						this.fieldsRefs[field.fieldName] = ref;
+					} else {
+						delete this.fieldsRefs[field.fieldName];
+					}
+				}
+
 				if((field.fieldType === FIELD_17_TAB) && (field.maxLength === 0) && !this.isSubForm()) {//tab
 					currentCompactAreaCounter = 0;//terminate compact area nesting
 					var isDefaultTab;
@@ -370,9 +378,7 @@ class FormFull extends eventProcessingMixins {
 					currentTabName = field.fieldName;
 					currentTab = React.createElement(FormTab, {
 						key: field.id,
-						ref: (ref) => {
-							this.fieldsRefs[field.fieldName] = ref;
-						},
+						ref,
 						title: field.name,
 						visible: tabVisible || this.showAllDebug || this.showAllTabs,
 						highlightFrame: this.showAllDebug,
@@ -382,9 +388,7 @@ class FormFull extends eventProcessingMixins {
 					tabs.push(currentTab);
 				} else if(this.props.editable || data[field.fieldName] || field.noStore || (field.fieldType === FIELD_15_1toN) || field.fieldType >= 100) {
 					var tf = React.createElement(FieldWrap, {
-						ref: (ref) => {
-							this.fieldsRefs[field.fieldName] = ref;
-						},
+						ref,
 						key: field.id,
 						field,
 						initialValue: data[field.fieldName],
