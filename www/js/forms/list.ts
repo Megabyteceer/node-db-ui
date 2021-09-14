@@ -74,17 +74,6 @@ class List extends BaseForm<ListProps, ListState> {
 		this.onShow();
 	}
 
-	UNSAFE_componentWillReceiveProps(newProps) {
-		super.UNSAFE_componentWillReceiveProps(newProps);
-		this.filters = $.extend({}, newProps.filters);
-		this.setSearchInputValue(this.filters.s as string);
-		//@ts-ignore
-		this.state.node = newProps.node || this.state.node;
-		//@ts-ignore
-		this.state.data = newProps.initialData || this.state.data;
-		this.onShow();
-	}
-
 	onShow() {
 		if(!this.state.data) {
 			setTimeout(() => { this.refreshData(); }, 1);

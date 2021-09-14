@@ -96,16 +96,7 @@ class AdminRoleprevsForm extends BaseForm {
 		this.saveClick = this.saveClick.bind(this);
 	}
 
-	componentDidMount() {
-		this.onShow();
-	}
-
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		super.UNSAFE_componentWillReceiveProps(nextProps);
-		this.onShow();
-	}
-
-	async onShow() {
+	async componentDidMount() {
 		let node = await getNode(this.props.recId);
 
 		let data = await getData('admin/nodePrevs', {

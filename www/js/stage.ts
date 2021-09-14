@@ -132,7 +132,7 @@ class Stage extends Component<any, any> {
 			location.href = node.staticLink;
 		}
 		ReactDOM.render(
-			React.createElement('div', { className: isRootForm ? undefined : 'form-modal-container' },
+			React.createElement('div', { key: node.id + '_' + recId, className: isRootForm ? undefined : 'form-modal-container' },
 				React.createElement(formType, { ref, node, recId, isRootForm, initialData: data || {}, filters, editable })
 			),
 			Stage.currentFormEntry.formContainer

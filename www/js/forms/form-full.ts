@@ -63,14 +63,6 @@ class FormFull extends eventProcessingMixins {
 		}
 	}
 
-	componentDidUpdate() {
-		if(this._isNeedCallOnload) {
-			this.recoveryBackupIfNeed();
-			this.onShow();
-			this._isNeedCallOnload = false;
-		}
-	}
-
 	recoveryBackupIfNeed() {
 		if(!this.currentData.id && !this.props.inlineEditable) {
 			var backup = getBackupData(this.props.node.id);
@@ -100,18 +92,6 @@ class FormFull extends eventProcessingMixins {
 
 	deteleBackup() {
 		removeBackup(this.props.node.id);
-	}
-
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		super.UNSAFE_componentWillReceiveProps(nextProps); //TODO merge with super class
-		if((this.currentData.id !== nextProps.initialData.id) || (this.props.node !== nextProps.node) || (this.props.editable !== nextProps.editable)) {
-
-			this.backupCurrentDataIfNeed();
-
-			this._isNeedCallOnload = true;
-			this.currentData = Object.assign({}, nextProps.filters, nextProps.initialData);
-			this.resendDataToFields();
-		}
 	}
 
 	componentWillUnmount() {

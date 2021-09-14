@@ -42,8 +42,6 @@ class eventProcessingMixins extends BaseForm {
 	/** contains validate() result */
 	formIsValid: boolean;
 
-	protected _isNeedCallOnload: boolean;
-
 	onSaveCallback: () => void;
 
 	currentTabName: string;
@@ -76,38 +74,17 @@ class eventProcessingMixins extends BaseForm {
 			}
 		}
 
-
 		this.currentData = null;
 		this.onSaveCallback = null;
-		this.resetFieldsProperties();
+		this.hiddenFields = {};
+		this.disabledFields = {};
+		this.currentTabName = null;
 	}
 
 	componentDidMount() {
 		if(!this.isListItem) {
 			this.callOnTabShowEvent(this.props.filters.tab);
 		}
-	}
-
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		super.UNSAFE_componentWillReceiveProps(nextProps);
-		this.showAllTabs = false;
-		if(nextProps.initialData.id !== this.props.initialData.id) {
-			//@ts-ignore
-			this.state = {};
-			this.resetFieldsProperties(true);
-			this.forceUpdate();
-		}
-		setTimeout(() => {
-			this.callOnTabShowEvent(nextProps.filters.tab);
-		}, 0);
-	}
-
-	resetFieldsProperties(_isNeedCallOnload?: boolean) {
-		this.hiddenFields = {};
-		this.disabledFields = {};
-		this.currentTabName = null;
-		this.onSaveCallback = null;
-		this._isNeedCallOnload = _isNeedCallOnload;
 	}
 
 	isFieldVisibleByFormViewMask(field) {
