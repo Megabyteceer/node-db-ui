@@ -30,7 +30,7 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_nodes_isDoc_onChange() {
-		if(this.fieldValue("isDoc")) {
+		if(this.fieldValue("isDocument")) {
 			this.showField("tableName", "creationName", "singleName",
 				"captcha", "draftable", "recPerPage");
 			if(this.hasField('creationName_en')) {

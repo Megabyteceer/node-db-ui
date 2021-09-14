@@ -155,7 +155,7 @@ interface NodeDesc {
 	privileges: PrivilegesMask;
 	matchName: string;
 	description: string;
-	isDoc: BoolNum;
+	isDocument: BoolNum;
 	reverse?: BoolNum;
 	creationName?: string;
 	staticLink?: string;

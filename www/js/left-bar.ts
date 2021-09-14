@@ -69,13 +69,13 @@ class BarItem extends Component<any, any> {
 	}
 
 	componentDidMount() {
-		if(!this.props.item.isDoc) {
+		if(!this.props.item.isDocument) {
 			allGropus.push(this);
 		}
 	}
 
 	componentWillUnmount() {
-		if(!this.props.item.isDoc) {
+		if(!this.props.item.isDocument) {
 			let i = allGropus.indexOf(this);
 			assert(i >= 0, 'BarItem registration is corrupted.');
 			allGropus.splice(i, 1);
@@ -173,7 +173,7 @@ class BarItem extends Component<any, any> {
 		}
 		/// #endif
 
-		if(!item.isDoc && (!item.children || (item.children.length === 0))
+		if(!item.isDocument && (!item.children || (item.children.length === 0))
 			/// #if DEBUG
 			&& false// in debug build always show empty nodes
 			/// #endif
@@ -186,10 +186,10 @@ class BarItem extends Component<any, any> {
 		}*/
 
 		var itemsIcon = R.div({ className: "left-bar-item-icon" },
-			renderIcon(item.icon + (item.isDoc ? ' brand-color' : ' noicon'))
+			renderIcon(item.icon + (item.isDocument ? ' brand-color' : ' noicon'))
 		)
 
-		let className = 'left-bar-item ' + (item.isDoc ? 'left-bar-item-doc' : 'left-bar-group');
+		let className = 'left-bar-item ' + (item.isDocument ? 'left-bar-item-doc' : 'left-bar-group');
 
 		const isActive = isCurrentlyShowedLeftbarItem(item);
 
@@ -212,7 +212,7 @@ class BarItem extends Component<any, any> {
 			this.state.expanded = isExpanded;
 		}
 
-		if(!item.isDoc) {
+		if(!item.isDocument) {
 			if(!_isMustBeExpanded) {
 				caret = R.span({ className: "left-bar-group-caret" },
 					renderIcon('caret-' + (isExpanded ? 'up' : 'down'))
@@ -235,7 +235,7 @@ class BarItem extends Component<any, any> {
 		const itemBody = R.div({
 			onClick: (ev) => {
 				if(!isMustBeExpandedVal) {
-					if(item.isDoc) {
+					if(item.isDocument) {
 						if(item.id === false) {
 							Stage.rootForm.setFormFilter('tab', item.tab);
 							return;
@@ -256,7 +256,7 @@ class BarItem extends Component<any, any> {
 		);
 
 
-		if(item.isDoc && (item.id !== false)) {
+		if(item.isDocument && (item.id !== false)) {
 			var href;
 			if(item.staticLink && item.staticLink !== 'reactClass') {
 				href = item.staticLink;

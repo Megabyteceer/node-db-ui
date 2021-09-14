@@ -135,7 +135,7 @@ class AdminRoleprevsForm extends BaseForm {
 				});
 			};
 
-			if(this.state.data.isDoc) {
+			if(this.state.data.isDocument) {
 				submit();
 			} else {
 				submit(!await myPromt(L('APPLY_CHILD'), L('TO_THIS'), L('TO_ALL'), 'check', 'check'));

@@ -39,9 +39,9 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				privileges,
 				matchName: srcNode["name" + landQ],
 				description: srcNode["description" + landQ],
-				isDoc: srcNode.isDoc
+				isDocument: srcNode.isDocument
 			}
-			if(srcNode.isDoc) {
+			if(srcNode.isDocument) {
 
 				ret.reverse = srcNode.reverse;
 				ret.creationName = srcNode["creationName" + landQ];
@@ -139,7 +139,7 @@ function getNodesTree(userSession) { // get nodes tree visible to user
 					icon: nodeSrc.icon,
 					id: nodeSrc.id,
 					name: nodeSrc['name' + langId],
-					isDoc: nodeSrc.isDoc,
+					isDocument: nodeSrc.isDocument,
 					parent: nodeSrc._nodesID,
 					privileges,
 					staticLink: nodeSrc.staticLink
@@ -226,7 +226,7 @@ async function initNodesData() { // load whole nodes data in to memory
 		nodeData.privileges = 65535;
 		let sortField = nodeData._fieldsID;
 
-		if(nodeData.isDoc) {
+		if(nodeData.isDocument) {
 			let query = "SELECT * FROM _fields WHERE node_fields_linker=" + nodeData.id + " AND status=1 ORDER BY prior";
 			let fields = await mysqlExec(query) as mysqlRowsResult;
 			for(let field of fields) {

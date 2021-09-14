@@ -18,7 +18,7 @@ async function nodePrevs(reqData, userSession) {
 		return 1;
 	} else { //get node privileges
 		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _roleprevs WHERE (nodeID=' + nodeId + ') AND (_roles.id=roleID) LIMIT 1) AS privileges FROM _roles WHERE ID <>1 AND ID <> 7 AND status = 1');
-		return { privileges, isDoc: getNodeDesc(nodeId).isDoc }
+		return { privileges, isDocument: getNodeDesc(nodeId).isDocument }
 	}
 }
 

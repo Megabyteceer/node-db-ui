@@ -349,7 +349,7 @@ class NodeAdmin extends Component<any, any> {
 }
 
 function createNodeForMenuItem(item) {
-	getNodeData(4, (item.isDoc ? item.parent : item.id) as number).then((data) => {
+	getNodeData(4, (item.isDocument ? item.parent : item.id) as number).then((data) => {
 		window.crudJs.Stage.showForm(4, 'new', {
 			prior: data.prior,
 			_nodesID: {

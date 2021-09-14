@@ -136,7 +136,7 @@ class FormEvents extends FormFull {
 	async _nodes_onload() {
 		makeIconSelectionField(this, 'icon');
 
-		if(!this.fieldValue('isDoc')) {
+		if(!this.fieldValue('isDocument')) {
 			this.hideField('defaultFilterId');
 		} else if(this.isUpdateRecord) {
 			this.isNewRecord
@@ -146,12 +146,12 @@ class FormEvents extends FormFull {
 		}
 
 		if(this.isUpdateRecord) {
-			this.disableField('isDoc');
+			this.disableField('isDocument');
 			this.disableField('tableName');
 			this.hideField('createdby_field');
 			this.hideField('createdon_field');
 			this.hideField('createUserFld');
-			if(!this.fieldValue('isDoc')) {
+			if(!this.fieldValue('isDocument')) {
 				this.hideField('t_fields');
 			}
 		}
@@ -165,7 +165,7 @@ class FormEvents extends FormFull {
 		if(!this.isNewRecord) {
 			this.addLookupFilters('_nodesID', 'excludeIDs', [this.recId]);
 		}
-		this.addLookupFilters('_nodesID', 'isDoc', 0);
+		this.addLookupFilters('_nodesID', 'isDocument', 0);
 		this.addLookupFilters('_fieldsID', {
 			node_fields_linker: this.recId,
 			forSearch: 1
@@ -174,7 +174,7 @@ class FormEvents extends FormFull {
 
 	async _nodes_onsave() {
 
-		if(!this.fieldValue("isDoc")) {
+		if(!this.fieldValue("isDocument")) {
 			var name = this.fieldValue("name");
 			this.setFieldValue("singleName", name);
 		}
@@ -251,10 +251,10 @@ class FormEvents extends FormFull {
 		}
 
 		this.addLookupFilters('node_fields_linker', {
-			isDoc: 1
+			isDocument: 1
 		});
 		this.addLookupFilters('nodeRef', {
-			isDoc: 1
+			isDocument: 1
 		});
 		this.hideField("prior");
 		this.hideField("show");

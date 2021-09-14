@@ -268,7 +268,7 @@ class eventProcessingMixins extends BaseForm {
 					var f = fields[k];
 					if((f.fieldType === FIELD_17_TAB) && (f.maxLength === 0)) {//tab
 						if(this.isFieldVisible(f.fieldNamePure)) {
-							items.push({ icon: f.icon, name: f.name, field: f, form: this, id: false, isDoc: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName });
+							items.push({ icon: f.icon, name: f.name, field: f, form: this, id: false, isDocument: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName });
 							isDefault = false;
 						}
 					}

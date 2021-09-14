@@ -27,7 +27,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 
 	let node = getNodeDesc(nodeId, userSession);
 
-	if(!node.isDoc) {
+	if(!node.isDocument) {
 		throwError("nodeId " + nodeId + " is not a document.");
 	}
 
