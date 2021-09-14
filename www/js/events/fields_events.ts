@@ -77,7 +77,7 @@ class FieldsEvents extends FormEvents {
 				this.setFieldLabel("fdescription", L("CONTENT"));
 			case FIELD_17_TAB:
 			case FIELD_18_BUTTON:
-				this.hideField("maxlen", "clientOnly", "nostore", "requirement", "uniqu", "forSearch");
+				this.hideField("maxLength", "clientOnly", "nostore", "requirement", "uniqu", "forSearch");
 				this.setFieldValue('forSearch', false);
 				break;
 			case FIELD_14_NtoM:
@@ -88,7 +88,7 @@ class FieldsEvents extends FormEvents {
 				this.setFieldValue("vis_list", 0);
 				this.hideField('forSearch', 'requirement', 'uniqu');
 			case FIELD_7_Nto1:
-				this.hideField("maxlen", "uniqu");
+				this.hideField("maxLength", "uniqu");
 				this.setFieldValue("uniqu", false);
 				this.showField("nodeRef");
 				break;
@@ -99,7 +99,7 @@ class FieldsEvents extends FormEvents {
 			case FIELD_19_RICHEDITOR:
 			case FIELD_12_PICTURE:
 				this.showField("width", "height");
-				this.hideField("maxlen", "nostore", "clientOnly", "uniqu");
+				this.hideField("maxLength", "nostore", "clientOnly", "uniqu");
 				this.setFieldValue('nostore', false);
 				this.setFieldValue('clientOnly', false);
 				this.setFieldValue('uniqu', false);
@@ -109,7 +109,7 @@ class FieldsEvents extends FormEvents {
 			case FIELD_11_DATE:
 			case FIELD_20_COLOR:
 			case FIELD_21_FILE:
-				this.hideField("maxlen");
+				this.hideField("maxLength");
 				break;
 
 		}

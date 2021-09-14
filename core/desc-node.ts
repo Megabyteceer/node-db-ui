@@ -45,7 +45,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 					fieldType: srcField.fieldType,
 					fieldName: srcField.fieldName,
 					selectFieldName: srcField.selectFieldName,
-					maxlen: srcField.maxlen,
+					maxLength: srcField.maxLength,
 					requirement: srcField.requirement,
 					uniqu: srcField.uniqu,
 					enum: srcField.enum,

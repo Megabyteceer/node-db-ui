@@ -29,8 +29,8 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends BaseField 
 		if(this.props.isEdit) {
 			this.iframeId = idCounter++;
 			var field = this.props.field;
-			var w = Math.floor(field.maxlen / 10000);
-			var h = field.maxlen % 10000;
+			var w = Math.floor(field.maxLength / 10000);
+			var h = field.maxLength % 10000;
 			var options = {
 				width: w,
 				height: h,
@@ -99,8 +99,8 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends BaseField 
 		if(this.props.isEdit) {
 			var field = this.props.field;
 
-			var w = Math.floor(field.maxlen / 10000) + 230;
-			var h = (field.maxlen % 10000) + 30;
+			var w = Math.floor(field.maxLength / 10000) + 230;
+			var h = (field.maxLength % 10000) + 30;
 
 			var style = { width: w, height: h + 100 };
 			var cog;

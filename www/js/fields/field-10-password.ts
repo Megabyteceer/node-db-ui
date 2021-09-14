@@ -24,7 +24,7 @@ registerFieldClass(FIELD_10_PASSWORD, class PasswordField extends BaseField {
 				autoFocus: this.isAutoFocus(),
 				defaultValue: value,
 				title: field.name,
-				maxLength: field.maxlen,
+				maxLength: field.maxLength,
 				placeholder: field.name,
 				readOnly: this.props.fieldDisabled,
 				ref: this.refGetter,

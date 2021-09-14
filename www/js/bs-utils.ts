@@ -83,7 +83,7 @@ interface FieldDesc {
 	/** field's name in database table */
 	fieldName: string;
 	/** maximal data length in database */
-	maxlen: number;
+	maxLength: number;
 
 	show: ViewMask;
 

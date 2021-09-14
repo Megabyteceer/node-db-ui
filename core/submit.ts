@@ -227,8 +227,8 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 						//continue to process as text
 						case FIELD_1_TEXT:
 						case FIELD_10_PASSWORD:
-							if(f.maxlen && (fieldVal.length > f.maxlen)) {
-								throwError("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxlen);
+							if(f.maxLength && (fieldVal.length > f.maxLength)) {
+								throwError("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxLength);
 							}
 							insQ.push("'", fieldVal, "'");
 							break;
@@ -257,8 +257,8 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 							if((typeof fieldVal !== 'number') || isNaN(fieldVal)) {
 								throwError("Value for field " + fieldName + " (" + tableName + ") expected as numeric.");
 							}
-							if(f.maxlen && fieldVal.toString().length > f.maxlen) {
-								throwError("Value -length for field '" + fieldName + "' (" + tableName + ") is longer that " + f.maxlen);
+							if(f.maxLength && fieldVal.toString().length > f.maxLength) {
+								throwError("Value -length for field '" + fieldName + "' (" + tableName + ") is longer that " + f.maxLength);
 							}
 							insQ.push(fieldVal as unknown as string);
 							break;

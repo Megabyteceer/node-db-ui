@@ -36,13 +36,13 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends BaseField {
 		if(this.props.isEdit) {
 			let className;
 			if(this.props.isCompact) {
-				if(field.maxlen > 600) {
+				if(field.maxLength > 600) {
 					className = 'middle-size-input';
 				}
 			} else {
-				if(field.maxlen > 600) {
+				if(field.maxLength > 600) {
 					className = 'large-input';
-				} else if(field.maxlen > 200) {
+				} else if(field.maxLength > 200) {
 					className = 'middle-size-input';
 				}
 			}
@@ -51,7 +51,7 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends BaseField {
 				className,
 				autoFocus: this.isAutoFocus(),
 				defaultValue: value,
-				maxLength: this.props.maxLen || field.maxlen,
+				maxLength: this.props.maxLen || field.maxLength,
 				title: field.name,
 				placeholder: field.name + (field.lang ? (' (' + field.lang + ')') : ''),
 				readOnly: this.props.fieldDisabled,
@@ -61,7 +61,7 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends BaseField {
 				}
 			};
 
-			if(field.maxlen > 200) {
+			if(field.maxLength > 200) {
 				return R.textarea(inputsProps);
 			} else {
 				return R.input(inputsProps);

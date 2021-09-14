@@ -335,7 +335,7 @@ class FormFull extends eventProcessingMixins {
 		for(var k in flds) {
 			let field = flds[k];
 			if(this.isFieldVisibleByFormViewMask(field)) {
-				if((field.fieldType === FIELD_17_TAB) && (field.maxlen === 0) && !this.isSubForm()) {//tab
+				if((field.fieldType === FIELD_17_TAB) && (field.maxLength === 0) && !this.isSubForm()) {//tab
 					currentCompactAreaCounter = 0;//terminate compact area nesting
 					var isDefaultTab;
 					if(!tabs) {
@@ -384,7 +384,7 @@ class FormFull extends eventProcessingMixins {
 					});
 
 
-					if((field.fieldType === FIELD_17_TAB) && (field.maxlen >= 0) && !this.isSubForm()) {//compact area
+					if((field.fieldType === FIELD_17_TAB) && (field.maxLength >= 0) && !this.isSubForm()) {//compact area
 						currentCompactAreaCounter = 0;//terminate compact area nesting
 					}
 
@@ -399,8 +399,8 @@ class FormFull extends eventProcessingMixins {
 					} else {
 						fields.push(tf);
 					}
-					if((field.fieldType === FIELD_17_TAB) && (field.maxlen >= 0) && !this.isSubForm()) {//compact area
-						currentCompactAreaCounter = field.maxlen;
+					if((field.fieldType === FIELD_17_TAB) && (field.maxLength >= 0) && !this.isSubForm()) {//compact area
+						currentCompactAreaCounter = field.maxLength;
 						currentCompactAreaName = field.fieldName;
 					}
 				}

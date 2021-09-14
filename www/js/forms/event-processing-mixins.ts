@@ -122,7 +122,7 @@ class eventProcessingMixins extends BaseForm {
 			for(var k in flds) {
 				var f = flds[k];
 				if(this.isFieldVisibleByFormViewMask(f)) {
-					if((f.fieldType === FIELD_17_TAB) && (f.maxlen === 0)) {//tab
+					if((f.fieldType === FIELD_17_TAB) && (f.maxLength === 0)) {//tab
 						if((tabNameToShow === f.fieldName) || !tabNameToShow) {
 							field = f;
 							break;
@@ -266,7 +266,7 @@ class eventProcessingMixins extends BaseForm {
 				var fields = this.props.node.fields
 				for(var k in fields) {
 					var f = fields[k];
-					if((f.fieldType === FIELD_17_TAB) && (f.maxlen === 0)) {//tab
+					if((f.fieldType === FIELD_17_TAB) && (f.maxLength === 0)) {//tab
 						if(this.isFieldVisible(f.fieldNamePure)) {
 							items.push({ icon: f.icon, name: f.name, field: f, form: this, id: false, isDoc: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName });
 							isDefault = false;

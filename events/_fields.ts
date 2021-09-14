@@ -59,7 +59,7 @@ const handlers: NodeEventsHandlers = {
 
 		shouldBeAdmin(userSession);
 
-		if(currentData.id === 9 && newData.hasOwnProperty('maxlen')) {
+		if(currentData.id === 9 && newData.hasOwnProperty('maxLength')) {
 			throwError(L('SIZE_FLD_BLOCKED'));
 		}
 
@@ -69,7 +69,7 @@ const handlers: NodeEventsHandlers = {
 
 		if(!currentData.nostore) {
 
-			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxlen') || newData.hasOwnProperty('multilingual')) {
+			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxLength') || newData.hasOwnProperty('multilingual')) {
 
 				const multilingualChanged = newData.hasOwnProperty('multilingual') && currentData.multilingual !== newData.multilingual;
 
@@ -134,9 +134,9 @@ function getFieldTypeSQL(data) {
 	switch(data.fieldType) {
 		case FIELD_10_PASSWORD:
 		case FIELD_1_TEXT:
-			if(data.maxlen <= 255) {
-				return 'VARCHAR(' + data.maxlen + ") NOT NULL DEFAULT ''";
-			} else if(data.maxlen <= 65535) {
+			if(data.maxLength <= 255) {
+				return 'VARCHAR(' + data.maxLength + ") NOT NULL DEFAULT ''";
+			} else if(data.maxLength <= 65535) {
 				return "TEXT NOT NULL DEFAULT ''";
 			} else {
 				return "MEDIUMTEXT NOT NULL DEFAULT ''";
@@ -144,10 +144,10 @@ function getFieldTypeSQL(data) {
 		case FIELD_20_COLOR:
 			return "BIGINT (11) UNSIGNED NOT NULL DEFAULT 4294967295";
 		case FIELD_2_INT:
-			if(data.maxlen <= 9) {
-				return 'INT(' + data.maxlen + ') NOT NULL DEFAULT 0';
+			if(data.maxLength <= 9) {
+				return 'INT(' + data.maxLength + ') NOT NULL DEFAULT 0';
 			} else {
-				return 'BIGINT(' + data.maxlen + ') NOT NULL DEFAULT 0';
+				return 'BIGINT(' + data.maxLength + ') NOT NULL DEFAULT 0';
 			}
 		case FIELD_4_DATETIME:
 		case FIELD_11_DATE:

@@ -236,8 +236,8 @@ class FormEvents extends FormFull {
 				this.setFieldValue("vis_list_custom", 0);
 
 			if(this.fieldValue("fieldType") === FIELD_12_PICTURE || this.fieldValue("fieldType") === FIELD_19_RICHEDITOR) {
-				this.setFieldValue("height", this.fieldValue("maxlen") % 10000);
-				this.setFieldValue("width", Math.floor(this.fieldValue("maxlen") / 10000));
+				this.setFieldValue("height", this.fieldValue("maxLength") % 10000);
+				this.setFieldValue("width", Math.floor(this.fieldValue("maxLength") / 10000));
 			}
 		}
 
@@ -346,17 +346,17 @@ class FormEvents extends FormFull {
 			if(!this.fieldValue("width")) {
 				this.fieldAlert("width", L('REQUIRED_FLD'));
 			}
-			let maxlen = Math.min(9999, this.fieldValue("height") || undefined) + (this.fieldValue("width") || undefined) * 10000;
-			if(!isNaN(maxlen)) {
-				this.setFieldValue("maxlen", maxlen);
+			let maxLength = Math.min(9999, this.fieldValue("height") || undefined) + (this.fieldValue("width") || undefined) * 10000;
+			if(!isNaN(maxLength)) {
+				this.setFieldValue("maxLength", maxLength);
 			}
 
 		}
 
-		if(!this.fieldValue('maxlen')) {
-			this.setFieldValue('maxlen', 0);
+		if(!this.fieldValue('maxLength')) {
+			this.setFieldValue('maxLength', 0);
 			if((fieldType === FIELD_1_TEXT) || (fieldType === FIELD_2_INT) || (fieldType === FIELD_10_PASSWORD)) {
-				this.fieldAlert('maxlen', L('REQUIRED_FLD'));
+				this.fieldAlert('maxLength', L('REQUIRED_FLD'));
 			}
 		}
 

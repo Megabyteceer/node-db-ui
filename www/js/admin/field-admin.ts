@@ -93,7 +93,7 @@ class FieldAdmin extends Component<any, any> {
 					field.fieldName
 				),
 				R.div(null,
-					'type: ' + field.fieldType + '; id: ' + field.id + '; len:' + field.maxlen
+					'type: ' + field.fieldType + '; id: ' + field.id + '; len:' + field.maxLength
 				),
 				R.div({
 					className: "admin-form-content"

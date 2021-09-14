@@ -150,8 +150,8 @@ class CropperFieldBody extends Component<any, any> {
 					cropperLoader.then((module) => {
 						const ReactCropper = module.Cropper;
 						var field = this.props.field;
-						var w = Math.floor(field.maxlen / 10000);
-						var h = field.maxlen % 10000;
+						var w = Math.floor(field.maxLength / 10000);
+						var h = field.maxLength % 10000;
 
 						if((w === selectedImage.width) && (h === selectedImage.height)) {
 							this._cropImage(true, reader.result);
@@ -210,8 +210,8 @@ class CropperFieldBody extends Component<any, any> {
 	render() {
 
 		var field = this.props.field;
-		var w = Math.floor(field.maxlen / 10000);
-		var h = field.maxlen % 10000;
+		var w = Math.floor(field.maxLength / 10000);
+		var h = field.maxLength % 10000;
 		var recW = w;
 		var recH = h;
 

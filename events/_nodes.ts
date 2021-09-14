@@ -57,13 +57,13 @@ const handlers: NodeEventsHandlers = {
 
 			//create default fields
 			const mainFieldQ = `INSERT INTO _fields
-				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName, selectFieldName, name,           fdescription, maxlen, requirement, uniqu, _usersID, forSearch, nostore) VALUES
+				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName, selectFieldName, name,           fdescription, maxLength, requirement, uniqu, _usersID, forSearch, nostore) VALUES
 				(${createdID},       1,       255,     1,     1,         'name',    '',              '${L('Name')}', '',           64,     1,           0,     0,        1,         0);`; //TODO add all languages
 			await mysqlExec(mainFieldQ);
 
 			if(data.createdon_field) {
 				const createdOnQ = `INSERT INTO _fields 
-				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,   selectFieldName, name,                 fdescription, maxlen, requirement, uniqu, _usersID, forSearch, nostore) VALUES
+				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,   selectFieldName, name,                 fdescription, maxLength, requirement, uniqu, _usersID, forSearch, nostore) VALUES
 				(${createdID},       1,        62,     2,     4,         'createdOn', '',              '${L('Created on')}', '',           0,      0,           0,     0,        1,         0);`;  //TODO add all languages
 				const dateFieldId = (await mysqlExec(createdOnQ) as mysqlInsertResult).insertId;
 				await mysqlExec('UPDATE _nodes SET _fieldsID=' + dateFieldId + ', reverse = 1 WHERE id=' + createdID);
@@ -71,14 +71,14 @@ const handlers: NodeEventsHandlers = {
 
 			if(data.createdby_field) {
 				const createdByQ = `INSERT INTO _fields
-				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,  selectFieldName, name,                   fdescription, maxlen, requirement, uniqu, _usersID, forSearch, nostore, nodeRef) VALUES
+				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,  selectFieldName, name,                   fdescription, maxLength, requirement, uniqu, _usersID, forSearch, nostore, nodeRef) VALUES
 				(${createdID},       1,        6,      2,     7,         '_organID', '_organ',        '${L('Organization')}', '',           0,      0,           0,     0,        1,         0,       7);`; //TODO add all languages
 				await mysqlExec(createdByQ);
 			}
 
 			if(data.createUserFld) {
 				const createdByQ = `INSERT INTO _fields
-				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,  selectFieldName,  name,           fdescription, maxlen, requirement, uniqu, _usersID, forSearch, nostore, nodeRef, icon) VALUES
+				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,  selectFieldName,  name,           fdescription, maxLength, requirement, uniqu, _usersID, forSearch, nostore, nodeRef, icon) VALUES
 				(${createdID},       1,        6,      3,     7,         '_usersID', '_users',        '${L('Owner')}', '',           0,      0,           0,     0,        1,         0,       5,       'avatar');`; //TODO add all languages
 				await mysqlExec(createdByQ);
 			}
