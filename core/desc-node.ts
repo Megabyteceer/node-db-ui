@@ -39,7 +39,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				const field: FieldDesc = {
 					id: srcField.id,
 					name: srcField['name' + landQ] || srcField.name,
-					fdescription: srcField['fdescription' + landQ] || srcField.fdescription,
+					description: srcField['description' + landQ] || srcField.description,
 					show: srcField.show,
 					prior: srcField.prior,
 					fieldType: srcField.fieldType,
@@ -47,10 +47,10 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 					selectFieldName: srcField.selectFieldName,
 					maxLength: srcField.maxLength,
 					requirement: srcField.requirement,
-					uniqu: srcField.uniqu,
+					unique: srcField.unique,
 					enum: srcField.enum,
 					forSearch: srcField.forSearch,
-					nostore: srcField.nostore,
+					noStore: srcField.noStore,
 					nodeRef: srcField.nodeRef,
 					clientOnly: srcField.clientOnly,
 					icon: srcField.icon

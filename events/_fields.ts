@@ -6,7 +6,7 @@ import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } fro
 import { getRecords } from "../core/get-records";
 import { submitRecord } from "../core/submit";
 import { L } from "../core/locale";
-import { FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_2_INT, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATICTEXT, PREVS_VIEW_ORG, RecordData, RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";
+import { FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_2_INT, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, PREVS_VIEW_ORG, RecordData, RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
@@ -64,10 +64,10 @@ const handlers: NodeEventsHandlers = {
 		}
 
 		mustBeUnset(newData, 'fieldName');
-		mustBeUnset(newData, 'nostore');
+		mustBeUnset(newData, 'noStore');
 		mustBeUnset(newData, 'node_fields_linker');
 
-		if(!currentData.nostore) {
+		if(!currentData.noStore) {
 
 			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxLength') || newData.hasOwnProperty('multilingual')) {
 
@@ -81,7 +81,7 @@ const handlers: NodeEventsHandlers = {
 				const fieldType = currentData.fieldType;
 
 				if((realBDFNAme !== '_organID') && (realBDFNAme !== '_usersID') && (realBDFNAme !== 'createdOn') && (realBDFNAme !== 'ID')) {
-					if((currentData.nostore === 0) && (fieldType !== FIELD_8_STATICTEXT) && (fieldType !== FIELD_14_NtoM) && (fieldType !== FIELD_15_1toN)) {
+					if((currentData.noStore === 0) && (fieldType !== FIELD_8_STATIC_TEXT) && (fieldType !== FIELD_14_NtoM) && (fieldType !== FIELD_15_1toN)) {
 
 
 						const typeQ = getFieldTypeSQL(currentData);
@@ -208,7 +208,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 	}
 
 	if(fieldType === FIELD_15_1toN) {
-		data.nostore = 1;
+		data.noStore = 1;
 	} else if(fieldType === FIELD_14_NtoM) {
 
 		data.selectFieldName = linkedNodeName;
@@ -227,7 +227,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 			FOREIGN KEY(\`${fld1}\`) REFERENCES \`${nodeName}\`(ID) ON DELETE CASCADE ON UPDATE CASCADE,
 			FOREIGN KEY(\`${fld2}\`) REFERENCES \`${linkedNodeName}\`(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4; `);
-	} else if(!data.nostore) {
+	} else if(!data.noStore) {
 		if(fieldType === FIELD_7_Nto1) {
 			data.forSearch = 1;
 			data.selectFieldName = linkedNodeName;
@@ -237,8 +237,8 @@ async function createFieldInTable(data: RecordDataWrite) {
 		if(typeQ) {
 			const altQ = ['ALTER TABLE \`', nodeName, '\` ADD COLUMN \`', fieldName, '\` ', typeQ];
 
-			if(data.forSearch || data.uniqu) {
-				altQ.push(', ADD', (data.uniqu ? ' UNIQUE' : ''), ' INDEX ', nodeName, '_', fieldName, ' (\`', fieldName, '\` ASC) ;');
+			if(data.forSearch || data.unique) {
+				altQ.push(', ADD', (data.unique ? ' UNIQUE' : ''), ' INDEX ', nodeName, '_', fieldName, ' (\`', fieldName, '\` ASC) ;');
 			}
 
 			await mysqlExec(altQ.join(''));

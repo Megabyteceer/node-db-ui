@@ -1,6 +1,6 @@
 import { Filters, getNodeData, isAdmin, L, myPromt, reloadLocation } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATICTEXT } from "../bs-utils";
+import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -246,7 +246,7 @@ class FormEvents extends FormFull {
 			this.disableField("fieldType");
 			this.disableField("nodeRef");
 			this.disableField("node_fields_linker");
-			this.disableField("nostore");
+			this.disableField("noStore");
 			this.disableField("clientOnly");
 		}
 
@@ -370,8 +370,8 @@ class FormEvents extends FormFull {
 			this.hideField('selectFieldName');
 		}
 
-		if((fieldType === FIELD_8_STATICTEXT) || (fieldType === FIELD_17_TAB) || (fieldType === FIELD_18_BUTTON)) {
-			this.setFieldValue('nostore', true);
+		if((fieldType === FIELD_8_STATIC_TEXT) || (fieldType === FIELD_17_TAB) || (fieldType === FIELD_18_BUTTON)) {
+			this.setFieldValue('noStore', true);
 		}
 		if(this._fieldsNameIsBad) {
 			this.fieldAlert('fieldName', L('FLD_EXISTS'));

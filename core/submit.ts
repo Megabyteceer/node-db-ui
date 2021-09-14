@@ -74,7 +74,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			if(data.hasOwnProperty(fieldName)) {
 				throwError('Field ' + f['fieldName'] + ' hidden for update, but present in request.');
 			}
-		} else if(!f.nostore) {
+		} else if(!f.noStore) {
 
 			if(f.requirement) {
 				if(((!data.hasOwnProperty(fieldName) || !data[fieldName])) && (!currentData || !currentData[fieldName])) {
@@ -88,7 +88,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 					}
 				}
 
-				if(f.uniqu) {
+				if(f.unique) {
 					if(!(await uniquCheckInner(tableName, fieldName, data[fieldName], recId))) {
 						throwError('Record ' + f.name + ' with value "' + data[fieldName] + '" already exist.');
 					}
@@ -147,7 +147,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		if(currentData) {
 			for(let f of node.fields) { // save filenames to delete updated files later
 				let fieldName = f.fieldName;
-				if(!f.nostore && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
+				if(!f.noStore && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
 					let fieldType = f.fieldType;
 					if((fieldType === FIELD_12_PICTURE) || (fieldType === FIELD_21_FILE)) {
 						if(!realDataBefore) {
@@ -175,7 +175,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 			let fieldName = f.fieldName;
 
-			if(!f.nostore && data.hasOwnProperty(fieldName)) {
+			if(!f.noStore && data.hasOwnProperty(fieldName)) {
 
 				let fieldType = f.fieldType;
 

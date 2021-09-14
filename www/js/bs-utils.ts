@@ -90,14 +90,14 @@ interface FieldDesc {
 	/** value is required for form. */
 	requirement: BoolNum;
 
-	/** value of the fied should be unique for whole database table. */
-	uniqu: BoolNum;
+	/** value of the field should be unique for whole database table. */
+	unique: BoolNum;
 
 	/** if true - field data do not go to the server on form save. */
 	clientOnly: BoolNum;
 
 	/** fields data go to the server, but has no store in database table. */
-	nostore: BoolNum;
+	noStore: BoolNum;
 
 	/** fields will have index in database, and search will be processed in this field */
 	forSearch: BoolNum;
@@ -116,8 +116,8 @@ interface FieldDesc {
 	/** order of the field in the form */
 	prior: number;
 
-	/** field tip. or html content for FIELD_8_STATICTEXT fields */
-	fdescription: string;
+	/** field tip. or html content for FIELD_8_STATIC_TEXT fields */
+	description: string;
 
 	/** client side only field */
 	node?: NodeDesc;
@@ -228,7 +228,7 @@ const FIELD_4_DATETIME: FieldType = 4;
 const FIELD_5_BOOL: FieldType = 5;
 const FIELD_6_ENUM: FieldType = 6;
 const FIELD_7_Nto1: FieldType = 7;
-const FIELD_8_STATICTEXT: FieldType = 8;
+const FIELD_8_STATIC_TEXT: FieldType = 8;
 const FIELD_10_PASSWORD: FieldType = 10;
 const FIELD_11_DATE: FieldType = 11;
 const FIELD_12_PICTURE: FieldType = 12;
@@ -278,7 +278,7 @@ export {
 	PREVS_VIEW_OWN, PREVS_VIEW_ORG, PREVS_VIEW_ALL, PREVS_CREATE, PREVS_EDIT_OWN, PREVS_EDIT_ORG, PREVS_EDIT_ALL,
 	PREVS_DELETE, PREVS_PUBLISH, PREVS_ANY,
 	FIELD_1_TEXT, FIELD_2_INT, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1,
-	FIELD_8_STATICTEXT, FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM,
+	FIELD_8_STATIC_TEXT, FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM,
 	FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR,
 	FIELD_20_COLOR, FIELD_21_FILE,
 

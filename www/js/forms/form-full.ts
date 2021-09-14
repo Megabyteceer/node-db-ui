@@ -26,6 +26,9 @@ setInterval(tryBackup, 15000);
 async function callForEachField(fieldRefs, data, functionName) {
 	for(let k of Object.keys(fieldRefs)) {
 		let f = fieldRefs[k];
+		if(!(f instanceof FieldWrap)) {
+			continue;
+		}
 		if(f.fieldRef[functionName]) {
 			var fieldName = f.props.field.fieldName;
 			let newValue = await f.fieldRef[functionName]();
@@ -131,7 +134,12 @@ class FormFull extends eventProcessingMixins {
 	forceBouncingTimeout() {
 		for(var k in this.fieldsRefs) {
 			var f = this.fieldsRefs[k];
-			f.forceBouncingTimeout();
+			if(!(f instanceof FieldWrap)) {
+				continue;
+			}
+			if(f.forceBouncingTimeout) {
+				f.forceBouncingTimeout();
+			}
 		}
 	}
 
@@ -150,6 +158,9 @@ class FormFull extends eventProcessingMixins {
 
 		for(let k in this.fieldsRefs) {
 			var fieldRef = this.fieldsRefs[k];
+			if(!(fieldRef instanceof FieldWrap)) {
+				continue;
+			}
 			var field = fieldRef.props.field;
 
 			if(this.props.overrideOrderData >= 0 && field.fieldName === 'order') {
@@ -212,6 +223,9 @@ class FormFull extends eventProcessingMixins {
 
 		for(var k in this.fieldsRefs) {
 			var fieldRef = this.fieldsRefs[k];
+			if(!(fieldRef instanceof FieldWrap)) {
+				continue;
+			}
 			var field = fieldRef.props.field;
 
 			var val = this.currentData[field.fieldName];
@@ -366,7 +380,7 @@ class FormFull extends eventProcessingMixins {
 						fields
 					});
 					tabs.push(currentTab);
-				} else if(this.props.editable || data[field.fieldName] || field.nostore || (field.fieldType === FIELD_15_1toN) || field.fieldType >= 100) {
+				} else if(this.props.editable || data[field.fieldName] || field.noStore || (field.fieldType === FIELD_15_1toN) || field.fieldType >= 100) {
 					var tf = React.createElement(FieldWrap, {
 						ref: (ref) => {
 							this.fieldsRefs[field.fieldName] = ref;

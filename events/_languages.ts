@@ -13,7 +13,7 @@ export default {
 		for(let f of fields) {
 			f.node_fields_linker = f.node_fields_linker.id;
 			f.fieldName = f.fieldName + '$' + data.code;
-			f.uniqu = 0;
+			f.unique = 0;
 			await createFieldInTable(f);
 		}
 		reloadMetadataSchedule();

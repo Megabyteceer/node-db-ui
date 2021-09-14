@@ -1,4 +1,4 @@
-import { FIELD_14_NtoM, FIELD_15_1toN, FIELD_18_BUTTON, FIELD_7_Nto1, FIELD_8_STATICTEXT } from "../bs-utils";
+import { FIELD_14_NtoM, FIELD_15_1toN, FIELD_18_BUTTON, FIELD_7_Nto1, FIELD_8_STATIC_TEXT } from "../bs-utils";
 import { R } from "../r";
 import React, { Component } from "react";
 import { FieldAdmin } from "../admin/field-admin";
@@ -252,8 +252,8 @@ class FieldWrap extends Component<FieldProps, any> {
 		var noLabel = !field.name;// (field.fieldType===FIELD_14_NtoM)||(field.fieldType===FIELD_15_1toN);
 
 		var help;
-		if(field.fdescription && field.fieldType !== FIELD_8_STATICTEXT) {
-			help = React.createElement(FieldHelp, { text: R.div(null, R.h4(null, field.name), field.fdescription) });
+		if(field.description && field.fieldType !== FIELD_8_STATIC_TEXT) {
+			help = React.createElement(FieldHelp, { text: R.div(null, R.h4(null, field.name), field.description) });
 		}
 
 		var fieldAdmin;

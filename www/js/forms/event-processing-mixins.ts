@@ -303,7 +303,7 @@ class eventProcessingMixins extends BaseForm {
 	}
 
 	async checkUniquValue(field, val) {
-		if(field.uniqu && val) {
+		if(field.unique && val) {
 			let data = await getData('api/uniquCheck', {
 				fieldId: field.id,
 				nodeId: field.node.id,
