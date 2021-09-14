@@ -48,8 +48,6 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 		}
 	}
 
-
-
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		if(this.props.filters) {
 			if(!this.state.filters) {

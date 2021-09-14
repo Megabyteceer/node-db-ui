@@ -198,6 +198,7 @@ function initIconsList() {
 			if(allNames.length) {
 				let iconName = allNames[0];
 				iconsList.push({
+					search: allNames.join(', '),
 					name: R.span(null, renderIcon(iconName), allNames.join(', ')),
 					value: iconName
 				});
