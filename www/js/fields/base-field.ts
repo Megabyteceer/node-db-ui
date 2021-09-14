@@ -5,7 +5,7 @@ import { assert, FieldDesc, RecordData } from "../bs-utils";
 import { Component } from "react";
 import Highlighter from "react-highlight-words";
 import { FormFull } from "../forms/form-full";
-import { FieldWrap } from "./field-wrap";
+import type { FieldWrap } from "./field-wrap";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 
 let autoFocusNow = true;

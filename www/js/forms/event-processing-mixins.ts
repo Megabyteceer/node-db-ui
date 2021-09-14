@@ -2,7 +2,7 @@ import { consoleLog, Filters, getData, L, ON_FIELD_CHANGE, ON_FORM_LOAD, ON_FORM
 import { BaseForm } from "./base-form";
 import { LeftBar } from "../left-bar";
 import { assert, FieldDesc, FIELD_17_TAB, FIELD_18_BUTTON, RecId, RecordData } from "../bs-utils";
-import { FieldWrap } from "../fields/field-wrap";
+import type { FieldWrap } from "../fields/field-wrap";
 
 let FormEvents;
 let FieldsEvents;

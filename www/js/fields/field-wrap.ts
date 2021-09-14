@@ -21,7 +21,6 @@ class FieldWrap extends Component<FieldProps, any> {
 		super(props);
 		this.state = {};
 		this.hidden = props.hidden;
-		props.form.fieldsRefs[props.field.fieldName] = this;
 		this.UNSAFE_componentWillReceiveProps(this.props)
 	}
 
@@ -40,9 +39,6 @@ class FieldWrap extends Component<FieldProps, any> {
 
 	componentWillUnmount() {
 		this.forceBouncingTimeout();
-		if(this.props.form.fieldsRefs[this.props.field.fieldName] === this) {
-			delete this.props.form.fieldsRefs[this.props.field.fieldName];
-		}
 	}
 
 	isEmpty() {

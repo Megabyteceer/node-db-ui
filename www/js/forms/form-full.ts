@@ -333,7 +333,7 @@ class FormFull extends eventProcessingMixins {
 		var currentCompactAreaCounter = 0;
 
 		for(var k in flds) {
-			var field = flds[k];
+			let field = flds[k];
 			if(this.isFieldVisibleByFormViewMask(field)) {
 				if((field.fieldType === FIELD_17_TAB) && (field.maxlen === 0) && !this.isSubForm()) {//tab
 					currentCompactAreaCounter = 0;//terminate compact area nesting
@@ -356,6 +356,9 @@ class FormFull extends eventProcessingMixins {
 					currentTabName = field.fieldName;
 					currentTab = React.createElement(FormTab, {
 						key: field.id,
+						ref: (ref) => {
+							this.fieldsRefs[field.fieldName] = ref;
+						},
 						title: field.name,
 						visible: tabVisible || this.showAllDebug || this.showAllTabs,
 						highlightFrame: this.showAllDebug,
@@ -365,6 +368,9 @@ class FormFull extends eventProcessingMixins {
 					tabs.push(currentTab);
 				} else if(this.props.editable || data[field.fieldName] || field.nostore || (field.fieldType === FIELD_15_1toN) || field.fieldType >= 100) {
 					var tf = React.createElement(FieldWrap, {
+						ref: (ref) => {
+							this.fieldsRefs[field.fieldName] = ref;
+						},
 						key: field.id,
 						field,
 						initialValue: data[field.fieldName],
