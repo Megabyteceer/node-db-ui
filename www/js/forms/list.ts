@@ -1,5 +1,5 @@
 import { R } from "../r";
-import { FIELD_2_INT, FIELD_7_Nto1, PREVS_CREATE, RecordsData } from "../bs-utils";
+import { FIELD_2_INT, FIELD_7_Nto1, PRIVILEGES_CREATE, RecordsData } from "../bs-utils";
 import { FieldAdmin } from "../admin/field-admin";
 import { NodeAdmin } from "../admin/node-admin";
 import { LeftBar } from "../left-bar";
@@ -319,7 +319,7 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 
 		var createBtn;
-		if(node.prevs & PREVS_CREATE) {
+		if(node.privileges & PRIVILEGES_CREATE) {
 			createBtn = R.div(null,
 				R.button({ title: L('ADD', (node.creationName || node.singleName)), className: 'clickable toolbtn create-btn', onClick: () => { data.items.push({}); this.forceUpdate(); } },
 					renderIcon('plus')
@@ -361,7 +361,7 @@ class List extends BaseForm<ListProps, ListState> {
 
 		if(!this.props.omitHeader) {
 			var createButton;
-			if((node.prevs & PREVS_CREATE) && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
+			if((node.privileges & PRIVILEGES_CREATE) && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
 				if(this.isSubForm()) {
 					createButton = R.button({
 						className: 'clickable create-button', onClick: async () => {

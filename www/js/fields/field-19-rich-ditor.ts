@@ -1,5 +1,5 @@
 import { R } from "../r";
-import { FIELD_19_RICHEDITOR } from "../bs-utils";
+import { FIELD_19_RICH_EDITOR } from "../bs-utils";
 import { L, renderIcon } from "../utils";
 import { registerFieldClass } from "../utils";
 import { BaseField } from "./base-field";
@@ -15,7 +15,7 @@ window.addEventListener('message', (e) => {
 	}
 });
 
-registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends BaseField {
+registerFieldClass(FIELD_19_RICH_EDITOR, class RichEditorField extends BaseField {
 
 	viewportRef: HTMLIFrameElement;
 	iframeId: number;

@@ -152,21 +152,21 @@ interface FilterDesc {
 interface NodeDesc {
 	id: RecId;
 	singleName: string;
-	prevs: PrevsMask;
-	reverse: BoolNum;
-	creationName: string;
+	privileges: PrivilegesMask;
 	matchName: string;
 	description: string;
 	isDoc: BoolNum;
-	staticLink: string;
-	tableName: string;
-	draftable: BoolNum;
-	icon: string;
-	recPerPage: number;
-	defaultFilterId: number;
-	fields: FieldDesc[];
-	filters: FilterDesc[];
-	sortFieldName: string;
+	reverse?: BoolNum;
+	creationName?: string;
+	staticLink?: string;
+	tableName?: string;
+	draftable?: BoolNum;
+	icon?: string;
+	recPerPage?: number;
+	defaultFilterId?: number;
+	fields?: FieldDesc[];
+	filters?: FilterDesc[];
+	sortFieldName?: string;
 	/** CLIENT SIDE ONLY */
 	fieldsById?: { [key: number]: FieldDesc };
 }
@@ -224,7 +224,7 @@ const USER_ROLE_ID: TRoleId = 3;
 
 const FIELD_1_TEXT: FieldType = 1;
 const FIELD_2_INT: FieldType = 2;
-const FIELD_4_DATETIME: FieldType = 4;
+const FIELD_4_DATE_TIME: FieldType = 4;
 const FIELD_5_BOOL: FieldType = 5;
 const FIELD_6_ENUM: FieldType = 6;
 const FIELD_7_Nto1: FieldType = 7;
@@ -237,11 +237,11 @@ const FIELD_15_1toN: FieldType = 15;
 const FIELD_16_RATING: FieldType = 16;
 const FIELD_17_TAB: FieldType = 17;
 const FIELD_18_BUTTON: FieldType = 18;
-const FIELD_19_RICHEDITOR: FieldType = 19;
+const FIELD_19_RICH_EDITOR: FieldType = 19;
 const FIELD_20_COLOR: FieldType = 20;
 const FIELD_21_FILE: FieldType = 21;
 
-type PrevsMask = number;
+type PrivilegesMask = number;
 type ViewMask = number;
 
 const VIEW_MASK_ALL = 65535;
@@ -252,16 +252,16 @@ const VIEW_MASK_DROPDOWN_LOOKUP = 8;
 const VIEW_MASK_CUSTOM_LIST = 16;
 
 
-const PREVS_VIEW_OWN: PrevsMask = 1;
-const PREVS_VIEW_ORG: PrevsMask = 2;
-const PREVS_VIEW_ALL: PrevsMask = 4;
-const PREVS_CREATE: PrevsMask = 8;
-const PREVS_EDIT_OWN: PrevsMask = 16;
-const PREVS_EDIT_ORG: PrevsMask = 32;
-const PREVS_EDIT_ALL: PrevsMask = 64;
-const PREVS_DELETE: PrevsMask = 128;
-const PREVS_PUBLISH: PrevsMask = 256;
-const PREVS_ANY: PrevsMask = 65535;
+const PRIVILEGES_VIEW_OWN: PrivilegesMask = 1;
+const PRIVILEGES_VIEW_ORG: PrivilegesMask = 2;
+const PRIVILEGES_VIEW_ALL: PrivilegesMask = 4;
+const PRIVILEGES_CREATE: PrivilegesMask = 8;
+const PRIVILEGES_EDIT_OWN: PrivilegesMask = 16;
+const PRIVILEGES_EDIT_ORG: PrivilegesMask = 32;
+const PRIVILEGES_EDIT_ALL: PrivilegesMask = 64;
+const PRIVILEGES_DELETE: PrivilegesMask = 128;
+const PRIVILEGES_PUBLISH: PrivilegesMask = 256;
+const PRIVILEGES_ANY: PrivilegesMask = 65535;
 
 const EVENT_HANDLER_TYPE_NODE = 'node';
 const EVENT_HANDLER_TYPE_FIELD = 'field';
@@ -275,11 +275,11 @@ export {
 
 	USER_ROLE_ID, ADMIN_ROLE_ID, GUEST_ROLE_ID,
 
-	PREVS_VIEW_OWN, PREVS_VIEW_ORG, PREVS_VIEW_ALL, PREVS_CREATE, PREVS_EDIT_OWN, PREVS_EDIT_ORG, PREVS_EDIT_ALL,
-	PREVS_DELETE, PREVS_PUBLISH, PREVS_ANY,
-	FIELD_1_TEXT, FIELD_2_INT, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1,
+	PRIVILEGES_VIEW_OWN, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_ALL, PRIVILEGES_CREATE, PRIVILEGES_EDIT_OWN, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_ALL,
+	PRIVILEGES_DELETE, PRIVILEGES_PUBLISH, PRIVILEGES_ANY,
+	FIELD_1_TEXT, FIELD_2_INT, FIELD_4_DATE_TIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1,
 	FIELD_8_STATIC_TEXT, FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM,
-	FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR,
+	FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR,
 	FIELD_20_COLOR, FIELD_21_FILE,
 
 	EVENT_HANDLER_TYPE_NODE, EVENT_HANDLER_TYPE_FIELD,
@@ -288,5 +288,5 @@ export {
 	VIEW_MASK_DROPDOWN_LOOKUP, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_ALL,
 
 	ViewMask, RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList,
-	PrevsMask, UserLangEntry, TRoleId, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
+	PrivilegesMask, UserLangEntry, TRoleId, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
 };

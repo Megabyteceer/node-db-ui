@@ -28,79 +28,82 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 	assert(!isNaN(nodeId), 'nodeId expected');
 	if(!clientSideNodes.has(userSession.cacheKey)) {
 		const srcNode = nodesById.get(nodeId);
-		let prevs;
+		let privileges;
 
-		if(srcNode && (prevs = getUserAccessToNode(srcNode, userSession))) {
+		if(srcNode && (privileges = getUserAccessToNode(srcNode, userSession))) {
 			let landQ = userSession.lang.prefix;
 
-
-			let fields = [];
-			for(let srcField of srcNode.fields) {
-				const field: FieldDesc = {
-					id: srcField.id,
-					name: srcField['name' + landQ] || srcField.name,
-					description: srcField['description' + landQ] || srcField.description,
-					show: srcField.show,
-					prior: srcField.prior,
-					fieldType: srcField.fieldType,
-					fieldName: srcField.fieldName,
-					selectFieldName: srcField.selectFieldName,
-					maxLength: srcField.maxLength,
-					requirement: srcField.requirement,
-					unique: srcField.unique,
-					enum: srcField.enum,
-					forSearch: srcField.forSearch,
-					noStore: srcField.noStore,
-					nodeRef: srcField.nodeRef,
-					clientOnly: srcField.clientOnly,
-					icon: srcField.icon
-				};
-
-				if(field.enum) {
-					field.enum = field.enum.map((item) => {
-						return {
-							name: item['name' + userSession.lang.prefix],
-							value: item.value
-						};
-					});
-				}
-
-				fields.push(field);
-				if(srcField.multilingual && userSession.langs) {
-
-					const fieldName = field.fieldName;
-					const fieldId = field.id;
-					const langs = userSession.langs;
-					for(const l of langs) {
-						if(l.prefix) {
-							const langFiled = Object.assign({}, field);
-							langFiled.show = field.show & (VIEW_MASK_ALL - VIEW_MASK_LIST - VIEW_MASK_DROPDOWN_LOOKUP);
-							langFiled.fieldName = fieldName + l.prefix;
-							langFiled.id = fieldId + l.prefix;
-							langFiled.lang = l.name;
-							fields.push(langFiled);
-						}
-					}
-				}
-			}
 			const ret: NodeDesc = {
 				id: srcNode.id,
 				singleName: srcNode["singleName" + landQ],
-				prevs,
-				reverse: srcNode.reverse,
-				creationName: srcNode["creationName" + landQ],
+				privileges,
 				matchName: srcNode["name" + landQ],
 				description: srcNode["description" + landQ],
-				isDoc: srcNode.isDoc,
-				staticLink: srcNode.staticLink,
-				tableName: srcNode.tableName,
-				draftable: srcNode.draftable,
-				icon: srcNode.icon,
-				recPerPage: srcNode.recPerPage,
-				defaultFilterId: srcNode.defaultFilterId,
-				fields,
-				filters: srcNode.filters,
-				sortFieldName: srcNode.sortFieldName
+				isDoc: srcNode.isDoc
+			}
+			if(srcNode.isDoc) {
+
+				ret.reverse = srcNode.reverse;
+				ret.creationName = srcNode["creationName" + landQ];
+				ret.staticLink = srcNode.staticLink;
+				ret.tableName = srcNode.tableName;
+				ret.draftable = srcNode.draftable;
+				ret.icon = srcNode.icon;
+				ret.recPerPage = srcNode.recPerPage;
+				ret.defaultFilterId = srcNode.defaultFilterId;
+				ret.filters = srcNode.filters;
+				ret.sortFieldName = srcNode.sortFieldName
+
+				let fields = [];
+				for(let srcField of srcNode.fields) {
+					const field: FieldDesc = {
+						id: srcField.id,
+						name: srcField['name' + landQ] || srcField.name,
+						description: srcField['description' + landQ] || srcField.description,
+						show: srcField.show,
+						prior: srcField.prior,
+						fieldType: srcField.fieldType,
+						fieldName: srcField.fieldName,
+						selectFieldName: srcField.selectFieldName,
+						maxLength: srcField.maxLength,
+						requirement: srcField.requirement,
+						unique: srcField.unique,
+						enum: srcField.enum,
+						forSearch: srcField.forSearch,
+						noStore: srcField.noStore,
+						nodeRef: srcField.nodeRef,
+						clientOnly: srcField.clientOnly,
+						icon: srcField.icon
+					};
+
+					if(field.enum) {
+						field.enum = field.enum.map((item) => {
+							return {
+								name: item['name' + userSession.lang.prefix],
+								value: item.value
+							};
+						});
+					}
+
+					fields.push(field);
+					if(srcField.multilingual && userSession.langs) {
+
+						const fieldName = field.fieldName;
+						const fieldId = field.id;
+						const langs = userSession.langs;
+						for(const l of langs) {
+							if(l.prefix) {
+								const langFiled = Object.assign({}, field);
+								langFiled.show = field.show & (VIEW_MASK_ALL - VIEW_MASK_LIST - VIEW_MASK_DROPDOWN_LOOKUP);
+								langFiled.fieldName = fieldName + l.prefix;
+								langFiled.id = fieldId + l.prefix;
+								langFiled.lang = l.name;
+								fields.push(langFiled);
+							}
+						}
+					}
+				}
+				ret.fields = fields;
 			}
 			clientSideNodes.set(nodeId, ret);
 		} else {
@@ -114,7 +117,7 @@ function getUserAccessToNode(node, userSession) {
 	let ret = 0;
 	for(let role of node.rolesToAccess) {
 		if(isUserHaveRole(role.roleId, userSession)) {
-			ret |= role.prevs;
+			ret |= role.privileges;
 		}
 	}
 	return ret;
@@ -130,15 +133,15 @@ function getNodesTree(userSession) { // get nodes tree visible to user
 		let nodesTree = [];
 		let ret = { nodesTree, options };
 		for(let nodeSrc of nodes) {
-			let prevs = getUserAccessToNode(nodeSrc, userSession);
-			if(prevs) {
+			let privileges = getUserAccessToNode(nodeSrc, userSession);
+			if(privileges) {
 				nodesTree.push({
 					icon: nodeSrc.icon,
 					id: nodeSrc.id,
 					name: nodeSrc['name' + langId],
 					isDoc: nodeSrc.isDoc,
 					parent: nodeSrc._nodesID,
-					prevs,
+					privileges,
 					staticLink: nodeSrc.staticLink
 				});
 			}
@@ -213,14 +216,14 @@ async function initNodesData() { // load whole nodes data in to memory
 		nodesById_new.set(nodeData.id, nodeData);
 		nodeData.sortFieldName = 'createdOn';
 
-		let rolesToAccess = await mysqlExec("SELECT roleId, prevs FROM _rolePrevs WHERE nodeID = 0 OR nodeID = " + nodeData.id);
+		let rolesToAccess = await mysqlExec("SELECT roleId, privileges FROM _rolePrevs WHERE nodeID = 0 OR nodeID = " + nodeData.id);
 
 		/// #if DEBUG
 		nodeData.__preventToStringify = nodeData; // circular structure to fail when try to stringify
 		/// #endif
 
 		nodeData.rolesToAccess = rolesToAccess;
-		nodeData.prevs = 65535;
+		nodeData.privileges = 65535;
 		let sortField = nodeData._fieldsID;
 
 		if(nodeData.isDoc) {

@@ -6,7 +6,7 @@ import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } fro
 import { getRecords } from "../core/get-records";
 import { submitRecord } from "../core/submit";
 import { L } from "../core/locale";
-import { FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_2_INT, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, PREVS_VIEW_ORG, RecordData, RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";
+import { FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_2_INT, FIELD_4_DATE_TIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, PRIVILEGES_VIEW_ORG, RecordData, RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
@@ -149,7 +149,7 @@ function getFieldTypeSQL(data) {
 			} else {
 				return 'BIGINT(' + data.maxLength + ') NOT NULL DEFAULT 0';
 			}
-		case FIELD_4_DATETIME:
+		case FIELD_4_DATE_TIME:
 		case FIELD_11_DATE:
 			return 'timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\'';
 		case FIELD_5_BOOL:
@@ -161,7 +161,7 @@ function getFieldTypeSQL(data) {
 			return "VARCHAR(32) NOT NULL DEFAULT ''";
 		case FIELD_16_RATING:
 			throwError(L('RATING_FLD_NOEDIT'));
-		case FIELD_19_RICHEDITOR:
+		case FIELD_19_RICH_EDITOR:
 			return "MEDIUMTEXT NOT NULL DEFAULT ''";
 		case FIELD_21_FILE:
 			return "VARCHAR(127) NOT NULL DEFAULT ''";
@@ -200,7 +200,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 				node_fields_linker: linkedNodeId,
 				fieldType: FIELD_12_PICTURE
 			};
-			const records = await getRecords(6, PREVS_VIEW_ORG, undefined, undefined, filters);
+			const records = await getRecords(6, PRIVILEGES_VIEW_ORG, undefined, undefined, filters);
 			if(records.total) {
 				data.icon = records.items[0].fieldName;
 			}

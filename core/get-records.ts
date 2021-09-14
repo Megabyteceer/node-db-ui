@@ -1,6 +1,6 @@
 import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHadlersNames } from './desc-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
-import { ViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PREVS_PUBLISH, PREVS_EDIT_ALL, PREVS_EDIT_ORG, PREVS_EDIT_OWN, PREVS_VIEW_ALL, PREVS_VIEW_ORG, PREVS_VIEW_OWN, PREVS_DELETE, FIELD_15_1toN, FIELD_19_RICHEDITOR, RecordData, RecordsData, RecId } from "../www/js/bs-utils";
+import { ViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PRIVILEGES_PUBLISH, PRIVILEGES_EDIT_ALL, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_OWN, PRIVILEGES_VIEW_ALL, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_OWN, PRIVILEGES_DELETE, FIELD_15_1toN, FIELD_19_RICH_EDITOR, RecordData, RecordsData, RecId } from "../www/js/bs-utils";
 import { UserSession } from './auth';
 
 const isASCII = (str) => {
@@ -71,7 +71,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 				}
 			} else if(selectFieldName) {
 				selQ.push('(', selectFieldName.replaceAll('@userid', userSession.id.toString()), ')AS `', fieldName, '`');
-			} else if((viewMask === 2 || viewMask === 16) && (fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICHEDITOR) && f.maxLength > 500) {
+			} else if((viewMask === 2 || viewMask === 16) && (fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICH_EDITOR) && f.maxLength > 500) {
 				selQ.push('SUBSTRING(', tableName, '.', fieldName, ',1,500) AS `', fieldName, '`');
 			} else {
 				selQ.push(tableName, '.', fieldName);
@@ -247,20 +247,20 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 	}
 
 
-	let prevs = node.prevs;
+	let privileges = node.privileges;
 	if(userSession) {
 
-		if((prevs & (PREVS_EDIT_OWN | PREVS_EDIT_ORG | PREVS_EDIT_ALL | PREVS_PUBLISH)) !== 0) {
+		if((privileges & (PRIVILEGES_EDIT_OWN | PRIVILEGES_EDIT_ORG | PRIVILEGES_EDIT_ALL | PRIVILEGES_PUBLISH)) !== 0) {
 			wheresBegin.push("(", tableName, ".status > 0)");
 		} else {
 			wheresBegin.push("(", tableName, ".status = 1)");
 		}
 
-		if(prevs & PREVS_VIEW_ALL) {
+		if(privileges & PRIVILEGES_VIEW_ALL) {
 
-		} else if((prevs & PREVS_VIEW_ORG) && (userSession.orgId !== 0)) {
+		} else if((privileges & PRIVILEGES_VIEW_ORG) && (userSession.orgId !== 0)) {
 			wheresBegin.push(" AND (", tableName, "._organID=", userSession.orgId as unknown as string, ')');
-		} else if(prevs & PREVS_VIEW_OWN) {
+		} else if(privileges & PRIVILEGES_VIEW_OWN) {
 			if(tableName !== '_messages') {
 				wheresBegin.push(" AND (", tableName, "._usersID=", userSession.id as unknown as string, ')');
 			} else {
@@ -282,19 +282,19 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 	for(let pag of items) {
 
 		if(viewMask) {
-			if(prevs & PREVS_EDIT_ALL) {
+			if(privileges & PRIVILEGES_EDIT_ALL) {
 				pag.isE = 1;
-			} else if((prevs & PREVS_EDIT_ORG) && (userSession.orgId !== 0) && (pag.creatorORG === userSession.orgId)) {
+			} else if((privileges & PRIVILEGES_EDIT_ORG) && (userSession.orgId !== 0) && (pag.creatorORG === userSession.orgId)) {
 				pag.isE = 1;
-			} else if((prevs & PREVS_EDIT_OWN) && (pag.creatorUSER === userSession.id)) {
+			} else if((privileges & PRIVILEGES_EDIT_OWN) && (pag.creatorUSER === userSession.id)) {
 				pag.isE = 1;
 			}
 
 			if(pag.isE) {
-				if(prevs & PREVS_DELETE) {
+				if(privileges & PRIVILEGES_DELETE) {
 					pag.isD = 1;
 				}
-				if(node.draftable && (prevs & PREVS_PUBLISH)) {
+				if(node.draftable && (privileges & PRIVILEGES_PUBLISH)) {
 					pag.isP = 1;
 				}
 			} else {

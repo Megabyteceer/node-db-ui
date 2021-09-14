@@ -1,4 +1,4 @@
-import { FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATIC_TEXT } from "../bs-utils";
+import { FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_4_DATE_TIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATIC_TEXT } from "../bs-utils";
 
 import { L } from "../utils";
 import { FormEvents } from "./forms_events";
@@ -96,7 +96,7 @@ class FieldsEvents extends FormEvents {
 			case FIELD_6_ENUM:
 				this.showField('enum');
 				break;
-			case FIELD_19_RICHEDITOR:
+			case FIELD_19_RICH_EDITOR:
 			case FIELD_12_PICTURE:
 				this.showField("width", "height");
 				this.hideField("maxLength", "noStore", "clientOnly", "unique");
@@ -105,7 +105,7 @@ class FieldsEvents extends FormEvents {
 				this.setFieldValue('unique', false);
 				break;
 			case FIELD_5_BOOL:
-			case FIELD_4_DATETIME:
+			case FIELD_4_DATE_TIME:
 			case FIELD_11_DATE:
 			case FIELD_20_COLOR:
 			case FIELD_21_FILE:
@@ -114,7 +114,7 @@ class FieldsEvents extends FormEvents {
 
 		}
 
-		if(fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICHEDITOR) {
+		if(fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICH_EDITOR) {
 			this.showField('multilingual');
 		} else {
 			this.hideField('multilingual');

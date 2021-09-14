@@ -1,7 +1,7 @@
 import {
-	throwError, FIELD_14_NtoM, FIELD_4_DATETIME, FIELD_11_DATE, FIELD_7_Nto1, FIELD_17_TAB, FIELD_19_RICHEDITOR,
-	FIELD_10_PASSWORD, FIELD_1_TEXT, FIELD_12_PICTURE, FIELD_21_FILE, FIELD_5_BOOL, FIELD_15_1toN, PREVS_ANY,
-	PREVS_PUBLISH, assert, PREVS_CREATE, RecId, RecordDataWrite
+	throwError, FIELD_14_NtoM, FIELD_4_DATE_TIME, FIELD_11_DATE, FIELD_7_Nto1, FIELD_17_TAB, FIELD_19_RICH_EDITOR,
+	FIELD_10_PASSWORD, FIELD_1_TEXT, FIELD_12_PICTURE, FIELD_21_FILE, FIELD_5_BOOL, FIELD_15_1toN, PRIVILEGES_ANY,
+	PRIVILEGES_PUBLISH, assert, PRIVILEGES_CREATE, RecId, RecordDataWrite
 } from "../www/js/bs-utils";
 
 import ENV from "../ENV";
@@ -30,15 +30,15 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 	let node = getNodeDesc(nodeId);
 	let currentData;
 	if(recId !== null) {
-		currentData = await getRecords(nodeId, PREVS_ANY, recId, userSession);
+		currentData = await getRecords(nodeId, PRIVILEGES_ANY, recId, userSession);
 	}
 
 	const tableName = node.tableName;
-	const prevs = node.prevs;
+	const privileges = node.privileges;
 	let filesToDelete;
 
 	if(node.draftable) {
-		if((prevs & PREVS_PUBLISH) === 0) {
+		if((privileges & PRIVILEGES_PUBLISH) === 0) {
 			if(recId !== null) {
 				if(currentData.status !== 1) {
 					data.status = 2;
@@ -61,7 +61,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			throwError('Update access denied.');
 		}
 	} else {
-		if(!(node.prevs & PREVS_CREATE)) {
+		if(!(node.privileges & PRIVILEGES_CREATE)) {
 			throwError('Creation access denied: ' + node.id);
 		}
 	}
@@ -82,7 +82,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 				}
 			}
 			if(data.hasOwnProperty(fieldName)) {
-				if(f.fieldType === FIELD_19_RICHEDITOR) {
+				if(f.fieldType === FIELD_19_RICH_EDITOR) {
 					for(let replacer of blockTags) {
 						data[fieldName] = data[fieldName].replace(replacer.exp, replacer.val);
 					}
@@ -233,7 +233,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 							insQ.push("'", fieldVal, "'");
 							break;
 
-						case FIELD_19_RICHEDITOR:
+						case FIELD_19_RICH_EDITOR:
 							if(fieldVal.length > 16000000) {
 								throwError("Value length for field '" + fieldName + "' (" + tableName + ") is longer that 16000000");
 							}
@@ -248,7 +248,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 							}
 							insQ.push(fieldVal);
 							break;
-						case FIELD_4_DATETIME:
+						case FIELD_4_DATE_TIME:
 						case FIELD_11_DATE:
 							insQ.push("'", fieldVal, "'");
 							break;

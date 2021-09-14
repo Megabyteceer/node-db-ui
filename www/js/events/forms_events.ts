@@ -1,6 +1,6 @@
 import { Filters, getNodeData, isAdmin, L, myPromt, reloadLocation } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT } from "../bs-utils";
+import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -235,7 +235,7 @@ class FormEvents extends FormFull {
 			else
 				this.setFieldValue("vis_list_custom", 0);
 
-			if(this.fieldValue("fieldType") === FIELD_12_PICTURE || this.fieldValue("fieldType") === FIELD_19_RICHEDITOR) {
+			if(this.fieldValue("fieldType") === FIELD_12_PICTURE || this.fieldValue("fieldType") === FIELD_19_RICH_EDITOR) {
 				this.setFieldValue("height", this.fieldValue("maxLength") % 10000);
 				this.setFieldValue("width", Math.floor(this.fieldValue("maxLength") / 10000));
 			}
@@ -339,7 +339,7 @@ class FormEvents extends FormFull {
 			this.fieldAlert('fieldName', L('NO_NUMERIC_NAME'));
 		}
 
-		if(fieldType === FIELD_12_PICTURE || fieldType === FIELD_19_RICHEDITOR) {
+		if(fieldType === FIELD_12_PICTURE || fieldType === FIELD_19_RICH_EDITOR) {
 			if(!this.fieldValue("height")) {
 				this.fieldAlert("height", L('REQUIRED_FLD'));
 			}

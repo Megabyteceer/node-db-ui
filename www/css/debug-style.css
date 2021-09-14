@@ -7,65 +7,65 @@
 	min-height: 400px;
 }
 
-.admin-role-prevs-body {
+.admin-role-privileges-body {
 	text-align: center;
 }
 
-.admin-role-prevs-block {
+.admin-role-privileges-block {
 	display: inline-block;
 	margin-bottom: 30px;
 }
 
-.admin-role-prevs-header {
+.admin-role-privileges-header {
 	color: #aaa;
 	font-size: 80%;
 }
 
-.admin-role-prevs-table {
+.admin-role-privileges-table {
 	text-align: center;
 	margin-top: 50px;
 }
 
-.admin-role-prevs-row-header {
+.admin-role-privileges-row-header {
 	font-weight: bold;
 	border-bottom: 1px solid #aaa;
 }
 
-.admin-role-prevs-line {
+.admin-role-privileges-line {
 	padding-bottom: 10px;
 	padding-top: 10px;
 	height: 40px;
 }
 
-.admin-role-prevs-line-header {
+.admin-role-privileges-line-header {
 	text-align: right;
 	vertical-align: middle;
 	padding-right: 20px;
 	width: 250px;
 }
 
-.admin-role-prevs-cell {
+.admin-role-privileges-cell {
 	width: 140px;
 }
 
-.admin-role-prevs-check {
+.admin-role-privileges-check {
 	margin-left: -12px;
 	margin-right: -12px;
 }
 
-.admin-role-prevs-disabled {
+.admin-role-privileges-disabled {
 	color: #ccc;
 }
 
-.admin-role-prevs-enabled {
+.admin-role-privileges-enabled {
 	color: #3a3;
 }
 
-.admin-role-prevs-size2 {
+.admin-role-privileges-size2 {
 	font-size: 120%;
 }
 
-.admin-role-prevs-size3 {
+.admin-role-privileges-size3 {
 	font-size: 140%;
 }
 

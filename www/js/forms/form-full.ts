@@ -6,7 +6,7 @@ import { eventProcessingMixins } from "./event-processing-mixins";
 import { NodeAdmin } from "../admin/node-admin";
 import { LoadingIndicator } from "../loading-indicator";
 import { R } from "../r";
-import { FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_5_BOOL, FIELD_7_Nto1, PREVS_PUBLISH, RecId, RecordData } from "../bs-utils";
+import { FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_5_BOOL, FIELD_7_Nto1, PRIVILEGES_PUBLISH, RecId, RecordData } from "../bs-utils";
 import React from "react";
 import { iAdmin } from "../user";
 import { HotkeyButton } from "../components/hotkey-button";
@@ -476,7 +476,7 @@ class FormFull extends eventProcessingMixins {
 			}
 
 			if(this.props.editable) {
-				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.prevs & PREVS_PUBLISH)) {
+				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.privileges & PRIVILEGES_PUBLISH)) {
 					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('SAVE') }, this.isSubForm() ? renderIcon('check') : renderIcon('floppy-o'), this.isSubForm() ? '' : L('SAVE'));
 				} else {
 					if(data.status === 1) {
