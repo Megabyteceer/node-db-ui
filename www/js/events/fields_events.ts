@@ -115,10 +115,10 @@ class FieldsEvents extends FormEvents {
 		}
 
 		if(fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICHEDITOR) {
-			this.showField('multilang');
+			this.showField('multilingual');
 		} else {
-			this.hideField('multilang');
-			this.setFieldValue('multilang', false);
+			this.hideField('multilingual');
+			this.setFieldValue('multilingual', false);
 		}
 		this.check12nFieldName();
 	}

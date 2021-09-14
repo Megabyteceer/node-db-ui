@@ -66,7 +66,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				}
 
 				fields.push(field);
-				if(srcField.multilang && userSession.langs) {
+				if(srcField.multilingual && userSession.langs) {
 
 					const fieldName = field.fieldName;
 					const fieldId = field.id;

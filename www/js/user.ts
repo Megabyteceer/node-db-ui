@@ -59,8 +59,8 @@ class User extends Component<any, any> {
 		}, 10);
 	}
 
-	toggleMultilang() {
-		getData('api/toggleMultilang').then(() => {
+	toggleMultilingual() {
+		getData('api/toggleMultilingual').then(() => {
 			window.location.reload();
 		});
 
@@ -73,15 +73,15 @@ class User extends Component<any, any> {
 		if(this.state) {
 
 			var iconName = '';
-			let className = 'clickable top-bar-user-multilang'
+			let className = 'clickable top-bar-user-multilingual'
 			if(this.state.hasOwnProperty('langs')) {
-				className += ' top-bar-user-multilang-active';
+				className += ' top-bar-user-multilingual-active';
 				iconName = 'check-';
 			};
 
-			var multilangBtn;
+			var multilingualBtn;
 			if(ENV.ENABLE_MULTILANG) {
-				multilangBtn = R.div({ className, onClick: this.toggleMultilang },
+				multilingualBtn = R.div({ className, onClick: this.toggleMultilingual },
 					renderIcon(iconName + 'square-o'), L('MULTILANG')
 				);
 			}
@@ -117,7 +117,7 @@ class User extends Component<any, any> {
 			}
 
 			body = R.span(null,
-				multilangBtn,
+				multilingualBtn,
 				org,
 				btn1, btn2
 			)

@@ -62,7 +62,7 @@ interface UserSession {
 	uploaded?: { [key: number]: string };
 	__temporaryServerSideSession?: boolean;
 	notifications?: string[];
-	/** not empty if user have multilangEnabled */
+	/** not empty if user have multilingualEnabled */
 	langs?: UserLangEntry[];
 }
 

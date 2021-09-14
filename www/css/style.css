@@ -580,7 +580,7 @@ input[readonly] {
 	cursor: pointer;
 }
 
-.top-bar-user-multilang {
+.top-bar-user-multilingual {
 	display: inline-block;
 	margin-right: 12px;
 	border-radius: 4px;
@@ -596,7 +596,7 @@ input[readonly] {
 	width: 50px;
 }
 
-.top-bar-user-multilang-active {
+.top-bar-user-multilingual-active {
 	color: #ffbf8c;
 }
 

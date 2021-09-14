@@ -30,7 +30,7 @@ const LANGS = {
 	/// #endif
 	'VALUE_EXISTS': 'Value already in use.',
 	'FLD_EXISTS': 'Field with same name already exists in this document.',
-	'MULTILANG': 'Multilangual',
+	'MULTILANG': 'Multilingualual',
 	'LOGIN': 'Login',
 	'USER_PROFILE': 'User profile',
 	'EDIT_USER_PROFILE': 'Edit user\'s profile %',

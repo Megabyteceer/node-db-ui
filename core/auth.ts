@@ -209,7 +209,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 		return sessionsByUserId.get(userID);
 	}
 
-	const query = "SELECT _users.name as userName, multilangEnabled, avatar, _users._organID AS orgID, company, defaultOrg, _organ.name AS organName, email, language FROM _users LEFT JOIN _organ ON (_users._organID = _organ.id) WHERE (_users.id = " + userID + ") AND _users.status=1 LIMIT 1";
+	const query = "SELECT _users.name as userName, multilingualEnabled, avatar, _users._organID AS orgID, company, defaultOrg, _organ.name AS organName, email, language FROM _users LEFT JOIN _organ ON (_users._organID = _organ.id) WHERE (_users.id = " + userID + ") AND _users.status=1 LIMIT 1";
 	const users = await mysqlExec(query) as mysqlRowsResult;
 	const user = users[0];
 	if(!user) {
@@ -257,7 +257,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 	const lang = getLang(user.language);
 
 	cacheKeyGenerator.push('l', lang.prefix);
-	cacheKeyGenerator.push('m', user.multilangEnabled);
+	cacheKeyGenerator.push('m', user.multilingualEnabled);
 
 	const userSession: UserSession = {
 		id: userID,
@@ -271,7 +271,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 		cacheKey: cacheKeyGenerator.join()
 	};
 
-	if(user.multilangEnabled) {
+	if(user.multilingualEnabled) {
 		userSession.langs = getLangs();
 	}
 
@@ -288,7 +288,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 			Object.freeze(userSession);
 		//*/
 	} else {
-		await setMultiLang(user.multilangEnabled, userSession);
+		await setMultiLang(user.multilingualEnabled, userSession);
 	}
 	return userSession;
 }
@@ -327,7 +327,7 @@ async function setMultiLang(enable, userSession) {
 	} else {
 		delete userSession.langs;
 	}
-	await mysqlExec('UPDATE _users SET multilangEnabled=' + (enable ? '1' : '0') + " WHERE id=" + userSession.id + " LIMIT 1");
+	await mysqlExec('UPDATE _users SET multilingualEnabled=' + (enable ? '1' : '0') + " WHERE id=" + userSession.id + " LIMIT 1");
 	return 1;
 }
 

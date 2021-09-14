@@ -12,7 +12,7 @@ const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
-		if(data.multilang) {
+		if(data.multilingual) {
 			const langs = getLangs();
 			const fn = data.fieldName;
 			for(let l of langs) {
@@ -69,9 +69,9 @@ const handlers: NodeEventsHandlers = {
 
 		if(!currentData.nostore) {
 
-			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxlen') || newData.hasOwnProperty('multilang')) {
+			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxlen') || newData.hasOwnProperty('multilingual')) {
 
-				const multilangChanged = newData.hasOwnProperty('multilang') && currentData.multilang !== newData.multilang;
+				const multilingualChanged = newData.hasOwnProperty('multilingual') && currentData.multilingual !== newData.multilingual;
 
 				currentData = Object.assign(currentData, newData);
 
@@ -90,8 +90,8 @@ const handlers: NodeEventsHandlers = {
 
 							const langs = getLangs();
 
-							if(multilangChanged) {
-								if(currentData.multilang) {
+							if(multilingualChanged) {
+								if(currentData.multilingual) {
 									for(let l of langs) {
 										if(l.prefix) {
 											currentData.fieldName = realBDFNAme + l.prefix;
@@ -106,7 +106,7 @@ const handlers: NodeEventsHandlers = {
 										}
 									}
 								}
-							} else if(currentData.multilang) {
+							} else if(currentData.multilingual) {
 								for(let l of langs) {
 									if(l.prefix) {
 										await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realBDFNAme + l.prefix + ' ' + typeQ);

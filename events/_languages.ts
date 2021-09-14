@@ -8,7 +8,7 @@ export default {
 
 	afterCreate: async function(data: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin();
-		const fieldsData = await getRecords(6, 1, null, undefined, { multilang: 1, p: '*' });
+		const fieldsData = await getRecords(6, 1, null, undefined, { multilingual: 1, p: '*' });
 		const fields = fieldsData.items;
 		for(let f of fields) {
 			f.node_fields_linker = f.node_fields_linker.id;

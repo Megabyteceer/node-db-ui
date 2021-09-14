@@ -28,7 +28,7 @@ const api = {
 	"api/setCurrentOrg": (reqData, userSession, res) => {
 		setCurrentOrg(reqData.orgId, userSession, true).then(res);
 	},
-	"api/toggleMultilang": (reqData, userSession, res) => {
+	"api/toggleMultilingual": (reqData, userSession, res) => {
 		setMultiLang(!userSession.langs, userSession).then(res);
 	},
 	"api/descNode": (reqData, userSession, res) => {
