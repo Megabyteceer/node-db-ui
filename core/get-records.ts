@@ -1,6 +1,6 @@
 import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHadlersNames } from './desc-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
-import { ViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PRIVILEGES_PUBLISH, PRIVILEGES_EDIT_ALL, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_OWN, PRIVILEGES_VIEW_ALL, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_OWN, PRIVILEGES_DELETE, FIELD_15_1toN, FIELD_19_RICH_EDITOR, RecordData, RecordsData, RecId } from "../www/js/bs-utils";
+import { ViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PRIVILEGES_PUBLISH, PRIVILEGES_EDIT_ALL, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_OWN, PRIVILEGES_VIEW_ALL, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_OWN, PRIVILEGES_DELETE, FIELD_15_1toN, FIELD_19_RICH_EDITOR, RecordData, RecordsData, RecId, VIEW_MASK_LIST, VIEW_MASK_CUSTOM_LIST } from "../www/js/bs-utils";
 import { UserSession } from './auth';
 
 const isASCII = (str) => {
@@ -71,7 +71,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 				}
 			} else if(selectFieldName) {
 				selQ.push('(', selectFieldName.replaceAll('@userid', userSession.id.toString()), ')AS `', fieldName, '`');
-			} else if((viewMask === 2 || viewMask === 16) && (fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICH_EDITOR) && f.maxLength > 500) {
+			} else if((viewMask === VIEW_MASK_LIST || viewMask === VIEW_MASK_CUSTOM_LIST) && (fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICH_EDITOR) && f.maxLength > 500) {
 				selQ.push('SUBSTRING(', tableName, '.', fieldName, ',1,500) AS `', fieldName, '`');
 			} else {
 				selQ.push(tableName, '.', fieldName);

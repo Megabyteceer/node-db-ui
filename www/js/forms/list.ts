@@ -74,6 +74,10 @@ class List extends BaseForm<ListProps, ListState> {
 		this.onShow();
 	}
 
+	UNSAFE_componentWillReceiveProps(newProps) {
+		// allow list props update to render in lookup
+	}
+
 	onShow() {
 		if(!this.state.data) {
 			setTimeout(() => { this.refreshData(); }, 1);

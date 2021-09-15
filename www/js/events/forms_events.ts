@@ -1,6 +1,6 @@
 import { Filters, getNodeData, isAdmin, L, myPromt, reloadLocation } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT } from "../bs-utils";
+import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, LANGUAGE_ID_DEFAULT } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -18,7 +18,7 @@ class FormEvents extends FormFull {
 		}
 
 		this.addLookupFilters('language', {
-			filterId: 6
+			isUILanguage: 1
 		});
 
 		if($('#org-edit-link').length === 0) {
@@ -379,6 +379,9 @@ class FormEvents extends FormFull {
 	}
 
 	async _languages_onload() {
+		if(this.recId === LANGUAGE_ID_DEFAULT) {
+			this.disableField('isUILanguage');
+		}
 		if(this.isUpdateRecord) {
 			this.disableField("code");
 		} else if(this.editable) {

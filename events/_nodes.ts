@@ -2,7 +2,7 @@
 import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "../core/mysql-connection";
 import { shouldBeAdmin } from "../core/admin/admin";
 import { NodeEventsHandlers, reloadMetadataSchedule } from "../core/desc-node";
-import { RecordData, RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";
+import { FIELD_1_TEXT, FIELD_4_DATE_TIME, FIELD_7_Nto1, NODE_ID_ORGS, NODE_ID_USERS, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_READONLY } from "../www/js/bs-utils";
 import { L } from "../core/locale";
 
 const handlers: NodeEventsHandlers = {
@@ -57,29 +57,29 @@ const handlers: NodeEventsHandlers = {
 
 			//create default fields
 			const mainFieldQ = `INSERT INTO _fields
-				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName, selectFieldName, name,           description, maxLength, requirement, unique, _usersID, forSearch, noStore) VALUES
-				(${createdID},       1,       255,     1,     1,         'name',    '',              '${L('Name')}', '',           64,     1,           0,     0,        1,         0);`; //TODO add all languages
+				(node_fields_linker, status, \`show\`,          prior, fieldType,       fieldName, selectFieldName, name,           description, maxLength, requirement, unique, _usersID, forSearch, noStore) VALUES
+				(${createdID},       1,       ${VIEW_MASK_ALL}, 1,     ${FIELD_1_TEXT}, 'name',    '',              '${L('Name')}', '',          64,        1,           0,     0,         1,         0);`;
 			await mysqlExec(mainFieldQ);
 
 			if(data.createdon_field) {
 				const createdOnQ = `INSERT INTO _fields 
-				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,   selectFieldName, name,                 description, maxLength, requirement, unique, _usersID, forSearch, noStore) VALUES
-				(${createdID},       1,        62,     2,     4,         'createdOn', '',              '${L('Created on')}', '',           0,      0,           0,     0,        1,         0);`;  //TODO add all languages
+				(node_fields_linker, status, \`show\`,                                 prior, fieldType,            fieldName,   selectFieldName, name,                 description, maxLength, requirement, unique, _usersID, forSearch, noStore) VALUES
+				(${createdID},       1,        ${VIEW_MASK_LIST | VIEW_MASK_READONLY}, 2,     ${FIELD_4_DATE_TIME}, 'createdOn', '',              '${L('Created on')}', '',          0,         0,           0,      0,        1,         0);`;
 				const dateFieldId = (await mysqlExec(createdOnQ) as mysqlInsertResult).insertId;
 				await mysqlExec('UPDATE _nodes SET _fieldsID=' + dateFieldId + ', reverse = 1 WHERE id=' + createdID);
 			}
 
 			if(data.createdby_field) {
 				const createdByQ = `INSERT INTO _fields
-				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,  selectFieldName, name,                   description, maxLength, requirement, unique, _usersID, forSearch, noStore, nodeRef) VALUES
-				(${createdID},       1,        6,      2,     7,         '_organID', '_organ',        '${L('Organization')}', '',           0,      0,           0,     0,        1,         0,       7);`; //TODO add all languages
+				(node_fields_linker, status, \`show\`,                                 prior, fieldType,       fieldName,  selectFieldName, name,                   description, maxLength, requirement, unique, _usersID, forSearch, noStore, nodeRef) VALUES
+				(${createdID},       1,        ${VIEW_MASK_LIST | VIEW_MASK_READONLY}, 3,     ${FIELD_7_Nto1}, '_organID', '_organ',        '${L('Organization')}', '',          0,         0,           0,      0,        1,         0,       ${NODE_ID_ORGS});`;
 				await mysqlExec(createdByQ);
 			}
 
 			if(data.createUserFld) {
 				const createdByQ = `INSERT INTO _fields
-				(node_fields_linker, status, \`show\`, prior, fieldType, fieldName,  selectFieldName,  name,           description, maxLength, requirement, unique, _usersID, forSearch, noStore, nodeRef, icon) VALUES
-				(${createdID},       1,        6,      3,     7,         '_usersID', '_users',        '${L('Owner')}', '',           0,      0,           0,     0,        1,         0,       5,       'avatar');`; //TODO add all languages
+				(node_fields_linker, status, \`show\`,                                 prior, fieldType,       fieldName,  selectFieldName,  name,           description, maxLength, requirement, unique, _usersID, forSearch, noStore, nodeRef,          icon) VALUES
+				(${createdID},       1,        ${VIEW_MASK_LIST | VIEW_MASK_READONLY}, 4,     ${FIELD_7_Nto1}, '_usersID', '_users',        '${L('Owner')}', '',           0,        0,           0,      0,        1,         0,       ${NODE_ID_USERS}, 'avatar');`;
 				await mysqlExec(createdByQ);
 			}
 		}

@@ -226,7 +226,7 @@ class eventProcessingMixins extends BaseForm {
 		}
 
 		var hdr = this.header;
-		if(this.state.header !== hdr) {
+		if((this.state.header || '') != hdr) {
 			this.setState({ header: hdr });
 		}
 

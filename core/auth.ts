@@ -272,7 +272,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 	};
 
 	if(user.multilingualEnabled) {
-		userSession.langs = getLangs();
+		userSession.multilingualEnabled = 1;
 	}
 
 	if(!await setCurrentOrg(organID_def, userSession)) {
@@ -322,10 +322,8 @@ async function setCurrentOrg(organID: number, userSession: UserSession, updateIn
 
 async function setMultiLang(enable, userSession) {
 	shouldBeAuthorized(userSession);
-	if(enable && ENV.ENABLE_MULTILANG) {
-		userSession.langs = getLangs();
-	} else {
-		delete userSession.langs;
+	if(ENV.ENABLE_MULTILINGUAL) {
+		userSession.multilingualEnabled = enable;
 	}
 	await mysqlExec('UPDATE _users SET multilingualEnabled=' + (enable ? '1' : '0') + " WHERE id=" + userSession.id + " LIMIT 1");
 	return 1;

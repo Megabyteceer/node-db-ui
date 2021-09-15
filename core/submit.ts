@@ -1,7 +1,7 @@
 import {
 	throwError, FIELD_14_NtoM, FIELD_4_DATE_TIME, FIELD_11_DATE, FIELD_7_Nto1, FIELD_17_TAB, FIELD_19_RICH_EDITOR,
 	FIELD_10_PASSWORD, FIELD_1_TEXT, FIELD_12_PICTURE, FIELD_21_FILE, FIELD_5_BOOL, FIELD_15_1toN, PRIVILEGES_ANY,
-	PRIVILEGES_PUBLISH, assert, PRIVILEGES_CREATE, RecId, RecordDataWrite
+	PRIVILEGES_PUBLISH, assert, PRIVILEGES_CREATE, RecId, RecordDataWrite, VIEW_MASK_DROPDOWN_LOOKUP
 } from "../www/js/bs-utils";
 
 import ENV from "../ENV";
@@ -244,7 +244,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 						case FIELD_7_Nto1:
 							if(!isAdmin(userSession) && fieldVal) {
-								await getRecords(f.nodeRef, 8, fieldVal, userSession); //check if you have read access to refered item
+								await getRecords(f.nodeRef, VIEW_MASK_DROPDOWN_LOOKUP, fieldVal, userSession); //check if you have read access to refered item
 							}
 							insQ.push(fieldVal);
 							break;

@@ -6,7 +6,7 @@ import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } fro
 import { getRecords } from "../core/get-records";
 import { submitRecord } from "../core/submit";
 import { L } from "../core/locale";
-import { FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_2_INT, FIELD_4_DATE_TIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, PRIVILEGES_VIEW_ORG, RecordData, RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";
+import { FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_2_INT, FIELD_4_DATE_TIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, FIELD_ID_MAX_LENGTH, NODE_ID_FIELDS, NODE_ID_NODES, PRIVILEGES_VIEW_ORG, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK_EDIT_CREATE } from "../www/js/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
@@ -34,7 +34,7 @@ const handlers: NodeEventsHandlers = {
 		const fieldName = data.fieldName;
 		if(fieldType === FIELD_15_1toN) {
 
-			const parentNode = await getRecords(4, 1, data.node_fields_linker, userSession);
+			const parentNode = await getRecords(NODE_ID_NODES, 1, data.node_fields_linker, userSession);
 
 			const linkerFieldData = {
 				status: 1,
@@ -42,15 +42,15 @@ const handlers: NodeEventsHandlers = {
 				node_fields_linker: data.nodeRef,
 				nodeRef: data.node_fields_linker,
 				name: parentNode.singleName,
-				show: 1,
+				show: VIEW_MASK_EDIT_CREATE,
 				prior: 1000,
-				fieldType: 7,
+				fieldType: FIELD_7_Nto1,
 				forSearch: 1,
 				selectFieldName: parentNode.tableName,
 				_usersID: userSession.id,
 				_organID: userSession.orgId
 			};
-			await submitRecord(6, linkerFieldData);
+			await submitRecord(NODE_ID_FIELDS, linkerFieldData);
 		}
 		reloadMetadataSchedule();
 	},
@@ -59,7 +59,7 @@ const handlers: NodeEventsHandlers = {
 
 		shouldBeAdmin(userSession);
 
-		if(currentData.id === 9 && newData.hasOwnProperty('maxLength')) {
+		if((currentData.id === FIELD_ID_MAX_LENGTH) && newData.hasOwnProperty('maxLength')) {
 			throwError(L('SIZE_FLD_BLOCKED'));
 		}
 

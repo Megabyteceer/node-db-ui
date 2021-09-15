@@ -37,7 +37,7 @@ class User extends Component<any, any> {
 		getData('api/getMe').then((data) => {
 			data.lang.code = data.lang.code || 'en';
 			moment.locale(data.lang.code);
-			import('/locales/' + data.lang.uiCode + '/lang').then(() => {
+			import('/locales/' + data.lang.code + '/lang').then(() => {
 				this.setState(data);
 
 				User.currentUserData = data;
@@ -80,7 +80,7 @@ class User extends Component<any, any> {
 			};
 
 			var multilingualBtn;
-			if(ENV.ENABLE_MULTILANG) {
+			if(ENV.ENABLE_MULTILINGUAL) {
 				multilingualBtn = R.div({ className, onClick: this.toggleMultilingual },
 					renderIcon(iconName + 'square-o'), L('MULTILANG')
 				);

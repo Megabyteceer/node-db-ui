@@ -63,7 +63,7 @@ interface UserSession {
 	__temporaryServerSideSession?: boolean;
 	notifications?: string[];
 	/** not empty if user have multilingualEnabled */
-	langs?: UserLangEntry[];
+	multilingualEnabled?: BoolNum;
 }
 
 interface EnumListItem {
@@ -78,7 +78,7 @@ interface FieldDesc {
 	name: string;
 
 	/** could be string for multilingual fields */
-	id: RecId | string;
+	id: RecId;
 
 	/** field's name in database table */
 	fieldName: string;
@@ -176,6 +176,7 @@ interface UserLangEntry {
 	name: string;
 	code: string;
 	prefix: string;
+	isUILanguage: boolean;
 }
 
 interface RecordDataWrite {
@@ -251,7 +252,6 @@ const VIEW_MASK_READONLY = 4;
 const VIEW_MASK_DROPDOWN_LOOKUP = 8;
 const VIEW_MASK_CUSTOM_LIST = 16;
 
-
 const PRIVILEGES_VIEW_OWN: PrivilegesMask = 1;
 const PRIVILEGES_VIEW_ORG: PrivilegesMask = 2;
 const PRIVILEGES_VIEW_ALL: PrivilegesMask = 4;
@@ -266,12 +266,46 @@ const PRIVILEGES_ANY: PrivilegesMask = 65535;
 const EVENT_HANDLER_TYPE_NODE = 'node';
 const EVENT_HANDLER_TYPE_FIELD = 'field';
 
+const NODE_ID_NODES: RecId = 4;
+const NODE_ID_USERS: RecId = 5;
+const NODE_ID_FIELDS: RecId = 6;
+const NODE_ID_ORGS: RecId = 7;
+const NODE_ID_ROLES: RecId = 8;
+const NODE_ID_FILTERS: RecId = 9;
+const NODE_ID_MESSAGES: RecId = 11;
+const NODE_ID_LANGUAGES: RecId = 12;
+const NODE_ID_PAGES: RecId = 49;
+const NODE_ID_ENUMERATIONS: RecId = 52;
+const NODE_ID_ENUMERATION_VALUES: RecId = 53;
+const NODE_ID_ERROR_REPORTS: RecId = 81;
+const NODE_ID_FILES: RecId = 83;
+
+const ROLE_ID_SUPER_ADMIN: RecId = 1;
+const ROLE_ID_GUEST: RecId = 2;
+const ROLE_ID_USER: RecId = 3;
+const ROLE_ID_VIEW_ALL: RecId = 7;
+
+const FIELD_ID_MAX_LENGTH: RecId = 9;
+
+const LANGUAGE_ID_DEFAULT: RecId = 1;
+
 export {
 	throwError,
 	/// #if DEBUG
 	getCurrentStack,
 	assert,
 	/// #endif
+
+	LANGUAGE_ID_DEFAULT,
+
+	FIELD_ID_MAX_LENGTH,
+
+	ROLE_ID_SUPER_ADMIN, ROLE_ID_GUEST, ROLE_ID_USER, ROLE_ID_VIEW_ALL,
+
+	NODE_ID_NODES, NODE_ID_USERS, NODE_ID_FIELDS, NODE_ID_ORGS,
+	NODE_ID_ROLES, NODE_ID_FILTERS, NODE_ID_MESSAGES, NODE_ID_LANGUAGES,
+	NODE_ID_PAGES, NODE_ID_ENUMERATIONS, NODE_ID_ENUMERATION_VALUES,
+	NODE_ID_ERROR_REPORTS, NODE_ID_FILES,
 
 	USER_ROLE_ID, ADMIN_ROLE_ID, GUEST_ROLE_ID,
 

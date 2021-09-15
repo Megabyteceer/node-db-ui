@@ -3,7 +3,7 @@ import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import ENV from "../ENV";
 import { authorizeUserByID, isUserHaveRole, setMainTainMode, UserSession, usersSessionsStartedCount } from "./auth";
-import { throwError, assert, FIELD_6_ENUM, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_DROPDOWN_LOOKUP, GUEST_ROLE_ID, ADMIN_ROLE_ID } from "../www/js/bs-utils";
+import { throwError, assert, FIELD_6_ENUM, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_DROPDOWN_LOOKUP, GUEST_ROLE_ID, ADMIN_ROLE_ID, NODE_ID_NODES, NODE_ID_FIELDS, NODE_ID_FILTERS } from "../www/js/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
@@ -86,17 +86,22 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 					}
 
 					fields.push(field);
-					if(srcField.multilingual && userSession.langs) {
+					if(srcField.multilingual && userSession.multilingualEnabled) {
 
 						const fieldName = field.fieldName;
 						const fieldId = field.id;
-						const langs = userSession.langs;
+						const langs = getLangs();
 						for(const l of langs) {
 							if(l.prefix) {
+								if(nodeId === NODE_ID_NODES || nodeId === NODE_ID_FIELDS || nodeId === NODE_ID_FILTERS) { // for nodes, fields, and filters, add only languages which used in system UI
+									if(!l.isUILanguage) {
+										continue;
+									}
+								}
 								const langFiled = Object.assign({}, field);
 								langFiled.show = field.show & (VIEW_MASK_ALL - VIEW_MASK_LIST - VIEW_MASK_DROPDOWN_LOOKUP);
 								langFiled.fieldName = fieldName + l.prefix;
-								langFiled.id = fieldId + l.prefix;
+								langFiled.id = (fieldId + l.prefix) as unknown as number;
 								langFiled.lang = l.name;
 								fields.push(langFiled);
 							}
@@ -193,7 +198,7 @@ async function initNodesData() { // load whole nodes data in to memory
 		REQUIRE_NAME: ENV.REQUIRE_NAME,
 		DEFAULT_LANG_ID: ENV.DEFAULT_LANG_ID,
 		MAX_FILESIZE_TO_UPLOAD: ENV.MAX_FILESIZE_TO_UPLOAD,
-		ENABLE_MULTILANG: ENV.ENABLE_MULTILANG,
+		ENABLE_MULTILINGUAL: ENV.ENABLE_MULTILINGUAL,
 		GOOGLE_PLUS: ENV.GOOGLE_PLUS,
 		TERMS_URL: ENV.TERMS_URL,
 		ALLOWED_UPLOADS: ENV.ALLOWED_UPLOADS
@@ -204,7 +209,7 @@ async function initNodesData() { // load whole nodes data in to memory
 	await mysqlExec('-- ======== NODES RELOADING STARTED ===================================================================================================================== --');
 	/// #endif
 
-	langs_new = await mysqlExec("SELECT id, name, code, uiCode FROM _languages WHERE id <> 0") as UserLangEntry[];
+	langs_new = await mysqlExec("SELECT id, name, code, isUILanguage FROM _languages WHERE id <> 0") as UserLangEntry[];
 	for(let l of langs_new) {
 		l.prefix = l.code ? ('$' + l.code) : '';
 	}
