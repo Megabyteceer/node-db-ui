@@ -213,12 +213,12 @@ function makeIconSelectionField(form, fieldName) {
 	if(!iconsList) {
 		initIconsList();
 	}
-	const $iconInput = $('.field-container-id-' + form.getField(fieldName).props.field.id + ' input');
-	$iconInput.css({
-		display: 'none'
-	});
-	$iconInput.after('<span id="icons-selector"></span>');
-
+	const formElement = ReactDOM.findDOMNode(form) as HTMLDivElement;
+	const input = formElement.querySelector('.field-container-id-' + form.getField(fieldName).props.field.id + ' input') as HTMLInputElement;
+	input.style.display = 'none';
+	const selectContainer = document.createElement('SPAN');
+	selectContainer.id = "icons-selector";
+	input.after(selectContainer);
 	setTimeout(() =>
 		ReactDOM.render(
 			React.createElement(Select, {
@@ -230,7 +230,7 @@ function makeIconSelectionField(form, fieldName) {
 				},
 				options: iconsList
 			}),
-			document.getElementById('icons-selector')
+			selectContainer
 		),
 		10);
 }
