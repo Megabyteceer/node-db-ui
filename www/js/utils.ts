@@ -524,7 +524,7 @@ function normalizeNode(node: NodeDesc) {
 				}
 			}
 			if(f.lang) {
-				const fieldId = f.id as string;
+				const fieldId = f.id as unknown as string; // language data fields have string ids of format: "77$ru"
 				const parentField: FieldDesc = node.fieldsById[fieldId.substr(0, fieldId.indexOf('$'))];
 				if(!parentField.childrenFields) {
 					parentField.childrenFields = [];
@@ -1019,11 +1019,11 @@ function keepInWindow(body) {
 		body = ReactDOM.findDOMNode(body);
 
 		let modalContainer = body.closest('.form-modal-container');
-		var screenR = window.innerWidth;
+		var screenR = window.innerWidth - 10;
 		var screenL = 0;
 		if(modalContainer) {
 			const cRect = modalContainer.getBoundingClientRect()
-			screenR = cRect.right;
+			screenR = cRect.right - 13;
 			screenL = cRect.left;
 		}
 

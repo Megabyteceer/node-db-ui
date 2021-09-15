@@ -5,18 +5,19 @@ import { FormEvents } from "./forms_events";
 
 class FieldsEvents extends FormEvents {
 
-	_html_title_onChange() {
-		let pv = this.fieldValue('title');
+	removeWrongCharactersInField(fieldName: string) {
+		let pv = this.fieldValue(fieldName);
 		if(pv) {
 			var newv = pv.replace(/ /g, '_').replace(/[^0-9a-zA-Z_]/g, '');
-
 			if(pv != newv) {
-				this.setFieldValue('title', newv);
+				this.setFieldValue(fieldName, newv);
 			}
-
 		}
-		this.setFieldValue('help', location.protocol + '//' + location.host + '/custom/html/' + newv + '.html');
+	}
 
+	_html_title_onChange() {
+		this.removeWrongCharactersInField('title');
+		this.setFieldValue('help', location.protocol + '//' + location.host + '/custom/html/' + this.fieldValue('title') + '.html');
 	}
 
 	_users_passconfirm_onChange() {
@@ -58,6 +59,7 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_fieldName_onChange() {
+		this.removeWrongCharactersInField('fieldName');
 		this.check12nFieldName();
 	}
 
@@ -123,7 +125,7 @@ class FieldsEvents extends FormEvents {
 		this.check12nFieldName();
 	}
 
-	_fields_nostore_onChange() {
+	_fields_noStore_onChange() {
 		if(this.isFieldVisible('noStore')) {
 			if(this.fieldValue('noStore') || this.fieldValue('clientOnly')) {
 				this.hideField('forSearch', 'unique');
@@ -134,7 +136,7 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_clientOnly_onChange() {
-		this._fields_nostore_onChange();
+		this._fields_noStore_onChange();
 	}
 
 	_fields_vis_create_onChange() {
@@ -194,6 +196,10 @@ class FieldsEvents extends FormEvents {
 
 	_fields_nodeRef_onChange() {
 		this.check12nFieldName();
+	}
+
+	async _nodes_tableName_onChange() {
+		this.removeWrongCharactersInField('tableName');
 	}
 
 	//_insertNewHandlersHere_

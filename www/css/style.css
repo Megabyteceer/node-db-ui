@@ -422,7 +422,7 @@ input[readonly] {
 	width: 100%;
 	box-shadow: 5px 0px 6px -3px #aaa;
 	vertical-align: top;
-	overflow-x: hidden;
+	overflow: hidden;
 }
 
 .left-bar-item {
@@ -482,6 +482,14 @@ input[readonly] {
 .left-bar-collapse-button {
 	padding-top: 5px;
 	padding-bottom: 5px;
+}
+
+.left-bar-group-container {
+	position: relative;
+}
+
+.left-bar-item-container {
+	position: relative;
 }
 
 .left-bar-children>.left-bar-group-container {

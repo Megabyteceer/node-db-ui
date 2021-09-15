@@ -168,15 +168,6 @@ class FieldAdmin extends Component<any, any> {
 					},
 						renderIcon(this.state.locked ? 'lock' : 'unlock')
 
-					),
-					R.button({
-						onClick: () => {
-							admin.debug(form.getField(field.fieldName) || form);
-						},
-						className: 'clickable toolbtn admin-form-btn',
-						title: 'log field to console'
-					},
-						renderIcon('info')
 					)
 				),
 				extendedInfo
@@ -184,12 +175,10 @@ class FieldAdmin extends Component<any, any> {
 		}
 
 		return R.span({
-			ref: keepInWindow,
 			className: 'admin-controll admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
 			R.span({
-				ref: keepInWindow,
 				className: 'halfvisible admin-form-open-btn' + border,
 				onMouseEnter: this.onShow
 			},

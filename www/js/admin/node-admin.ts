@@ -312,15 +312,6 @@ class NodeAdmin extends Component<any, any> {
 					},
 						renderIcon('user')
 					),
-					R.button({
-						onClick: () => {
-							admin.debug(form || node);
-						},
-						className: 'clickable toolbtn admin-form-btn',
-						title: 'log node to console'
-					},
-						renderIcon('info')
-					),
 					R.span({
 						className: 'clickable admin-form-lock-btn',
 						onClick: this.toggleLock
@@ -333,7 +324,6 @@ class NodeAdmin extends Component<any, any> {
 		}
 
 		return R.div({
-			ref: keepInWindow,
 			className: 'admin-controll admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
 			onClick: sp
 		},

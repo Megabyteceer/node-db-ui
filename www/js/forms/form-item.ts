@@ -2,7 +2,7 @@ import { ComponentProps, R } from "../r";
 import React from "react";
 import { FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, Filters, NodeDesc, RecordData } from "../bs-utils";
 import { FieldWrap } from "../fields/field-wrap";
-import { deleteRecord, draftRecord, isRecordRestrictedForDeletion, L, locationToHash, publishRecord, renderIcon, sp } from "../utils";
+import { deleteRecord, draftRecord, isRecordRestrictedForDeletion, L, publishRecord, renderIcon, sp } from "../utils";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import { eventProcessingMixins } from "./event-processing-mixins";
 
@@ -65,28 +65,27 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 		if(data.hasOwnProperty('isE')) {
 			if(!formItem || !formItem.props.list || !formItem.props.list.state.noEditButton) {
 				buttons.push(
-					R.a({
-						key: 2, href: locationToHash(node.id, data.id, editButtonFilters, true), onClick: (e) => {
-							// TODO go to edit on current level
+					R.button({
+						className: 'clickable toolbtn edit-btn', title: L('EDIT', itemName), key: 2, onClick: (e) => {
 							if(formItem && formItem.props.parentForm) {
-								sp(e);
 								formItem.props.parentForm.toggleCreateDialogue(data.id)
+							} else {
+								window.crudJs.Stage.showForm(node.id, data.id, undefined, true);
 							}
 						}
 					},
-						R.button({ className: 'clickable toolbtn edit-btn', title: L('EDIT', itemName) },
-							renderIcon('pencil')
-						)
+						renderIcon('pencil')
 					)
 				)
 			}
 		} else if(!formItem || !formItem.props.list || !(formItem.props.list.state.noPreviewButton || formItem.props.list.props.noPreviewButton)) {
 			buttons.push(
-				// TODO go to watch on current level
-				R.a({ key: 2, href: locationToHash(node.id, data.id) },
-					R.button({ className: 'clickable toolbtn view-btn', title: L('DETAILS') + itemName },
-						renderIcon('search')
-					)
+				R.button({
+					className: 'clickable toolbtn view-btn', title: L('DETAILS') + itemName, key: 2, onClick: (e) => {
+						window.crudJs.Stage.showForm(node.id, data.id);
+					}
+				},
+					renderIcon('search')
 				)
 			)
 		}

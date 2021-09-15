@@ -255,7 +255,6 @@ class BarItem extends Component<any, any> {
 			)
 		);
 
-
 		if(item.isDocument && (item.id !== false)) {
 			var href;
 			if(item.staticLink && item.staticLink !== 'reactClass') {
@@ -263,7 +262,7 @@ class BarItem extends Component<any, any> {
 			} else {
 				href = locationToHash(item.id, item.recId, item.filters, item.editable);
 			}
-			return R.a({ href: href, onClick: this.collapseOtherGroups },
+			return R.a({ className: 'left-bar-item-container', href: href, onClick: this.collapseOtherGroups },
 				adminControl,
 				itemBody
 			)
