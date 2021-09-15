@@ -146,16 +146,17 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 		var field = this.props.field;
 		var value = this.state.value;
 		var iconPic;
-		if(field.icon && value && (!this.props.hideIcon) && value.icon) {
-			iconPic = R.img({
-				className: 'field-lookup-icon-pic',
-				src: idToImgURL(value.icon, field.icon)
-			});
-		} else {
-			iconPic = R.div({
-				className: 'field-lookup-icon-pic field-lookup-icon-pic-empty'
-			});
-
+		if(value) {
+			if(field.icon && (!this.props.hideIcon) && value.icon) {
+				iconPic = R.img({
+					className: 'field-lookup-icon-pic',
+					src: idToImgURL(value.icon, field.icon)
+				});
+			} else {
+				iconPic = R.div({
+					className: 'field-lookup-icon-pic field-lookup-icon-pic-empty'
+				});
+			}
 		}
 		if(this.props.isEdit) {
 			var list;
