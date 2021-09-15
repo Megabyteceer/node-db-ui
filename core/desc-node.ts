@@ -19,6 +19,8 @@ const GUEST_USER_SESSION: UserSession = {} as UserSession;
 const clientSideNodes = new Map();
 const nodesTreeCache = new Map();
 
+const filtersById = new Map();
+
 function getFieldDesc(fieldId): FieldDesc {
 	assert(fields.has(fieldId), "Unknown field id " + fieldId);
 	return fields.get(fieldId);
@@ -51,7 +53,16 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				ret.icon = srcNode.icon;
 				ret.recPerPage = srcNode.recPerPage;
 				ret.defaultFilterId = srcNode.defaultFilterId;
-				ret.filters = srcNode.filters;
+
+				ret.filters = [];
+				for(let id in srcNode.filters) {
+					const filter = srcNode.filters[id];
+					ret.filters.push({
+						id,
+						name: filter['name' + userSession.lang.prefix]
+					});
+				}
+
 				ret.sortFieldName = srcNode.sortFieldName
 
 				let fields = [];
@@ -214,7 +225,7 @@ async function initNodesData() { // load whole nodes data in to memory
 		l.prefix = l.code ? ('$' + l.code) : '';
 	}
 
-	let query = "SELECT * FROM _nodes WHERE status=1 ORDER BY prior";
+	let query = "SELECT * FROM _nodes WHERE status = 1 ORDER BY prior";
 	nodes_new = await mysqlExec(query);
 
 	for(let nodeData of nodes_new) {
@@ -232,7 +243,7 @@ async function initNodesData() { // load whole nodes data in to memory
 		let sortField = nodeData._fieldsID;
 
 		if(nodeData.isDocument) {
-			let query = "SELECT * FROM _fields WHERE node_fields_linker=" + nodeData.id + " AND status=1 ORDER BY prior";
+			let query = "SELECT * FROM _fields WHERE node_fields_linker=" + nodeData.id + " AND status = 1 ORDER BY prior";
 			let fields = await mysqlExec(query) as mysqlRowsResult;
 			for(let field of fields) {
 
@@ -249,10 +260,11 @@ async function initNodesData() { // load whole nodes data in to memory
 				fields_new.set(field.id, field);
 			}
 			nodeData.fields = fields;
-			const filtersRes = await mysqlExec("SELECT id,filter,name,view,hiPriority, fields FROM _filters WHERE _nodesID=" + nodeData.id) as mysqlRowsResult;
+			const filtersRes = await mysqlExec("SELECT * FROM _filters WHERE status = 1 AND _nodesID=" + nodeData.id) as mysqlRowsResult;
 
 			const filters = {};
 			for(let f of filtersRes) {
+				filtersById.set(f.id, f);
 				filters[f.id] = f;
 			}
 			nodeData.filters = filters;
@@ -363,7 +375,7 @@ const destroyObject = (o) => {
 
 
 export {
-	NodeEventsHandlers,
+	NodeEventsHandlers, filtersById,
 	ENV, getNodeDesc, getFieldDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs,
 	ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule, ServerSideEventHadlersNames
 };
