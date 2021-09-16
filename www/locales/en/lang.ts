@@ -116,6 +116,7 @@ const LANGS = {
 	'APPLY_CHILD': 'Apply settings for all sub sections?',
 	'TO_THIS': 'To this section only',
 	'TO_ALL': 'To all sub sections',
+	'TOO_MATCH_FORMS': 'Form of that type is already open.',
 	'NEW_LANGUAGE_WARNING': 'Warning! Adding a new language will modify all database tables. Additional columns will be created for all fields marked as multilingual.'
 };
 

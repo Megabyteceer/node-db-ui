@@ -266,6 +266,8 @@ const PRIVILEGES_ANY: PrivilegesMask = 65535;
 const EVENT_HANDLER_TYPE_NODE = 'node';
 const EVENT_HANDLER_TYPE_FIELD = 'field';
 
+const HASH_DIVIDER = '.';
+
 const NODE_ID_NODES: RecId = 4;
 const NODE_ID_USERS: RecId = 5;
 const NODE_ID_FIELDS: RecId = 6;
@@ -289,12 +291,25 @@ const FIELD_ID_MAX_LENGTH: RecId = 9;
 
 const LANGUAGE_ID_DEFAULT: RecId = 1;
 
+interface IFormParameters {
+	nodeId: RecId;
+	/** id of current edited/shown record. 'new' - if record is not saved yet.*/
+	recId?: RecId | 'new';
+	/** true if form is editable or read only */
+	editable?: boolean;
+	filters?: Filters;
+}
+
 export {
 	throwError,
 	/// #if DEBUG
 	getCurrentStack,
 	assert,
 	/// #endif
+
+	IFormParameters,
+
+	HASH_DIVIDER,
 
 	LANGUAGE_ID_DEFAULT,
 

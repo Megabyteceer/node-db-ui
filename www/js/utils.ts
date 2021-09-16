@@ -4,7 +4,7 @@ import type { LANG_KEYS } from "../locales/en/lang";
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
-import { ADMIN_ROLE_ID, assert, FieldDesc, FIELD_1_TEXT, Filters, GetRecordsParams, NodeDesc, RecId, RecordData, RecordsData, TRoleId } from "./bs-utils";
+import { ADMIN_ROLE_ID, assert, FieldDesc, FIELD_1_TEXT, Filters, GetRecordsParams, HASH_DIVIDER, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, TRoleId } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
@@ -46,7 +46,7 @@ function restrictRecordsDeletion(nodes: RestrictDeletionData) {
 }
 
 restrictRecordsDeletion({
-	4: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 50, 52, 53], /* disable critical sections  deletion/hidding*/
+	4: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 50, 52, 53], /* disable critical sections  deletion/hiding*/
 	5: [1, 2, 3], /* disable admin,user,guest deletion*/
 	7: [1, 2, 3], /* disable critical organizations deletion*/
 	8: [1, 2, 3], /* disable critical roles deletion*/
@@ -61,12 +61,12 @@ function isRecordRestrictedForDeletion(nodeId, recordId) {
 	}
 }
 
-function myAlert(txt: string | React.Component, isSucess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean) {
+function myAlert(txt: string | React.Component, isSuccess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean) {
 	if(!Modal.instance) {
 		alert(txt);
 	} else {
 		var className;
-		if(isSucess) {
+		if(isSuccess) {
 			className = "alert-bg alert-bg-success";
 		} else {
 			className = "alert-bg alert-bg-danger";
@@ -246,6 +246,7 @@ function toReadableDatetime(d) {
 	}
 	return '';
 }
+
 function toReadableTime(d) {
 	if(d) {
 		d = d.format(readableTimeFormat);
@@ -278,23 +279,20 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, 
 	}
 
 	if(filters && (Object.keys(filters).length > 0)) {
-		var copmlicatedFilters = false;
+		var complicatedFilters = false;
 		for(var k in filters) {
 			var v = filters[k];
 			if(typeof v === 'object') {
-				copmlicatedFilters = true;
+				complicatedFilters = true;
 				break;
 			}
 		}
 
-		if(copmlicatedFilters) {
+		if(complicatedFilters) {
 			newHash.push('j');
 			newHash.push(encodeURIComponent(JSON.stringify(filters)));
-
 		} else {
-
 			var filtersHash;
-
 			filtersHash = [];
 			for(var k in filters) {
 				if(filters.hasOwnProperty(k) && (filters[k] || filters[k] === 0)) {
@@ -317,9 +315,6 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, 
 	if(retHash === 'n/' + ENV.HOME_NODE) {
 		retHash = '';
 	}
-
-	retHash = '#' + retHash;
-
 	return retHash;
 }
 
@@ -336,63 +331,96 @@ function isCurrentlyShowedLeftbarItem(item) {
 		currentFormParameters.editable === item.editable;
 };
 
-function goToPageByHash() {
-	var hashTxt = window.location.hash.substr(1);
-
-	if(hashTxt) {
-
-		var nodeId;
-		var recId;
-		var editable;
-		var filters;
-
-		let hash = hashTxt.split('/');
-		var i;
-		while(hash.length) {
-			i = hash.shift();
-			switch(i) {
-				case 'n':
-					nodeId = parseInt(hash.shift());
-					break;
-				case 'r':
-					recId = hash.shift();
-					break;
-				case 'e':
-					editable = true;
-					break;
-				case 'j':
-					filters = JSON.parse(decodeURIComponent(hash.shift()));
-					break;
-				case 'f':
-					filters = {};
-					while(hash.length) {
-						let key = hash.shift();
-						let val = decodeURIComponent(hash.shift());
-						let numVal = parseInt(val); // return numeric values to filter
-						if(val == numVal.toString()) {
-							// @ts-ignore
-							val = numVal;
-						}
-						filters[key] = val;
+function hashToFormParams(hashTxt: string): IFormParameters {
+	if(!hashTxt) {
+		return { nodeId: ENV.HOME_NODE, filters: {} };
+	}
+	let nodeId;
+	let recId;
+	let editable;
+	let filters = {};
+	let hash = hashTxt.split('/');
+	var i;
+	while(hash.length) {
+		i = hash.shift();
+		switch(i) {
+			case 'n':
+				nodeId = parseInt(hash.shift());
+				break;
+			case 'r':
+				recId = hash.shift();
+				break;
+			case 'e':
+				editable = true;
+				break;
+			case 'j':
+				filters = JSON.parse(decodeURIComponent(hash.shift()));
+				break;
+			case 'f':
+				while(hash.length) {
+					let key = hash.shift();
+					let val = decodeURIComponent(hash.shift());
+					let numVal = parseInt(val); // return numeric values to filter
+					if(val == numVal.toString()) {
+						// @ts-ignore
+						val = numVal;
 					}
-					break;
-				default:
-					debugError('Unknown hash entry: ' + i);
-					break;
+					filters[key] = val;
+				}
+				break;
+			default:
+				debugError('Unknown hash entry: ' + i);
+				break;
+		}
+	}
+	if(recId !== 'new') {
+		if(recId) {
+			recId = parseInt(recId);
+		}
+	}
+	return { recId, nodeId, editable, filters };
+}
+
+async function goToPageByHash() {
+	const isPageLoading = !_oneFormShowed;
+
+	let hash = window.location.hash.substr(1);
+	var formParamsByLevels = hash.split(HASH_DIVIDER).map(hashToFormParams);
+
+	const Stage = window.crudJs.Stage;
+	let level;
+
+	for(level = 0; (level < formParamsByLevels.length) && (level < Stage.allForms.length); level++) {
+		const formParams = formParamsByLevels[level];
+		const form = Stage.allForms[level].form;
+
+
+		let isTheSame = formParams.nodeId === form.nodeId && formParams.recId === form.recId && Boolean(formParams.editable) === Boolean(form.editable);
+		if(isTheSame) {
+			if(JSON.stringify(form.filters) !== JSON.stringify(formParams.filters)) {
+				isTheSame = false;
 			}
 		}
-
-		if(recId !== 'new') {
-			if(recId) {
-				recId = parseInt(recId);
+		if(!isTheSame) {
+			while(Stage.allForms.length > (level + 1)) {
+				Stage.goBackIfModal();
 			}
+			break;
 		}
-		window.crudJs.Stage.showForm(nodeId, recId, filters, editable);
-
-	} else {
-		goToHome();
 	}
 
+	if(formParamsByLevels.length <= level) {
+		while(formParamsByLevels.length <= level) {
+			Stage.goBackIfModal();
+			level--;
+		}
+	} else {
+		while(level < formParamsByLevels.length) {
+			let paramsToShow = formParamsByLevels[level];
+			await Stage.showForm(paramsToShow.nodeId, paramsToShow.recId, paramsToShow.filters, paramsToShow.editable, level > 0, undefined, isPageLoading);
+			level++;
+		}
+	}
 };
 
 
@@ -415,7 +443,7 @@ function goBack(isAfterDelete?: boolean) {
 			window.crudJs.Stage.showForm(ENV.HOME_NODE);
 		}
 
-	} else if(currentFormParameters.recId) {
+	} else if(currentFormParameters && currentFormParameters.recId) {
 		window.crudJs.Stage.showForm(currentFormParameters.nodeId, undefined, currentFormParameters.filters);
 	} else if(isAfterDelete) {
 		window.crudJs.Stage.refreshForm();
@@ -434,14 +462,14 @@ function updateHashLocation() {
 	}
 
 	hashUpdateTimeout = setTimeout(() => {
-		const currentFormParameters = window.crudJs.Stage.currentForm;
 		hashUpdateTimeout = false;
+		var newHash = '#' + window.crudJs.Stage.allForms.map((formEntry) => {
+			const formParameters = formEntry.form;
+			const filters = formParameters.filters;
+			return locationToHash(formParameters.nodeId, formParameters.recId, filters, formParameters.editable);
+		}).join(HASH_DIVIDER);
 
-		const filters = currentFormParameters.filters;
-
-		var newHash = locationToHash(currentFormParameters.nodeId, currentFormParameters.recId, filters, currentFormParameters.editable);
-
-		if((location.hash != newHash) && !isHistoryChanging) {
+		if((location.hash != newHash.substr(1)) && !isHistoryChanging) {
 
 			if((window.location.hash.split('/f/').shift() === (newHash.split('/f/').shift())) && history.replaceState) { //only filters is changed
 				history.replaceState(null, null, newHash);
@@ -1187,7 +1215,6 @@ export {
 	idToFileUrl,
 	isCurrentlyShowedLeftbarItem,
 	addMixins,
-	locationToHash,
 	goToPageByHash,
 	consoleLog,
 	consoleDir,

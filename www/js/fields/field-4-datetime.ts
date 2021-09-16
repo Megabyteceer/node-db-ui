@@ -7,6 +7,7 @@ import moment from "moment";
 import { innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDatetime, toReadableTime } from "../utils";
 import { registerFieldClass } from "../utils";
 import { BaseField, FieldState, FieldProps, RefToInput } from "./base-field";
+import type { FormFull } from "../forms/form-full";
 
 function isSameDay(val, d) {
 	if(!d || !val) return false;
@@ -25,7 +26,9 @@ let ReactDatetimeClassHolder: { importReactDateTime: () => void, isRequired?: bo
 			ReactDatetimeClassHolder.isRequired = true;
 			import('react-datetime').then((module) => {
 				ReactDatetimeClassHolder.ReactDatetimeClass = module.default;
-				window.crudJs.Stage.currentForm.forceUpdate();
+				if(window.crudJs.Stage.currentForm) {
+					(window.crudJs.Stage.currentForm as FormFull).forceUpdate();
+				}
 			});
 		}
 	}

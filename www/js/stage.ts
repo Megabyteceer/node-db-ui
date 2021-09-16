@@ -2,10 +2,11 @@
 import { R } from "./r";
 import { FormFull } from "./forms/form-full";
 import { List } from "./forms/list";
-import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon } from "./utils";
+import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, L, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from "./utils";
 import { RecId, RecordData } from "./bs-utils";
 import { BaseForm } from "./forms/base-form";
 import ReactDOM from 'react-dom';
+import { Notify } from "./notify";
 
 let mouseX: number;
 let mouseY: number;
@@ -36,28 +37,43 @@ interface FormEntry {
 	onModified?: (dataToSend: RecordData | null) => void;
 }
 
-let forms: FormEntry[] = [];
+let allForms: FormEntry[] = [];
 
 class Stage extends Component<any, any> {
 
-	static rootForm: FormFull;
-	static currentForm: BaseForm;
-	static currentFormEntry: FormEntry;
+	static allForms: FormEntry[];
+
+	static get currentForm(): BaseForm | null {
+		const e = Stage.currentFormEntry;
+		return e && e.form;
+	}
+
+	static get currentFormEntry(): FormEntry {
+		return allForms[allForms.length - 1]
+	};
+
+	static get rootForm(): BaseForm {
+		return allForms[0] && allForms[0].form;
+	}
 
 	static refreshForm() {
-		Stage.showForm(
-			Stage.currentForm.nodeId,
-			Stage.currentForm.recId,
-			Stage.currentForm.filters,
-			Stage.currentForm.editable
-		);
+		if(Stage.currentForm) {
+			Stage.showForm(
+				Stage.currentForm.nodeId,
+				Stage.currentForm.recId,
+				Stage.currentForm.filters,
+				Stage.currentForm.editable
+			);
+		}
 	}
 
 	static goBackIfModal() {
-		if(forms.length > 1) {
-			let e = forms.pop();
-			forms[forms.length - 1].container.classList.remove('blocked-layer');
+		if(allForms.length > 1) {
+			let e = allForms.pop();
+			allForms[allForms.length - 1].container.classList.remove('blocked-layer');
 			const formContainer = e.formContainer;
+			e.formContainer = null;
+
 			formContainer.style.transform = 'scale(0.01)';
 			e.container.style.backgroundColor = '#00112200'
 			setTimeout(() => {
@@ -67,28 +83,30 @@ class Stage extends Component<any, any> {
 					e.container.remove();
 				}
 			}, 300);
-			Stage.currentFormEntry = forms[forms.length - 1];
-			Stage.currentForm = Stage.currentFormEntry.form;
-			if(forms.length === 1) { // enable scrolling
+			if(allForms.length === 1) { // enable scrolling
 				document.body.style.overflowY = '';
 				document.body.style.paddingRight = '';
 				document.body.style.boxSizing = '';
 			}
+			updateHashLocation();
 			return true;
 		}
 	}
 
-	/** null - deleted.*/
+	/** @param newRecordData null - if record was deleted. */
 	static dataDidModifed(newRecordData: RecordData | null) {
 		if(Stage.currentFormEntry.onModified) {
 			Stage.currentFormEntry.onModified(newRecordData);
 		}
 	}
 
-	static async showForm(nodeId: RecId, recId?: RecId | 'new', filters: Filters = {}, editable?: boolean, modal?: boolean, onModified?: (dataToSend: RecordData) => void) {
-
-		if(!forms.length || modal) {
-			addFormEntry();
+	static async showForm(nodeId: RecId, recId?: RecId | 'new', filters: Filters = {}, editable?: boolean, modal?: boolean, onModified?: (dataToSend: RecordData) => void, noAnimation = false) {
+		if(!allForms.length || modal) {
+			if(allForms.find(formEntry => formEntry.form.nodeId === nodeId && Boolean(recId) === Boolean(formEntry.form.recId))) { //prevent opening two forms of the same type
+				Notify.add(L("TOO_MATCH_FORMS"));
+				return;
+			}
+			addFormEntry(noAnimation);
 		} else {
 			if(Stage.currentForm) {
 				const formParameters = Stage.currentForm;
@@ -98,8 +116,12 @@ class Stage extends Component<any, any> {
 				formParameters.editable = editable;
 			}
 		}
-		const isRootForm = forms.length === 1;
-		Stage.currentFormEntry.onModified = onModified;
+
+		const formEntry = Stage.currentFormEntry;
+
+		const isRootForm = allForms.length === 1;
+		formEntry.onModified = onModified;
+
 		let data;
 		if(recId !== 'new') {
 			if(typeof recId === 'number') {
@@ -109,13 +131,14 @@ class Stage extends Component<any, any> {
 			}
 		}
 		let node = await getNode(nodeId);
+
+		if(!formEntry.formContainer) { // popup is hidden already
+			return;
+		}
+
 		const ref = (form: BaseForm) => {
 			if(form) {
-				if(isRootForm) {
-					Stage.rootForm = form as FormFull;
-				}
-				Stage.currentForm = form;
-				Stage.currentFormEntry.form = form;
+				formEntry.form = form;
 			}
 		};
 		let formType;
@@ -131,12 +154,14 @@ class Stage extends Component<any, any> {
 		} else {
 			location.href = node.staticLink;
 		}
+
 		ReactDOM.render(
 			React.createElement('div', { key: node.id + '_' + recId, className: isRootForm ? undefined : 'form-modal-container' },
 				React.createElement(formType, { ref, node, recId, isRootForm, initialData: data || {}, filters, editable })
 			),
-			Stage.currentFormEntry.formContainer
+			formEntry.formContainer
 		);
+
 		if(isRootForm && Stage.rootForm) {
 			const formParameters = Stage.rootForm;
 			if(formParameters.nodeId && ((formParameters.nodeId !== nodeId) || (formParameters.recId !== recId))) {
@@ -144,6 +169,7 @@ class Stage extends Component<any, any> {
 			}
 		}
 		onOneFormShowed();
+		updateHashLocation();
 	}
 
 	constructor(props) {
@@ -155,26 +181,34 @@ class Stage extends Component<any, any> {
 	}
 }
 
-function addFormEntry() {
-	const isRoot = forms.length === 0;
+Stage.allForms = allForms;
+
+function addFormEntry(noAnimation = false) {
+	const isRoot = allForms.length === 0;
 	let container = document.createElement('div');
 	container.className = isRoot ? 'form-layer' : 'form-layer form-layer-modal';
 	let formContainer;
+
 	if(!isRoot) {
-		forms[forms.length - 1].container.classList.add('blocked-layer');
-		container.style.transition = 'background-color 0.3s';
-		container.style.backgroundColor = '#00112200'
 		formContainer = document.createElement('div');
-		formContainer.className = 'form-layer-modal';
 		container.appendChild(formContainer);
-		formContainer.style.transformOrigin = mouseX + 'px ' + mouseY + 'px';
-		formContainer.style.transform = 'scale(0.01)';
+		allForms[allForms.length - 1].container.classList.add('blocked-layer');
+		container.style.backgroundColor = '#00112200'
+		formContainer.className = 'form-layer-modal';
+		container.style.transition = 'background-color 0.3s';
 		formContainer.style.transition = 'transform 0.3s';
 		formContainer.style.transitionTimingFunction = 'ease-in-out';
-		setTimeout(() => {
+		if(!noAnimation) {
+			formContainer.style.transformOrigin = mouseX + 'px ' + mouseY + 'px';
+			formContainer.style.transform = 'scale(0.01)';
+			setTimeout(() => {
+				formContainer.style.transform = 'scale(1)';
+				container.style.backgroundColor = '#00112280'
+			}, 10);
+		} else {
 			formContainer.style.transform = 'scale(1)';
 			container.style.backgroundColor = '#00112280'
-		}, 10);
+		}
 	} else {
 		formContainer = container;
 	}
@@ -183,15 +217,14 @@ function addFormEntry() {
 		container,
 		formContainer
 	}
-	if(forms.length === 1) { // disable scrolling
+	if(allForms.length === 1) { // disable scrolling
 		if(document.body.scrollHeight > document.body.clientHeight) {
 			document.body.style.paddingRight = '10px';
 			document.body.style.boxSizing = 'border-box';
 		}
 		document.body.style.overflowY = 'hidden';
 	}
-	forms.push(entry);
-	Stage.currentFormEntry = entry;
+	allForms.push(entry);
 }
 
 export { Stage, FormLoaderCog }

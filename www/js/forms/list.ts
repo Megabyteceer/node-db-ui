@@ -3,7 +3,7 @@ import { FIELD_2_INT, FIELD_7_Nto1, PRIVILEGES_CREATE, RecordsData } from "../bs
 import { FieldAdmin } from "../admin/field-admin";
 import { NodeAdmin } from "../admin/node-admin";
 import { LeftBar } from "../left-bar";
-import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID } from "../utils";
+import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
 import { FormFull } from "./form-full";
 import { FormItem } from "./form-item";
 import { BaseForm, FormProps, FormState } from "./base-form";
@@ -101,7 +101,7 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	async refreshData() {
-		this.updateHashLocation();
+		updateHashLocation();
 		var nodeIdToFetch = this.props.nodeId || this.props.node.id;
 		if(nodeIdToFetch !== this.currentFechingNodeId) {
 			this.currentFechingNodeId = nodeIdToFetch;

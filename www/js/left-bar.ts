@@ -6,7 +6,7 @@ import { assert } from "./bs-utils";
 import { R } from "./r";
 import { Stage } from "./stage";
 import { iAdmin, User } from "./user";
-import { isLitePage, L, locationToHash, renderIcon } from "./utils";
+import { isLitePage, L, renderIcon } from "./utils";
 
 let collapsed;
 
@@ -32,6 +32,9 @@ interface LeftBarItemData {
 
 function isCurrentlyShowedLeftbarItem(item) {
 	const currentFormParameters = Stage.currentForm;
+	if(!currentFormParameters) {
+		return;
+	}
 	if(item.id === false) {
 		if(!currentFormParameters.filters || (Object.keys(currentFormParameters.filters).length === 0)) {
 			return item.isDefault;
@@ -256,13 +259,20 @@ class BarItem extends Component<any, any> {
 		);
 
 		if(item.isDocument && (item.id !== false)) {
-			var href;
-			if(item.staticLink && item.staticLink !== 'reactClass') {
-				href = item.staticLink;
-			} else {
-				href = locationToHash(item.id, item.recId, item.filters, item.editable);
+			const props = {
+				className: 'left-bar-item-container',
+				onClick: this.collapseOtherGroups
 			}
-			return R.a({ className: 'left-bar-item-container', href: href, onClick: this.collapseOtherGroups },
+			if(item.staticLink && item.staticLink !== 'reactClass') {
+				///@ts-ignore
+				props.href = item.staticLink;
+			} else {
+				props.onClick = () => {
+					window.crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
+					this.collapseOtherGroups();
+				}
+			}
+			return R.a(props,
 				adminControl,
 				itemBody
 			)
