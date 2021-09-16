@@ -124,7 +124,7 @@ class NodeAdmin extends Component<any, any> {
 				if(this.state.allFieldsVisible) {
 					allFields = [];
 					for(let f of node.fields) {
-						if(f.lang) return undefined;
+						if(f.lang) continue;
 
 						allFields.push(R.span({
 							key: f.id + 'a',
@@ -142,13 +142,13 @@ class NodeAdmin extends Component<any, any> {
 								R.div({
 									className: "admin-form-all-fields-name"
 								}, f.fieldName + '; (' + f.id + ')'),
-								renderIcon((f.show & 1) ? 'eye' : 'eye-slash halfvisible'),
-								renderIcon((f.show & 2) ? 'eye' : 'eye-slash halfvisible'),
-								renderIcon((f.show & 16) ? 'eye' : 'eye-slash halfvisible'),
-								renderIcon((f.show & 4) ? 'eye' : 'eye-slash halfvisible'),
-								renderIcon((f.show & 8) ? 'eye' : 'eye-slash halfvisible'),
+								renderIcon((f.show & 1) ? 'eye' : 'eye-slash half-visible'),
+								renderIcon((f.show & 2) ? 'eye' : 'eye-slash half-visible'),
+								renderIcon((f.show & 16) ? 'eye' : 'eye-slash half-visible'),
+								renderIcon((f.show & 4) ? 'eye' : 'eye-slash half-visible'),
+								renderIcon((f.show & 8) ? 'eye' : 'eye-slash half-visible'),
 
-								renderIcon((f.forSearch) ? 'search-plus' : 'search halfvisible')
+								renderIcon((f.forSearch) ? 'search-plus' : 'search half-visible')
 
 							))
 					}
@@ -156,7 +156,7 @@ class NodeAdmin extends Component<any, any> {
 
 				buttons = R.span(null,
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						onClick: () => {
 							this.toggleAllFields();
 						},
@@ -165,25 +165,25 @@ class NodeAdmin extends Component<any, any> {
 						'all fields ', renderIcon('caret-down')
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn' + borderOnLoad,
+						className: 'clickable tool-btn admin-form-btn' + borderOnLoad,
 						onClick: () => {
-							admin_editSource('onload', node, undefined);
+							admin_editSource(ON_FORM_LOAD, node, undefined);
 						},
 						title: "Edit client side script which execute on form open."
 					},
 						'onLoad...'
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn' + borderOnSave,
+						className: 'clickable tool-btn admin-form-btn' + borderOnSave,
 						onClick: () => {
-							admin_editSource('onsave', node, undefined);
+							admin_editSource(ON_FORM_SAVE, node, undefined);
 						},
 						title: "Edit client side script which execute on form save."
 					},
 						'onSave...'
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						title: L('FLD_ADD'),
 						onClick: () => {
 							window.crudJs.Stage.showForm(6, 'new', {
@@ -197,7 +197,7 @@ class NodeAdmin extends Component<any, any> {
 						renderIcon('plus')
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						title: L('FLD_SHOW_ALL'),
 						onClick: () => {
 							if(form) {
@@ -209,7 +209,7 @@ class NodeAdmin extends Component<any, any> {
 						renderIcon('eye')
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						title: L('ADD_RATING_FLD'),
 						onClick: () => {
 							// TODO: implement ratings creation process
@@ -224,7 +224,7 @@ class NodeAdmin extends Component<any, any> {
 			} else {
 				buttons = R.span(null,
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						title: L('ADD_NODE'),
 						onClick: () => {
 							createNodeForMenuItem(item);
@@ -233,7 +233,7 @@ class NodeAdmin extends Component<any, any> {
 						renderIcon('plus')
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						onClick: () => {
 							getNodeData(4, undefined, {
 								_nodesID: item.parent
@@ -250,7 +250,7 @@ class NodeAdmin extends Component<any, any> {
 						renderIcon('arrow-down')
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						onClick: () => {
 							getNodeData(4, undefined, {
 								_nodesID: item.parent
@@ -294,7 +294,7 @@ class NodeAdmin extends Component<any, any> {
 				},
 					buttons,
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						title: L('EDIT_NODE'),
 						onClick: () => {
 							window.crudJs.Stage.showForm(4, nodeId, undefined, true, true, reloadLocation);
@@ -304,22 +304,13 @@ class NodeAdmin extends Component<any, any> {
 						renderIcon('pencil')
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						title: L('EDIT_ACCESS'),
 						onClick: () => {
 							window.crudJs.Stage.showForm(1, nodeId, undefined, true, true, reloadLocation);
 						}
 					},
 						renderIcon('user')
-					),
-					R.button({
-						onClick: () => {
-							admin.debug(form || node);
-						},
-						className: 'clickable toolbtn admin-form-btn',
-						title: 'log node to console'
-					},
-						renderIcon('info')
 					),
 					R.span({
 						className: 'clickable admin-form-lock-btn',
@@ -333,12 +324,11 @@ class NodeAdmin extends Component<any, any> {
 		}
 
 		return R.div({
-			ref: keepInWindow,
-			className: 'admin-controll admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
+			className: 'admin-control admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
 			R.span({
-				className: 'halfvisible admin-form-open-btn' + (borderOnLoad || borderOnSave),
+				className: 'half-visible admin-form-open-btn' + (borderOnLoad || borderOnSave),
 				onMouseEnter: this.show
 			},
 				renderIcon('wrench')
@@ -349,7 +339,7 @@ class NodeAdmin extends Component<any, any> {
 }
 
 function createNodeForMenuItem(item) {
-	getNodeData(4, (item.isDoc ? item.parent : item.id) as number).then((data) => {
+	getNodeData(4, (item.isDocument ? item.parent : item.id) as number).then((data) => {
 		window.crudJs.Stage.showForm(4, 'new', {
 			prior: data.prior,
 			_nodesID: {

@@ -1,11 +1,11 @@
 import {
-	throwError, FIELD_14_NtoM, FIELD_4_DATETIME, FIELD_11_DATE, FIELD_7_Nto1, FIELD_17_TAB, FIELD_19_RICHEDITOR,
-	FIELD_10_PASSWORD, FIELD_1_TEXT, FIELD_12_PICTURE, FIELD_21_FILE, FIELD_5_BOOL, FIELD_15_1toN, PREVS_ANY,
-	PREVS_PUBLISH, assert, PREVS_CREATE, RecId, RecordDataWrite
+	throwError, FIELD_14_NtoM, FIELD_4_DATE_TIME, FIELD_11_DATE, FIELD_7_Nto1, FIELD_17_TAB, FIELD_19_RICH_EDITOR,
+	FIELD_10_PASSWORD, FIELD_1_TEXT, FIELD_12_PICTURE, FIELD_21_FILE, FIELD_5_BOOL, FIELD_15_1toN, PRIVILEGES_ANY,
+	PRIVILEGES_PUBLISH, assert, PRIVILEGES_CREATE, RecId, RecordDataWrite, VIEW_MASK_DROPDOWN_LOOKUP
 } from "../www/js/bs-utils";
 
 import ENV from "../ENV";
-import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHadlersNames } from "./desc-node";
+import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHandlersNames } from "./desc-node";
 import { getRecords } from "./get-records";
 import { mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit, mysqlRowsResult } from "./mysql-connection";
 import { UPLOADS_FILES_PATH, idToImgURLServer } from './upload';
@@ -30,15 +30,15 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 	let node = getNodeDesc(nodeId);
 	let currentData;
 	if(recId !== null) {
-		currentData = await getRecords(nodeId, PREVS_ANY, recId, userSession);
+		currentData = await getRecords(nodeId, PRIVILEGES_ANY, recId, userSession);
 	}
 
 	const tableName = node.tableName;
-	const prevs = node.prevs;
+	const privileges = node.privileges;
 	let filesToDelete;
 
 	if(node.draftable) {
-		if((prevs & PREVS_PUBLISH) === 0) {
+		if((privileges & PRIVILEGES_PUBLISH) === 0) {
 			if(recId !== null) {
 				if(currentData.status !== 1) {
 					data.status = 2;
@@ -61,7 +61,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			throwError('Update access denied.');
 		}
 	} else {
-		if(!(node.prevs & PREVS_CREATE)) {
+		if(!(node.privileges & PRIVILEGES_CREATE)) {
 			throwError('Creation access denied: ' + node.id);
 		}
 	}
@@ -74,7 +74,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			if(data.hasOwnProperty(fieldName)) {
 				throwError('Field ' + f['fieldName'] + ' hidden for update, but present in request.');
 			}
-		} else if(!f.nostore) {
+		} else if(!f.noStore) {
 
 			if(f.requirement) {
 				if(((!data.hasOwnProperty(fieldName) || !data[fieldName])) && (!currentData || !currentData[fieldName])) {
@@ -82,14 +82,14 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 				}
 			}
 			if(data.hasOwnProperty(fieldName)) {
-				if(f.fieldType === FIELD_19_RICHEDITOR) {
+				if(f.fieldType === FIELD_19_RICH_EDITOR) {
 					for(let replacer of blockTags) {
 						data[fieldName] = data[fieldName].replace(replacer.exp, replacer.val);
 					}
 				}
 
-				if(f.uniqu) {
-					if(!(await uniquCheckInner(tableName, fieldName, data[fieldName], recId))) {
+				if(f.unique) {
+					if(!(await uniqueCheckInner(tableName, fieldName, data[fieldName], recId))) {
 						throwError('Record ' + f.name + ' with value "' + data[fieldName] + '" already exist.');
 					}
 				}
@@ -147,7 +147,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		if(currentData) {
 			for(let f of node.fields) { // save filenames to delete updated files later
 				let fieldName = f.fieldName;
-				if(!f.nostore && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
+				if(!f.noStore && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
 					let fieldType = f.fieldType;
 					if((fieldType === FIELD_12_PICTURE) || (fieldType === FIELD_21_FILE)) {
 						if(!realDataBefore) {
@@ -166,16 +166,16 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		}
 
 		if(recId !== null) {
-			await getNodeEventHandler(nodeId, ServerSideEventHadlersNames.beforeUpdate, currentData, data, userSession);
+			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeUpdate, currentData, data, userSession);
 		} else {
-			await getNodeEventHandler(nodeId, ServerSideEventHadlersNames.beforeCreate, data, userSession);
+			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeCreate, data, userSession);
 		}
 		let needProcess_n2m;
 		for(let f of node.fields) {
 
 			let fieldName = f.fieldName;
 
-			if(!f.nostore && data.hasOwnProperty(fieldName)) {
+			if(!f.noStore && data.hasOwnProperty(fieldName)) {
 
 				let fieldType = f.fieldType;
 
@@ -227,13 +227,13 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 						//continue to process as text
 						case FIELD_1_TEXT:
 						case FIELD_10_PASSWORD:
-							if(f.maxlen && (fieldVal.length > f.maxlen)) {
-								throwError("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxlen);
+							if(f.maxLength && (fieldVal.length > f.maxLength)) {
+								throwError("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxLength);
 							}
 							insQ.push("'", fieldVal, "'");
 							break;
 
-						case FIELD_19_RICHEDITOR:
+						case FIELD_19_RICH_EDITOR:
 							if(fieldVal.length > 16000000) {
 								throwError("Value length for field '" + fieldName + "' (" + tableName + ") is longer that 16000000");
 							}
@@ -244,11 +244,11 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 						case FIELD_7_Nto1:
 							if(!isAdmin(userSession) && fieldVal) {
-								await getRecords(f.nodeRef, 8, fieldVal, userSession); //check if you have read access to refered item
+								await getRecords(f.nodeRef, VIEW_MASK_DROPDOWN_LOOKUP, fieldVal, userSession); //check if you have read access to referenced item
 							}
 							insQ.push(fieldVal);
 							break;
-						case FIELD_4_DATETIME:
+						case FIELD_4_DATE_TIME:
 						case FIELD_11_DATE:
 							insQ.push("'", fieldVal, "'");
 							break;
@@ -257,8 +257,8 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 							if((typeof fieldVal !== 'number') || isNaN(fieldVal)) {
 								throwError("Value for field " + fieldName + " (" + tableName + ") expected as numeric.");
 							}
-							if(f.maxlen && fieldVal.toString().length > f.maxlen) {
-								throwError("Value -length for field '" + fieldName + "' (" + tableName + ") is longer that " + f.maxlen);
+							if(f.maxLength && fieldVal.toString().length > f.maxLength) {
+								throwError("Value -length for field '" + fieldName + "' (" + tableName + ") is longer that " + f.maxLength);
 							}
 							insQ.push(fieldVal as unknown as string);
 							break;
@@ -285,7 +285,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		}
 		/// #if DEBUG
 		else {
-			throwError('No fields updated in sumbitRecord.');
+			throwError('No fields updated in submitRecord.');
 		}
 
 		for(let key in data) {
@@ -299,7 +299,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		if(recId === null) {
 			recId = qResult.insertId;
 			data.id = recId;
-			await getNodeEventHandler(nodeId, ServerSideEventHadlersNames.afterCreate, data, userSession);
+			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterCreate, data, userSession);
 		}
 		if(needProcess_n2m) {
 			for(let f of node.fields) {
@@ -323,7 +323,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 								}
 
 								if(!isAdmin(userSession) && id) {
-									await getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to refered item
+									await getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to referenced item
 								}
 
 								n2miQ.push("(", recId as unknown as string, ',', id, ")");
@@ -353,7 +353,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 	}
 }
 
-async function uniquCheckInner(tableName, fieldName, val, recId) {
+async function uniqueCheckInner(tableName, fieldName, val, recId) {
 	let query = ["SELECT id FROM ", tableName, " WHERE ", fieldName, " ='", val, "'"];
 	if(recId !== null) {
 		query.push(" AND id<>", recId);
@@ -364,8 +364,8 @@ async function uniquCheckInner(tableName, fieldName, val, recId) {
 	return !exists.length;
 }
 
-function uniquCheck(fieldId, nodeId, val, recId, userSession) {
-	return uniquCheckInner(getNodeDesc(nodeId, userSession).tableName, getFieldDesc(fieldId).fieldName, val, recId);
+function uniqueCheck(fieldId, nodeId, val, recId, userSession) {
+	return uniqueCheckInner(getNodeDesc(nodeId, userSession).tableName, getFieldDesc(fieldId).fieldName, val, recId);
 }
 
-export { submitRecord, uniquCheck };
+export { submitRecord, uniqueCheck };

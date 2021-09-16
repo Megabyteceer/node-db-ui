@@ -6,26 +6,22 @@ import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } fro
 import { getRecords } from "../core/get-records";
 import { submitRecord } from "../core/submit";
 import { L } from "../core/locale";
-import { FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_2_INT, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATICTEXT, PREVS_VIEW_ORG, RecordData, RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";
+import { FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_2_INT, FIELD_4_DATE_TIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, FIELD_ID_MAX_LENGTH, NODE_ID_FIELDS, NODE_ID_NODES, PRIVILEGES_VIEW_ORG, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK_EDIT_CREATE } from "../www/js/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
-		if(data.multilang) {
+		if(data.multilingual) {
 			const langs = getLangs();
 			const fn = data.fieldName;
 			for(let l of langs) {
-				if(l.code) {
-					data.fieldName = fn + '$' + l.code;
+				if(l.prefix) {
+					data.fieldName = fn + l.prefix;
 					await createFieldInTable(data);
 				}
 			}
 			data.fieldName = fn;
-		}
-
-		if(data.enum) { //TODO: rename nodeRef field to enum?
-			data.nodeRef = data.enum;
 		}
 
 		await createFieldInTable(data);
@@ -38,7 +34,7 @@ const handlers: NodeEventsHandlers = {
 		const fieldName = data.fieldName;
 		if(fieldType === FIELD_15_1toN) {
 
-			const parentNode = await getRecords(4, 1, data.node_fields_linker, userSession);
+			const parentNode = await getRecords(NODE_ID_NODES, 1, data.node_fields_linker, userSession);
 
 			const linkerFieldData = {
 				status: 1,
@@ -46,15 +42,15 @@ const handlers: NodeEventsHandlers = {
 				node_fields_linker: data.nodeRef,
 				nodeRef: data.node_fields_linker,
 				name: parentNode.singleName,
-				show: 1,
+				show: VIEW_MASK_EDIT_CREATE,
 				prior: 1000,
-				fieldType: 7,
+				fieldType: FIELD_7_Nto1,
 				forSearch: 1,
 				selectFieldName: parentNode.tableName,
 				_usersID: userSession.id,
 				_organID: userSession.orgId
 			};
-			await submitRecord(6, linkerFieldData);
+			await submitRecord(NODE_ID_FIELDS, linkerFieldData);
 		}
 		reloadMetadataSchedule();
 	},
@@ -63,33 +59,29 @@ const handlers: NodeEventsHandlers = {
 
 		shouldBeAdmin(userSession);
 
-		if(currentData.id === 9 && newData.hasOwnProperty('maxlen')) {
+		if((currentData.id === FIELD_ID_MAX_LENGTH) && newData.hasOwnProperty('maxLength')) {
 			throwError(L('SIZE_FLD_BLOCKED'));
 		}
 
 		mustBeUnset(newData, 'fieldName');
-		mustBeUnset(newData, 'nostore');
+		mustBeUnset(newData, 'noStore');
 		mustBeUnset(newData, 'node_fields_linker');
 
-		if(newData.enum) { //TODO: rename nodeRef field to enum?
-			newData.nodeRef = newData.enum;
-		}
+		if(!currentData.noStore) {
 
-		if(!currentData.nostore) {
+			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxLength') || newData.hasOwnProperty('multilingual')) {
 
-			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxlen')) {
-
-				const multilangChanged = newData.hasOwnProperty('multilang') && currentData.multilang !== newData.multilang;
+				const multilingualChanged = newData.hasOwnProperty('multilingual') && currentData.multilingual !== newData.multilingual;
 
 				currentData = Object.assign(currentData, newData);
 
 				const node = getNodeDesc(currentData.node_fields_linker.id);
 
-				const realBDFNAme = currentData.fieldName;
+				const realFieldName = currentData.fieldName;
 				const fieldType = currentData.fieldType;
 
-				if((realBDFNAme !== '_organID') && (realBDFNAme !== '_usersID') && (realBDFNAme !== 'createdOn') && (realBDFNAme !== 'ID')) {
-					if((currentData.nostore === 0) && (fieldType !== FIELD_8_STATICTEXT) && (fieldType !== FIELD_14_NtoM) && (fieldType !== FIELD_15_1toN)) {
+				if((realFieldName !== '_organID') && (realFieldName !== '_usersID') && (realFieldName !== 'createdOn') && (realFieldName !== 'ID')) {
+					if((currentData.noStore === 0) && (fieldType !== FIELD_8_STATIC_TEXT) && (fieldType !== FIELD_14_NtoM) && (fieldType !== FIELD_15_1toN)) {
 
 
 						const typeQ = getFieldTypeSQL(currentData);
@@ -98,31 +90,30 @@ const handlers: NodeEventsHandlers = {
 
 							const langs = getLangs();
 
-							if(multilangChanged) {
-								if(currentData.multilang) {
+							if(multilingualChanged) {
+								if(currentData.multilingual) {
 									for(let l of langs) {
-										debugger;
-										if(l.code) {
-											currentData.fieldName = realBDFNAme + '$' + l.code;
+										if(l.prefix) {
+											currentData.fieldName = realFieldName + l.prefix;
 											await createFieldInTable(currentData);
 										}
 									}
-									currentData.fieldName = realBDFNAme;
+									currentData.fieldName = realFieldName;
 								} else {
 									for(let l of langs) {
-										if(l.code) {
-											await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realBDFNAme + '$' + l.code);
+										if(l.prefix) {
+											await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realFieldName + l.prefix);
 										}
 									}
 								}
-							} else if(currentData.multilang) {
+							} else if(currentData.multilingual) {
 								for(let l of langs) {
-									if(l.code) {
-										await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realBDFNAme + '$' + l.code + ' ' + typeQ);
+									if(l.prefix) {
+										await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + l.prefix + ' ' + typeQ);
 									}
 								}
 							}
-							await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realBDFNAme + ' ' + typeQ);
+							await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + ' ' + typeQ);
 						}
 					}
 				}
@@ -143,9 +134,9 @@ function getFieldTypeSQL(data) {
 	switch(data.fieldType) {
 		case FIELD_10_PASSWORD:
 		case FIELD_1_TEXT:
-			if(data.maxlen <= 255) {
-				return 'VARCHAR(' + data.maxlen + ") NOT NULL DEFAULT ''";
-			} else if(data.maxlen <= 65535) {
+			if(data.maxLength <= 255) {
+				return 'VARCHAR(' + data.maxLength + ") NOT NULL DEFAULT ''";
+			} else if(data.maxLength <= 65535) {
 				return "TEXT NOT NULL DEFAULT ''";
 			} else {
 				return "MEDIUMTEXT NOT NULL DEFAULT ''";
@@ -153,12 +144,12 @@ function getFieldTypeSQL(data) {
 		case FIELD_20_COLOR:
 			return "BIGINT (11) UNSIGNED NOT NULL DEFAULT 4294967295";
 		case FIELD_2_INT:
-			if(data.maxlen <= 9) {
-				return 'INT(' + data.maxlen + ') NOT NULL DEFAULT 0';
+			if(data.maxLength <= 9) {
+				return 'INT(' + data.maxLength + ') NOT NULL DEFAULT 0';
 			} else {
-				return 'BIGINT(' + data.maxlen + ') NOT NULL DEFAULT 0';
+				return 'BIGINT(' + data.maxLength + ') NOT NULL DEFAULT 0';
 			}
-		case FIELD_4_DATETIME:
+		case FIELD_4_DATE_TIME:
 		case FIELD_11_DATE:
 			return 'timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\'';
 		case FIELD_5_BOOL:
@@ -170,7 +161,7 @@ function getFieldTypeSQL(data) {
 			return "VARCHAR(32) NOT NULL DEFAULT ''";
 		case FIELD_16_RATING:
 			throwError(L('RATING_FLD_NOEDIT'));
-		case FIELD_19_RICHEDITOR:
+		case FIELD_19_RICH_EDITOR:
 			return "MEDIUMTEXT NOT NULL DEFAULT ''";
 		case FIELD_21_FILE:
 			return "VARCHAR(127) NOT NULL DEFAULT ''";
@@ -181,7 +172,10 @@ function getFieldTypeSQL(data) {
 
 async function createFieldInTable(data: RecordDataWrite) {
 
-	const nodeId = data.node_fields_linker;
+	let nodeId = data.node_fields_linker;
+	if(typeof nodeId !== 'number') {
+		nodeId = nodeId.id;
+	}
 
 	// prepare space for field
 	await mysqlExec("UPDATE _fields SET prior=prior+20 WHERE (node_fields_linker =" + nodeId + ") AND (prior >" + data.prior + ")");
@@ -206,7 +200,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 				node_fields_linker: linkedNodeId,
 				fieldType: FIELD_12_PICTURE
 			};
-			const records = await getRecords(6, PREVS_VIEW_ORG, undefined, undefined, filters);
+			const records = await getRecords(6, PRIVILEGES_VIEW_ORG, undefined, undefined, filters);
 			if(records.total) {
 				data.icon = records.items[0].fieldName;
 			}
@@ -214,7 +208,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 	}
 
 	if(fieldType === FIELD_15_1toN) {
-		data.nostore = 1;
+		data.noStore = 1;
 	} else if(fieldType === FIELD_14_NtoM) {
 
 		data.selectFieldName = linkedNodeName;
@@ -233,7 +227,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 			FOREIGN KEY(\`${fld1}\`) REFERENCES \`${nodeName}\`(ID) ON DELETE CASCADE ON UPDATE CASCADE,
 			FOREIGN KEY(\`${fld2}\`) REFERENCES \`${linkedNodeName}\`(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4; `);
-	} else if(!data.nostore) {
+	} else if(!data.noStore) {
 		if(fieldType === FIELD_7_Nto1) {
 			data.forSearch = 1;
 			data.selectFieldName = linkedNodeName;
@@ -243,8 +237,8 @@ async function createFieldInTable(data: RecordDataWrite) {
 		if(typeQ) {
 			const altQ = ['ALTER TABLE \`', nodeName, '\` ADD COLUMN \`', fieldName, '\` ', typeQ];
 
-			if(data.forSearch || data.uniqu) {
-				altQ.push(', ADD', (data.uniqu ? ' UNIQUE' : ''), ' INDEX ', nodeName, '_', fieldName, ' (\`', fieldName, '\` ASC) ;');
+			if(data.forSearch || data.unique) {
+				altQ.push(', ADD', (data.unique ? ' UNIQUE' : ''), ' INDEX ', nodeName, '_', fieldName, ' (\`', fieldName, '\` ASC) ;');
 			}
 
 			await mysqlExec(altQ.join(''));

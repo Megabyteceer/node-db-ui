@@ -1,6 +1,6 @@
 ﻿import React from "react";
 
-import { getData, goToPageByHash, idToImgURL, isAdmin, L, locationToHash, renderIcon } from "./utils";
+import { getData, goToPageByHash, idToImgURL, isAdmin, L, renderIcon } from "./utils";
 import { Select } from "./components/select";
 import { admin } from "./admin/admin-utils";
 import { ENV } from "./main-frame";
@@ -59,8 +59,8 @@ class User extends Component<any, any> {
 		}, 10);
 	}
 
-	toggleMultilang() {
-		getData('api/toggleMultilang').then(() => {
+	toggleMultilingual() {
+		getData('api/toggleMultilingual').then(() => {
 			window.location.reload();
 		});
 
@@ -73,16 +73,16 @@ class User extends Component<any, any> {
 		if(this.state) {
 
 			var iconName = '';
-			let className = 'clickable top-bar-user-multilang'
+			let className = 'clickable top-bar-user-multilingual'
 			if(this.state.hasOwnProperty('langs')) {
-				className += ' top-bar-user-multilang-active';
+				className += ' top-bar-user-multilingual-active';
 				iconName = 'check-';
 			};
 
-			var multilangBtn;
-			if(ENV.ENABLE_MULTILANG) {
-				multilangBtn = R.div({ className, onClick: this.toggleMultilang },
-					renderIcon(iconName + 'square-o'), L('MULTILANG')
+			var multilingualBtn;
+			if(ENV.ENABLE_MULTILINGUAL) {
+				multilingualBtn = R.div({ className, onClick: this.toggleMultilingual },
+					renderIcon(iconName + 'square-o'), L('MULTILINGUAL')
 				);
 			}
 
@@ -108,7 +108,11 @@ class User extends Component<any, any> {
 			} else {
 				let imgUrl = idToImgURL(this.state.avatar, 'avatar');
 				// TODO go to edit in showForm modal level
-				btn1 = R.a({ href: locationToHash(5, this.state.id, undefined, true), title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn' },
+				btn1 = R.a({
+					onClick: () => {
+						window.crudJs.Stage.showForm(5, this.state.id, undefined, true, true);
+					}, title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn'
+				},
 					R.img({ className: 'user-avatar', src: imgUrl })
 				);
 				btn2 = R.a({ href: 'login', title: L('LOGOUT'), className: 'clickable top-bar-user-btn' },
@@ -117,7 +121,7 @@ class User extends Component<any, any> {
 			}
 
 			body = R.span(null,
-				multilangBtn,
+				multilingualBtn,
 				org,
 				btn1, btn2
 			)

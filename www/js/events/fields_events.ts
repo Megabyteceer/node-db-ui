@@ -1,22 +1,23 @@
-import { FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATICTEXT } from "../bs-utils";
+import { FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_4_DATE_TIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATIC_TEXT } from "../bs-utils";
 
 import { L } from "../utils";
 import { FormEvents } from "./forms_events";
 
 class FieldsEvents extends FormEvents {
 
-	_html_title_onChange() {
-		let pv = this.fieldValue('title');
+	removeWrongCharactersInField(fieldName: string) {
+		let pv = this.fieldValue(fieldName);
 		if(pv) {
-			var newv = pv.replace(/ /g, '_').replace(/[^0-9a-zA-Z_]/g, '');
-
-			if(pv != newv) {
-				this.setFieldValue('title', newv);
+			var newValue = pv.replace(/ /g, '_').replace(/[^0-9a-zA-Z_]/g, '');
+			if(pv != newValue) {
+				this.setFieldValue(fieldName, newValue);
 			}
-
 		}
-		this.setFieldValue('help', location.protocol + '//' + location.host + '/custom/html/' + newv + '.html');
+	}
 
+	_html_title_onChange() {
+		this.removeWrongCharactersInField('title');
+		this.setFieldValue('help', location.protocol + '//' + location.host + '/custom/html/' + this.fieldValue('title') + '.html');
 	}
 
 	_users_passconfirm_onChange() {
@@ -29,20 +30,20 @@ class FieldsEvents extends FormEvents {
 		}
 	}
 
-	_nodes_isDoc_onChange() {
-		if(this.fieldValue("isDoc")) {
+	_nodes_isDocument_onChange() {
+		if(this.fieldValue("isDocument")) {
 			this.showField("tableName", "creationName", "singleName",
 				"captcha", "draftable", "recPerPage");
 			if(this.hasField('creationName_en')) {
 				this.showField("creationName_en", "singleName_en");
 			}
-			if(!this.rec_creation) {
+			if(!this.isNewRecord) {
 				this.showField("_fieldsID", "reverse");
 			} else {
 				this.hideField("_fieldsID", "reverse");
 			}
 
-			if(!this.rec_update) {
+			if(!this.isUpdateRecord) {
 				this.showField("createdon_field", "createUserFld", "createdby_field",
 					"staticLink");
 			}
@@ -58,13 +59,14 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_fieldName_onChange() {
+		this.removeWrongCharactersInField('fieldName');
 		this.check12nFieldName();
 	}
 
 	_fields_fieldType_onChange() {
 		const fieldType = this.fieldValue("fieldType");
 		this.showField();
-		this.setFieldLabel("fdescription", L("FLD_DESC"));
+		this.setFieldLabel("description", L("FLD_DESC"));
 		this.hideField("selectFieldName", "show", "nodeRef", "enum", "width", "height", "icon");
 		this.enableField("vis_list");
 		if(fieldType === FIELD_14_NtoM) {
@@ -73,68 +75,68 @@ class FieldsEvents extends FormEvents {
 			this.getField('nodeRef').setLookupFilter('excludeIDs', undefined);
 		}
 		switch(fieldType) {
-			case FIELD_8_STATICTEXT:
-				this.setFieldLabel("fdescription", L("CONTENT"));
+			case FIELD_8_STATIC_TEXT:
+				this.setFieldLabel("description", L("CONTENT"));
 			case FIELD_17_TAB:
 			case FIELD_18_BUTTON:
-				this.hideField("maxlen", "clientOnly", "nostore", "requirement", "uniqu", "forSearch");
+				this.hideField("maxLength", "clientOnly", "noStore", "requirement", "unique", "forSearch");
 				this.setFieldValue('forSearch', false);
 				break;
 			case FIELD_14_NtoM:
 			case FIELD_15_1toN:
 				this.disableField("vis_list");
-				this.disableField("nostore");
-				this.setFieldValue('nostore', 0);
+				this.disableField("noStore");
+				this.setFieldValue('noStore', 0);
 				this.setFieldValue("vis_list", 0);
-				this.hideField('forSearch', 'requirement', 'uniqu');
+				this.hideField('forSearch', 'requirement', 'unique');
 			case FIELD_7_Nto1:
-				this.hideField("maxlen", "uniqu");
-				this.setFieldValue("uniqu", false);
+				this.hideField("maxLength", "unique");
+				this.setFieldValue("unique", false);
 				this.showField("nodeRef");
 				break;
 
 			case FIELD_6_ENUM:
 				this.showField('enum');
 				break;
-			case FIELD_19_RICHEDITOR:
+			case FIELD_19_RICH_EDITOR:
 			case FIELD_12_PICTURE:
 				this.showField("width", "height");
-				this.hideField("maxlen", "nostore", "clientOnly", "uniqu");
-				this.setFieldValue('nostore', false);
+				this.hideField("maxLength", "noStore", "clientOnly", "unique");
+				this.setFieldValue('noStore', false);
 				this.setFieldValue('clientOnly', false);
-				this.setFieldValue('uniqu', false);
+				this.setFieldValue('unique', false);
 				break;
 			case FIELD_5_BOOL:
-			case FIELD_4_DATETIME:
+			case FIELD_4_DATE_TIME:
 			case FIELD_11_DATE:
 			case FIELD_20_COLOR:
 			case FIELD_21_FILE:
-				this.hideField("maxlen");
+				this.hideField("maxLength");
 				break;
 
 		}
 
-		if(fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICHEDITOR) {
-			this.showField('multilang');
+		if(fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICH_EDITOR) {
+			this.showField('multilingual');
 		} else {
-			this.hideField('multilang');
-			this.setFieldValue('multilang', false);
+			this.hideField('multilingual');
+			this.setFieldValue('multilingual', false);
 		}
 		this.check12nFieldName();
 	}
 
-	_fields_nostore_onChange() {
-		if(this.isFieldVisible('nostore')) {
-			if(this.fieldValue('nostore') || this.fieldValue('clientOnly')) {
-				this.hideField('forSearch', 'uniqu');
+	_fields_noStore_onChange() {
+		if(this.isFieldVisible('noStore')) {
+			if(this.fieldValue('noStore') || this.fieldValue('clientOnly')) {
+				this.hideField('forSearch', 'unique');
 			} else {
-				this.showField('forSearch', 'uniqu');
+				this.showField('forSearch', 'unique');
 			}
 		}
 	}
 
 	_fields_clientOnly_onChange() {
-		this._fields_nostore_onChange();
+		this._fields_noStore_onChange();
 	}
 
 	_fields_vis_create_onChange() {
@@ -194,6 +196,10 @@ class FieldsEvents extends FormEvents {
 
 	_fields_nodeRef_onChange() {
 		this.check12nFieldName();
+	}
+
+	async _nodes_tableName_onChange() {
+		this.removeWrongCharactersInField('tableName');
 	}
 
 	//_insertNewHandlersHere_

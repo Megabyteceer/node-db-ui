@@ -209,7 +209,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 		return sessionsByUserId.get(userID);
 	}
 
-	const query = "SELECT _users.name as userName, multilangEnabled, avatar, _users._organID AS orgID, company, defaultOrg, _organ.name AS organName, email, language FROM _users LEFT JOIN _organ ON (_users._organID = _organ.id) WHERE (_users.id = " + userID + ") AND _users.status=1 LIMIT 1";
+	const query = "SELECT _users.name as userName, multilingualEnabled, avatar, _users._organID AS orgID, company, defaultOrg, _organ.name AS organName, email, language FROM _users LEFT JOIN _organ ON (_users._organID = _organ.id) WHERE (_users.id = " + userID + ") AND _users.status=1 LIMIT 1";
 	const users = await mysqlExec(query) as mysqlRowsResult;
 	const user = users[0];
 	if(!user) {
@@ -231,14 +231,14 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 
 	const roles = await mysqlExec("SELECT _rolesID FROM _userroles WHERE _userroles._usersID=" + userID + " ORDER BY _rolesID") as mysqlRowsResult;
 
-	let cacheKeyGenerator;
+	let cacheKeyGenerator: string[];
 	let userRoles: UserRoles = {};
 	if(userID === 2) {
 		userRoles[GUEST_ROLE_ID] = 1;
-		cacheKeyGenerator = [GUEST_ROLE_ID]
+		cacheKeyGenerator = [GUEST_ROLE_ID as unknown as string]
 	} else {
 		userRoles[USER_ROLE_ID] = 1;
-		cacheKeyGenerator = [USER_ROLE_ID]
+		cacheKeyGenerator = [USER_ROLE_ID as unknown as string]
 	}
 	for(let role of roles) {
 		cacheKeyGenerator.push(role._rolesID);
@@ -246,15 +246,18 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 	}
 
 
-	let orgs = {
+	let organizations = {
 		[organID]: organName
 	}
 	const pgs = await mysqlExec("SELECT _organ.id, _organ.name FROM `_organ__users` LEFT JOIN _organ ON (_organ.id = _organ__users._organID) WHERE _organ__users._usersID=" + userID + " ORDER BY _organ.id") as mysqlRowsResult;
 	for(let org of pgs) {
-		orgs[org.id] = org.name;
+		organizations[org.id] = org.name;
 	}
 
 	const lang = getLang(user.language);
+
+	cacheKeyGenerator.push('l', lang.prefix);
+	cacheKeyGenerator.push('m', user.multilingualEnabled);
 
 	const userSession: UserSession = {
 		id: userID,
@@ -263,10 +266,14 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 		avatar: user.avatar,
 		email: user.email,
 		userRoles,
-		orgs,
+		orgs: organizations,
 		lang,
-		cacheKey: cacheKeyGenerator.join() + lang.prefix
+		cacheKey: cacheKeyGenerator.join()
 	};
+
+	if(user.multilingualEnabled) {
+		userSession.multilingualEnabled = 1;
+	}
 
 	if(!await setCurrentOrg(organID_def, userSession)) {
 		await setCurrentOrg(organID, userSession, true);
@@ -281,7 +288,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 			Object.freeze(userSession);
 		//*/
 	} else {
-		await setMultiLang(user.multilangEnabled, userSession);
+		await setMultiLang(user.multilingualEnabled, userSession);
 	}
 	return userSession;
 }
@@ -315,13 +322,10 @@ async function setCurrentOrg(organID: number, userSession: UserSession, updateIn
 
 async function setMultiLang(enable, userSession) {
 	shouldBeAuthorized(userSession);
-	if(enable && ENV.ENABLE_MULTILANG) {
-		debugger;
-		userSession.langs = getLangs();
-	} else {
-		delete userSession.langs;
+	if(ENV.ENABLE_MULTILINGUAL) {
+		userSession.multilingualEnabled = enable;
 	}
-	await mysqlExec('UPDATE _users SET multilangEnabled=' + (enable ? '1' : '0') + " WHERE id=" + userSession.id + " LIMIT 1");
+	await mysqlExec('UPDATE _users SET multilingualEnabled=' + (enable ? '1' : '0') + " WHERE id=" + userSession.id + " LIMIT 1");
 	return 1;
 }
 

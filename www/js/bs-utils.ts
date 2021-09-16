@@ -1,6 +1,24 @@
 interface Filters {
 	[key: string]: string | number | {};
+
 	excludeIDs?: RecId[];
+
+	onlyIDs?: RecId[];
+
+	/** filter id to apply to query */
+	filterId?: RecId;
+
+	/** page number. '*' - to retrieve all */
+	p?: number | '*';
+
+	/** items per page */
+	n?: number;
+
+	/** field name to order by */
+	o?: string;
+
+	/** reverse order */
+	r?: boolean;
 }
 
 const throwError = (message: string): never => {
@@ -44,6 +62,8 @@ interface UserSession {
 	uploaded?: { [key: number]: string };
 	__temporaryServerSideSession?: boolean;
 	notifications?: string[];
+	/** not empty if user have multilingualEnabled */
+	multilingualEnabled?: BoolNum;
 }
 
 interface EnumListItem {
@@ -57,26 +77,27 @@ interface FieldDesc {
 	/** readable name */
 	name: string;
 
+	/** could be string for multilingual fields */
 	id: RecId;
 
 	/** field's name in database table */
 	fieldName: string;
 	/** maximal data length in database */
-	maxlen: number;
+	maxLength: number;
 
 	show: ViewMask;
 
 	/** value is required for form. */
 	requirement: BoolNum;
 
-	/** value of the fied should be unique for whole database table. */
-	uniqu: BoolNum;
+	/** value of the field should be unique for whole database table. */
+	unique: BoolNum;
 
 	/** if true - field data do not go to the server on form save. */
 	clientOnly: BoolNum;
 
 	/** fields data go to the server, but has no store in database table. */
-	nostore: BoolNum;
+	noStore: BoolNum;
 
 	/** fields will have index in database, and search will be processed in this field */
 	forSearch: BoolNum;
@@ -95,25 +116,33 @@ interface FieldDesc {
 	/** order of the field in the form */
 	prior: number;
 
-	node: NodeDesc;
+	/** field tip. or html content for FIELD_8_STATIC_TEXT fields */
+	description: string;
 
-	/** index in parent's node 'fields' list */
-	index: number;
+	/** client side only field */
+	node?: NodeDesc;
 
+	/** index in parent's node 'fields' list. Client side only field */
+	index?: number;
+
+	/** client side only field */
 	enum?: EnumList;
-	enumNamesById: { [key: number]: string };
+
+	/** client side only field */
+	enumNamesById?: { [key: number]: string };
 
 	/** contains language id, if field is multilingual and refers to non default language */
 	lang?: string;
 
-	/** field tip. or html content for FIELD_8_STATICTEXT fields */
-	fdescription: string;
+	/** field name without language prefix */
+	fieldNamePure?: string;/** field name without language prefix */
 
-	/** uset to group fields together in compactArea */
-	isCompactNested: boolean;
+	/** fields which contains other languages data for that field */
+	childrenFields?: FieldDesc[];
+
+	/** used to group fields together in compactArea. Client side only field  */
+	isCompactNested?: boolean;
 }
-
-
 
 interface FilterDesc {
 
@@ -123,21 +152,21 @@ interface FilterDesc {
 interface NodeDesc {
 	id: RecId;
 	singleName: string;
-	prevs: PrevsMask;
-	reverse: BoolNum;
-	creationName: string;
+	privileges: PrivilegesMask;
 	matchName: string;
 	description: string;
-	isDoc: BoolNum;
-	staticLink: string;
-	tableName: string;
-	draftable: BoolNum;
-	icon: string;
-	recPerPage: number;
-	defaultFilterId: number;
-	fields: FieldDesc[];
-	filters: FilterDesc[];
-	sortFieldName: string;
+	isDocument: BoolNum;
+	reverse?: BoolNum;
+	creationName?: string;
+	staticLink?: string;
+	tableName?: string;
+	draftable?: BoolNum;
+	icon?: string;
+	recPerPage?: number;
+	defaultFilterId?: number;
+	fields?: FieldDesc[];
+	filters?: FilterDesc[];
+	sortFieldName?: string;
 	/** CLIENT SIDE ONLY */
 	fieldsById?: { [key: number]: FieldDesc };
 }
@@ -147,6 +176,7 @@ interface UserLangEntry {
 	name: string;
 	code: string;
 	prefix: string;
+	isUILanguage: boolean;
 }
 
 interface RecordDataWrite {
@@ -195,11 +225,11 @@ const USER_ROLE_ID: TRoleId = 3;
 
 const FIELD_1_TEXT: FieldType = 1;
 const FIELD_2_INT: FieldType = 2;
-const FIELD_4_DATETIME: FieldType = 4;
+const FIELD_4_DATE_TIME: FieldType = 4;
 const FIELD_5_BOOL: FieldType = 5;
 const FIELD_6_ENUM: FieldType = 6;
 const FIELD_7_Nto1: FieldType = 7;
-const FIELD_8_STATICTEXT: FieldType = 8;
+const FIELD_8_STATIC_TEXT: FieldType = 8;
 const FIELD_10_PASSWORD: FieldType = 10;
 const FIELD_11_DATE: FieldType = 11;
 const FIELD_12_PICTURE: FieldType = 12;
@@ -208,26 +238,67 @@ const FIELD_15_1toN: FieldType = 15;
 const FIELD_16_RATING: FieldType = 16;
 const FIELD_17_TAB: FieldType = 17;
 const FIELD_18_BUTTON: FieldType = 18;
-const FIELD_19_RICHEDITOR: FieldType = 19;
+const FIELD_19_RICH_EDITOR: FieldType = 19;
 const FIELD_20_COLOR: FieldType = 20;
 const FIELD_21_FILE: FieldType = 21;
 
-type PrevsMask = number;
+type PrivilegesMask = number;
 type ViewMask = number;
 
-const PREVS_VIEW_OWN: PrevsMask = 1;
-const PREVS_VIEW_ORG: PrevsMask = 2;
-const PREVS_VIEW_ALL: PrevsMask = 4;
-const PREVS_CREATE: PrevsMask = 8;
-const PREVS_EDIT_OWN: PrevsMask = 16;
-const PREVS_EDIT_ORG: PrevsMask = 32;
-const PREVS_EDIT_ALL: PrevsMask = 64;
-const PREVS_DELETE: PrevsMask = 128;
-const PREVS_PUBLISH: PrevsMask = 256;
-const PREVS_ANY: PrevsMask = 65535;
+const VIEW_MASK_ALL = 65535;
+const VIEW_MASK_EDIT_CREATE = 1;
+const VIEW_MASK_LIST = 2;
+const VIEW_MASK_READONLY = 4;
+const VIEW_MASK_DROPDOWN_LOOKUP = 8;
+const VIEW_MASK_CUSTOM_LIST = 16;
+
+const PRIVILEGES_VIEW_OWN: PrivilegesMask = 1;
+const PRIVILEGES_VIEW_ORG: PrivilegesMask = 2;
+const PRIVILEGES_VIEW_ALL: PrivilegesMask = 4;
+const PRIVILEGES_CREATE: PrivilegesMask = 8;
+const PRIVILEGES_EDIT_OWN: PrivilegesMask = 16;
+const PRIVILEGES_EDIT_ORG: PrivilegesMask = 32;
+const PRIVILEGES_EDIT_ALL: PrivilegesMask = 64;
+const PRIVILEGES_DELETE: PrivilegesMask = 128;
+const PRIVILEGES_PUBLISH: PrivilegesMask = 256;
+const PRIVILEGES_ANY: PrivilegesMask = 65535;
 
 const EVENT_HANDLER_TYPE_NODE = 'node';
 const EVENT_HANDLER_TYPE_FIELD = 'field';
+
+const HASH_DIVIDER = '.';
+
+const NODE_ID_NODES: RecId = 4;
+const NODE_ID_USERS: RecId = 5;
+const NODE_ID_FIELDS: RecId = 6;
+const NODE_ID_ORGS: RecId = 7;
+const NODE_ID_ROLES: RecId = 8;
+const NODE_ID_FILTERS: RecId = 9;
+const NODE_ID_MESSAGES: RecId = 11;
+const NODE_ID_LANGUAGES: RecId = 12;
+const NODE_ID_PAGES: RecId = 49;
+const NODE_ID_ENUMERATIONS: RecId = 52;
+const NODE_ID_ENUMERATION_VALUES: RecId = 53;
+const NODE_ID_ERROR_REPORTS: RecId = 81;
+const NODE_ID_FILES: RecId = 83;
+
+const ROLE_ID_SUPER_ADMIN: RecId = 1;
+const ROLE_ID_GUEST: RecId = 2;
+const ROLE_ID_USER: RecId = 3;
+const ROLE_ID_VIEW_ALL: RecId = 7;
+
+const FIELD_ID_MAX_LENGTH: RecId = 9;
+
+const LANGUAGE_ID_DEFAULT: RecId = 1;
+
+interface IFormParameters {
+	nodeId: RecId;
+	/** id of current edited/shown record. 'new' - if record is not saved yet.*/
+	recId?: RecId | 'new';
+	/** true if form is editable or read only */
+	editable?: boolean;
+	filters?: Filters;
+}
 
 export {
 	throwError,
@@ -236,17 +307,35 @@ export {
 	assert,
 	/// #endif
 
+	IFormParameters,
+
+	HASH_DIVIDER,
+
+	LANGUAGE_ID_DEFAULT,
+
+	FIELD_ID_MAX_LENGTH,
+
+	ROLE_ID_SUPER_ADMIN, ROLE_ID_GUEST, ROLE_ID_USER, ROLE_ID_VIEW_ALL,
+
+	NODE_ID_NODES, NODE_ID_USERS, NODE_ID_FIELDS, NODE_ID_ORGS,
+	NODE_ID_ROLES, NODE_ID_FILTERS, NODE_ID_MESSAGES, NODE_ID_LANGUAGES,
+	NODE_ID_PAGES, NODE_ID_ENUMERATIONS, NODE_ID_ENUMERATION_VALUES,
+	NODE_ID_ERROR_REPORTS, NODE_ID_FILES,
+
 	USER_ROLE_ID, ADMIN_ROLE_ID, GUEST_ROLE_ID,
 
-	PREVS_VIEW_OWN, PREVS_VIEW_ORG, PREVS_VIEW_ALL, PREVS_CREATE, PREVS_EDIT_OWN, PREVS_EDIT_ORG, PREVS_EDIT_ALL,
-	PREVS_DELETE, PREVS_PUBLISH, PREVS_ANY,
-	FIELD_1_TEXT, FIELD_2_INT, FIELD_4_DATETIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1,
-	FIELD_8_STATICTEXT, FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM,
-	FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR,
+	PRIVILEGES_VIEW_OWN, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_ALL, PRIVILEGES_CREATE, PRIVILEGES_EDIT_OWN, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_ALL,
+	PRIVILEGES_DELETE, PRIVILEGES_PUBLISH, PRIVILEGES_ANY,
+	FIELD_1_TEXT, FIELD_2_INT, FIELD_4_DATE_TIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1,
+	FIELD_8_STATIC_TEXT, FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM,
+	FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR,
 	FIELD_20_COLOR, FIELD_21_FILE,
 
 	EVENT_HANDLER_TYPE_NODE, EVENT_HANDLER_TYPE_FIELD,
 
+	VIEW_MASK_EDIT_CREATE, VIEW_MASK_LIST, VIEW_MASK_READONLY,
+	VIEW_MASK_DROPDOWN_LOOKUP, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_ALL,
+
 	ViewMask, RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList,
-	PrevsMask, UserLangEntry, TRoleId, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
+	PrivilegesMask, UserLangEntry, TRoleId, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
 };

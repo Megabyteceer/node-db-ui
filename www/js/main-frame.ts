@@ -32,7 +32,7 @@ class MainFrame extends Component<any, any> {
 		ENV.nodesTree = nodesTree;
 
 		/// #if DEBUG
-		if(!ENV.DEBUG) { throw "DEBUG directives nad not cutted of in PRODUCTION mode" };
+		if(!ENV.DEBUG) { throw "DEBUG directives nad not cut of in PRODUCTION mode" };
 		/// #endif
 
 

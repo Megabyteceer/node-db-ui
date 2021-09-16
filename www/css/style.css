@@ -140,7 +140,7 @@ img {
 	vertical-align: middle;
 }
 
-.disabled .field-boolean,
+.field-wrap-disabled .field-boolean,
 .restricted {
 	opacity: 0.3;
 	pointer-events: none;
@@ -154,7 +154,7 @@ img {
 	text-decoration: none;
 }
 
-.unclickable {
+.not-clickable {
 	vertical-align: middle;
 	pointer-events: none;
 }
@@ -195,9 +195,8 @@ img {
 }
 
 .clickable:active {
-	-webkit-box-shadow: inset 0px 4px 12px 0px rgba(44, 0, 0, 0.75);
-	-moz-box-shadow: inset 0px 4px 12px 0px rgba(44, 0, 0, 0.75);
-	box-shadow: inset 0px 4px 12px 0px rgba(44, 0, 0, 0.75);
+	-webkit-box-shadow: inset 0px 2px 8px -2px rgba(0, 0, 48, 0.51);
+	box-shadow: inset 0px 2px 8px -2px rgba(0, 0, 48, 0.51);
 }
 
 .drag {
@@ -211,7 +210,7 @@ img {
 	cursor: grabbing;
 }
 
-.toolbtn {
+.tool-btn {
 	padding: 3px 2px;
 	border-radius: 3px;
 	-webkit-box-shadow: none;
@@ -219,7 +218,7 @@ img {
 	box-shadow: none;
 }
 
-.halfvisible {
+.half-visible {
 	opacity: 0.5;
 }
 
@@ -423,7 +422,7 @@ input[readonly] {
 	width: 100%;
 	box-shadow: 5px 0px 6px -3px #aaa;
 	vertical-align: top;
-	overflow-x: hidden;
+	overflow: hidden;
 }
 
 .left-bar-item {
@@ -483,6 +482,14 @@ input[readonly] {
 .left-bar-collapse-button {
 	padding-top: 5px;
 	padding-bottom: 5px;
+}
+
+.left-bar-group-container {
+	position: relative;
+}
+
+.left-bar-item-container {
+	position: relative;
 }
 
 .left-bar-children>.left-bar-group-container {
@@ -580,12 +587,13 @@ input[readonly] {
 	cursor: pointer;
 }
 
-.top-bar-user-multilang {
+.top-bar-user-multilingual {
 	display: inline-block;
 	margin-right: 12px;
 	border-radius: 4px;
 	border: 1px solid var(--BRAND_COLOR_DARK);
 	color: var(--BRAND_COLOR_LIGHT);
+	padding: 3px 10px;
 	padding: 3px 10px;
 }
 
@@ -596,7 +604,7 @@ input[readonly] {
 	width: 50px;
 }
 
-.top-bar-user-multilang-active {
+.top-bar-user-multilingual-active {
 	color: #ffbf8c;
 }
 
@@ -1233,7 +1241,7 @@ input[readonly] {
 	border-radius: 6px;
 }
 
-.list-search .toolbtn {
+.list-search .tool-btn {
 	display: inline-block;
 	height: 100%;
 }
@@ -1281,7 +1289,7 @@ input[readonly] {
 	margin: 50px;
 }
 
-.list-emty {
+.list-empty {
 	color: #ccc;
 	text-align: center;
 	font-size: 140%;

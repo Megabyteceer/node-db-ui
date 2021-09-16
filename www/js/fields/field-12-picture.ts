@@ -73,13 +73,11 @@ class CropperFieldBody extends Component<any, any> {
 
 	_cropImage(exactlySize, imgData) {
 
-		if(exactlySize === true) {//no cropper needded
+		if(exactlySize === true) {//no cropper need
 			this.setState({
 				cropResult: imgData,
 				src: null
 			});
-
-
 		} else {
 			// @ts-ignore
 			if(typeof this.cropper.cropper.getCroppedCanvas() === 'undefined') {
@@ -150,8 +148,8 @@ class CropperFieldBody extends Component<any, any> {
 					cropperLoader.then((module) => {
 						const ReactCropper = module.Cropper;
 						var field = this.props.field;
-						var w = Math.floor(field.maxlen / 10000);
-						var h = field.maxlen % 10000;
+						var w = Math.floor(field.maxLength / 10000);
+						var h = field.maxLength % 10000;
 
 						if((w === selectedImage.width) && (h === selectedImage.height)) {
 							this._cropImage(true, reader.result);
@@ -210,8 +208,8 @@ class CropperFieldBody extends Component<any, any> {
 	render() {
 
 		var field = this.props.field;
-		var w = Math.floor(field.maxlen / 10000);
-		var h = field.maxlen % 10000;
+		var w = Math.floor(field.maxLength / 10000);
+		var h = field.maxLength % 10000;
 		var recW = w;
 		var recH = h;
 
@@ -225,7 +223,7 @@ class CropperFieldBody extends Component<any, any> {
 
 		var clrBtn;
 		if(this.state.cropResult || this.state.src || this.props.currentPicUrl && this.props.currentPicUrl !== 'images/placeholder_' + field.fieldName + '.png') {
-			clrBtn = R.button({ className: 'clickable toolbtn clear-btn', onClick: this.clear },
+			clrBtn = R.button({ className: 'clickable tool-btn clear-btn', onClick: this.clear },
 				renderIcon('times')
 			)
 		}
@@ -280,7 +278,7 @@ class CropperFieldBody extends Component<any, any> {
 			R.div(null,
 				preview,
 				body,
-				R.div({ className: 'small-text' }, L('RECOMEND_SIZE', recW).replace('%', recH)),
+				R.div({ className: 'small-text' }, L('RECOMMEND_SIZE', recW).replace('%', recH)),
 				form
 			),
 			select

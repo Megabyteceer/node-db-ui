@@ -1,8 +1,8 @@
 import { consoleLog, Filters, getData, L, ON_FIELD_CHANGE, ON_FORM_LOAD, ON_FORM_SAVE } from "../utils";
 import { BaseForm } from "./base-form";
 import { LeftBar } from "../left-bar";
-import { assert, FieldDesc, FIELD_17_TAB, FIELD_18_BUTTON, RecId, RecordData } from "../bs-utils";
-import { FieldWrap } from "../fields/field-wrap";
+import { assert, FieldDesc, FIELD_17_TAB, FIELD_18_BUTTON, RecordData } from "../bs-utils";
+import type { FieldWrap } from "../fields/field-wrap";
 
 let FormEvents;
 let FieldsEvents;
@@ -18,15 +18,15 @@ let isHandlersInitialized;
 
 class eventProcessingMixins extends BaseForm {
 	/** true if form opened for new record creation */
-	rec_creation: boolean;
+	isNewRecord: boolean;
 	/** true if form opened for editing existing form */
-	rec_update: boolean;
+	isUpdateRecord: boolean;
 
 
-	/** previous value of changed field. Can be used in onChage event of field */
+	/** previous value of changed field. Can be used in onChange event of field */
 	prev_value: any;
 
-	/**  says if field was changed by user's action. Can be used in onChage event of field */
+	/**  says if field was changed by user's action. Can be used in onChange event of field */
 	isUserEdit: boolean;
 
 	currentData: RecordData;
@@ -41,8 +41,6 @@ class eventProcessingMixins extends BaseForm {
 
 	/** contains validate() result */
 	formIsValid: boolean;
-
-	protected _isNeedCallOnload: boolean;
 
 	onSaveCallback: () => void;
 
@@ -76,10 +74,11 @@ class eventProcessingMixins extends BaseForm {
 			}
 		}
 
-
 		this.currentData = null;
 		this.onSaveCallback = null;
-		this.resetFieldsProperties();
+		this.hiddenFields = {};
+		this.disabledFields = {};
+		this.currentTabName = null;
 	}
 
 	componentDidMount() {
@@ -88,29 +87,7 @@ class eventProcessingMixins extends BaseForm {
 		}
 	}
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		super.UNSAFE_componentWillReceiveProps(nextProps);
-		this.showAllTabs = false;
-		if(nextProps.initialData.id !== this.props.initialData.id) {
-			//@ts-ignore
-			this.state = {};
-			this.resetFieldsProperties(true);
-			this.forceUpdate();
-		}
-		setTimeout(() => {
-			this.callOnTabShowEvent(nextProps.filters.tab);
-		}, 0);
-	}
-
-	resetFieldsProperties(_isNeedCallOnload?: boolean) {
-		this.hiddenFields = {};
-		this.disabledFields = {};
-		this.currentTabName = null;
-		this.onSaveCallback = null;
-		this._isNeedCallOnload = _isNeedCallOnload;
-	}
-
-	isVisibleField(field) {
+	isFieldVisibleByFormViewMask(field) {
 		return true;
 	}
 
@@ -121,8 +98,8 @@ class eventProcessingMixins extends BaseForm {
 			var flds = this.props.node.fields;
 			for(var k in flds) {
 				var f = flds[k];
-				if(this.isVisibleField(f)) {
-					if((f.fieldType === FIELD_17_TAB) && (f.maxlen === 0)) {//tab
+				if(this.isFieldVisibleByFormViewMask(f)) {
+					if((f.fieldType === FIELD_17_TAB) && (f.maxLength === 0)) {//tab
 						if((tabNameToShow === f.fieldName) || !tabNameToShow) {
 							field = f;
 							break;
@@ -164,12 +141,15 @@ class eventProcessingMixins extends BaseForm {
 	hideField(...fieldsNames: string[]) {
 		let fields = this._fieldsFromArgs(arguments);
 		for(let fieldName of fields) {
-			var f = this.getField(fieldName);
-			if(f && (this.hiddenFields[fieldName] !== 1)) {
+			if(this.hiddenFields[fieldName] !== 1) {
 				this.hiddenFields[fieldName] = 1;
-				f.hide();
+				var f = this.getField(fieldName);
+				if(f) {
+					f.hide();
+				}
 			}
 		}
+		this.refreshLeftBar();
 	}
 
 	showField(...fieldsNames: string[]) {
@@ -177,12 +157,16 @@ class eventProcessingMixins extends BaseForm {
 		for(let fieldName of fields) {
 			if(this.hiddenFields[fieldName] === 1) {
 				delete (this.hiddenFields[fieldName]);
-				this.getField(fieldName).show();
+				var f = this.getField(fieldName);
+				if(f) {
+					f.show();
+				}
 			}
 		}
+		this.refreshLeftBar();
 	}
 
-	isFieldVisible(fieldName) {
+	isFieldVisible(fieldName: string) {
 		return this.hiddenFields[fieldName] !== 1;
 	}
 
@@ -242,7 +226,7 @@ class eventProcessingMixins extends BaseForm {
 		}
 
 		var hdr = this.header;
-		if(this.state.header !== hdr) {
+		if((this.state.header || '') != hdr) {
 			this.setState({ header: hdr });
 		}
 
@@ -259,20 +243,13 @@ class eventProcessingMixins extends BaseForm {
 				var fields = this.props.node.fields
 				for(var k in fields) {
 					var f = fields[k];
-
-					if((f.fieldType === FIELD_17_TAB) && (f.maxlen === 0)) {//tab
-
-						if(this.isVisibleField(f)) {
-
-							items.push({ icon: f.icon, name: f.name, field: f, form: this, id: false, isDoc: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName });
+					if((f.fieldType === FIELD_17_TAB) && (f.maxLength === 0)) {//tab
+						if(this.isFieldVisible(f.fieldNamePure)) {
+							items.push({ icon: f.icon, name: f.name, field: f, form: this, id: false, isDocument: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName });
 							isDefault = false;
-
 						}
-
 					}
-
 				}
-
 				LeftBar.instance.setLeftBar(items);
 			} else {
 				LeftBar.instance.setLeftBar();
@@ -294,7 +271,7 @@ class eventProcessingMixins extends BaseForm {
 
 			await this.processFieldEvent(field, isUserAction, prev_value);
 
-			this.checkUniquValue(field, val);
+			this.checkUniqueValue(field, val);
 
 			if(fieldName === 'name') {
 				this.refreshLeftBar();
@@ -302,8 +279,8 @@ class eventProcessingMixins extends BaseForm {
 		}
 	}
 
-	async checkUniquValue(field, val) {
-		if(field.uniqu && val) {
+	async checkUniqueValue(field, val) {
+		if(field.unique && val) {
 			let data = await getData('api/uniquCheck', {
 				fieldId: field.id,
 				nodeId: field.node.id,
@@ -385,11 +362,11 @@ class eventProcessingMixins extends BaseForm {
 		if(handler) {
 			this.prev_value = prev_val;
 			this.recId = this.props.initialData.id || 'new';
-			this.rec_update = this.props.editable;
-			if(this.rec_update) {
-				this.rec_creation = !this.props.initialData.hasOwnProperty('id');
-				if(this.rec_creation) {
-					this.rec_update = false;
+			this.isUpdateRecord = this.props.editable;
+			if(this.isUpdateRecord) {
+				this.isNewRecord = !this.props.initialData.hasOwnProperty('id');
+				if(this.isNewRecord) {
+					this.isUpdateRecord = false;
 				}
 			}
 			this.isUserEdit = isUserAction;

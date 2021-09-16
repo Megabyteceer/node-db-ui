@@ -1,13 +1,32 @@
 import { R } from "../r";
 import { Component } from "react";
-import { renderIcon } from "../utils";
+import { L, renderIcon } from "../utils";
+import ReactDOM from "react-dom";
 
 class Select extends Component<any, any> {
 	constructor(props) {
 		super(props);
 		this.state = {};
 		this.toggle = this.toggle.bind(this);
-		this.onMouseLeave = this.onMouseLeave.bind(this);
+		this.handleClickOutside = this.handleClickOutside.bind(this);
+	}
+
+
+	componentDidMount() {
+		document.addEventListener('mousedown', this.handleClickOutside, true);
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener('mousedown', this.handleClickOutside, true);
+	}
+
+	handleClickOutside(event) {
+		const domNode = ReactDOM.findDOMNode(this);
+		if(!domNode || !domNode.contains(event.target)) {
+			if(this.state.expanded) {
+				this.toggle();
+			}
+		}
 	}
 
 	toggle() {
@@ -29,12 +48,6 @@ class Select extends Component<any, any> {
 		}
 	}
 
-	onMouseLeave() {
-		if(this.state.expanded) {
-			this.toggle();
-		}
-	}
-
 	render() {
 
 		var curVal = this.state.curVal || this.props.defaultValue;
@@ -47,10 +60,33 @@ class Select extends Component<any, any> {
 
 		var optionsList;
 		if(this.state.expanded) {
+
+			let options = this.props.options;
+
+			let searchInput;
+			if(options.length > 5) {
+				searchInput = R.input({
+					className: 'select-search-input',
+					autoFocus: true,
+					defaultValue: this.state.search || '',
+					placeholder: L("SEARCH"),
+					onChange: (ev) => {
+						this.setState({ search: ev.target.value.toLowerCase() });
+					}
+				});
+			}
+
+			if(this.state.search) {
+				options = options.filter((i) => {
+					return (i.search || i.name).toLowerCase().indexOf(this.state.search) >= 0;
+				});
+			}
+
 			optionsList = R.div({
 				className: 'select-control-list'
 			},
-				this.props.options.map((o) => {
+				searchInput,
+				options.map((o) => {
 					return R.div({
 						className: 'clickable select-control-item',
 						key: o.value,
@@ -70,11 +106,10 @@ class Select extends Component<any, any> {
 		}, renderIcon('caret-down'));
 
 		return R.span({
-			className: 'select-control-wrapper',
-			onMouseLeave: this.onMouseLeave
+			className: 'select-control-wrapper'
 		},
 			R.div({
-				className: this.props.disabled ? 'unclickable disabled select-control' : 'clickable select-control',
+				className: this.props.disabled ? 'not-clickable disabled select-control' : 'clickable select-control',
 				onClick: this.toggle
 			},
 				curVal || '\xa0',

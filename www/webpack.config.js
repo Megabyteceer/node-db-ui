@@ -32,7 +32,6 @@ module.exports = {
                 {
                     loader: "ifdef-loader",
                     options: {
-                        EDITOR: false,
                         DEBUG: true,
                     }
                 }

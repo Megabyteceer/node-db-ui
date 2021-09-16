@@ -4,6 +4,7 @@ import { getNodeData, keepInWindow, L, ON_FIELD_CHANGE, reloadLocation, renderIc
 import { admin_editSource } from "./admin-event-editor";
 import { admin } from "./admin-utils";
 import { FieldDesc, NodeDesc } from "../bs-utils";
+import { List } from "../forms/list";
 
 var showedFieldId;
 
@@ -75,6 +76,7 @@ class FieldAdmin extends Component<any, any> {
 					})
 				);
 			}
+			let isList = this.props.form instanceof List;
 
 			body = R.div({
 				ref: keepInWindow,
@@ -93,13 +95,13 @@ class FieldAdmin extends Component<any, any> {
 					field.fieldName
 				),
 				R.div(null,
-					'type: ' + field.fieldType + '; id: ' + field.id + '; len:' + field.maxlen
+					'type: ' + field.fieldType + '; id: ' + field.id + '; len:' + field.maxLength
 				),
 				R.div({
 					className: "admin-form-content"
 				},
 					R.button({
-						className: 'clickable toolbtn admin-form-btn' + border,
+						className: 'clickable tool-btn admin-form-btn' + border,
 						onClick: () => {
 
 							admin_editSource(ON_FIELD_CHANGE, node, field);
@@ -110,31 +112,31 @@ class FieldAdmin extends Component<any, any> {
 						'onChange...'
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						onClick: () => {
 							var i = field.index;
 							if(i > 0) {
-								admin.moveField(i, form, node, -1);
+								admin.moveField(i, form, node, -1).then(reloadLocation);
 							}
 						},
-						title: "Move field up"
+						title: "Increase field priority"
 					},
-						renderIcon('arrow-up')
+						renderIcon(isList ? 'arrow-left' : 'arrow-up')
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						onClick: () => {
 							var i = field.index;
 							if(i < (node.fields.length - 1)) {
-								admin.moveField(i, form, node, +1);
+								admin.moveField(i, form, node, + 1).then(reloadLocation);
 							}
 						},
-						title: "Move filed down"
+						title: "Decrease field priority"
 					},
-						renderIcon('arrow-down')
+						renderIcon(isList ? 'arrow-right' : 'arrow-down')
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						onClick: () => {
 
 							getNodeData(6, field.id).then((data) => {
@@ -155,7 +157,7 @@ class FieldAdmin extends Component<any, any> {
 						onClick: () => {
 							window.crudJs.Stage.showForm(6, field.id, undefined, true, true, reloadLocation);
 						},
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						title: "Edit field properties"
 					},
 						renderIcon('pencil')
@@ -166,15 +168,6 @@ class FieldAdmin extends Component<any, any> {
 					},
 						renderIcon(this.state.locked ? 'lock' : 'unlock')
 
-					),
-					R.button({
-						onClick: () => {
-							admin.debug(form.getField(field.fieldName) || form);
-						},
-						className: 'clickable toolbtn admin-form-btn',
-						title: 'log field to console'
-					},
-						renderIcon('info')
 					)
 				),
 				extendedInfo
@@ -182,13 +175,11 @@ class FieldAdmin extends Component<any, any> {
 		}
 
 		return R.span({
-			ref: keepInWindow,
-			className: 'admin-controll admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
+			className: 'admin-control admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
 			R.span({
-				ref: keepInWindow,
-				className: 'halfvisible admin-form-open-btn' + border,
+				className: 'half-visible admin-form-open-btn' + border,
 				onMouseEnter: this.onShow
 			},
 				renderIcon('wrench')

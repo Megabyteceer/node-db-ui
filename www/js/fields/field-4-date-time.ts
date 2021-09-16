@@ -1,37 +1,40 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import { FIELD_4_DATETIME } from "../bs-utils";
+import { FIELD_4_DATE_TIME } from "../bs-utils";
 import { R } from "../r";
 import moment from "moment";
-import { innerDatetimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDatetime, toReadableTime } from "../utils";
+import { innerDateTimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDateTime, toReadableTime } from "../utils";
 import { registerFieldClass } from "../utils";
 import { BaseField, FieldState, FieldProps, RefToInput } from "./base-field";
+import type { FormFull } from "../forms/form-full";
 
 function isSameDay(val, d) {
 	if(!d || !val) return false;
 	return d.date() === val.date() && d.month() === val.month() && d.year() === val.year();
 };
 
-interface DatetimeFieldState extends FieldState {
+interface DateTimeFieldState extends FieldState {
 	minDate?: moment.Moment;
 	maxDate?: moment.Moment;
 	allowedDays?: moment.Moment[];
 }
 
-let ReactDatetimeClassHolder: { importReactDateTime: () => void, isRequired?: boolean, ReactDatetimeClass?: typeof import('react-datetime') } = {
+let ReactDateTimeClassHolder: { importReactDateTime: () => void, isRequired?: boolean, ReactDateTimeClass?: typeof import('react-datetime') } = {
 	importReactDateTime: () => {
-		if(!ReactDatetimeClassHolder.isRequired) {
-			ReactDatetimeClassHolder.isRequired = true;
+		if(!ReactDateTimeClassHolder.isRequired) {
+			ReactDateTimeClassHolder.isRequired = true;
 			import('react-datetime').then((module) => {
-				ReactDatetimeClassHolder.ReactDatetimeClass = module.default;
-				window.crudJs.Stage.currentForm.forceUpdate();
+				ReactDateTimeClassHolder.ReactDateTimeClass = module.default;
+				if(window.crudJs.Stage.currentForm) {
+					(window.crudJs.Stage.currentForm as FormFull).forceUpdate();
+				}
 			});
 		}
 	}
 }
 
-class dateFieldMixins extends BaseField<FieldProps, DatetimeFieldState> {
+class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 
 
 
@@ -166,12 +169,12 @@ class dateFieldMixins extends BaseField<FieldProps, DatetimeFieldState> {
 	}
 }
 
-registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins {
+registerFieldClass(FIELD_4_DATE_TIME, class FieldDateTime extends dateFieldMixins {
 	timeRef: RefToInput;
 
 	static decodeValue(val) {
 		if(val) {
-			return moment(val, innerDatetimeFormat);
+			return moment(val, innerDateTimeFormat);
 		}
 		return null;
 	}
@@ -180,7 +183,7 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 		if(!val) {
 			return ('0000-00-00 00:00:00');
 		}
-		return val.format(innerDatetimeFormat);
+		return val.format(innerDateTimeFormat);
 	}
 
 	focus() {
@@ -204,8 +207,8 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 		}
 
 		if(this.props.isEdit) {
-			if(!ReactDatetimeClassHolder.ReactDatetimeClass) {
-				ReactDatetimeClassHolder.importReactDateTime();
+			if(!ReactDateTimeClassHolder.ReactDateTimeClass) {
+				ReactDateTimeClassHolder.importReactDateTime();
 				return renderIcon('cog fa-spin');
 			}
 			var inputsProps1 = {
@@ -225,19 +228,19 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 				},
 				onChange: (val) => {
 					if(val._isAMomentObject) {
-						var concatedVal;
+						var mergedValue;
 						var value = this.state.value;
 						if(value) {
-							concatedVal = value.clone();
-							concatedVal.hour(val.hour());
-							concatedVal.minute(val.minute());
-							concatedVal.second(val.second());
+							mergedValue = value.clone();
+							mergedValue.hour(val.hour());
+							mergedValue.minute(val.minute());
+							mergedValue.second(val.second());
 						} else {
-							concatedVal = val;
+							mergedValue = val;
 						}
 
-						this.setValue(concatedVal);
-						this.props.wrapper.valueListener(concatedVal, true, this);
+						this.setValue(mergedValue);
+						this.props.wrapper.valueListener(mergedValue, true, this);
 					} else {
 						this.clearValue();
 					}
@@ -259,18 +262,18 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 				},
 				onChange: (val) => {
 					if(val._isAMomentObject) {
-						var concatedVal;
+						var mergedValue;
 						var value = this.state.value;
 						if(value) {
-							concatedVal = value.clone();
-							concatedVal.year(val.year());
-							concatedVal.dayOfYear(val.dayOfYear());
+							mergedValue = value.clone();
+							mergedValue.year(val.year());
+							mergedValue.dayOfYear(val.dayOfYear());
 						} else {
-							concatedVal = val;
+							mergedValue = val;
 						}
 
-						this.setValue(concatedVal);
-						this.props.wrapper.valueListener(concatedVal, true, this);
+						this.setValue(mergedValue);
+						this.props.wrapper.valueListener(mergedValue, true, this);
 					} else {
 						this.clearValue();
 					}
@@ -281,17 +284,17 @@ registerFieldClass(FIELD_4_DATETIME, class FieldDateTime extends dateFieldMixins
 			},
 				R.div({
 					className: "field-date-time-time"
-				}, React.createElement(ReactDatetimeClassHolder.ReactDatetimeClass, inputsProps1)),
+				}, React.createElement(ReactDateTimeClassHolder.ReactDateTimeClass, inputsProps1)),
 				R.div({
 					className: "field-date-time-date"
-				}, React.createElement(ReactDatetimeClassHolder.ReactDatetimeClass, inputsProps2))
+				}, React.createElement(ReactDateTimeClassHolder.ReactDateTimeClass, inputsProps2))
 			);
 		} else {
-			return toReadableDatetime(value);
+			return toReadableDateTime(value);
 		}
 	}
 });
 
 export {
-	dateFieldMixins, ReactDatetimeClassHolder
+	dateFieldMixins, ReactDateTimeClassHolder
 };

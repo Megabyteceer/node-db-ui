@@ -6,7 +6,7 @@ import { assert } from "./bs-utils";
 import { R } from "./r";
 import { Stage } from "./stage";
 import { iAdmin, User } from "./user";
-import { isLitePage, L, locationToHash, renderIcon } from "./utils";
+import { isLitePage, L, renderIcon } from "./utils";
 
 let collapsed;
 
@@ -14,24 +14,27 @@ function isMustBeExpanded(i) {
 	if(i.children) {
 		for(var k in i.children) {
 			var j = i.children[k];
-			if(isCurrentlyShowedLeftbarItem(j) || isMustBeExpanded(j)) {
+			if(isCurrentlyShowedLeftBarItem(j) || isMustBeExpanded(j)) {
 				return true;
 			}
 		}
 		return false;
 	} else {
-		return isCurrentlyShowedLeftbarItem(i);
+		return isCurrentlyShowedLeftBarItem(i);
 	}
 }
 
-const allGropus: BarItem[] = [];
+const allGroups: BarItem[] = [];
 
 interface LeftBarItemData {
 
 }
 
-function isCurrentlyShowedLeftbarItem(item) {
+function isCurrentlyShowedLeftBarItem(item) {
 	const currentFormParameters = Stage.currentForm;
+	if(!currentFormParameters) {
+		return;
+	}
 	if(item.id === false) {
 		if(!currentFormParameters.filters || (Object.keys(currentFormParameters.filters).length === 0)) {
 			return item.isDefault;
@@ -62,29 +65,29 @@ function isStrictlySelected(item) {
 
 class BarItem extends Component<any, any> {
 
-	constructor(prosp) {
-		super(prosp);
+	constructor(props) {
+		super(props);
 		this.state = {};
 		this.collapseOtherGroups = this.collapseOtherGroups.bind(this);
 	}
 
 	componentDidMount() {
-		if(!this.props.item.isDoc) {
-			allGropus.push(this);
+		if(!this.props.item.isDocument) {
+			allGroups.push(this);
 		}
 	}
 
 	componentWillUnmount() {
-		if(!this.props.item.isDoc) {
-			let i = allGropus.indexOf(this);
+		if(!this.props.item.isDocument) {
+			let i = allGroups.indexOf(this);
 			assert(i >= 0, 'BarItem registration is corrupted.');
-			allGropus.splice(i, 1);
+			allGroups.splice(i, 1);
 		}
 	}
 
 	collapseOtherGroups() {
-		for(let g of allGropus) {
-			if(g.props.item.children.indexOf(this.props.item) < 0) {
+		for(let g of allGroups) {
+			if(g.props.item.children && g.props.item.children.indexOf(this.props.item) < 0) {
 				g.collapse();
 			}
 		}
@@ -173,7 +176,7 @@ class BarItem extends Component<any, any> {
 		}
 		/// #endif
 
-		if(!item.isDoc && (!item.children || (item.children.length === 0))
+		if(!item.isDocument && (!item.children || (item.children.length === 0))
 			/// #if DEBUG
 			&& false// in debug build always show empty nodes
 			/// #endif
@@ -186,15 +189,15 @@ class BarItem extends Component<any, any> {
 		}*/
 
 		var itemsIcon = R.div({ className: "left-bar-item-icon" },
-			renderIcon(item.icon + (item.isDoc ? ' brand-color' : ' noicon'))
+			renderIcon(item.icon + (item.isDocument ? ' brand-color' : ' no-icon'))
 		)
 
-		let className = 'left-bar-item ' + (item.isDoc ? 'left-bar-item-doc' : 'left-bar-group');
+		let className = 'left-bar-item ' + (item.isDocument ? 'left-bar-item-doc' : 'left-bar-group');
 
-		const isActive = isCurrentlyShowedLeftbarItem(item);
+		const isActive = isCurrentlyShowedLeftBarItem(item);
 
 		if(isActive) {
-			className += ' left-bar-item-active unclickable';
+			className += ' left-bar-item-active not-clickable';
 		}
 
 		if(item.tabId) {
@@ -212,7 +215,7 @@ class BarItem extends Component<any, any> {
 			this.state.expanded = isExpanded;
 		}
 
-		if(!item.isDoc) {
+		if(!item.isDocument) {
 			if(!_isMustBeExpanded) {
 				caret = R.span({ className: "left-bar-group-caret" },
 					renderIcon('caret-' + (isExpanded ? 'up' : 'down'))
@@ -229,13 +232,13 @@ class BarItem extends Component<any, any> {
 				className += ' clickable';
 			}
 		} else {
-			className += ' unclickable left-bar-active-group';
+			className += ' not-clickable left-bar-active-group';
 		}
 
 		const itemBody = R.div({
 			onClick: (ev) => {
 				if(!isMustBeExpandedVal) {
-					if(item.isDoc) {
+					if(item.isDocument) {
 						if(item.id === false) {
 							Stage.rootForm.setFormFilter('tab', item.tab);
 							return;
@@ -255,15 +258,21 @@ class BarItem extends Component<any, any> {
 			)
 		);
 
-
-		if(item.isDoc && (item.id !== false)) {
-			var href;
-			if(item.staticLink && item.staticLink !== 'reactClass') {
-				href = item.staticLink;
-			} else {
-				href = locationToHash(item.id, item.recId, item.filters, item.editable);
+		if(item.isDocument && (item.id !== false)) {
+			const props = {
+				className: 'left-bar-item-container',
+				onClick: this.collapseOtherGroups
 			}
-			return R.a({ href: href, onClick: this.collapseOtherGroups },
+			if(item.staticLink && item.staticLink !== 'reactClass') {
+				///@ts-ignore
+				props.href = item.staticLink;
+			} else {
+				props.onClick = () => {
+					window.crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
+					this.collapseOtherGroups();
+				}
+			}
+			return R.a(props,
 				adminControl,
 				itemBody
 			)
@@ -281,6 +290,7 @@ function renderItemsArray(itemsArray, level, item?) {
 	/// #if DEBUG
 	if((!itemsArray || itemsArray.length === 0) && (level > 0)) {
 		return [R.div({
+			key: 'empty-section',
 			className: 'clickable left-bar-empty-section', onClick: () => {
 				createNodeForMenuItem(item);
 			}

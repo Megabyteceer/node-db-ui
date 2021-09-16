@@ -1,20 +1,18 @@
 import React, { Component } from "react";
-import { BoolNum, Filters, NodeDesc, RecId, RecordData } from "../bs-utils";
-import { LookpuOneToManyFiled } from "../fields/field-15-one-to-many";
+import { BoolNum, Filters, NodeDesc, RecId, RecordData, throwError } from "../bs-utils";
+import { LookupOneToManyFiled } from "../fields/field-15-one-to-many";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
-import { FieldWrap } from "../fields/field-wrap";
+import type { FieldWrap } from "../fields/field-wrap";
 import { LeftBar } from "../left-bar";
 import { goBack, updateHashLocation } from "../utils";
 
-/// #if EDITOR
-import { List } from "./list";
-/// #endif
+import type { List } from "./list";
 
 interface FormProps {
 	initialData?: RecordData;
 	list?: List;
 	onCancel?: () => void;
-	parentForm?: LookpuOneToManyFiled;
+	parentForm?: LookupOneToManyFiled;
 	filters?: Filters;
 	node: NodeDesc;
 	isRootForm?: boolean;
@@ -24,7 +22,7 @@ interface FormProps {
 	editable?: boolean;
 	isCompact?: boolean;
 	inlineEditable?: boolean;
-	hideControlls?: boolean;
+	hideControls?: boolean;
 	disableDrafting?: boolean;
 	preventDeleteButton?: boolean;
 	additionalButtons?: AdditionalButtonsRenderer;
@@ -39,11 +37,10 @@ interface FormState {
 	preventCreateButton: boolean;
 	footerHidden: boolean;
 	header?: string;
-	hideControlls?: boolean;
+	hideControls?: boolean;
 }
 
 class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState> extends Component<T, T2> {
-
 	nodeId: RecId;
 	/** id of current edited/shown record. 'new' - if record is not saved yet.*/
 	recId: RecId | 'new';
@@ -68,11 +65,11 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		this.fieldsRefs = {};
 		this.cancelClick = this.cancelClick.bind(this);
 		this.header = '';
-		this.updateHashLocation();
+		updateHashLocation();
 	}
 
 	UNSAFE_componentWillReceiveProps(newProps) {
-		this.filters = $.extend({}, newProps.filters);
+		throwError("Form should be recreated, and not receive new props. Add 'key' to parent element contains nodeId and recId.");
 	}
 
 	callOnTabShowEvent(tabNameToShow) {
@@ -137,14 +134,8 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 			if(name === 'tab' && this.props.isRootForm) {
 				LeftBar.instance.refreshLeftBarActive();
 			}
-			this.updateHashLocation();
-			return true;
-		}
-	}
-
-	updateHashLocation() {
-		if(this.props.isRootForm) {
 			updateHashLocation();
+			return true;
 		}
 	}
 }

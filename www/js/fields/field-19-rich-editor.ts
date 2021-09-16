@@ -1,5 +1,5 @@
 import { R } from "../r";
-import { FIELD_19_RICHEDITOR } from "../bs-utils";
+import { FIELD_19_RICH_EDITOR } from "../bs-utils";
 import { L, renderIcon } from "../utils";
 import { registerFieldClass } from "../utils";
 import { BaseField } from "./base-field";
@@ -15,13 +15,13 @@ window.addEventListener('message', (e) => {
 	}
 });
 
-registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends BaseField {
+registerFieldClass(FIELD_19_RICH_EDITOR, class RichEditorField extends BaseField {
 
 	viewportRef: HTMLIFrameElement;
 	iframeId: number;
-	summerNoteIsInited: boolean;
+	summerNoteIsInitialized: boolean;
 
-	getSummernote(): Window {
+	getSummerNote(): Window {
 		return this.viewportRef.contentWindow as Window;
 	}
 
@@ -29,8 +29,8 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends BaseField 
 		if(this.props.isEdit) {
 			this.iframeId = idCounter++;
 			var field = this.props.field;
-			var w = Math.floor(field.maxlen / 10000);
-			var h = field.maxlen % 10000;
+			var w = Math.floor(field.maxLength / 10000);
+			var h = field.maxLength % 10000;
 			var options = {
 				width: w,
 				height: h,
@@ -39,12 +39,12 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends BaseField 
 
 			listeners[this.iframeId] = (data) => {
 
-				if(!this.summerNoteIsInited) {
-					this.summerNoteIsInited = true;
+				if(!this.summerNoteIsInitialized) {
+					this.summerNoteIsInitialized = true;
 					this.forceUpdate();
 				}
 
-				var s = this.getSummernote();
+				var s = this.getSummerNote();
 				if(data.hasOwnProperty('value')) {
 					this.setValue(data.value, false);
 					this.props.wrapper.valueListener(this.state.value, true, this);
@@ -79,7 +79,7 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends BaseField 
 		}
 		if(this.state.value !== val) {
 			if(sendToEditor !== false) {
-				var s = this.getSummernote();
+				var s = this.getSummerNote();
 				s.postMessage({ value: val }, '*');
 			}
 			///@ts-ignore
@@ -89,7 +89,7 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends BaseField 
 
 	async beforeSave() {
 		return new Promise((resolve) => {
-			var s = this.getSummernote();
+			var s = this.getSummerNote();
 			this.onSaveCallback = resolve as () => void;
 			s.postMessage({ onSaveRichEditor: true }, '*');
 		});
@@ -99,12 +99,12 @@ registerFieldClass(FIELD_19_RICHEDITOR, class RichEditorField extends BaseField 
 		if(this.props.isEdit) {
 			var field = this.props.field;
 
-			var w = Math.floor(field.maxlen / 10000) + 230;
-			var h = (field.maxlen % 10000) + 30;
+			var w = Math.floor(field.maxLength / 10000) + 230;
+			var h = (field.maxLength % 10000) + 30;
 
 			var style = { width: w, height: h + 100 };
 			var cog;
-			if(!this.summerNoteIsInited) {
+			if(!this.summerNoteIsInitialized) {
 				cog = R.div(null, renderIcon('cog fa-spin'));
 			}
 

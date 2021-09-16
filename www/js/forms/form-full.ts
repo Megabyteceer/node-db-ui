@@ -6,7 +6,7 @@ import { eventProcessingMixins } from "./event-processing-mixins";
 import { NodeAdmin } from "../admin/node-admin";
 import { LoadingIndicator } from "../loading-indicator";
 import { R } from "../r";
-import { FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_5_BOOL, FIELD_7_Nto1, PREVS_PUBLISH, RecId, RecordData } from "../bs-utils";
+import { FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_5_BOOL, FIELD_7_Nto1, PRIVILEGES_PUBLISH, RecId, RecordData } from "../bs-utils";
 import React from "react";
 import { iAdmin } from "../user";
 import { HotkeyButton } from "../components/hotkey-button";
@@ -26,6 +26,9 @@ setInterval(tryBackup, 15000);
 async function callForEachField(fieldRefs, data, functionName) {
 	for(let k of Object.keys(fieldRefs)) {
 		let f = fieldRefs[k];
+		if(!(f instanceof FieldWrap)) {
+			continue;
+		}
 		if(f.fieldRef[functionName]) {
 			var fieldName = f.props.field.fieldName;
 			let newValue = await f.fieldRef[functionName]();
@@ -60,14 +63,6 @@ class FormFull extends eventProcessingMixins {
 		}
 	}
 
-	componentDidUpdate() {
-		if(this._isNeedCallOnload) {
-			this.recoveryBackupIfNeed();
-			this.onShow();
-			this._isNeedCallOnload = false;
-		}
-	}
-
 	recoveryBackupIfNeed() {
 		if(!this.currentData.id && !this.props.inlineEditable) {
 			var backup = getBackupData(this.props.node.id);
@@ -82,7 +77,7 @@ class FormFull extends eventProcessingMixins {
 		var fields = this.props.node.fields;
 		for(var k in fields) {
 			var f = fields[k];
-			if((f.fieldType === FIELD_15_1toN) && this.isVisibleField(f)) {
+			if((f.fieldType === FIELD_15_1toN) && this.isFieldVisibleByFormViewMask(f)) {
 				this.currentData[f.fieldName] = this.getField(f.fieldName).getBackupData();
 			}
 		}
@@ -95,21 +90,8 @@ class FormFull extends eventProcessingMixins {
 		}
 	}
 
-	deteleBackup() {
+	deleteBackup() {
 		removeBackup(this.props.node.id);
-	}
-
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		super.UNSAFE_componentWillReceiveProps(nextProps); //TODO merge with super class
-		consoleLog('receive props; ' + this.props.node.tableName);
-		if((this.currentData.id !== nextProps.initialData.id) || (this.props.node !== nextProps.node) || (this.props.editable !== nextProps.editable)) {
-
-			this.backupCurrentDataIfNeed();
-
-			this._isNeedCallOnload = true;
-			this.currentData = Object.assign({}, nextProps.filters, nextProps.initialData);
-			this.resendDataToFields();
-		}
 	}
 
 	componentWillUnmount() {
@@ -131,7 +113,12 @@ class FormFull extends eventProcessingMixins {
 	forceBouncingTimeout() {
 		for(var k in this.fieldsRefs) {
 			var f = this.fieldsRefs[k];
-			f.forceBouncingTimeout();
+			if(!(f instanceof FieldWrap)) {
+				continue;
+			}
+			if(f.forceBouncingTimeout) {
+				f.forceBouncingTimeout();
+			}
 		}
 	}
 
@@ -150,6 +137,9 @@ class FormFull extends eventProcessingMixins {
 
 		for(let k in this.fieldsRefs) {
 			var fieldRef = this.fieldsRefs[k];
+			if(!(fieldRef instanceof FieldWrap)) {
+				continue;
+			}
 			var field = fieldRef.props.field;
 
 			if(this.props.overrideOrderData >= 0 && field.fieldName === 'order') {
@@ -161,7 +151,7 @@ class FormFull extends eventProcessingMixins {
 				this.formIsValid = false;
 			} else {
 				this.fieldAlert(field.fieldName);
-				let isValid = await this.checkUniquValue(field, (!fieldRef.isEmpty()) && this.currentData[field.fieldName]);
+				let isValid = await this.checkUniqueValue(field, (!fieldRef.isEmpty()) && this.currentData[field.fieldName]);
 				let isValid2 = await fieldRef.checkValidityBeforeSave(this.formIsValid);
 				if(!isValid || !isValid2) {
 					this.formIsValid = false;
@@ -212,6 +202,9 @@ class FormFull extends eventProcessingMixins {
 
 		for(var k in this.fieldsRefs) {
 			var fieldRef = this.fieldsRefs[k];
+			if(!(fieldRef instanceof FieldWrap)) {
+				continue;
+			}
 			var field = fieldRef.props.field;
 
 			var val = this.currentData[field.fieldName];
@@ -262,7 +255,7 @@ class FormFull extends eventProcessingMixins {
 			//renew current data
 			this.currentData = Object.assign(this.currentData, data);
 			//renew initial data;
-			window.crudJs.Stage.dataDidModifed(this.currentData);
+			window.crudJs.Stage.dataDidModified(this.currentData);
 
 			for(var k in data) {
 				var val = data[k];
@@ -284,7 +277,7 @@ class FormFull extends eventProcessingMixins {
 			await callForEachField(this.fieldsRefs, data, 'afterSave');
 
 			this.recId = this.currentData.id;
-			this.deteleBackup();
+			this.deleteBackup();
 			if(this.onSaveCallback) {
 				await this.onSaveCallback();
 			}
@@ -293,13 +286,13 @@ class FormFull extends eventProcessingMixins {
 		}
 
 		if(this.isSubForm()) {
-			this.props.parentForm.valueChoosed(this.currentData, true);
+			this.props.parentForm.valueSelected(this.currentData, true);
 		} else {
 			this.cancelClick();
 		}
 	}
 
-	isVisibleField(field) {
+	isFieldVisibleByFormViewMask(field) {
 		return (this.props.editable ? (field.show & 1) : (field.show & 4)) > 0;
 	}
 
@@ -314,7 +307,7 @@ class FormFull extends eventProcessingMixins {
 		var tabs;
 		var fields = [];
 		var data = this.currentData;
-		var flds = node.fields;
+		var nodeFields = node.fields;
 
 		var className = 'form form-full form-node-' + node.id + ' form-rec-' + this.recId;
 		if(this.props.isCompact) {
@@ -332,10 +325,19 @@ class FormFull extends eventProcessingMixins {
 		var currentCompactAreaFields = [];
 		var currentCompactAreaCounter = 0;
 
-		for(var k in flds) {
-			var field = flds[k];
-			if(this.isVisibleField(field)) {
-				if((field.fieldType === FIELD_17_TAB) && (field.maxlen === 0) && !this.isSubForm()) {//tab
+		for(var k in nodeFields) {
+			let field = nodeFields[k];
+			if(this.isFieldVisibleByFormViewMask(field)) {
+
+				const ref = (ref) => {
+					if(ref) {
+						this.fieldsRefs[field.fieldName] = ref;
+					} else {
+						delete this.fieldsRefs[field.fieldName];
+					}
+				}
+
+				if((field.fieldType === FIELD_17_TAB) && (field.maxLength === 0) && !this.isSubForm()) {//tab
 					currentCompactAreaCounter = 0;//terminate compact area nesting
 					var isDefaultTab;
 					if(!tabs) {
@@ -356,6 +358,7 @@ class FormFull extends eventProcessingMixins {
 					currentTabName = field.fieldName;
 					currentTab = React.createElement(FormTab, {
 						key: field.id,
+						ref,
 						title: field.name,
 						visible: tabVisible || this.showAllDebug || this.showAllTabs,
 						highlightFrame: this.showAllDebug,
@@ -363,8 +366,9 @@ class FormFull extends eventProcessingMixins {
 						fields
 					});
 					tabs.push(currentTab);
-				} else if(this.props.editable || data[field.fieldName] || field.nostore || (field.fieldType === FIELD_15_1toN) || field.fieldType >= 100) {
+				} else if(this.props.editable || data[field.fieldName] || field.noStore || (field.fieldType === FIELD_15_1toN) || field.fieldType >= 100) {
 					var tf = React.createElement(FieldWrap, {
+						ref,
 						key: field.id,
 						field,
 						initialValue: data[field.fieldName],
@@ -373,12 +377,12 @@ class FormFull extends eventProcessingMixins {
 						subFields: currentCompactAreaFields,
 						parentCompactAreaName: currentCompactAreaName,
 						isCompact: this.props.isCompact || (currentCompactAreaCounter > 0),
-						hidden: (this.hiddenFields.hasOwnProperty(field.fieldName) || (forcedValues.hasOwnProperty(field.fieldName))),
-						fieldDisabled: this.isFieldDisabled(field.fieldName) || forcedValues.hasOwnProperty(field.fieldName)
+						hidden: (this.hiddenFields.hasOwnProperty(field.fieldNamePure) || (forcedValues.hasOwnProperty(field.fieldNamePure))),
+						fieldDisabled: this.isFieldDisabled(field.fieldNamePure) || forcedValues.hasOwnProperty(field.fieldNamePure)
 					});
 
 
-					if((field.fieldType === FIELD_17_TAB) && (field.maxlen >= 0) && !this.isSubForm()) {//compact area
+					if((field.fieldType === FIELD_17_TAB) && (field.maxLength >= 0) && !this.isSubForm()) {//compact area
 						currentCompactAreaCounter = 0;//terminate compact area nesting
 					}
 
@@ -393,8 +397,8 @@ class FormFull extends eventProcessingMixins {
 					} else {
 						fields.push(tf);
 					}
-					if((field.fieldType === FIELD_17_TAB) && (field.maxlen >= 0) && !this.isSubForm()) {//compact area
-						currentCompactAreaCounter = field.maxlen;
+					if((field.fieldType === FIELD_17_TAB) && (field.maxLength >= 0) && !this.isSubForm()) {//compact area
+						currentCompactAreaCounter = field.maxLength;
 						currentCompactAreaName = field.fieldName;
 					}
 				}
@@ -446,7 +450,7 @@ class FormFull extends eventProcessingMixins {
 					className: isRestricted ? 'restricted clickable danger-button' : 'clickable danger-button', onClick: async () => {
 						if(await deleteRecord(data.name, node.id, data.id)) {
 							if(this.isSubForm()) {
-								this.props.parentForm.valueChoosed();
+								this.props.parentForm.valueSelected();
 							} else {
 								goBack(true);
 							}
@@ -456,7 +460,7 @@ class FormFull extends eventProcessingMixins {
 			}
 
 			if(this.props.editable) {
-				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.prevs & PREVS_PUBLISH)) {
+				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.privileges & PRIVILEGES_PUBLISH)) {
 					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('SAVE') }, this.isSubForm() ? renderIcon('check') : renderIcon('floppy-o'), this.isSubForm() ? '' : L('SAVE'));
 				} else {
 					if(data.status === 1) {

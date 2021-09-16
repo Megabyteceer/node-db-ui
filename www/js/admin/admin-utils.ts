@@ -33,7 +33,7 @@ class admin {
 			if(i === fIndex) {
 				fieldIndex = j;
 			}
-			if(form.isVisibleField(f) && !f.lang) {
+			if(form.isFieldVisibleByFormViewMask(f) && !f.lang) {
 				j++;
 				return true;
 			}
@@ -47,7 +47,7 @@ class admin {
 			var i;
 
 			if(field.fieldType === FIELD_17_TAB) {
-				if(field.maxlen === 0) { //two tabs exchanging
+				if(field.maxLength === 0) { //two tabs exchanging
 
 					i = fieldIndex;
 					group1.push(fields[i]);
@@ -55,7 +55,7 @@ class admin {
 					while(i < fields.length && i >= 0) {
 						f = fields[i];
 
-						if(f.fieldType === FIELD_17_TAB && f.maxlen === 0) {
+						if(f.fieldType === FIELD_17_TAB && f.maxLength === 0) {
 							break;
 						}
 						group1.push(f);
@@ -67,7 +67,7 @@ class admin {
 							i = fieldIndex - 1;
 							while(i > 0) {
 								var f = fields[i];
-								if(f.fieldType === FIELD_17_TAB && f.maxlen === 0) {
+								if(f.fieldType === FIELD_17_TAB && f.maxLength === 0) {
 									break;
 								}
 								i--;
@@ -83,7 +83,7 @@ class admin {
 							i++;
 							while(i < fields.length) {
 								var f = fields[i];
-								if(f.fieldType === FIELD_17_TAB && f.maxlen === 0) {
+								if(f.fieldType === FIELD_17_TAB && f.maxLength === 0) {
 									break;
 								}
 								group2.push(f);
@@ -175,7 +175,7 @@ class admin {
 
 	static toggleAdminUI() {
 		if(adminOn) {
-			styleSheet.insertRule('.admin-controll{display:none;}', 0);
+			styleSheet.insertRule('.admin-control{display:none;}', 0);
 		} else {
 			if(styleSheet.rules.length) {
 				styleSheet.removeRule(0);
@@ -198,6 +198,7 @@ function initIconsList() {
 			if(allNames.length) {
 				let iconName = allNames[0];
 				iconsList.push({
+					search: allNames.join(', '),
 					name: R.span(null, renderIcon(iconName), allNames.join(', ')),
 					value: iconName
 				});
@@ -212,12 +213,12 @@ function makeIconSelectionField(form, fieldName) {
 	if(!iconsList) {
 		initIconsList();
 	}
-	const $iconInput = $('.field-container-id-' + form.getField(fieldName).props.field.id + ' input');
-	$iconInput.css({
-		display: 'none'
-	});
-	$iconInput.after('<span id="icons-selector"></span>');
-
+	const formElement = ReactDOM.findDOMNode(form) as HTMLDivElement;
+	const input = formElement.querySelector('.field-container-id-' + form.getField(fieldName).props.field.id + ' input') as HTMLInputElement;
+	input.style.display = 'none';
+	const selectContainer = document.createElement('SPAN');
+	selectContainer.id = "icons-selector";
+	input.after(selectContainer);
 	setTimeout(() =>
 		ReactDOM.render(
 			React.createElement(Select, {
@@ -229,7 +230,7 @@ function makeIconSelectionField(form, fieldName) {
 				},
 				options: iconsList
 			}),
-			document.getElementById('icons-selector')
+			selectContainer
 		),
 		10);
 }

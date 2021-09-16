@@ -78,7 +78,7 @@ let allowedUpload;
 
 async function uploadFile(reqData, userSession) {
 	if(reqData.filename.indexOf('..') >= 0) {
-		throwError(L('UPL_ERROW_WFN'));
+		throwError(L('UPL_ERROR_WFN'));
 	}
 	getFieldForUpload(reqData, userSession); //Check access to the field
 	if(!allowedUpload) {
@@ -119,8 +119,8 @@ async function uploadImage(reqData, userSession) {
 	let img = await sharp(reqData.fileContent);
 	let meta = await img.metadata();
 
-	let targetW = Math.floor(field.maxlen / 10000);
-	let targetH = field.maxlen % 10000;
+	let targetW = Math.floor(field.maxLength / 10000);
+	let targetH = field.maxLength % 10000;
 
 	let srcW = meta.width;
 	let srcH = meta.height;

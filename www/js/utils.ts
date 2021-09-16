@@ -1,10 +1,10 @@
-/// #if EDITOR
-import { LANG_KEYS } from "../locales/en/lang.js";
-/// #endif
+
+import type { LANG_KEYS } from "../locales/en/lang";
+
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
-import { ADMIN_ROLE_ID, assert, FIELD_1_TEXT, Filters, GetRecordsParams, NodeDesc, PREVS_PUBLISH, RecId, RecordData, RecordsData, RecordsDataResponse, TRoleId } from "./bs-utils";
+import { ADMIN_ROLE_ID, assert, FieldDesc, FIELD_1_TEXT, Filters, GetRecordsParams, HASH_DIVIDER, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, TRoleId } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
@@ -13,8 +13,8 @@ import { DebugPanel } from "./debug-panel";
 import React from "react";
 import { HotkeyButton } from "./components/hotkey-button";
 
-const ON_FORM_SAVE = 'onsave';
-const ON_FORM_LOAD = 'onload';
+const ON_FORM_SAVE = 'onSave';
+const ON_FORM_LOAD = 'onLoad';
 const ON_FIELD_CHANGE = 'onChange';
 
 const __corePath = 'https://node-db-ui.com:1443/core/';
@@ -46,7 +46,7 @@ function restrictRecordsDeletion(nodes: RestrictDeletionData) {
 }
 
 restrictRecordsDeletion({
-	4: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 50, 52, 53], /* disable critical sections  deletion/hidding*/
+	4: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 50, 52, 53], /* disable critical sections  deletion/hiding*/
 	5: [1, 2, 3], /* disable admin,user,guest deletion*/
 	7: [1, 2, 3], /* disable critical organizations deletion*/
 	8: [1, 2, 3], /* disable critical roles deletion*/
@@ -61,12 +61,12 @@ function isRecordRestrictedForDeletion(nodeId, recordId) {
 	}
 }
 
-function myAlert(txt: string | React.Component, isSucess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean) {
+function myAlert(txt: string | React.Component, isSuccess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean) {
 	if(!Modal.instance) {
 		alert(txt);
 	} else {
 		var className;
-		if(isSucess) {
+		if(isSuccess) {
 			className = "alert-bg alert-bg-success";
 		} else {
 			className = "alert-bg alert-bg-danger";
@@ -83,7 +83,7 @@ function myAlert(txt: string | React.Component, isSucess?: boolean, autoHide?: b
 
 }
 
-async function myPromt(txt: string | Comment, yesLabel?: string, noLabel?: string, yesIcon?: string, noIcon?: string, discardByOutsideClick?: boolean) {
+async function showPrompt(txt: string | Comment, yesLabel?: string, noLabel?: string, yesIcon?: string, noIcon?: string, discardByOutsideClick?: boolean) {
 	return new Promise((resolve) => {
 		if(!yesLabel) {
 			yesLabel = L('OK');
@@ -225,7 +225,7 @@ function handleAdditionalData(data, url) {
 
 }
 
-var innerDatetimeFormat = 'YYYY-MM-DD HH:mm:ss';
+var innerDateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
 var readableDateFormat = 'D MMMM YYYY';
 var readableTimeFormat = 'H:mm';
 
@@ -238,7 +238,7 @@ function toReadableDate(d) {
 	return '';
 }
 
-function toReadableDatetime(d) {
+function toReadableDateTime(d) {
 	if(d) {
 		d = d.format(readableDateFormat + ' ' + readableTimeFormat);
 		if(d === 'Invalid date') return '';
@@ -246,6 +246,7 @@ function toReadableDatetime(d) {
 	}
 	return '';
 }
+
 function toReadableTime(d) {
 	if(d) {
 		d = d.format(readableTimeFormat);
@@ -278,23 +279,20 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, 
 	}
 
 	if(filters && (Object.keys(filters).length > 0)) {
-		var copmlicatedFilters = false;
+		var complicatedFilters = false;
 		for(var k in filters) {
 			var v = filters[k];
 			if(typeof v === 'object') {
-				copmlicatedFilters = true;
+				complicatedFilters = true;
 				break;
 			}
 		}
 
-		if(copmlicatedFilters) {
+		if(complicatedFilters) {
 			newHash.push('j');
 			newHash.push(encodeURIComponent(JSON.stringify(filters)));
-
 		} else {
-
 			var filtersHash;
-
 			filtersHash = [];
 			for(var k in filters) {
 				if(filters.hasOwnProperty(k) && (filters[k] || filters[k] === 0)) {
@@ -317,13 +315,10 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, 
 	if(retHash === 'n/' + ENV.HOME_NODE) {
 		retHash = '';
 	}
-
-	retHash = '#' + retHash;
-
 	return retHash;
 }
 
-function isCurrentlyShowedLeftbarItem(item) {
+function isCurrentlyShowedLeftBarItem(item) {
 	const currentFormParameters = window.crudJs.Stage.currentForm;
 	if(item.id === false) {
 		if(!currentFormParameters.filters || (Object.keys(currentFormParameters.filters).length === 0)) {
@@ -336,63 +331,96 @@ function isCurrentlyShowedLeftbarItem(item) {
 		currentFormParameters.editable === item.editable;
 };
 
-function goToPageByHash() {
-	var hashTxt = window.location.hash.substr(1);
-
-	if(hashTxt) {
-
-		var nodeId;
-		var recId;
-		var editable;
-		var filters;
-
-		let hash = hashTxt.split('/');
-		var i;
-		while(hash.length) {
-			i = hash.shift();
-			switch(i) {
-				case 'n':
-					nodeId = parseInt(hash.shift());
-					break;
-				case 'r':
-					recId = hash.shift();
-					break;
-				case 'e':
-					editable = true;
-					break;
-				case 'j':
-					filters = JSON.parse(decodeURIComponent(hash.shift()));
-					break;
-				case 'f':
-					filters = {};
-					while(hash.length) {
-						let key = hash.shift();
-						let val = decodeURIComponent(hash.shift());
-						let numVal = parseInt(val); // return numeric values to filter
-						if(val == numVal.toString()) {
-							// @ts-ignore
-							val = numVal;
-						}
-						filters[key] = val;
+function hashToFormParams(hashTxt: string): IFormParameters {
+	if(!hashTxt) {
+		return { nodeId: ENV.HOME_NODE, filters: {} };
+	}
+	let nodeId;
+	let recId;
+	let editable;
+	let filters = {};
+	let hash = hashTxt.split('/');
+	var i;
+	while(hash.length) {
+		i = hash.shift();
+		switch(i) {
+			case 'n':
+				nodeId = parseInt(hash.shift());
+				break;
+			case 'r':
+				recId = hash.shift();
+				break;
+			case 'e':
+				editable = true;
+				break;
+			case 'j':
+				filters = JSON.parse(decodeURIComponent(hash.shift()));
+				break;
+			case 'f':
+				while(hash.length) {
+					let key = hash.shift();
+					let val = decodeURIComponent(hash.shift());
+					let numVal = parseInt(val); // return numeric values to filter
+					if(val == numVal.toString()) {
+						// @ts-ignore
+						val = numVal;
 					}
-					break;
-				default:
-					debugError('Unknown hash entry: ' + i);
-					break;
+					filters[key] = val;
+				}
+				break;
+			default:
+				debugError('Unknown hash entry: ' + i);
+				break;
+		}
+	}
+	if(recId !== 'new') {
+		if(recId) {
+			recId = parseInt(recId);
+		}
+	}
+	return { recId, nodeId, editable, filters };
+}
+
+async function goToPageByHash() {
+	const isPageLoading = !_oneFormShowed;
+
+	let hash = window.location.hash.substr(1);
+	var formParamsByLevels = hash.split(HASH_DIVIDER).map(hashToFormParams);
+
+	const Stage = window.crudJs.Stage;
+	let level;
+
+	for(level = 0; (level < formParamsByLevels.length) && (level < Stage.allForms.length); level++) {
+		const formParams = formParamsByLevels[level];
+		const form = Stage.allForms[level].form;
+
+
+		let isTheSame = formParams.nodeId === form.nodeId && formParams.recId === form.recId && Boolean(formParams.editable) === Boolean(form.editable);
+		if(isTheSame) {
+			if(JSON.stringify(form.filters) !== JSON.stringify(formParams.filters)) {
+				isTheSame = false;
 			}
 		}
-
-		if(recId !== 'new') {
-			if(recId) {
-				recId = parseInt(recId);
+		if(!isTheSame) {
+			while(Stage.allForms.length > (level + 1)) {
+				Stage.goBackIfModal();
 			}
+			break;
 		}
-		window.crudJs.Stage.showForm(nodeId, recId, filters, editable);
-
-	} else {
-		goToHome();
 	}
 
+	if(formParamsByLevels.length <= level) {
+		while(formParamsByLevels.length <= level) {
+			Stage.goBackIfModal();
+			level--;
+		}
+	} else {
+		while(level < formParamsByLevels.length) {
+			let paramsToShow = formParamsByLevels[level];
+			await Stage.showForm(paramsToShow.nodeId, paramsToShow.recId, paramsToShow.filters, paramsToShow.editable, level > 0, undefined, isPageLoading);
+			level++;
+		}
+	}
 };
 
 
@@ -415,7 +443,7 @@ function goBack(isAfterDelete?: boolean) {
 			window.crudJs.Stage.showForm(ENV.HOME_NODE);
 		}
 
-	} else if(currentFormParameters.recId) {
+	} else if(currentFormParameters && currentFormParameters.recId) {
 		window.crudJs.Stage.showForm(currentFormParameters.nodeId, undefined, currentFormParameters.filters);
 	} else if(isAfterDelete) {
 		window.crudJs.Stage.refreshForm();
@@ -434,14 +462,14 @@ function updateHashLocation() {
 	}
 
 	hashUpdateTimeout = setTimeout(() => {
-		const currentFormParameters = window.crudJs.Stage.currentForm;
 		hashUpdateTimeout = false;
+		var newHash = '#' + window.crudJs.Stage.allForms.map((formEntry) => {
+			const formParameters = formEntry.form;
+			const filters = formParameters.filters;
+			return locationToHash(formParameters.nodeId, formParameters.recId, filters, formParameters.editable);
+		}).join(HASH_DIVIDER);
 
-		const filters = currentFormParameters.filters;
-
-		var newHash = locationToHash(currentFormParameters.nodeId, currentFormParameters.recId, filters, currentFormParameters.editable);
-
-		if((location.hash != newHash) && !isHistoryChanging) {
+		if((location.hash != newHash.substr(1)) && !isHistoryChanging) {
 
 			if((window.location.hash.split('/f/').shift() === (newHash.split('/f/').shift())) && history.replaceState) { //only filters is changed
 				history.replaceState(null, null, newHash);
@@ -513,7 +541,7 @@ async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string) 
 function normalizeNode(node: NodeDesc) {
 	node.fieldsById = [];
 	if(node.fields) {
-		node.fields.forEach((f, i) => {
+		node.fields.forEach((f: FieldDesc, i) => {
 			f.index = i;
 			f.node = node;
 			node.fieldsById[f.id] = f;
@@ -522,6 +550,17 @@ function normalizeNode(node: NodeDesc) {
 				for(let e of f.enum) {
 					f.enumNamesById[e.value] = e.name;
 				}
+			}
+			if(f.lang) {
+				const fieldId = f.id as unknown as string; // language data fields have string ids of format: "77$ru"
+				const parentField: FieldDesc = node.fieldsById[fieldId.substr(0, fieldId.indexOf('$'))];
+				if(!parentField.childrenFields) {
+					parentField.childrenFields = [];
+				}
+				parentField.childrenFields.push(f);
+				f.fieldNamePure = parentField.fieldName;
+			} else {
+				f.fieldNamePure = f.fieldName;
 			}
 		});
 	}
@@ -575,7 +614,7 @@ async function getNodeData(nodeId: RecId, recId: RecId | undefined, filters?: un
 
 		if(data.hasOwnProperty('node')) {
 			if(nodes[nodeId]) {
-				debugError('Node description owerriding.');
+				debugError('Node description overriding.');
 			}
 			normalizeNode(data.node);
 			nodes[nodeId] = data.node;
@@ -662,7 +701,7 @@ function addMixins(Class, mixins) {
 
 async function submitRecord(nodeId: RecId, data: RecordData, recId?: RecId): Promise<RecId> {
 	if(Object.keys(data).length === 0) {
-		throw 'Tried to submit emty object';
+		throw 'Tried to submit empty object';
 	}
 	let node = await getNode(nodeId);
 	return submitData('api/submit', { nodeId, recId, data: encodeData(data, node) });
@@ -872,18 +911,18 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 }
 
 
-async function deleteRecord(name, nodeId: RecId, recId: RecId, noPromt?: boolean, onYes?: () => void) {
-	if(noPromt) {
+async function deleteRecord(name, nodeId: RecId, recId: RecId, noPrompt?: boolean, onYes?: () => void) {
+	if(noPrompt) {
 		if(onYes) {
 			onYes();
 		} else {
 			await submitData('api/delete', { nodeId, recId });
-			window.crudJs.Stage.dataDidModifed(null);
+			window.crudJs.Stage.dataDidModified(null);
 			return true;
 		}
 	} else {
 		let node = await getNode(nodeId);
-		if(await myPromt(L('SURE_DELETE', (node.creationName || node.singleName)) + ' "' + name + '"?',
+		if(await showPrompt(L('SURE_DELETE', (node.creationName || node.singleName)) + ' "' + name + '"?',
 			L('DELETE'), L('CANCEL'), 'times', 'caret-left', true)) {
 			return deleteRecord(null, nodeId, recId, true, onYes);
 		}
@@ -1008,11 +1047,11 @@ function keepInWindow(body) {
 		body = ReactDOM.findDOMNode(body);
 
 		let modalContainer = body.closest('.form-modal-container');
-		var screenR = window.innerWidth;
+		var screenR = window.innerWidth - 10;
 		var screenL = 0;
 		if(modalContainer) {
 			const cRect = modalContainer.getBoundingClientRect()
-			screenR = cRect.right;
+			screenR = cRect.right - 13;
 			screenL = cRect.left;
 		}
 
@@ -1024,7 +1063,7 @@ function keepInWindow(body) {
 		if(l < screenL) {
 			addTranslateX(body, -l);
 		} else {
-			var out = r - screenR + 10;
+			var out = r - screenR;
 			if(out > 0) {
 				addTranslateX(body, -out);
 			}
@@ -1066,14 +1105,14 @@ function checkFileSize(file) {
 		return true;
 	}
 
-	if(file.size > ENV.MAX_FILESIZE_TO_UPLOAD) {
+	if(file.size > ENV.MAX_FILE_SIZE_TO_UPLOAD) {
 		myAlert(L('FILE_BIG', (file.size / 1000000.0).toFixed(0)) + getReadableUploadSize());
 		return true;
 	}
 }
 
 function getReadableUploadSize() {
-	return (ENV.MAX_FILESIZE_TO_UPLOAD / 1000000.0).toFixed(0) + L('MB');
+	return (ENV.MAX_FILE_SIZE_TO_UPLOAD / 1000000.0).toFixed(0) + L('MB');
 }
 
 var __errorsSent = {};
@@ -1129,7 +1168,7 @@ var listRenderers = [];
 
 function registerListRenderer(nodeId, renderFunction) {
 	if(listRenderers.hasOwnProperty(nodeId)) {
-		throw 'List renderer redifinition for node ' + nodeId;
+		throw 'List renderer for node ' + nodeId + ' is already registered.';
 	}
 	listRenderers[nodeId] = renderFunction;
 }
@@ -1174,22 +1213,21 @@ export {
 	publishRecord,
 	idToImgURL,
 	idToFileUrl,
-	isCurrentlyShowedLeftbarItem,
+	isCurrentlyShowedLeftBarItem,
 	addMixins,
-	locationToHash,
 	goToPageByHash,
 	consoleLog,
 	consoleDir,
 	sp,
-	innerDatetimeFormat,
+	innerDateTimeFormat,
 	toReadableDate,
 	toReadableTime,
-	toReadableDatetime,
+	toReadableDateTime,
 	updateHashLocation,
 	goBack,
 	getNodeData,
 	getNode,
-	myPromt,
+	showPrompt,
 	UID,
 	myAlert,
 	serializeForm,

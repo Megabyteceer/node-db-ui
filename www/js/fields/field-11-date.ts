@@ -4,8 +4,8 @@ import React from "react";
 import { FIELD_11_DATE } from "../bs-utils";
 import { R } from "../r";
 import moment from "moment";
-import { innerDatetimeFormat, readableDateFormat, registerFieldClass, renderIcon, toReadableDate } from "../utils";
-import { dateFieldMixins, ReactDatetimeClassHolder } from "./field-4-datetime";
+import { innerDateTimeFormat, readableDateFormat, registerFieldClass, renderIcon, toReadableDate } from "../utils";
+import { dateFieldMixins, ReactDateTimeClassHolder } from "./field-4-date-time";
 
 registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 
@@ -13,14 +13,14 @@ registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 		if(val === '0000-00-00 00:00:00') {
 			return null;
 		}
-		return moment(val, innerDatetimeFormat);
+		return moment(val, innerDateTimeFormat);
 	}
 
 	static encodeValue(val) {
 		if(!val) {
 			return ('0000-00-00 00:00:00');
 		}
-		return val.format(innerDatetimeFormat);
+		return val.format(innerDateTimeFormat);
 	}
 
 	focus() {
@@ -33,8 +33,8 @@ registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 		var field = this.props.field;
 		var value = toReadableDate(this.state.value);
 		if(this.props.isEdit) {
-			if(!ReactDatetimeClassHolder.ReactDatetimeClass) {
-				ReactDatetimeClassHolder.importReactDateTime();
+			if(!ReactDateTimeClassHolder.ReactDateTimeClass) {
+				ReactDateTimeClassHolder.importReactDateTime();
 				return renderIcon('cog fa-spin');
 			}
 			var inputsProps = {
@@ -58,7 +58,7 @@ registerFieldClass(FIELD_11_DATE, class DateField extends dateFieldMixins {
 			return R.div({
 				title: (this.props.isCompact ? field.name : '')
 			},
-				React.createElement(ReactDatetimeClassHolder.ReactDatetimeClass, inputsProps)
+				React.createElement(ReactDateTimeClassHolder.ReactDateTimeClass, inputsProps)
 			);
 
 		} else {

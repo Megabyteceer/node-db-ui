@@ -10,11 +10,11 @@ import { fieldLookupMixins } from "./field-lookup-mixins";
 var keyCounter = 0;
 var dragItem;
 var dragList;
-var dragListenersInited;
+var dragListenersInitialized;
 
 var refs = [];
 
-class LookpuManyToManyFiled extends fieldLookupMixins {
+class LookupManyToManyFiled extends fieldLookupMixins {
 
 	excludeIDs: RecId[];
 
@@ -52,7 +52,7 @@ class LookpuManyToManyFiled extends fieldLookupMixins {
 	}
 
 	dragStart(item) {
-		if(!dragListenersInited) {
+		if(!dragListenersInitialized) {
 			$(document).on('mouseup', () => {
 				if(dragItem) {
 					dragItem = undefined;
@@ -95,7 +95,7 @@ class LookpuManyToManyFiled extends fieldLookupMixins {
 					}
 				}
 			});
-			dragListenersInited = true;
+			dragListenersInitialized = true;
 		}
 		dragList = this;
 		dragItem = item;
@@ -128,7 +128,7 @@ class LookpuManyToManyFiled extends fieldLookupMixins {
 				if(this.state.extendedEditor) {
 					reorderButton = R.button({
 						title: L('FRAG_TO_REORDER'),
-						className: isDrag ? 'toolbtn drag draggable default-btn' : 'toolbtn drag default-btn', onMouseDown: (e) => {
+						className: isDrag ? 'tool-btn drag draggable default-btn' : 'tool-btn drag default-btn', onMouseDown: (e) => {
 							sp(e);
 							this.dragStart(value);
 						}
@@ -139,7 +139,7 @@ class LookpuManyToManyFiled extends fieldLookupMixins {
 					additionalButtonsN2M,
 					R.button({
 						title: L('EDIT'),
-						className: 'clickable toolbtn edit-btn', onClick: () => {
+						className: 'clickable tool-btn edit-btn', onClick: () => {
 							const recId = this.props.form.recId;
 							const filters = {
 								[this.getLinkerFieldName()]: { id: recId }
@@ -169,7 +169,7 @@ class LookpuManyToManyFiled extends fieldLookupMixins {
 					),
 					R.button({
 						title: L('LIST_REMOVE'),
-						className: 'clickable toolbtn danger-btn', onClick: () => {
+						className: 'clickable tool-btn danger-btn', onClick: () => {
 							this.deleteItemByIndex(i);
 						}
 					},
@@ -250,6 +250,6 @@ class LookpuManyToManyFiled extends fieldLookupMixins {
 	}
 }
 
-registerFieldClass(FIELD_14_NtoM, LookpuManyToManyFiled);
+registerFieldClass(FIELD_14_NtoM, LookupManyToManyFiled);
 
-export { LookpuManyToManyFiled };
+export { LookupManyToManyFiled };

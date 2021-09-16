@@ -6,7 +6,7 @@ const ENV = {
 
 	EMAIL_FROM: "test@test.com",
 
-	APP_TITLE: "distrib engine",
+	APP_TITLE: "CRUD-js",
 
 	DB_HOST: "127.0.0.1",
 	DB_USER: "root",
@@ -15,7 +15,7 @@ const ENV = {
 
 	DEPLOY_TO: "http: //test.server.org",
 	DEPLOYMENT_KEY_LOCAL: '',
-	DEPLOYMENT_KEY_REMOTE: "test_OHIwqd09uOHIsdw0eoihwehp0PPEH(WPEwe09wed;pH(O{WE230723(*28i",
+	DEPLOYMENT_KEY_REMOTE: "test_OOPIHJWQp0du()*W9d8wpu9(z*Y@(*2yP*)d@>2H2p(*h9p@*yPlikb;",
 
 	DEPLOYMENT_KEEP_DEBUG: true,
 
@@ -26,10 +26,10 @@ const ENV = {
 
 	DEFAULT_LANG_ID: 1,
 	ALLOW_GUEST: true,
-	ENABLE_MULTILANG: false,
+	ENABLE_MULTILINGUAL: false,
 	GOOGLE_PLUS: true,
-	TERMS_URL: "https: //org.uforum.pro/custom/html/terms_of_use.html",
-	MAX_FILESIZE_TO_UPLOAD: 3000000,
+	TERMS_URL: "",
+	MAX_FILE_SIZE_TO_UPLOAD: 3000000,
 
 	ALLOWED_UPLOADS: ["gif", "jpg", "jpeg", "jpe", "png", "zip", "rar", "doc", "docx", "xls", "xlsx", "pdf", "ppt", "pptx", "txt", "wav"],
 

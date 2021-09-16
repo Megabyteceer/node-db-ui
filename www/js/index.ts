@@ -1,7 +1,7 @@
 import { MainFrame } from "./main-frame";
 import "./fields/field-1-text-default";
 import "./fields/field-2-numeric";
-import "./fields/field-4-datetime";
+import "./fields/field-4-date-time";
 import "./fields/field-5-bool";
 import "./fields/field-6-enum";
 import "./fields/field-7-many-to-one";
@@ -14,7 +14,7 @@ import "./fields/field-15-one-to-many";
 import "./fields/field-16-rating";
 import "./fields/field-17-compact-area";
 import "./fields/field-18-button";
-import "./fields/field-19-rich-ditor";
+import "./fields/field-19-rich-editor";
 import "./fields/field-20-color";
 import "./fields/field-21-file";
 import "./views/view_5_users";
@@ -41,14 +41,14 @@ window.crudJs = {
 }
 
 /// #if DEBUG
-import { AdminRoleprevsForm } from "./admin/admin-roleprevs-form";
+import { AdminRolePrivilegesForm } from "./admin/admin-role-privileges-form";
 
 import { DPromise } from "./debug-promise";
 
 //@ts-ignore
 window.Promise = DPromise;
 
-window.crudJs.customClasses.AdminRoleprevsForm = AdminRoleprevsForm;
+window.crudJs.customClasses.AdminRolePrivilegesForm = AdminRolePrivilegesForm;
 /*
 /// #endif
 window.onerror = (msg, url, line, col, error) => {

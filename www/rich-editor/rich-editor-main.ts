@@ -5,7 +5,7 @@ $(async function () {
 	window.Popper = await import("popper.js");
 
 	//@ts-ignore
-	var s: { summernote: (...params: any[]) => void } = $('#summernote');
+	var s: { summerNote: (...params: any[]) => void } = $('#summer-note');
 	var iframeId = location.href.split('iframeId=').pop();
 
 	window.addEventListener("message", (event) => {
@@ -19,17 +19,17 @@ $(async function () {
 					sendValueToParent();
 				}
 			};
-			s.summernote(data.options);
+			s.summerNote(data.options);
 		}
 		if(data.hasOwnProperty('value')) {
-			s.summernote('code', data.value);
+			s.summerNote('code', data.value);
 		} else if(data.hasOwnProperty('onSaveRichEditor')) {
 			sendValueToParent();
 		}
 	}, false);
 
 	function sendValueToParent() {
-		window.parent.postMessage({ id: iframeId, value: s.summernote('code') }, '*');
+		window.parent.postMessage({ id: iframeId, value: s.summerNote('code') }, '*');
 	}
 	window.parent.postMessage({ id: iframeId }, '*');
 

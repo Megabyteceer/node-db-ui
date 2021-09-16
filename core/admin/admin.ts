@@ -2,23 +2,23 @@
 import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../desc-node";
 import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 
-import { throwError } from "../../www/js/bs-utils";
+import { ROLE_ID_SUPER_ADMIN, ROLE_ID_VIEW_ALL, throwError } from "../../www/js/bs-utils";
 import { join } from "path";
 import { readFileSync, writeFileSync } from "fs";
 import { isAdmin } from "../auth.js";
 const { exec } = require('child_process');
 
-async function nodePrevs(reqData, userSession) {
+async function nodePrivileges(reqData, userSession) {
 	shouldBeAdmin(userSession);
 	const nodeId = reqData.nodeId;
-	if(reqData.prevs) {//set node prevs
-		const prevs = reqData.prevs;
-		await setRolePrevsForNode(nodeId, prevs, reqData.toChild, userSession);
+	if(reqData.privileges) {//set node privileges
+		const privileges = reqData.privileges;
+		await setRolePrevsForNode(nodeId, privileges, reqData.toChild, userSession);
 		reloadMetadataSchedule();
 		return 1;
-	} else { //get node prevs
-		const prevs = await mysqlExec('SELECT id, name, (SELECT prevs FROM _roleprevs WHERE (nodeID=' + nodeId + ') AND (_roles.id=roleID) LIMIT 1) AS prevs FROM _roles WHERE ID <>1 AND ID <> 7 AND status = 1');
-		return { prevs, isDoc: getNodeDesc(nodeId).isDoc }
+	} else { //get node privileges
+		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _roleprevs WHERE (nodeID=' + nodeId + ') AND (_roles.id=roleID) LIMIT 1) AS privileges FROM _roles WHERE ID <> ' + ROLE_ID_SUPER_ADMIN + ' AND ID <> ' + ROLE_ID_VIEW_ALL + ' AND status = 1');
+		return { privileges, isDocument: getNodeDesc(nodeId).isDocument }
 	}
 }
 
@@ -41,8 +41,8 @@ async function setRolePrevsForNode(nodeID, roleprevs, toChild, userSession) {
 	await mysqlExec('DELETE FROM `_roleprevs` WHERE `nodeID`=' + nodeID + ';');
 
 	for(let p of roleprevs) {
-		if(p.prevs) {
-			await mysqlExec('INSERT INTO _roleprevs SET nodeID=' + nodeID + ', roleID=' + p.id + ', prevs=' + p.prevs + ';');
+		if(p.privileges) {
+			await mysqlExec('INSERT INTO _roleprevs SET nodeID=' + nodeID + ', roleID=' + p.id + ', privileges=' + p.privileges + ';');
 		}
 	}
 	if(toChild) {
@@ -119,4 +119,4 @@ async function getClientEventHandler({
 	}
 }
 
-export { nodePrevs, getClientEventHandler, shouldBeAdmin, clearCache };
+export { nodePrivileges, getClientEventHandler, shouldBeAdmin, clearCache };

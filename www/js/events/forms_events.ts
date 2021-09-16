@@ -1,6 +1,6 @@
-import { Filters, getNodeData, isAdmin, L, myPromt, reloadLocation } from "../utils";
+import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICHEDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATICTEXT } from "../bs-utils";
+import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, LANGUAGE_ID_DEFAULT } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -9,7 +9,7 @@ import { R } from "../r";
 
 class FormEvents extends FormFull {
 
-	async _users_onload() {
+	async _users_onLoad() {
 
 		const isHiddenField = (fn) => {
 			if(this.fieldValue(fn) === 'hidden_91d2g7') {
@@ -17,13 +17,17 @@ class FormEvents extends FormFull {
 			}
 		}
 
+		this.addLookupFilters('language', {
+			isUILanguage: 1
+		});
+
 		if($('#org-edit-link').length === 0) {
 			$('.field-container-id-63 input').css('width', '50%');
 			if(this.fieldValue('_organID')) {
 				$('.field-container-id-63 input').after(
-					'<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organisation settings" href="#n/7/r/' +
+					'<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organization settings" href="#n/7/r/' +
 					this.fieldValue('_organID').id +
-					'/e">additional organisation settings <p class="fa fa-wrench"></p></a>'
+					'/e">additional organization settings <p class="fa fa-wrench"></p></a>'
 				);
 			}
 		}
@@ -41,14 +45,14 @@ class FormEvents extends FormFull {
 			this.hideField('_organID');
 		}
 
-		var myname = this.fieldValue('name');
+		var myName = this.fieldValue('name');
 
 
 		if(!isAdmin()) {
 			this.disableField('email');
 		}
 
-		if(this.rec_update || this.rec_creation) {
+		if(this.isUpdateRecord || this.isNewRecord) {
 			this.addLookupFilters('_userroles', {
 				excludeIDs: [2, 3]
 			});
@@ -68,14 +72,14 @@ class FormEvents extends FormFull {
 		}
 
 
-		if(this.rec_update) {
-			this.header = L('EDIT_USER_PROFILE', myname);
+		if(this.isUpdateRecord) {
+			this.header = L('EDIT_USER_PROFILE', myName);
 			this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
 			this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
 			this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
 		}
 
-		if(this.rec_creation) {
+		if(this.isNewRecord) {
 			this.hideField('mailing');
 			this.hideField('PHONE');
 			//this.hideField('desc');
@@ -86,7 +90,7 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _users_onsave() {
+	async _users_onSave() {
 		var pass = this.fieldValue('PASS');
 
 		if(pass.length < 6) {
@@ -108,7 +112,7 @@ class FormEvents extends FormFull {
 			}
 			if(nLang != pLang) {
 				this.onSaveCallback = () => {
-					myPromt(L('RESTARTNOW')).then((isYes) => {
+					showPrompt(L('RESTART_NOW')).then((isYes) => {
 						if(isYes) {
 							window.location.href = 'login';
 						}
@@ -118,47 +122,59 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _roles_onload() {
+	async _roles_onLoad() {
 		this.getField('_userroles').setLookupFilter('excludeIDs', [1, 2, 3]);
 		if((this.recId === 2) || (this.recId === 3)) {
 			this.hideField('_userroles');
 		}
 	}
 
-	async _enums_onload() {
+	async _enums_onLoad() {
 		this.getField("values").inlineEditable();
 	}
 
-	async _nodes_onload() {
+	async _nodes_onLoad() {
 		makeIconSelectionField(this, 'icon');
 
-		if(this.rec_update) {
-			this.disableField('isDoc');
+		if(!this.fieldValue('isDocument')) {
+			this.hideField('defaultFilterId');
+		} else if(this.isUpdateRecord) {
+			this.isNewRecord
+			this.addLookupFilters('defaultFilterId', {
+				_nodesID: this.recId
+			});
+		}
+
+		if(this.isUpdateRecord) {
+			this.disableField('isDocument');
 			this.disableField('tableName');
 			this.hideField('createdby_field');
 			this.hideField('createdon_field');
 			this.hideField('createUserFld');
+			if(!this.fieldValue('isDocument')) {
+				this.hideField('t_fields');
+			}
 		}
 
-		if(this.rec_creation) {
+		if(this.isNewRecord) {
 			if(!this.fieldValue('recPerPage')) {
 				this.setFieldValue('recPerPage', 25);
 			}
 			this.hideField('_fieldsID');
 		}
-		if(!this.rec_creation) {
+		if(!this.isNewRecord) {
 			this.addLookupFilters('_nodesID', 'excludeIDs', [this.recId]);
 		}
-		this.addLookupFilters('_nodesID', 'isDoc', 0);
+		this.addLookupFilters('_nodesID', 'isDocument', 0);
 		this.addLookupFilters('_fieldsID', {
 			node_fields_linker: this.recId,
 			forSearch: 1
 		});
 	}
 
-	async _nodes_onsave() {
+	async _nodes_onSave() {
 
-		if(!this.fieldValue("isDoc")) {
+		if(!this.fieldValue("isDocument")) {
 			var name = this.fieldValue("name");
 			this.setFieldValue("singleName", name);
 		}
@@ -176,11 +192,11 @@ class FormEvents extends FormFull {
 
 	_fieldsNameIsBad: boolean;
 
-	async _fields_onload() {
+	async _fields_onLoad() {
 
 		(this.getField('fieldType').fieldRef as EnumField).setFilterValues([16]);
 
-		if(this.rec_creation) {
+		if(this.isNewRecord) {
 			if(isNaN(this.fieldValue("show"))) {
 				this.setFieldValue("show", 5);
 				this.setFieldValue("vis_create", 1);
@@ -219,26 +235,26 @@ class FormEvents extends FormFull {
 			else
 				this.setFieldValue("vis_list_custom", 0);
 
-			if(this.fieldValue("fieldType") === FIELD_12_PICTURE || this.fieldValue("fieldType") === FIELD_19_RICHEDITOR) {
-				this.setFieldValue("height", this.fieldValue("maxlen") % 10000);
-				this.setFieldValue("width", Math.floor(this.fieldValue("maxlen") / 10000));
+			if(this.fieldValue("fieldType") === FIELD_12_PICTURE || this.fieldValue("fieldType") === FIELD_19_RICH_EDITOR) {
+				this.setFieldValue("height", this.fieldValue("maxLength") % 10000);
+				this.setFieldValue("width", Math.floor(this.fieldValue("maxLength") / 10000));
 			}
 		}
 
-		if(this.rec_update) {
+		if(this.isUpdateRecord) {
 			this.disableField("fieldName");
 			this.disableField("fieldType");
 			this.disableField("nodeRef");
 			this.disableField("node_fields_linker");
-			this.disableField("nostore");
+			this.disableField("noStore");
 			this.disableField("clientOnly");
 		}
 
 		this.addLookupFilters('node_fields_linker', {
-			isDoc: 1
+			isDocument: 1
 		});
 		this.addLookupFilters('nodeRef', {
-			isDoc: 1
+			isDocument: 1
 		});
 		this.hideField("prior");
 		this.hideField("show");
@@ -261,7 +277,7 @@ class FormEvents extends FormFull {
 	}
 
 	check12nFieldName() {
-		if(this.rec_creation) {
+		if(this.isNewRecord) {
 			this._fieldsNameIsBad = false;
 
 			var checkFieldExists = (fName, nodeId) => {
@@ -275,7 +291,7 @@ class FormEvents extends FormFull {
 					if(this._fieldsNameIsBad) return;
 					if(data.items.length > 0) {
 						if(this.fieldValue('fieldType') === FIELD_14_NtoM) {
-							this.fieldAlert('fieldName', L('LOOKUP_NAME_NOT_UNIC'));
+							this.fieldAlert('fieldName', L('LOOKUP_NAME_NOT_UNIQUE'));
 						} else {
 							this.fieldAlert('fieldName', L('FLD_EXISTS'));
 						}
@@ -306,7 +322,7 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _fields_onsave() {
+	async _fields_onSave() {
 		var fieldType = this.fieldValue("fieldType");
 
 		if(fieldType === FIELD_7_Nto1 || fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) {
@@ -323,30 +339,30 @@ class FormEvents extends FormFull {
 			this.fieldAlert('fieldName', L('NO_NUMERIC_NAME'));
 		}
 
-		if(fieldType === FIELD_12_PICTURE || fieldType === FIELD_19_RICHEDITOR) {
+		if(fieldType === FIELD_12_PICTURE || fieldType === FIELD_19_RICH_EDITOR) {
 			if(!this.fieldValue("height")) {
 				this.fieldAlert("height", L('REQUIRED_FLD'));
 			}
 			if(!this.fieldValue("width")) {
 				this.fieldAlert("width", L('REQUIRED_FLD'));
 			}
-			let maxlen = Math.min(9999, this.fieldValue("height") || undefined) + (this.fieldValue("width") || undefined) * 10000;
-			if(!isNaN(maxlen)) {
-				this.setFieldValue("maxlen", maxlen);
+			let maxLength = Math.min(9999, this.fieldValue("height") || undefined) + (this.fieldValue("width") || undefined) * 10000;
+			if(!isNaN(maxLength)) {
+				this.setFieldValue("maxLength", maxLength);
 			}
 
 		}
 
-		if(!this.fieldValue('maxlen')) {
-			this.setFieldValue('maxlen', 0);
+		if(!this.fieldValue('maxLength')) {
+			this.setFieldValue('maxLength', 0);
 			if((fieldType === FIELD_1_TEXT) || (fieldType === FIELD_2_INT) || (fieldType === FIELD_10_PASSWORD)) {
-				this.fieldAlert('maxlen', L('REQUIRED_FLD'));
+				this.fieldAlert('maxLength', L('REQUIRED_FLD'));
 			}
 		}
 
-		if(this.rec_creation) {
+		if(this.isNewRecord) {
 
-			if(this.rec_creation && (!this.fieldValue('fieldName') || (this.fieldValue('fieldName').length < 3))) {
+			if(this.isNewRecord && (!this.fieldValue('fieldName') || (this.fieldValue('fieldName').length < 3))) {
 				this.fieldAlert('fieldName', L('MIN_NAMES_LEN', 3));
 			}
 
@@ -354,30 +370,40 @@ class FormEvents extends FormFull {
 			this.hideField('selectFieldName');
 		}
 
-		if((fieldType === FIELD_8_STATICTEXT) || (fieldType === FIELD_17_TAB) || (fieldType === FIELD_18_BUTTON)) {
-			this.setFieldValue('nostore', true);
+		if((fieldType === FIELD_8_STATIC_TEXT) || (fieldType === FIELD_17_TAB) || (fieldType === FIELD_18_BUTTON)) {
+			this.setFieldValue('noStore', true);
 		}
 		if(this._fieldsNameIsBad) {
 			this.fieldAlert('fieldName', L('FLD_EXISTS'));
 		}
 	}
 
-	async _languages_onload() {
-		if(this.rec_update) {
+	async _languages_onLoad() {
+		if(this.recId === LANGUAGE_ID_DEFAULT) {
+			this.disableField('isUILanguage');
+		}
+		if(this.isUpdateRecord) {
 			this.disableField("code");
 		} else if(this.editable) {
 			this.header = R.span({ className: 'danger' }, L("NEW_LANGUAGE_WARNING"));
 		}
 	}
 
-	async _languages_onsave() {
-		if(this.rec_creation && !this.fieldValue('code')) {
+	async _languages_onSave() {
+		if(this.isNewRecord && !this.fieldValue('code')) {
 			this.fieldAlert('code', L('REQUIRED_FLD'));
 		}
 	}
 
-	async _enums_onsave() {
+	async _enums_onSave() {
 		//TODO check if all values unique
+	}
+
+	async _filters_onLoad() {
+		this.addLookupFilters('_nodesID', {
+			filterId: 8,
+			excludeIDs: [9]
+		});
 	}
 
 	//_insertNewHandlersHere_

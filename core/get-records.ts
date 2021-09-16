@@ -1,6 +1,6 @@
-import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHadlersNames } from './desc-node';
+import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHandlersNames, filtersById } from './desc-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
-import { ViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PREVS_PUBLISH, PREVS_EDIT_ALL, PREVS_EDIT_ORG, PREVS_EDIT_OWN, PREVS_VIEW_ALL, PREVS_VIEW_ORG, PREVS_VIEW_OWN, PREVS_DELETE, FIELD_15_1toN, FIELD_19_RICHEDITOR, RecordData, RecordsData, RecId } from "../www/js/bs-utils";
+import { ViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PRIVILEGES_PUBLISH, PRIVILEGES_EDIT_ALL, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_OWN, PRIVILEGES_VIEW_ALL, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_OWN, PRIVILEGES_DELETE, FIELD_15_1toN, FIELD_19_RICH_EDITOR, RecordData, RecordsData, RecId, VIEW_MASK_LIST, VIEW_MASK_CUSTOM_LIST } from "../www/js/bs-utils";
 import { UserSession } from './auth';
 
 const isASCII = (str) => {
@@ -11,21 +11,15 @@ const EMPTY_FILTERS = {};
 
 const EMPTY_RATING = { all: 0 };
 /*
-* @param nodeId
-* @param viewMask		bitMask for fields. 1-fields for EDIT/CREATE view; 2-fields for LIST view; 4-fields for VIEW view; 8-fields for REFERENCE/LOOKUP view; 16-custom list fields
-* @param recId
-* @param ignorePrevs	select data ignore current user's privileges
-* @param filterFields	array with fieldname=>value filters. Only numeric fields is support
+* @param filterFields	array with [fieldName: string]=>value filters. Only numeric fields is support
 *									special fields:
-										['p'] = 5; - page of records to retrevie;
+										['p'] = 5; - page of records to retrieve; * - retrieve all
 										['n'] = 5; - number of records per page;
 										['excludeIDs'] = [3,5,64,5,45]; - exclude records with these IDs;
 										['onlyIDs'] = '3,5,64,5,45'; - filter by IDs;
 										['o'] = fieldName for order;
 										['r'] = reverse order;
-										['flt_id'] = filter's id to be applied on result;
-* @param search			string to full text search
-*
+										['filterId'] = filter's id to be applied on result;
 */
 async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: RecId, userSession: UserSession): Promise<RecordData>;
 async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId[], userSession: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
@@ -33,7 +27,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 
 	let node = getNodeDesc(nodeId, userSession);
 
-	if(!node.isDoc) {
+	if(!node.isDocument) {
 		throwError("nodeId " + nodeId + " is not a document.");
 	}
 
@@ -53,7 +47,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 	//===== fields list =======================================
 	//=========================================================
 	for(let f of node.fields) {
-		if(!f.nostore && (f.show & viewMask)) {
+		if(!f.noStore && (f.show & viewMask)) {
 
 			const fieldType = f.fieldType;
 			const fieldName = f.fieldName;
@@ -77,7 +71,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 				}
 			} else if(selectFieldName) {
 				selQ.push('(', selectFieldName.replaceAll('@userid', userSession.id.toString()), ')AS `', fieldName, '`');
-			} else if((viewMask === 2 || viewMask === 16) && (fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICHEDITOR) && f.maxlen > 500) {
+			} else if((viewMask === VIEW_MASK_LIST || viewMask === VIEW_MASK_CUSTOM_LIST) && (fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICH_EDITOR) && f.maxLength > 500) {
 				selQ.push('SUBSTRING(', tableName, '.', fieldName, ',1,500) AS `', fieldName, '`');
 			} else {
 				selQ.push(tableName, '.', fieldName);
@@ -132,7 +126,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 				if(!f.forSearch) {
 					sortFieldName = undefined;
 					/// #if DEBUG
-					throwError("Tried to sort by unindexed field: " + fieldName);
+					throwError("Tried to sort by un-indexed field: " + fieldName);
 					/// #endif
 				}
 			}
@@ -158,7 +152,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 						wheres.push(" AND(`", tableName, "`.`", fieldName, "`=", fltVal, ')');
 					}
 				} else {
-					throwError("Attempt to filter records by unindexed field " + fieldName);
+					throwError("Attempt to filter records by un-indexed field " + fieldName);
 				}
 			}
 		}
@@ -180,13 +174,21 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 			wheres.push('AND(', tableName, '.id IN (', filterFields.onlyIDs, '))');
 		}
 
-		const filterId = filterFields.flt_id;
+		const filterId = filterFields.filterId;
 		let filter;
 
+
+		/// #if DEBUG
+		const availableFilters = Object.keys(node.filters).join();
+		assert(!filterId || node.filters[filterId],
+			"Unknown filterId " + filterId + ' for node ' + node.tableName +
+			(availableFilters ? ('. Available values is: ' + availableFilters) : ' node has no filters.'));
+		/// #endif
+
 		if(filterId && node.filters[filterId]) { //user selected filter
-			filter = node.filters[filterId];
-		} else {
-			filter = node.defaultFilterId;
+			filter = filtersById.get(filterId);
+		} else if(node.defaultFilterId) {
+			filter = filtersById.get(node.defaultFilterId);
 		}
 
 
@@ -245,20 +247,20 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 	}
 
 
-	let prevs = node.prevs;
+	let privileges = node.privileges;
 	if(userSession) {
 
-		if((prevs & (PREVS_EDIT_OWN | PREVS_EDIT_ORG | PREVS_EDIT_ALL | PREVS_PUBLISH)) !== 0) {
+		if((privileges & (PRIVILEGES_EDIT_OWN | PRIVILEGES_EDIT_ORG | PRIVILEGES_EDIT_ALL | PRIVILEGES_PUBLISH)) !== 0) {
 			wheresBegin.push("(", tableName, ".status > 0)");
 		} else {
 			wheresBegin.push("(", tableName, ".status = 1)");
 		}
 
-		if(prevs & PREVS_VIEW_ALL) {
+		if(privileges & PRIVILEGES_VIEW_ALL) {
 
-		} else if((prevs & PREVS_VIEW_ORG) && (userSession.orgId !== 0)) {
+		} else if((privileges & PRIVILEGES_VIEW_ORG) && (userSession.orgId !== 0)) {
 			wheresBegin.push(" AND (", tableName, "._organID=", userSession.orgId as unknown as string, ')');
-		} else if(prevs & PREVS_VIEW_OWN) {
+		} else if(privileges & PRIVILEGES_VIEW_OWN) {
 			if(tableName !== '_messages') {
 				wheresBegin.push(" AND (", tableName, "._usersID=", userSession.id as unknown as string, ')');
 			} else {
@@ -280,19 +282,19 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 	for(let pag of items) {
 
 		if(viewMask) {
-			if(prevs & PREVS_EDIT_ALL) {
+			if(privileges & PRIVILEGES_EDIT_ALL) {
 				pag.isE = 1;
-			} else if((prevs & PREVS_EDIT_ORG) && (userSession.orgId !== 0) && (pag.creatorORG === userSession.orgId)) {
+			} else if((privileges & PRIVILEGES_EDIT_ORG) && (userSession.orgId !== 0) && (pag.creatorORG === userSession.orgId)) {
 				pag.isE = 1;
-			} else if((prevs & PREVS_EDIT_OWN) && (pag.creatorUSER === userSession.id)) {
+			} else if((privileges & PRIVILEGES_EDIT_OWN) && (pag.creatorUSER === userSession.id)) {
 				pag.isE = 1;
 			}
 
 			if(pag.isE) {
-				if(prevs & PREVS_DELETE) {
+				if(privileges & PRIVILEGES_DELETE) {
 					pag.isD = 1;
 				}
-				if(node.draftable && (prevs & PREVS_PUBLISH)) {
+				if(node.draftable && (privileges & PRIVILEGES_PUBLISH)) {
 					pag.isP = 1;
 				}
 			} else {
@@ -302,7 +304,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 			}
 
 			for(let f of node.fields) {
-				if(!f.nostore && (f.show & viewMask)) {
+				if(!f.noStore && (f.show & viewMask)) {
 					const fieldType = f.fieldType;
 					const fieldName = f.fieldName;
 					if(fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) { //n2m,12n
@@ -388,7 +390,7 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 		throwError('Deletion access is denied');
 	}
 
-	await getNodeEventHandler(nodeId, ServerSideEventHadlersNames.beforeDelete, recordData, userSession);
+	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeDelete, recordData, userSession);
 
 	await mysqlExec("UPDATE " + node.tableName + " SET status=0 WHERE id=" + recId + " LIMIT 1");
 	return 1;
