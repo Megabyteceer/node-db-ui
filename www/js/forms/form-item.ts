@@ -19,7 +19,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 		if(data.hasOwnProperty('isE')) {
 			buttons = [
 				R.button({
-					key: 2, className: 'clickable toolbtn edit-btn', title: L('EDIT'), onMouseDown: (e) => {
+					key: 2, className: 'clickable tool-btn edit-btn', title: L('EDIT'), onMouseDown: (e) => {
 						sp(e);
 						formItem.props.parentForm.toggleCreateDialogue(data.id)
 					}
@@ -42,7 +42,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 			if(data.status === 1) {
 				buttons.push(
 					R.button({
-						key: 1, className: isRestricted ? 'clickable toolbtn unpublish-btn restricted' : 'clickable toolbtn unpublish-btn', title: L('UNPUBLISH'), onClick: () => {
+						key: 1, className: isRestricted ? 'clickable tool-btn unpublish-btn restricted' : 'clickable tool-btn unpublish-btn', title: L('UNPUBLISH'), onClick: () => {
 							publishClick(true, node, data).then(refreshFunction);
 						}
 					},
@@ -52,7 +52,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 			} else {
 				buttons.push(
 					R.button({
-						key: 1, className: 'clickable toolbtn publish-btn', title: L('PUBLISH'), onClick: () => {
+						key: 1, className: 'clickable tool-btn publish-btn', title: L('PUBLISH'), onClick: () => {
 							publishClick(false, node, data).then(refreshFunction);
 						}
 					},
@@ -66,7 +66,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 			if(!formItem || !formItem.props.list || !formItem.props.list.state.noEditButton) {
 				buttons.push(
 					R.button({
-						className: 'clickable toolbtn edit-btn', title: L('EDIT', itemName), key: 2, onClick: (e) => {
+						className: 'clickable tool-btn edit-btn', title: L('EDIT', itemName), key: 2, onClick: (e) => {
 							if(formItem && formItem.props.parentForm) {
 								formItem.props.parentForm.toggleCreateDialogue(data.id)
 							} else {
@@ -81,7 +81,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 		} else if(!formItem || !formItem.props.list || !(formItem.props.list.state.noPreviewButton || formItem.props.list.props.noPreviewButton)) {
 			buttons.push(
 				R.button({
-					className: 'clickable toolbtn view-btn', title: L('DETAILS') + itemName, key: 2, onClick: (e) => {
+					className: 'clickable tool-btn view-btn', title: L('DETAILS') + itemName, key: 2, onClick: (e) => {
 						window.crudJs.Stage.showForm(node.id, data.id);
 					}
 				},
@@ -93,10 +93,10 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 		if(data.hasOwnProperty('isD')) {
 			buttons.push(
 				R.button({
-					key: 3, className: isRestricted ? 'clickable toolbtn danger-btn restricted' : 'clickable toolbtn danger-btn', title: L('DELETE') + itemName, onClick: async () => {
+					key: 3, className: isRestricted ? 'clickable tool-btn danger-btn restricted' : 'clickable tool-btn danger-btn', title: L('DELETE') + itemName, onClick: async () => {
 						await deleteRecord(data.name, node.id, data.id);
 						if(formItem && formItem.isSubForm()) {
-							formItem.props.parentForm.valueChoosed();
+							formItem.props.parentForm.valueSelected();
 						} else {
 							refreshFunction();
 						}
@@ -131,10 +131,10 @@ class FormItem extends eventProcessingMixins {
 
 		var fields = [];
 		var data = this.props.initialData;
-		var flds = this.props.node.fields;
-		for(var k in flds) {
+		var nodeFields = this.props.node.fields;
+		for(var k in nodeFields) {
 
-			var field = flds[k];
+			var field = nodeFields[k];
 			if(this.isFieldVisibleByFormViewMask(field)) {
 				let className = 'form-item-row';
 				if(field.fieldType === FIELD_2_INT) {
@@ -162,12 +162,12 @@ class FormItem extends eventProcessingMixins {
 			itemProps.title = L('SELECT');
 			itemProps.className += ' clickable';
 			itemProps.onClick = () => {
-				this.props.parentForm.valueChoosed(data);
+				this.props.parentForm.valueSelected(data);
 			};
 		}
 
 		var buttons;
-		if(!this.props.hideControlls && !this.state.hideControlls) {
+		if(!this.props.hideControls && !this.state.hideControls) {
 			buttons = renderItemsButtons(this.props.node, data, this.props.list.refreshData, this);
 		}
 

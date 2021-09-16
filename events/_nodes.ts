@@ -19,14 +19,14 @@ const handlers: NodeEventsHandlers = {
 
 		const createdID = data.id;
 
-		//inherit access previlegies from parent node
+		//inherit access privileges from parent node
 		const rpQ = "SELECT roleID, privileges FROM _roleprevs, _roles " +
 			"WHERE (_roleprevs.roleID = _roles.ID)AND(_roleprevs.nodeID=" + data._nodesID + ")";
 
-		const parentPrevs = await mysqlExec(rpQ) as mysqlRowsResult;
+		const parentPrivileges = await mysqlExec(rpQ) as mysqlRowsResult;
 
-		if(parentPrevs.length) {
-			await mysqlExec(parentPrevs.map((prev) => {
+		if(parentPrivileges.length) {
+			await mysqlExec(parentPrivileges.map((prev) => {
 				return 'INSERT INTO _roleprevs SET nodeID=' + createdID + ', roleID=' + prev.roleID + ', privileges=' + prev.privileges + ';';
 			}).join(''));
 		}

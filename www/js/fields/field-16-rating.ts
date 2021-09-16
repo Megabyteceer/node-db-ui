@@ -15,7 +15,7 @@ registerFieldClass(FIELD_16_RATING, class RatingField extends BaseField {
 	render() {
 		if(this.state.value.all === 0) {
 			return R.span(null,
-				L('NORATES')
+				L('NO_RATES')
 			);
 		} else {
 			var rate = parseFloat(this.state.value.rate.replace(',', '.'));

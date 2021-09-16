@@ -7,7 +7,7 @@ import { idToImgURL, L, renderIcon, scrollToVisible, sp } from "../utils";
 import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
 
-registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupMixins {
+registerFieldClass(FIELD_7_Nto1, class LookupManyToOneFiled extends fieldLookupMixins {
 	isEnterCreateThroughList: boolean;
 
 	constructor(props) {
@@ -26,7 +26,7 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 			value: val
 		};
 		this.toggleList = this.toggleList.bind(this);
-		this.valueChoosed = this.valueChoosed.bind(this);
+		this.valueSelected = this.valueSelected.bind(this);
 		this.toggleCreateDialogue = this.toggleCreateDialogue.bind(this);
 		this.setValue = this.setValue.bind(this);
 
@@ -69,7 +69,7 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 		}
 	}
 
-	valueChoosed(recordData: RecordData, isNewCreated?: boolean, noToggleList?: boolean) {
+	valueSelected(recordData: RecordData, isNewCreated?: boolean, noToggleList?: boolean) {
 		if(recordData) {
 			if(!noToggleList) {
 
@@ -110,7 +110,7 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 				}
 				scrollToVisible(this);
 			} else if(recIdToEdit === 'new' && newData) {
-				this.valueChoosed(newData, true, true);
+				this.valueSelected(newData, true, true);
 				scrollToVisible(this);
 			}
 		});
@@ -134,7 +134,7 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 	}
 
 	clearValue() {
-		this.valueChoosed({
+		this.valueSelected({
 			id: 0,
 			name: ''
 		}, false, true);
@@ -211,7 +211,7 @@ registerFieldClass(FIELD_7_Nto1, class LookpuManyToOneFiled extends fieldLookupM
 				className: 'field-lookup-wrapper'
 			},
 				R.div({
-					className: this.props.fieldDisabled ? 'field-lookup-chooser unclickable disabled' : 'field-lookup-chooser clickable',
+					className: this.props.fieldDisabled ? 'field-lookup-chooser not-clickable disabled' : 'field-lookup-chooser clickable',
 					title: this.props.isCompact ? field.name : L('SELECT'),
 					onClick: this.toggleList
 				},

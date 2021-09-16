@@ -35,8 +35,8 @@ class Modal extends Component<any, any> {
 		return modalStack.length > 0;
 	}
 
-	hide(idTohide?) {
-		if(typeof (idTohide) !== 'number') {
+	hide(idToHide?) {
+		if(typeof (idToHide) !== 'number') {
 			/// #if DEBUG
 			if(modalStack.length < 1) {
 				debugError('tried to hide modal while no modal showed');
@@ -45,7 +45,7 @@ class Modal extends Component<any, any> {
 			modalStack.pop();
 		} else {
 			modalStack = modalStack.filter((m) => {
-				return m.id !== idTohide;
+				return m.id !== idToHide;
 			});
 		}
 		this.forceUpdate();

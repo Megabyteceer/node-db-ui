@@ -78,7 +78,7 @@ let allowedUpload;
 
 async function uploadFile(reqData, userSession) {
 	if(reqData.filename.indexOf('..') >= 0) {
-		throwError(L('UPL_ERROW_WFN'));
+		throwError(L('UPL_ERROR_WFN'));
 	}
 	getFieldForUpload(reqData, userSession); //Check access to the field
 	if(!allowedUpload) {

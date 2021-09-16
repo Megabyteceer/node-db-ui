@@ -69,9 +69,9 @@ export default class Search extends Component<any, any> {
 	}
 
 	clearHideTimeout() {
-		if(this.hiddingTimeout) {
-			clearTimeout(this.hiddingTimeout);
-			this.hiddingTimeout = false;
+		if(this.hidingTimeout) {
+			clearTimeout(this.hidingTimeout);
+			this.hidingTimeout = false;
 		}
 	}
 
@@ -179,7 +179,7 @@ export default class Search extends Component<any, any> {
 			style: style,
 			onMouseLeave: () => {
 				this.clearHideTimeout();
-				this.hiddingTimeout = setTimeout(() => {
+				this.hidingTimeout = setTimeout(() => {
 					this.setState({
 						hidden: true
 					})

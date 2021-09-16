@@ -1,9 +1,9 @@
 import { RecordsDataResponse } from 'www/js/bs-utils';
-import { nodePrevs, getClientEventHandler, clearCache } from './admin/admin';
+import { nodePrivileges, getClientEventHandler, clearCache } from './admin/admin';
 import { setCurrentOrg, setMultiLang, login, resetPassword, registerUser, activateUser } from './auth';
 import { getNodeDesc, getNodesTree } from './desc-node';
 import { getRecords, deleteRecord } from './get-records';
-import { submitRecord, uniquCheck } from './submit';
+import { submitRecord, uniqueCheck } from './submit';
 import { uploadImage, uploadFile } from './upload';
 
 const api = {
@@ -43,8 +43,8 @@ const api = {
 	"api/uploadFile": (reqData, userSession, res) => {
 		uploadFile(reqData, userSession).then(res);
 	},
-	"api/uniquCheck": (reqData, userSession, res) => {
-		uniquCheck(reqData.fieldId, reqData.nodeId, reqData.val, reqData.recId, userSession).then(res);
+	"api/uniqueCheck": (reqData, userSession, res) => {
+		uniqueCheck(reqData.fieldId, reqData.nodeId, reqData.val, reqData.recId, userSession).then(res);
 	},
 	"register": (reqData, userSession, res) => {
 		registerUser(reqData).then(res);
@@ -58,8 +58,8 @@ const api = {
 	"activate": (reqData, userSession, res) => {
 		activateUser(reqData.key).then(res);
 	},
-	"admin/nodePrevs": (reqData, userSession, res) => {
-		nodePrevs(reqData, userSession).then(res);
+	"admin/nodePrivileges": (reqData, userSession, res) => {
+		nodePrivileges(reqData, userSession).then(res);
 	},
 	"admin/cache_info": (reqData, userSession, res) => {
 		clearCache(userSession).then(res);

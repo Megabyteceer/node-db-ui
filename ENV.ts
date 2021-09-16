@@ -29,7 +29,7 @@ const ENV = {
 	ENABLE_MULTILINGUAL: false,
 	GOOGLE_PLUS: true,
 	TERMS_URL: "",
-	MAX_FILESIZE_TO_UPLOAD: 3000000,
+	MAX_FILE_SIZE_TO_UPLOAD: 3000000,
 
 	ALLOWED_UPLOADS: ["gif", "jpg", "jpeg", "jpe", "png", "zip", "rar", "doc", "docx", "xls", "xlsx", "pdf", "ppt", "pptx", "txt", "wav"],
 

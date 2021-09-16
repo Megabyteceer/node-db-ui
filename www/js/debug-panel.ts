@@ -2,7 +2,7 @@ import { Component } from "react";
 import { ENV } from "./main-frame";
 import { R } from "./r";
 import { iAdmin } from "./user";
-import { getData, isLitePage, L, myAlert, myPromt, reloadLocation, renderIcon, sp, strip_tags } from "./utils";
+import { getData, isLitePage, L, myAlert, showPrompt, reloadLocation, renderIcon, sp, strip_tags } from "./utils";
 
 var currentId = 10;
 var debugInfo = [];
@@ -58,13 +58,13 @@ class DebugPanel extends Component<any, any> {
 
 	async deployClick(ev) {
 		sp(ev);
-		if(await myPromt(L('DEPLOY_TO', ENV.DEPLOY_TO))) {
-			let testResult = await getData('test_uyas87dq8qwdqw/test');
+		if(await showPrompt(L('DEPLOY_TO', ENV.DEPLOY_TO))) {
+			let testResult = await getData('/test');
 			if(testResult === 'ok') {
-				let deployData = await getData('/deploy/api/deploy', { commitmessage: 'no message' });
-				let data = await getData('test_uyas87dq8qwdqw/test', { remote: true });
+				let deployData = await getData('/deploy/api/deploy', { commitMessage: 'no message' });
+				let data = await getData('/test', { remote: true });
 				if(data === 'ok') {
-					myAlert(R.span(renderIcon('thumbs-up'), 'Changes aplied to ',
+					myAlert(R.span(renderIcon('thumbs-up'), 'Changes applied to ',
 						R.a({ href: ENV.DEPLOY_TO, target: '_blank', onClick: (ev) => { ev.stopPropagation(); } },
 							ENV.DEPLOY_TO
 						),
@@ -83,15 +83,15 @@ class DebugPanel extends Component<any, any> {
 
 		var deployBtn;
 		var cacheClearBtn;
-		let clearBtn = R.a({ className: 'clickable admin-controll', onClick: this.clear },
+		let clearBtn = R.a({ className: 'clickable admin-control', onClick: this.clear },
 			renderIcon('trash')
 		)
 		if(iAdmin()) {
-			deployBtn = R.a({ className: 'clickable admin-controll', title: L('DEPLOY'), onClick: this.deployClick },
+			deployBtn = R.a({ className: 'clickable admin-control', title: L('DEPLOY'), onClick: this.deployClick },
 				renderIcon('upload')
 			);
 			cacheClearBtn = R.a({
-				className: 'clickable admin-controll', title: L('CLEAR_CACHE'), onClick: (ev) => {
+				className: 'clickable admin-control', title: L('CLEAR_CACHE'), onClick: (ev) => {
 					sp(ev);
 					getData('admin/cache_info', { clear: 1, json: 1 }).then(() => { reloadLocation(); });
 				}
@@ -147,10 +147,10 @@ class DebugPanel extends Component<any, any> {
 					)
 				});
 
-				body = R.div({ className: "admin-controll" },
+				body = R.div({ className: "admin-control" },
 					R.div({ className: "debug-panel-background", onClick: this.hide }),
 					R.div({ className: "debug-panel-panel" },
-						R.a({ className: 'clickable admin-controll', title: L('CLEAR_DEBUG'), onClick: this.clear },
+						R.a({ className: 'clickable admin-control', title: L('CLEAR_DEBUG'), onClick: this.clear },
 							renderIcon('trash')
 						),
 						R.div({ className: "debug-panel-scroll" },
@@ -162,12 +162,12 @@ class DebugPanel extends Component<any, any> {
 				if(isLitePage()) {
 					body = R.span();
 				} else {
-					body = R.div({ className: "admin-controll debug-panel-panel" },
+					body = R.div({ className: "admin-control debug-panel-panel" },
 						cacheClearBtn,
 						deployBtn,
 						clearBtn,
 						R.br(),
-						R.span({ className: 'debug-panel-sql-btn admin-controll clickable', onClick: this.show },
+						R.span({ className: 'debug-panel-sql-btn admin-control clickable', onClick: this.show },
 							'requests ' + debugInfo.length,
 							R.br(),
 							'SQL ' + debugInfo.reduce((pc, i) => {

@@ -5,7 +5,7 @@ import { renderIcon } from "../utils";
 
 var chartLoaded = false;
 var all = [];
-var idCunter = 0;
+var idCounter = 0;
 
 var init = () => {
 	// @ts-ignore
@@ -32,8 +32,8 @@ class GoogleChart extends Component<any, any> {
 
 	constructor(props) {
 		super(props);
-		this.chartId = 'google-chart' + idCunter;
-		idCunter++;
+		this.chartId = 'google-chart' + idCounter;
+		idCounter++;
 		this.state = {};
 	}
 

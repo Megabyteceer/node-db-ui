@@ -8,7 +8,7 @@ import { readFileSync, writeFileSync } from "fs";
 import { isAdmin } from "../auth.js";
 const { exec } = require('child_process');
 
-async function nodePrevs(reqData, userSession) {
+async function nodePrivileges(reqData, userSession) {
 	shouldBeAdmin(userSession);
 	const nodeId = reqData.nodeId;
 	if(reqData.privileges) {//set node privileges
@@ -119,4 +119,4 @@ async function getClientEventHandler({
 	}
 }
 
-export { nodePrevs, getClientEventHandler, shouldBeAdmin, clearCache };
+export { nodePrivileges, getClientEventHandler, shouldBeAdmin, clearCache };

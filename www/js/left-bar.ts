@@ -14,23 +14,23 @@ function isMustBeExpanded(i) {
 	if(i.children) {
 		for(var k in i.children) {
 			var j = i.children[k];
-			if(isCurrentlyShowedLeftbarItem(j) || isMustBeExpanded(j)) {
+			if(isCurrentlyShowedLeftBarItem(j) || isMustBeExpanded(j)) {
 				return true;
 			}
 		}
 		return false;
 	} else {
-		return isCurrentlyShowedLeftbarItem(i);
+		return isCurrentlyShowedLeftBarItem(i);
 	}
 }
 
-const allGropus: BarItem[] = [];
+const allGroups: BarItem[] = [];
 
 interface LeftBarItemData {
 
 }
 
-function isCurrentlyShowedLeftbarItem(item) {
+function isCurrentlyShowedLeftBarItem(item) {
 	const currentFormParameters = Stage.currentForm;
 	if(!currentFormParameters) {
 		return;
@@ -65,28 +65,28 @@ function isStrictlySelected(item) {
 
 class BarItem extends Component<any, any> {
 
-	constructor(prosp) {
-		super(prosp);
+	constructor(props) {
+		super(props);
 		this.state = {};
 		this.collapseOtherGroups = this.collapseOtherGroups.bind(this);
 	}
 
 	componentDidMount() {
 		if(!this.props.item.isDocument) {
-			allGropus.push(this);
+			allGroups.push(this);
 		}
 	}
 
 	componentWillUnmount() {
 		if(!this.props.item.isDocument) {
-			let i = allGropus.indexOf(this);
+			let i = allGroups.indexOf(this);
 			assert(i >= 0, 'BarItem registration is corrupted.');
-			allGropus.splice(i, 1);
+			allGroups.splice(i, 1);
 		}
 	}
 
 	collapseOtherGroups() {
-		for(let g of allGropus) {
+		for(let g of allGroups) {
 			if(g.props.item.children && g.props.item.children.indexOf(this.props.item) < 0) {
 				g.collapse();
 			}
@@ -189,15 +189,15 @@ class BarItem extends Component<any, any> {
 		}*/
 
 		var itemsIcon = R.div({ className: "left-bar-item-icon" },
-			renderIcon(item.icon + (item.isDocument ? ' brand-color' : ' noicon'))
+			renderIcon(item.icon + (item.isDocument ? ' brand-color' : ' no-icon'))
 		)
 
 		let className = 'left-bar-item ' + (item.isDocument ? 'left-bar-item-doc' : 'left-bar-group');
 
-		const isActive = isCurrentlyShowedLeftbarItem(item);
+		const isActive = isCurrentlyShowedLeftBarItem(item);
 
 		if(isActive) {
-			className += ' left-bar-item-active unclickable';
+			className += ' left-bar-item-active not-clickable';
 		}
 
 		if(item.tabId) {
@@ -232,7 +232,7 @@ class BarItem extends Component<any, any> {
 				className += ' clickable';
 			}
 		} else {
-			className += ' unclickable left-bar-active-group';
+			className += ' not-clickable left-bar-active-group';
 		}
 
 		const itemBody = R.div({

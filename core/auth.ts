@@ -246,12 +246,12 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 	}
 
 
-	let orgs = {
+	let organizations = {
 		[organID]: organName
 	}
 	const pgs = await mysqlExec("SELECT _organ.id, _organ.name FROM `_organ__users` LEFT JOIN _organ ON (_organ.id = _organ__users._organID) WHERE _organ__users._usersID=" + userID + " ORDER BY _organ.id") as mysqlRowsResult;
 	for(let org of pgs) {
-		orgs[org.id] = org.name;
+		organizations[org.id] = org.name;
 	}
 
 	const lang = getLang(user.language);
@@ -266,7 +266,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 		avatar: user.avatar,
 		email: user.email,
 		userRoles,
-		orgs,
+		orgs: organizations,
 		lang,
 		cacheKey: cacheKeyGenerator.join()
 	};

@@ -82,7 +82,7 @@ class User extends Component<any, any> {
 			var multilingualBtn;
 			if(ENV.ENABLE_MULTILINGUAL) {
 				multilingualBtn = R.div({ className, onClick: this.toggleMultilingual },
-					renderIcon(iconName + 'square-o'), L('MULTILANG')
+					renderIcon(iconName + 'square-o'), L('MULTILINGUAL')
 				);
 			}
 

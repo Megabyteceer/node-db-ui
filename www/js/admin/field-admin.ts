@@ -101,7 +101,7 @@ class FieldAdmin extends Component<any, any> {
 					className: "admin-form-content"
 				},
 					R.button({
-						className: 'clickable toolbtn admin-form-btn' + border,
+						className: 'clickable tool-btn admin-form-btn' + border,
 						onClick: () => {
 
 							admin_editSource(ON_FIELD_CHANGE, node, field);
@@ -112,7 +112,7 @@ class FieldAdmin extends Component<any, any> {
 						'onChange...'
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						onClick: () => {
 							var i = field.index;
 							if(i > 0) {
@@ -124,7 +124,7 @@ class FieldAdmin extends Component<any, any> {
 						renderIcon(isList ? 'arrow-left' : 'arrow-up')
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						onClick: () => {
 							var i = field.index;
 							if(i < (node.fields.length - 1)) {
@@ -136,7 +136,7 @@ class FieldAdmin extends Component<any, any> {
 						renderIcon(isList ? 'arrow-right' : 'arrow-down')
 					),
 					R.button({
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						onClick: () => {
 
 							getNodeData(6, field.id).then((data) => {
@@ -157,7 +157,7 @@ class FieldAdmin extends Component<any, any> {
 						onClick: () => {
 							window.crudJs.Stage.showForm(6, field.id, undefined, true, true, reloadLocation);
 						},
-						className: 'clickable toolbtn admin-form-btn',
+						className: 'clickable tool-btn admin-form-btn',
 						title: "Edit field properties"
 					},
 						renderIcon('pencil')
@@ -175,11 +175,11 @@ class FieldAdmin extends Component<any, any> {
 		}
 
 		return R.span({
-			className: 'admin-controll admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
+			className: 'admin-control admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
 			R.span({
-				className: 'halfvisible admin-form-open-btn' + border,
+				className: 'half-visible admin-form-open-btn' + border,
 				onMouseEnter: this.onShow
 			},
 				renderIcon('wrench')

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { BoolNum, Filters, NodeDesc, RecId, RecordData, throwError } from "../bs-utils";
-import { LookpuOneToManyFiled } from "../fields/field-15-one-to-many";
+import { LookupOneToManyFiled } from "../fields/field-15-one-to-many";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import type { FieldWrap } from "../fields/field-wrap";
 import { LeftBar } from "../left-bar";
@@ -12,7 +12,7 @@ interface FormProps {
 	initialData?: RecordData;
 	list?: List;
 	onCancel?: () => void;
-	parentForm?: LookpuOneToManyFiled;
+	parentForm?: LookupOneToManyFiled;
 	filters?: Filters;
 	node: NodeDesc;
 	isRootForm?: boolean;
@@ -22,7 +22,7 @@ interface FormProps {
 	editable?: boolean;
 	isCompact?: boolean;
 	inlineEditable?: boolean;
-	hideControlls?: boolean;
+	hideControls?: boolean;
 	disableDrafting?: boolean;
 	preventDeleteButton?: boolean;
 	additionalButtons?: AdditionalButtonsRenderer;
@@ -37,7 +37,7 @@ interface FormState {
 	preventCreateButton: boolean;
 	footerHidden: boolean;
 	header?: string;
-	hideControlls?: boolean;
+	hideControls?: boolean;
 }
 
 class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState> extends Component<T, T2> {

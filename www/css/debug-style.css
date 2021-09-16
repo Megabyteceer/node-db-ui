@@ -169,12 +169,12 @@
 	padding-right: 6px;
 }
 
-.admin-controll .clickable:hover {
+.admin-control .clickable:hover {
 	color: #def !important;
 	background: #567 !important;
 }
 
-.blocked-layer .admin-controll {
+.blocked-layer .admin-control {
 	display: none;
 }
 

@@ -67,11 +67,11 @@ if(!String.prototype.replaceAll) {
 }
 
 let mysqlTransactStarted = false;
-const transactionsqueq = [];
+const transactionsQue = [];
 
 function waitPrevTransactionFinish() {
 	return new Promise((resolve) => {
-		transactionsqueq.push(resolve);
+		transactionsQue.push(resolve);
 	});
 }
 
@@ -84,9 +84,9 @@ async function mysqlStartTransaction() {
 	return ret;
 }
 
-function nextTrasnsaction() {
-	if(transactionsqueq.length) {
-		transactionsqueq.shift()();
+function nextTransaction() {
+	if(transactionsQue.length) {
+		transactionsQue.shift()();
 	}
 }
 
@@ -94,14 +94,14 @@ async function mysqlCommit() {
 	assert(mysqlTransactStarted, "transaction is not started");
 	await mysqlExec("COMMIT;");
 	mysqlTransactStarted = false;
-	nextTrasnsaction();
+	nextTransaction();
 }
 
 async function mysqlRollback() {
 	if(mysqlTransactStarted) {
 		await mysqlExec("ROLLBACK;");
 		mysqlTransactStarted = false;
-		nextTrasnsaction();
+		nextTransaction();
 	}
 }
 type mysqlInsertResult = mysql.OkPacket;

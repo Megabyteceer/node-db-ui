@@ -1,4 +1,4 @@
-import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHadlersNames, filtersById } from './desc-node';
+import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHandlersNames, filtersById } from './desc-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import { ViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PRIVILEGES_PUBLISH, PRIVILEGES_EDIT_ALL, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_OWN, PRIVILEGES_VIEW_ALL, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_OWN, PRIVILEGES_DELETE, FIELD_15_1toN, FIELD_19_RICH_EDITOR, RecordData, RecordsData, RecId, VIEW_MASK_LIST, VIEW_MASK_CUSTOM_LIST } from "../www/js/bs-utils";
 import { UserSession } from './auth';
@@ -11,7 +11,7 @@ const EMPTY_FILTERS = {};
 
 const EMPTY_RATING = { all: 0 };
 /*
-* @param filterFields	array with fieldname=>value filters. Only numeric fields is support
+* @param filterFields	array with [fieldName: string]=>value filters. Only numeric fields is support
 *									special fields:
 										['p'] = 5; - page of records to retrieve; * - retrieve all
 										['n'] = 5; - number of records per page;
@@ -126,7 +126,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 				if(!f.forSearch) {
 					sortFieldName = undefined;
 					/// #if DEBUG
-					throwError("Tried to sort by unindexed field: " + fieldName);
+					throwError("Tried to sort by un-indexed field: " + fieldName);
 					/// #endif
 				}
 			}
@@ -152,7 +152,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 						wheres.push(" AND(`", tableName, "`.`", fieldName, "`=", fltVal, ')');
 					}
 				} else {
-					throwError("Attempt to filter records by unindexed field " + fieldName);
+					throwError("Attempt to filter records by un-indexed field " + fieldName);
 				}
 			}
 		}
@@ -390,7 +390,7 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 		throwError('Deletion access is denied');
 	}
 
-	await getNodeEventHandler(nodeId, ServerSideEventHadlersNames.beforeDelete, recordData, userSession);
+	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeDelete, recordData, userSession);
 
 	await mysqlExec("UPDATE " + node.tableName + " SET status=0 WHERE id=" + recId + " LIMIT 1");
 	return 1;

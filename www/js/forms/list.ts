@@ -44,7 +44,7 @@ interface ListState extends Omit<FormState, 'data'> {
 	noEditButton?: boolean;
 	hideSearch?: boolean;
 	additionalButtons?: AdditionalButtonsRenderer;
-	hideControlls?: boolean;
+	hideControls?: boolean;
 	noPreviewButton?: boolean;
 	data: RecordsData;
 }
@@ -52,8 +52,8 @@ interface ListState extends Omit<FormState, 'data'> {
 class List extends BaseForm<ListProps, ListState> {
 
 	private searchInput: RefToInput;
-	private subformsRefs: { [key: number]: FormFull };
-	private currentFechingNodeId: number;
+	private subFormsRefs: { [key: number]: FormFull };
+	private currentFetchingNodeId: number;
 	private unmounted: boolean;
 	private searchTimeout: NodeJS.Timeout;
 
@@ -70,7 +70,7 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	componentDidMount() {
-		this.subformsRefs = {};
+		this.subFormsRefs = {};
 		this.onShow();
 	}
 
@@ -103,20 +103,20 @@ class List extends BaseForm<ListProps, ListState> {
 	async refreshData() {
 		updateHashLocation();
 		var nodeIdToFetch = this.props.nodeId || this.props.node.id;
-		if(nodeIdToFetch !== this.currentFechingNodeId) {
-			this.currentFechingNodeId = nodeIdToFetch;
+		if(nodeIdToFetch !== this.currentFetchingNodeId) {
+			this.currentFetchingNodeId = nodeIdToFetch;
 
 			if(this.props.editable) {
 				this.filters.p = '*';
 			}
 
-			let data = await getNodeData(nodeIdToFetch, undefined, this.filters, this.props.editable, this.props.isLookup, this.isCustomListRenering());
+			let data = await getNodeData(nodeIdToFetch, undefined, this.filters, this.props.editable, this.props.isLookup, this.isCustomListRendering());
 
 			if(this.unmounted) {
 				return;
 			}
 
-			this.currentFechingNodeId = -1;
+			this.currentFetchingNodeId = -1;
 			var sorting = data.items.length && data.items[0].hasOwnProperty('order');
 			if(sorting) {
 				data.items.sort(sortByOrder);
@@ -184,14 +184,14 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	subFormRef(ref, itemNum) {
-		this.subformsRefs[itemNum] = ref;
+		this.subFormsRefs[itemNum] = ref;
 	}
 
-	getSubforms(): FormFull[] {
+	getSubForms(): FormFull[] {
 		var ret = [];
-		for(var k in this.subformsRefs) {
-			if(this.subformsRefs.hasOwnProperty(k)) {
-				var f = this.subformsRefs[k];
+		for(var k in this.subFormsRefs) {
+			if(this.subFormsRefs.hasOwnProperty(k)) {
+				var f = this.subFormsRefs[k];
 				if(f) {
 					ret.push(f);
 				}
@@ -200,7 +200,7 @@ class List extends BaseForm<ListProps, ListState> {
 		return ret;
 	}
 
-	isCustomListRenering() {
+	isCustomListRendering() {
 		return (!this.props.filters.noCustomList && !this.props.isLookup && isPresentListRenderer(this.props.nodeId || this.props.node.id));
 	}
 
@@ -218,10 +218,10 @@ class List extends BaseForm<ListProps, ListState> {
 					const isRestricted = isRecordRestrictedForDeletion(node.id, item.id);
 					if(!item.__deleted_901d123f) {
 
-						var btns = [];
+						var buttons = [];
 
-						btns.push(R.button({
-							className: isRestricted ? 'clickable toolbtn danger-btn restricted' : 'clickable toolbtn danger-btn', title: L('DELETE'), key: 'b' + UID(item), onClick: async () => {
+						buttons.push(R.button({
+							className: isRestricted ? 'clickable tool-btn danger-btn restricted' : 'clickable tool-btn danger-btn', title: L('DELETE'), key: 'b' + UID(item), onClick: async () => {
 								await deleteRecord(item.name, node.id, 0, false, () => {
 									item.__deleted_901d123f = true;
 									this.forceUpdate();
@@ -252,15 +252,15 @@ class List extends BaseForm<ListProps, ListState> {
 
 							if(typeof uidM1 === 'number') {
 								(() => {
-									btns.push(R.button({
-										className: 'clickable toolbtn edit-btn', title: L('MOVE_UP'), key: 'bu' + UID(item), onClick: () => {
+									buttons.push(R.button({
+										className: 'clickable tool-btn edit-btn', title: L('MOVE_UP'), key: 'bu' + UID(item), onClick: () => {
 											var t = data.items[itemNum];
 											data.items[itemNum] = data.items[itemNumM1];
 											data.items[itemNumM1] = t;
-											this.subformsRefs[itemNum].setFieldValue('order', itemNumM1);
-											this.subformsRefs[itemNum].saveForm();
-											this.subformsRefs[uidM1].setFieldValue('order', itemNum);
-											this.subformsRefs[uidM1].saveForm();
+											this.subFormsRefs[itemNum].setFieldValue('order', itemNumM1);
+											this.subFormsRefs[itemNum].saveForm();
+											this.subFormsRefs[uidM1].setFieldValue('order', itemNum);
+											this.subFormsRefs[uidM1].saveForm();
 											this.forceUpdate();
 										}
 									}, renderIcon('arrow-up')));
@@ -269,16 +269,16 @@ class List extends BaseForm<ListProps, ListState> {
 							if(uidP1) {
 
 								(() => {
-									btns.push(R.button({
-										className: 'clickable toolbtn edit-btn', title: L('MOVE_DOWN'), key: 'bd' + UID(item), onClick: () => {
+									buttons.push(R.button({
+										className: 'clickable tool-btn edit-btn', title: L('MOVE_DOWN'), key: 'bd' + UID(item), onClick: () => {
 											var t = data.items[itemNum];
 											data.items[itemNum] = data.items[itemNumP1];
 											data.items[itemNumP1] = t;
 
-											this.subformsRefs[itemNum].setFieldValue('order', itemNumP1);
-											this.subformsRefs[itemNum].saveForm();
-											this.subformsRefs[uidP1].setFieldValue('order', itemNum);
-											this.subformsRefs[uidP1].saveForm();
+											this.subFormsRefs[itemNum].setFieldValue('order', itemNumP1);
+											this.subFormsRefs[itemNum].saveForm();
+											this.subFormsRefs[uidP1].setFieldValue('order', itemNum);
+											this.subFormsRefs[uidP1].saveForm();
 											this.forceUpdate();
 
 										}
@@ -294,8 +294,8 @@ class List extends BaseForm<ListProps, ListState> {
 										this.subFormRef(ref, itemNum);
 									}, inlineEditable: true, editable: true, isCompact: true, filters: filters, parentForm: this.props.parentForm, isLookup: this.props.isLookup, list: this, node, initialData: item, overrideOrderData: sorting ? itemNum : -1
 								}),
-								R.span({ key: UID(item) + 'btns', className: 'btns' },
-									btns
+								R.span({ key: UID(item) + 'buttons', className: 'buttons' },
+									buttons
 								)
 							)
 
@@ -314,7 +314,7 @@ class List extends BaseForm<ListProps, ListState> {
 		var createBtn;
 		if(node.privileges & PRIVILEGES_CREATE) {
 			createBtn = R.div(null,
-				R.button({ title: L('ADD', (node.creationName || node.singleName)), className: 'clickable toolbtn create-btn', onClick: () => { data.items.push({}); this.forceUpdate(); } },
+				R.button({ title: L('ADD', (node.creationName || node.singleName)), className: 'clickable tool-btn create-btn', onClick: () => { data.items.push({}); this.forceUpdate(); } },
 					renderIcon('plus')
 				)
 			);
@@ -383,7 +383,7 @@ class List extends BaseForm<ListProps, ListState> {
 				searchPanel = R.div({ className: 'list-search' },
 					R.input({ ref: (input) => { this.searchInput = input; }, className: 'list-search-input', placeholder: L('SEARCH_LIST'), onChange: this.changeSearch, defaultValue: this.filters.s }),
 					R.a({
-						className: 'clickable toolbtn default-btn', onClick: (e) => {
+						className: 'clickable tool-btn default-btn', onClick: (e) => {
 							this.clearSearch();
 							sp(e);
 						}
@@ -405,7 +405,7 @@ class List extends BaseForm<ListProps, ListState> {
 
 		var body;
 		if(data.total > 0) {
-			if(this.isCustomListRenering()) {
+			if(this.isCustomListRendering()) {
 				body = getListRenderer(node.id).call(this);
 			}
 			if(!body) {
@@ -451,10 +451,10 @@ class List extends BaseForm<ListProps, ListState> {
 
 				var additionalButtons = this.state.additionalButtons || this.props.additionalButtons || undefined;
 
-				var hideControlls = this.props.hideControlls || this.state.hideControlls || (this.props.filters && this.props.filters.hideControlls);
+				var hideControls = this.props.hideControls || this.state.hideControls || (this.props.filters && this.props.filters.hideControls);
 
 				var lines = data.items.map((item) => {
-					return React.createElement(FormItem, { key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, parentForm: this.props.parentForm, additionalButtons, hideControlls: hideControlls, isLookup: this.props.isLookup, list: this, node, initialData: item });
+					return React.createElement(FormItem, { key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, parentForm: this.props.parentForm, additionalButtons, hideControls: hideControls, isLookup: this.props.isLookup, list: this, node, initialData: item });
 				});
 
 				body = R.table({ className: 'list-table' },
@@ -481,7 +481,7 @@ class List extends BaseForm<ListProps, ListState> {
 				emptyIcon = renderIcon((node.icon || 'plus') + ((this.isSubForm() ? ' fa-3x' : ' fa-5x') + ' list-empty-icon'))
 			}
 
-			body = R.div({ className: 'list-emty' },
+			body = R.div({ className: 'list-empty' },
 				emptyIcon,
 				R.div(null, t1),
 				R.div(null, t2)
@@ -497,16 +497,16 @@ class List extends BaseForm<ListProps, ListState> {
 		var totalPages = Math.ceil(data.total / (recPerPage || node.recPerPage));
 		var curPage = parseInt(filters.p as string) || 0;
 
-		var pageNums = { 0: 1, 1: 1, 2: 1 };
+		var pageNumbers = { 0: 1, 1: 1, 2: 1 };
 
 		let p;
 		for(p = 0; p <= 2; p++) {
-			pageNums[curPage + p] = 1;
-			pageNums[curPage - p] = 1;
-			pageNums[totalPages - 1 - p] = 1;
+			pageNumbers[curPage + p] = 1;
+			pageNumbers[curPage - p] = 1;
+			pageNumbers[totalPages - 1 - p] = 1;
 		}
 		var prevP = -1;
-		for(p in pageNums) {
+		for(p in pageNumbers) {
 			p = parseInt(p);
 			if(p >= 0 && p < totalPages) {
 				if((p - prevP) !== 1) {

@@ -175,7 +175,7 @@ class admin {
 
 	static toggleAdminUI() {
 		if(adminOn) {
-			styleSheet.insertRule('.admin-controll{display:none;}', 0);
+			styleSheet.insertRule('.admin-control{display:none;}', 0);
 		} else {
 			if(styleSheet.rules.length) {
 				styleSheet.removeRule(0);

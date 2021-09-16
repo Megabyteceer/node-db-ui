@@ -1,7 +1,7 @@
 import { consoleLog, Filters, getData, L, ON_FIELD_CHANGE, ON_FORM_LOAD, ON_FORM_SAVE } from "../utils";
 import { BaseForm } from "./base-form";
 import { LeftBar } from "../left-bar";
-import { assert, FieldDesc, FIELD_17_TAB, FIELD_18_BUTTON, RecId, RecordData } from "../bs-utils";
+import { assert, FieldDesc, FIELD_17_TAB, FIELD_18_BUTTON, RecordData } from "../bs-utils";
 import type { FieldWrap } from "../fields/field-wrap";
 
 let FormEvents;
@@ -23,10 +23,10 @@ class eventProcessingMixins extends BaseForm {
 	isUpdateRecord: boolean;
 
 
-	/** previous value of changed field. Can be used in onChage event of field */
+	/** previous value of changed field. Can be used in onChange event of field */
 	prev_value: any;
 
-	/**  says if field was changed by user's action. Can be used in onChage event of field */
+	/**  says if field was changed by user's action. Can be used in onChange event of field */
 	isUserEdit: boolean;
 
 	currentData: RecordData;
@@ -271,7 +271,7 @@ class eventProcessingMixins extends BaseForm {
 
 			await this.processFieldEvent(field, isUserAction, prev_value);
 
-			this.checkUniquValue(field, val);
+			this.checkUniqueValue(field, val);
 
 			if(fieldName === 'name') {
 				this.refreshLeftBar();
@@ -279,7 +279,7 @@ class eventProcessingMixins extends BaseForm {
 		}
 	}
 
-	async checkUniquValue(field, val) {
+	async checkUniqueValue(field, val) {
 		if(field.unique && val) {
 			let data = await getData('api/uniquCheck', {
 				fieldId: field.id,

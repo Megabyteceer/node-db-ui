@@ -6,7 +6,7 @@ import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
 import { FIELD_15_1toN, RecId, RecordData, RecordsData } from "../bs-utils";
 
-class LookpuOneToManyFiled extends fieldLookupMixins {
+class LookupOneToManyFiled extends fieldLookupMixins {
 
 	inlineListRef: List;
 
@@ -26,7 +26,7 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 		var ret = [];
 		var i;
 		if(this.state.inlineEditing) {
-			var subForms = this.inlineListRef.getSubforms();
+			var subForms = this.inlineListRef.getSubForms();
 			for(i = 0; i < subForms.length; i++) {
 				var form = subForms[i];
 				form.prepareToBackup();
@@ -36,8 +36,8 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 		return ret;
 	}
 
-	valueChoosed(recordData?: RecordData, isNewCreated?: boolean, noToggleList?: boolean);
-	valueChoosed() {
+	valueSelected(recordData?: RecordData, isNewCreated?: boolean, noToggleList?: boolean);
+	valueSelected() {
 	}
 
 	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
@@ -56,7 +56,7 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 	async getMessageIfInvalid(): Promise<string | false | true> {
 		if(this.state.inlineEditing) {
 			let ret;
-			let forms = this.inlineListRef.getSubforms();
+			let forms = this.inlineListRef.getSubForms();
 			for(let subForm of forms) {
 				let res = await subForm.validate();
 				if(!res) {
@@ -78,7 +78,7 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 					}
 				}
 			}
-			var subForms = this.inlineListRef.getSubforms();
+			var subForms = this.inlineListRef.getSubForms();
 			for(let form of subForms) {
 				var initialData = form.props.initialData;
 				var linkerName = this.getLinkerFieldName();
@@ -106,7 +106,7 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 		return R.div(null,
 			React.createElement(List, {
 				ref: (r) => { this.inlineListRef = r; },
-				hideControlls: this.state.hideControlls,
+				hideControls: this.state.hideControls,
 				noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton,
 				disableDrafting: this.state.disableDrafting,
 				additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
@@ -123,6 +123,6 @@ class LookpuOneToManyFiled extends fieldLookupMixins {
 	}
 }
 
-registerFieldClass(FIELD_15_1toN, LookpuOneToManyFiled);
+registerFieldClass(FIELD_15_1toN, LookupOneToManyFiled);
 
-export { LookpuOneToManyFiled };
+export { LookupOneToManyFiled };

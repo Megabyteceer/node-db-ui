@@ -77,10 +77,10 @@ const handlers: NodeEventsHandlers = {
 
 				const node = getNodeDesc(currentData.node_fields_linker.id);
 
-				const realBDFNAme = currentData.fieldName;
+				const realFieldName = currentData.fieldName;
 				const fieldType = currentData.fieldType;
 
-				if((realBDFNAme !== '_organID') && (realBDFNAme !== '_usersID') && (realBDFNAme !== 'createdOn') && (realBDFNAme !== 'ID')) {
+				if((realFieldName !== '_organID') && (realFieldName !== '_usersID') && (realFieldName !== 'createdOn') && (realFieldName !== 'ID')) {
 					if((currentData.noStore === 0) && (fieldType !== FIELD_8_STATIC_TEXT) && (fieldType !== FIELD_14_NtoM) && (fieldType !== FIELD_15_1toN)) {
 
 
@@ -94,26 +94,26 @@ const handlers: NodeEventsHandlers = {
 								if(currentData.multilingual) {
 									for(let l of langs) {
 										if(l.prefix) {
-											currentData.fieldName = realBDFNAme + l.prefix;
+											currentData.fieldName = realFieldName + l.prefix;
 											await createFieldInTable(currentData);
 										}
 									}
-									currentData.fieldName = realBDFNAme;
+									currentData.fieldName = realFieldName;
 								} else {
 									for(let l of langs) {
 										if(l.prefix) {
-											await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realBDFNAme + l.prefix);
+											await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realFieldName + l.prefix);
 										}
 									}
 								}
 							} else if(currentData.multilingual) {
 								for(let l of langs) {
 									if(l.prefix) {
-										await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realBDFNAme + l.prefix + ' ' + typeQ);
+										await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + l.prefix + ' ' + typeQ);
 									}
 								}
 							}
-							await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realBDFNAme + ' ' + typeQ);
+							await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + ' ' + typeQ);
 						}
 					}
 				}

@@ -3,9 +3,9 @@ import ReactDOM from "react-dom";
 import { R } from "../r";
 import { sp } from "../utils";
 
-const allHotkeyedButtons = [];
+const allHotKeyedButtons = [];
 window.addEventListener("keydown", (ev) => {
-	for(let b of allHotkeyedButtons) {
+	for(let b of allHotKeyedButtons) {
 		if(b.onKeyDown(ev)) { //call only first button with this hotkey
 			return;
 		}
@@ -96,14 +96,14 @@ class HotkeyButton extends React.Component<HotkeyButtonProps> {
 	}
 
 	registerHotkey() {
-		allHotkeyedButtons.unshift(this);
+		allHotKeyedButtons.unshift(this);
 	}
 
 	unregisterHotkey() {
 		if(this.props.hotkey) {
-			let i = allHotkeyedButtons.indexOf(this);
+			let i = allHotKeyedButtons.indexOf(this);
 			if(i >= 0) {
-				allHotkeyedButtons.splice(i, 1);
+				allHotKeyedButtons.splice(i, 1);
 			}
 		}
 	}
@@ -124,7 +124,7 @@ class HotkeyButton extends React.Component<HotkeyButtonProps> {
 	render() {
 		return R.button({
 			disabled: this.props.disabled,
-			className: (this.props.disabled ? 'unclickable ' : 'clickable ') + this.props.className,
+			className: (this.props.disabled ? 'not-clickable ' : 'clickable ') + this.props.className,
 			onClick: this.onClick,
 			title: this.props.title,
 		}, this.props.label);

@@ -1,4 +1,4 @@
-import { Filters, getNodeData, isAdmin, L, myPromt, reloadLocation } from "../utils";
+import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
 import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, LANGUAGE_ID_DEFAULT } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
@@ -9,7 +9,7 @@ import { R } from "../r";
 
 class FormEvents extends FormFull {
 
-	async _users_onload() {
+	async _users_onLoad() {
 
 		const isHiddenField = (fn) => {
 			if(this.fieldValue(fn) === 'hidden_91d2g7') {
@@ -25,9 +25,9 @@ class FormEvents extends FormFull {
 			$('.field-container-id-63 input').css('width', '50%');
 			if(this.fieldValue('_organID')) {
 				$('.field-container-id-63 input').after(
-					'<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organisation settings" href="#n/7/r/' +
+					'<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organization settings" href="#n/7/r/' +
 					this.fieldValue('_organID').id +
-					'/e">additional organisation settings <p class="fa fa-wrench"></p></a>'
+					'/e">additional organization settings <p class="fa fa-wrench"></p></a>'
 				);
 			}
 		}
@@ -45,7 +45,7 @@ class FormEvents extends FormFull {
 			this.hideField('_organID');
 		}
 
-		var myname = this.fieldValue('name');
+		var myName = this.fieldValue('name');
 
 
 		if(!isAdmin()) {
@@ -73,7 +73,7 @@ class FormEvents extends FormFull {
 
 
 		if(this.isUpdateRecord) {
-			this.header = L('EDIT_USER_PROFILE', myname);
+			this.header = L('EDIT_USER_PROFILE', myName);
 			this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
 			this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
 			this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
@@ -90,7 +90,7 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _users_onsave() {
+	async _users_onSave() {
 		var pass = this.fieldValue('PASS');
 
 		if(pass.length < 6) {
@@ -112,7 +112,7 @@ class FormEvents extends FormFull {
 			}
 			if(nLang != pLang) {
 				this.onSaveCallback = () => {
-					myPromt(L('RESTARTNOW')).then((isYes) => {
+					showPrompt(L('RESTART_NOW')).then((isYes) => {
 						if(isYes) {
 							window.location.href = 'login';
 						}
@@ -122,18 +122,18 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _roles_onload() {
+	async _roles_onLoad() {
 		this.getField('_userroles').setLookupFilter('excludeIDs', [1, 2, 3]);
 		if((this.recId === 2) || (this.recId === 3)) {
 			this.hideField('_userroles');
 		}
 	}
 
-	async _enums_onload() {
+	async _enums_onLoad() {
 		this.getField("values").inlineEditable();
 	}
 
-	async _nodes_onload() {
+	async _nodes_onLoad() {
 		makeIconSelectionField(this, 'icon');
 
 		if(!this.fieldValue('isDocument')) {
@@ -172,7 +172,7 @@ class FormEvents extends FormFull {
 		});
 	}
 
-	async _nodes_onsave() {
+	async _nodes_onSave() {
 
 		if(!this.fieldValue("isDocument")) {
 			var name = this.fieldValue("name");
@@ -192,7 +192,7 @@ class FormEvents extends FormFull {
 
 	_fieldsNameIsBad: boolean;
 
-	async _fields_onload() {
+	async _fields_onLoad() {
 
 		(this.getField('fieldType').fieldRef as EnumField).setFilterValues([16]);
 
@@ -291,7 +291,7 @@ class FormEvents extends FormFull {
 					if(this._fieldsNameIsBad) return;
 					if(data.items.length > 0) {
 						if(this.fieldValue('fieldType') === FIELD_14_NtoM) {
-							this.fieldAlert('fieldName', L('LOOKUP_NAME_NOT_UNIC'));
+							this.fieldAlert('fieldName', L('LOOKUP_NAME_NOT_UNIQUE'));
 						} else {
 							this.fieldAlert('fieldName', L('FLD_EXISTS'));
 						}
@@ -322,7 +322,7 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _fields_onsave() {
+	async _fields_onSave() {
 		var fieldType = this.fieldValue("fieldType");
 
 		if(fieldType === FIELD_7_Nto1 || fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) {
@@ -378,7 +378,7 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _languages_onload() {
+	async _languages_onLoad() {
 		if(this.recId === LANGUAGE_ID_DEFAULT) {
 			this.disableField('isUILanguage');
 		}
@@ -389,17 +389,17 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _languages_onsave() {
+	async _languages_onSave() {
 		if(this.isNewRecord && !this.fieldValue('code')) {
 			this.fieldAlert('code', L('REQUIRED_FLD'));
 		}
 	}
 
-	async _enums_onsave() {
+	async _enums_onSave() {
 		//TODO check if all values unique
 	}
 
-	async _filters_onload() {
+	async _filters_onLoad() {
 		this.addLookupFilters('_nodesID', {
 			filterId: 8,
 			excludeIDs: [9]

@@ -27,6 +27,7 @@ interface FieldProps {
 	parentCompactAreaName?: string;
 	additionalButtons?: AdditionalButtonsRenderer;
 	isTable?: boolean;
+	subFields?: FieldWrap[]
 }
 
 interface FieldState {

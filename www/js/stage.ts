@@ -94,7 +94,7 @@ class Stage extends Component<any, any> {
 	}
 
 	/** @param newRecordData null - if record was deleted. */
-	static dataDidModifed(newRecordData: RecordData | null) {
+	static dataDidModified(newRecordData: RecordData | null) {
 		if(Stage.currentFormEntry.onModified) {
 			Stage.currentFormEntry.onModified(newRecordData);
 		}

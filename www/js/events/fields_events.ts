@@ -8,9 +8,9 @@ class FieldsEvents extends FormEvents {
 	removeWrongCharactersInField(fieldName: string) {
 		let pv = this.fieldValue(fieldName);
 		if(pv) {
-			var newv = pv.replace(/ /g, '_').replace(/[^0-9a-zA-Z_]/g, '');
-			if(pv != newv) {
-				this.setFieldValue(fieldName, newv);
+			var newValue = pv.replace(/ /g, '_').replace(/[^0-9a-zA-Z_]/g, '');
+			if(pv != newValue) {
+				this.setFieldValue(fieldName, newValue);
 			}
 		}
 	}

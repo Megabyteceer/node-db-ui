@@ -5,7 +5,7 @@ import {
 } from "../www/js/bs-utils";
 
 import ENV from "../ENV";
-import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHadlersNames } from "./desc-node";
+import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHandlersNames } from "./desc-node";
 import { getRecords } from "./get-records";
 import { mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit, mysqlRowsResult } from "./mysql-connection";
 import { UPLOADS_FILES_PATH, idToImgURLServer } from './upload';
@@ -89,7 +89,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 				}
 
 				if(f.unique) {
-					if(!(await uniquCheckInner(tableName, fieldName, data[fieldName], recId))) {
+					if(!(await uniqueCheckInner(tableName, fieldName, data[fieldName], recId))) {
 						throwError('Record ' + f.name + ' with value "' + data[fieldName] + '" already exist.');
 					}
 				}
@@ -166,9 +166,9 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		}
 
 		if(recId !== null) {
-			await getNodeEventHandler(nodeId, ServerSideEventHadlersNames.beforeUpdate, currentData, data, userSession);
+			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeUpdate, currentData, data, userSession);
 		} else {
-			await getNodeEventHandler(nodeId, ServerSideEventHadlersNames.beforeCreate, data, userSession);
+			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeCreate, data, userSession);
 		}
 		let needProcess_n2m;
 		for(let f of node.fields) {
@@ -244,7 +244,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 						case FIELD_7_Nto1:
 							if(!isAdmin(userSession) && fieldVal) {
-								await getRecords(f.nodeRef, VIEW_MASK_DROPDOWN_LOOKUP, fieldVal, userSession); //check if you have read access to refered item
+								await getRecords(f.nodeRef, VIEW_MASK_DROPDOWN_LOOKUP, fieldVal, userSession); //check if you have read access to referenced item
 							}
 							insQ.push(fieldVal);
 							break;
@@ -285,7 +285,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		}
 		/// #if DEBUG
 		else {
-			throwError('No fields updated in sumbitRecord.');
+			throwError('No fields updated in submitRecord.');
 		}
 
 		for(let key in data) {
@@ -299,7 +299,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		if(recId === null) {
 			recId = qResult.insertId;
 			data.id = recId;
-			await getNodeEventHandler(nodeId, ServerSideEventHadlersNames.afterCreate, data, userSession);
+			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterCreate, data, userSession);
 		}
 		if(needProcess_n2m) {
 			for(let f of node.fields) {
@@ -323,7 +323,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 								}
 
 								if(!isAdmin(userSession) && id) {
-									await getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to refered item
+									await getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to referenced item
 								}
 
 								n2miQ.push("(", recId as unknown as string, ',', id, ")");
@@ -353,7 +353,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 	}
 }
 
-async function uniquCheckInner(tableName, fieldName, val, recId) {
+async function uniqueCheckInner(tableName, fieldName, val, recId) {
 	let query = ["SELECT id FROM ", tableName, " WHERE ", fieldName, " ='", val, "'"];
 	if(recId !== null) {
 		query.push(" AND id<>", recId);
@@ -364,8 +364,8 @@ async function uniquCheckInner(tableName, fieldName, val, recId) {
 	return !exists.length;
 }
 
-function uniquCheck(fieldId, nodeId, val, recId, userSession) {
-	return uniquCheckInner(getNodeDesc(nodeId, userSession).tableName, getFieldDesc(fieldId).fieldName, val, recId);
+function uniqueCheck(fieldId, nodeId, val, recId, userSession) {
+	return uniqueCheckInner(getNodeDesc(nodeId, userSession).tableName, getFieldDesc(fieldId).fieldName, val, recId);
 }
 
-export { submitRecord, uniquCheck };
+export { submitRecord, uniqueCheck };

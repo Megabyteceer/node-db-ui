@@ -181,11 +181,11 @@ let metadataReloadingInterval;
 function reloadMetadataSchedule() {
 	if(!metadataReloadingInterval) {
 		setMainTainMode(true);
-		metadataReloadingInterval = setInterval(attemptToreloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl);
+		metadataReloadingInterval = setInterval(attemptToReloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl);
 	}
 }
 
-function attemptToreloadMetadataSchedule() {
+function attemptToReloadMetadataSchedule() {
 	if(usersSessionsStartedCount() === 0) {
 		reInitNodesData().then(() => {
 			setMainTainMode(false);
@@ -208,7 +208,7 @@ async function initNodesData() { // load whole nodes data in to memory
 		REQUIRE_COMPANY: ENV.REQUIRE_COMPANY,
 		REQUIRE_NAME: ENV.REQUIRE_NAME,
 		DEFAULT_LANG_ID: ENV.DEFAULT_LANG_ID,
-		MAX_FILESIZE_TO_UPLOAD: ENV.MAX_FILESIZE_TO_UPLOAD,
+		MAX_FILE_SIZE_TO_UPLOAD: ENV.MAX_FILE_SIZE_TO_UPLOAD,
 		ENABLE_MULTILINGUAL: ENV.ENABLE_MULTILINGUAL,
 		GOOGLE_PLUS: ENV.GOOGLE_PLUS,
 		TERMS_URL: ENV.TERMS_URL,
@@ -304,7 +304,7 @@ function getLangs(): UserLangEntry[] {
 	return langs;
 }
 
-enum ServerSideEventHadlersNames {
+enum ServerSideEventHandlersNames {
 	beforeCreate = 'beforeCreate',
 	afterCreate = 'afterCreate',
 	beforeUpdate = 'beforeUpdate',
@@ -318,11 +318,11 @@ interface NodeEventsHandlers {
 	beforeDelete?: (data: RecordData, userSession: UserSession) => Promise<void>;
 }
 
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames.beforeCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames.afterCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames.beforeUpdate, currentData: RecordData, newData: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames.beforeDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHadlersNames, data1, data2, data3?): Promise<void> {
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeUpdate, currentData: RecordData, newData: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames, data1, data2, data3?): Promise<void> {
 	if(eventsHandlers.has(nodeId)) {
 		const serverSideNodeEventHandler = eventsHandlers.get(nodeId)[eventName];
 		/// #if DEBUG
@@ -350,7 +350,7 @@ const wrapObjectToDestroy = (o) => {
 		return new Proxy(o, {
 			set: function(obj, prop, value, a) {
 				if(destroyed) {
-					throwError('Attempt to assign data after axit on eventHandler. Has eventHandler not "await" for something?');
+					throwError('Attempt to assign data after exit on eventHandler. Has eventHandler not "await" for something?');
 				}
 				if(prop === 'destroyObject_ONKwoiqwhd123123') {
 					destroyed = true;
@@ -377,5 +377,5 @@ const destroyObject = (o) => {
 export {
 	NodeEventsHandlers, filtersById,
 	ENV, getNodeDesc, getFieldDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs,
-	ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule, ServerSideEventHadlersNames
+	ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule, ServerSideEventHandlersNames
 };

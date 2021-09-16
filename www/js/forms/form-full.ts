@@ -90,7 +90,7 @@ class FormFull extends eventProcessingMixins {
 		}
 	}
 
-	deteleBackup() {
+	deleteBackup() {
 		removeBackup(this.props.node.id);
 	}
 
@@ -151,7 +151,7 @@ class FormFull extends eventProcessingMixins {
 				this.formIsValid = false;
 			} else {
 				this.fieldAlert(field.fieldName);
-				let isValid = await this.checkUniquValue(field, (!fieldRef.isEmpty()) && this.currentData[field.fieldName]);
+				let isValid = await this.checkUniqueValue(field, (!fieldRef.isEmpty()) && this.currentData[field.fieldName]);
 				let isValid2 = await fieldRef.checkValidityBeforeSave(this.formIsValid);
 				if(!isValid || !isValid2) {
 					this.formIsValid = false;
@@ -255,7 +255,7 @@ class FormFull extends eventProcessingMixins {
 			//renew current data
 			this.currentData = Object.assign(this.currentData, data);
 			//renew initial data;
-			window.crudJs.Stage.dataDidModifed(this.currentData);
+			window.crudJs.Stage.dataDidModified(this.currentData);
 
 			for(var k in data) {
 				var val = data[k];
@@ -277,7 +277,7 @@ class FormFull extends eventProcessingMixins {
 			await callForEachField(this.fieldsRefs, data, 'afterSave');
 
 			this.recId = this.currentData.id;
-			this.deteleBackup();
+			this.deleteBackup();
 			if(this.onSaveCallback) {
 				await this.onSaveCallback();
 			}
@@ -286,7 +286,7 @@ class FormFull extends eventProcessingMixins {
 		}
 
 		if(this.isSubForm()) {
-			this.props.parentForm.valueChoosed(this.currentData, true);
+			this.props.parentForm.valueSelected(this.currentData, true);
 		} else {
 			this.cancelClick();
 		}
@@ -307,7 +307,7 @@ class FormFull extends eventProcessingMixins {
 		var tabs;
 		var fields = [];
 		var data = this.currentData;
-		var flds = node.fields;
+		var nodeFields = node.fields;
 
 		var className = 'form form-full form-node-' + node.id + ' form-rec-' + this.recId;
 		if(this.props.isCompact) {
@@ -325,8 +325,8 @@ class FormFull extends eventProcessingMixins {
 		var currentCompactAreaFields = [];
 		var currentCompactAreaCounter = 0;
 
-		for(var k in flds) {
-			let field = flds[k];
+		for(var k in nodeFields) {
+			let field = nodeFields[k];
 			if(this.isFieldVisibleByFormViewMask(field)) {
 
 				const ref = (ref) => {
@@ -450,7 +450,7 @@ class FormFull extends eventProcessingMixins {
 					className: isRestricted ? 'restricted clickable danger-button' : 'clickable danger-button', onClick: async () => {
 						if(await deleteRecord(data.name, node.id, data.id)) {
 							if(this.isSubForm()) {
-								this.props.parentForm.valueChoosed();
+								this.props.parentForm.valueSelected();
 							} else {
 								goBack(true);
 							}

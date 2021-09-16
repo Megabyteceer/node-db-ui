@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import { BaseForm } from "../forms/base-form";
 import { FormLoaderCog } from "../stage";
 import { iAdmin } from "../user";
-import { getData, getNode, L, myPromt, renderIcon, submitData } from "../utils";
+import { getData, getNode, L, showPrompt, renderIcon, submitData } from "../utils";
 import { NodeAdmin } from "./node-admin";
 
 function check() {
@@ -13,7 +13,7 @@ function check() {
 	}, renderIcon('check'));
 }
 
-class PrevsEditor extends Component<any, any> {
+class PrivilegesEditor extends Component<any, any> {
 	render() {
 		var body;
 		var item = this.props.item;
@@ -87,7 +87,7 @@ class PrevsEditor extends Component<any, any> {
 	}
 }
 
-class AdminRoleprevsForm extends BaseForm {
+class AdminRolePrivilegesForm extends BaseForm {
 
 	initData: RecordData;
 
@@ -99,7 +99,7 @@ class AdminRoleprevsForm extends BaseForm {
 	async componentDidMount() {
 		let node = await getNode(this.props.recId);
 
-		let data = await getData('admin/nodePrevs', {
+		let data = await getData('admin/nodePrivileges', {
 			nodeId: this.props.recId
 		});
 
@@ -121,7 +121,7 @@ class AdminRoleprevsForm extends BaseForm {
 			var submit = (toChild?: boolean) => {
 				this.state.data.nodeId = this.props.recId;
 				this.state.data.toChild = toChild;
-				submitData('admin/nodePrevs', this.state.data).then(() => {
+				submitData('admin/nodePrivileges', this.state.data).then(() => {
 					this.cancelClick();
 				});
 			};
@@ -129,7 +129,7 @@ class AdminRoleprevsForm extends BaseForm {
 			if(this.state.data.isDocument) {
 				submit();
 			} else {
-				submit(!await myPromt(L('APPLY_CHILD'), L('TO_THIS'), L('TO_ALL'), 'check', 'check'));
+				submit(!await showPrompt(L('APPLY_CHILD'), L('TO_THIS'), L('TO_ALL'), 'check', 'check'));
 			}
 		} else {
 			this.cancelClick();
@@ -150,27 +150,27 @@ class AdminRoleprevsForm extends BaseForm {
 					R.td({
 						className: "admin-role-privileges-line-header"
 					}, i.name),
-					React.createElement(PrevsEditor, {
+					React.createElement(PrivilegesEditor, {
 						bitsCount: 3,
 						baseBit: PRIVILEGES_VIEW_OWN,
 						item: i
 					}),
-					React.createElement(PrevsEditor, {
+					React.createElement(PrivilegesEditor, {
 						bitsCount: 1,
 						baseBit: PRIVILEGES_CREATE,
 						item: i
 					}),
-					React.createElement(PrevsEditor, {
+					React.createElement(PrivilegesEditor, {
 						bitsCount: 3,
 						baseBit: PRIVILEGES_EDIT_OWN,
 						item: i
 					}),
-					React.createElement(PrevsEditor, {
+					React.createElement(PrivilegesEditor, {
 						bitsCount: 1,
 						baseBit: PRIVILEGES_DELETE,
 						item: i
 					}),
-					node.draftable ? React.createElement(PrevsEditor, {
+					node.draftable ? React.createElement(PrivilegesEditor, {
 						bitsCount: 1,
 						baseBit: PRIVILEGES_PUBLISH,
 						item: i
@@ -245,4 +245,4 @@ class AdminRoleprevsForm extends BaseForm {
 	}
 }
 
-export { AdminRoleprevsForm };
+export { AdminRolePrivilegesForm };

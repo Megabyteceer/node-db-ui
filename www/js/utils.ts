@@ -13,8 +13,8 @@ import { DebugPanel } from "./debug-panel";
 import React from "react";
 import { HotkeyButton } from "./components/hotkey-button";
 
-const ON_FORM_SAVE = 'onsave';
-const ON_FORM_LOAD = 'onload';
+const ON_FORM_SAVE = 'onSave';
+const ON_FORM_LOAD = 'onLoad';
 const ON_FIELD_CHANGE = 'onChange';
 
 const __corePath = 'https://node-db-ui.com:1443/core/';
@@ -83,7 +83,7 @@ function myAlert(txt: string | React.Component, isSuccess?: boolean, autoHide?: 
 
 }
 
-async function myPromt(txt: string | Comment, yesLabel?: string, noLabel?: string, yesIcon?: string, noIcon?: string, discardByOutsideClick?: boolean) {
+async function showPrompt(txt: string | Comment, yesLabel?: string, noLabel?: string, yesIcon?: string, noIcon?: string, discardByOutsideClick?: boolean) {
 	return new Promise((resolve) => {
 		if(!yesLabel) {
 			yesLabel = L('OK');
@@ -225,7 +225,7 @@ function handleAdditionalData(data, url) {
 
 }
 
-var innerDatetimeFormat = 'YYYY-MM-DD HH:mm:ss';
+var innerDateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
 var readableDateFormat = 'D MMMM YYYY';
 var readableTimeFormat = 'H:mm';
 
@@ -238,7 +238,7 @@ function toReadableDate(d) {
 	return '';
 }
 
-function toReadableDatetime(d) {
+function toReadableDateTime(d) {
 	if(d) {
 		d = d.format(readableDateFormat + ' ' + readableTimeFormat);
 		if(d === 'Invalid date') return '';
@@ -318,7 +318,7 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, 
 	return retHash;
 }
 
-function isCurrentlyShowedLeftbarItem(item) {
+function isCurrentlyShowedLeftBarItem(item) {
 	const currentFormParameters = window.crudJs.Stage.currentForm;
 	if(item.id === false) {
 		if(!currentFormParameters.filters || (Object.keys(currentFormParameters.filters).length === 0)) {
@@ -614,7 +614,7 @@ async function getNodeData(nodeId: RecId, recId: RecId | undefined, filters?: un
 
 		if(data.hasOwnProperty('node')) {
 			if(nodes[nodeId]) {
-				debugError('Node description owerriding.');
+				debugError('Node description overriding.');
 			}
 			normalizeNode(data.node);
 			nodes[nodeId] = data.node;
@@ -701,7 +701,7 @@ function addMixins(Class, mixins) {
 
 async function submitRecord(nodeId: RecId, data: RecordData, recId?: RecId): Promise<RecId> {
 	if(Object.keys(data).length === 0) {
-		throw 'Tried to submit emty object';
+		throw 'Tried to submit empty object';
 	}
 	let node = await getNode(nodeId);
 	return submitData('api/submit', { nodeId, recId, data: encodeData(data, node) });
@@ -911,18 +911,18 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 }
 
 
-async function deleteRecord(name, nodeId: RecId, recId: RecId, noPromt?: boolean, onYes?: () => void) {
-	if(noPromt) {
+async function deleteRecord(name, nodeId: RecId, recId: RecId, noPrompt?: boolean, onYes?: () => void) {
+	if(noPrompt) {
 		if(onYes) {
 			onYes();
 		} else {
 			await submitData('api/delete', { nodeId, recId });
-			window.crudJs.Stage.dataDidModifed(null);
+			window.crudJs.Stage.dataDidModified(null);
 			return true;
 		}
 	} else {
 		let node = await getNode(nodeId);
-		if(await myPromt(L('SURE_DELETE', (node.creationName || node.singleName)) + ' "' + name + '"?',
+		if(await showPrompt(L('SURE_DELETE', (node.creationName || node.singleName)) + ' "' + name + '"?',
 			L('DELETE'), L('CANCEL'), 'times', 'caret-left', true)) {
 			return deleteRecord(null, nodeId, recId, true, onYes);
 		}
@@ -1105,14 +1105,14 @@ function checkFileSize(file) {
 		return true;
 	}
 
-	if(file.size > ENV.MAX_FILESIZE_TO_UPLOAD) {
+	if(file.size > ENV.MAX_FILE_SIZE_TO_UPLOAD) {
 		myAlert(L('FILE_BIG', (file.size / 1000000.0).toFixed(0)) + getReadableUploadSize());
 		return true;
 	}
 }
 
 function getReadableUploadSize() {
-	return (ENV.MAX_FILESIZE_TO_UPLOAD / 1000000.0).toFixed(0) + L('MB');
+	return (ENV.MAX_FILE_SIZE_TO_UPLOAD / 1000000.0).toFixed(0) + L('MB');
 }
 
 var __errorsSent = {};
@@ -1168,7 +1168,7 @@ var listRenderers = [];
 
 function registerListRenderer(nodeId, renderFunction) {
 	if(listRenderers.hasOwnProperty(nodeId)) {
-		throw 'List renderer redifinition for node ' + nodeId;
+		throw 'List renderer for node ' + nodeId + ' is already registered.';
 	}
 	listRenderers[nodeId] = renderFunction;
 }
@@ -1213,21 +1213,21 @@ export {
 	publishRecord,
 	idToImgURL,
 	idToFileUrl,
-	isCurrentlyShowedLeftbarItem,
+	isCurrentlyShowedLeftBarItem,
 	addMixins,
 	goToPageByHash,
 	consoleLog,
 	consoleDir,
 	sp,
-	innerDatetimeFormat,
+	innerDateTimeFormat,
 	toReadableDate,
 	toReadableTime,
-	toReadableDatetime,
+	toReadableDateTime,
 	updateHashLocation,
 	goBack,
 	getNodeData,
 	getNode,
-	myPromt,
+	showPrompt,
 	UID,
 	myAlert,
 	serializeForm,
