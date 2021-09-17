@@ -46,7 +46,7 @@ const getCurrentStack = () => {
 type RecId = number;
 
 type UserRoles = { [key: number]: 1 };
-type UserOrgs = { [key: number]: string };
+type UserOrganizations = { [key: number]: string };
 
 interface UserSession {
 	id: RecId;
@@ -55,7 +55,7 @@ interface UserSession {
 	avatar: string;
 	email: string;
 	userRoles: UserRoles;
-	orgs: UserOrgs;
+	organizations: UserOrganizations;
 	lang: UserLangEntry;
 	cacheKey: string;
 	/** file names uploaded for specified field id */
@@ -271,7 +271,7 @@ const HASH_DIVIDER = '.';
 const NODE_ID_NODES: RecId = 4;
 const NODE_ID_USERS: RecId = 5;
 const NODE_ID_FIELDS: RecId = 6;
-const NODE_ID_ORGS: RecId = 7;
+const NODE_ID_ORGANIZATIONS: RecId = 7;
 const NODE_ID_ROLES: RecId = 8;
 const NODE_ID_FILTERS: RecId = 9;
 const NODE_ID_MESSAGES: RecId = 11;
@@ -317,7 +317,7 @@ export {
 
 	ROLE_ID_SUPER_ADMIN, ROLE_ID_GUEST, ROLE_ID_USER, ROLE_ID_VIEW_ALL,
 
-	NODE_ID_NODES, NODE_ID_USERS, NODE_ID_FIELDS, NODE_ID_ORGS,
+	NODE_ID_NODES, NODE_ID_USERS, NODE_ID_FIELDS, NODE_ID_ORGANIZATIONS,
 	NODE_ID_ROLES, NODE_ID_FILTERS, NODE_ID_MESSAGES, NODE_ID_LANGUAGES,
 	NODE_ID_PAGES, NODE_ID_ENUMERATIONS, NODE_ID_ENUMERATION_VALUES,
 	NODE_ID_ERROR_REPORTS, NODE_ID_FILES,

@@ -87,11 +87,11 @@ class User extends Component<any, any> {
 			}
 
 			var org;
-			if(this.state.orgs && Object.keys(this.state.orgs).length > 1 && this.state.orgs[this.state.orgId]) {
+			if(this.state.organizations && Object.keys(this.state.organizations).length > 1 && this.state.organizations[this.state.orgId]) {
 				var options = [];
 
-				for(var k in this.state.orgs) {
-					var name = this.state.orgs[k];
+				for(var k in this.state.organizations) {
+					var name = this.state.organizations[k];
 					options.push({ value: k, name });
 				};
 

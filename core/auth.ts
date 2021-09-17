@@ -266,7 +266,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 		avatar: user.avatar,
 		email: user.email,
 		userRoles,
-		orgs: organizations,
+		organizations,
 		lang,
 		cacheKey: cacheKeyGenerator.join()
 	};
@@ -309,7 +309,7 @@ function getLang(langId): UserLangEntry {
 }
 
 async function setCurrentOrg(organID: number, userSession: UserSession, updateInBd?) {
-	if(userSession.orgs.hasOwnProperty(organID)) {
+	if(userSession.organizations.hasOwnProperty(organID)) {
 		userSession.orgId = organID;
 		if(updateInBd) {
 			shouldBeAuthorized(userSession);
