@@ -160,7 +160,7 @@ function getFieldTypeSQL(data) {
 		case FIELD_12_PICTURE:
 			return "VARCHAR(32) NOT NULL DEFAULT ''";
 		case FIELD_16_RATING:
-			throwError(L('RATING_FLD_NOEDIT'));
+			throwError('Field type ' + FIELD_16_RATING + ' is not editable');
 		case FIELD_19_RICH_EDITOR:
 			return "MEDIUMTEXT NOT NULL DEFAULT ''";
 		case FIELD_21_FILE:

@@ -4,10 +4,10 @@ import { getPasswordHash, isAdmin } from "../core/auth";
 import { submitRecord } from "../core/submit";
 
 async function clearUserParams(data, currentData, userSession) {
-
+	debugger;
 	if(!isAdmin(userSession)) {
 		delete data._organID;
-		delete data._userRolesm2n;
+		delete data._user_roles;
 	}
 
 	if(data.hasOwnProperty('PASS')) {

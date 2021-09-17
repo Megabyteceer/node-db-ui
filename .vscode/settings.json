@@ -10,5 +10,19 @@
 		"**/ww w/**": true,
 		"**/cert/**": true,
 		"**/nginx-1.20.1/**": true
-	}
+	},
+	"cSpell.words": [
+		"corechart",
+		"deferreds",
+		"draggable",
+		"Inno",
+		"MEDIUMTEXT",
+		"nocheck",
+		"sbin",
+		"TIMESTAMPDIFF",
+		"TINYINT",
+		"unpublish",
+		"VARCHAR",
+		"zoomable"
+	]
 }

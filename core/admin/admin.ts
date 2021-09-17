@@ -13,11 +13,11 @@ async function nodePrivileges(reqData, userSession) {
 	const nodeId = reqData.nodeId;
 	if(reqData.privileges) {//set node privileges
 		const privileges = reqData.privileges;
-		await setRolePrevsForNode(nodeId, privileges, reqData.toChild, userSession);
+		await setRolePrivilegesForNode(nodeId, privileges, reqData.toChild, userSession);
 		reloadMetadataSchedule();
 		return 1;
 	} else { //get node privileges
-		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _roleprevs WHERE (nodeID=' + nodeId + ') AND (_roles.id=roleID) LIMIT 1) AS privileges FROM _roles WHERE ID <> ' + ROLE_ID_SUPER_ADMIN + ' AND ID <> ' + ROLE_ID_VIEW_ALL + ' AND status = 1');
+		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _role_privileges WHERE (nodeID=' + nodeId + ') AND (_roles.id=roleID) LIMIT 1) AS privileges FROM _roles WHERE ID <> ' + ROLE_ID_SUPER_ADMIN + ' AND ID <> ' + ROLE_ID_VIEW_ALL + ' AND status = 1');
 		return { privileges, isDocument: getNodeDesc(nodeId).isDocument }
 	}
 }
@@ -36,20 +36,20 @@ const shouldBeAdmin = (userSession = ADMIN_USER_SESSION) => {
 	}
 }
 
-async function setRolePrevsForNode(nodeID, roleprevs, toChild, userSession) {
+async function setRolePrivilegesForNode(nodeID, rolePrivileges, toChild, userSession) {
 	shouldBeAdmin(userSession);
-	await mysqlExec('DELETE FROM `_roleprevs` WHERE `nodeID`=' + nodeID + ';');
+	await mysqlExec('DELETE FROM `_role_privileges` WHERE `nodeID`=' + nodeID + ';');
 
-	for(let p of roleprevs) {
+	for(let p of rolePrivileges) {
 		if(p.privileges) {
-			await mysqlExec('INSERT INTO _roleprevs SET nodeID=' + nodeID + ', roleID=' + p.id + ', privileges=' + p.privileges + ';');
+			await mysqlExec('INSERT INTO _role_privileges SET nodeID=' + nodeID + ', roleID=' + p.id + ', privileges=' + p.privileges + ';');
 		}
 	}
 	if(toChild) {
 		//apply to sub sections
 		const pgs = await mysqlExec("SELECT id FROM _nodes WHERE _nodesID =" + nodeID) as mysqlRowsResult;
 		for(let pg of pgs) {
-			await setRolePrevsForNode(pg.id, roleprevs, toChild, userSession);
+			await setRolePrivilegesForNode(pg.id, rolePrivileges, toChild, userSession);
 		}
 	}
 }

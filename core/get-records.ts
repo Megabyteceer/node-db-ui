@@ -70,7 +70,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 					selQ.push("(SELECT CONCAT(id,'␞',name) FROM ", selectFieldName + " AS t", fieldName, " WHERE ", tableName, ".", fieldName, "=t", fieldName, ".id LIMIT 1) AS `", fieldName, "`");
 				}
 			} else if(selectFieldName) {
-				selQ.push('(', selectFieldName.replaceAll('@userid', userSession.id.toString()), ')AS `', fieldName, '`');
+				selQ.push('(', selectFieldName.replaceAll('@userId', userSession.id.toString()), ')AS `', fieldName, '`');
 			} else if((viewMask === VIEW_MASK_LIST || viewMask === VIEW_MASK_CUSTOM_LIST) && (fieldType === FIELD_1_TEXT || fieldType === FIELD_19_RICH_EDITOR) && f.maxLength > 500) {
 				selQ.push('SUBSTRING(', tableName, '.', fieldName, ',1,500) AS `', fieldName, '`');
 			} else {
@@ -196,8 +196,8 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 			let fw = filter['filter'];
 			if(fw) {
 				if(fw.indexOf('@') >= 0) {
-					fw = fw.replaceAll('@userid', userSession.id);
-					fw = fw.replaceAll('@orgid', userSession.orgId);
+					fw = fw.replaceAll('@userId', userSession.id);
+					fw = fw.replaceAll('@orgId', userSession.orgId);
 					if(fw.indexOf('@') >= 0) {
 						for(let k in filterFields) {
 							fw.replaceAll('@' + k, filterFields[k]);

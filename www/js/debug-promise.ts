@@ -6,15 +6,15 @@
 function finallyConstructor(callback) {
 	var constructor = this.constructor;
 	return this.then(
-		function (value) {
+		function(value) {
 			// @ts-ignore
-			return constructor.resolve(callback()).then(function () {
+			return constructor.resolve(callback()).then(function() {
 				return value;
 			});
 		},
-		function (reason) {
+		function(reason) {
 			// @ts-ignore
-			return constructor.resolve(callback()).then(function () {
+			return constructor.resolve(callback()).then(function() {
 				// @ts-ignore
 				return constructor.reject(reason);
 			});
@@ -24,7 +24,7 @@ function finallyConstructor(callback) {
 
 function allSettled(arr) {
 	var P = this;
-	return new P(function (resolve, reject) {
+	return new P(function(resolve, reject) {
 		if(!(arr && typeof arr.length !== 'undefined')) {
 			return reject(
 				new TypeError(
@@ -45,10 +45,10 @@ function allSettled(arr) {
 				if(typeof then === 'function') {
 					then.call(
 						val,
-						function (val) {
+						function(val) {
 							res(i, val);
 						},
-						function (e) {
+						function(e) {
 							args[i] = { status: 'rejected', reason: e };
 							if(--remaining === 0) {
 								resolve(args);
@@ -82,7 +82,7 @@ function noop() { }
 
 // Polyfill for Function.prototype.bind
 function bind(fn, thisArg) {
-	return function () {
+	return function() {
 		fn.apply(thisArg, arguments);
 	};
 }
@@ -116,7 +116,7 @@ function handle(self, deferred) {
 		return;
 	}
 	self._handled = true;
-	DPromise._immediateFn(function () {
+	DPromise._immediateFn(function() {
 		var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
 		if(cb === null) {
 			(self._state === 1 ? resolve : reject)(deferred.promise, self._value);
@@ -164,7 +164,7 @@ function reject(self, newValue) {
 
 function finale(self) {
 	if(self._state === 2 && self._deferreds.length === 0) {
-		DPromise._immediateFn(function () {
+		DPromise._immediateFn(function() {
 			if(!self._handled) {
 				DPromise._unhandledRejectionFn(self._value);
 			}
@@ -190,18 +190,18 @@ function Handler(onFulfilled, onRejected, promise) {
  * Take a potentially misbehaving resolver function and make sure
  * onFulfilled and onRejected are only called once.
  *
- * Makes no guarantees about asynchrony.
+ * Makes no guarantees about async.
  */
 function doResolve(fn, self) {
 	var done = false;
 
 	fn(
-		function (value) {
+		function(value) {
 			if(done) return;
 			done = true;
 			resolve(self, value);
 		},
-		function (reason) {
+		function(reason) {
 			if(done) return;
 			done = true;
 			reject(self, reason);
@@ -210,11 +210,11 @@ function doResolve(fn, self) {
 
 }
 
-DPromise.prototype['catch'] = function (onRejected) {
+DPromise.prototype['catch'] = function(onRejected) {
 	return this.then(null, onRejected);
 };
 
-DPromise.prototype.then = function (onFulfilled, onRejected) {
+DPromise.prototype.then = function(onFulfilled, onRejected) {
 	// @ts-ignore
 	var prom = new this.constructor(noop);
 
@@ -224,8 +224,8 @@ DPromise.prototype.then = function (onFulfilled, onRejected) {
 
 DPromise.prototype['finally'] = finallyConstructor;
 
-DPromise.all = function (arr) {
-	return new DPromise(function (resolve, reject) {
+DPromise.all = function(arr) {
+	return new DPromise(function(resolve, reject) {
 		if(!isArray(arr)) {
 			return reject(new TypeError('DPromise.all accepts an array'));
 		}
@@ -241,7 +241,7 @@ DPromise.all = function (arr) {
 				if(typeof then === 'function') {
 					then.call(
 						val,
-						function (val) {
+						function(val) {
 							res(i, val);
 						},
 						reject
@@ -264,24 +264,24 @@ DPromise.all = function (arr) {
 
 DPromise.allSettled = allSettled;
 
-DPromise.resolve = function (value) {
+DPromise.resolve = function(value) {
 	if(value && typeof value === 'object' && value.constructor === DPromise) {
 		return value;
 	}
 
-	return new DPromise(function (resolve) {
+	return new DPromise(function(resolve) {
 		resolve(value);
 	});
 };
 
-DPromise.reject = function (value) {
-	return new DPromise(function (resolve, reject) {
+DPromise.reject = function(value) {
+	return new DPromise(function(resolve, reject) {
 		reject(value);
 	});
 };
 
-DPromise.race = function (arr) {
-	return new DPromise(function (resolve, reject) {
+DPromise.race = function(arr) {
+	return new DPromise(function(resolve, reject) {
 		if(!isArray(arr)) {
 			return reject(new TypeError('DPromise.race accepts an array'));
 		}
@@ -296,11 +296,11 @@ DPromise.race = function (arr) {
 DPromise._immediateFn =
 	// @ts-ignore
 	(typeof setImmediate === 'function' &&
-		function (fn) {
+		function(fn) {
 			// @ts-ignore
 			setImmediate(fn);
 		}) ||
-	function (fn) {
+	function(fn) {
 		setTimeoutFunc(fn, 0);
 	};
 

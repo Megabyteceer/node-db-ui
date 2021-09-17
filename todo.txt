@@ -26,7 +26,7 @@ captcha
 
 Generate small icons for all image fields
 
-Lookup nto1 and ntom to user gives access for user if field marked as access opener. Keep such a fields in prevsFields property. Use it in messages.
+Lookup nto1 and ntom to user gives access for user if field marked as access opener. Keep such a fields in privilegesFields property. Use it in messages.
 
 проверить все TODO
 

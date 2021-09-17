@@ -232,7 +232,7 @@ async function initNodesData() { // load whole nodes data in to memory
 		nodesById_new.set(nodeData.id, nodeData);
 		nodeData.sortFieldName = 'createdOn';
 
-		let rolesToAccess = await mysqlExec("SELECT roleId, privileges FROM _rolePrevs WHERE nodeID = 0 OR nodeID = " + nodeData.id);
+		let rolesToAccess = await mysqlExec("SELECT roleId, privileges FROM _role_privileges WHERE nodeID = 0 OR nodeID = " + nodeData.id);
 
 		/// #if DEBUG
 		nodeData.__preventToStringify = nodeData; // circular structure to fail when try to stringify

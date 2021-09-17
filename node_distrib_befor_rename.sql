@@ -350,10 +350,10 @@ CREATE TABLE `_filters` (
 
 INSERT INTO `_filters` (`id`, `status`, `_usersID`, `createdON`, `_organid`, `_nodesID`, `name`, `filter`, `view`, `hiPriority`, `fields`) VALUES
 (0, 0, 0, '2014-12-02 14:00:08', 0, 0, '', '', '', 0, ''),
-(1, 1, 1, '2014-12-02 14:00:08', 0, 11, 'All', '((_messages._usersID=@userid) OR (_receiverID=@userid))', '', 0, ''),
-(2, 1, 1, '2014-12-02 13:57:33', 0, 11, 'Unread', '((readed IS NULL) AND (_receiverID=@userid))', '', 0, ''),
-(3, 1, 1, '2014-12-02 13:59:36', 0, 11, 'Sent', '(_messages._usersID=@userid)', '', 0, ''),
-(4, 1, 1, '2014-12-02 15:24:07', 0, 11, 'Income', '(_receiverID=@userid)', '', 0, ''),
+(1, 1, 1, '2014-12-02 14:00:08', 0, 11, 'All', '((_messages._usersID=@userId) OR (_receiverID=@userId))', '', 0, ''),
+(2, 1, 1, '2014-12-02 13:57:33', 0, 11, 'Unread', '((readed IS NULL) AND (_receiverID=@userId))', '', 0, ''),
+(3, 1, 1, '2014-12-02 13:59:36', 0, 11, 'Sent', '(_messages._usersID=@userId)', '', 0, ''),
+(4, 1, 1, '2014-12-02 15:24:07', 0, 11, 'Income', '(_receiverID=@userId)', '', 0, ''),
 (8, 1, 1, '2021-09-13 12:08:39', 1, 4, 'Can have filter', '(isDocument = 1 AND staticLink = \'\') ', '', 0, '');
 
 -- --------------------------------------------------------
@@ -526,21 +526,21 @@ CREATE TABLE `_organ__users` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `_roleprevs`
+-- Table structure for table `_role_privileges`
 --
 
-DROP TABLE IF EXISTS `_roleprevs`;
-CREATE TABLE `_roleprevs` (
+DROP TABLE IF EXISTS `_role_privileges`;
+CREATE TABLE `_role_privileges` (
   `nodeID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `roleid` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `privileges` int(8) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `_roleprevs`
+-- Dumping data for table `_role_privileges`
 --
 
-INSERT INTO `_roleprevs` (`nodeID`, `roleid`, `privileges`) VALUES
+INSERT INTO `_role_privileges` (`nodeID`, `roleid`, `privileges`) VALUES
 (0, 1, 65535),
 (2, 2, 4),
 (12, 2, 7),
@@ -798,9 +798,9 @@ ALTER TABLE `_organ__users`
   ADD KEY `_usersID` (`_usersID`);
 
 --
--- Indexes for table `_roleprevs`
+-- Indexes for table `_role_privileges`
 --
-ALTER TABLE `_roleprevs`
+ALTER TABLE `_role_privileges`
   ADD PRIMARY KEY (`roleid`,`nodeID`),
   ADD KEY `user_roleID` (`roleid`),
   ADD KEY `nodID` (`nodeID`);
@@ -1015,9 +1015,9 @@ ALTER TABLE `_organ`
   ADD CONSTRAINT `_organ_ibfk_1` FOREIGN KEY (`_organid`) REFERENCES `_organ` (`id`);
 
 --
--- Constraints for table `_roleprevs`
+-- Constraints for table `_role_privileges`
 --
-ALTER TABLE `_roleprevs`
+ALTER TABLE `_role_privileges`
   ADD CONSTRAINT `nodID` FOREIGN KEY (`nodeID`) REFERENCES `_nodes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `user_roleID` FOREIGN KEY (`roleid`) REFERENCES `_roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 

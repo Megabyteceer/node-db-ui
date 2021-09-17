@@ -95,9 +95,9 @@ class eventProcessingMixins extends BaseForm {
 		if(this.currentTabName !== tabNameToShow) {
 			this.currentTabName = tabNameToShow;
 			var field;
-			var flds = this.props.node.fields;
-			for(var k in flds) {
-				var f = flds[k];
+			var nodeFields = this.props.node.fields;
+			for(var k in nodeFields) {
+				var f = nodeFields[k];
 				if(this.isFieldVisibleByFormViewMask(f)) {
 					if((f.fieldType === FIELD_17_TAB) && (f.maxLength === 0)) {//tab
 						if((tabNameToShow === f.fieldName) || !tabNameToShow) {
@@ -281,7 +281,7 @@ class eventProcessingMixins extends BaseForm {
 
 	async checkUniqueValue(field, val) {
 		if(field.unique && val) {
-			let data = await getData('api/uniquCheck', {
+			let data = await getData('api/uniqueCheck', {
 				fieldId: field.id,
 				nodeId: field.node.id,
 				recId: (this.recId !== 'new') && this.recId,
@@ -313,9 +313,9 @@ class eventProcessingMixins extends BaseForm {
 	}
 
 	async onSave() {
-		//DEBUG
+		/// #if DEBUG
 		consoleLog('onSave ' + this.props.node.tableName + ': ' + this.props.initialData.id);
-		//ENDDEBUG			
+		/// #endif
 
 		for(var k in this.props.node.fields) {
 			if(this.hasField(k)) {//hide all alerts
