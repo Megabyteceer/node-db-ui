@@ -70,7 +70,7 @@ const LANGS = {
 	'ADM_VARS': 'Variables:',
 	'ADM_HLP_1': ' - true if it is editable form, false - if it is read only form,',
 	'ADM_HLP_2': ' - true if editing of existing record.',
-	'ADM_HLP_3': ' - ID of current record',
+	'ADM_HLP_3': ' - id of current record',
 	'ADM_HLP_4': ' - previous value for field changing',
 	'ADM_HLP_5': ' - values, filled automatically at creation new record.',
 	'ADM_HLP_6': ' - filters to view lists in linked fields',

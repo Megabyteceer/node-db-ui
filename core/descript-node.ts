@@ -230,7 +230,7 @@ async function initNodesData() { // load whole nodes data in to memory
 
 	for(let nodeData of nodes_new) {
 		nodesById_new.set(nodeData.id, nodeData);
-		nodeData.sortFieldName = 'createdOn';
+		nodeData.sortFieldName = '_createdON';
 
 		let rolesToAccess = await mysqlExec("SELECT roleId, privileges FROM _role_privileges WHERE nodeID = 0 OR nodeID = " + nodeData.id);
 

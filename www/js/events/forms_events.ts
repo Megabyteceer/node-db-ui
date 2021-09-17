@@ -23,10 +23,10 @@ class FormEvents extends FormFull {
 
 		if($('#org-edit-link').length === 0) {
 			$('.field-container-id-63 input').css('width', '50%');
-			if(this.fieldValue('_organID')) {
+			if(this.fieldValue('_organizationID')) {
 				$('.field-container-id-63 input').after(
 					'<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organization settings" href="#n/7/r/' +
-					this.fieldValue('_organID').id +
+					this.fieldValue('_organizationID').id +
 					'/e">additional organization settings <p class="fa fa-wrench"></p></a>'
 				);
 			}
@@ -39,10 +39,10 @@ class FormEvents extends FormFull {
 			this.hideField('_user_roles');
 		}
 
-		this.disableField('_organID');
+		this.disableField('_organizationID');
 
 		if(!iAdmin()) {
-			this.hideField('_organID');
+			this.hideField('_organizationID');
 		}
 
 		var myName = this.fieldValue('name');
@@ -82,8 +82,8 @@ class FormEvents extends FormFull {
 		if(this.isNewRecord) {
 			this.hideField('mailing');
 			this.hideField('PHONE');
-			//this.hideField('desc');
-			this.hideField('_organID');
+			//this.hideField('description');
+			this.hideField('_organizationID');
 			this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
 			this.setFieldValue('passConfirm', 'nc_l4DFn76ds5yhg');
 			this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
@@ -161,9 +161,9 @@ class FormEvents extends FormFull {
 				this.setFieldValue('recPerPage', 25);
 			}
 			this.hideField('_fieldsID');
-		}
-		if(!this.isNewRecord) {
+		} else {
 			this.addLookupFilters('_nodesID', 'excludeIDs', [this.recId]);
+			this.addLookupFilters('node_fields', 'n', 200);
 		}
 		this.addLookupFilters('_nodesID', 'isDocument', 0);
 		this.addLookupFilters('_fieldsID', {
@@ -199,10 +199,10 @@ class FormEvents extends FormFull {
 		if(this.isNewRecord) {
 			if(isNaN(this.fieldValue("show"))) {
 				this.setFieldValue("show", 5);
-				this.setFieldValue("vis_create", 1);
-				this.setFieldValue("vis_view", 1);
-				this.setFieldValue("vis_list", 1);
-				this.setFieldValue("vis_dropdownList", 0);
+				this.setFieldValue("visibility_create", 1);
+				this.setFieldValue("visibility_view", 1);
+				this.setFieldValue("visibility_list", 1);
+				this.setFieldValue("visibility_dropdownList", 0);
 			}
 
 			if(!this.fieldValue("prior")) {
@@ -211,29 +211,29 @@ class FormEvents extends FormFull {
 
 		} else {
 			if(this.fieldValue("show") & 1)
-				this.setFieldValue("vis_create", 1)
+				this.setFieldValue("visibility_create", 1)
 			else
-				this.setFieldValue("vis_create", 0);
+				this.setFieldValue("visibility_create", 0);
 
 			if(this.fieldValue("show") & 4)
-				this.setFieldValue("vis_view", 1)
+				this.setFieldValue("visibility_view", 1)
 			else
-				this.setFieldValue("vis_view", 0);
+				this.setFieldValue("visibility_view", 0);
 
 			if(this.fieldValue("show") & 2)
-				this.setFieldValue("vis_list", 1)
+				this.setFieldValue("visibility_list", 1)
 			else
-				this.setFieldValue("vis_list", 0);
+				this.setFieldValue("visibility_list", 0);
 
 			if(this.fieldValue("show") & 8)
-				this.setFieldValue("vis_dropdownList", 1)
+				this.setFieldValue("visibility_dropdownList", 1)
 			else
-				this.setFieldValue("vis_dropdownList", 0);
+				this.setFieldValue("visibility_dropdownList", 0);
 
 			if(this.fieldValue("show") & 16)
-				this.setFieldValue("vis_list_custom", 1)
+				this.setFieldValue("visibility_customList", 1)
 			else
-				this.setFieldValue("vis_list_custom", 0);
+				this.setFieldValue("visibility_customList", 0);
 
 			if(this.fieldValue("fieldType") === FIELD_12_PICTURE || this.fieldValue("fieldType") === FIELD_19_RICH_EDITOR) {
 				this.setFieldValue("height", this.fieldValue("maxLength") % 10000);

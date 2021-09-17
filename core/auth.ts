@@ -1,6 +1,6 @@
 import ENV from "../ENV";
 import { mysqlExec, mysqlInsertResult, mysqlRowResultSingle, mysqlRowsResult } from "./mysql-connection";
-import { getLangs, GUEST_USER_SESSION } from "./desc-node";
+import { getLangs, GUEST_USER_SESSION } from "./descript-node";
 import { throwError, GUEST_ROLE_ID, USER_ROLE_ID, assert, UserLangEntry, UserRoles, UserSession, TRoleId, ADMIN_ROLE_ID } from "../www/js/bs-utils";
 import { L } from "./locale";
 import { pbkdf2, randomBytes } from "crypto";
@@ -133,9 +133,9 @@ async function activateUser(key) {
 		if(user) {
 			let userID = user.id;
 			//create company for new user
-			let orgId = (await mysqlExec("INSERT INTO `_organ` (`name`, `status`, `_usersID`) VALUES ('" + user.company + "', '1', " + userID + ")") as mysqlInsertResult).insertId;
-			await mysqlExec("UPDATE _users SET status=1, activation='', _organID=" + orgId + ", _usersID = " + userID + " WHERE id=" + userID);
-			await mysqlExec("UPDATE _organ SET _organID=" + orgId + " WHERE id=" + orgId);
+			let organizationID = (await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_userID`) VALUES ('" + user.company + "', '1', " + userID + ")") as mysqlInsertResult).insertId;
+			await mysqlExec("UPDATE _users SET status=1, activation='', _organizationID=" + organizationID + ", _userID = " + userID + " WHERE id =" + userID);
+			await mysqlExec("UPDATE _organization SET _organizationID=" + organizationID + " WHERE id =" + organizationID);
 			return authorizeUserByID(userID);
 		}
 	}
@@ -148,7 +148,7 @@ async function resetPassword(key) {
 		const user = users[0];
 		if(user) {
 			let userID = user.id;
-			await mysqlExec("UPDATE _users SET activation='' WHERE id='" + userID + "'");
+			await mysqlExec("UPDATE _users SET activation='' WHERE id ='" + userID + "'");
 			return authorizeUserByID(userID);
 		}
 	}
@@ -209,27 +209,27 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 		return sessionsByUserId.get(userID);
 	}
 
-	const query = "SELECT _users.name as userName, multilingualEnabled, avatar, _users._organID AS orgID, company, defaultOrg, _organ.name AS organName, email, language FROM _users LEFT JOIN _organ ON (_users._organID = _organ.id) WHERE (_users.id = " + userID + ") AND _users.status=1 LIMIT 1";
+	const query = "SELECT _users.name as userName, multilingualEnabled, avatar, _users._organizationID AS user_organizationID, company, defaultOrg, _organization.name AS organName, email, language FROM _users LEFT JOIN _organization ON (_users._organizationID = _organization.id) WHERE (_users.id = " + userID + ") AND _users.status=1 LIMIT 1";
 	const users = await mysqlExec(query) as mysqlRowsResult;
 	const user = users[0];
 	if(!user) {
 		throwError("user activation error " + userID);
 	}
 
-	let organID: number = user.orgID;
+	let organID: number = user.user_organizationID;
 
 	// fix user's org if undefined
 	if(organID === 0) {
-		const orgId = await mysqlExec("INSERT INTO `_organ` (`name`, `status`, `_usersID`) VALUES ('" + user.company + "', '1', " + userID + ")");
-		await mysqlExec("UPDATE _users SET _organID=" + orgId + ", _usersID = " + userID + " WHERE id=" + userID);
-		await mysqlExec("UPDATE _organ SET _organID=" + orgId + " WHERE id=" + orgId);
+		const orgId = await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_userID`) VALUES ('" + user.company + "', '1', " + userID + ")");
+		await mysqlExec("UPDATE _users SET _organizationID=" + orgId + ", _userID = " + userID + " WHERE id=" + userID);
+		await mysqlExec("UPDATE _organization SET _organizationID=" + orgId + " WHERE id=" + orgId);
 		return authorizeUserByID(userID);
 	}
 
 	let organID_def = user.defaultOrg || organID;
 	let organName = user.organName;
 
-	const roles = await mysqlExec("SELECT _rolesID FROM _user_roles WHERE _user_roles._usersID=" + userID + " ORDER BY _rolesID") as mysqlRowsResult;
+	const roles = await mysqlExec("SELECT _rolesID FROM _user_roles WHERE _user_roles._userID=" + userID + " ORDER BY _rolesID") as mysqlRowsResult;
 
 	let cacheKeyGenerator: string[];
 	let userRoles: UserRoles = {};
@@ -249,7 +249,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 	let organizations = {
 		[organID]: organName
 	}
-	const pgs = await mysqlExec("SELECT _organ.id, _organ.name FROM `_organ__users` LEFT JOIN _organ ON (_organ.id = _organ__users._organID) WHERE _organ__users._usersID=" + userID + " ORDER BY _organ.id") as mysqlRowsResult;
+	const pgs = await mysqlExec("SELECT _organization.id, _organization.name FROM `_organization_users` LEFT JOIN _organization ON (_organization.id = _organization_users._organizationID) WHERE _organization_users._userID=" + userID + " ORDER BY _organization.id") as mysqlRowsResult;
 	for(let org of pgs) {
 		organizations[org.id] = org.name;
 	}
@@ -288,7 +288,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 			Object.freeze(userSession);
 		//*/
 	} else {
-		await setMultiLang(user.multilingualEnabled, userSession);
+		await setMultilingual(user.multilingualEnabled, userSession);
 	}
 	return userSession;
 }
@@ -320,7 +320,7 @@ async function setCurrentOrg(organID: number, userSession: UserSession, updateIn
 	return 0;
 }
 
-async function setMultiLang(enable, userSession) {
+async function setMultilingual(enable, userSession) {
 	shouldBeAuthorized(userSession);
 	if(ENV.ENABLE_MULTILINGUAL) {
 		userSession.multilingualEnabled = enable;
@@ -389,4 +389,4 @@ const isUserHaveRole = (roleId: TRoleId, userSession: UserSession) => {
 	return userSession && userSession.userRoles[roleId];
 }
 
-export { UserSession, notificationOut, shouldBeAuthorized, isAdmin, isUserHaveRole, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultiLang, login, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode };
+export { UserSession, notificationOut, shouldBeAuthorized, isAdmin, isUserHaveRole, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultilingual, login, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode };

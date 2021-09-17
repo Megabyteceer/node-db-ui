@@ -5,7 +5,7 @@ import {
 } from "../www/js/bs-utils";
 
 import ENV from "../ENV";
-import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHandlersNames } from "./desc-node";
+import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHandlersNames } from "./descript-node";
 import { getRecords } from "./get-records";
 import { mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit, mysqlRowsResult } from "./mysql-connection";
 import { UPLOADS_FILES_PATH, idToImgURLServer } from './upload';
@@ -116,29 +116,29 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		let leastOneTablesFieldUpdated = false;
 
 		if(recId === null) {
-			if(data.hasOwnProperty('_usersID')) {
-				if(userSession && !isAdmin(userSession) && (userSession.id !== data._usersID)) {
-					throwError("wrong _usersID detected");
+			if(data.hasOwnProperty('_userID')) {
+				if(userSession && !isAdmin(userSession) && (userSession.id !== data._userID)) {
+					throwError("wrong _userID detected");
 				};
 			} else {
-				assert(userSession, "submitRecord without userSession requires _usersID to be defined.");
+				assert(userSession, "submitRecord without userSession requires _userID to be defined.");
 				noNeedComma = false;
-				insQ.push('_usersID=', userSession.id);
+				insQ.push('_userID=', userSession.id);
 				leastOneTablesFieldUpdated = true;
 			}
 
-			if(data.hasOwnProperty('_organID')) {
-				if(userSession && !isAdmin(userSession) && (userSession.id !== data._organID)) {
-					throwError("wrong _organID detected");
+			if(data.hasOwnProperty('_organizationID')) {
+				if(userSession && !isAdmin(userSession) && (userSession.id !== data._organizationID)) {
+					throwError("wrong _organizationID detected");
 				};
 			} else {
-				assert(userSession, "submitRecord without userSession requires _organID to be defined.");
+				assert(userSession, "submitRecord without userSession requires _organizationID to be defined.");
 
 				if(!noNeedComma) {
 					insQ.push(",");
 				}
 				noNeedComma = false;
-				insQ.push('_organID=', userSession.orgId);
+				insQ.push('_organizationID=', userSession.orgId);
 				leastOneTablesFieldUpdated = true;
 			}
 		}
@@ -289,7 +289,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		}
 
 		for(let key in data) {
-			if(key !== 'status' && key !== '_organID' && key !== '_usersID') {
+			if(key !== 'status' && key !== '_organizationID' && key !== '_userID') {
 				assert(node.fields.find(f => (f.fieldName === key) && !f.clientOnly), "Unknown field '" + key + "' in data set detected.");
 			}
 		}

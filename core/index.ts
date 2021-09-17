@@ -2,7 +2,7 @@
 import { createServer } from 'http';
 import api from './api';
 import { startSession, finishSession, isUserHaveRole } from './auth';
-import { initNodesData } from './desc-node';
+import { initNodesData } from './descript-node';
 import { performance } from 'perf_hooks';
 import { getBoundary, parse } from 'parse-multipart-data';
 import './locale';

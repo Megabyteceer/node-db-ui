@@ -1,4 +1,4 @@
-import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHandlersNames, filtersById } from './desc-node';
+import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHandlersNames, filtersById } from './descript-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import { ViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PRIVILEGES_PUBLISH, PRIVILEGES_EDIT_ALL, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_OWN, PRIVILEGES_VIEW_ALL, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_OWN, PRIVILEGES_DELETE, FIELD_15_1toN, FIELD_19_RICH_EDITOR, RecordData, RecordsData, RecId, VIEW_MASK_LIST, VIEW_MASK_CUSTOM_LIST } from "../www/js/bs-utils";
 import { UserSession } from './auth';
@@ -55,7 +55,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 
 
 			if(fieldType === FIELD_16_RATING) {
-				selQ.push(tableName, '.rates_1,', tableName, '.rates_2,', tableName, '.rates_3,', tableName, '.rates_4,', tableName, '.rates_5,(SELECT rate FROM ', tableName, '_rates WHERE _recID=', tableName, '.id AND _usersID=', userSession.id as unknown as string, ' LIMIT 1) AS rates_y');
+				selQ.push(tableName, '.rates_1,', tableName, '.rates_2,', tableName, '.rates_3,', tableName, '.rates_4,', tableName, '.rates_5,(SELECT rate FROM ', tableName, '_rates WHERE _recID=', tableName, '.id AND _userID=', userSession.id as unknown as string, ' LIMIT 1) AS rates_y');
 			} else if(fieldType === FIELD_14_NtoM) {//n2m
 				let tblTmpName = 't' + f.id;
 				if(f.icon) {
@@ -82,7 +82,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 
 	selQ.push(tableName, '.id');
 
-	selQ.push(',', tableName, '._organID AS creatorORG,', tableName, '._usersID AS creatorUSER');
+	selQ.push(',', tableName, '._organizationID AS creatorORG,', tableName, '._userID AS creatorUSER');
 	if(node.draftable) {
 		selQ.push(',', tableName, '.status');
 	}
@@ -259,12 +259,12 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 		if(privileges & PRIVILEGES_VIEW_ALL) {
 
 		} else if((privileges & PRIVILEGES_VIEW_ORG) && (userSession.orgId !== 0)) {
-			wheresBegin.push(" AND (", tableName, "._organID=", userSession.orgId as unknown as string, ')');
+			wheresBegin.push(" AND (", tableName, "._organizationID=", userSession.orgId as unknown as string, ')');
 		} else if(privileges & PRIVILEGES_VIEW_OWN) {
 			if(tableName !== '_messages') {
-				wheresBegin.push(" AND (", tableName, "._usersID=", userSession.id as unknown as string, ')');
+				wheresBegin.push(" AND (", tableName, "._userID=", userSession.id as unknown as string, ')');
 			} else {
-				wheresBegin.push(" AND ((", tableName, "._usersID=", userSession.id as unknown as string, ")OR(", tableName, "._receiverID=", userSession.id as unknown as string, '))');
+				wheresBegin.push(" AND ((", tableName, "._userID=", userSession.id as unknown as string, ")OR(", tableName, "._receiverID=", userSession.id as unknown as string, '))');
 			}
 		} else {
 			throwError('Access denied 3.');

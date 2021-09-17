@@ -5,7 +5,7 @@ import { join } from "path";
 import * as fs from "fs";
 const sharp = require("sharp");
 import ENV from "../ENV";
-import { getNodeDesc, getFieldDesc } from "./desc-node";
+import { getNodeDesc, getFieldDesc } from "./descript-node";
 import { L } from "./locale";
 
 const UPLOADS_IMAGES_PATH = join(__dirname, '../../www/images/uploads');

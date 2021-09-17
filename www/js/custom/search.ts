@@ -151,7 +151,7 @@ export default class Search extends Component<any, any> {
 						},
 							img,
 							R.h5(null, i.name),
-							i.desc.split('<br>').map((i, k) => {
+							i.description.split('<br>').map((i, k) => {
 								return R.p({
 									key: k
 								}, i);

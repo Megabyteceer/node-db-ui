@@ -2,7 +2,7 @@
 import { mysqlExec } from "../core/mysql-connection";
 import { shouldBeAdmin } from "../core/admin/admin";
 import { mustBeUnset } from "../core/auth";
-import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } from "../core/desc-node";
+import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } from "../core/descript-node";
 import { getRecords } from "../core/get-records";
 import { submitRecord } from "../core/submit";
 import { L } from "../core/locale";
@@ -47,8 +47,8 @@ const handlers: NodeEventsHandlers = {
 				fieldType: FIELD_7_Nto1,
 				forSearch: 1,
 				selectFieldName: parentNode.tableName,
-				_usersID: userSession.id,
-				_organID: userSession.orgId
+				_userID: userSession.id,
+				_organizationID: userSession.orgId
 			};
 			await submitRecord(NODE_ID_FIELDS, linkerFieldData);
 		}
@@ -80,7 +80,7 @@ const handlers: NodeEventsHandlers = {
 				const realFieldName = currentData.fieldName;
 				const fieldType = currentData.fieldType;
 
-				if((realFieldName !== '_organID') && (realFieldName !== '_usersID') && (realFieldName !== 'createdOn') && (realFieldName !== 'ID')) {
+				if((realFieldName !== '_organizationID') && (realFieldName !== '_userID') && (realFieldName !== '_createdON') && (realFieldName !== 'id')) {
 					if((currentData.noStore === 0) && (fieldType !== FIELD_8_STATIC_TEXT) && (fieldType !== FIELD_14_NtoM) && (fieldType !== FIELD_15_1toN)) {
 
 
@@ -214,18 +214,17 @@ async function createFieldInTable(data: RecordDataWrite) {
 		data.selectFieldName = linkedNodeName;
 		data.forSearch = 1;
 
-		const fld1 = nodeName + 'ID';
-		const fld2 = linkedNodeName + 'ID';
+		const fld1 = nodeName + 'id';
+		const fld2 = linkedNodeName + 'id';
 
 		await mysqlExec(`CREATE TABLE \`${fieldName}\` (
-			ID bigint(15) unsigned NOT NULL AUTO_INCREMENT,
 			\`${fld1}\` bigint(15) unsigned NOT NULL DEFAULT 0,
 			\`${fld2}\` bigint(15) unsigned NOT NULL DEFAULT 0,
-			primary key(ID),
+			primary key(\`${fld1}\`,\`${fld2}\`),
 			INDEX(\`${fld1}\`),
 			INDEX(\`${fld2}\`),
-			FOREIGN KEY(\`${fld1}\`) REFERENCES \`${nodeName}\`(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-			FOREIGN KEY(\`${fld2}\`) REFERENCES \`${linkedNodeName}\`(ID) ON DELETE CASCADE ON UPDATE CASCADE
+			FOREIGN KEY (\`${fld1}\`) REFERENCES \`${nodeName}\`(id) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (\`${fld2}\`) REFERENCES \`${linkedNodeName}\`(id) ON DELETE CASCADE ON UPDATE CASCADE
 		) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4; `);
 	} else if(!data.noStore) {
 		if(fieldType === FIELD_7_Nto1) {
@@ -245,7 +244,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 
 			if(fieldType === FIELD_7_Nto1) {
 				await mysqlExec('ALTER TABLE \`' + nodeName + '\` ADD INDEX(\`' + fieldName + '\`);');
-				await mysqlExec('ALTER TABLE \`' + nodeName + '\` ADD FOREIGN KEY (\`' + fieldName + '\`) REFERENCES \`' + linkedNodeName + '\`(ID) ON DELETE RESTRICT ON UPDATE RESTRICT;');
+				await mysqlExec('ALTER TABLE \`' + nodeName + '\` ADD FOREIGN KEY (\`' + fieldName + '\`) REFERENCES \`' + linkedNodeName + '\`(id) ON DELETE RESTRICT ON UPDATE RESTRICT;');
 			}
 		}
 	}

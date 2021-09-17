@@ -1,7 +1,7 @@
 import { RecordsDataResponse } from 'www/js/bs-utils';
 import { nodePrivileges, getClientEventHandler, clearCache } from './admin/admin';
-import { setCurrentOrg, setMultiLang, login, resetPassword, registerUser, activateUser } from './auth';
-import { getNodeDesc, getNodesTree } from './desc-node';
+import { setCurrentOrg, setMultilingual, login, resetPassword, registerUser, activateUser } from './auth';
+import { getNodeDesc, getNodesTree } from './descript-node';
 import { getRecords, deleteRecord } from './get-records';
 import { submitRecord, uniqueCheck } from './submit';
 import { uploadImage, uploadFile } from './upload';
@@ -29,7 +29,7 @@ const api = {
 		setCurrentOrg(reqData.orgId, userSession, true).then(res);
 	},
 	"api/toggleMultilingual": (reqData, userSession, res) => {
-		setMultiLang(!userSession.langs, userSession).then(res);
+		setMultilingual(!userSession.langs, userSession).then(res);
 	},
 	"api/descNode": (reqData, userSession, res) => {
 		res(getNodeDesc(reqData.nodeId, userSession));

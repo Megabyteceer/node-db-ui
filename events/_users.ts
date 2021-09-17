@@ -6,7 +6,7 @@ import { submitRecord } from "../core/submit";
 async function clearUserParams(data, currentData, userSession) {
 	debugger;
 	if(!isAdmin(userSession)) {
-		delete data._organID;
+		delete data._organizationID;
 		delete data._user_roles;
 	}
 
@@ -41,8 +41,8 @@ export default {
 		}
 
 		if(newData.hasOwnProperty('company')) {
-			if(currentData._organID.id) {
-				await submitRecord(7, { name: newData.company }, currentData._organID.id);
+			if(currentData._organizationID.id) {
+				await submitRecord(7, { name: newData.company }, currentData._organizationID.id);
 			}
 		}
 		return clearUserParams(newData, currentData, userSession);

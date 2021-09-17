@@ -1,4 +1,4 @@
-import { reloadMetadataSchedule } from "../core/desc-node";
+import { reloadMetadataSchedule } from "../core/descript-node";
 import { RecordData, RecordDataWrite, UserSession } from "../www/js/bs-utils";
 
 export default {

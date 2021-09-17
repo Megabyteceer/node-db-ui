@@ -1,4 +1,4 @@
-import { reloadMetadataSchedule } from "../core/desc-node";
+import { reloadMetadataSchedule } from "../core/descript-node";
 import { getRecords } from "../core/get-records";
 import { createFieldInTable } from "./_fields";
 import { NODE_ID_FIELDS, RecordData, RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";

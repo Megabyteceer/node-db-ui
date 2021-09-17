@@ -1,4 +1,4 @@
-$(async function () {
+$(async function() {
 	//@ts-ignore
 	window.Bootstrap = await import("bootstrap");
 	//@ts-ignore
@@ -14,7 +14,7 @@ $(async function () {
 		if(data.hasOwnProperty('options')) {
 
 			data.options.callbacks = {
-				onChange: function (contents, $editable) {
+				onChange: function(contents, $editable) {
 					sendValueToParent();
 				}
 			};

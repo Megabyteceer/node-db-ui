@@ -68,7 +68,7 @@ class FieldsEvents extends FormEvents {
 		this.showField();
 		this.setFieldLabel("description", L("FLD_DESC"));
 		this.hideField("selectFieldName", "show", "nodeRef", "enum", "width", "height", "icon");
-		this.enableField("vis_list");
+		this.enableField("visibility_list");
 		if(fieldType === FIELD_14_NtoM) {
 			this.getField('nodeRef').setLookupFilter('excludeIDs', [this.fieldValue("node_fields_linker").id]);
 		} else {
@@ -84,10 +84,10 @@ class FieldsEvents extends FormEvents {
 				break;
 			case FIELD_14_NtoM:
 			case FIELD_15_1toN:
-				this.disableField("vis_list");
+				this.disableField("visibility_list");
 				this.disableField("noStore");
 				this.setFieldValue('noStore', 0);
-				this.setFieldValue("vis_list", 0);
+				this.setFieldValue("visibility_list", 0);
 				this.hideField('forSearch', 'requirement', 'unique');
 			case FIELD_7_Nto1:
 				this.hideField("maxLength", "unique");
@@ -139,10 +139,10 @@ class FieldsEvents extends FormEvents {
 		this._fields_noStore_onChange();
 	}
 
-	_fields_vis_create_onChange() {
+	_fields_visibility_create_onChange() {
 		var shv = this.fieldValue("show");
 
-		if(this.fieldValue("vis_create"))
+		if(this.fieldValue("visibility_create"))
 			shv |= 1;
 		else
 			shv &= (65535 - 1);
@@ -150,10 +150,10 @@ class FieldsEvents extends FormEvents {
 		this.setFieldValue("show", shv);
 	}
 
-	_fields_vis_list_onChange() {
+	_fields_visibility_list_onChange() {
 		var shv = this.fieldValue("show");
 
-		if(this.fieldValue("vis_list"))
+		if(this.fieldValue("visibility_list"))
 			shv |= 2;
 		else
 			shv &= (65535 - 2);
@@ -161,10 +161,10 @@ class FieldsEvents extends FormEvents {
 		this.setFieldValue("show", shv);
 	}
 
-	_fields_vis_list_custom_onChange() {
+	_fields_visibility_customList_onChange() {
 		var shv = this.fieldValue("show");
 
-		if(this.fieldValue("vis_list_custom"))
+		if(this.fieldValue("visibility_customList"))
 			shv |= 16;
 		else
 			shv &= (65535 - 16);
@@ -172,9 +172,9 @@ class FieldsEvents extends FormEvents {
 		this.setFieldValue("show", shv);
 	}
 
-	_fields_vis_view_onChange() {
+	_fields_visibility_view_onChange() {
 		var shv = this.fieldValue("show");
-		if(this.fieldValue("vis_view")) {
+		if(this.fieldValue("visibility_view")) {
 			shv |= 4;
 		} else {
 			shv &= (65535 - 4);
@@ -183,9 +183,9 @@ class FieldsEvents extends FormEvents {
 		this.setFieldValue("show", shv);
 	}
 
-	_fields_vis_dropdownList_onChange() {
+	_fields_visibility_dropdownList_onChange() {
 		var shv = this.fieldValue("show");
-		if(this.fieldValue("vis_dropdownList")) {
+		if(this.fieldValue("visibility_dropdownList")) {
 			shv |= 8;
 		} else {
 			shv &= (65535 - 8);
