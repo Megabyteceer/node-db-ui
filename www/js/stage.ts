@@ -106,7 +106,9 @@ class Stage extends Component<any, any> {
 
 	static async showForm(nodeId: RecId, recId?: RecId | 'new', filters: Filters = {}, editable?: boolean, modal?: boolean, onModified?: (dataToSend: RecordData) => void, noAnimation = false) {
 		if(!allForms.length || modal) {
-			if(allForms.find(formEntry => formEntry.form.nodeId === nodeId && Boolean(recId) === Boolean(formEntry.form.recId))) { //prevent opening two forms of the same type
+			if(allForms.find((formEntry, i) => {
+				return (i > 0) && (formEntry.form.nodeId === nodeId && Boolean(recId) === Boolean(formEntry.form.recId))
+			})) { //prevent opening two forms of the same type
 				Notify.add(L("TOO_MATCH_FORMS"));
 				return;
 			}
