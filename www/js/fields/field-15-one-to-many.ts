@@ -1,10 +1,10 @@
 import { R } from "../r";
 import React from "react";
 import { List } from "../forms/list";
-import { deleteRecord, L } from "../utils";
+import { assignFilters, deleteRecord, L } from "../utils";
 import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
-import { FIELD_15_1toN, RecId, RecordData, RecordsData } from "../bs-utils";
+import { FIELD_15_1toN, Filters, RecId, RecordData, RecordsData } from "../bs-utils";
 
 class LookupOneToManyFiled extends fieldLookupMixins {
 
@@ -94,6 +94,13 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 		await this.props.form.saveForm();
 		const linkerFieldName = this.getLinkerFieldName();
 		this.state.filters[linkerFieldName] = this.props.form.currentData.id;
+	}
+
+	setLookupFilter(filtersObjOrName: string | Filters, val?: any) {
+		super.setLookupFilter(filtersObjOrName, val);
+		if(this.inlineListRef) {
+			assignFilters(this.state.filters, this.inlineListRef.filters);
+		}
 	}
 
 	render() {
