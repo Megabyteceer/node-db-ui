@@ -73,7 +73,7 @@ class eventProcessingMixins extends BaseForm {
 				isHandlersInitialized = true;
 			}
 		}
-
+		this.recId = this.props.initialData.id || 'new';
 		this.currentData = null;
 		this.onSaveCallback = null;
 		this.hiddenFields = {};
