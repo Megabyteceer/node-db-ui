@@ -218,9 +218,10 @@ async function createFieldInTable(data: RecordDataWrite) {
 		const fld2 = linkedNodeName + 'id';
 
 		await mysqlExec(`CREATE TABLE \`${fieldName}\` (
+			id bigint(15) unsigned NOT NULL AUTO_INCREMENT,
 			\`${fld1}\` bigint(15) unsigned NOT NULL DEFAULT 0,
 			\`${fld2}\` bigint(15) unsigned NOT NULL DEFAULT 0,
-			primary key(\`${fld1}\`,\`${fld2}\`),
+			primary key(id),
 			INDEX(\`${fld1}\`),
 			INDEX(\`${fld2}\`),
 			FOREIGN KEY (\`${fld1}\`) REFERENCES \`${nodeName}\`(id) ON DELETE CASCADE ON UPDATE CASCADE,
