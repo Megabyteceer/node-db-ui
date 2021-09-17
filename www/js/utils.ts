@@ -1149,7 +1149,9 @@ function initDictionary(o) {
 }
 
 function reloadLocation() {
-	location.reload();
+	setTimeout(() => {
+		location.reload();
+	}, 10);
 }
 
 function L(key: LANG_KEYS, param?: any) {
