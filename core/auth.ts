@@ -1,6 +1,6 @@
 import ENV from "../ENV";
 import { mysqlExec, mysqlInsertResult, mysqlRowResultSingle, mysqlRowsResult } from "./mysql-connection";
-import { getLangs, GUEST_USER_SESSION } from "./descript-node";
+import { getLangs, GUEST_USER_SESSION } from "./describe-node";
 import { throwError, GUEST_ROLE_ID, USER_ROLE_ID, assert, UserLangEntry, UserRoles, UserSession, TRoleId, ADMIN_ROLE_ID } from "../www/js/bs-utils";
 import { L } from "./locale";
 import { pbkdf2, randomBytes } from "crypto";

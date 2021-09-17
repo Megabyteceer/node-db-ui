@@ -1,4 +1,4 @@
-import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHandlersNames, filtersById } from './descript-node';
+import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHandlersNames, filtersById } from './describe-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import { ViewMask, throwError, assert, FIELD_16_RATING, FIELD_14_NtoM, FIELD_7_Nto1, FIELD_1_TEXT, PRIVILEGES_PUBLISH, PRIVILEGES_EDIT_ALL, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_OWN, PRIVILEGES_VIEW_ALL, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_OWN, PRIVILEGES_DELETE, FIELD_15_1toN, FIELD_19_RICH_EDITOR, RecordData, RecordsData, RecId, VIEW_MASK_LIST, VIEW_MASK_CUSTOM_LIST } from "../www/js/bs-utils";
 import { UserSession } from './auth';

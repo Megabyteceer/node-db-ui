@@ -2,7 +2,7 @@
 import { mysqlExec } from "../core/mysql-connection";
 import { shouldBeAdmin } from "../core/admin/admin";
 import { mustBeUnset } from "../core/auth";
-import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } from "../core/descript-node";
+import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } from "../core/describe-node";
 import { getRecords } from "../core/get-records";
 import { submitRecord } from "../core/submit";
 import { L } from "../core/locale";

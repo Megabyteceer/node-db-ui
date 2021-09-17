@@ -1,7 +1,7 @@
 
 import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "../core/mysql-connection";
 import { shouldBeAdmin } from "../core/admin/admin";
-import { NodeEventsHandlers, reloadMetadataSchedule } from "../core/descript-node";
+import { NodeEventsHandlers, reloadMetadataSchedule } from "../core/describe-node";
 import { FIELD_1_TEXT, FIELD_4_DATE_TIME, FIELD_7_Nto1, NODE_ID_ORGANIZATIONS, NODE_ID_USERS, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_READONLY } from "../www/js/bs-utils";
 import { L } from "../core/locale";
 

@@ -5,7 +5,7 @@ import {
 } from "../www/js/bs-utils";
 
 import ENV from "../ENV";
-import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHandlersNames } from "./descript-node";
+import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHandlersNames } from "./describe-node";
 import { getRecords } from "./get-records";
 import { mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit, mysqlRowsResult } from "./mysql-connection";
 import { UPLOADS_FILES_PATH, idToImgURLServer } from './upload';

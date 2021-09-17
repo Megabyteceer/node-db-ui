@@ -1,5 +1,5 @@
 
-import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../descript-node";
+import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../describe-node";
 import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 
 import { ROLE_ID_SUPER_ADMIN, ROLE_ID_VIEW_ALL, throwError } from "../../www/js/bs-utils";

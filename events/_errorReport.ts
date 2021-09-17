@@ -1,5 +1,5 @@
 import { mail_utf8, UserSession } from "../core/auth";
-import { NodeEventsHandlers } from "../core/descript-node";
+import { NodeEventsHandlers } from "../core/describe-node";
 import ENV from "../ENV";
 import { RecordDataWrite } from "../www/js/bs-utils";
 

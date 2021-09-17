@@ -1,4 +1,4 @@
-import { NodeEventsHandlers } from "../core/descript-node"
+import { NodeEventsHandlers } from "../core/describe-node"
 import { RecordData, RecordDataWrite, UserSession } from "../www/js/bs-utils";
 
 const handlers: NodeEventsHandlers = {

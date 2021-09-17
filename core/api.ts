@@ -1,7 +1,7 @@
 import { RecordsDataResponse } from 'www/js/bs-utils';
 import { nodePrivileges, getClientEventHandler, clearCache } from './admin/admin';
 import { setCurrentOrg, setMultilingual, login, resetPassword, registerUser, activateUser } from './auth';
-import { getNodeDesc, getNodesTree } from './descript-node';
+import { getNodeDesc, getNodesTree } from './describe-node';
 import { getRecords, deleteRecord } from './get-records';
 import { submitRecord, uniqueCheck } from './submit';
 import { uploadImage, uploadFile } from './upload';
