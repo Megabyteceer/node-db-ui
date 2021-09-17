@@ -17,6 +17,11 @@ window.addEventListener('message', (e) => {
 
 registerFieldClass(FIELD_19_RICH_EDITOR, class RichEditorField extends BaseField {
 
+	constructor(props) {
+		super(props);
+		this.iframeId = idCounter++;
+	}
+
 	viewportRef: HTMLIFrameElement;
 	iframeId: number;
 	summerNoteIsInitialized: boolean;
@@ -27,7 +32,6 @@ registerFieldClass(FIELD_19_RICH_EDITOR, class RichEditorField extends BaseField
 
 	componentDidMount() {
 		if(this.props.isEdit) {
-			this.iframeId = idCounter++;
 			var field = this.props.field;
 			var w = Math.floor(field.maxLength / 10000);
 			var h = field.maxLength % 10000;
