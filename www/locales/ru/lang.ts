@@ -49,6 +49,7 @@ initDictionary({
 	'TO_START': 'чтобы начать работу...',
 	'LIST_EMPTY': 'Список пуст.',
 	'SHOWED_LIST': '% из %',
+	'TOTAL_IN_LIST': 'всего %',
 	'SEARCH_RESULTS': ' (результаты поиска по запросу "%")',
 	'EDIT': 'Редактировать',
 	'TEMPLATE': 'черновик',

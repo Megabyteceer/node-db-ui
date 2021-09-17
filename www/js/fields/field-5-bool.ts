@@ -1,4 +1,4 @@
-import { assert, FIELD_5_BOOL } from "../bs-utils";
+import { FIELD_5_BOOL } from "../bs-utils";
 import { R } from "../r";
 import React, { Component } from "react";
 import { L, renderIcon } from "../utils";

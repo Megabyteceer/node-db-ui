@@ -1282,6 +1282,7 @@ input[readonly] {
 }
 
 .list-paginator {
+	color: var(--BRAND_COLOR_LIGHT);
 	margin-top: 30;
 	font-size: 75%;
 }

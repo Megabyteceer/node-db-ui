@@ -531,11 +531,17 @@ class List extends BaseForm<ListProps, ListState> {
 			paginatorText += L('SEARCH_RESULTS', this.filters.s);
 		}
 
-		if(data.items.length > 0 && data.items.length < data.total) {
-			footer = R.span({ className: 'list-paginator' },
-				paginatorText,
-				paginator
-			)
+		if(data.items.length > 0) {
+			if(data.items.length < data.total) {
+				footer = R.span({ className: 'list-paginator' },
+					paginatorText,
+					paginator
+				)
+			} else {
+				footer = R.span({ className: 'list-paginator' },
+					L('TOTAL_IN_LIST', data.items.length)
+				)
+			}
 		}
 
 		var nodeAdmin;
@@ -557,7 +563,7 @@ class List extends BaseForm<ListProps, ListState> {
 			header,
 			footer,
 			body,
-			footer
+			(data.items.length > 5) ? footer : undefined
 		);
 	}
 }

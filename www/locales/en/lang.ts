@@ -54,6 +54,7 @@ const LANGS = {
 	'TO_START': 'to start your work...',
 	'LIST_EMPTY': 'List is empty.',
 	'SHOWED_LIST': '% of %',
+	'TOTAL_IN_LIST': 'total %',
 	'SEARCH_RESULTS': ' (search results for "%")',
 	'EDIT': 'Edit',
 	'TEMPLATE': 'template',
