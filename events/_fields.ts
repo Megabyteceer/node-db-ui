@@ -69,25 +69,28 @@ const handlers: NodeEventsHandlers = {
 
 		if(!currentData.noStore) {
 
-			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxLength') || newData.hasOwnProperty('multilingual')) {
+			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxLength') || newData.hasOwnProperty('multilingual') || newData.hasOwnProperty('forSearch')) {
 
 				const multilingualChanged = newData.hasOwnProperty('multilingual') && currentData.multilingual !== newData.multilingual;
 
-				currentData = Object.assign(currentData, newData);
-
 				const node = getNodeDesc(currentData.node_fields_linker.id);
-
 				const realFieldName = currentData.fieldName;
 				const fieldType = currentData.fieldType;
 
+				if(currentData.forSearch !== newData.forSearch) {
+					if(newData.forSearch) {
+						await mysqlExec('ALTER TABLE `' + node.tableName + '` ADD INDEX (`' + realFieldName + '`);');
+					} else {
+						await mysqlExec('ALTER TABLE `' + node.tableName + '` DROP INDEX `' + realFieldName + '`;');
+					}
+				}
+
+				currentData = Object.assign(currentData, newData);
+
 				if((realFieldName !== '_organizationID') && (realFieldName !== '_usersID') && (realFieldName !== '_createdON') && (realFieldName !== 'id')) {
 					if((currentData.noStore === 0) && (fieldType !== FIELD_8_STATIC_TEXT) && (fieldType !== FIELD_14_NtoM) && (fieldType !== FIELD_15_1toN)) {
-
-
 						const typeQ = getFieldTypeSQL(currentData);
 						if(typeQ) {
-
-
 							const langs = getLangs();
 
 							if(multilingualChanged) {
