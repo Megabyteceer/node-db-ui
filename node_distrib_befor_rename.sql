@@ -18,10 +18,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `node_distrib`
+-- Database: `crud_js_base`
 --
-CREATE DATABASE IF NOT EXISTS `node_distrib` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `node_distrib`;
+CREATE DATABASE IF NOT EXISTS `crud_js_base` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `crud_js_base`;
 
 -- --------------------------------------------------------
 
@@ -171,7 +171,7 @@ INSERT INTO `_fields` (`id`, `name`, `status`, `_usersID`, `createdON`, `_organi
 (12, 'Field description ', 1, 0, '0000-00-00 00:00:00', 0, 6, 5, 75, 1, 'description', '', '', 65000, 0, 0, 0, 0, 0, 1, 0, '', 0, 0),
 (13, 'Section id', 1, 0, '0000-00-00 00:00:00', 0, 4, 254, 19, 2, 'id', '', '', 15, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (14, 'Table name in DB', 1, 0, '0000-00-00 00:00:00', 0, 4, 5, 111, 1, 'tableName', '', '', 24, 0, 1, 0, 0, 0, 0, 0, '', 0, 0),
-(17, 'Organisation name', 1, 0, '0000-00-00 00:00:00', 0, 7, 255, 1, 1, 'name', '', '', 255, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
+(17, 'Organization name', 1, 0, '0000-00-00 00:00:00', 0, 7, 255, 1, 1, 'name', '', '', 255, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (18, 'Member of', 1, 0, '2014-12-26 16:34:51', 0, 5, 5, 1022, 7, '_organID', '_organ', '', 7, 0, 0, 1, 0, 7, 0, 0, '', 0, 0),
 (20, 'Field type', 1, 0, '0000-00-00 00:00:00', 0, 6, 7, 33, 6, 'fieldType', '', '', 0, 1, 0, 1, 0, 0, 0, 0, '', 0, 1),
 (21, 'Visibility', 1, 0, '0000-00-00 00:00:00', 0, 6, 5, 62, 2, 'show', '', '', 15, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
@@ -190,25 +190,25 @@ INSERT INTO `_fields` (`id`, `name`, `status`, `_usersID`, `createdON`, `_organi
 (36, 'Role name', 1, 0, '0000-00-00 00:00:00', 0, 8, 255, 23, 1, 'name', '', '', 45, 1, 1, 1, 0, 0, 1, 0, '', 0, 0),
 (37, 'Description', 1, 0, '2011-05-10 13:15:46', 0, 8, 15, 64, 1, 'desc', '', '', 3000, 0, 0, 0, 0, 0, 1, 0, '', 0, 0),
 (38, 'E-mail', 1, 0, '2011-05-13 08:57:09', 0, 5, 19, 105, 1, 'email', '', '', 50, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
-(39, 'Confirm password', 1, 0, '2011-05-13 09:43:08', 0, 5, 1, 317, 10, 'passconfirm', '', '', 128, 0, 0, 0, 1, 0, 0, 1, '', 0, 0),
+(39, 'Confirm password', 1, 0, '2011-05-13 09:43:08', 0, 5, 1, 317, 10, 'passConfirm', '', '', 128, 0, 0, 0, 1, 0, 0, 1, '', 0, 0),
 (40, '', 1, 0, '2011-05-13 10:11:08', 0, 5, 0, 153, 8, 'desc_spl', '', '<div id=\"noNeedLoginHere\"></div> Fill information about your self:', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 0),
 (42, 'Creation date', 1, 0, '0000-00-00 00:00:00', 0, 11, 14, 1, 4, 'createdOn', '', '', 0, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
-(44, 'Mуssage text', 1, 0, '2011-09-19 08:50:41', 0, 11, 5, 4, 1, 'text', '', '', 64000, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
+(44, 'Message text', 1, 0, '2011-09-19 08:50:41', 0, 11, 5, 4, 1, 'text', '', '', 64000, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (45, 'Sender', 1, 0, '2014-12-02 13:06:31', 0, 11, 14, 6, 7, '_usersID', '_users', '', 5, 0, 0, 1, 0, 5, 0, 0, 'avatar', 0, 0),
 (46, '', 1, 0, '2011-09-19 09:31:16', 0, 11, 4, 7, 8, 'descript', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 0),
-(47, 'Readed', 1, 0, '2011-09-19 09:44:26', 0, 11, 10, 5, 5, 'readed', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
+(47, 'Read', 1, 0, '2011-09-19 09:44:26', 0, 11, 10, 5, 5, 'readed', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (48, 'Subject', 1, 0, '2011-09-19 11:16:00', 0, 11, 255, 2, 1, 'name', '', '', 128, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (49, 'Notify on Email about new private messages', 1, 0, '2014-12-30 11:49:56', 0, 5, 1, 319, 5, 'mailing', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (52, 'Parent document', 1, 0, '0000-00-00 00:00:00', 0, 9, 7, 56, 7, '_nodesID', '_nodes', '', 4, 1, 0, 1, 0, 4, 0, 0, '', 0, 0),
 (53, 'Filter name', 1, 0, '2014-11-28 12:16:09', 0, 9, 255, 2, 1, 'name', '', '', 40, 1, 0, 1, 0, 0, 1, 0, '', 0, 0),
 (54, 'SQL condition', 1, 0, '2014-11-28 12:17:21', 0, 9, 7, 23, 1, 'filter', '', '', 1024, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (55, 'ViewName to select from', 1, 0, '2014-11-28 12:18:21', 0, 9, 7, 34, 1, 'view', '', '', 127, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
-(56, 'Reciever', 1, 0, '2014-12-02 13:08:17', 0, 11, 15, 0, 7, '_receiverID', '_users', '', 5, 1, 0, 1, 0, 5, 0, 0, 'avatar', 0, 0),
+(56, 'Receiver', 1, 0, '2014-12-02 13:08:17', 0, 11, 15, 0, 7, '_receiverID', '_users', '', 5, 1, 0, 1, 0, 5, 0, 0, 'avatar', 0, 0),
 (59, 'Avatar', 1, 0, '2014-12-16 13:16:57', 0, 5, 31, 1, 12, 'avatar', '', '', 2000200, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (73, 'Is Draftable', 1, 0, '2014-12-10 09:45:25', 0, 4, 5, 1254, 5, 'draftable', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (90, 'Extended DB name', 1, 0, '2014-12-26 11:15:12', 0, 6, 5, 61, 1, 'selectFieldName', '', '', 127, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
-(125, '\"Created on\" field', 1, 0, '2014-12-26 11:54:19', 0, 4, 1, 9154, 5, 'createdon_field', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 0),
-(126, '\"Created by\" field (Organization)', 1, 0, '2014-12-26 11:54:33', 0, 4, 1, 10185, 5, 'createdby_field', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 0),
+(125, 'Add \"Created on\" field', 1, 0, '2014-12-26 11:54:19', 0, 4, 1, 9154, 5, 'addCreatedOnFiled', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 0),
+(126, 'Add \"Created by\" field (Organization)', 1, 0, '2014-12-26 11:54:33', 0, 4, 1, 10185, 5, 'addCreatedByFiled', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 0),
 (138, 'Sort by', 1, 0, '0000-00-00 00:00:00', 0, 4, 5, 116, 7, '_fieldsID', '_fields', '', 6, 0, 0, 1, 0, 6, 0, 0, '', 0, 0),
 (139, 'Activation code', 1, 0, '0000-00-00 00:00:00', 0, 5, 0, 856, 1, 'activation', '', '', 16, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (145, '\"Sender\" field (user)', 1, 0, '0000-00-00 00:00:00', 0, 4, 1, 10184, 5, 'createUserFld', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 0),
@@ -239,15 +239,15 @@ INSERT INTO `_fields` (`id`, `name`, `status`, `_usersID`, `createdON`, `_organi
 (238, 'Show Twitter', 1, 0, '2015-05-29 10:24:24', 0, 5, 0, 863, 5, 'show_twitter', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (243, 'Document name', 1, 0, '0000-00-00 00:00:00', 0, 49, 255, 0, 1, 'name', '', '', 64, 1, 0, 1, 0, 0, 1, 0, '', 0, 0),
 (244, 'Body', 1, 0, '2015-11-11 06:13:52', 0, 49, 5, 71, 19, 'body', '', '', 8000999, 0, 0, 0, 0, 0, 1, 0, '', 999, 0),
-(245, 'help', 1, 0, '2015-11-11 06:34:51', 0, 49, 5, 21, 1, 'help', '', '<div class=\"row\" style=\"margin-top:10px;\"><div class=\"col-xs-3\" style=\"text-align:right;\">Direct link:</div><div id=\"help_filename\" class=\"col-xs-7\">&nbsp;<b>https://unfo.pro/custom/html/xFILENAMEx.html</b>&nbsp;</div></div>', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 0),
+(245, 'Link', 1, 0, '2015-11-11 06:34:51', 0, 49, 5, 21, 1, 'link', '', '', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 0),
 (246, 'File name', 1, 0, '2015-11-11 07:17:47', 0, 49, 5, 31, 1, 'title', '', '', 127, 1, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (251, 'Moderators', 1, 0, '2016-02-07 15:14:02', 0, 7, 5, 82, 14, '_organ__users', '_users', '', 5, 0, 0, 0, 0, 5, 0, 0, 'avatar', 0, 0),
 (252, 'Records per page', 1, 0, '2016-02-08 16:39:22', 0, 4, 5, 10221, 2, 'recPerPage', '', '', 3, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (253, 'Related Section', 1, 0, '2015-03-16 09:36:21', 0, 6, 5, 34, 7, 'nodeRef', '_nodes', '', 0, 0, 0, 1, 0, 4, 0, 0, '', 0, 0),
 (256, 'Icon', 1, 0, '0000-00-00 00:00:00', 0, 6, 5, 69, 1, 'icon', '', '', 24, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (283, 'Moderators', 1, 1, '2016-03-14 06:11:03', 0, 7, 5, 81, 17, 't_moders', '', '', 0, 0, 0, 0, 1, 0, 0, 0, 'tags', 0, 0),
-(287, 'Roles', 1, 1, '2016-03-14 10:31:44', 0, 5, 1, 288, 14, '_userroles', '_roles', '', 0, 0, 0, 0, 0, 8, 0, 0, '', 0, 0),
-(288, 'Role owners', 1, 1, '2016-03-14 10:31:44', 0, 8, 5, 87, 14, '_userroles', '_users', '', 0, 0, 0, 0, 0, 5, 0, 0, 'avatar', 0, 0),
+(287, 'Roles', 1, 1, '2016-03-14 10:31:44', 0, 5, 1, 288, 14, '_user_roles', '_roles', '', 0, 0, 0, 0, 0, 8, 0, 0, '', 0, 0),
+(288, 'Role owners', 1, 1, '2016-03-14 10:31:44', 0, 8, 5, 87, 14, '_user_roles', '_users', '', 0, 0, 0, 0, 0, 5, 0, 0, 'avatar', 0, 0),
 (295, 'Creation name', 1, 1, '2016-03-21 04:15:14', 0, 4, 1, 101, 1, 'creationName', '', 'Name which will be used on creation page. Useful for some not English languages. You can keep this field empty.', 64, 0, 0, 0, 0, 0, 1, 0, '', 0, 0),
 (299, 'Visibility', 1, 1, '2016-03-23 06:02:35', 0, 6, 5, 63, 17, 'show_group', '', '', 5, 0, 0, 0, 1, 0, 0, 0, '', 0, 0),
 (305, 'Phone', 1, 1, '2016-03-24 04:28:50', 0, 5, 21, 982, 1, 'public_phone', '', '', 32, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
@@ -261,7 +261,7 @@ INSERT INTO `_fields` (`id`, `name`, `status`, `_usersID`, `createdON`, `_organi
 (314, 'List', 1, 1, '2016-03-28 04:57:51', 0, 52, 5, 21, 15, 'values', '', '', 0, 0, 0, 0, 1, 53, 0, 0, '', 0, 0),
 (315, 'Enumeration', 1, 1, '2016-03-28 04:57:52', 0, 53, 1, 1050, 7, 'values_linker', '_enums', '', 0, 0, 0, 1, 0, 52, 0, 0, '', 0, 0),
 (316, 'Enumeration', 1, 1, '2016-03-28 05:26:41', 0, 6, 5, 35, 7, 'enum', '_enums', '', 0, 0, 0, 0, 0, 52, 0, 0, '', 0, 0),
-(318, 'Visibility in the drop-down list', 1, 1, '2016-04-05 05:27:23', 0, 6, 5, 68, 5, 'vis_reflist', '', '', 0, 0, 0, 0, 1, 0, 0, 1, '', 0, 0),
+(318, 'Visibility in the drop-down list', 1, 1, '2016-04-05 05:27:23', 0, 6, 5, 68, 5, 'vis_dropdownList', '', '', 0, 0, 0, 0, 1, 0, 0, 1, '', 0, 0),
 (325, 'Multilingual field', 1, 1, '2016-04-19 11:05:25', 0, 6, 7, 71, 5, 'multilingual', '', '', 0, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (326, 'Name', 1, 0, '2016-04-19 11:10:20', 0, 12, 255, 1, 1, 'name', '', '', 64, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (327, 'Lang code (en, ru, ...)', 1, 1, '2016-04-19 11:11:58', 0, 12, 7, 11, 1, 'code', '', '', 2, 0, 1, 1, 0, 0, 0, 0, '', 0, 0),
@@ -321,15 +321,7 @@ CREATE TABLE `_files` (
 --
 
 INSERT INTO `_files` (`ID`, `status`, `name`, `_usersID`, `createdON`, `_organID`, `file`) VALUES
-(0, 0, '', 0, '2021-07-02 15:26:32', 0, ''),
-(2, 1, 'wasq', 1, '2021-07-02 15:28:35', 1, '/uploads/file/62/152413091917/pcicon.png'),
-(3, 1, '123123', 1, '2021-07-02 17:39:36', 1, '/uploads/file/64/152408182562/ironimpactlogo.png'),
-(4, 1, 'dfgdfg', 1, '2021-09-08 22:41:25', 1, '82190edf4307e/bullets.png'),
-(5, 1, '9999999', 1, '2021-09-08 22:42:00', 1, '375ef7a9a21fe/bullets.png'),
-(6, 1, 'FFFFFFFFFFFFFFF7', 1, '2021-09-08 22:49:20', 1, '8838fdc58366e/bullets.png'),
-(7, 1, '000000000', 1, '2021-09-08 22:49:57', 1, 'f6cf92d3e3736/bullets.png'),
-(8, 1, 'uyuuy', 1, '2021-09-09 08:59:36', 1, '1fbcf333d2fd6/bullets.png'),
-(9, 1, 'tyytty', 1, '2021-09-09 09:34:07', 1, '808c449d6a9f8/ads.txt');
+(0, 0, '', 0, '2021-07-02 15:26:32', 0, '');
 
 -- --------------------------------------------------------
 
@@ -359,7 +351,7 @@ CREATE TABLE `_filters` (
 INSERT INTO `_filters` (`id`, `status`, `_usersID`, `createdON`, `_organid`, `_nodesID`, `name`, `filter`, `view`, `hiPriority`, `fields`) VALUES
 (0, 0, 0, '2014-12-02 14:00:08', 0, 0, '', '', '', 0, ''),
 (1, 1, 1, '2014-12-02 14:00:08', 0, 11, 'All', '((_messages._usersID=@userid) OR (_receiverID=@userid))', '', 0, ''),
-(2, 1, 1, '2014-12-02 13:57:33', 0, 11, 'Unreaded', '((readed IS NULL) AND (_receiverID=@userid))', '', 0, ''),
+(2, 1, 1, '2014-12-02 13:57:33', 0, 11, 'Unread', '((readed IS NULL) AND (_receiverID=@userid))', '', 0, ''),
 (3, 1, 1, '2014-12-02 13:59:36', 0, 11, 'Sent', '(_messages._usersID=@userid)', '', 0, ''),
 (4, 1, 1, '2014-12-02 15:24:07', 0, 11, 'Income', '(_receiverID=@userid)', '', 0, ''),
 (8, 1, 1, '2021-09-13 12:08:39', 1, 4, 'Can have filter', '(isDocument = 1 AND staticLink = \'\') ', '', 0, '');
@@ -387,8 +379,7 @@ CREATE TABLE `_html` (
 --
 
 INSERT INTO `_html` (`id`, `status`, `name`, `_usersID`, `createdON`, `_organid`, `body`, `title`) VALUES
-(0, 0, '', 0, '2015-11-11 03:28:36', 0, '', ''),
-(1, 1, 'wasq', 1, '2021-08-30 15:39:56', 1, 'dgerg egergnh,jhj,&nbsp;', 'gymgymgy');
+(0, 0, '', 0, '2015-11-11 03:28:36', 0, '', '');
 
 -- --------------------------------------------------------
 
@@ -480,7 +471,7 @@ INSERT INTO `_nodes` (`id`, `_nodesID`, `isDocument`, `status`, `tableName`, `si
 (4, 10, 1, 1, '_nodes', 'Section', 'Sections', 'Website\'s section', 9, 0, '2014-12-19 09:18:48', 0, 0, 1, 33, '', 25, 'sitemap', '', 0, 0),
 (5, 3, 1, 1, '_users', 'User', 'Users', '', 8, 0, '2014-12-03 01:04:55', 0, 0, 0, 0, '', 50, 'user', '', 0, 0),
 (6, 10, 1, 1, '_fields', 'Field', 'Fields', '', 11, 0, '0000-00-00 00:00:00', 0, 0, 1, 10, '', 200, 'edit', '', 0, 0),
-(7, 3, 1, 1, '_organ', 'Organsation', 'Organsations', '', 12, 0, '0000-00-00 00:00:00', 0, 0, 0, 0, '', 10, 'institution', '', 0, 0),
+(7, 3, 1, 1, '_organ', 'Organization', 'Organizations', '', 12, 0, '0000-00-00 00:00:00', 0, 0, 0, 0, '', 10, 'institution', '', 0, 0),
 (8, 3, 1, 1, '_roles', 'Role', 'Roles', '', 10, 0, '2011-05-05 11:36:20', 0, 0, 0, 0, '', 10, 'id-badge', '', 0, 0),
 (9, 10, 1, 1, '_filters', 'Filter', 'Filters', '', 55, 0, '2014-12-03 01:05:15', 0, 0, 1, 0, '', 40, 'filter', '', 0, 0),
 (10, 2, 0, 1, '', 'Deep Administration', 'Deep Administration', 'Danger zone. Please make changes here only if you know what you doing.', 1274, 0, '2014-12-23 15:44:46', 0, 0, 0, 0, '', 10, 'wrench', '', 0, 0),
@@ -491,10 +482,7 @@ INSERT INTO `_nodes` (`id`, `_nodesID`, `isDocument`, `status`, `tableName`, `si
 (52, 3, 1, 1, '_enums', 'Enumeration', 'Enumerations', '', 1024, 1, '2016-03-28 04:20:08', 0, 0, 0, 0, '', 25, 'list', '', 0, 0),
 (53, 50, 1, 1, '_enum_values', 'Enumeration value', 'Enumeration values', '', 994, 1, '2016-03-28 04:46:54', 0, 0, 0, 312, '', 25, '', '', 0, 0),
 (81, 3, 1, 1, '_errorReport', 'Error report', 'Error reports', '', 130, 1, '2017-04-24 02:35:25', 0, 4, 0, 620, '', 25, 'bug', '', 1, 0),
-(83, 3, 1, 1, '_files', 'File', 'Files', '', 91, 1, '2021-07-02 15:26:32', 0, 1, 0, 0, '', 25, 'file', '', 0, 0),
-(113, 2, 0, 1, '', 'Test section', 'Test section', '', 22, 1, '2021-07-20 16:14:58', 0, 1, 0, 0, '', 25, 'glass', '', 0, 0),
-(114, 113, 0, 1, '', 'Test sub section', 'Test sub section', '', 12, 1, '2021-07-20 16:15:08', 0, 1, 0, 0, '', 25, 'music', '', 0, 0),
-(115, 113, 1, 1, '', 'https://google.com', 'https://google.com', '', 12, 1, '2021-07-20 16:16:00', 0, 1, 0, 0, 'https://google.com', 25, 'gear', '', 0, 0);
+(83, 3, 1, 1, '_files', 'File', 'Files', '', 91, 1, '2021-07-02 15:26:32', 0, 1, 0, 0, '', 25, 'file', '', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -558,9 +546,6 @@ INSERT INTO `_roleprevs` (`nodeID`, `roleid`, `privileges`) VALUES
 (12, 2, 7),
 (49, 2, 4),
 (83, 2, 4),
-(113, 2, 4),
-(114, 2, 4),
-(115, 2, 4),
 (2, 3, 4),
 (5, 3, 17),
 (11, 3, 1),
@@ -568,9 +553,6 @@ INSERT INTO `_roleprevs` (`nodeID`, `roleid`, `privileges`) VALUES
 (49, 3, 4),
 (81, 3, 8),
 (83, 3, 4),
-(113, 3, 4),
-(114, 3, 4),
-(115, 3, 4),
 (0, 7, 7);
 
 -- --------------------------------------------------------
@@ -604,11 +586,11 @@ INSERT INTO `_roles` (`id`, `name`, `status`, `createdOn`, `_usersID`, `desc`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `_userroles`
+-- Table structure for table `_user_roles`
 --
 
-DROP TABLE IF EXISTS `_userroles`;
-CREATE TABLE `_userroles` (
+DROP TABLE IF EXISTS `_user_roles`;
+CREATE TABLE `_user_roles` (
   `ID` bigint(15) UNSIGNED NOT NULL,
   `_usersID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `_rolesID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
@@ -616,10 +598,10 @@ CREATE TABLE `_userroles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `_userroles`
+-- Dumping data for table `_user_roles`
 --
 
-INSERT INTO `_userroles` (`ID`, `_usersID`, `_rolesID`, `name_n2m`) VALUES
+INSERT INTO `_user_roles` (`ID`, `_usersID`, `_rolesID`, `name_n2m`) VALUES
 (40, 1, 1, '');
 
 -- --------------------------------------------------------
@@ -727,7 +709,7 @@ ALTER TABLE `_fields`
   ADD PRIMARY KEY (`id`),
   ADD KEY `parent_doc` (`node_fields_linker`),
   ADD KEY `field_prior` (`prior`),
-  ADD KEY `Uniqu_fld_in_node` (`node_fields_linker`,`fieldName`),
+  ADD KEY `Unique_fld_in_node` (`node_fields_linker`,`fieldName`),
   ADD KEY `fieldType` (`fieldType`),
   ADD KEY `fieldName` (`fieldName`),
   ADD KEY `nodeRef` (`nodeRef`),
@@ -820,7 +802,7 @@ ALTER TABLE `_organ__users`
 --
 ALTER TABLE `_roleprevs`
   ADD PRIMARY KEY (`roleid`,`nodeID`),
-  ADD KEY `uroleID` (`roleid`),
+  ADD KEY `user_roleID` (`roleid`),
   ADD KEY `nodID` (`nodeID`);
 
 --
@@ -833,9 +815,9 @@ ALTER TABLE `_roles`
   ADD KEY `organ` (`_organid`);
 
 --
--- Indexes for table `_userroles`
+-- Indexes for table `_user_roles`
 --
-ALTER TABLE `_userroles`
+ALTER TABLE `_user_roles`
   ADD PRIMARY KEY (`ID`),
   ADD KEY `_usersID` (`_usersID`),
   ADD KEY `_rolesID` (`_rolesID`);
@@ -939,9 +921,9 @@ ALTER TABLE `_roles`
   MODIFY `id` bigint(15) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `_userroles`
+-- AUTO_INCREMENT for table `_user_roles`
 --
-ALTER TABLE `_userroles`
+ALTER TABLE `_user_roles`
   MODIFY `ID` bigint(15) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
@@ -1002,8 +984,8 @@ ALTER TABLE `_filters`
 -- Constraints for table `_html`
 --
 ALTER TABLE `_html`
-  ADD CONSTRAINT `_organID_unfo_html` FOREIGN KEY (`_organid`) REFERENCES `_organ` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `creator_id_unfo_html` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `_organID_html` FOREIGN KEY (`_organid`) REFERENCES `_organ` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `creator_id_html` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `_languages`
@@ -1024,7 +1006,7 @@ ALTER TABLE `_messages`
 --
 ALTER TABLE `_nodes`
   ADD CONSTRAINT `_nodes_ibfk_1` FOREIGN KEY (`defaultFilterId`) REFERENCES `_filters` (`id`),
-  ADD CONSTRAINT `parentnode` FOREIGN KEY (`_nodesID`) REFERENCES `_nodes` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `parent_node` FOREIGN KEY (`_nodesID`) REFERENCES `_nodes` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `_organ`
@@ -1037,7 +1019,7 @@ ALTER TABLE `_organ`
 --
 ALTER TABLE `_roleprevs`
   ADD CONSTRAINT `nodID` FOREIGN KEY (`nodeID`) REFERENCES `_nodes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `uroleID` FOREIGN KEY (`roleid`) REFERENCES `_roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `user_roleID` FOREIGN KEY (`roleid`) REFERENCES `_roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `_roles`
@@ -1046,11 +1028,11 @@ ALTER TABLE `_roles`
   ADD CONSTRAINT `_roles_ibfk_1` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`) ON UPDATE CASCADE;
 
 --
--- Constraints for table `_userroles`
+-- Constraints for table `_user_roles`
 --
-ALTER TABLE `_userroles`
-  ADD CONSTRAINT `_userroles_ibfk_1` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `_userroles_ibfk_2` FOREIGN KEY (`_rolesID`) REFERENCES `_roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `_user_roles`
+  ADD CONSTRAINT `_user_roles_ibfk_1` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `_user_roles_ibfk_2` FOREIGN KEY (`_rolesID`) REFERENCES `_roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `_users`

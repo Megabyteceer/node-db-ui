@@ -33,10 +33,10 @@ class FormEvents extends FormFull {
 		}
 
 		if(!iAdmin()) {
-			this.hideField('_userroles');
+			this.hideField('_user_roles');
 		}
 		if(this.recId < 4) {
-			this.hideField('_userroles');
+			this.hideField('_user_roles');
 		}
 
 		this.disableField('_organID');
@@ -53,7 +53,7 @@ class FormEvents extends FormFull {
 		}
 
 		if(this.isUpdateRecord || this.isNewRecord) {
-			this.addLookupFilters('_userroles', {
+			this.addLookupFilters('_user_roles', {
 				excludeIDs: [2, 3]
 			});
 			this.hideField('public_phone');
@@ -75,7 +75,7 @@ class FormEvents extends FormFull {
 		if(this.isUpdateRecord) {
 			this.header = L('EDIT_USER_PROFILE', myName);
 			this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
-			this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
+			this.setFieldValue('passConfirm', 'nc_l4DFn76ds5yhg');
 			this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
 		}
 
@@ -85,7 +85,7 @@ class FormEvents extends FormFull {
 			//this.hideField('desc');
 			this.hideField('_organID');
 			this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
-			this.setFieldValue('passconfirm', 'nc_l4DFn76ds5yhg');
+			this.setFieldValue('passConfirm', 'nc_l4DFn76ds5yhg');
 			this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
 		}
 	}
@@ -97,8 +97,8 @@ class FormEvents extends FormFull {
 			this.fieldAlert('PASS', L('PASS_LEN', 6));
 		}
 
-		if(pass != this.fieldValue('passconfirm')) {
-			this.fieldAlert('passconfirm', L('PASS_NOT_MACH'));
+		if(pass != this.fieldValue('passConfirm')) {
+			this.fieldAlert('passConfirm', L('PASS_NOT_MACH'));
 		}
 
 		if(User.currentUserData.id === this.fieldValue('id')) {
@@ -123,9 +123,9 @@ class FormEvents extends FormFull {
 	}
 
 	async _roles_onLoad() {
-		this.getField('_userroles').setLookupFilter('excludeIDs', [1, 2, 3]);
+		this.getField('_user_roles').setLookupFilter('excludeIDs', [1, 2, 3]);
 		if((this.recId === 2) || (this.recId === 3)) {
-			this.hideField('_userroles');
+			this.hideField('_user_roles');
 		}
 	}
 
@@ -148,8 +148,8 @@ class FormEvents extends FormFull {
 		if(this.isUpdateRecord) {
 			this.disableField('isDocument');
 			this.disableField('tableName');
-			this.hideField('createdby_field');
-			this.hideField('createdon_field');
+			this.hideField('addCreatedByFiled');
+			this.hideField('addCreatedOnFiled');
 			this.hideField('createUserFld');
 			if(!this.fieldValue('isDocument')) {
 				this.hideField('t_fields');
@@ -202,7 +202,7 @@ class FormEvents extends FormFull {
 				this.setFieldValue("vis_create", 1);
 				this.setFieldValue("vis_view", 1);
 				this.setFieldValue("vis_list", 1);
-				this.setFieldValue("vis_reflist", 0);
+				this.setFieldValue("vis_dropdownList", 0);
 			}
 
 			if(!this.fieldValue("prior")) {
@@ -226,9 +226,9 @@ class FormEvents extends FormFull {
 				this.setFieldValue("vis_list", 0);
 
 			if(this.fieldValue("show") & 8)
-				this.setFieldValue("vis_reflist", 1)
+				this.setFieldValue("vis_dropdownList", 1)
 			else
-				this.setFieldValue("vis_reflist", 0);
+				this.setFieldValue("vis_dropdownList", 0);
 
 			if(this.fieldValue("show") & 16)
 				this.setFieldValue("vis_list_custom", 1)

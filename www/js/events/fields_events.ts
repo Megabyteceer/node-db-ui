@@ -17,16 +17,16 @@ class FieldsEvents extends FormEvents {
 
 	_html_title_onChange() {
 		this.removeWrongCharactersInField('title');
-		this.setFieldValue('help', location.protocol + '//' + location.host + '/custom/html/' + this.fieldValue('title') + '.html');
+		this.setFieldValue('link', location.protocol + '//' + location.host + '/custom/html/' + this.fieldValue('title') + '.html');
 	}
 
-	_users_passconfirm_onChange() {
+	_users_passConfirm_onChange() {
 		var p = this.fieldValue('PASS');
-		var p2 = this.fieldValue('passconfirm');
+		var p2 = this.fieldValue('passConfirm');
 		if(p && (p !== p2)) {
-			this.fieldAlert('passconfirm', L('PASSWORDS_NOT_M'));
+			this.fieldAlert('passConfirm', L('PASSWORDS_NOT_M'));
 		} else {
-			this.fieldAlert('passconfirm');
+			this.fieldAlert('passConfirm');
 		}
 	}
 
@@ -44,14 +44,14 @@ class FieldsEvents extends FormEvents {
 			}
 
 			if(!this.isUpdateRecord) {
-				this.showField("createdon_field", "createUserFld", "createdby_field",
+				this.showField("addCreatedOnFiled", "createUserFld", "addCreatedByFiled",
 					"staticLink");
 			}
 
 		} else {
 			this.hideField("tableName", "creationName", "singleName",
-				"captcha", "_fieldsID", "reverse", "draftable", "createdon_field",
-				"createUserFld", "createdby_field", "staticLink", "recPerPage");
+				"captcha", "_fieldsID", "reverse", "draftable", "addCreatedOnFiled",
+				"createUserFld", "addCreatedByFiled", "staticLink", "recPerPage");
 			if(this.hasField('creationName_en')) {
 				this.hideField("creationName_en", "singleName_en");
 			}
@@ -183,9 +183,9 @@ class FieldsEvents extends FormEvents {
 		this.setFieldValue("show", shv);
 	}
 
-	_fields_vis_reflist_onChange() {
+	_fields_vis_dropdownList_onChange() {
 		var shv = this.fieldValue("show");
-		if(this.fieldValue("vis_reflist")) {
+		if(this.fieldValue("vis_dropdownList")) {
 			shv |= 8;
 		} else {
 			shv &= (65535 - 8);

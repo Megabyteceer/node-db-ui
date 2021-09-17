@@ -61,7 +61,7 @@ const handlers: NodeEventsHandlers = {
 				(${createdID},       1,       ${VIEW_MASK_ALL}, 1,     ${FIELD_1_TEXT}, 'name',    '',              '${L('Name')}', '',          64,        1,           0,     0,         1,         0);`;
 			await mysqlExec(mainFieldQ);
 
-			if(data.createdon_field) {
+			if(data.addCreatedOnFiled) {
 				const createdOnQ = `INSERT INTO _fields 
 				(node_fields_linker, status, \`show\`,                                 prior, fieldType,            fieldName,   selectFieldName, name,                 description, maxLength, requirement, unique, _usersID, forSearch, noStore) VALUES
 				(${createdID},       1,        ${VIEW_MASK_LIST | VIEW_MASK_READONLY}, 2,     ${FIELD_4_DATE_TIME}, 'createdOn', '',              '${L('Created on')}', '',          0,         0,           0,      0,        1,         0);`;
@@ -69,7 +69,7 @@ const handlers: NodeEventsHandlers = {
 				await mysqlExec('UPDATE _nodes SET _fieldsID=' + dateFieldId + ', reverse = 1 WHERE id=' + createdID);
 			}
 
-			if(data.createdby_field) {
+			if(data.addCreatedByFiled) {
 				const createdByQ = `INSERT INTO _fields
 				(node_fields_linker, status, \`show\`,                                 prior, fieldType,       fieldName,  selectFieldName, name,                   description, maxLength, requirement, unique, _usersID, forSearch, noStore, nodeRef) VALUES
 				(${createdID},       1,        ${VIEW_MASK_LIST | VIEW_MASK_READONLY}, 3,     ${FIELD_7_Nto1}, '_organID', '_organ',        '${L('Organization')}', '',          0,         0,           0,      0,        1,         0,       ${NODE_ID_ORGS});`;

@@ -229,7 +229,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 	let organID_def = user.defaultOrg || organID;
 	let organName = user.organName;
 
-	const roles = await mysqlExec("SELECT _rolesID FROM _userroles WHERE _userroles._usersID=" + userID + " ORDER BY _rolesID") as mysqlRowsResult;
+	const roles = await mysqlExec("SELECT _rolesID FROM _user_roles WHERE _user_roles._usersID=" + userID + " ORDER BY _rolesID") as mysqlRowsResult;
 
 	let cacheKeyGenerator: string[];
 	let userRoles: UserRoles = {};

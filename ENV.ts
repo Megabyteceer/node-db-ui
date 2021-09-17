@@ -11,7 +11,7 @@ const ENV = {
 	DB_HOST: "127.0.0.1",
 	DB_USER: "root",
 	DB_PASS: "",
-	DB_NAME: "node_distrib",
+	DB_NAME: "crud_js_base",
 
 	DEPLOY_TO: "http: //test.server.org",
 	DEPLOYMENT_KEY_LOCAL: '',
