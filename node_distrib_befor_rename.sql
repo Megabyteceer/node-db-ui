@@ -34,7 +34,7 @@ CREATE TABLE `_enums` (
   `id` bigint(15) UNSIGNED NOT NULL,
   `status` int(1) UNSIGNED NOT NULL DEFAULT 1,
   `name` varchar(64) NOT NULL DEFAULT '',
-  `_userID` bigint(15) UNSIGNED NOT NULL,
+  `_usersID` bigint(15) UNSIGNED NOT NULL,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -43,7 +43,7 @@ CREATE TABLE `_enums` (
 -- Dumping data for table `_enums`
 --
 
-INSERT INTO `_enums` (`id`, `status`, `name`, `_userID`, `_createdON`, `_organizationID`) VALUES
+INSERT INTO `_enums` (`id`, `status`, `name`, `_usersID`, `_createdON`, `_organizationID`) VALUES
 (0, 0, '', 0, '2017-08-18 11:02:25', 0),
 (1, 1, 'Filed\'s type', 1, '2016-03-28 04:20:37', 0);
 
@@ -58,7 +58,7 @@ CREATE TABLE `_enum_values` (
   `id` bigint(15) UNSIGNED NOT NULL,
   `status` int(1) UNSIGNED NOT NULL DEFAULT 1,
   `name` varchar(64) NOT NULL DEFAULT '',
-  `_userID` bigint(15) UNSIGNED NOT NULL,
+  `_usersID` bigint(15) UNSIGNED NOT NULL,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `value` bigint(11) NOT NULL DEFAULT 0,
@@ -70,7 +70,7 @@ CREATE TABLE `_enum_values` (
 -- Dumping data for table `_enum_values`
 --
 
-INSERT INTO `_enum_values` (`id`, `status`, `name`, `_userID`, `_createdON`, `_organizationID`, `value`, `values_linker`, `order`) VALUES
+INSERT INTO `_enum_values` (`id`, `status`, `name`, `_usersID`, `_createdON`, `_organizationID`, `value`, `values_linker`, `order`) VALUES
 (0, 0, '', 0, '2017-08-18 11:02:37', 0, 0, 0, 0),
 (1, 1, 'Text', 1, '2016-03-28 05:05:09', 0, 1, 1, 0),
 (2, 1, 'Number', 1, '2016-03-28 05:05:09', 0, 2, 1, 1),
@@ -102,7 +102,7 @@ CREATE TABLE `_error_reports` (
   `id` bigint(15) UNSIGNED NOT NULL,
   `status` int(1) UNSIGNED NOT NULL DEFAULT 1,
   `name` mediumtext NOT NULL DEFAULT '',
-  `_userID` bigint(15) UNSIGNED NOT NULL,
+  `_usersID` bigint(15) UNSIGNED NOT NULL,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `stack` text NOT NULL DEFAULT ''
@@ -112,7 +112,7 @@ CREATE TABLE `_error_reports` (
 -- Dumping data for table `_error_reports`
 --
 
-INSERT INTO `_error_reports` (`id`, `status`, `name`, `_userID`, `_createdON`, `_organizationID`, `stack`) VALUES
+INSERT INTO `_error_reports` (`id`, `status`, `name`, `_usersID`, `_createdON`, `_organizationID`, `stack`) VALUES
 (0, 0, '', 0, '2018-01-13 13:12:21', 0, '');
 
 -- --------------------------------------------------------
@@ -126,7 +126,7 @@ CREATE TABLE `_fields` (
   `id` bigint(15) UNSIGNED NOT NULL,
   `name` varchar(128) NOT NULL DEFAULT '',
   `status` int(1) UNSIGNED NOT NULL DEFAULT 0,
-  `_userID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
+  `_usersID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `node_fields_linker` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
@@ -153,7 +153,7 @@ CREATE TABLE `_fields` (
 -- Dumping data for table `_fields`
 --
 
-INSERT INTO `_fields` (`id`, `name`, `status`, `_userID`, `_createdON`, `_organizationID`, `node_fields_linker`, `show`, `prior`, `fieldType`, `fieldName`, `selectFieldName`, `description`, `maxLength`, `requirement`, `unique`, `forSearch`, `noStore`, `nodeRef`, `multilingual`, `clientOnly`, `icon`, `height`, `enum`) VALUES
+INSERT INTO `_fields` (`id`, `name`, `status`, `_usersID`, `_createdON`, `_organizationID`, `node_fields_linker`, `show`, `prior`, `fieldType`, `fieldName`, `selectFieldName`, `description`, `maxLength`, `requirement`, `unique`, `forSearch`, `noStore`, `nodeRef`, `multilingual`, `clientOnly`, `icon`, `height`, `enum`) VALUES
 (0, '', 0, 0, '2014-12-03 00:47:56', 0, 0, 0, 0, 0, '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (1, 'Section name in the singular', 1, 0, '2014-12-03 00:47:56', 0, 4, 7, 80, 1, 'singleName', '', '', 127, 1, 0, 1, 0, 0, 1, 0, '', 0, 0),
 (2, 'Section name in the plural', 1, 0, '0000-00-00 00:00:00', 0, 4, 255, 21, 1, 'name', '', '', 127, 1, 0, 1, 0, 0, 1, 0, '', 0, 0),
@@ -192,7 +192,7 @@ INSERT INTO `_fields` (`id`, `name`, `status`, `_userID`, `_createdON`, `_organi
 (40, '', 1, 0, '2011-05-13 10:11:08', 0, 5, 0, 153, 8, 'desc_spl', '', '<div id=\"noNeedLoginHere\"></div> Fill information about your self:', 0, 0, 0, 0, 1, 0, 0, 0, '', 0, 0),
 (42, 'Creation date', 1, 0, '0000-00-00 00:00:00', 0, 11, 14, 1, 4, '_createdON', '', '', 0, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (44, 'Message text', 1, 0, '2011-09-19 08:50:41', 0, 11, 5, 4, 1, 'text', '', '', 64000, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
-(45, 'Sender', 1, 0, '2014-12-02 13:06:31', 0, 11, 14, 6, 7, '_userID', '_users', '', 5, 0, 0, 1, 0, 5, 0, 0, 'avatar', 0, 0),
+(45, 'Sender', 1, 0, '2014-12-02 13:06:31', 0, 11, 14, 6, 7, '_usersID', '_users', '', 5, 0, 0, 1, 0, 5, 0, 0, 'avatar', 0, 0),
 (47, 'Read', 1, 0, '2011-09-19 09:44:26', 0, 11, 10, 5, 5, 'read', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (48, 'Subject', 1, 0, '2011-09-19 11:16:00', 0, 11, 255, 2, 1, 'name', '', '', 128, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (49, 'Notify on Email about new private messages', 1, 0, '2014-12-30 11:49:56', 0, 5, 1, 319, 5, 'mailing', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
@@ -272,7 +272,7 @@ INSERT INTO `_fields` (`id`, `name`, `status`, `_userID`, `_createdON`, `_organi
 (619, 'Error', 1, 0, '2017-04-24 02:35:25', 0, 81, 255, 0, 1, 'name', '', '', 200000, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (620, 'Creation date', 1, 0, '2017-04-24 02:35:25', 0, 81, 63, 11, 4, '_createdON', '', '', 0, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (621, 'Organization', 1, 0, '2017-04-24 02:35:25', 0, 81, 6, 13, 7, '_organizationID', '_organization', '', 0, 0, 0, 1, 0, 7, 0, 0, '', 0, 0),
-(622, 'User', 1, 0, '2017-04-24 02:35:25', 0, 81, 7, 12, 7, '_userID', '_users', '', 0, 0, 0, 1, 0, 5, 0, 0, 'avatar', 0, 0),
+(622, 'User', 1, 0, '2017-04-24 02:35:25', 0, 81, 7, 12, 7, '_usersID', '_users', '', 0, 0, 0, 1, 0, 5, 0, 0, 'avatar', 0, 0),
 (623, 'Stack', 1, 1, '2017-04-24 02:37:08', 4, 81, 5, 1, 1, 'stack', '', '', 4000, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (651, 'Additional SELECT fields', 1, 1, '2017-07-03 02:10:13', 33, 9, 3, 24, 1, 'fields', '', '', 255, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (656, 'UI Language', 1, 1, '2018-01-04 20:02:24', 1, 5, 1, 107, 7, 'language', '_languages', '', 0, 0, 0, 1, 0, 12, 0, 0, 'lang_icon', 0, 0),
@@ -285,7 +285,7 @@ INSERT INTO `_fields` (`id`, `name`, `status`, `_userID`, `_createdON`, `_organi
 (665, 'Name', 1, 0, '2021-07-02 12:26:32', 0, 83, 255, 0, 1, 'name', '', '', 64, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (666, 'Created on', 1, 0, '2021-07-02 12:26:32', 0, 83, 62, 1, 4, '_createdON', '', '', 0, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (667, 'Organization', 1, 0, '2021-07-02 12:26:32', 0, 83, 6, 22, 7, '_organizationID', '_organization', '', 0, 0, 0, 1, 0, 7, 0, 0, '', 0, 0),
-(668, 'Owner', 1, 0, '2021-07-02 12:26:32', 0, 83, 6, 23, 7, '_userID', '_users', '', 0, 0, 0, 1, 0, 5, 0, 0, 'avatar', 0, 0),
+(668, 'Owner', 1, 0, '2021-07-02 12:26:32', 0, 83, 6, 23, 7, '_usersID', '_users', '', 0, 0, 0, 1, 0, 5, 0, 0, 'avatar', 0, 0),
 (669, 'File', 1, 1, '2021-07-02 12:28:04', 1, 83, 31, 11, 21, 'file', '', '', 0, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (728, 'order', 1, 1, '2021-07-20 14:27:45', 1, 53, 27, 41, 2, 'order', '', 'to have ordering in 1toN lookups, just add field \'order\'  to target node.', 9, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (751, 'Is UI language', 1, 1, '2021-09-13 11:10:19', 1, 12, 7, 21, 5, 'isUILanguage', '', 'Used to load localization data for user UI. locales/xx/lang.ts', 2, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
@@ -305,7 +305,7 @@ CREATE TABLE `_files` (
   `id` bigint(15) UNSIGNED NOT NULL,
   `status` int(1) UNSIGNED NOT NULL DEFAULT 1,
   `name` varchar(64) NOT NULL DEFAULT '',
-  `_userID` bigint(15) UNSIGNED NOT NULL,
+  `_usersID` bigint(15) UNSIGNED NOT NULL,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `file` varchar(127) NOT NULL DEFAULT ''
@@ -315,7 +315,7 @@ CREATE TABLE `_files` (
 -- Dumping data for table `_files`
 --
 
-INSERT INTO `_files` (`id`, `status`, `name`, `_userID`, `_createdON`, `_organizationID`, `file`) VALUES
+INSERT INTO `_files` (`id`, `status`, `name`, `_usersID`, `_createdON`, `_organizationID`, `file`) VALUES
 (0, 0, '', 0, '2021-07-02 15:26:32', 0, '');
 
 -- --------------------------------------------------------
@@ -328,7 +328,7 @@ DROP TABLE IF EXISTS `_filters`;
 CREATE TABLE `_filters` (
   `id` bigint(15) UNSIGNED NOT NULL,
   `status` int(1) UNSIGNED NOT NULL DEFAULT 0,
-  `_userID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
+  `_usersID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `_nodesID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
@@ -343,11 +343,11 @@ CREATE TABLE `_filters` (
 -- Dumping data for table `_filters`
 --
 
-INSERT INTO `_filters` (`id`, `status`, `_userID`, `_createdON`, `_organizationID`, `_nodesID`, `name`, `filter`, `view`, `hiPriority`, `fields`) VALUES
+INSERT INTO `_filters` (`id`, `status`, `_usersID`, `_createdON`, `_organizationID`, `_nodesID`, `name`, `filter`, `view`, `hiPriority`, `fields`) VALUES
 (0, 0, 0, '2014-12-02 14:00:08', 0, 0, '', '', '', 0, ''),
-(1, 1, 1, '2014-12-02 14:00:08', 0, 11, 'All', '((_messages._userID=@userId) OR (_receiverID=@userId))', '', 0, ''),
+(1, 1, 1, '2014-12-02 14:00:08', 0, 11, 'All', '((_messages._usersID=@userId) OR (_receiverID=@userId))', '', 0, ''),
 (2, 1, 1, '2014-12-02 13:57:33', 0, 11, 'Unread', '((read IS NULL) AND (_receiverID=@userId))', '', 0, ''),
-(3, 1, 1, '2014-12-02 13:59:36', 0, 11, 'Sent', '(_messages._userID=@userId)', '', 0, ''),
+(3, 1, 1, '2014-12-02 13:59:36', 0, 11, 'Sent', '(_messages._usersID=@userId)', '', 0, ''),
 (4, 1, 1, '2014-12-02 15:24:07', 0, 11, 'Income', '(_receiverID=@userId)', '', 0, ''),
 (8, 1, 1, '2021-09-13 12:08:39', 1, 4, 'Can have filter', '(isDocument = 1 AND staticLink = \'\') ', '', 0, '');
 
@@ -362,7 +362,7 @@ CREATE TABLE `_html` (
   `id` bigint(15) UNSIGNED NOT NULL,
   `status` int(1) UNSIGNED NOT NULL DEFAULT 0,
   `name` varchar(64) NOT NULL DEFAULT '',
-  `_userID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
+  `_usersID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `body` mediumtext NOT NULL DEFAULT '',
@@ -373,7 +373,7 @@ CREATE TABLE `_html` (
 -- Dumping data for table `_html`
 --
 
-INSERT INTO `_html` (`id`, `status`, `name`, `_userID`, `_createdON`, `_organizationID`, `body`, `title`) VALUES
+INSERT INTO `_html` (`id`, `status`, `name`, `_usersID`, `_createdON`, `_organizationID`, `body`, `title`) VALUES
 (0, 0, '', 0, '2015-11-11 03:28:36', 0, '', '');
 
 -- --------------------------------------------------------
@@ -387,7 +387,7 @@ CREATE TABLE `_languages` (
   `id` bigint(15) UNSIGNED NOT NULL,
   `status` int(1) UNSIGNED NOT NULL DEFAULT 1,
   `name` varchar(64) NOT NULL DEFAULT '',
-  `_userID` bigint(15) UNSIGNED NOT NULL,
+  `_usersID` bigint(15) UNSIGNED NOT NULL,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `code` varchar(2) NOT NULL DEFAULT '',
@@ -399,7 +399,7 @@ CREATE TABLE `_languages` (
 -- Dumping data for table `_languages`
 --
 
-INSERT INTO `_languages` (`id`, `status`, `name`, `_userID`, `_createdON`, `_organizationID`, `code`, `lang_icon`, `isUILanguage`) VALUES
+INSERT INTO `_languages` (`id`, `status`, `name`, `_usersID`, `_createdON`, `_organizationID`, `code`, `lang_icon`, `isUILanguage`) VALUES
 (0, 0, '', 0, '2018-01-04 19:56:58', 0, '', '', 0),
 (1, 1, 'English', 1, '2016-04-19 11:12:10', 0, '', '14/72852466098522.jpg', 1);
 
@@ -413,7 +413,7 @@ DROP TABLE IF EXISTS `_messages`;
 CREATE TABLE `_messages` (
   `id` bigint(15) UNSIGNED NOT NULL,
   `status` int(1) UNSIGNED NOT NULL DEFAULT 0,
-  `_userID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
+  `_usersID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `text` text NOT NULL DEFAULT '',
@@ -440,7 +440,7 @@ CREATE TABLE `_nodes` (
   `name` varchar(127) NOT NULL DEFAULT '',
   `description` text NOT NULL DEFAULT '',
   `prior` int(8) NOT NULL DEFAULT 0,
-  `_userID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
+  `_usersID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
   `captcha` tinyint(1) NOT NULL DEFAULT 0,
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
@@ -458,7 +458,7 @@ CREATE TABLE `_nodes` (
 -- Dumping data for table `_nodes`
 --
 
-INSERT INTO `_nodes` (`id`, `_nodesID`, `isDocument`, `status`, `tableName`, `singleName`, `name`, `description`, `prior`, `_userID`, `_createdON`, `captcha`, `_organizationID`, `draftable`, `_fieldsID`, `staticLink`, `recPerPage`, `icon`, `creationName`, `reverse`, `defaultFilterId`) VALUES
+INSERT INTO `_nodes` (`id`, `_nodesID`, `isDocument`, `status`, `tableName`, `singleName`, `name`, `description`, `prior`, `_usersID`, `_createdON`, `captcha`, `_organizationID`, `draftable`, `_fieldsID`, `staticLink`, `recPerPage`, `icon`, `creationName`, `reverse`, `defaultFilterId`) VALUES
 (0, 0, 0, 0, '', '', '', '', 0, 0, '0000-00-00 00:00:00', 0, 0, 0, 0, '', 0, '', '', 0, 0),
 (1, 50, 1, 1, 'AdminRolePrivilegesForm', 'Right access form', 'Right access form', '', 994, 1, '2016-03-15 05:17:01', 0, 0, 0, 0, 'reactClass', 25, '', '', 0, 0),
 (2, 0, 0, 1, '', 'All sections', 'All sections', '', 12, 0, '0000-00-00 00:00:00', 0, 0, 0, 0, '', 10, '', '', 0, 0),
@@ -490,7 +490,7 @@ CREATE TABLE `_organization` (
   `id` bigint(15) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL DEFAULT '',
   `status` int(1) UNSIGNED NOT NULL DEFAULT 0,
-  `_userID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
+  `_usersID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -499,7 +499,7 @@ CREATE TABLE `_organization` (
 -- Dumping data for table `_organization`
 --
 
-INSERT INTO `_organization` (`id`, `name`, `status`, `_userID`, `_createdON`, `_organizationID`) VALUES
+INSERT INTO `_organization` (`id`, `name`, `status`, `_usersID`, `_createdON`, `_organizationID`) VALUES
 (0, '', 0, 0, '0000-00-00 00:00:00', 0),
 (1, 'admin group', 1, 0, '0000-00-00 00:00:00', 1),
 (2, 'guest group', 1, 0, '0000-00-00 00:00:00', 2),
@@ -514,7 +514,7 @@ INSERT INTO `_organization` (`id`, `name`, `status`, `_userID`, `_createdON`, `_
 DROP TABLE IF EXISTS `_organization_users`;
 CREATE TABLE `_organization_users` (
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
-  `_userID` bigint(15) UNSIGNED NOT NULL DEFAULT 0
+  `_usersID` bigint(15) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -561,7 +561,7 @@ CREATE TABLE `_roles` (
   `name` varchar(45) NOT NULL DEFAULT '',
   `status` int(1) NOT NULL DEFAULT 0,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
-  `_userID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
+  `_usersID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `description` text NOT NULL DEFAULT '',
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -570,7 +570,7 @@ CREATE TABLE `_roles` (
 -- Dumping data for table `_roles`
 --
 
-INSERT INTO `_roles` (`id`, `name`, `status`, `_createdON`, `_userID`, `description`, `_organizationID`) VALUES
+INSERT INTO `_roles` (`id`, `name`, `status`, `_createdON`, `_usersID`, `description`, `_organizationID`) VALUES
 (0, '', 0, '2018-01-13 13:16:17', 0, '', 0),
 (1, 'Super admin', 1, '0000-00-00 00:00:00', 1, 'Full access for all sections', 0),
 (2, 'Guest', 1, '2014-12-15 10:07:32', 1, 'Role assigned to each unauthorized user', 0),
@@ -585,7 +585,7 @@ INSERT INTO `_roles` (`id`, `name`, `status`, `_createdON`, `_userID`, `descript
 
 DROP TABLE IF EXISTS `_user_roles`;
 CREATE TABLE `_user_roles` (
-  `_userID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
+  `_usersID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `_rolesID` bigint(15) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -593,7 +593,7 @@ CREATE TABLE `_user_roles` (
 -- Dumping data for table `_user_roles`
 --
 
-INSERT INTO `_user_roles` (`_userID`, `_rolesID`) VALUES
+INSERT INTO `_user_roles` (`_usersID`, `_rolesID`) VALUES
 (1, 1);
 
 -- --------------------------------------------------------
@@ -613,7 +613,7 @@ CREATE TABLE `_users` (
   `PHONE` varchar(32) NOT NULL DEFAULT '',
   `blocked_to` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `mistakes` int(8) NOT NULL DEFAULT 3,
-  `_userID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
+  `_usersID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `_createdON` timestamp NOT NULL DEFAULT current_timestamp(),
   `email` varchar(50) NOT NULL DEFAULT '',
   `mailing` tinyint(1) NOT NULL DEFAULT 0,
@@ -653,7 +653,7 @@ CREATE TABLE `_users` (
 -- Dumping data for table `_users`
 --
 
-INSERT INTO `_users` (`id`, `name`, `_organizationID`, `PASS`, `salt`, `status`, `PHONE`, `blocked_to`, `mistakes`, `_userID`, `_createdON`, `email`, `mailing`, `avatar`, `activation`, `reset_time`, `show_phone`, `show_email`, `firstName`, `lastName`, `midName`, `company`, `title`, `description`, `www`, `skype`, `soc_vk`, `soc_fb`, `soc_google`, `soc_twitter`, `show_skype`, `show_vk`, `show_facebook`, `show_google`, `show_twitter`, `public_phone`, `public_vk`, `public_fb`, `public_google`, `public_email`, `multilingualEnabled`, `defaultOrg`, `language`) VALUES
+INSERT INTO `_users` (`id`, `name`, `_organizationID`, `PASS`, `salt`, `status`, `PHONE`, `blocked_to`, `mistakes`, `_usersID`, `_createdON`, `email`, `mailing`, `avatar`, `activation`, `reset_time`, `show_phone`, `show_email`, `firstName`, `lastName`, `midName`, `company`, `title`, `description`, `www`, `skype`, `soc_vk`, `soc_fb`, `soc_google`, `soc_twitter`, `show_skype`, `show_vk`, `show_facebook`, `show_google`, `show_twitter`, `public_phone`, `public_vk`, `public_fb`, `public_google`, `public_email`, `multilingualEnabled`, `defaultOrg`, `language`) VALUES
 (0, '', 0, '', '', 0, '', '2014-11-01 20:35:57', -20, 0, '2014-12-30 11:54:50', '', 0, '', '', '2016-01-13 10:49:47', 0, 0, '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, '', '', '', '', '', 0, 0, 0),
 (1, 'admin', 1, '$2y$10$DD.q5zohc15RFTbsKOA.oO1fBE7lrelIkqSDR7g0T7eoHmKFyPKzG', '', 1, '', '2014-11-01 20:35:57', 3, 1, '2014-12-30 11:54:50', 'admin', 1, 'a5/820df48e028c8.jpg', '123123', '2021-07-29 21:00:00', 1, 0, '', '', '', 'admin group', '', '123', '', 'ssssssssssssssssssssssss', 'vvvvvvvvvvv', 'fffffffffffffff', 'gggggggggggggggg', 'ttttttttttttttttttttttttt', 1, 1, 0, 1, 1, '', 'vvvvvvvvvvv', 'hidden_91d2g7', 'gggggggggggggggg', 'hidden_91d2g7', 0, 1, 0),
 (2, 'guest', 2, 'nc_l4DFn76ds5yhg', '', 1, '', '2001-01-09 00:00:00', 3, 1, '2014-12-07 09:43:13', 'guest@guest.guest', 0, '', '', '0000-00-00 00:00:00', 1, 1, '', '', '', 'guest group', 'guest', '', '', '', '', '', '', '', 1, 1, 1, 1, 1, '', '', '', '', 'guest@guest.guest', 0, 2, 0),
@@ -668,7 +668,7 @@ INSERT INTO `_users` (`id`, `name`, `_organizationID`, `PASS`, `salt`, `status`,
 --
 ALTER TABLE `_enums`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `_userID` (`_userID`),
+  ADD KEY `_usersID` (`_usersID`),
   ADD KEY `_createdON` (`_createdON`),
   ADD KEY `_organizationID` (`_organizationID`);
 
@@ -677,7 +677,7 @@ ALTER TABLE `_enums`
 --
 ALTER TABLE `_enum_values`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `_userID` (`_userID`),
+  ADD KEY `_usersID` (`_usersID`),
   ADD KEY `_createdON` (`_createdON`),
   ADD KEY `_organizationID` (`_organizationID`),
   ADD KEY `value` (`value`),
@@ -689,7 +689,7 @@ ALTER TABLE `_enum_values`
 --
 ALTER TABLE `_error_reports`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `_userID` (`_userID`),
+  ADD KEY `_usersID` (`_usersID`),
   ADD KEY `_createdON` (`_createdON`),
   ADD KEY `_organizationID` (`_organizationID`);
 
@@ -712,7 +712,7 @@ ALTER TABLE `_fields`
 --
 ALTER TABLE `_files`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `_userID` (`_userID`),
+  ADD KEY `_usersID` (`_usersID`),
   ADD KEY `_createdON` (`_createdON`),
   ADD KEY `_organizationID` (`_organizationID`),
   ADD KEY `file` (`file`);
@@ -722,7 +722,7 @@ ALTER TABLE `_files`
 --
 ALTER TABLE `_filters`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `creator_id` (`_userID`),
+  ADD KEY `creator_id` (`_usersID`),
   ADD KEY `_createdON` (`_createdON`),
   ADD KEY `_organizationID` (`_organizationID`),
   ADD KEY `_nodes__filters` (`_nodesID`),
@@ -734,7 +734,7 @@ ALTER TABLE `_filters`
 --
 ALTER TABLE `_html`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `creator_id` (`_userID`),
+  ADD KEY `creator_id` (`_usersID`),
   ADD KEY `_createdON` (`_createdON`),
   ADD KEY `_organizationID` (`_organizationID`);
 
@@ -743,7 +743,7 @@ ALTER TABLE `_html`
 --
 ALTER TABLE `_languages`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `creator_id` (`_userID`),
+  ADD KEY `creator_id` (`_usersID`),
   ADD KEY `_createdON` (`_createdON`),
   ADD KEY `_organizationID` (`_organizationID`),
   ADD KEY `languages_code` (`code`),
@@ -754,7 +754,7 @@ ALTER TABLE `_languages`
 --
 ALTER TABLE `_messages`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `creator_id` (`_userID`),
+  ADD KEY `creator_id` (`_usersID`),
   ADD KEY `_createdON` (`_createdON`),
   ADD KEY `_organizationID` (`_organizationID`),
   ADD KEY `_receiverID` (`_receiverID`),
@@ -782,9 +782,9 @@ ALTER TABLE `_organization`
 -- Indexes for table `_organization_users`
 --
 ALTER TABLE `_organization_users`
-  ADD PRIMARY KEY (`_organizationID`, `_userID`),
+  ADD PRIMARY KEY (`_organizationID`, `_usersID`),
   ADD KEY `_organizationID` (`_organizationID`),
-  ADD KEY `_userID` (`_userID`);
+  ADD KEY `_usersID` (`_usersID`);
 
 --
 -- Indexes for table `_role_privileges`
@@ -799,15 +799,15 @@ ALTER TABLE `_role_privileges`
 --
 ALTER TABLE `_roles`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `_userID` (`_userID`),
+  ADD KEY `_usersID` (`_usersID`),
   ADD KEY `_organizationID` (`_organizationID`);
 
 --
 -- Indexes for table `_user_roles`
 --
 ALTER TABLE `_user_roles`
-  ADD PRIMARY KEY (`_userID`, `_rolesID`),
-  ADD KEY `_userID` (`_userID`),
+  ADD PRIMARY KEY (`_usersID`, `_rolesID`),
+  ADD KEY `_usersID` (`_usersID`),
   ADD KEY `_rolesID` (`_rolesID`);
 
 --
@@ -815,7 +815,7 @@ ALTER TABLE `_user_roles`
 --
 ALTER TABLE `_users`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `_userID` (`_userID`),
+  ADD KEY `_usersID` (`_usersID`),
   ADD KEY `name` (`name`),
   ADD KEY `_organizationID` (`_organizationID`),
   ADD KEY `firstName` (`firstName`),
@@ -916,7 +916,7 @@ ALTER TABLE `_users`
 --
 ALTER TABLE `_enums`
   ADD CONSTRAINT `_organizationID_fk_1` FOREIGN KEY (`_organizationID`) REFERENCES `_organization` (`id`),
-  ADD CONSTRAINT `_userID_fk_2` FOREIGN KEY (`_userID`) REFERENCES `_users` (`id`);
+  ADD CONSTRAINT `_userID_fk_2` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`);
 
 --
 -- Constraints for table `_enum_values`
@@ -924,14 +924,14 @@ ALTER TABLE `_enums`
 ALTER TABLE `_enum_values`
   ADD CONSTRAINT `values_linker_fk_3` FOREIGN KEY (`values_linker`) REFERENCES `_enums` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `_organizationID_fk_4` FOREIGN KEY (`_organizationID`) REFERENCES `_organization` (`id`),
-  ADD CONSTRAINT `_userID_fk_5` FOREIGN KEY (`_userID`) REFERENCES `_users` (`id`);
+  ADD CONSTRAINT `_userID_fk_5` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`);
 
 --
 -- Constraints for table `_error_reports`
 --
 ALTER TABLE `_error_reports`
   ADD CONSTRAINT `_organizationID_fk_6` FOREIGN KEY (`_organizationID`) REFERENCES `_organization` (`id`),
-  ADD CONSTRAINT `_userID_fk_7` FOREIGN KEY (`_userID`) REFERENCES `_users` (`id`);
+  ADD CONSTRAINT `_userID_fk_7` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`);
 
 --
 -- Constraints for table `_fields`
@@ -945,13 +945,13 @@ ALTER TABLE `_fields`
 --
 ALTER TABLE `_files`
   ADD CONSTRAINT `_organizationID_fk_10` FOREIGN KEY (`_organizationID`) REFERENCES `_organization` (`id`),
-  ADD CONSTRAINT `_userID_fk_11` FOREIGN KEY (`_userID`) REFERENCES `_users` (`id`);
+  ADD CONSTRAINT `_userID_fk_11` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`);
 
 --
 -- Constraints for table `_filters`
 --
 ALTER TABLE `_filters`
-  ADD CONSTRAINT `_userID_fk_12` FOREIGN KEY (`_userID`) REFERENCES `_users` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `_userID_fk_12` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `_organizationID_fk_13` FOREIGN KEY (`_organizationID`) REFERENCES `_organization` (`id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `_nodes__filters_fk_14` FOREIGN KEY (`_nodesID`) REFERENCES `_nodes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -960,21 +960,21 @@ ALTER TABLE `_filters`
 --
 ALTER TABLE `_html`
   ADD CONSTRAINT `_organizationID_fk_15` FOREIGN KEY (`_organizationID`) REFERENCES `_organization` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `_userID_fk_16` FOREIGN KEY (`_userID`) REFERENCES `_users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `_userID_fk_16` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `_languages`
 --
 ALTER TABLE `_languages`
   ADD CONSTRAINT `_organizationID_fk_17` FOREIGN KEY (`_organizationID`) REFERENCES `_organization` (`id`),
-  ADD CONSTRAINT `_userID_fk_18` FOREIGN KEY (`_userID`) REFERENCES `_users` (`id`);
+  ADD CONSTRAINT `_userID_fk_18` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`);
 
 --
 -- Constraints for table `_messages`
 --
 ALTER TABLE `_messages`
   ADD CONSTRAINT `_organizationID_fk_19` FOREIGN KEY (`_organizationID`) REFERENCES `_organization` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `_userID_fk_20` FOREIGN KEY (`_userID`) REFERENCES `_users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `_userID_fk_20` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `_nodes`
@@ -1000,13 +1000,13 @@ ALTER TABLE `_role_privileges`
 -- Constraints for table `_roles`
 --
 ALTER TABLE `_roles`
-  ADD CONSTRAINT `_userID_fk_26` FOREIGN KEY (`_userID`) REFERENCES `_users` (`id`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `_userID_fk_26` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `_user_roles`
 --
 ALTER TABLE `_user_roles`
-  ADD CONSTRAINT `_userID_fk_27` FOREIGN KEY (`_userID`) REFERENCES `_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `_userID_fk_27` FOREIGN KEY (`_usersID`) REFERENCES `_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `_rolesID_fk_28` FOREIGN KEY (`_rolesID`) REFERENCES `_roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --

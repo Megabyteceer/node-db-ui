@@ -116,14 +116,14 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		let leastOneTablesFieldUpdated = false;
 
 		if(recId === null) {
-			if(data.hasOwnProperty('_userID')) {
-				if(userSession && !isAdmin(userSession) && (userSession.id !== data._userID)) {
-					throwError("wrong _userID detected");
+			if(data.hasOwnProperty('_usersID')) {
+				if(userSession && !isAdmin(userSession) && (userSession.id !== data._usersID)) {
+					throwError("wrong _usersID detected");
 				};
 			} else {
-				assert(userSession, "submitRecord without userSession requires _userID to be defined.");
+				assert(userSession, "submitRecord without userSession requires _usersID to be defined.");
 				noNeedComma = false;
-				insQ.push('_userID=', userSession.id);
+				insQ.push('_usersID=', userSession.id);
 				leastOneTablesFieldUpdated = true;
 			}
 
@@ -289,7 +289,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		}
 
 		for(let key in data) {
-			if(key !== 'status' && key !== '_organizationID' && key !== '_userID') {
+			if(key !== 'status' && key !== '_organizationID' && key !== '_usersID') {
 				assert(node.fields.find(f => (f.fieldName === key) && !f.clientOnly), "Unknown field '" + key + "' in data set detected.");
 			}
 		}

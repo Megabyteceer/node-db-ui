@@ -124,8 +124,6 @@ class CropperFieldBody extends Component<any, any> {
 	}
 
 	_onChange(e) {
-		var _this = this;
-
 		e.preventDefault();
 		var files = undefined;
 		if(e.dataTransfer) {
@@ -139,7 +137,7 @@ class CropperFieldBody extends Component<any, any> {
 			}
 			var reader = new FileReader();
 			reader.onload = () => {
-				_this.setState({ waiting: 0, src: reader.result, cropResult: false });
+				this.setState({ waiting: 0, src: reader.result, cropResult: false });
 
 				var selectedImage = new Image();
 				const cropperLoader = import('react-cropper');

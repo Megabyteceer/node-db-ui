@@ -55,13 +55,13 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 
 
 			if(fieldType === FIELD_16_RATING) {
-				selQ.push(tableName, '.rates_1,', tableName, '.rates_2,', tableName, '.rates_3,', tableName, '.rates_4,', tableName, '.rates_5,(SELECT rate FROM ', tableName, '_rates WHERE _recID=', tableName, '.id AND _userID=', userSession.id as unknown as string, ' LIMIT 1) AS rates_y');
+				selQ.push(tableName, '.rates_1,', tableName, '.rates_2,', tableName, '.rates_3,', tableName, '.rates_4,', tableName, '.rates_5,(SELECT rate FROM ', tableName, '_rates WHERE _recID=', tableName, '.id AND _usersID=', userSession.id as unknown as string, ' LIMIT 1) AS rates_y');
 			} else if(fieldType === FIELD_14_NtoM) {//n2m
 				let tblTmpName = 't' + f.id;
 				if(f.icon) {
-					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name,'␞',", f.icon, ") SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
+					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name,'␞',", f.icon, ") SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", tableName, ".id) AS `", fieldName, "`");
 				} else {
-					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name) SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
+					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name) SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", tableName, ".id) AS `", fieldName, "`");
 				}
 			} else if(fieldType === FIELD_7_Nto1) {//n21
 				if(f.icon) {
@@ -82,7 +82,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 
 	selQ.push(tableName, '.id');
 
-	selQ.push(',', tableName, '._organizationID AS creatorORG,', tableName, '._userID AS creatorUSER');
+	selQ.push(',', tableName, '._organizationID AS creatorORG,', tableName, '._usersID AS creatorUSER');
 	if(node.draftable) {
 		selQ.push(',', tableName, '.status');
 	}
@@ -262,9 +262,9 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 			wheresBegin.push(" AND (", tableName, "._organizationID=", userSession.orgId as unknown as string, ')');
 		} else if(privileges & PRIVILEGES_VIEW_OWN) {
 			if(tableName !== '_messages') {
-				wheresBegin.push(" AND (", tableName, "._userID=", userSession.id as unknown as string, ')');
+				wheresBegin.push(" AND (", tableName, "._usersID=", userSession.id as unknown as string, ')');
 			} else {
-				wheresBegin.push(" AND ((", tableName, "._userID=", userSession.id as unknown as string, ")OR(", tableName, "._receiverID=", userSession.id as unknown as string, '))');
+				wheresBegin.push(" AND ((", tableName, "._usersID=", userSession.id as unknown as string, ")OR(", tableName, "._receiverID=", userSession.id as unknown as string, '))');
 			}
 		} else {
 			throwError('Access denied 3.');

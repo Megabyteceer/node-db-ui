@@ -47,7 +47,7 @@ const handlers: NodeEventsHandlers = {
 				fieldType: FIELD_7_Nto1,
 				forSearch: 1,
 				selectFieldName: parentNode.tableName,
-				_userID: userSession.id,
+				_usersID: userSession.id,
 				_organizationID: userSession.orgId
 			};
 			await submitRecord(NODE_ID_FIELDS, linkerFieldData);
@@ -80,7 +80,7 @@ const handlers: NodeEventsHandlers = {
 				const realFieldName = currentData.fieldName;
 				const fieldType = currentData.fieldType;
 
-				if((realFieldName !== '_organizationID') && (realFieldName !== '_userID') && (realFieldName !== '_createdON') && (realFieldName !== 'id')) {
+				if((realFieldName !== '_organizationID') && (realFieldName !== '_usersID') && (realFieldName !== '_createdON') && (realFieldName !== 'id')) {
 					if((currentData.noStore === 0) && (fieldType !== FIELD_8_STATIC_TEXT) && (fieldType !== FIELD_14_NtoM) && (fieldType !== FIELD_15_1toN)) {
 
 

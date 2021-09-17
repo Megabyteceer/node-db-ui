@@ -133,8 +133,8 @@ async function activateUser(key) {
 		if(user) {
 			let userID = user.id;
 			//create company for new user
-			let organizationID = (await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_userID`) VALUES ('" + user.company + "', '1', " + userID + ")") as mysqlInsertResult).insertId;
-			await mysqlExec("UPDATE _users SET status=1, activation='', _organizationID=" + organizationID + ", _userID = " + userID + " WHERE id =" + userID);
+			let organizationID = (await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_usersID`) VALUES ('" + user.company + "', '1', " + userID + ")") as mysqlInsertResult).insertId;
+			await mysqlExec("UPDATE _users SET status=1, activation='', _organizationID=" + organizationID + ", _usersID = " + userID + " WHERE id =" + userID);
 			await mysqlExec("UPDATE _organization SET _organizationID=" + organizationID + " WHERE id =" + organizationID);
 			return authorizeUserByID(userID);
 		}
@@ -220,8 +220,8 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 
 	// fix user's org if undefined
 	if(organID === 0) {
-		const orgId = await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_userID`) VALUES ('" + user.company + "', '1', " + userID + ")");
-		await mysqlExec("UPDATE _users SET _organizationID=" + orgId + ", _userID = " + userID + " WHERE id=" + userID);
+		const orgId = await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_usersID`) VALUES ('" + user.company + "', '1', " + userID + ")");
+		await mysqlExec("UPDATE _users SET _organizationID=" + orgId + ", _usersID = " + userID + " WHERE id=" + userID);
 		await mysqlExec("UPDATE _organization SET _organizationID=" + orgId + " WHERE id=" + orgId);
 		return authorizeUserByID(userID);
 	}
@@ -229,7 +229,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 	let organID_def = user.defaultOrg || organID;
 	let organName = user.organName;
 
-	const roles = await mysqlExec("SELECT _rolesID FROM _user_roles WHERE _user_roles._userID=" + userID + " ORDER BY _rolesID") as mysqlRowsResult;
+	const roles = await mysqlExec("SELECT _rolesID FROM _user_roles WHERE _user_roles._usersID=" + userID + " ORDER BY _rolesID") as mysqlRowsResult;
 
 	let cacheKeyGenerator: string[];
 	let userRoles: UserRoles = {};
@@ -249,7 +249,7 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 	let organizations = {
 		[organID]: organName
 	}
-	const pgs = await mysqlExec("SELECT _organization.id, _organization.name FROM `_organization_users` LEFT JOIN _organization ON (_organization.id = _organization_users._organizationID) WHERE _organization_users._userID=" + userID + " ORDER BY _organization.id") as mysqlRowsResult;
+	const pgs = await mysqlExec("SELECT _organization.id, _organization.name FROM `_organization_users` LEFT JOIN _organization ON (_organization.id = _organization_users._organizationID) WHERE _organization_users._usersID=" + userID + " ORDER BY _organization.id") as mysqlRowsResult;
 	for(let org of pgs) {
 		organizations[org.id] = org.name;
 	}
