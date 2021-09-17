@@ -478,8 +478,9 @@ class FormFull extends eventProcessingMixins {
 
 
 			if(!this.props.isCompact) {
-				let headerContent = this.header || this.state.header || R.span(null, node.icon ? renderIcon(node.icon) : undefined, node.singleName);
-
+				let headerContent = this.header || this.state.header || R.span(null, node.icon ? renderIcon(node.icon) : undefined, (this.recId === 'new') ?
+					L('CREATE') + ' ' + (node.creationName || node.singleName) :
+					(this.state.data ? this.state.data.name : this.props.initialData.name));
 				header = R.h4({ className: "form-header" }, headerContent);
 			}
 
