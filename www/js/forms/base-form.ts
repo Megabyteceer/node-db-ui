@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BoolNum, Filters, NodeDesc, RecId, RecordData, throwError } from "../bs-utils";
+import { assert, BoolNum, Filters, NodeDesc, RecId, RecordData, throwError } from "../bs-utils";
 import { LookupOneToManyFiled } from "../fields/field-15-one-to-many";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import type { FieldWrap } from "../fields/field-wrap";
@@ -46,7 +46,11 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	recId: RecId | 'new';
 	/** true if form is editable or read only */
 	editable: boolean;
+
+	/** *List* - uses *filters* as filters values for records fetch request;
+	 * *FullForm* - uses *filters* as initialData and current tab store;  */
 	filters: Filters;
+
 	fieldsRefs: { [key: string]: FieldWrap };
 	/** set content of form header */
 	header: string | React.Component;
@@ -56,56 +60,24 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		super(props as T);
 		this.nodeId = this.props.nodeId || this.props.node.id;
 		this.recId = this.props.initialData ? this.props.initialData.id : this.props.recId;
-		this.filters = this.props.filters;
+		this.filters = Object.assign({}, this.props.filters);
 		this.editable = this.props.editable;
 
 		//@ts-ignore
 		this.state = {};
-		this.filters = Object.assign({}, this.props.filters);
 		this.fieldsRefs = {};
 		this.cancelClick = this.cancelClick.bind(this);
 		this.header = '';
-		updateHashLocation();
 	}
 
 	UNSAFE_componentWillReceiveProps(newProps) {
-		throwError("Form should be recreated, and not receive new props. Add 'key' to parent element contains nodeId and recId.");
+		assert((this.recId === (newProps.initialData ? newProps.initialData.id : newProps.recId)) &&
+			(this.nodeId === (newProps.nodeId || newProps.node.id)),
+			"Form should be recreated, and not receive new props. Add 'key' to parent element contains nodeId and recId.");
 	}
 
 	callOnTabShowEvent(tabNameToShow) {
 
-	}
-
-	refreshData() {
-
-	}
-
-	changeFilter(name: string, v?: any, refresh?: boolean) {
-		if(name === 'tab') {
-			this.callOnTabShowEvent(v);
-		}
-
-		var p = this.filters[name];
-
-		if((p !== 0) && (v !== 0)) {
-			if(!p && !v) return;
-		}
-
-		if(p !== v) {
-
-			if(typeof (v) === 'undefined') {
-				delete (this.filters[name]);
-				delete (this.filters[name]);
-			} else {
-				this.filters[name] = v;
-				this.filters[name] = v;
-			}
-			if(refresh) {
-				this.refreshData();
-			}
-			return true;
-		}
-		return false;
 	}
 
 	isSubForm() {

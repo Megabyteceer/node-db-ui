@@ -247,7 +247,7 @@ class FormFull extends eventProcessingMixins {
 
 		if(Object.keys(data).length > 0) {
 			let recId = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
-
+			this.recId = recId;
 			if(!this.currentData.hasOwnProperty('id')) {
 				this.currentData.id = recId;
 				this.props.initialData.id = recId;
@@ -276,7 +276,6 @@ class FormFull extends eventProcessingMixins {
 
 			await callForEachField(this.fieldsRefs, data, 'afterSave');
 
-			this.recId = this.currentData.id;
 			this.deleteBackup();
 			if(this.onSaveCallback) {
 				await this.onSaveCallback();

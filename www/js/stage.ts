@@ -3,7 +3,7 @@ import { R } from "./r";
 import { FormFull } from "./forms/form-full";
 import { List } from "./forms/list";
 import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, L, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from "./utils";
-import { RecId, RecordData } from "./bs-utils";
+import { assert, RecId, RecordData } from "./bs-utils";
 import { BaseForm } from "./forms/base-form";
 import ReactDOM from 'react-dom';
 import { Notify } from "./notify";
@@ -54,6 +54,10 @@ class Stage extends Component<any, any> {
 
 	static get rootForm(): BaseForm {
 		return allForms[0] && allForms[0].form;
+	}
+
+	static destroyForm() {
+		ReactDOM.render(React.createElement(React.Fragment), Stage.currentFormEntry.container);
 	}
 
 	static refreshForm() {
@@ -141,9 +145,15 @@ class Stage extends Component<any, any> {
 				formEntry.form = form;
 			}
 		};
+
 		let formType;
 		if(!node.staticLink) {
-			formType = (recId || (recId === 0)) ? FormFull : List;
+			if(recId || (recId === 0)) {
+				formType = FormFull;
+			} else {
+				formType = List;
+				assert(!modal, "List could not be show at modal level.");
+			}
 		} else if(node.staticLink === 'reactClass') {
 			if(typeof window.crudJs.customClasses[node.tableName] === 'undefined') {
 				myAlert('Unknown react class: ' + node.tableName);

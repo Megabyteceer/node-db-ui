@@ -12,6 +12,7 @@ import { ENV } from "./main-frame";
 import { DebugPanel } from "./debug-panel";
 import React from "react";
 import { HotkeyButton } from "./components/hotkey-button";
+import { List } from "./forms/list";
 
 const ON_FORM_SAVE = 'onSave';
 const ON_FORM_LOAD = 'onLoad';
@@ -265,7 +266,6 @@ function goToHome() {
 	}
 }
 
-
 function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, editable?: boolean) {
 	var newHash = [
 		'n', encodeURIComponent(nodeId)];
@@ -402,8 +402,12 @@ async function goToPageByHash() {
 			}
 		}
 		if(!isTheSame) {
-			while(Stage.allForms.length > (level + 1)) {
-				Stage.goBackIfModal();
+			if(level === 0) {
+				Stage.destroyForm();
+			} else {
+				while(Stage.allForms.length > (level + 1)) {
+					Stage.goBackIfModal();
+				}
 			}
 			break;
 		}
@@ -430,15 +434,13 @@ function goBack(isAfterDelete?: boolean) {
 		return;
 	}
 	if(isLitePage() && window.history.length < 2) {
-		if(window.location.href.indexOf('#n/28/f/p/*/formTitle') > 0) {
-			window.crudJs.Stage.refreshForm();
-		} else {
-			window.close();
-		}
+		window.close();
 	} else if(!isAfterDelete && window.history.length) {
-		isHistoryChanging = true;
+
 		if(window.history.length > 0) {
+			isHistoryChanging = true;
 			window.history.back();
+			isHistoryChanging = false;
 		} else {
 			window.crudJs.Stage.showForm(ENV.HOME_NODE);
 		}
@@ -450,44 +452,43 @@ function goBack(isAfterDelete?: boolean) {
 	}
 }
 
-var hashUpdateTimeout;
+function assignFilters(src, desc): boolean {
+	var leastOneUpdated;
+	var keys = Object.keys(src);
+	for(var i = keys.length; i > 0;) {
+		i--;
+		var name = keys[i];
+		var value = src[name];
+		if(desc[name] !== value) {
+			desc[name] = value;
+			leastOneUpdated = true;
+		}
+	}
+	return leastOneUpdated;
+}
+
+
 let isHistoryChanging = false;
 
 function updateHashLocation() {
-
-	if(hashUpdateTimeout) {
-		consoleLog('Hash updated more that once');
-		clearTimeout(hashUpdateTimeout);
-		hashUpdateTimeout = false;
+	if(isHistoryChanging) {
+		return;
 	}
+	var newHash = '#' + window.crudJs.Stage.allForms.map((formEntry) => {
+		const formParameters = formEntry.form;
+		const filters = formParameters.filters;
+		return locationToHash(formParameters.nodeId, formParameters.recId, filters, formParameters.editable);
+	}).join(HASH_DIVIDER);
 
-	hashUpdateTimeout = setTimeout(() => {
-		hashUpdateTimeout = false;
-		var newHash = '#' + window.crudJs.Stage.allForms.map((formEntry) => {
-			const formParameters = formEntry.form;
-			const filters = formParameters.filters;
-			return locationToHash(formParameters.nodeId, formParameters.recId, filters, formParameters.editable);
-		}).join(HASH_DIVIDER);
-
-		if((location.hash != newHash.substr(1)) && !isHistoryChanging) {
-
-			if((window.location.hash.split('/f/').shift() === (newHash.split('/f/').shift())) && history.replaceState) { //only filters is changed
-				history.replaceState(null, null, newHash);
-			} else if(history.pushState) {
-				history.pushState(null, null, newHash);
-			} else {
-				location.hash = newHash.replace('#', '');
-			}
-		}
-		isHistoryChanging = false;
-	}, 1);
-
+	if((location.hash != newHash) && (location.hash != newHash.substr(1))) {
+		history.pushState(null, null, newHash);
+	}
 }
-
 
 $(window).on('hashchange', () => {
 	isHistoryChanging = true;
 	goToPageByHash();
+	isHistoryChanging = false;
 });
 
 var nodes = {};
@@ -1166,18 +1167,18 @@ function L(key: LANG_KEYS, param?: any) {
 
 var listRenderers = [];
 
-function registerListRenderer(nodeId, renderFunction) {
+function registerListRenderer(nodeId: RecId, renderFunction: (this: List) => any[]) {
 	if(listRenderers.hasOwnProperty(nodeId)) {
 		throw 'List renderer for node ' + nodeId + ' is already registered.';
 	}
 	listRenderers[nodeId] = renderFunction;
 }
 
-function isPresentListRenderer(nodeId) {
+function isPresentListRenderer(nodeId: RecId) {
 	return listRenderers.hasOwnProperty(nodeId);
 }
 
-function getListRenderer(nodeId) {
+function getListRenderer(nodeId: RecId): (this: List) => any[] {
 	return listRenderers[nodeId];
 }
 
@@ -1241,5 +1242,6 @@ export {
 	ON_FIELD_CHANGE,
 	onOneFormShowed,
 	isRecordRestrictedForDeletion,
-	reloadLocation
+	reloadLocation,
+	assignFilters
 }

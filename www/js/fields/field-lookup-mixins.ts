@@ -1,7 +1,7 @@
 import React from "react";
 import { FIELD_15_1toN, NodeDesc, RecId, RecordData, RecordsData } from "../bs-utils";
 import { FormItem } from "../forms/form-item";
-import { Filters } from "../utils";
+import { assignFilters, Filters } from "../utils";
 import { LookupManyToManyFiled } from "./field-14-many-to-many";
 import { BaseField, FieldProps, FieldState } from "./base-field";
 
@@ -65,18 +65,7 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 				this.forceUpdate();
 			}
 		} else {
-			var leastOneUpdated;
-			var keys = Object.keys(filtersObjOrName);
-			for(var i = keys.length; i > 0;) {
-				i--;
-				var name = keys[i];
-				var value = filtersObjOrName[name];
-				if(this.state.filters[name] !== value) {
-					this.state.filters[name] = value;
-					leastOneUpdated = true;
-				}
-			}
-			if(leastOneUpdated) {
+			if(assignFilters(filtersObjOrName, this.state.filters)) {
 				this.forceUpdate();
 			}
 		}

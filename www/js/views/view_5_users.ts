@@ -1,9 +1,10 @@
 import { R } from "../r";
 import { renderItemsButtons } from "../forms/form-item";
 import { idToImgURL, registerListRenderer, renderIcon } from "../utils";
+import { List } from "../forms/list";
 
 
-registerListRenderer(5, function() {
+registerListRenderer(5, function (this: List) {
 
 	var node = this.state.node;
 	var data = this.state.data;

@@ -74,8 +74,31 @@ class List extends BaseForm<ListProps, ListState> {
 		this.onShow();
 	}
 
-	UNSAFE_componentWillReceiveProps(newProps) {
-		Object.assign(this.filters, newProps.filters);
+	changeFilter(name: string, v?: any, refresh?: boolean) {
+		if(name === 'tab') {
+			this.callOnTabShowEvent(v);
+		}
+
+		var p = this.filters[name];
+
+		if((p !== 0) && (v !== 0)) {
+			if(!p && !v) return;
+		}
+
+		if(p !== v) {
+			if(typeof (v) === 'undefined') {
+				delete (this.filters[name]);
+				delete (this.filters[name]);
+			} else {
+				this.filters[name] = v;
+				this.filters[name] = v;
+			}
+			if(refresh) {
+				this.refreshData();
+			}
+			return true;
+		}
+		return false;
 	}
 
 	onShow() {
@@ -409,10 +432,7 @@ class List extends BaseForm<ListProps, ListState> {
 				body = getListRenderer(node.id).call(this);
 			}
 			if(!body) {
-
-
 				var tableHeader = [];
-
 				node.fields.some((field) => {
 
 
