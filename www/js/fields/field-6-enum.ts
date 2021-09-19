@@ -9,9 +9,8 @@ class EnumField extends BaseField {
 
 	enum: EnumList;
 
-	setValue(val) {
-		//@ts-ignore
-		this.state.value = val;
+	setValue(value) {
+		this.setState({ value });
 	}
 
 	setFilterValues(filter) {
