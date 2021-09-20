@@ -1,5 +1,5 @@
 import ENV from "../ENV";
-import { mysqlExec, mysqlInsertResult, mysqlRowResultSingle, mysqlRowsResult } from "./mysql-connection";
+import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "./mysql-connection";
 import { getLangs, GUEST_USER_SESSION } from "./describe-node";
 import { throwError, GUEST_ROLE_ID, USER_ROLE_ID, assert, UserLangEntry, UserRoles, UserSession, TRoleId, ADMIN_ROLE_ID } from "../www/js/bs-utils";
 import { L } from "./locale";
@@ -116,7 +116,7 @@ async function registerUser(reqData) {
 		if(pgs.length > 0) {
 			throwError('EMAIL_ALREADY');
 		} else {
-			const salt = randomBytes(16).toString('hex');
+			const salt = generateSalt();
 			let actKey = randomBytes(24).toString('base64');
 			let href = getServerHref() + '?activate_user&key=' + actKey;
 			await mysqlExec("INSERT INTO `_users` (status, `name`, `PASS`, `salt`, `email`, `company`, `activation`) VALUES (2,'" + name + "','" + (await getPasswordHash(password, salt)) + "','" + salt + "','" + login + "','" + company + "','" + actKey + "');");
@@ -124,6 +124,10 @@ async function registerUser(reqData) {
 			return L('EMAIL_SENDED', login);
 		}
 	}
+}
+
+function generateSalt() {
+	return randomBytes(16).toString('hex');
 }
 
 async function activateUser(key) {
@@ -166,41 +170,6 @@ function getPasswordHash(password, salt) {
 		});
 	});
 }
-
-async function login(username, password) {
-
-	let user = await mysqlExec("SELECT id, activation, salt, TIMESTAMPDIFF(SECOND, NOW(), blocked_to) AS blocked, PASS, mistakes FROM _users WHERE email='" + username + "' AND _users.status=1 LIMIT 1") as mysqlRowResultSingle;
-	user = user[0];
-	if(user) {
-
-		let userID = user.id;
-
-		let blocked = user.blocked;
-
-		if(blocked > 0) {
-			throwError(L('USER_BLOCKED', blocked));
-		} else {
-
-			let mistakes = user.mistakes;
-
-			let key = await getPasswordHash(password, user.salt);
-
-			if(key !== user.PASS) {
-				if(mistakes <= 1) {
-					await mysqlExec("UPDATE _users SET blocked_to=DATE_ADD( NOW(),INTERVAL 1 MINUTE), mistakes=3 WHERE id='" + userID + "'");
-				} else {
-					await mysqlExec("UPDATE _users SET mistakes=(mistakes-1) WHERE id='" + userID + "'");
-				}
-				throwError('WRONG_PASS');
-			}
-
-			return authorizeUserByID(userID);
-		}
-	}
-	throwError('WRONG_PASS');
-}
-
-
 
 
 async function authorizeUserByID(userID, isItServerSideRole: boolean = false, sessionToken: string | null = null): Promise<UserSession> {
@@ -389,4 +358,4 @@ const isUserHaveRole = (roleId: TRoleId, userSession: UserSession) => {
 	return userSession && userSession.userRoles[roleId];
 }
 
-export { UserSession, notificationOut, shouldBeAuthorized, isAdmin, isUserHaveRole, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultilingual, login, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode };
+export { UserSession, generateSalt, notificationOut, shouldBeAuthorized, isAdmin, isUserHaveRole, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultilingual, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode };

@@ -64,6 +64,7 @@ interface UserSession {
 	notifications?: string[];
 	/** not empty if user have multilingualEnabled */
 	multilingualEnabled?: BoolNum;
+	sessionToken?: string;
 }
 
 interface EnumListItem {
@@ -156,6 +157,7 @@ interface NodeDesc {
 	matchName: string;
 	description: string;
 	isDocument: BoolNum;
+	noStoreForms?: BoolNum;
 	reverse?: BoolNum;
 	creationName?: string;
 	staticLink?: string;
@@ -281,6 +283,7 @@ const NODE_ID_ENUMERATIONS: RecId = 52;
 const NODE_ID_ENUMERATION_VALUES: RecId = 53;
 const NODE_ID_ERROR_REPORTS: RecId = 81;
 const NODE_ID_FILES: RecId = 83;
+const NODE_ID_LOGIN: RecId = 20;
 
 const ROLE_ID_SUPER_ADMIN: RecId = 1;
 const ROLE_ID_GUEST: RecId = 2;
@@ -320,7 +323,7 @@ export {
 	NODE_ID_NODES, NODE_ID_USERS, NODE_ID_FIELDS, NODE_ID_ORGANIZATIONS,
 	NODE_ID_ROLES, NODE_ID_FILTERS, NODE_ID_MESSAGES, NODE_ID_LANGUAGES,
 	NODE_ID_PAGES, NODE_ID_ENUMERATIONS, NODE_ID_ENUMERATION_VALUES,
-	NODE_ID_ERROR_REPORTS, NODE_ID_FILES,
+	NODE_ID_ERROR_REPORTS, NODE_ID_FILES, NODE_ID_LOGIN,
 
 	USER_ROLE_ID, ADMIN_ROLE_ID, GUEST_ROLE_ID,
 

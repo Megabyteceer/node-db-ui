@@ -4,7 +4,7 @@ import type { LANG_KEYS } from "../locales/en/lang";
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
-import { ADMIN_ROLE_ID, assert, FieldDesc, FIELD_1_TEXT, Filters, GetRecordsParams, HASH_DIVIDER, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, TRoleId } from "./bs-utils";
+import { ADMIN_ROLE_ID, assert, FieldDesc, FIELD_1_TEXT, Filters, GetRecordsParams, HASH_DIVIDER, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, TRoleId, USER_ROLE_ID } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
@@ -14,9 +14,12 @@ import React from "react";
 import { HotkeyButton } from "./components/hotkey-button";
 import { List } from "./forms/list";
 
-const ON_FORM_SAVE = 'onSave';
-const ON_FORM_LOAD = 'onLoad';
-const ON_FIELD_CHANGE = 'onChange';
+enum CLIENT_SIDE_FORM_EVENTS {
+	ON_FORM_SAVE = 'onSave',
+	ON_FORM_AFTER_SAVE = 'onAfterSave',
+	ON_FORM_LOAD = 'onLoad',
+	ON_FIELD_CHANGE = 'onChange',
+}
 
 const __corePath = 'https://node-db-ui.com:1443/core/';
 
@@ -513,7 +516,7 @@ async function waitForNode(nodeId) {
 	});
 }
 
-async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string) {
+async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string): Promise<NodeDesc> {
 
 	if(!callStack) {
 		callStack = new Error('getNode called from: ').stack;
@@ -865,7 +868,9 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 
 	let body: FormData;
 	if(!noProcessData) {
-		dataToSend.sessionToken = User.sessionToken;
+		if(User.sessionToken) {
+			dataToSend.sessionToken = User.sessionToken;
+		}
 		body = JSON.stringify(dataToSend) as unknown as FormData;
 	} else {
 		body = dataToSend;
@@ -1239,9 +1244,7 @@ export {
 	debugError,
 	isUserHaveRole,
 	isAdmin,
-	ON_FORM_SAVE,
-	ON_FORM_LOAD,
-	ON_FIELD_CHANGE,
+	CLIENT_SIDE_FORM_EVENTS,
 	onOneFormShowed,
 	isRecordRestrictedForDeletion,
 	reloadLocation,

@@ -21,7 +21,7 @@ registerFieldClass(FIELD_19_RICH_EDITOR, class RichEditorField extends BaseField
 		super(props);
 		this.iframeId = idCounter++;
 	}
-
+	resolveValueAwaiting: () => void;
 	viewportRef: HTMLIFrameElement;
 	iframeId: number;
 	summerNoteIsInitialized: boolean;
@@ -52,12 +52,12 @@ registerFieldClass(FIELD_19_RICH_EDITOR, class RichEditorField extends BaseField
 				if(data.hasOwnProperty('value')) {
 					this.setValue(data.value, false);
 					this.props.wrapper.valueListener(this.state.value, true, this);
+					if(this.resolveValueAwaiting) {
+						this.resolveValueAwaiting();
+						this.resolveValueAwaiting = null;
+					}
 				} else {
 					s.postMessage({ options: options, value: this.state.value }, '*');
-				}
-				if(this.onSaveCallback) {
-					this.onSaveCallback();
-					delete this.onSaveCallback;
 				}
 			};
 		}
@@ -94,7 +94,7 @@ registerFieldClass(FIELD_19_RICH_EDITOR, class RichEditorField extends BaseField
 	async beforeSave() {
 		return new Promise((resolve) => {
 			var s = this.getSummerNote();
-			this.onSaveCallback = resolve as () => void;
+			this.resolveValueAwaiting = resolve as () => void;
 			s.postMessage({ onSaveRichEditor: true }, '*');
 		});
 	}

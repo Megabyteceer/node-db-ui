@@ -1,11 +1,13 @@
 import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, LANGUAGE_ID_DEFAULT } from "../bs-utils";
+import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, LANGUAGE_ID_DEFAULT, UserSession } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
 import { EnumField } from "../fields/field-6-enum";
 import { R } from "../r";
+
+let uiLanguageIsChanged;
 
 class FormEvents extends FormFull {
 
@@ -110,15 +112,17 @@ class FormEvents extends FormFull {
 			if(nLang && nLang.hasOwnProperty('id')) {
 				nLang = nLang.id;
 			}
-			if(nLang != pLang) {
-				this.onSaveCallback = () => {
-					showPrompt(L('RESTART_NOW')).then((isYes) => {
-						if(isYes) {
-							window.location.href = 'login';
-						}
-					});
+			uiLanguageIsChanged = nLang != pLang;
+		}
+	}
+
+	async _users_onAfterSave() {
+		if(uiLanguageIsChanged) {
+			showPrompt(L('RESTART_NOW')).then((isYes) => {
+				if(isYes) {
+					window.location.href = 'login';
 				}
-			}
+			});
 		}
 	}
 
@@ -147,6 +151,7 @@ class FormEvents extends FormFull {
 
 		if(this.isUpdateRecord) {
 			this.disableField('isDocument');
+			this.disableField('noStoreForms');
 			this.disableField('tableName');
 			this.hideField('addCreatedByFiled');
 			this.hideField('addCreatedOnFiled');
@@ -194,7 +199,8 @@ class FormEvents extends FormFull {
 
 	async _fields_onLoad() {
 
-		(this.getField('fieldType').fieldRef as EnumField).setFilterValues([16]);
+
+		(this.getField('fieldType').fieldRef as EnumField).setFilterValues([FIELD_16_RATING]); //TODO ratings is not implemented
 
 		if(this.isNewRecord) {
 			if(isNaN(this.fieldValue("show"))) {
@@ -254,7 +260,8 @@ class FormEvents extends FormFull {
 			isDocument: 1
 		});
 		this.addLookupFilters('nodeRef', {
-			isDocument: 1
+			isDocument: 1,
+			noStoreForms: 0
 		});
 		this.hideField("prior");
 		this.hideField("show");
@@ -397,6 +404,7 @@ class FormEvents extends FormFull {
 
 	async _enums_onSave() {
 		//TODO check if all values unique
+
 	}
 
 	async _filters_onLoad() {
@@ -404,6 +412,10 @@ class FormEvents extends FormFull {
 			filterId: 8,
 			excludeIDs: [9]
 		});
+	}
+
+	async _login_onAfterSave(saveResult) {
+		User.instance.setUserData(saveResult);
 	}
 
 	//_insertNewHandlersHere_

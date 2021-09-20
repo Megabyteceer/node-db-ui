@@ -44,14 +44,14 @@ class FieldsEvents extends FormEvents {
 			}
 
 			if(!this.isUpdateRecord) {
-				this.showField("addCreatedOnFiled", "createUserFld", "addCreatedByFiled",
-					"staticLink");
+				this.showField("addCreatedOnFiled", "createUserFld", "addCreatedByFiled", "staticLink",
+					"noStoreForms");
 			}
 
 		} else {
 			this.hideField("tableName", "creationName", "singleName",
 				"captcha", "_fieldsID", "reverse", "draftable", "addCreatedOnFiled",
-				"createUserFld", "addCreatedByFiled", "staticLink", "recPerPage");
+				"createUserFld", "addCreatedByFiled", "staticLink", "noStoreForms", "recPerPage");
 			if(this.hasField('creationName_en')) {
 				this.hideField("creationName_en", "singleName_en");
 			}
@@ -77,10 +77,15 @@ class FieldsEvents extends FormEvents {
 		switch(fieldType) {
 			case FIELD_8_STATIC_TEXT:
 				this.setFieldLabel("description", L("CONTENT"));
+
 			case FIELD_17_TAB:
 			case FIELD_18_BUTTON:
 				this.hideField("maxLength", "clientOnly", "noStore", "requirement", "unique", "forSearch");
 				this.setFieldValue('forSearch', false);
+				this.setFieldValue("clientOnly", 1);
+				this.disableField("clientOnly");
+				this.setFieldValue("noStore", 1);
+				this.disableField("noStore");
 				break;
 			case FIELD_14_NtoM:
 			case FIELD_15_1toN:
@@ -90,12 +95,16 @@ class FieldsEvents extends FormEvents {
 				this.setFieldValue("visibility_list", 0);
 				this.hideField('forSearch', 'requirement', 'unique');
 			case FIELD_7_Nto1:
+				this.enableField("noStore");
+				this.enableField("clientOnly");
 				this.hideField("maxLength", "unique");
 				this.setFieldValue("unique", false);
 				this.showField("nodeRef");
 				break;
 
 			case FIELD_6_ENUM:
+				this.enableField("noStore");
+				this.enableField("clientOnly");
 				this.showField('enum');
 				break;
 			case FIELD_19_RICH_EDITOR:
@@ -105,12 +114,16 @@ class FieldsEvents extends FormEvents {
 				this.setFieldValue('noStore', false);
 				this.setFieldValue('clientOnly', false);
 				this.setFieldValue('unique', false);
+				this.enableField("noStore");
+				this.enableField("clientOnly");
 				break;
 			case FIELD_5_BOOL:
 			case FIELD_4_DATE_TIME:
 			case FIELD_11_DATE:
 			case FIELD_20_COLOR:
 			case FIELD_21_FILE:
+				this.enableField("noStore");
+				this.enableField("clientOnly");
 				this.hideField("maxLength");
 				break;
 
@@ -200,6 +213,15 @@ class FieldsEvents extends FormEvents {
 
 	async _nodes_tableName_onChange() {
 		this.removeWrongCharactersInField('tableName');
+	}
+
+	async _nodes_staticLink_onChange() {
+		if(this.fieldValue('staticLink')) {
+			this.disableField('noStoreForms');
+			this.setFieldValue('noStoreForms', 1);
+		} else if(!this.isUpdateRecord) {
+			this.enableField('noStoreForms');
+		}
 	}
 
 	//_insertNewHandlersHere_

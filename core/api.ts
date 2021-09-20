@@ -1,7 +1,7 @@
 import { RecordsDataResponse } from 'www/js/bs-utils';
 import { nodePrivileges, getClientEventHandler, clearCache } from './admin/admin';
-import { setCurrentOrg, setMultilingual, login, resetPassword, registerUser, activateUser } from './auth';
-import { getNodeDesc, getNodesTree } from './describe-node';
+import { setCurrentOrg, setMultilingual, resetPassword, registerUser, activateUser, killSession } from './auth';
+import { getNodeDesc, getNodesTree, GUEST_USER_SESSION } from './describe-node';
 import { getRecords, deleteRecord } from './get-records';
 import { submitRecord, uniqueCheck } from './submit';
 import { uploadImage, uploadFile } from './upload';
@@ -15,6 +15,10 @@ const api = {
 			}
 			res(ret);
 		});
+	},
+	"api/logout": (reqData, userSession, res) => {
+		killSession(userSession);
+		res(GUEST_USER_SESSION);
 	},
 	"api/getMe": (reqData, userSession, res) => {
 		res(userSession);
@@ -48,9 +52,6 @@ const api = {
 	},
 	"register": (reqData, userSession, res) => {
 		registerUser(reqData).then(res);
-	},
-	"login": (reqData, userSession, res) => {
-		login(reqData.login_username, reqData.login_password).then(res);
 	},
 	"reset": (reqData, userSession, res) => {
 		resetPassword(reqData.key).then(res);

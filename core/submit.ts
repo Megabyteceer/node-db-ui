@@ -168,168 +168,174 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		if(recId !== null) {
 			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeUpdate, currentData, data, userSession);
 		} else {
-			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeCreate, data, userSession);
+			let createHandlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeCreate, data, userSession);
+			if(node.noStoreForms) {
+				recId = createHandlerResult as unknown as number; // allows to return no store events results to the client.
+			}
 		}
-		let needProcess_n2m;
-		for(let f of node.fields) {
+		if(!node.noStoreForms) {
 
-			let fieldName = f.fieldName;
+			let needProcess_n2m;
+			for(let f of node.fields) {
 
-			if(!f.noStore && data.hasOwnProperty(fieldName)) {
+				let fieldName = f.fieldName;
 
-				let fieldType = f.fieldType;
+				if(!f.noStore && data.hasOwnProperty(fieldName)) {
 
-				let fieldVal = data[fieldName];
+					let fieldType = f.fieldType;
 
-				if(fieldType === FIELD_14_NtoM) {
-					//will process later
-					needProcess_n2m = 1;
-				} else if(fieldType === FIELD_15_1toN) {
-					throwError('children records addition/deletion is independent.');
-				} else {
-					leastOneTablesFieldUpdated = true;
-					if(!noNeedComma) {
-						insQ.push(",");
-					}
-					noNeedComma = false;
-					insQ.push("`", fieldName, "`=");
+					let fieldVal = data[fieldName];
 
-					switch(fieldType) {
+					if(fieldType === FIELD_14_NtoM) {
+						//will process later
+						needProcess_n2m = 1;
+					} else if(fieldType === FIELD_15_1toN) {
+						throwError('children records addition/deletion is independent.');
+					} else {
+						leastOneTablesFieldUpdated = true;
+						if(!noNeedComma) {
+							insQ.push(",");
+						}
+						noNeedComma = false;
+						insQ.push("`", fieldName, "`=");
 
-						case FIELD_5_BOOL:
-							insQ.push(fieldVal);
-							break;
+						switch(fieldType) {
 
-						case FIELD_21_FILE:
+							case FIELD_5_BOOL:
+								insQ.push(fieldVal);
+								break;
 
-						//continue to process as uploaded image
-						case FIELD_12_PICTURE:
-							if(fieldVal) {
-								if(userSession.uploaded && (userSession.uploaded[f.id] === fieldVal)) {
-									delete userSession.uploaded[fieldVal];
-								} else {
-									throwError("Error. Couldn't link uploaded file to the record.");
-								}
-							}
-							if(realDataBefore && realDataBefore[fieldName]) {
-								if(realDataBefore[fieldName] !== fieldVal) {
-									if(!filesToDelete) {
-										filesToDelete = [];
-									}
-									if(fieldType === FIELD_12_PICTURE) {
-										filesToDelete.push(idToImgURLServer(realDataBefore[fieldName]));
+							case FIELD_21_FILE:
+
+							//continue to process as uploaded image
+							case FIELD_12_PICTURE:
+								if(fieldVal) {
+									if(userSession.uploaded && (userSession.uploaded[f.id] === fieldVal)) {
+										delete userSession.uploaded[fieldVal];
 									} else {
-										filesToDelete.push(join(UPLOADS_FILES_PATH, realDataBefore[fieldName]));
+										throwError("Error. Couldn't link uploaded file to the record.");
 									}
 								}
-							}
+								if(realDataBefore && realDataBefore[fieldName]) {
+									if(realDataBefore[fieldName] !== fieldVal) {
+										if(!filesToDelete) {
+											filesToDelete = [];
+										}
+										if(fieldType === FIELD_12_PICTURE) {
+											filesToDelete.push(idToImgURLServer(realDataBefore[fieldName]));
+										} else {
+											filesToDelete.push(join(UPLOADS_FILES_PATH, realDataBefore[fieldName]));
+										}
+									}
+								}
 
-						//continue to process as text
-						case FIELD_1_TEXT:
-						case FIELD_10_PASSWORD:
-							if(f.maxLength && (fieldVal.length > f.maxLength)) {
-								throwError("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxLength);
-							}
-							insQ.push("'", fieldVal, "'");
-							break;
+							//continue to process as text
+							case FIELD_1_TEXT:
+							case FIELD_10_PASSWORD:
+								if(f.maxLength && (fieldVal.length > f.maxLength)) {
+									throwError("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxLength);
+								}
+								insQ.push("'", fieldVal, "'");
+								break;
 
-						case FIELD_19_RICH_EDITOR:
-							if(fieldVal.length > 16000000) {
-								throwError("Value length for field '" + fieldName + "' (" + tableName + ") is longer that 16000000");
-							}
-							insQ.push("'", fieldVal, "'");
-							break;
-						case FIELD_17_TAB:
-							break;
+							case FIELD_19_RICH_EDITOR:
+								if(fieldVal.length > 16000000) {
+									throwError("Value length for field '" + fieldName + "' (" + tableName + ") is longer that 16000000");
+								}
+								insQ.push("'", fieldVal, "'");
+								break;
+							case FIELD_17_TAB:
+								break;
 
-						case FIELD_7_Nto1:
-							if(!isAdmin(userSession) && fieldVal) {
-								await getRecords(f.nodeRef, VIEW_MASK_DROPDOWN_LOOKUP, fieldVal, userSession); //check if you have read access to referenced item
-							}
-							insQ.push(fieldVal);
-							break;
-						case FIELD_4_DATE_TIME:
-						case FIELD_11_DATE:
-							insQ.push("'", fieldVal, "'");
-							break;
-						default:
+							case FIELD_7_Nto1:
+								if(!isAdmin(userSession) && fieldVal) {
+									await getRecords(f.nodeRef, VIEW_MASK_DROPDOWN_LOOKUP, fieldVal, userSession); //check if you have read access to referenced item
+								}
+								insQ.push(fieldVal);
+								break;
+							case FIELD_4_DATE_TIME:
+							case FIELD_11_DATE:
+								insQ.push("'", fieldVal, "'");
+								break;
+							default:
 
-							if((typeof fieldVal !== 'number') || isNaN(fieldVal)) {
-								throwError("Value for field " + fieldName + " (" + tableName + ") expected as numeric.");
-							}
-							if(f.maxLength && fieldVal.toString().length > f.maxLength) {
-								throwError("Value -length for field '" + fieldName + "' (" + tableName + ") is longer that " + f.maxLength);
-							}
-							insQ.push(fieldVal as unknown as string);
-							break;
+								if((typeof fieldVal !== 'number') || isNaN(fieldVal)) {
+									throwError("Value for field " + fieldName + " (" + tableName + ") expected as numeric.");
+								}
+								if(f.maxLength && fieldVal.toString().length > f.maxLength) {
+									throwError("Value -length for field '" + fieldName + "' (" + tableName + ") is longer that " + f.maxLength);
+								}
+								insQ.push(fieldVal as unknown as string);
+								break;
+						}
 					}
 				}
 			}
-		}
 
 
-		if(data.hasOwnProperty('status')) {
-			if(!noNeedComma) {
-				insQ.push(",");
+			if(data.hasOwnProperty('status')) {
+				if(!noNeedComma) {
+					insQ.push(",");
+				}
+				leastOneTablesFieldUpdated = true;
+				insQ.push(' status=', data.status);
 			}
-			leastOneTablesFieldUpdated = true;
-			insQ.push(' status=', data.status);
-		}
 
-		if(recId !== null) {
-			insQ.push(" WHERE id=", recId as unknown as string, " LIMIT 1");
-		}
-		let qResult;
-		if(leastOneTablesFieldUpdated) {
-			qResult = (await mysqlExec(insQ.join('')));
-		}
-		/// #if DEBUG
-		else {
-			throwError('No fields updated in submitRecord.');
-		}
-
-		for(let key in data) {
-			if(key !== 'status' && key !== '_organizationID' && key !== '_usersID') {
-				assert(node.fields.find(f => (f.fieldName === key) && !f.clientOnly), "Unknown field '" + key + "' in data set detected.");
+			if(recId !== null) {
+				insQ.push(" WHERE id=", recId as unknown as string, " LIMIT 1");
 			}
-		}
+			let qResult;
+			if(leastOneTablesFieldUpdated) {
+				qResult = (await mysqlExec(insQ.join('')));
+			}
+			/// #if DEBUG
+			else {
+				throwError('No fields updated in submitRecord.');
+			}
 
-		/// #endif
+			for(let key in data) {
+				if(key !== 'status' && key !== '_organizationID' && key !== '_usersID') {
+					assert(node.fields.find(f => (f.fieldName === key) && !f.clientOnly), "Unknown field '" + key + "' in data set detected.");
+				}
+			}
 
-		if(recId === null) {
-			recId = qResult.insertId;
-			data.id = recId;
-			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterCreate, data, userSession);
-		}
-		if(needProcess_n2m) {
-			for(let f of node.fields) {
+			/// #endif
 
-				if(f.fieldType === FIELD_14_NtoM) {
-					let fieldName = f.fieldName;
-					if(data.hasOwnProperty(fieldName)) {
+			if(recId === null) {
+				recId = qResult.insertId;
+				data.id = recId;
+				await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterCreate, data, userSession);
+			}
+			if(needProcess_n2m) {
+				for(let f of node.fields) {
 
-						//clear all n2m links
-						await mysqlExec("DELETE FROM `" + fieldName + "` WHERE `" + tableName + "id` = " + recId);
-						let fieldVal = data[fieldName];
+					if(f.fieldType === FIELD_14_NtoM) {
+						let fieldName = f.fieldName;
+						if(data.hasOwnProperty(fieldName)) {
 
-						if(fieldVal.length) {
-							//add new n2m links
-							const n2miQ = ['INSERT INTO `', fieldName, '` (`', tableName, 'id`, `', f.selectFieldName, "id`) VALUES"];
+							//clear all n2m links
+							await mysqlExec("DELETE FROM `" + fieldName + "` WHERE `" + tableName + "id` = " + recId);
+							let fieldVal = data[fieldName];
 
-							let isNotFirst = false;
-							for(let id of fieldVal) {
-								if(isNotFirst) {
-									n2miQ.push(',');
+							if(fieldVal.length) {
+								//add new n2m links
+								const n2miQ = ['INSERT INTO `', fieldName, '` (`', tableName, 'id`, `', f.selectFieldName, "id`) VALUES"];
+
+								let isNotFirst = false;
+								for(let id of fieldVal) {
+									if(isNotFirst) {
+										n2miQ.push(',');
+									}
+
+									if(!isAdmin(userSession) && id) {
+										await getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to referenced item
+									}
+
+									n2miQ.push("(", recId as unknown as string, ',', id, ")");
+									isNotFirst = true;
 								}
-
-								if(!isAdmin(userSession) && id) {
-									await getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to referenced item
-								}
-
-								n2miQ.push("(", recId as unknown as string, ',', id, ")");
-								isNotFirst = true;
+								await mysqlExec(n2miQ.join(''));
 							}
-							await mysqlExec(n2miQ.join(''));
 						}
 					}
 				}

@@ -1,13 +1,12 @@
 ﻿import React from "react";
 
-import { getData, goToPageByHash, idToImgURL, isAdmin, L, renderIcon } from "./utils";
+import { getData, getItem, goToPageByHash, idToImgURL, isAdmin, L, renderIcon, setItem } from "./utils";
 import { Select } from "./components/select";
-import { admin } from "./admin/admin-utils";
-import { ENV } from "./main-frame";
+import { ENV, MainFrame } from "./main-frame";
 import moment from "moment";
 import { Component } from "react";
 import { R } from "./r";
-import { UserSession } from "./bs-utils";
+import { NODE_ID_LOGIN, UserSession } from "./bs-utils";
 
 function setUserOrg(orgId) {
 	if(User.currentUserData.orgId !== orgId) {
@@ -38,18 +37,21 @@ class User extends Component<any, any> {
 			data.lang.code = data.lang.code || 'en';
 			moment.locale(data.lang.code);
 			import('/locales/' + data.lang.code + '/lang').then(() => {
-				this.setState(data);
-
-				User.currentUserData = data;
-				if(iAdmin()) {
-					admin.toggleAdminUI();
-				}
+				this.setUserData(data);
 				if(isFirstCall) {
 					isFirstCall = false;
 					goToPageByHash();
 				}
 			})
 		});
+	}
+
+	setUserData(data: UserSession) {
+		User.currentUserData = data;
+		User.sessionToken = data.sessionToken;
+		setItem('cud-js-session-token', User.sessionToken);
+		this.setState(data);
+		MainFrame.instance.reloadOptions();
 	}
 
 	changeOrg(value) {
@@ -63,7 +65,6 @@ class User extends Component<any, any> {
 		getData('api/toggleMultilingual').then(() => {
 			window.location.reload();
 		});
-
 	}
 
 	render() {
@@ -101,8 +102,11 @@ class User extends Component<any, any> {
 			}
 
 			var btn1, btn2;
+
+			const loginURL = '#n/' + NODE_ID_LOGIN + '/r/new/e';
+
 			if(this.state.id === 2) {
-				btn2 = R.a({ href: 'login', title: L('LOGIN'), className: 'clickable top-bar-user-btn' },
+				btn2 = R.a({ href: loginURL, title: L('LOGIN'), className: 'clickable top-bar-user-btn' },
 					renderIcon('sign-in fa-2x')
 				)
 			} else {
@@ -110,12 +114,18 @@ class User extends Component<any, any> {
 				// TODO go to edit in showForm modal level
 				btn1 = R.a({
 					onClick: () => {
-						window.crudJs.Stage.showForm(5, this.state.id, undefined, true, true);
+						window.crudJs.Stage.showForm(5, this.state.id, undefined, true);
 					}, title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn'
 				},
 					R.img({ className: 'user-avatar', src: imgUrl })
 				);
-				btn2 = R.a({ href: 'login', title: L('LOGOUT'), className: 'clickable top-bar-user-btn' },
+				btn2 = R.a({
+					title: L('LOGOUT'), className: 'clickable top-bar-user-btn', onClick: async () => {
+						let guestUserSession = await getData('api/logout');
+						this.setUserData(guestUserSession);
+						document.location.href = loginURL;
+					}
+				},
 					renderIcon('sign-out fa-2x')
 				);
 			}
@@ -136,11 +146,7 @@ class User extends Component<any, any> {
 }
 /** @type User */
 User.instance = null;
-
 User.currentUserData = null;
-
-/// #if DEBUG
-User.sessionToken = "dev-admin-session-token";
-/// #endif
+User.sessionToken = getItem('cud-js-session-token');
 
 export { iAdmin, User };

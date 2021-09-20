@@ -6,7 +6,6 @@ import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, L, my
 import { assert, RecId, RecordData } from "./bs-utils";
 import { BaseForm } from "./forms/base-form";
 import ReactDOM from 'react-dom';
-import { Notify } from "./notify";
 
 let mouseX: number;
 let mouseY: number;
@@ -106,12 +105,6 @@ class Stage extends Component<any, any> {
 
 	static async showForm(nodeId: RecId, recId?: RecId | 'new', filters: Filters = {}, editable?: boolean, modal?: boolean, onModified?: (dataToSend: RecordData) => void, noAnimation = false) {
 		if(!allForms.length || modal) {
-			if(allForms.find((formEntry, i) => {
-				return (i > 0) && (formEntry.form.nodeId === nodeId && Boolean(recId) === Boolean(formEntry.form.recId))
-			})) { //prevent opening two forms of the same type
-				Notify.add(L("TOO_MATCH_FORMS"));
-				return;
-			}
 			addFormEntry(noAnimation);
 		} else {
 			if(Stage.currentForm) {
@@ -148,9 +141,14 @@ class Stage extends Component<any, any> {
 			}
 		};
 
+		if(node.noStoreForms) {
+			recId = 'new';
+			editable = true;
+		}
+
 		let formType;
 		if(!node.staticLink) {
-			if(recId || (recId === 0)) {
+			if(recId || (recId === 0) || recId === 'new') {
 				formType = FormFull;
 			} else {
 				formType = List;
@@ -168,7 +166,7 @@ class Stage extends Component<any, any> {
 		}
 
 		ReactDOM.render(
-			React.createElement('div', { key: node.id + '_' + recId, className: isRootForm ? undefined : 'form-modal-container' },
+			React.createElement('div', { key: node.id + '_' + recId, className: isRootForm ? undefined : 'form-modal-container form-modal-container-node-' + nodeId },
 				React.createElement(formType, { ref, node, recId, isRootForm, initialData: data || {}, filters, editable })
 			),
 			formEntry.formContainer

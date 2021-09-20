@@ -31,7 +31,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 		throwError("nodeId " + nodeId + " is not a document.");
 	}
 
-	if(node.staticLink) {
+	if(node.noStoreForms) {
 		return null;
 	}
 

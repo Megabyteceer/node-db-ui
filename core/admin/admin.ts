@@ -73,7 +73,8 @@ function editFunction(fileName, functionName) {
 
 	let text = readFileSync(fileName, 'utf8').replaceAll("\r\n", "\n");
 
-	const c1 = substrCount(text, functionName + '() {');
+	const functionSearchPattern = '\tasync ' + functionName + '(';
+	const c1 = substrCount(text, functionSearchPattern);
 
 	if(c1 > 1) {
 		throwError("function (" + functionName + ") present more that once in file: " + fileName);
@@ -92,7 +93,7 @@ function editFunction(fileName, functionName) {
 	}
 
 	let a = text.split('\n');
-	let line = a.findIndex(s => s.indexOf(functionName + '() {') >= 0);
+	let line = a.findIndex(s => s.indexOf(functionSearchPattern) >= 0);
 	line += 2;
 	try {
 		let arg = fileName + ':' + line + ':2';

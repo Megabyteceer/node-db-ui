@@ -1,6 +1,6 @@
 import { R } from "../r";
 import React, { Component } from "react";
-import { getNode, getNodeData, keepInWindow, L, ON_FORM_LOAD, ON_FORM_SAVE, reloadLocation, renderIcon, sp } from "../utils";
+import { CLIENT_SIDE_FORM_EVENTS, getNode, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from "../utils";
 import { admin_editSource } from "./admin-event-editor";
 import { admin } from "./admin-utils";
 import { FieldAdmin } from "./field-admin";
@@ -98,15 +98,22 @@ class NodeAdmin extends Component<any, any> {
 		var nodeId = node && (node.id || item.id);
 
 		var borderOnSave;
+		var borderOnAfterSave;
 		var borderOnLoad;
 
-		if(form && form._getFormEventHandler && form._getFormEventHandler(ON_FORM_SAVE)) {
+		if(form && form._getFormEventHandler && form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE)) {
 			borderOnSave = " admin-button-highlighted";
 		} else {
 			borderOnSave = '';
 		}
 
-		if(form && form._getFormEventHandler && form._getFormEventHandler(ON_FORM_LOAD)) {
+		if(form && form._getFormEventHandler && form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE)) {
+			borderOnAfterSave = " admin-button-highlighted";
+		} else {
+			borderOnAfterSave = '';
+		}
+
+		if(form && form._getFormEventHandler && form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD)) {
 			borderOnLoad = " admin-button-highlighted";
 		} else {
 			borderOnLoad = '';
@@ -167,7 +174,7 @@ class NodeAdmin extends Component<any, any> {
 					R.button({
 						className: 'clickable tool-btn admin-form-btn' + borderOnLoad,
 						onClick: () => {
-							admin_editSource(ON_FORM_LOAD, node, undefined);
+							admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD, node, undefined);
 						},
 						title: "Edit client side script which execute on form open."
 					},
@@ -176,11 +183,20 @@ class NodeAdmin extends Component<any, any> {
 					R.button({
 						className: 'clickable tool-btn admin-form-btn' + borderOnSave,
 						onClick: () => {
-							admin_editSource(ON_FORM_SAVE, node, undefined);
+							admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE, node, undefined);
 						},
-						title: "Edit client side script which execute on form save."
+						title: "Edit client side script which execute before form save."
 					},
 						'onSave...'
+					),
+					R.button({
+						className: 'clickable tool-btn admin-form-btn' + borderOnAfterSave,
+						onClick: () => {
+							admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE, node, undefined);
+						},
+						title: "Edit client side script which execute after form save."
+					},
+						'onAfterSave...'
 					),
 					R.button({
 						className: 'clickable tool-btn admin-form-btn',

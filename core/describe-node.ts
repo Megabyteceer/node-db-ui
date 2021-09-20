@@ -47,6 +47,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 
 				ret.reverse = srcNode.reverse;
 				ret.creationName = srcNode["creationName" + landQ];
+				ret.noStoreForms = srcNode.noStoreForms;
 				ret.staticLink = srcNode.staticLink;
 				ret.tableName = srcNode.tableName;
 				ret.draftable = srcNode.draftable;
@@ -330,9 +331,10 @@ async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHand
 		data2 = wrapObjectToDestroy(data2);
 		data3 = wrapObjectToDestroy(data3);
 		/// #endif
+		let res;
 		if(serverSideNodeEventHandler) {
 			// call node server side event handler
-			await serverSideNodeEventHandler(data1, data2, data3);
+			res = await serverSideNodeEventHandler(data1, data2, data3);
 		}
 
 		/// #if DEBUG
@@ -340,6 +342,7 @@ async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHand
 		destroyObject(data2);
 		destroyObject(data3);
 		/// #endif
+		return res;
 	}
 }
 

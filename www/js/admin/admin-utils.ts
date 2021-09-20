@@ -3,7 +3,7 @@ import React from "react";
 import { FieldDesc, FIELD_17_TAB } from "../bs-utils";
 import { R } from "../r";
 import { Select } from "../components/select";
-import { consoleDir, getNode, getNodeData, isLitePage, renderIcon, submitRecord } from "../utils";
+import { consoleDir, getItem, getNode, getNodeData, isLitePage, renderIcon, setItem, submitRecord } from "../utils";
 import { MainFrame } from "../main-frame";
 
 function debugInfoGetter() {
@@ -15,14 +15,18 @@ var styleSheet;
 document.head.appendChild(styleEl);
 styleSheet = styleEl.sheet;
 var adminOn;
-document.addEventListener('load', () => {
+
+/// #if DEBUG
+
+setTimeout(() => {
 	adminOn = !isLitePage();
 	$('body').append('<span class="admin-tools-enable-btn"><span>Admin tools </span><input type="checkbox" checked="' + adminOn + '" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>');
 	$('#admin-disable').on('click', admin.toggleAdminUI);
-
-	admin.toggleAdminUI();
-});
-
+	if(getItem('__admin-ui-enables', true)) {
+		admin.toggleAdminUI();
+	}
+}, 100);
+/// #endif
 let iconsList;
 
 class admin {
@@ -181,6 +185,7 @@ class admin {
 				styleSheet.removeRule(0);
 			}
 		}
+		setItem('__admin-ui-enables', adminOn);
 		$('#admin-disable').prop('checked', !adminOn);
 		adminOn = !adminOn;
 	}

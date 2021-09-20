@@ -1,10 +1,9 @@
 
 import { mysqlExec } from "../core/mysql-connection";
-import { getPasswordHash, isAdmin } from "../core/auth";
+import { generateSalt, getPasswordHash, isAdmin } from "../core/auth";
 import { submitRecord } from "../core/submit";
 
 async function clearUserParams(data, currentData, userSession) {
-	debugger;
 	if(!isAdmin(userSession)) {
 		delete data._organizationID;
 		delete data._user_roles;
@@ -13,8 +12,9 @@ async function clearUserParams(data, currentData, userSession) {
 	if(data.hasOwnProperty('PASS')) {
 		const p = data.PASS;
 		if(p !== 'nc_l4DFn76ds5yhg') {
-			await mysqlExec("UPDATE _users SET salt='" + currentData.salt + "' WHERE id=" + currentData.id);
-			data.PASS = await getPasswordHash(data.PASS, currentData.salt);
+			const salt = generateSalt();
+			await mysqlExec("UPDATE _users SET salt='" + salt + "' WHERE id=" + currentData.id);
+			data.PASS = await getPasswordHash(data.PASS, salt);
 		} else {
 			delete data.PASS;
 		}

@@ -1,6 +1,6 @@
 
 import { FieldWrap } from "../fields/field-wrap";
-import { backupCreationData, consoleLog, deleteRecord, getBackupData, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord } from "../utils";
+import { backupCreationData, CLIENT_SIDE_FORM_EVENTS, consoleLog, deleteRecord, getBackupData, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord } from "../utils";
 import { FormTab } from "./form-tab";
 import { eventProcessingMixins } from "./event-processing-mixins";
 import { NodeAdmin } from "../admin/node-admin";
@@ -48,7 +48,6 @@ class FormFull extends eventProcessingMixins {
 
 		this.showAllDebug = false;
 		this.disableDrafting = false;
-		this.onSaveCallback = null;
 	}
 
 	componentDidMount() {
@@ -273,13 +272,11 @@ class FormFull extends eventProcessingMixins {
 					this.props.initialData[k] = val;
 				}
 			}
-
 			await callForEachField(this.fieldsRefs, data, 'afterSave');
 
+			await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE, recId);
+
 			this.deleteBackup();
-			if(this.onSaveCallback) {
-				await this.onSaveCallback();
-			}
 		} else {
 			await callForEachField(this.fieldsRefs, data, 'afterSave');
 		}
@@ -417,7 +414,6 @@ class FormFull extends eventProcessingMixins {
 					} else {
 						return -1
 					}
-
 				}
 				var pa = a.props.field.lang;
 				var pb = b.props.field.lang;
@@ -428,10 +424,7 @@ class FormFull extends eventProcessingMixins {
 					if(pa && (pa > pb)) return 1;
 					if(pa && (pa < pb)) return -1;
 				}
-
 				return a.props.field.index - b.props.field.index;
-
-
 			});
 		}
 
@@ -460,7 +453,7 @@ class FormFull extends eventProcessingMixins {
 
 			if(this.props.editable) {
 				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.privileges & PRIVILEGES_PUBLISH)) {
-					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('SAVE') }, this.isSubForm() ? renderIcon('check') : renderIcon('floppy-o'), this.isSubForm() ? '' : L('SAVE'));
+					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: node.noStoreForms ? node.matchName : L('SAVE') }, this.isSubForm() ? renderIcon('check') : renderIcon(node.noStoreForms ? node.icon : 'floppy-o'), node.noStoreForms ? node.matchName : (this.isSubForm() ? '' : L('SAVE')));
 				} else {
 					if(data.status === 1) {
 						draftButton = R.button({ className: isRestricted ? 'clickable default-button restricted' : 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
@@ -477,9 +470,9 @@ class FormFull extends eventProcessingMixins {
 			}
 
 
-			if(!this.props.isCompact) {
+			if(!this.props.isCompact && !node.noStoreForms) {
 				let headerContent = this.header || this.state.header || R.span(null, node.icon ? renderIcon(node.icon) : undefined, (this.recId === 'new') ?
-					L('CREATE') + ' ' + (node.creationName || node.singleName) :
+					(L('CREATE') + ' ' + (node.creationName || node.singleName)) :
 					(this.state.data ? this.state.data.name : this.props.initialData.name));
 				header = R.h4({ className: "form-header" }, headerContent);
 			}

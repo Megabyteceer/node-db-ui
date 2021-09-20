@@ -1,4 +1,4 @@
-import { consoleLog, Filters, getData, L, ON_FIELD_CHANGE, ON_FORM_LOAD, ON_FORM_SAVE } from "../utils";
+import { CLIENT_SIDE_FORM_EVENTS, consoleLog, Filters, getData, L } from "../utils";
 import { BaseForm } from "./base-form";
 import { LeftBar } from "../left-bar";
 import { assert, FieldDesc, FIELD_17_TAB, FIELD_18_BUTTON, RecordData } from "../bs-utils";
@@ -42,8 +42,6 @@ class eventProcessingMixins extends BaseForm {
 	/** contains validate() result */
 	formIsValid: boolean;
 
-	onSaveCallback: () => void;
-
 	currentTabName: string;
 
 	private invalidAlertInOnSaveHandler: boolean;
@@ -75,7 +73,6 @@ class eventProcessingMixins extends BaseForm {
 		}
 		this.recId = this.props.initialData.id || 'new';
 		this.currentData = null;
-		this.onSaveCallback = null;
 		this.hiddenFields = {};
 		this.disabledFields = {};
 		this.currentTabName = null;
@@ -215,7 +212,7 @@ class eventProcessingMixins extends BaseForm {
 		this.currentTabName = null;
 		this.hiddenFields = {};
 		this.disabledFields = {};
-		await this.processFormEvent(ON_FORM_LOAD);
+		await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD);
 		this.refreshLeftBar();
 
 		for(var k in this.fieldsRefs) {
@@ -324,7 +321,7 @@ class eventProcessingMixins extends BaseForm {
 		}
 
 		this.invalidAlertInOnSaveHandler = false;
-		var onSaveRes = await this.processFormEvent(ON_FORM_SAVE);
+		var onSaveRes = await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE);
 		return onSaveRes || this.invalidAlertInOnSaveHandler;
 	}
 
@@ -342,23 +339,24 @@ class eventProcessingMixins extends BaseForm {
 		}
 	}
 
-	_getFormEventHandler(eventName) {
+	_getFormEventHandler(eventName: CLIENT_SIDE_FORM_EVENTS) {
 		return FormEvents.prototype[this.props.node.tableName + '_' + eventName];
 	}
 
 	_getFieldEventHandler(field: FieldDesc) {
-		return FieldsEvents.prototype[this.props.node.tableName + '_' + field.fieldName + '_' + ON_FIELD_CHANGE];
+		return FieldsEvents.prototype[this.props.node.tableName + '_' + field.fieldName + '_' + CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE];
 	}
 
-	async processFieldEvent(field: FieldDesc, isUserAction?: boolean, prev_val?) {
+	processFieldEvent(field: FieldDesc, isUserAction?: boolean, prev_val?) {
 		return this.processEvent(this._getFieldEventHandler(field), isUserAction, prev_val);
 	}
 
-	async processFormEvent(eventName) {
-		return this.processEvent(this._getFormEventHandler(eventName));
+	/** @argument arg - result of server side onSave event handler */
+	processFormEvent(eventName: CLIENT_SIDE_FORM_EVENTS, arg: any) {
+		return this.processEvent(this._getFormEventHandler(eventName), undefined, undefined, arg);
 	}
 
-	async processEvent(handler, isUserAction = false, prev_val = undefined) {
+	processEvent(handler, isUserAction = false, prev_val = undefined, arg?: any) {
 		if(handler) {
 			this.prev_value = prev_val;
 			this.recId = this.props.initialData.id || 'new';
@@ -370,7 +368,7 @@ class eventProcessingMixins extends BaseForm {
 				}
 			}
 			this.isUserEdit = isUserAction;
-			return handler.call(this);
+			return handler.call(this, arg);
 		}
 	}
 }

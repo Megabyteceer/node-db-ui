@@ -53,6 +53,7 @@ registerFieldClass(FIELD_1_TEXT, class TextField extends BaseField {
 				defaultValue: value,
 				maxLength: this.props.maxLen || field.maxLength,
 				title: field.name,
+				name: field.fieldName,
 				placeholder: field.name + (field.lang ? (' (' + field.lang + ')') : ''),
 				readOnly: this.props.fieldDisabled,
 				ref: this.refGetter,

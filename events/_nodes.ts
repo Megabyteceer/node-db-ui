@@ -33,7 +33,7 @@ const handlers: NodeEventsHandlers = {
 
 
 
-		if(data.isDocument && !data.staticLink) {
+		if(data.isDocument && !data.noStoreForms) {
 
 			const tblCrtQ = `CREATE TABLE \`${data.tableName}\` (
 			id bigint(15) unsigned NOT NULL AUTO_INCREMENT,
