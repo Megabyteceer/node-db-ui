@@ -1,6 +1,6 @@
-import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation } from "../utils";
+import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation, getNode } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, LANGUAGE_ID_DEFAULT, UserSession } from "../bs-utils";
+import { FieldDesc, FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, LANGUAGE_ID_DEFAULT, NodeDesc, UserSession } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -11,7 +11,7 @@ let uiLanguageIsChanged;
 
 class FormEvents extends FormFull {
 
-	async _users_onLoad() {
+	_users_onLoad() {
 
 		const isHiddenField = (fn) => {
 			if(this.fieldValue(fn) === 'hidden_91d2g7') {
@@ -92,7 +92,7 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _users_onSave() {
+	_users_onSave() {
 		var pass = this.fieldValue('PASS');
 
 		if(pass.length < 6) {
@@ -116,7 +116,7 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _users_onAfterSave() {
+	_users_onAfterSave() {
 		if(uiLanguageIsChanged) {
 			showPrompt(L('RESTART_NOW')).then((isYes) => {
 				if(isYes) {
@@ -126,18 +126,18 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _roles_onLoad() {
+	_roles_onLoad() {
 		this.getField('_user_roles').setLookupFilter('excludeIDs', [1, 2, 3]);
 		if((this.recId === 2) || (this.recId === 3)) {
 			this.hideField('_user_roles');
 		}
 	}
 
-	async _enums_onLoad() {
+	_enums_onLoad() {
 		this.getField("values").inlineEditable();
 	}
 
-	async _nodes_onLoad() {
+	_nodes_onLoad() {
 		makeIconSelectionField(this, 'icon');
 
 		if(!this.fieldValue('isDocument')) {
@@ -177,7 +177,7 @@ class FormEvents extends FormFull {
 		});
 	}
 
-	async _nodes_onSave() {
+	_nodes_onSave() {
 
 		if(!this.fieldValue("isDocument")) {
 			var name = this.fieldValue("name");
@@ -198,7 +198,15 @@ class FormEvents extends FormFull {
 	_fieldsNameIsBad: boolean;
 
 	async _fields_onLoad() {
-
+		let parentNodeVal = this.fieldValue('node_fields_linker');
+		let parentNode: NodeDesc;
+		if(parentNodeVal) {
+			parentNode = await getNode(parentNodeVal.id);
+			if(parentNode.noStoreForms) {
+				this.setFieldValue('noStore', 1);
+				this.disableField('noStore');
+			}
+		}
 
 		(this.getField('fieldType').fieldRef as EnumField).setFilterValues([FIELD_16_RATING]); //TODO ratings is not implemented
 
@@ -329,7 +337,7 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _fields_onSave() {
+	_fields_onSave() {
 		var fieldType = this.fieldValue("fieldType");
 
 		if(fieldType === FIELD_7_Nto1 || fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) {
@@ -385,7 +393,7 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _languages_onLoad() {
+	_languages_onLoad() {
 		if(this.recId === LANGUAGE_ID_DEFAULT) {
 			this.disableField('isUILanguage');
 		}
@@ -396,25 +404,25 @@ class FormEvents extends FormFull {
 		}
 	}
 
-	async _languages_onSave() {
+	_languages_onSave() {
 		if(this.isNewRecord && !this.fieldValue('code')) {
 			this.fieldAlert('code', L('REQUIRED_FLD'));
 		}
 	}
 
-	async _enums_onSave() {
+	_enums_onSave() {
 		//TODO check if all values unique
 
 	}
 
-	async _filters_onLoad() {
+	_filters_onLoad() {
 		this.addLookupFilters('_nodesID', {
 			filterId: 8,
 			excludeIDs: [9]
 		});
 	}
 
-	async _login_onAfterSave(saveResult) {
+	_login_onAfterSave(saveResult) {
 		User.instance.setUserData(saveResult);
 	}
 
