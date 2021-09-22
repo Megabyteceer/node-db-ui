@@ -969,7 +969,7 @@ function n2mValuesEqual(v1, v2) {
 
 function renderIcon(name) {
 	if(!name) {
-		name = 'circle-o';
+		return undefined;
 	}
 	return R.p({ className: 'fa fa-' + name });
 }
