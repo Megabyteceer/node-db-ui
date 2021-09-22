@@ -198,7 +198,6 @@ class FieldWrap extends Component<FieldProps, any> {
 
 	clearChangeTimeout() {
 		if(this.onChangeTimeout) {
-			console.log('clearChangeTimeout: ' + this.props.field.fieldName);
 			clearTimeout(this.onChangeTimeout);
 			delete (this.onChangeTimeout);
 		}
@@ -206,7 +205,6 @@ class FieldWrap extends Component<FieldProps, any> {
 
 	forceBouncingTimeout() {
 		if(this.onChangeTimeout) {
-			console.log('forceBouncingTimeout: ' + this.props.field.fieldName);
 			this.clearChangeTimeout();
 			this.sendCurrentValueToForm();
 		}

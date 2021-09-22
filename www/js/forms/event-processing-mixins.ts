@@ -257,6 +257,9 @@ class eventProcessingMixins extends BaseForm {
 	async setFieldValue(fieldName: string, val: any, isUserAction = false) {
 
 		var f = this.getField(fieldName);
+		if(!f) {
+			return; // prevent crash on unmount values debouncing
+		}
 		let field = f.props.field;
 
 		if(this.currentData[fieldName] !== val) {

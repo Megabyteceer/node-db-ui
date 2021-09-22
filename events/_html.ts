@@ -28,14 +28,16 @@ const emptyCallback = () => { };
 
 async function saveDoc(data): Promise<void> {
 	return new Promise((resolve, rejects) => {
-		debugger;
-		//TODO: add _template.htmp 
-		readFile(join(__dirname, '../../custom/html/_template.htmp'), 'utf8', (err, txt) => {
-			debugger;
+		readFile(join(__dirname, '../../www/custom/html/_template.htmp'), 'utf8', (err, txt) => {
+
 			if(err) {
 				rejects(err);
 			} else {
-				txt = txt.replace('xBODYx', data.body);
+				for(let name in data) {
+					txt = txt.replaceAll('\\$\\{' + name + '\\}', data[name]);
+				}
+
+				txt = txt.replaceAll('\\$\\{name\\}', data.name);
 				writeFile(getDocFilename(data), txt, (err) => {
 					if(err) {
 						rejects(err);
@@ -49,5 +51,5 @@ async function saveDoc(data): Promise<void> {
 }
 
 function getDocFilename(data) {
-	return join(__dirname, '../../custom/html/', data.title, '.html');
+	return join(__dirname, '../../www/custom/html/', data.title + '.html');
 }

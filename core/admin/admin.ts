@@ -54,27 +54,14 @@ async function setRolePrivilegesForNode(nodeID, rolePrivileges, toChild, userSes
 	}
 }
 
-function substrCount(string, subString) {
-	let n = -1;
-	let pos = 0;
-	while(pos >= 0) {
-		pos = string.indexOf(subString, pos);
-		n++;
-		if(pos >= 0) {
-			pos++;
-		}
-	}
-	return n;
-}
-
 function editFunction(fileName, functionName) {
 
 	fileName = join(__dirname, fileName);
 
 	let text = readFileSync(fileName, 'utf8').replaceAll("\r\n", "\n");
 
-	const functionSearchPattern = '\tasync ' + functionName + '(';
-	const c1 = substrCount(text, functionSearchPattern);
+	const functionSearchPattern = new RegExp('\\s*' + functionName + '\\(', 'gi');
+	const c1 = (text.match(functionSearchPattern) || []).length;
 
 	if(c1 > 1) {
 		throwError("function (" + functionName + ") present more that once in file: " + fileName);
@@ -84,7 +71,7 @@ function editFunction(fileName, functionName) {
 		if(i < 0) {
 			throwError("marker (" + NEW_FUNCTION_MARKER + ") is not detected in file: " + fileName);
 		}
-		text = text.substr(0, i) + 'async ' + functionName + `() {
+		text = text.substr(0, i) + '\t' + functionName + `() {
 		
 	}
 
@@ -93,7 +80,7 @@ function editFunction(fileName, functionName) {
 	}
 
 	let a = text.split('\n');
-	let line = a.findIndex(s => s.indexOf(functionSearchPattern) >= 0);
+	let line = a.findIndex(s => s.match(functionSearchPattern));
 	line += 2;
 	try {
 		let arg = fileName + ':' + line + ':2';

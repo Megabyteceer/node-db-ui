@@ -1,6 +1,6 @@
 import { R } from "../r";
 import { Component } from "react";
-import { getNodeData, keepInWindow, L, ON_FIELD_CHANGE, reloadLocation, renderIcon, sp } from "../utils";
+import { CLIENT_SIDE_FORM_EVENTS, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from "../utils";
 import { admin_editSource } from "./admin-event-editor";
 import { admin } from "./admin-utils";
 import { FieldDesc, NodeDesc } from "../bs-utils";
@@ -104,7 +104,7 @@ class FieldAdmin extends Component<any, any> {
 						className: 'clickable tool-btn admin-form-btn' + border,
 						onClick: () => {
 
-							admin_editSource(ON_FIELD_CHANGE, node, field);
+							admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE, node, field);
 
 						},
 						title: "Edit client side script which execute on field value change."
