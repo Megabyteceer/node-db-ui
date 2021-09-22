@@ -142,7 +142,9 @@ class Stage extends Component<any, any> {
 		};
 
 		if(node.noStoreForms) {
-			recId = 'new';
+			if(!recId) {
+				recId = 'new';
+			}
 			editable = true;
 		}
 
