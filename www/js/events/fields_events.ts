@@ -1,4 +1,5 @@
 import { FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_4_DATE_TIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATIC_TEXT } from "../bs-utils";
+import ReactDOM from "react-dom";
 
 import { L } from "../utils";
 import { FormEvents } from "./forms_events";
@@ -17,7 +18,12 @@ class FieldsEvents extends FormEvents {
 
 	_html_title_onChange() {
 		this.removeWrongCharactersInField('title');
-		this.setFieldValue('link', location.protocol + '//' + location.host + '/custom/html/' + this.fieldValue('title') + '.html');
+		let href = location.protocol + '//' + location.host + '/custom/html/' + this.fieldValue('title') + '.html';
+		this.setFieldValue('link', href);
+
+		let e: HTMLDivElement = ReactDOM.findDOMNode(this) as HTMLDivElement;
+		(e.querySelector('.clickable-link') as HTMLAnchorElement).href = href;
+		(e.querySelector('.clickable-link-text') as HTMLAnchorElement).innerText = href;
 	}
 
 	_users_passConfirm_onChange() {
@@ -211,11 +217,11 @@ class FieldsEvents extends FormEvents {
 		this.check12nFieldName();
 	}
 
-	async _nodes_tableName_onChange() {
+	_nodes_tableName_onChange() {
 		this.removeWrongCharactersInField('tableName');
 	}
 
-	async _nodes_staticLink_onChange() {
+	_nodes_staticLink_onChange() {
 		if(this.fieldValue('staticLink')) {
 			this.disableField('noStoreForms');
 			this.setFieldValue('noStoreForms', 1);
