@@ -52,12 +52,15 @@ function setMainTainMode(val) {
 
 async function startSession(sessionToken) {
 	if(!sessionToken) {
-		return Promise.resolve(GUEST_USER_SESSION);
+		return GUEST_USER_SESSION;
 	}
+	let userSession;
 	if(!sessions.has(sessionToken)) {
-		throwError('session expired')
+		return GUEST_USER_SESSION
+	} else {
+		userSession = sessions.get(sessionToken);
 	}
-	const userSession = sessions.get(sessionToken);
+
 	if(!userSession.hasOwnProperty('_isStarted') && !maintainMode) {
 		userSession._isStarted = true;
 		startedSessionsCount++;
