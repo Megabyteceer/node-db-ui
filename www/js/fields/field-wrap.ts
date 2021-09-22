@@ -212,6 +212,7 @@ class FieldWrap extends Component<FieldProps, any> {
 
 	valueListener(newVal, withBounceDelay, sender) {
 		this.currentValue = newVal;
+		this.props.form.fieldAlert(this.props.field.fieldName);
 		if(withBounceDelay) {
 			this.clearChangeTimeout();
 			this.onChangeTimeout = setTimeout(() => {
