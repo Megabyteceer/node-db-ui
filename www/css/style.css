@@ -712,7 +712,7 @@ input[readonly] {
 .field-wrap-value {
 	position: relative;
 	vertical-align: top;
-	width: 70%;
+	width: 73%;
 	color: var(--TEXT_COLOR);
 	font-size: 110%;
 	display: inline-block;
@@ -727,7 +727,7 @@ input[readonly] {
 	font-weight: bold;
 	height: 34px;
 	width: 25%;
-	padding-right: 20px;
+	padding-right: 2%;
 	color: var(--TEXT_COLOR);
 	display: inline-flex;
 	text-align: right;
@@ -1156,6 +1156,7 @@ input[readonly] {
 .form-header {
 	color: var(--BRAND_COLOR_HEADER);
 	margin: 10px;
+	margin-left: 27%;
 }
 
 .form-item-row {
@@ -1298,9 +1299,26 @@ input[readonly] {
 
 }
 
-.form-modal-container-node-20 {
+.form-modal-container-node-20,
+.form-modal-container-node-21 {
 	max-width: 550px !important;
 }
+
+.email-highlight {
+	color: #070;
+	margin: 40px;
+	font-weight: bold;
+}
+
+.field-container-id-1013 .field-button,
+.field-container-id-1014 .field-button,
+.field-container-id-1015 .field-button {
+	background: transparent;
+	color: var(--BRAND_COLOR_DARK);
+	text-decoration: underline;
+	font-weight: 600;
+}
+
 
 .shake {
 	animation: shake-animation linear 0.3s;

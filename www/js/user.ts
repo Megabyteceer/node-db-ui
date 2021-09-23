@@ -7,11 +7,12 @@ import moment from "moment";
 import { Component } from "react";
 import { R } from "./r";
 import { NODE_ID_LOGIN, UserSession } from "./bs-utils";
+import { Stage } from "./stage";
 
 function setUserOrg(orgId) {
 	if(User.currentUserData.orgId !== orgId) {
 		getData('api/setCurrentOrg', { orgId }).then(() => {
-			User.instance.refreshUser();
+			User.refreshUser();
 		});
 	}
 }
@@ -20,8 +21,6 @@ function iAdmin() {
 	return User.currentUserData && isAdmin();
 }
 
-var isFirstCall = true;
-
 class User extends Component<any, any> {
 	static sessionToken: string;
 	static instance: User;
@@ -29,28 +28,26 @@ class User extends Component<any, any> {
 
 	componentDidMount() {
 		User.instance = this;
-		this.refreshUser();
 	}
 
-	refreshUser() {
+	static refreshUser() {
 		getData('api/getMe').then((data) => {
 			data.lang.code = data.lang.code || 'en';
 			moment.locale(data.lang.code);
 			import('/locales/' + data.lang.code + '/lang').then(() => {
-				this.setUserData(data);
-				if(isFirstCall) {
-					isFirstCall = false;
-					goToPageByHash();
+				if(User.instance) {
+					User.instance.forceUpdate();
 				}
+				User.setUserData(data);
+				MainFrame.instance.reloadOptions();
 			})
 		});
 	}
 
-	setUserData(data: UserSession) {
+	static setUserData(data: UserSession) {
 		User.currentUserData = data;
 		User.sessionToken = data.sessionToken;
 		setItem('cud-js-session-token', User.sessionToken);
-		this.setState(data);
 		MainFrame.instance.reloadOptions();
 	}
 
@@ -71,11 +68,13 @@ class User extends Component<any, any> {
 
 		var body;
 
-		if(this.state) {
+		const userData = User.currentUserData;
+
+		if(userData) {
 
 			var iconName = '';
 			let className = 'clickable top-bar-user-multilingual'
-			if(this.state.hasOwnProperty('langs')) {
+			if(userData.hasOwnProperty('langs')) {
 				className += ' top-bar-user-multilingual-active';
 				iconName = 'check-';
 			};
@@ -88,33 +87,31 @@ class User extends Component<any, any> {
 			}
 
 			var org;
-			if(this.state.organizations && Object.keys(this.state.organizations).length > 1 && this.state.organizations[this.state.orgId]) {
+			if(userData.organizations && Object.keys(userData.organizations).length > 1 && userData.organizations[userData.orgId]) {
 				var options = [];
 
-				for(var k in this.state.organizations) {
-					var name = this.state.organizations[k];
+				for(var k in userData.organizations) {
+					var name = userData.organizations[k];
 					options.push({ value: k, name });
 				};
 
-				org = React.createElement(Select, { options, className: "top-bar-user-org-select", isCompact: true, defaultValue: this.state.orgId, onChange: this.changeOrg });
-			} else {
-				org = this.state.org;
+				org = React.createElement(Select, { options, className: "top-bar-user-org-select", isCompact: true, defaultValue: userData.orgId, onChange: this.changeOrg });
 			}
 
 			var btn1, btn2;
 
 			const loginURL = '#n/' + NODE_ID_LOGIN + '/r/new/e';
 
-			if(this.state.id === 2) {
+			if(userData.id === 2) {
 				btn2 = R.a({ href: loginURL, title: L('LOGIN'), className: 'clickable top-bar-user-btn' },
 					renderIcon('sign-in fa-2x')
 				)
 			} else {
-				let imgUrl = idToImgURL(this.state.avatar, 'avatar');
+				let imgUrl = idToImgURL(userData.avatar, 'avatar');
 				// TODO go to edit in showForm modal level
 				btn1 = R.a({
 					onClick: () => {
-						window.crudJs.Stage.showForm(5, this.state.id, undefined, true);
+						window.crudJs.Stage.showForm(5, userData.id, undefined, true);
 					}, title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn'
 				},
 					R.img({ className: 'user-avatar', src: imgUrl })
@@ -122,7 +119,7 @@ class User extends Component<any, any> {
 				btn2 = R.a({
 					title: L('LOGOUT'), className: 'clickable top-bar-user-btn', onClick: async () => {
 						let guestUserSession = await getData('api/logout');
-						this.setUserData(guestUserSession);
+						User.setUserData(guestUserSession);
 						document.location.href = loginURL;
 					}
 				},

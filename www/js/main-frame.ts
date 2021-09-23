@@ -10,6 +10,7 @@ import { Notify } from "./notify";
 import { Stage } from "./stage";
 import { TopBar } from "./top-bar";
 import { getData } from "./utils";
+import { User } from "./user";
 
 const ENV: any = {};
 
@@ -20,7 +21,10 @@ class MainFrame extends Component<any, any> {
 	constructor(props) {
 		super(props);
 		MainFrame.instance = this;
-		this.reloadOptions();
+	}
+
+	componentDidMount() {
+		User.refreshUser();
 	}
 
 	async reloadOptions() {

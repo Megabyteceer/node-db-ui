@@ -453,7 +453,7 @@ class FormFull extends eventProcessingMixins {
 
 			if(this.props.editable) {
 				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.privileges & PRIVILEGES_PUBLISH)) {
-					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: node.noStoreForms ? node.matchName : L('SAVE') }, this.isSubForm() ? renderIcon('check') : renderIcon(node.noStoreForms ? node.icon : 'floppy-o'), node.noStoreForms ? node.matchName : (this.isSubForm() ? '' : L('SAVE')));
+					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: node.noStoreForms ? node.matchName : L('SAVE') }, this.isSubForm() ? renderIcon('check') : renderIcon(node.noStoreForms ? node.icon : 'floppy-o'), node.noStoreForms ? node.matchName : (this.isSubForm() ? '' : (this.saveButtonTitle || L('SAVE'))));
 				} else {
 					if(data.status === 1) {
 						draftButton = R.button({ className: isRestricted ? 'clickable default-button restricted' : 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
@@ -470,17 +470,19 @@ class FormFull extends eventProcessingMixins {
 			}
 
 
-			if(!this.props.isCompact && !node.noStoreForms) {
+			if(!this.props.isCompact) {
 				let headerContent = this.header || this.state.header || R.span(null, node.icon ? renderIcon(node.icon) : undefined, (this.recId === 'new') ?
-					(L('CREATE') + ' ' + (node.creationName || node.singleName)) :
+					((node.noStoreForms ? undefined : L('CREATE') + ' '), (node.creationName || node.singleName)) :
 					(this.state.data ? this.state.data.name : this.props.initialData.name));
 				header = R.h4({ className: "form-header" }, headerContent);
 			}
 
-			if(this.props.editable) {
-				closeButton = React.createElement(HotkeyButton, { hotkey: 27, className: 'clickable default-button', onClick: this.cancelClick, title: L('CANCEL'), label: R.span(null, renderIcon('caret-left'), this.isSubForm() ? '' : L('CANCEL')) });
-			} else {
-				closeButton = React.createElement(HotkeyButton, { hotkey: 27, className: 'clickable default-button', onClick: this.cancelClick, label: R.span(null, renderIcon('caret-left'), this.isSubForm() ? '' : L('BACK')) });
+			if(!this.isCancelButtonHidden) {
+				if(this.props.editable) {
+					closeButton = React.createElement(HotkeyButton, { hotkey: 27, className: 'clickable default-button', onClick: this.cancelClick, title: L('CANCEL'), label: R.span(null, renderIcon('caret-left'), this.isSubForm() ? '' : L('CANCEL')) });
+				} else {
+					closeButton = React.createElement(HotkeyButton, { hotkey: 27, className: 'clickable default-button', onClick: this.cancelClick, label: R.span(null, renderIcon('caret-left'), this.isSubForm() ? '' : L('BACK')) });
+				}
 			}
 		}
 		return R.div({ className },

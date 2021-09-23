@@ -1,4 +1,4 @@
-import { FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_4_DATE_TIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATIC_TEXT } from "../bs-utils";
+import { FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_20_COLOR, FIELD_21_FILE, FIELD_4_DATE_TIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, NODE_ID_LOGIN, NODE_ID_REGISTER, NODE_ID_RESET } from "../bs-utils";
 import ReactDOM from "react-dom";
 
 import { L } from "../utils";
@@ -78,9 +78,10 @@ class FieldsEvents extends FormEvents {
 			case FIELD_8_STATIC_TEXT:
 				this.setFieldLabel("description", L("CONTENT"));
 
-			case FIELD_17_TAB:
 			case FIELD_18_BUTTON:
 				this.hideField("maxLength", "clientOnly", "noStore", "requirement", "unique", "forSearch");
+			case FIELD_17_TAB:
+				this.showField('maxLength');
 				this.setFieldValue('forSearch', false);
 				this.setFieldValue("clientOnly", 1);
 				this.disableField("clientOnly");
@@ -226,6 +227,18 @@ class FieldsEvents extends FormEvents {
 
 	_registration_passwordConfirm_onChange() {
 		this.checkPasswordConfirmation();
+	}
+
+	_registration_alreadyHaveAccountBtn_onChange() {
+		window.crudJs.Stage.showForm(NODE_ID_LOGIN);
+	}
+
+	_login_signUpLinkBtn_onChange() {
+		window.crudJs.Stage.showForm(NODE_ID_REGISTER, 'new', undefined, true);
+	}
+
+	_login_forgotPasswordButton_onChange() {
+		window.crudJs.Stage.showForm(NODE_ID_RESET, 'new', undefined, true);
 	}
 
 	//_insertNewHandlersHere_

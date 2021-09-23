@@ -41,6 +41,11 @@ const usersSessionsStartedCount = () => {
 }
 
 function setMainTainMode(val) {
+	/// #if DEBUG
+	console.log('setMainTainMode ' + val);
+	console.log((new Error('')).stack);
+	/// #endif
+
 	if(val) {
 		maintainMode++;
 	} else {

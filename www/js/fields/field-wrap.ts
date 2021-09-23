@@ -290,7 +290,9 @@ class FieldWrap extends Component<FieldProps, any> {
 			return R.span({
 				className,
 				onFocus: () => {
-					this.setState({ showToolTip: true });
+					if(field.fieldType !== FIELD_18_BUTTON) {
+						this.setState({ showToolTip: true });
+					}
 				},
 				onBlur: () => {
 					this.setState({ showToolTip: false });

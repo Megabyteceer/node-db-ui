@@ -78,8 +78,8 @@ server.on('request', (req, res) => {
 					body = JSON.parse(body);
 				}
 				/// #if DEBUG
-				console.log(req.url);
-				console.dir(body);
+				//console.log(req.url);
+				//console.dir(body);
 				/// #endif
 				mysql_real_escape_object(body);
 				let userSession;

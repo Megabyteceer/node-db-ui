@@ -22,6 +22,8 @@ class eventProcessingMixins extends BaseForm {
 	/** true if form opened for editing existing form */
 	isUpdateRecord: boolean;
 
+	saveButtonTitle: string;
+	isCancelButtonHidden: boolean;
 
 	/** previous value of changed field. Can be used in onChange event of field */
 	prev_value: any;
@@ -86,6 +88,16 @@ class eventProcessingMixins extends BaseForm {
 
 	isFieldVisibleByFormViewMask(field) {
 		return true;
+	}
+
+	setSaveButtonTitle(txt?: string) {
+		this.saveButtonTitle = txt;
+		this.forceUpdate();
+	}
+
+	hideCancelButton() {
+		this.isCancelButtonHidden = true;
+		this.forceUpdate();
 	}
 
 	callOnTabShowEvent(tabNameToShow) {

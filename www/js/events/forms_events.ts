@@ -1,4 +1,4 @@
-import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation, getNode } from "../utils";
+import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation, getNode, myAlert } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
 import { FieldDesc, FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
@@ -430,7 +430,7 @@ class FormEvents extends FormFull {
 	}
 
 	_login_onAfterSave(saveResult) {
-		User.instance.setUserData(saveResult);
+		User.setUserData(saveResult);
 	}
 
 	_registration_onSave() {
@@ -438,10 +438,25 @@ class FormEvents extends FormFull {
 	}
 
 	_registration_onAfterSave() {
-		showPrompt(L("REGISTRATION_EMAIL_SENT", this.fieldValue("email")),
-			L("LOGIN")).then(() => {
+		myAlert(R.span(null,
+			L("REGISTRATION_EMAIL_SENT"),
+			R.div({ className: 'email-highlight' },
+				this.fieldValue("email")
+			)), true, false, true,
+			() => {
 				window.crudJs.Stage.showForm(NODE_ID_LOGIN);
-			});
+			},
+			L('GO_TO_LOGIN')
+		);
+	}
+
+	_registration_onLoad() {
+		this.setSaveButtonTitle(L('REGISTER'));
+		this.hideCancelButton();
+	}
+
+	_login_onLoad() {
+		this.hideCancelButton();
 	}
 
 	//_insertNewHandlersHere_

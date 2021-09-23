@@ -20,7 +20,7 @@ registerFieldClass(FIELD_10_PASSWORD, class PasswordField extends BaseField {
 
 			var inputsProps = {
 				type: 'password',
-				name: 'password',
+				name: field.fieldName,
 				autoFocus: this.isAutoFocus(),
 				defaultValue: value,
 				title: field.name,

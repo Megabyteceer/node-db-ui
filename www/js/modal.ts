@@ -56,7 +56,7 @@ class Modal extends Component<any, any> {
 			return R.div(null,
 				modalStack.map((m) => {
 					let className = 'fade-in modal-backdrop';
-					if(m.noDiscardByBackdrop) {
+					if(!m.noDiscardByBackdrop) {
 						className += " pointer";
 					}
 					return R.div({

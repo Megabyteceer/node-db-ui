@@ -10,7 +10,7 @@ import { User } from "./user";
 import { Modal } from "./modal";
 import { ENV } from "./main-frame";
 import { DebugPanel } from "./debug-panel";
-import React from "react";
+import React, { Component } from "react";
 import { HotkeyButton } from "./components/hotkey-button";
 import { List } from "./forms/list";
 
@@ -65,7 +65,7 @@ function isRecordRestrictedForDeletion(nodeId, recordId) {
 	}
 }
 
-function myAlert(txt: string | React.Component, isSuccess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean) {
+function myAlert(txt: string | React.Component, isSuccess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean, onOk?: () => void, okButtonText?: string) {
 	if(!Modal.instance) {
 		alert(txt);
 	} else {
@@ -76,7 +76,21 @@ function myAlert(txt: string | React.Component, isSuccess?: boolean, autoHide?: 
 			className = "alert-bg alert-bg-danger";
 		}
 
-		var modalId = Modal.instance.show(R.div({ className }, txt), noDiscardByBackdrop);
+		var button;
+		if(onOk) {
+			button = R.div({ className: 'alert-button-container' },
+				R.button({
+					title: L('GO_TO_LOGIN'),
+					className: 'clickable success-button save-btn', onClick: () => {
+						Modal.instance.hide(modalId);
+						onOk();
+					}
+				}, okButtonText || L('OK')
+				)
+			);
+		}
+
+		var modalId = Modal.instance.show(R.div({ className }, txt, button), noDiscardByBackdrop);
 
 		if(autoHide) {
 			setTimeout(() => {
@@ -84,10 +98,9 @@ function myAlert(txt: string | React.Component, isSuccess?: boolean, autoHide?: 
 			}, 1100);
 		}
 	}
-
 }
 
-async function showPrompt(txt: string | Comment, yesLabel?: string, noLabel?: string, yesIcon?: string, noIcon?: string, discardByOutsideClick?: boolean) {
+async function showPrompt(txt: string | Component, yesLabel?: string, noLabel?: string, yesIcon?: string, noIcon?: string, discardByOutsideClick?: boolean) {
 	return new Promise((resolve) => {
 		if(!yesLabel) {
 			yesLabel = L('OK');
