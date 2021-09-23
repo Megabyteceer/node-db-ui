@@ -71,7 +71,7 @@ function editFunction(fileName, functionName) {
 		if(i < 0) {
 			throwError("marker (" + NEW_FUNCTION_MARKER + ") is not detected in file: " + fileName);
 		}
-		text = text.substr(0, i) + '\t' + functionName + `() {
+		text = text.substr(0, i) + functionName + `() {
 		
 	}
 

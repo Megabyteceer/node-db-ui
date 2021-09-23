@@ -1,6 +1,6 @@
 import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation, getNode } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FieldDesc, FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, LANGUAGE_ID_DEFAULT, NodeDesc, UserSession } from "../bs-utils";
+import { FieldDesc, FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -10,6 +10,16 @@ import { R } from "../r";
 let uiLanguageIsChanged;
 
 class FormEvents extends FormFull {
+
+	checkPasswordConfirmation() {
+		var p = this.fieldValue('password');
+		var p2 = this.fieldValue('passwordConfirm');
+		if(p && (p !== p2)) {
+			this.fieldAlert('passwordConfirm', L('PASS_NOT_MACH'));
+		} else {
+			this.fieldAlert('passwordConfirm');
+		}
+	}
 
 	_users_onLoad() {
 
@@ -76,9 +86,9 @@ class FormEvents extends FormFull {
 
 		if(this.isUpdateRecord) {
 			this.header = L('EDIT_USER_PROFILE', myName);
-			this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
-			this.setFieldValue('passConfirm', 'nc_l4DFn76ds5yhg');
-			this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
+			this.setFieldValue('password', 'nc_l4DFn76ds5yhg');
+			this.setFieldValue('passwordConfirm', 'nc_l4DFn76ds5yhg');
+			this.props.initialData.password = 'nc_l4DFn76ds5yhg';
 		}
 
 		if(this.isNewRecord) {
@@ -86,21 +96,18 @@ class FormEvents extends FormFull {
 			this.hideField('PHONE');
 			//this.hideField('description');
 			this.hideField('_organizationID');
-			this.setFieldValue('PASS', 'nc_l4DFn76ds5yhg');
-			this.setFieldValue('passConfirm', 'nc_l4DFn76ds5yhg');
-			this.props.initialData.PASS = 'nc_l4DFn76ds5yhg';
+			this.setFieldValue('password', 'nc_l4DFn76ds5yhg');
+			this.setFieldValue('passwordConfirm', 'nc_l4DFn76ds5yhg');
+			this.props.initialData.password = 'nc_l4DFn76ds5yhg';
 		}
 	}
 
 	_users_onSave() {
-		var pass = this.fieldValue('PASS');
 
+		this.checkPasswordConfirmation();
+		var pass = this.fieldValue('password');
 		if(pass.length < 6) {
-			this.fieldAlert('PASS', L('PASS_LEN', 6));
-		}
-
-		if(pass != this.fieldValue('passConfirm')) {
-			this.fieldAlert('passConfirm', L('PASS_NOT_MACH'));
+			this.fieldAlert('password', L('PASS_LEN', 6));
 		}
 
 		if(User.currentUserData.id === this.fieldValue('id')) {
@@ -424,6 +431,17 @@ class FormEvents extends FormFull {
 
 	_login_onAfterSave(saveResult) {
 		User.instance.setUserData(saveResult);
+	}
+
+	_registration_onSave() {
+		this.checkPasswordConfirmation();
+	}
+
+	_registration_onAfterSave() {
+		showPrompt(L("REGISTRATION_EMAIL_SENT", this.fieldValue("email")),
+			L("LOGIN")).then(() => {
+				window.crudJs.Stage.showForm(NODE_ID_LOGIN);
+			});
 	}
 
 	//_insertNewHandlersHere_

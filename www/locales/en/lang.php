@@ -47,7 +47,6 @@ $A = array(
 'CONFIRM_EMAIL'=>'Please confirm your registration in %
 Link for confirmation: ',
 'CONFIRM_EMAIL_SUBJ'=>'Registration confirmation',
-'EMAIL_SENDED'=>'We sended confirmation link to e-mail %. <a href="/login">Login.</a>',
 'USER_NAME'=>'Name',
 'USER_EMAIL'=>'E-mail',
 'USER_COMPANY'=>'Company',

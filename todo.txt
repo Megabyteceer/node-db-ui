@@ -1,8 +1,22 @@
+save button title in registration change to register
 
-регистрация/активация/логин/сброс формы (через ноды, которые не хранят свои данные а только обрабатывают хендлеры)
+Forgot my password link to login form
+
+Already have an account?  button to the end of register form link to login
 
 
-найти все ссылки на /reset /login /register и заменить на показ форм
+activateUser function via  __registration table
+
+/активация/логин/сброс формы нода 22
+
+после сохранения не попает историю а добавляет в конец
+
+найти все ссылки на /reset /login /register и заменить на показ форм]
+
+/#n/22  /#n/20/r/new/e    /#n/21
+
+
+
 
 убрать <a href="/login
 
@@ -12,13 +26,13 @@
 
 crop падает на прозрачной области. когда кроп больше картинки
 
+Generate small icons for all image fields
+
 try mysql.createPool
 
-в разделе добавить выбор ссылки на _html
+в разделе добавить выбор ссылки на _html через клиент онли поле лукапа на старницу
 
 captcha
-
-Generate small icons for all image fields
 
 Lookup nto1 and ntom to user gives access for user if field marked as access opener. Keep such a fields in privilegesFields property. Use it in messages.
 
@@ -34,14 +48,10 @@ Lookup nto1 and ntom to user gives access for user if field marked as access ope
 
 кастомные евент хендлеры в добавок имеющимся
 
-
-
 Linemaster list. render items one by one with delay
 
 Use mysql>Alter table students ADD FULLTEXT (first_name, last_name);
 mysql>Select * from students where match(first_name, last_name) AGAINST (‘Jones’);
-
-Separate FormEvents and CustomFormEvents. Call both of them.
 
 
 

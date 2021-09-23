@@ -153,7 +153,6 @@ class admin {
 				return submitRecord(6, { prior: f.prior }, f.id);
 			}));
 			await getNode(node.id, true);
-			window.crudJs.Stage.refreshForm();
 		}
 	}
 

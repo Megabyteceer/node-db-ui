@@ -1,6 +1,6 @@
 import { RecordsDataResponse } from 'www/js/bs-utils';
 import { nodePrivileges, getClientEventHandler, clearCache } from './admin/admin';
-import { setCurrentOrg, setMultilingual, resetPassword, registerUser, activateUser, killSession } from './auth';
+import { setCurrentOrg, setMultilingual, resetPassword, activateUser, killSession } from './auth';
 import { getNodeDesc, getNodesTree, GUEST_USER_SESSION } from './describe-node';
 import { getRecords, deleteRecord } from './get-records';
 import { submitRecord, uniqueCheck } from './submit';
@@ -49,9 +49,6 @@ const api = {
 	},
 	"api/uniqueCheck": (reqData, userSession, res) => {
 		uniqueCheck(reqData.fieldId, reqData.nodeId, reqData.val, reqData.recId, userSession).then(res);
-	},
-	"register": (reqData, userSession, res) => {
-		registerUser(reqData).then(res);
 	},
 	"reset": (reqData, userSession, res) => {
 		resetPassword(reqData.key).then(res);

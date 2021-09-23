@@ -335,6 +335,9 @@ class eventProcessingMixins extends BaseForm {
 			f = this.getField(f.props.parentCompactAreaName);
 		}
 		if(f) {
+			if(typeof isSuccess === 'undefined') {
+				isSuccess = !Boolean(text);
+			}
 			f.fieldAlert(text, isSuccess, focus);
 			if(!isSuccess) {
 				this.invalidAlertInOnSaveHandler = true;
@@ -355,7 +358,7 @@ class eventProcessingMixins extends BaseForm {
 	}
 
 	/** @argument arg - result of server side onSave event handler */
-	processFormEvent(eventName: CLIENT_SIDE_FORM_EVENTS, arg: any) {
+	processFormEvent(eventName: CLIENT_SIDE_FORM_EVENTS, arg?: any) {
 		return this.processEvent(this._getFormEventHandler(eventName), undefined, undefined, arg);
 	}
 

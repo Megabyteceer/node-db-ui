@@ -160,7 +160,7 @@ INSERT INTO `_fields` (`id`, `name`, `status`, `_usersID`, `_createdON`, `_organ
 (3, 'Section description', 1, 0, '0000-00-00 00:00:00', 0, 4, 5, 10186, 1, 'description', '', '', 65535, 0, 0, 0, 0, 0, 1, 0, '', 0, 0),
 (4, 'Parent section', 1, 0, '0000-00-00 00:00:00', 0, 4, 7, 153, 7, '_nodesID', '_nodes', '', 4, 1, 0, 1, 0, 4, 0, 0, '', 0, 0),
 (5, 'Name', 1, 0, '0000-00-00 00:00:00', 0, 5, 255, 2, 1, 'name', '', '', 64, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
-(6, 'Password', 1, 0, '0000-00-00 00:00:00', 0, 5, 1, 316, 10, 'PASS', '(\'\')', '', 128, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
+(6, 'Password', 1, 0, '0000-00-00 00:00:00', 0, 5, 1, 316, 10, 'password', '(\'\')', '', 128, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (7, 'Phone', 1, 0, '2014-12-30 11:54:32', 0, 5, 23, 387, 1, 'PHONE', '', '', 32, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (8, 'id', 1, 0, '0000-00-00 00:00:00', 0, 5, 16, 291, 2, 'id', '', '', 15, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (9, 'Name', 1, 0, '0000-00-00 00:00:00', 0, 6, 255, 31, 1, 'fieldName', '', 'Field`s name which used to store data in database and access field via scripts.', 33, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
@@ -607,7 +607,7 @@ CREATE TABLE `_users` (
   `id` bigint(15) UNSIGNED NOT NULL,
   `name` varchar(64) NOT NULL DEFAULT '',
   `_organizationID` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
-  `PASS` varchar(128) NOT NULL DEFAULT '',
+  `password` varchar(128) NOT NULL DEFAULT '',
   `salt` varchar(32) NOT NULL DEFAULT '',
   `status` int(8) NOT NULL DEFAULT 0,
   `PHONE` varchar(32) NOT NULL DEFAULT '',
@@ -653,7 +653,7 @@ CREATE TABLE `_users` (
 -- Dumping data for table `_users`
 --
 
-INSERT INTO `_users` (`id`, `name`, `_organizationID`, `PASS`, `salt`, `status`, `PHONE`, `blocked_to`, `mistakes`, `_usersID`, `_createdON`, `email`, `mailing`, `avatar`, `activation`, `reset_time`, `show_phone`, `show_email`, `firstName`, `lastName`, `midName`, `company`, `title`, `description`, `www`, `skype`, `soc_vk`, `soc_fb`, `soc_google`, `soc_twitter`, `show_skype`, `show_vk`, `show_facebook`, `show_google`, `show_twitter`, `public_phone`, `public_vk`, `public_fb`, `public_google`, `public_email`, `multilingualEnabled`, `defaultOrg`, `language`) VALUES
+INSERT INTO `_users` (`id`, `name`, `_organizationID`, `password`, `salt`, `status`, `PHONE`, `blocked_to`, `mistakes`, `_usersID`, `_createdON`, `email`, `mailing`, `avatar`, `activation`, `reset_time`, `show_phone`, `show_email`, `firstName`, `lastName`, `midName`, `company`, `title`, `description`, `www`, `skype`, `soc_vk`, `soc_fb`, `soc_google`, `soc_twitter`, `show_skype`, `show_vk`, `show_facebook`, `show_google`, `show_twitter`, `public_phone`, `public_vk`, `public_fb`, `public_google`, `public_email`, `multilingualEnabled`, `defaultOrg`, `language`) VALUES
 (0, '', 0, '', '', 0, '', '2014-11-01 20:35:57', -20, 0, '2014-12-30 11:54:50', '', 0, '', '', '2016-01-13 10:49:47', 0, 0, '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, 0, '', '', '', '', '', 0, 0, 0),
 (1, 'admin', 1, '$2y$10$DD.q5zohc15RFTbsKOA.oO1fBE7lrelIkqSDR7g0T7eoHmKFyPKzG', '', 1, '', '2014-11-01 20:35:57', 3, 1, '2014-12-30 11:54:50', 'admin', 1, 'a5/820df48e028c8.jpg', '123123', '2021-07-29 21:00:00', 1, 0, '', '', '', 'admin group', '', '123', '', 'ssssssssssssssssssssssss', 'vvvvvvvvvvv', 'fffffffffffffff', 'gggggggggggggggg', 'ttttttttttttttttttttttttt', 1, 1, 0, 1, 1, '', 'vvvvvvvvvvv', 'hidden_91d2g7', 'gggggggggggggggg', 'hidden_91d2g7', 0, 1, 0),
 (2, 'guest', 2, 'nc_l4DFn76ds5yhg', '', 1, '', '2001-01-09 00:00:00', 3, 1, '2014-12-07 09:43:13', 'guest@guest.guest', 0, '', '', '0000-00-00 00:00:00', 1, 1, '', '', '', 'guest group', 'guest', '', '', '', '', '', '', '', 1, 1, 1, 1, 1, '', '', '', '', 'guest@guest.guest', 0, 2, 0),

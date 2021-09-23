@@ -2,7 +2,6 @@ import ENV from "../ENV";
 import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "./mysql-connection";
 import { getLangs, GUEST_USER_SESSION } from "./describe-node";
 import { throwError, GUEST_ROLE_ID, USER_ROLE_ID, assert, UserLangEntry, UserRoles, UserSession, TRoleId, ADMIN_ROLE_ID } from "../www/js/bs-utils";
-import { L } from "./locale";
 import { pbkdf2, randomBytes } from "crypto";
 
 
@@ -100,41 +99,13 @@ function getServerHref() {
 	return ENV.SERVER_NAME;
 }
 
-async function registerUser(reqData) {
-
-	const r_name = ENV.REQUIRE_NAME;
-	const r_company = ENV.REQUIRE_COMPANY;
-
-	const login = reqData.login_username;
-	const password = reqData.login_password;
-	const password_r = reqData.password_r;
-	const company = r_company ? reqData.company : '';
-	const name = r_name ? reqData.name : '';
-
-	if(password !== password_r) {
-		throwError('PASS_NOT_SAME');
-	} else {
-
-		let pgs = await mysqlExec("SELECT id FROM _users WHERE _users.status=1 AND email='" + login + "' LIMIT 1") as mysqlRowsResult;
-		if(pgs.length > 0) {
-			throwError('EMAIL_ALREADY');
-		} else {
-			const salt = generateSalt();
-			let actKey = randomBytes(24).toString('base64');
-			let href = getServerHref() + '?activate_user&key=' + actKey;
-			await mysqlExec("INSERT INTO `_users` (status, `name`, `PASS`, `salt`, `email`, `company`, `activation`) VALUES (2,'" + name + "','" + (await getPasswordHash(password, salt)) + "','" + salt + "','" + login + "','" + company + "','" + actKey + "');");
-			await mail_utf8(login, L('CONFIRM_EMAIL_SUBJ'), L('CONFIRM_EMAIL', ENV.APP_TITLE) + href);
-			return L('EMAIL_SENDED', login);
-		}
-	}
-}
-
 function generateSalt() {
 	return randomBytes(16).toString('hex');
 }
 
 async function activateUser(key) {
 	if(key) {
+		//TODO use __registration
 		const users = await mysqlExec("SELECT id, pass, company, email FROM _users WHERE status = 2 AND activation='" + key + "' LIMIT 1") as mysqlRowsResult;
 		const user = users[0];
 		if(user) {
@@ -305,6 +276,7 @@ let transporter;
 async function mail_utf8(email, subject, text): Promise<void> {
 	return new Promise((resolve, rejects) => {
 		if(ENV.DEBUG) {
+			resolve();
 			return;
 		}
 		if(!transporter) {
@@ -361,4 +333,4 @@ const isUserHaveRole = (roleId: TRoleId, userSession: UserSession) => {
 	return userSession && userSession.userRoles[roleId];
 }
 
-export { UserSession, generateSalt, notificationOut, shouldBeAuthorized, isAdmin, isUserHaveRole, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultilingual, authorizeUserByID, resetPassword, activateUser, registerUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode };
+export { UserSession, generateSalt, notificationOut, shouldBeAuthorized, isAdmin, isUserHaveRole, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultilingual, authorizeUserByID, resetPassword, activateUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode };

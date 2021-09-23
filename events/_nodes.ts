@@ -56,23 +56,23 @@ const handlers: NodeEventsHandlers = {
 			await mysqlExec("UPDATE \`" + data.tableName + "\` SET id=0 WHERE id=" + insertedId);
 
 			//create default fields
-			const mainFieldQ = `INSERT INTO _fields
-				(node_fields_linker, status, \`show\`,          prior, fieldType,       fieldName, selectFieldName, name,           description, maxLength, requirement, unique, _usersID, forSearch, noStore) VALUES
-				(${createdID},       1,       ${VIEW_MASK_ALL}, 1,     ${FIELD_1_TEXT}, 'name',    '',              '${L('Name')}', '',          64,        1,           0,     0,         1,         0);`;
+			const mainFieldQ = `INSERT INTO \`_fields\`
+				(\`node_fields_linker\`, \`status\`, \`show\`,          \`prior\`, \`fieldType\`,    \`fieldName\`, \`selectFieldName\`, \`name\`,        \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`noStore\`) VALUES
+				(${createdID},             1,          ${VIEW_MASK_ALL},  1,        ${FIELD_1_TEXT}, 'name',        '',                  '${L('Name')}',   '',              64,             1,               0,         0,            1,             0);`;
 			await mysqlExec(mainFieldQ);
 
 			if(data.addCreatedOnFiled) {
-				const createdOnQ = `INSERT INTO _fields 
-				(node_fields_linker, status, \`show\`,                                 prior, fieldType,            fieldName,   selectFieldName, name,                 description, maxLength, requirement, unique, _usersID, forSearch, noStore) VALUES
-				(${createdID},       1,        ${VIEW_MASK_LIST | VIEW_MASK_READONLY}, 2,     ${FIELD_4_DATE_TIME}, '_createdON', '',              '${L('Created on')}', '',          0,         0,           0,      0,        1,         0);`;
+				const createdOnQ = `INSERT INTO \`_fields\`
+				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,            \`fieldName\`,   \`selectFieldName\`, \`name\`,            \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`noStore\`) VALUES
+				(${createdID},            1,          ${VIEW_MASK_LIST | VIEW_MASK_READONLY},   2,         ${FIELD_4_DATE_TIME},     '_createdON',    '',                '${L('Created on')}',  '',              0,              0,               0,          0,            1,             0);`;
 				const dateFieldId = (await mysqlExec(createdOnQ) as mysqlInsertResult).insertId;
 				await mysqlExec('UPDATE _nodes SET _fieldsID=' + dateFieldId + ', reverse = 1 WHERE id=' + createdID);
 			}
 
 			if(data.addCreatedByFiled) {
 				const createdByQ = `INSERT INTO _fields
-				(node_fields_linker, status, \`show\`,                                 prior, fieldType,       fieldName,  selectFieldName, name,                   description, maxLength, requirement, unique, _usersID, forSearch, noStore, nodeRef) VALUES
-				(${createdID},       1,        ${VIEW_MASK_LIST | VIEW_MASK_READONLY}, 3,     ${FIELD_7_Nto1}, '_organizationID', '_organization',        '${L('Organization')}', '',          0,         0,           0,      0,        1,         0,       ${NODE_ID_ORGANIZATIONS});`;
+				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,            \`fieldName\`,      \`selectFieldName\`, \`name\`,              \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`noStore\`, \`nodeRef\`) VALUES
+				(${createdID},            1,          ${VIEW_MASK_LIST | VIEW_MASK_READONLY},   3,         ${FIELD_7_Nto1},          '_organizationID', '_organization',     '${L('Organization')}', '',              0,            0,               0,           0,            1,              0,          ${NODE_ID_ORGANIZATIONS});`;
 				await mysqlExec(createdByQ);
 			}
 

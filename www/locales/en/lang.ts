@@ -24,7 +24,6 @@ const LANGS = {
 	'CONTENT': 'Content',
 	'LOOKUP_NAME_NOT_UNIQUE': 'Lookup N to M should have globally unique name.',
 	'FLD_DESC': 'Field description',
-	'PASSWORDS_NOT_M': 'Passwords dont match',
 	/// #if DEBUG
 	'EMPTY_SECTION': 'Empty section (click to add)',
 	/// #endif
@@ -114,7 +113,8 @@ const LANGS = {
 	'APPLY_CHILD': 'Apply settings for all sub sections?',
 	'TO_THIS': 'To this section only',
 	'TO_ALL': 'To all sub sections',
-	'NEW_LANGUAGE_WARNING': 'Warning! Adding a new language will modify all database tables. Additional columns will be created for all fields marked as multilingual.'
+	'NEW_LANGUAGE_WARNING': 'Warning! Adding a new language will modify all database tables. Additional columns will be created for all fields marked as multilingual.',
+	'REGISTRATION_EMAIL_SENT': 'We sent confirmation link to e-mail %. <a href="/login">Login.</a>'
 };
 
 initDictionary(LANGS);

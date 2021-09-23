@@ -26,14 +26,8 @@ class FieldsEvents extends FormEvents {
 		(e.querySelector('.clickable-link-text') as HTMLAnchorElement).innerText = href;
 	}
 
-	_users_passConfirm_onChange() {
-		var p = this.fieldValue('PASS');
-		var p2 = this.fieldValue('passConfirm');
-		if(p && (p !== p2)) {
-			this.fieldAlert('passConfirm', L('PASSWORDS_NOT_M'));
-		} else {
-			this.fieldAlert('passConfirm');
-		}
+	_users_passwordConfirm_onChange() {
+		this.checkPasswordConfirmation();
 	}
 
 	_nodes_isDocument_onChange() {
@@ -228,6 +222,10 @@ class FieldsEvents extends FormEvents {
 		} else if(!this.isUpdateRecord) {
 			this.enableField('noStoreForms');
 		}
+	}
+
+	_registration_passwordConfirm_onChange() {
+		this.checkPasswordConfirmation();
 	}
 
 	//_insertNewHandlersHere_
