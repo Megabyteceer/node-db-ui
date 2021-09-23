@@ -1,5 +1,5 @@
 import { R } from "../r";
-import { FIELD_2_INT, FIELD_7_Nto1, PRIVILEGES_CREATE, RecordsData } from "../bs-utils";
+import { FIELD_TYPE_NUMBER_2, FIELD_TYPE_LOOKUP_7, PRIVILEGES_CREATE, RecordsData } from "../bs-utils";
 import { FieldAdmin } from "../admin/field-admin";
 import { NodeAdmin } from "../admin/node-admin";
 import { LeftBar } from "../left-bar";
@@ -155,7 +155,7 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	scrollIfNeed() {
-		if(this.isSubForm() && this.props.parentForm.props.field.fieldType === FIELD_7_Nto1) {
+		if(this.isSubForm() && this.props.parentForm.props.field.fieldType === FIELD_TYPE_LOOKUP_7) {
 			scrollToVisible(this, true);
 		}
 	}
@@ -461,7 +461,7 @@ class List extends BaseForm<ListProps, ListState> {
 
 
 					if(this.isFieldVisibleByFormViewMask(field)) {
-						tableHeader.push(R.td({ key: field.id, className: (field.fieldType === FIELD_2_INT) ? 'list-row-header list-row-header-num' : 'list-row-header' },
+						tableHeader.push(R.td({ key: field.id, className: (field.fieldType === FIELD_TYPE_NUMBER_2) ? 'list-row-header list-row-header-num' : 'list-row-header' },
 							rowHeader,
 							fieldAdmin
 						));

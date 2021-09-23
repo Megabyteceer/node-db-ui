@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import React from "react";
-import { FieldDesc, FIELD_17_TAB } from "../bs-utils";
+import { FieldDesc, FIELD_TYPE_TAB_17 } from "../bs-utils";
 import { R } from "../r";
 import { Select } from "../components/select";
 import { consoleDir, getItem, getNode, getNodeData, isLitePage, renderIcon, setItem, submitRecord } from "../utils";
@@ -50,7 +50,7 @@ class admin {
 			var f;
 			var i;
 
-			if(field.fieldType === FIELD_17_TAB) {
+			if(field.fieldType === FIELD_TYPE_TAB_17) {
 				if(field.maxLength === 0) { //two tabs exchanging
 
 					i = fieldIndex;
@@ -59,7 +59,7 @@ class admin {
 					while(i < fields.length && i >= 0) {
 						f = fields[i];
 
-						if(f.fieldType === FIELD_17_TAB && f.maxLength === 0) {
+						if(f.fieldType === FIELD_TYPE_TAB_17 && f.maxLength === 0) {
 							break;
 						}
 						group1.push(f);
@@ -71,7 +71,7 @@ class admin {
 							i = fieldIndex - 1;
 							while(i > 0) {
 								var f = fields[i];
-								if(f.fieldType === FIELD_17_TAB && f.maxLength === 0) {
+								if(f.fieldType === FIELD_TYPE_TAB_17 && f.maxLength === 0) {
 									break;
 								}
 								i--;
@@ -87,7 +87,7 @@ class admin {
 							i++;
 							while(i < fields.length) {
 								var f = fields[i];
-								if(f.fieldType === FIELD_17_TAB && f.maxLength === 0) {
+								if(f.fieldType === FIELD_TYPE_TAB_17 && f.maxLength === 0) {
 									break;
 								}
 								group2.push(f);

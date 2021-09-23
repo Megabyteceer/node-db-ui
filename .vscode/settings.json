@@ -7,7 +7,7 @@
 	"files.exclude": {
 		"**/dist/**": true,
 		"**/node_modules_pached_for_debug/**": true,
-		"**/www/**": true,
+		"**/ww w/**": true,
 		"**/cert/**": true,
 		"**/nginx-1.20.1/**": true
 	},

@@ -1,9 +1,9 @@
-import { FIELD_8_STATIC_TEXT } from "../bs-utils";
+import { FIELD_TYPE_STATIC_TEXT_8 } from "../bs-utils";
 import { R } from "../r";
 import { registerFieldClass } from "../utils";
 import { BaseField } from "./base-field";
 
-registerFieldClass(FIELD_8_STATIC_TEXT, class StaticTextField extends BaseField {
+registerFieldClass(FIELD_TYPE_STATIC_TEXT_8, class StaticTextField extends BaseField {
 
 	setValue(val) { }
 

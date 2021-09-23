@@ -4,7 +4,7 @@ import { List } from "../forms/list";
 import { assignFilters, deleteRecord, L } from "../utils";
 import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
-import { FIELD_15_1toN, Filters, RecId, RecordData, RecordsData } from "../bs-utils";
+import { FIELD_TYPE_LOOKUP_1toN_15, Filters, RecId, RecordData, RecordsData } from "../bs-utils";
 
 class LookupOneToManyFiled extends fieldLookupMixins {
 
@@ -130,6 +130,6 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 	}
 }
 
-registerFieldClass(FIELD_15_1toN, LookupOneToManyFiled);
+registerFieldClass(FIELD_TYPE_LOOKUP_1toN_15, LookupOneToManyFiled);
 
 export { LookupOneToManyFiled };

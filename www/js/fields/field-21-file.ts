@@ -3,14 +3,14 @@ import React from "react";
 
 import { R } from "../r";
 import { Component } from "react";
-import { FIELD_21_FILE } from "../bs-utils";
+import { FIELD_TYPE_FILE_21 } from "../bs-utils";
 import { ENV } from "../main-frame";
 import { Modal } from "../modal";
 import { checkFileSize, getReadableUploadSize, idToFileUrl, L, renderIcon, serializeForm, submitData } from "../utils";
 import { registerFieldClass } from "../utils";
 import { BaseField, RefToInput } from "./base-field";
 
-registerFieldClass(FIELD_21_FILE, class FileField extends BaseField {
+registerFieldClass(FIELD_TYPE_FILE_21, class FileField extends BaseField {
 
 	fileFormBodyRef: FileFormBody;
 

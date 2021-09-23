@@ -1,6 +1,6 @@
 import { ComponentProps, R } from "../r";
 import React from "react";
-import { FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, Filters, NodeDesc, RecordData } from "../bs-utils";
+import { FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_NUMBER_2, FIELD_TYPE_LOOKUP_7, Filters, NodeDesc, RecordData } from "../bs-utils";
 import { FieldWrap } from "../fields/field-wrap";
 import { deleteRecord, draftRecord, isRecordRestrictedForDeletion, L, publishRecord, renderIcon, sp } from "../utils";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
@@ -137,9 +137,9 @@ class FormItem extends eventProcessingMixins {
 			var field = nodeFields[k];
 			if(this.isFieldVisibleByFormViewMask(field)) {
 				let className = 'form-item-row';
-				if(field.fieldType === FIELD_2_INT) {
+				if(field.fieldType === FIELD_TYPE_NUMBER_2) {
 					className += ' form-item-row-num';
-				} else if(field.fieldType !== FIELD_1_TEXT && field.fieldType !== FIELD_19_RICH_EDITOR && field.fieldType !== FIELD_7_Nto1) {
+				} else if(field.fieldType !== FIELD_TYPE_TEXT_1 && field.fieldType !== FIELD_TYPE_RICH_EDITOR_19 && field.fieldType !== FIELD_TYPE_LOOKUP_7) {
 					className += ' form-item-row-misc'
 				}
 

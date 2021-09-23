@@ -1,7 +1,7 @@
 import { CLIENT_SIDE_FORM_EVENTS, consoleLog, Filters, getData, L } from "../utils";
 import { BaseForm } from "./base-form";
 import { LeftBar } from "../left-bar";
-import { assert, FieldDesc, FIELD_17_TAB, FIELD_18_BUTTON, RecordData } from "../bs-utils";
+import { assert, FieldDesc, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, RecordData } from "../bs-utils";
 import type { FieldWrap } from "../fields/field-wrap";
 
 let FormEvents;
@@ -108,7 +108,7 @@ class eventProcessingMixins extends BaseForm {
 			for(var k in nodeFields) {
 				var f = nodeFields[k];
 				if(this.isFieldVisibleByFormViewMask(f)) {
-					if((f.fieldType === FIELD_17_TAB) && (f.maxLength === 0)) {//tab
+					if((f.fieldType === FIELD_TYPE_TAB_17) && (f.maxLength === 0)) {//tab
 						if((tabNameToShow === f.fieldName) || !tabNameToShow) {
 							field = f;
 							break;
@@ -229,7 +229,7 @@ class eventProcessingMixins extends BaseForm {
 
 		for(var k in this.fieldsRefs) {
 			var f = this.fieldsRefs[k];
-			if(f.props.field.fieldType !== FIELD_18_BUTTON && f.props.field.fieldType !== FIELD_17_TAB) {
+			if(f.props.field.fieldType !== FIELD_TYPE_BUTTON_18 && f.props.field.fieldType !== FIELD_TYPE_TAB_17) {
 				await this.processFieldEvent(f.props.field, false);
 			}
 		}
@@ -252,7 +252,7 @@ class eventProcessingMixins extends BaseForm {
 				var fields = this.props.node.fields
 				for(var k in fields) {
 					var f = fields[k];
-					if((f.fieldType === FIELD_17_TAB) && (f.maxLength === 0)) {//tab
+					if((f.fieldType === FIELD_TYPE_TAB_17) && (f.maxLength === 0)) {//tab
 						if(this.isFieldVisible(f.fieldNamePure)) {
 							items.push({ icon: f.icon, name: f.name, field: f, form: this, id: false, isDocument: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName });
 							isDefault = false;

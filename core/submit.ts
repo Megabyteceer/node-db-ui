@@ -1,6 +1,6 @@
 import {
-	throwError, FIELD_14_NtoM, FIELD_4_DATE_TIME, FIELD_11_DATE, FIELD_7_Nto1, FIELD_17_TAB, FIELD_19_RICH_EDITOR,
-	FIELD_10_PASSWORD, FIELD_1_TEXT, FIELD_12_PICTURE, FIELD_21_FILE, FIELD_5_BOOL, FIELD_15_1toN, PRIVILEGES_ANY,
+	throwError, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_DATE_TIME_4, FIELD_TYPE_DATE_11, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_TAB_17, FIELD_TYPE_RICH_EDITOR_19,
+	FIELD_TYPE_PASSWORD_10, FIELD_TYPE_TEXT_1, FIELD_TYPE_PICTURE_12, FIELD_TYPE_FILE_21, FIELD_TYPE_BOOL_5, FIELD_TYPE_LOOKUP_1toN_15, PRIVILEGES_ANY,
 	PRIVILEGES_PUBLISH, assert, PRIVILEGES_CREATE, RecId, RecordDataWrite, VIEW_MASK_DROPDOWN_LOOKUP
 } from "../www/js/bs-utils";
 
@@ -82,7 +82,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 				}
 			}
 			if(data.hasOwnProperty(fieldName)) {
-				if(f.fieldType === FIELD_19_RICH_EDITOR) {
+				if(f.fieldType === FIELD_TYPE_RICH_EDITOR_19) {
 					for(let replacer of blockTags) {
 						data[fieldName] = data[fieldName].replace(replacer.exp, replacer.val);
 					}
@@ -149,7 +149,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 				let fieldName = f.fieldName;
 				if(!f.noStore && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
 					let fieldType = f.fieldType;
-					if((fieldType === FIELD_12_PICTURE) || (fieldType === FIELD_21_FILE)) {
+					if((fieldType === FIELD_TYPE_PICTURE_12) || (fieldType === FIELD_TYPE_FILE_21)) {
 						if(!realDataBefore) {
 							realDataBefore = {};
 						}
@@ -186,10 +186,10 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 					let fieldVal = data[fieldName];
 
-					if(fieldType === FIELD_14_NtoM) {
+					if(fieldType === FIELD_TYPE_LOOKUP_NtoM_14) {
 						//will process later
 						needProcess_n2m = 1;
-					} else if(fieldType === FIELD_15_1toN) {
+					} else if(fieldType === FIELD_TYPE_LOOKUP_1toN_15) {
 						throwError('children records addition/deletion is independent.');
 					} else {
 						leastOneTablesFieldUpdated = true;
@@ -201,14 +201,14 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 						switch(fieldType) {
 
-							case FIELD_5_BOOL:
+							case FIELD_TYPE_BOOL_5:
 								insQ.push(fieldVal);
 								break;
 
-							case FIELD_21_FILE:
+							case FIELD_TYPE_FILE_21:
 
 							//continue to process as uploaded image
-							case FIELD_12_PICTURE:
+							case FIELD_TYPE_PICTURE_12:
 								if(fieldVal) {
 									if(userSession.uploaded && (userSession.uploaded[f.id] === fieldVal)) {
 										delete userSession.uploaded[fieldVal];
@@ -221,7 +221,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 										if(!filesToDelete) {
 											filesToDelete = [];
 										}
-										if(fieldType === FIELD_12_PICTURE) {
+										if(fieldType === FIELD_TYPE_PICTURE_12) {
 											filesToDelete.push(idToImgURLServer(realDataBefore[fieldName]));
 										} else {
 											filesToDelete.push(join(UPLOADS_FILES_PATH, realDataBefore[fieldName]));
@@ -230,31 +230,31 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 								}
 
 							//continue to process as text
-							case FIELD_1_TEXT:
-							case FIELD_10_PASSWORD:
+							case FIELD_TYPE_TEXT_1:
+							case FIELD_TYPE_PASSWORD_10:
 								if(f.maxLength && (fieldVal.length > f.maxLength)) {
 									throwError("Value length for field '" + fieldName + "' (" + tableName + ") is " + fieldVal.length + " longer that " + f.maxLength);
 								}
 								insQ.push("'", fieldVal, "'");
 								break;
 
-							case FIELD_19_RICH_EDITOR:
+							case FIELD_TYPE_RICH_EDITOR_19:
 								if(fieldVal.length > 16000000) {
 									throwError("Value length for field '" + fieldName + "' (" + tableName + ") is longer that 16000000");
 								}
 								insQ.push("'", fieldVal, "'");
 								break;
-							case FIELD_17_TAB:
+							case FIELD_TYPE_TAB_17:
 								break;
 
-							case FIELD_7_Nto1:
+							case FIELD_TYPE_LOOKUP_7:
 								if(!isAdmin(userSession) && fieldVal) {
 									await getRecords(f.nodeRef, VIEW_MASK_DROPDOWN_LOOKUP, fieldVal, userSession); //check if you have read access to referenced item
 								}
 								insQ.push(fieldVal);
 								break;
-							case FIELD_4_DATE_TIME:
-							case FIELD_11_DATE:
+							case FIELD_TYPE_DATE_TIME_4:
+							case FIELD_TYPE_DATE_11:
 								insQ.push("'", fieldVal, "'");
 								break;
 							default:
@@ -309,7 +309,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			if(needProcess_n2m) {
 				for(let f of node.fields) {
 
-					if(f.fieldType === FIELD_14_NtoM) {
+					if(f.fieldType === FIELD_TYPE_LOOKUP_NtoM_14) {
 						let fieldName = f.fieldName;
 						if(data.hasOwnProperty(fieldName)) {
 

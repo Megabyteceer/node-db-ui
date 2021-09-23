@@ -4,7 +4,7 @@ import type { LANG_KEYS } from "../locales/en/lang";
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
-import { ADMIN_ROLE_ID, assert, FieldDesc, FIELD_1_TEXT, Filters, GetRecordsParams, HASH_DIVIDER, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, TRoleId, USER_ROLE_ID } from "./bs-utils";
+import { ADMIN_ROLE_ID, assert, FieldDesc, FIELD_TYPE_TEXT_1, Filters, GetRecordsParams, HASH_DIVIDER, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, TRoleId, USER_ROLE_ID } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
@@ -667,7 +667,7 @@ function getClassForField(type) {
 	if(_fieldClasses.hasOwnProperty(type)) {
 		return _fieldClasses[type];
 	}
-	return _fieldClasses[FIELD_1_TEXT];
+	return _fieldClasses[FIELD_TYPE_TEXT_1];
 }
 
 function registerFieldClass(type, class_) {

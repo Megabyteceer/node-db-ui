@@ -1,4 +1,4 @@
-import { FIELD_5_BOOL } from "../bs-utils";
+import { FIELD_TYPE_BOOL_5 } from "../bs-utils";
 import { R } from "../r";
 import React, { Component } from "react";
 import { L, renderIcon } from "../utils";
@@ -38,7 +38,7 @@ class CheckBox extends Component<any, any> {
 	}
 }
 
-registerFieldClass(FIELD_5_BOOL, class BooleanField extends BaseField {
+registerFieldClass(FIELD_TYPE_BOOL_5, class BooleanField extends BaseField {
 
 	setValue(val) {
 		val = (val !== 0) && Boolean(val);

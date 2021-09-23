@@ -1,4 +1,4 @@
-import { FIELD_14_NtoM, FIELD_15_1toN, FIELD_18_BUTTON, FIELD_7_Nto1, FIELD_8_STATIC_TEXT } from "../bs-utils";
+import { FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_BUTTON_18, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8 } from "../bs-utils";
 import { R } from "../r";
 import React, { Component } from "react";
 import { FieldAdmin } from "../admin/field-admin";
@@ -71,9 +71,9 @@ class FieldWrap extends Component<FieldProps, any> {
 
 	setLookupFilter(filtersObjOrName, val) {
 		/// #if DEBUG
-		if((this.props.field.fieldType !== FIELD_7_Nto1) &&
-			(this.props.field.fieldType !== FIELD_14_NtoM) &&
-			(this.props.field.fieldType !== FIELD_15_1toN)) {
+		if((this.props.field.fieldType !== FIELD_TYPE_LOOKUP_7) &&
+			(this.props.field.fieldType !== FIELD_TYPE_LOOKUP_NtoM_14) &&
+			(this.props.field.fieldType !== FIELD_TYPE_LOOKUP_1toN_15)) {
 
 			debugError('setLookupFilter applied to not lookUp field: ' + this.props.field.fieldName);
 		}
@@ -247,10 +247,10 @@ class FieldWrap extends Component<FieldProps, any> {
 		var fieldTypedBody = React.createElement(getClassForField(field.fieldType), fieldProps);
 		var fieldCustomBody;
 
-		var noLabel = !field.name;// (field.fieldType===FIELD_14_NtoM)||(field.fieldType===FIELD_15_1toN);
+		var noLabel = !field.name;// (field.fieldType===FIELD_TYPE_LOOKUP_NtoM_14)||(field.fieldType===FIELD_TYPE_LOOKUP_1toN_15);
 
 		var help;
-		if(field.description && field.fieldType !== FIELD_8_STATIC_TEXT) {
+		if(field.description && field.fieldType !== FIELD_TYPE_STATIC_TEXT_8) {
 			help = React.createElement(FieldHelp, { text: R.div(null, R.h4(null, field.name), field.description) });
 		}
 
@@ -290,7 +290,7 @@ class FieldWrap extends Component<FieldProps, any> {
 			return R.span({
 				className,
 				onFocus: () => {
-					if(field.fieldType !== FIELD_18_BUTTON) {
+					if(field.fieldType !== FIELD_TYPE_BUTTON_18) {
 						this.setState({ showToolTip: true });
 					}
 				},
@@ -378,7 +378,7 @@ class FieldLabel extends Component<any, any> {
 				field.lang
 			)
 		} else {
-			body = (field.fieldType !== FIELD_18_BUTTON) ? (this.props.labelOverride || field.name) : '';
+			body = (field.fieldType !== FIELD_TYPE_BUTTON_18) ? (this.props.labelOverride || field.name) : '';
 		}
 
 		return R.div({ className: 'field-wrap-label' },

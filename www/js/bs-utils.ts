@@ -117,7 +117,7 @@ interface FieldDesc {
 	/** order of the field in the form */
 	prior: number;
 
-	/** field tip. or html content for FIELD_8_STATIC_TEXT fields */
+	/** field tip. or html content for FIELD_TYPE_STATIC_TEXT_8 fields */
 	description: string;
 
 	/** client side only field */
@@ -225,24 +225,24 @@ const GUEST_ROLE_ID: TRoleId = 2;
 const USER_ROLE_ID: TRoleId = 3;
 
 
-const FIELD_1_TEXT: FieldType = 1;
-const FIELD_2_INT: FieldType = 2;
-const FIELD_4_DATE_TIME: FieldType = 4;
-const FIELD_5_BOOL: FieldType = 5;
-const FIELD_6_ENUM: FieldType = 6;
-const FIELD_7_Nto1: FieldType = 7;
-const FIELD_8_STATIC_TEXT: FieldType = 8;
-const FIELD_10_PASSWORD: FieldType = 10;
-const FIELD_11_DATE: FieldType = 11;
-const FIELD_12_PICTURE: FieldType = 12;
-const FIELD_14_NtoM: FieldType = 14;
-const FIELD_15_1toN: FieldType = 15;
-const FIELD_16_RATING: FieldType = 16;
-const FIELD_17_TAB: FieldType = 17;
-const FIELD_18_BUTTON: FieldType = 18;
-const FIELD_19_RICH_EDITOR: FieldType = 19;
-const FIELD_20_COLOR: FieldType = 20;
-const FIELD_21_FILE: FieldType = 21;
+const FIELD_TYPE_TEXT_1: FieldType = 1;
+const FIELD_TYPE_NUMBER_2: FieldType = 2;
+const FIELD_TYPE_DATE_TIME_4: FieldType = 4;
+const FIELD_TYPE_BOOL_5: FieldType = 5;
+const FIELD_TYPE_ENUM_6: FieldType = 6;
+const FIELD_TYPE_LOOKUP_7: FieldType = 7;
+const FIELD_TYPE_STATIC_TEXT_8: FieldType = 8;
+const FIELD_TYPE_PASSWORD_10: FieldType = 10;
+const FIELD_TYPE_DATE_11: FieldType = 11;
+const FIELD_TYPE_PICTURE_12: FieldType = 12;
+const FIELD_TYPE_LOOKUP_NtoM_14: FieldType = 14;
+const FIELD_TYPE_LOOKUP_1toN_15: FieldType = 15;
+const FIELD_TYPE_RATING_16: FieldType = 16;
+const FIELD_TYPE_TAB_17: FieldType = 17;
+const FIELD_TYPE_BUTTON_18: FieldType = 18;
+const FIELD_TYPE_RICH_EDITOR_19: FieldType = 19;
+const FIELD_TYPE_COLOR_20: FieldType = 20;
+const FIELD_TYPE_FILE_21: FieldType = 21;
 
 type PrivilegesMask = number;
 type ViewMask = number;
@@ -331,10 +331,10 @@ export {
 
 	PRIVILEGES_VIEW_OWN, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_ALL, PRIVILEGES_CREATE, PRIVILEGES_EDIT_OWN, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_ALL,
 	PRIVILEGES_DELETE, PRIVILEGES_PUBLISH, PRIVILEGES_ANY,
-	FIELD_1_TEXT, FIELD_2_INT, FIELD_4_DATE_TIME, FIELD_5_BOOL, FIELD_6_ENUM, FIELD_7_Nto1,
-	FIELD_8_STATIC_TEXT, FIELD_10_PASSWORD, FIELD_11_DATE, FIELD_12_PICTURE, FIELD_14_NtoM,
-	FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR,
-	FIELD_20_COLOR, FIELD_21_FILE,
+	FIELD_TYPE_TEXT_1, FIELD_TYPE_NUMBER_2, FIELD_TYPE_DATE_TIME_4, FIELD_TYPE_BOOL_5, FIELD_TYPE_ENUM_6, FIELD_TYPE_LOOKUP_7,
+	FIELD_TYPE_STATIC_TEXT_8, FIELD_TYPE_PASSWORD_10, FIELD_TYPE_DATE_11, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14,
+	FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RATING_16, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19,
+	FIELD_TYPE_COLOR_20, FIELD_TYPE_FILE_21,
 
 	EVENT_HANDLER_TYPE_NODE, EVENT_HANDLER_TYPE_FIELD,
 

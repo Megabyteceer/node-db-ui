@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import { FIELD_14_NtoM, FIELD_7_Nto1, RecId } from "../bs-utils";
+import { FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_7, RecId } from "../bs-utils";
 import { R } from "../r";
 import { getClassForField, L, n2mValuesEqual, renderIcon, sp, UID } from "../utils";
 import { registerFieldClass } from "../utils";
@@ -198,7 +198,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 
 				var body = R.div({ key: key, ref: value ? (ref) => { refs[UID(value)] = ref; } : undefined, className },
 
-					React.createElement(getClassForField(FIELD_7_Nto1), {
+					React.createElement(getClassForField(FIELD_TYPE_LOOKUP_7), {
 						field, preventCreateButton: this.state.preventCreateButton, pos: i, isEdit, isN2M: true, filters: this.state.filters, ref: (ref) => {
 							if(ref) {
 								// @ts-ignore
@@ -250,6 +250,6 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 	}
 }
 
-registerFieldClass(FIELD_14_NtoM, LookupManyToManyFiled);
+registerFieldClass(FIELD_TYPE_LOOKUP_NtoM_14, LookupManyToManyFiled);
 
 export { LookupManyToManyFiled };

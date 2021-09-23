@@ -1,6 +1,6 @@
 import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation, getNode, myAlert } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FieldDesc, FIELD_10_PASSWORD, FIELD_12_PICTURE, FIELD_14_NtoM, FIELD_15_1toN, FIELD_16_RATING, FIELD_17_TAB, FIELD_18_BUTTON, FIELD_19_RICH_EDITOR, FIELD_1_TEXT, FIELD_2_INT, FIELD_7_Nto1, FIELD_8_STATIC_TEXT, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession } from "../bs-utils";
+import { FieldDesc, FIELD_TYPE_PASSWORD_10, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RATING_16, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_NUMBER_2, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -215,7 +215,7 @@ class FormEvents extends FormFull {
 			}
 		}
 
-		(this.getField('fieldType').fieldRef as EnumField).setFilterValues([FIELD_16_RATING]); //TODO ratings is not implemented
+		(this.getField('fieldType').fieldRef as EnumField).setFilterValues([FIELD_TYPE_RATING_16]); //TODO ratings is not implemented
 
 		if(this.isNewRecord) {
 			if(isNaN(this.fieldValue("show"))) {
@@ -256,7 +256,7 @@ class FormEvents extends FormFull {
 			else
 				this.setFieldValue("visibility_customList", 0);
 
-			if(this.fieldValue("fieldType") === FIELD_12_PICTURE || this.fieldValue("fieldType") === FIELD_19_RICH_EDITOR) {
+			if(this.fieldValue("fieldType") === FIELD_TYPE_PICTURE_12 || this.fieldValue("fieldType") === FIELD_TYPE_RICH_EDITOR_19) {
 				this.setFieldValue("height", this.fieldValue("maxLength") % 10000);
 				this.setFieldValue("width", Math.floor(this.fieldValue("maxLength") / 10000));
 			}
@@ -306,13 +306,13 @@ class FormEvents extends FormFull {
 				let fieldsFilter: Filters = {
 					fieldName: fName
 				}
-				if(this.fieldValue('fieldType') !== FIELD_14_NtoM) {
+				if(this.fieldValue('fieldType') !== FIELD_TYPE_LOOKUP_NtoM_14) {
 					fieldsFilter.node_fields_linker = nodeId;
 				}
 				getNodeData(6, undefined, fieldsFilter).then((data) => {
 					if(this._fieldsNameIsBad) return;
 					if(data.items.length > 0) {
-						if(this.fieldValue('fieldType') === FIELD_14_NtoM) {
+						if(this.fieldValue('fieldType') === FIELD_TYPE_LOOKUP_NtoM_14) {
 							this.fieldAlert('fieldName', L('LOOKUP_NAME_NOT_UNIQUE'));
 						} else {
 							this.fieldAlert('fieldName', L('FLD_EXISTS'));
@@ -335,7 +335,7 @@ class FormEvents extends FormFull {
 			}
 
 			if(nodeId && fn && fn.length >= 3) {
-				if((this.fieldValue("fieldType") === FIELD_15_1toN) && nodeRef) {
+				if((this.fieldValue("fieldType") === FIELD_TYPE_LOOKUP_1toN_15) && nodeRef) {
 					checkFieldExists(fn + '_linker', nodeRef);
 				} else {
 					checkFieldExists(fn, nodeId);
@@ -347,7 +347,7 @@ class FormEvents extends FormFull {
 	_fields_onSave() {
 		var fieldType = this.fieldValue("fieldType");
 
-		if(fieldType === FIELD_7_Nto1 || fieldType === FIELD_14_NtoM || fieldType === FIELD_15_1toN) {
+		if(fieldType === FIELD_TYPE_LOOKUP_7 || fieldType === FIELD_TYPE_LOOKUP_NtoM_14 || fieldType === FIELD_TYPE_LOOKUP_1toN_15) {
 			if(this.isFieldEmpty('nodeRef')) {
 				this.fieldAlert('nodeRef', L('REQUIRED_FLD'));
 			}
@@ -361,7 +361,7 @@ class FormEvents extends FormFull {
 			this.fieldAlert('fieldName', L('NO_NUMERIC_NAME'));
 		}
 
-		if(fieldType === FIELD_12_PICTURE || fieldType === FIELD_19_RICH_EDITOR) {
+		if(fieldType === FIELD_TYPE_PICTURE_12 || fieldType === FIELD_TYPE_RICH_EDITOR_19) {
 			if(!this.fieldValue("height")) {
 				this.fieldAlert("height", L('REQUIRED_FLD'));
 			}
@@ -377,7 +377,7 @@ class FormEvents extends FormFull {
 
 		if(!this.fieldValue('maxLength')) {
 			this.setFieldValue('maxLength', 0);
-			if((fieldType === FIELD_1_TEXT) || (fieldType === FIELD_2_INT) || (fieldType === FIELD_10_PASSWORD)) {
+			if((fieldType === FIELD_TYPE_TEXT_1) || (fieldType === FIELD_TYPE_NUMBER_2) || (fieldType === FIELD_TYPE_PASSWORD_10)) {
 				this.fieldAlert('maxLength', L('REQUIRED_FLD'));
 			}
 		}
@@ -392,7 +392,7 @@ class FormEvents extends FormFull {
 			this.hideField('selectFieldName');
 		}
 
-		if((fieldType === FIELD_8_STATIC_TEXT) || (fieldType === FIELD_17_TAB) || (fieldType === FIELD_18_BUTTON)) {
+		if((fieldType === FIELD_TYPE_STATIC_TEXT_8) || (fieldType === FIELD_TYPE_TAB_17) || (fieldType === FIELD_TYPE_BUTTON_18)) {
 			this.setFieldValue('noStore', true);
 		}
 		if(this._fieldsNameIsBad) {

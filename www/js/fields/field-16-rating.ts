@@ -1,10 +1,10 @@
-import { FIELD_16_RATING } from "../bs-utils";
+import { FIELD_TYPE_RATING_16 } from "../bs-utils";
 import { R } from "../r";
 import { L } from "../utils";
 import { registerFieldClass } from "../utils";
 import { BaseField } from "./base-field";
 
-registerFieldClass(FIELD_16_RATING, class RatingField extends BaseField {
+registerFieldClass(FIELD_TYPE_RATING_16, class RatingField extends BaseField {
 
 	setValue(val) {
 		this.refToInput.value = val;

@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import { FIELD_4_DATE_TIME } from "../bs-utils";
+import { FIELD_TYPE_DATE_TIME_4 } from "../bs-utils";
 import { R } from "../r";
 import moment from "moment";
 import { innerDateTimeFormat, L, readableDateFormat, readableTimeFormat, renderIcon, toReadableDate, toReadableDateTime, toReadableTime } from "../utils";
@@ -169,7 +169,7 @@ class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 	}
 }
 
-registerFieldClass(FIELD_4_DATE_TIME, class FieldDateTime extends dateFieldMixins {
+registerFieldClass(FIELD_TYPE_DATE_TIME_4, class FieldDateTime extends dateFieldMixins {
 	timeRef: RefToInput;
 
 	static decodeValue(val) {

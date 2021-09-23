@@ -1,10 +1,10 @@
-import { FIELD_18_BUTTON } from "../bs-utils";
+import { FIELD_TYPE_BUTTON_18 } from "../bs-utils";
 import { R } from "../r";
 import { renderIcon } from "../utils";
 import { registerFieldClass } from "../utils";
 import { BaseField } from "./base-field";
 
-registerFieldClass(FIELD_18_BUTTON, class ButtonField extends BaseField {
+registerFieldClass(FIELD_TYPE_BUTTON_18, class ButtonField extends BaseField {
 
 	constructor(props) {
 		super(props);

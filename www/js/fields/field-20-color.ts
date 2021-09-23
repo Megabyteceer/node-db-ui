@@ -1,7 +1,7 @@
 "use strict";
 
 import { R } from "../r";
-import { FIELD_20_COLOR } from "../bs-utils";
+import { FIELD_TYPE_COLOR_20 } from "../bs-utils";
 import { registerFieldClass } from "../utils";
 import { BaseField, FieldState, FieldProps } from "./base-field";
 
@@ -19,7 +19,7 @@ interface ColorFieldState extends FieldState {
 	alpha: number;
 }
 
-registerFieldClass(FIELD_20_COLOR, class ColorField extends BaseField<FieldProps, ColorFieldState> {
+registerFieldClass(FIELD_TYPE_COLOR_20, class ColorField extends BaseField<FieldProps, ColorFieldState> {
 
 	constructor(props) {
 		super(props);
