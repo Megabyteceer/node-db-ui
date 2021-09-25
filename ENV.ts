@@ -1,5 +1,5 @@
 const ENV = {
-	SERVER_NAME: 'http://distrib.ru',
+	SERVER_NAME: 'https://node-db-ui.com:1443/',
 	DEBUG: true,
 	ADMIN_ENABLED_DEFAULT: true,
 	ERROR_NOTIFY_EMAIL: 'vasiliy.p.kostin@gmail.com,example@example.com',
@@ -24,7 +24,7 @@ const ENV = {
 	REQUIRE_NAME: true,
 	REQUIRE_COMPANY: true,
 
-	DEFAULT_LANG_ID: 1,
+	DEFAULT_LANG_CODE: 'en',
 	ALLOW_GUEST: true,
 	ENABLE_MULTILINGUAL: false,
 	GOOGLE_PLUS: true,

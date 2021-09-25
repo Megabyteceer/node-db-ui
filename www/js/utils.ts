@@ -744,6 +744,15 @@ function idToFileUrl(fileId) {
 }
 
 let __requestsOrder = [];
+function releaseQuiresOrder(requestRecord) {
+	var roi = __requestsOrder.indexOf(requestRecord);
+	/// #if DEBUG
+	if(roi < 0) {
+		throw new Error('requests order is corrupted');
+	}
+	/// #endif
+	__requestsOrder.splice(roi, 1);
+}
 
 async function getData(url: string, params?: { [key: string]: any }, callStack?: string, noLoadingIndicator?: boolean): Promise<any> {
 	return new Promise((resolve) => {
@@ -779,6 +788,11 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 			noLoadingIndicator = true;
 		}
 
+		/// #if DEBUG
+		let isOrderNeedDispose = true;
+
+		/// #endif
+
 		fetch(__corePath + url, {
 			method: 'POST',
 			headers: headersJSON,
@@ -790,19 +804,13 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 				handleAdditionalData(data, url);
 				if(isAuthNeed(data)) {
 					alert('authHerePopup');
-					//authHerePopup
-
+					//TODO authHerePopup
 				} else if(data.hasOwnProperty('result')) {
+					/// #if DEBUG
+					isOrderNeedDispose = false;
+					/// #endif
 					requestRecord.result = data.result;
 				} else {
-					var roi = __requestsOrder.indexOf(requestRecord);
-					/// #if DEBUG
-					if(roi < 0) {
-						throw new Error('requests order is corrupted');
-					}
-					/// #endif
-					__requestsOrder.splice(roi, 1);
-
 					handleError(data, url, callStack);
 				}
 			})
@@ -810,20 +818,18 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 			/*
 			/// #endif
 			.catch((error) => {
-				var roi = __requestsOrder.indexOf(requestRecord);
-				/// #if DEBUG
-					if(roi < 0) {
-						throw new Error('requests order is corrupted');
-					}
-				/// #endif
-				__requestsOrder.splice(roi, 1);
-		
+				releaseQuiresOrder(requestRecord);
 				handleError(error, url, callStack);
 				
 				myAlert(L('CHECK_CONNECTION'), false, true);
 			})
 			//*/
 			.finally(() => {
+				/// #if DEBUG
+				if(isOrderNeedDispose) {
+					releaseQuiresOrder(requestRecord);
+				}
+				/// #endif
 				while(__requestsOrder.length > 0 && __requestsOrder[0].hasOwnProperty('result')) {
 					var rr = __requestsOrder.shift();
 					rr.resolve(rr.result);
@@ -1160,16 +1166,16 @@ function submitErrorReport(name, stack) {
 
 }
 
-var dictionary = {};
-
-function initDictionary(o) {
-	dictionary = Object.assign(dictionary, o);
-}
-
 function reloadLocation() {
 	setTimeout(() => {
 		location.reload();
 	}, 10);
+}
+
+var dictionary = {};
+
+function initDictionary(o) {
+	dictionary = Object.assign(dictionary, o);
 }
 
 function L(key: LANG_KEYS, param?: any) {

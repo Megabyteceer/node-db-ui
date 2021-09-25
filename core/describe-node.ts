@@ -2,7 +2,7 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import ENV from "../ENV";
-import { authorizeUserByID, isUserHaveRole, setMainTainMode, UserSession, usersSessionsStartedCount } from "./auth";
+import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession, usersSessionsStartedCount } from "./auth";
 import { throwError, assert, FIELD_TYPE_ENUM_6, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_DROPDOWN_LOOKUP, GUEST_ROLE_ID, ADMIN_ROLE_ID, NODE_ID_NODES, NODE_ID_FIELDS, NODE_ID_FILTERS } from "../www/js/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
@@ -173,15 +173,15 @@ async function reInitNodesData() {
 		clearInterval(metadataReloadingInterval);
 		metadataReloadingInterval = null;
 	}
-	setMainTainMode(true);
+	setMaintenanceMode(true);
 	await initNodesData();
-	setMainTainMode(false);
+	setMaintenanceMode(false);
 }
 
 let metadataReloadingInterval;
 function reloadMetadataSchedule() {
 	if(!metadataReloadingInterval) {
-		setMainTainMode(true);
+		setMaintenanceMode(true);
 		metadataReloadingInterval = setInterval(attemptToReloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl);
 	}
 }
@@ -189,7 +189,7 @@ function reloadMetadataSchedule() {
 function attemptToReloadMetadataSchedule() {
 	if(usersSessionsStartedCount() === 0) {
 		reInitNodesData().then(() => {
-			setMainTainMode(false);
+			setMaintenanceMode(false);
 		});
 	}
 }
@@ -208,7 +208,7 @@ async function initNodesData() { // load whole nodes data in to memory
 		HOME_NODE: ENV.HOME_NODE,
 		REQUIRE_COMPANY: ENV.REQUIRE_COMPANY,
 		REQUIRE_NAME: ENV.REQUIRE_NAME,
-		DEFAULT_LANG_ID: ENV.DEFAULT_LANG_ID,
+		DEFAULT_LANG_CODE: ENV.DEFAULT_LANG_CODE,
 		MAX_FILE_SIZE_TO_UPLOAD: ENV.MAX_FILE_SIZE_TO_UPLOAD,
 		ENABLE_MULTILINGUAL: ENV.ENABLE_MULTILINGUAL,
 		GOOGLE_PLUS: ENV.GOOGLE_PLUS,
@@ -224,6 +224,10 @@ async function initNodesData() { // load whole nodes data in to memory
 	langs_new = await mysqlExec("SELECT id, name, code, isUILanguage FROM _languages WHERE id <> 0") as UserLangEntry[];
 	for(let l of langs_new) {
 		l.prefix = l.code ? ('$' + l.code) : '';
+		ALL_LANGUAGES_BY_CODES.set(l.code || ENV.DEFAULT_LANG_CODE, l);
+		if(!DEFAULT_LANGUAGE || (l.code === ENV.DEFAULT_LANG_CODE)) {
+			DEFAULT_LANGUAGE = l;
+		}
 	}
 
 	let query = "SELECT * FROM _nodes WHERE status = 1 ORDER BY prior";
@@ -294,16 +298,44 @@ async function initNodesData() { // load whole nodes data in to memory
 	));
 	assert(isUserHaveRole(ADMIN_ROLE_ID, ADMIN_USER_SESSION), "User with id 1 expected to be admin.");
 	Object.assign(GUEST_USER_SESSION, await authorizeUserByID(2, true, 'guest-session'));
+	GUEST_USER_SESSION.isGuest = true;
 	assert(isUserHaveRole(GUEST_ROLE_ID, GUEST_USER_SESSION), "User with id 2 expected to be guest.");
 	/// #if DEBUG
 	await authorizeUserByID(3, undefined, "dev-user-session-token");
 	/// #endif
 
+	await import("../www/locales/en/lang-server");
+	await import("../www/locales/ru/lang-server");
+
+}
+
+
+const GUEST_USER_SESSIONS = new Map();
+
+let DEFAULT_LANGUAGE;
+const ALL_LANGUAGES_BY_CODES: Map<string, UserLangEntry> = new Map();
+
+function getGuestUserForBrowserLanguage(browserLanguage: string) {
+	if(browserLanguage) {
+		browserLanguage = browserLanguage.substr(0, 2);
+	} else {
+		browserLanguage = ENV.DEFAULT_LANG_CODE;
+	}
+
+	const languageCode = ALL_LANGUAGES_BY_CODES.has(browserLanguage) ? browserLanguage : ENV.DEFAULT_LANG_CODE;
+
+	if(!GUEST_USER_SESSIONS.has(languageCode)) {
+		let session: UserSession = Object.assign({}, GUEST_USER_SESSION);
+		session.lang = ALL_LANGUAGES_BY_CODES.get(languageCode);
+		GUEST_USER_SESSIONS.set(languageCode, session);
+	}
+	return GUEST_USER_SESSIONS.get(languageCode);
 }
 
 function getLangs(): UserLangEntry[] {
 	return langs;
 }
+
 
 enum ServerSideEventHandlersNames {
 	beforeCreate = 'beforeCreate',
@@ -355,7 +387,7 @@ const wrapObjectToDestroy = (o) => {
 				if(destroyed) {
 					throwError('Attempt to assign data after exit on eventHandler. Has eventHandler not "await" for something?');
 				}
-				if(prop === 'destroyObject_ONKwoiqwhd123123') {
+				if(prop === 'destroyObject_ONKwFSqwSFd123123') {
 					destroyed = true;
 				} else {
 					obj[prop] = value;
@@ -368,17 +400,14 @@ const wrapObjectToDestroy = (o) => {
 
 const destroyObject = (o) => {
 	if(o) {
-		o.destroyObject_ONKwoiqwhd123123 = true;
+		o.destroyObject_ONKwFSqwSFd123123 = true;
 	}
 }
 
 /// #endif
 
-
-
-
 export {
-	NodeEventsHandlers, filtersById,
+	NodeEventsHandlers, filtersById, getGuestUserForBrowserLanguage, DEFAULT_LANGUAGE,
 	ENV, getNodeDesc, getFieldDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs,
-	ADMIN_USER_SESSION, GUEST_USER_SESSION, reloadMetadataSchedule, ServerSideEventHandlersNames
+	ADMIN_USER_SESSION, reloadMetadataSchedule, ServerSideEventHandlersNames
 };

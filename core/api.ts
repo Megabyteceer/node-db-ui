@@ -1,69 +1,68 @@
 import { RecordsDataResponse } from 'www/js/bs-utils';
 import { nodePrivileges, getClientEventHandler, clearCache } from './admin/admin';
-import { setCurrentOrg, setMultilingual, resetPassword, activateUser, killSession } from './auth';
-import { getNodeDesc, getNodesTree, GUEST_USER_SESSION } from './describe-node';
+import { setCurrentOrg, setMultilingual, resetPassword, activateUser, killSession, getGuestUserForBrowserLanguage } from './auth';
+import { getNodeDesc, getNodesTree } from './describe-node';
 import { getRecords, deleteRecord } from './get-records';
 import { submitRecord, uniqueCheck } from './submit';
 import { uploadImage, uploadFile } from './upload';
 
 const api = {
-	"api/": (reqData, userSession, res) => {
-		getRecords(reqData.nodeId, reqData.viewFields, reqData.recId, userSession, reqData, reqData.s).then((data) => {
-			let ret: RecordsDataResponse = { data };
-			if(reqData.descNode) {
-				ret.node = getNodeDesc(reqData.nodeId, userSession);
-			}
-			res(ret);
-		});
+	"api/": async (reqData, userSession) => {
+		const data = await getRecords(reqData.nodeId, reqData.viewFields, reqData.recId, userSession, reqData, reqData.s);
+		let ret: RecordsDataResponse = { data };
+		if(reqData.descNode) {
+			ret.node = getNodeDesc(reqData.nodeId, userSession);
+		}
+		return ret;
 	},
-	"api/logout": (reqData, userSession, res) => {
+	"api/logout": (reqData, userSession) => {
 		killSession(userSession);
-		res(GUEST_USER_SESSION);
+		return Promise.resolve(getGuestUserForBrowserLanguage(reqData.headers['accept-language']));
 	},
-	"api/getMe": (reqData, userSession, res) => {
-		res(userSession);
+	"api/getMe": (reqData, userSession) => {
+		return Promise.resolve(userSession);
 	},
-	"api/getOptions": (reqData, userSession, res) => {
-		res(getNodesTree(userSession));
+	"api/getOptions": (reqData, userSession) => {
+		return Promise.resolve(getNodesTree(userSession));
 	},
-	"api/delete": (reqData, userSession, res) => {
-		deleteRecord(reqData.nodeId, reqData.recId, userSession).then(res);
+	"api/delete": (reqData, userSession) => {
+		return deleteRecord(reqData.nodeId, reqData.recId, userSession);
 	},
-	"api/setCurrentOrg": (reqData, userSession, res) => {
-		setCurrentOrg(reqData.orgId, userSession, true).then(res);
+	"api/setCurrentOrg": (reqData, userSession) => {
+		return setCurrentOrg(reqData.orgId, userSession, true);
 	},
-	"api/toggleMultilingual": (reqData, userSession, res) => {
-		setMultilingual(!userSession.langs, userSession).then(res);
+	"api/toggleMultilingual": (reqData, userSession) => {
+		return setMultilingual(!userSession.langs, userSession);
 	},
-	"api/descNode": (reqData, userSession, res) => {
-		res(getNodeDesc(reqData.nodeId, userSession));
+	"api/descNode": (reqData, userSession) => {
+		return Promise.resolve(getNodeDesc(reqData.nodeId, userSession));
 	},
-	"api/submit": (reqData, userSession, res) => {
-		submitRecord(reqData.nodeId, reqData.data, reqData.recId, userSession).then(res);
+	"api/submit": (reqData, userSession) => {
+		return submitRecord(reqData.nodeId, reqData.data, reqData.recId, userSession);
 	},
-	"api/uploadImage": (reqData, userSession, res) => {
-		uploadImage(reqData, userSession).then(res);
+	"api/uploadImage": (reqData, userSession) => {
+		return uploadImage(reqData, userSession);
 	},
-	"api/uploadFile": (reqData, userSession, res) => {
-		uploadFile(reqData, userSession).then(res);
+	"api/uploadFile": (reqData, userSession) => {
+		return uploadFile(reqData, userSession);
 	},
-	"api/uniqueCheck": (reqData, userSession, res) => {
-		uniqueCheck(reqData.fieldId, reqData.nodeId, reqData.val, reqData.recId, userSession).then(res);
+	"api/uniqueCheck": (reqData, userSession) => {
+		return uniqueCheck(reqData.fieldId, reqData.nodeId, reqData.val, reqData.recId, userSession);
 	},
-	"reset": (reqData, userSession, res) => {
-		resetPassword(reqData.key).then(res);
+	"api/reset": (reqData, userSession) => {
+		return resetPassword(reqData.resetCode, reqData.userId, userSession);
 	},
-	"activate": (reqData, userSession, res) => {
-		activateUser(reqData.key).then(res);
+	"api/activate": (reqData, userSession) => {
+		return activateUser(reqData.activationKey, userSession);
 	},
-	"admin/nodePrivileges": (reqData, userSession, res) => {
-		nodePrivileges(reqData, userSession).then(res);
+	"admin/nodePrivileges": (reqData, userSession) => {
+		return nodePrivileges(reqData, userSession);
 	},
-	"admin/cache_info": (reqData, userSession, res) => {
-		clearCache(userSession).then(res);
+	"admin/cache_info": (reqData, userSession) => {
+		return clearCache(userSession);
 	},
-	"admin/editEventHandler": (reqData, userSession, res) => {
-		getClientEventHandler(reqData, userSession).then(res);
+	"admin/editEventHandler": (reqData, userSession) => {
+		return getClientEventHandler(reqData, userSession);
 	}
 };
 

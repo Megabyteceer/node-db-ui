@@ -83,72 +83,62 @@ server.on('request', (req, res) => {
 				/// #endif
 				mysql_real_escape_object(body);
 				let userSession;
-				const onResult = (result, error) => {
-					const resHeaders = {
-						'content-type': 'application/json'
-					};
-					let ret: any = {
-						result, error, isGuest: false,
-						/// #if DEBUG
-						debug: null
-						/// #endif
-					};
-					/// #if DEBUG
-					resHeaders['Access-Control-Allow-Origin'] = '*';
-					if(mysqlDebug.debug) {
-						ret.debug = mysqlDebug.debug;
-						delete mysqlDebug.debug;
-						ret.debug.timeElapsed_ms = performance.now() - startTime;
-					}
-					/// #endif
-
-					if(isUserHaveRole(GUEST_ROLE_ID, userSession)) {
-						ret.isGuest = true;
-					}
-
-					res.writeHead(200, resHeaders);
-
-					if(userSession.hasOwnProperty('notifications')) {
-						ret.notifications = userSession.notifications;
-						delete userSession.notifications;
-					}
-					res.end(JSON.stringify(ret));
-				}
 				/// #if DEBUG
 				mysqlDebug.debug = { requestTime: new Date(), stack: [] };
 				/// #endif
-				startSession(body.sessionToken).then((session) => {
-					userSession = session;
-					handler(body, session, onResult);
-				})
+
+				const onError = (error) => {
+					debugger;
 					/// #if DEBUG
+					console.log(error.stack);
+					res.end(JSON.stringify({ error: error.stack }));
 					/*
 					/// #endif
-						.catch((error) => {
-							debugger;
-							console.log(error.stack);
-							onResult(undefined, error.message);
-						})
-						//*/
+					res.writeHead(500);
+					error = true;
+					res.end("{error:1}");
+					//*/
+				}
+
+				startSession(body.sessionToken, req.headers['accept-language']).then((session) => {
+					userSession = session;
+					handler(body, session).then((result) => {
+
+						const resHeaders = {
+							'content-type': 'application/json'
+						};
+						let ret: any = {
+							result, isGuest: false,
+							/// #if DEBUG
+							debug: null
+							/// #endif
+						};
+						/// #if DEBUG
+						resHeaders['Access-Control-Allow-Origin'] = '*';
+						if(mysqlDebug.debug) {
+							ret.debug = mysqlDebug.debug;
+							delete mysqlDebug.debug;
+							ret.debug.timeElapsed_ms = performance.now() - startTime;
+						}
+						/// #endif
+
+						if(isUserHaveRole(GUEST_ROLE_ID, userSession)) {
+							ret.isGuest = true;
+						}
+
+						res.writeHead(200, resHeaders);
+
+						if(userSession.hasOwnProperty('notifications')) {
+							ret.notifications = userSession.notifications;
+							delete userSession.notifications;
+						}
+						res.end(JSON.stringify(ret));
+					}).catch(onError);
+				})
+					.catch(onError)
 					.finally(() => {
 						finishSession(body.sessionToken);
 					});
-				/// #if DEBUG
-				/*
-				}
-
-				/// #endif
-				catch(error) {
-					debugger;
-					res.writeHead(500);
-					
-					res.end(JSON.stringify({error}));
-					
-					
-					res.end('{"error":"error"}');
-					
-				}
-				//*/
 			});
 		} else {
 			res.writeHead(404);

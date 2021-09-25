@@ -1,6 +1,6 @@
-import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation, getNode, myAlert } from "../utils";
+import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation, getNode, myAlert, getData } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FieldDesc, FIELD_TYPE_PASSWORD_10, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RATING_16, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_NUMBER_2, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession } from "../bs-utils";
+import { FieldDesc, FIELD_TYPE_PASSWORD_10, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RATING_16, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_NUMBER_2, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession, NODE_ID_USERS } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -268,7 +268,6 @@ class FormEvents extends FormFull {
 			this.disableField("nodeRef");
 			this.disableField("node_fields_linker");
 			this.disableField("noStore");
-			this.disableField("clientOnly");
 		}
 
 		this.addLookupFilters('node_fields_linker', {
@@ -438,8 +437,13 @@ class FormEvents extends FormFull {
 	}
 
 	_registration_onAfterSave() {
+		this.showMessageAboutEmailSent(L("REGISTRATION_EMAIL_SENT"));
+		this.isPreventCloseFormAfterSave = true;
+	}
+
+	showMessageAboutEmailSent(txt) {
 		myAlert(R.span(null,
-			L("REGISTRATION_EMAIL_SENT"),
+			txt,
 			R.div({ className: 'email-highlight' },
 				this.fieldValue("email")
 			)), true, false, true,
@@ -450,6 +454,11 @@ class FormEvents extends FormFull {
 		);
 	}
 
+	_resetPassword_onAfterSave() {
+		this.showMessageAboutEmailSent(L("RESET_EMAIL_SENT"));
+		this.isPreventCloseFormAfterSave;
+	}
+
 	_registration_onLoad() {
 		this.setSaveButtonTitle(L('REGISTER'));
 		this.hideCancelButton();
@@ -457,6 +466,32 @@ class FormEvents extends FormFull {
 
 	_login_onLoad() {
 		this.hideCancelButton();
+	}
+
+	_resetPassword_onLoad() {
+		this.hideCancelButton();
+		let activationKey = this.filters.activationKey;
+		let resetCode = this.filters.resetCode;
+		if(activationKey || resetCode) {
+			this.hideField('resetCode');
+			this.hideField('email');
+			this.hideFooter();
+			if(activationKey) {
+				getData('api/activate', this.filters).then((userSession) => {
+					User.setUserData(userSession);
+				}).catch((er) => {
+
+				});
+			} else {
+				getData('api/reset', this.filters).then((userSession) => {
+					User.setUserData(userSession);
+					window.crudJs.Stage.showForm(NODE_ID_USERS, userSession.id, { tab: 't_pass' }, true);
+				}).catch((er) => {
+
+				});
+
+			}
+		}
 	}
 
 	//_insertNewHandlersHere_

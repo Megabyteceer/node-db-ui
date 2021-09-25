@@ -114,7 +114,8 @@ const LANGS = {
 	'TO_THIS': 'To this section only',
 	'TO_ALL': 'To all sub sections',
 	'NEW_LANGUAGE_WARNING': 'Warning! Adding a new language will modify all database tables. Additional columns will be created for all fields marked as multilingual.',
-	'REGISTRATION_EMAIL_SENT': 'We sent confirmation link to e-mail: ',
+	'REGISTRATION_EMAIL_SENT': 'We sent confirmation link to E-mail: ',
+	'RESET_EMAIL_SENT': 'We sent link for reset password to E-mail: ',
 	'GO_TO_LOGIN': 'Go to login',
 	'REGISTER': 'Register'
 };

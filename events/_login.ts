@@ -8,7 +8,7 @@ const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession): Promise<any> {
 		const username = data.username;
 		const password = data.password;
-		let user = await mysqlExec("SELECT id, activation, salt, TIMESTAMPDIFF(SECOND, NOW(), blocked_to) AS blocked, password, mistakes FROM _users WHERE email='" + username + "' AND _users.status=1 LIMIT 1") as mysqlRowResultSingle;
+		let user = await mysqlExec("SELECT id, salt, TIMESTAMPDIFF(SECOND, NOW(), blocked_to) AS blocked, password, mistakes FROM _users WHERE email='" + username + "' AND _users.status=1 LIMIT 1") as mysqlRowResultSingle;
 		user = user[0];
 		if(user) {
 
@@ -17,7 +17,7 @@ const handlers: NodeEventsHandlers = {
 			let blocked = user.blocked;
 
 			if(blocked > 0) {
-				throwError(L('USER_BLOCKED', blocked));
+				throwError(L('USER_BLOCKED', userSession, blocked));
 			} else {
 				let mistakes = user.mistakes;
 

@@ -21,6 +21,8 @@ function iAdmin() {
 	return User.currentUserData && isAdmin();
 }
 
+let isFirstCall = true;
+
 class User extends Component<any, any> {
 	static sessionToken: string;
 	static instance: User;
@@ -49,6 +51,11 @@ class User extends Component<any, any> {
 		User.sessionToken = data.sessionToken;
 		setItem('cud-js-session-token', User.sessionToken);
 		MainFrame.instance.reloadOptions();
+		if(isFirstCall) {
+			isFirstCall = false;
+			goToPageByHash();
+		}
+
 	}
 
 	changeOrg(value) {

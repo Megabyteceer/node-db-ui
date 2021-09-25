@@ -60,7 +60,7 @@ const handlers: NodeEventsHandlers = {
 		shouldBeAdmin(userSession);
 
 		if((currentData.id === FIELD_ID_MAX_LENGTH) && newData.hasOwnProperty('maxLength')) {
-			throwError(L('SIZE_FLD_BLOCKED'));
+			throwError(L('SIZE_FLD_BLOCKED', userSession));
 		}
 
 		mustBeUnset(newData, 'fieldName');

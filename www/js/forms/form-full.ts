@@ -178,6 +178,7 @@ class FormFull extends eventProcessingMixins {
 		return ret;
 	}
 	async saveClickInner(isDraft): Promise<boolean> {
+		this.isPreventCloseFormAfterSave = false;
 		this.forceBouncingTimeout();
 		var data: RecordData = {};
 
@@ -243,7 +244,6 @@ class FormFull extends eventProcessingMixins {
 		}
 
 		await callForEachField(this.fieldsRefs, data, 'beforeSave')
-
 		if(Object.keys(data).length > 0) {
 			let recId = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
 			this.recId = recId;
@@ -281,10 +281,12 @@ class FormFull extends eventProcessingMixins {
 			await callForEachField(this.fieldsRefs, data, 'afterSave');
 		}
 
-		if(this.isSubForm()) {
-			this.props.parentForm.valueSelected(this.currentData, true);
-		} else {
-			this.cancelClick();
+		if(!this.isPreventCloseFormAfterSave) {
+			if(this.isSubForm()) {
+				this.props.parentForm.valueSelected(this.currentData, true);
+			} else {
+				this.cancelClick();
+			}
 		}
 	}
 

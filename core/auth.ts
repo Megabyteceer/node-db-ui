@@ -1,8 +1,10 @@
 import ENV from "../ENV";
 import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "./mysql-connection";
-import { getLangs, GUEST_USER_SESSION } from "./describe-node";
-import { throwError, GUEST_ROLE_ID, USER_ROLE_ID, assert, UserLangEntry, UserRoles, UserSession, TRoleId, ADMIN_ROLE_ID } from "../www/js/bs-utils";
+import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from "./describe-node";
+import { throwError, NODE_ID_USERS, GUEST_ROLE_ID, USER_ROLE_ID, assert, UserLangEntry, UserRoles, UserSession, TRoleId, ADMIN_ROLE_ID } from "../www/js/bs-utils";
 import { pbkdf2, randomBytes } from "crypto";
+import { L } from "./locale";
+import { submitRecord } from "./submit";
 
 
 const sessions = new Map();
@@ -34,45 +36,45 @@ const SESSION_START_REATTEMPT_DELAY = 1000;
 const SESSION_START_MAINTAIN_REATTEMPT_DELAY = 5000;
 //*/
 
-let maintainMode = 0;
+let maintenanceMode = 0;
 let startedSessionsCount = 0;
 const usersSessionsStartedCount = () => {
 	return startedSessionsCount;
 }
 
-function setMainTainMode(val) {
+function setMaintenanceMode(val) {
 	/// #if DEBUG
-	console.log('setMainTainMode ' + val);
+	console.log('setMaintenanceMode ' + val);
 	console.log((new Error('')).stack);
 	/// #endif
 
 	if(val) {
-		maintainMode++;
+		maintenanceMode++;
 	} else {
-		maintainMode--;
-		assert(maintainMode >= 0, "Maintain mode disable attempt when it was not enabled.");
+		maintenanceMode--;
+		assert(maintenanceMode >= 0, "Maintain mode disable attempt when it was not enabled.");
 	}
 }
 
-async function startSession(sessionToken) {
+async function startSession(sessionToken, browserLanguageId: string) {
 	if(!sessionToken) {
-		return GUEST_USER_SESSION;
+		return getGuestUserForBrowserLanguage(browserLanguageId);
 	}
 	let userSession;
 	if(!sessions.has(sessionToken)) {
-		return GUEST_USER_SESSION
+		return getGuestUserForBrowserLanguage(browserLanguageId);
 	} else {
 		userSession = sessions.get(sessionToken);
 	}
 
-	if(!userSession.hasOwnProperty('_isStarted') && !maintainMode) {
+	if(!userSession.hasOwnProperty('_isStarted') && !maintenanceMode) {
 		userSession._isStarted = true;
 		startedSessionsCount++;
 		return Promise.resolve(userSession);
 	}
 	return new Promise((resolve, rejects) => {
 		let i = setInterval(() => {
-			if(!userSession.hasOwnProperty('_isStarted') && !maintainMode) {
+			if(!userSession.hasOwnProperty('_isStarted') && !maintenanceMode) {
 				clearInterval(i);
 				if(userSession.id === 0) {
 					rejects(new Error('session expired'));
@@ -81,7 +83,7 @@ async function startSession(sessionToken) {
 				startedSessionsCount++;
 				resolve(userSession);
 			}
-		}, maintainMode ? SESSION_START_MAINTAIN_REATTEMPT_DELAY : SESSION_START_REATTEMPT_DELAY);
+		}, maintenanceMode ? SESSION_START_MAINTAIN_REATTEMPT_DELAY : SESSION_START_REATTEMPT_DELAY);
 	});
 }
 
@@ -108,34 +110,42 @@ function generateSalt() {
 	return randomBytes(16).toString('hex');
 }
 
-async function activateUser(key) {
+async function activateUser(key, userSession: UserSession) {
 	if(key) {
-		//TODO use __registration
-		const users = await mysqlExec("SELECT id, pass, company, email FROM _users WHERE status = 2 AND activation='" + key + "' LIMIT 1") as mysqlRowsResult;
-		const user = users[0];
-		if(user) {
-			let userID = user.id;
-			//create company for new user
-			let organizationID = (await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_usersID`) VALUES ('" + user.company + "', '1', " + userID + ")") as mysqlInsertResult).insertId;
-			await mysqlExec("UPDATE _users SET status=1, activation='', _organizationID=" + organizationID + ", _usersID = " + userID + " WHERE id =" + userID);
-			await mysqlExec("UPDATE _organization SET _organizationID=" + organizationID + " WHERE id =" + organizationID);
+		const registrations = await mysqlExec("SELECT * FROM _registration WHERE status = 1 AND activationKey='" + key + "' AND _createdON > DATE_ADD(CURDATE(), INTERVAL -1 DAY) LIMIT 1") as mysqlRowsResult;
+		const registration = registrations[0];
+		if(registration) {
+			let existingUser = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND email='" + registration.email + "' LIMIT 1") as mysqlRowsResult;
+			if(existingUser.length > 0) {
+				throwError(L('EMAIL_ALREADY', userSession));
+			}
+			if(!registration.name) {
+				registration.name = registration.email.split('@')[0];
+			}
+			let registrationID = registration.id;
+			delete registration.id;
+			delete registration.activationKey;
+			delete registration._createdON;
+			const userID = await submitRecord(NODE_ID_USERS, registration);
+			let organizationID = (await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_usersID`) VALUES ('', '1', " + userID + ")") as mysqlInsertResult).insertId;
+			await mysqlExec("UPDATE _organization SET _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + organizationID);
+			await mysqlExec("UPDATE _users SET _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + userID);
+			await mysqlExec("UPDATE _registration SET activationKey = '', status = 0 WHERE id = " + registrationID);
 			return authorizeUserByID(userID);
 		}
 	}
 	throwError('REG_EXPIRED');
 }
 
-async function resetPassword(key) {
-	if(key) {
-		const users = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND activation='" + key + "' AND reset_time > DATE_ADD(CURDATE(), INTERVAL -1 DAY)  LIMIT 1");
-		const user = users[0];
-		if(user) {
-			let userID = user.id;
-			await mysqlExec("UPDATE _users SET activation='' WHERE id ='" + userID + "'");
-			return authorizeUserByID(userID);
+async function resetPassword(key, userId, userSession) {
+	if(key && userId) {
+		const users = await mysqlExec("SELECT id FROM _users WHERE id= " + userId + " AND status = 1 AND resetCode='" + key + "' AND reset_time > DATE_ADD(CURDATE(), INTERVAL -1 DAY) LIMIT 1") as mysqlRowsResult;
+		if(users.length === 1) {
+			await mysqlExec("UPDATE _users SET resetCode = '' WHERE id ='" + userId + "'");
+			return authorizeUserByID(userId);
 		}
 	}
-	throwError('RECOVERY_EXPIRED');
+	throwError(L('RECOVERY_EXPIRED', userSession));
 }
 
 function getPasswordHash(password, salt) {
@@ -248,12 +258,7 @@ function getLang(langId): UserLangEntry {
 			return l;
 		}
 	}
-	for(let l of ls) {
-		if(l.id === ENV.DEFAULT_LANG_ID) {
-			return l;
-		}
-	}
-	return ls[0];
+	return DEFAULT_LANGUAGE;
 }
 
 async function setCurrentOrg(organID: number, userSession: UserSession, updateInBd?) {
@@ -331,11 +336,11 @@ const shouldBeAuthorized = (userSession: UserSession) => {
 }
 
 const isAdmin = (userSession: UserSession) => {
-	return isUserHaveRole(ADMIN_ROLE_ID, userSession);
+	return !userSession || isUserHaveRole(ADMIN_ROLE_ID, userSession);
 }
 
 const isUserHaveRole = (roleId: TRoleId, userSession: UserSession) => {
 	return userSession && userSession.userRoles[roleId];
 }
 
-export { UserSession, generateSalt, notificationOut, shouldBeAuthorized, isAdmin, isUserHaveRole, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultilingual, authorizeUserByID, resetPassword, activateUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMainTainMode };
+export { UserSession, getGuestUserForBrowserLanguage, generateSalt, notificationOut, shouldBeAuthorized, isAdmin, isUserHaveRole, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultilingual, authorizeUserByID, resetPassword, activateUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMaintenanceMode };

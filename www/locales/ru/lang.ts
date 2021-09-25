@@ -108,6 +108,7 @@ initDictionary({
 	'TO_ALL': 'Для всех подразделов',
 	'NEW_LANGUAGE_WARNING': 'Внимание! Добавление нового языка затронет все таблицы в базе данных. Дополнительные колонки будут добавлены для все полей помеченных как мультиязычные.',
 	'REGISTRATION_EMAIL_SENT': 'Cсылка для подтверждения регистрации отправлена на E-mail:',
+	'RESET_EMAIL_SENT': 'We sent link for reset password to E-mail: ',
 	'GO_TO_LOGIN': 'Go to login',
 	'REGISTER': 'Зарегистрироваться'
 });

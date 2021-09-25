@@ -52,6 +52,9 @@ class eventProcessingMixins extends BaseForm {
 
 	isListItem?: boolean;
 
+	/** dont close form after it is saved */
+	isPreventCloseFormAfterSave?: boolean;
+
 	constructor(props) {
 		super(props);
 

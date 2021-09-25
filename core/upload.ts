@@ -78,14 +78,14 @@ let allowedUpload;
 
 async function uploadFile(reqData, userSession) {
 	if(reqData.filename.indexOf('..') >= 0) {
-		throwError(L('UPL_ERROR_WFN'));
+		throwError(L('UPL_ERROR_WFN', userSession));
 	}
 	getFieldForUpload(reqData, userSession); //Check access to the field
 	if(!allowedUpload) {
 		allowedUpload = RegExp('\\.(' + ENV.ALLOWED_UPLOADS.join('|') + ')$', 'i');
 	}
 	if(!allowedUpload.test(reqData.filename)) {
-		throwError(L('FILE_TYPE_NA', reqData.filename));
+		throwError(L('FILE_TYPE_NA', userSession, reqData.filename));
 	}
 	const newFileName = (await getNewFileDir()) + '/' + reqData.filename;
 

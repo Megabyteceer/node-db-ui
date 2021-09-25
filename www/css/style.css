@@ -383,7 +383,7 @@ input[readonly] {
 .alert-bg-success {
 	background: var(--SUCCESS_ALERT_BG);
 	color: var(--EDIT_COLOR);
-	border: 1px solid var(--EDIT_COLOR);
+	border: 1px solid var(--BRAND_COLOR);
 	padding: 30px;
 	border-radius: 4px;
 }

@@ -22,6 +22,7 @@ interface Filters {
 }
 
 const throwError = (message: string): never => {
+	debugger;
 	throw new Error(message);
 }
 
@@ -65,6 +66,7 @@ interface UserSession {
 	/** not empty if user have multilingualEnabled */
 	multilingualEnabled?: BoolNum;
 	sessionToken?: string;
+	isGuest?: boolean;
 }
 
 interface EnumListItem {

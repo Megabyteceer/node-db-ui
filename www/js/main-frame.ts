@@ -62,15 +62,12 @@ class MainFrame extends Component<any, any> {
 
 	render() {
 		var debug = React.createElement(DebugPanel);
-		if(!ENV.nodesTree) {
-			return R.div(null, debug);
-		}
 		return R.div(null,
 			React.createElement(TopBar),
 			R.table({ className: "root-table" },
 				R.tbody(null,
 					R.tr(null,
-						React.createElement(LeftBar, { staticItems: ENV.rootItem.children }),
+						ENV.nodesTree ? React.createElement(LeftBar, { staticItems: ENV.rootItem.children }) : undefined,
 						R.td({ className: "stage-container" },
 							React.createElement(Stage)
 						)

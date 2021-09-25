@@ -71,7 +71,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		let fieldName = f.fieldName;
 
 		if((f.show & 1) === 0) {
-			if(data.hasOwnProperty(fieldName)) {
+			if(data.hasOwnProperty(fieldName) && !isAdmin(userSession)) {
 				throwError('Field ' + f['fieldName'] + ' hidden for update, but present in request.');
 			}
 		} else if(!f.noStore) {
@@ -159,7 +159,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 				/// #if DEBUG
 				if(f.clientOnly && data.hasOwnProperty('fieldName')) {
-					notificationOut(userSession, L('CLIENT_ONLY_ON_SERVER', fieldName));
+					notificationOut(userSession, L('CLIENT_ONLY_ON_SERVER', userSession, fieldName));
 				}
 				/// #endif
 			}
@@ -170,7 +170,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		} else {
 			let createHandlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeCreate, data, userSession);
 			if(node.noStoreForms) {
-				recId = createHandlerResult as unknown as number; // allows to return no store events results to the client.
+				recId = createHandlerResult as unknown as number || 1; // allows to return no store events results to the client.
 			}
 		}
 		if(!node.noStoreForms) {
@@ -286,19 +286,19 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			}
 			let qResult;
 			if(leastOneTablesFieldUpdated) {
+				/// #if DEBUG
+				for(let key in data) {
+					if(key !== 'status' && key !== '_organizationID' && key !== '_usersID') {
+						assert(node.fields.find(f => (f.fieldName === key) && !f.clientOnly), "Unknown field '" + key + "' in data set detected.");
+					}
+				}
+				/// #endif
 				qResult = (await mysqlExec(insQ.join('')));
 			}
 			/// #if DEBUG
 			else {
 				throwError('No fields updated in submitRecord.');
 			}
-
-			for(let key in data) {
-				if(key !== 'status' && key !== '_organizationID' && key !== '_usersID') {
-					assert(node.fields.find(f => (f.fieldName === key) && !f.clientOnly), "Unknown field '" + key + "' in data set detected.");
-				}
-			}
-
 			/// #endif
 
 			if(recId === null) {

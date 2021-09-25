@@ -1,20 +1,13 @@
-save button title in registration change to register
+регистрация и сброс проверены. Включить отправку ошибок и проверить истекшие ссылки. Как ошибки на клиент показываются.
 
-Forgot my password link to login form
+Табы рендерить вверху формы не слева
 
-Already have an account?  button to the end of register form link to login
-
-
-activateUser function via  __registration table
-
-/активация/логин/сброс формы нода 22
 
 после сохранения не попает историю а добавляет в конец
 
-найти все ссылки на /reset /login /register и заменить на показ форм]
+найти все ссылки на /reset /login /register и заменить на показ форм
 
 /#n/22  /#n/20/r/new/e    /#n/21
-
 
 
 
@@ -37,6 +30,8 @@ captcha
 Lookup nto1 and ntom to user gives access for user if field marked as access opener. Keep such a fields in privilegesFields property. Use it in messages.
 
 проверить все TODO
+
+удалить неиспользуемые переводы
 
 проверить сессии на глючность
 
