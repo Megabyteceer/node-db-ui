@@ -3,7 +3,6 @@ import { assert, BoolNum, Filters, NodeDesc, RecId, RecordData, throwError } fro
 import { LookupOneToManyFiled } from "../fields/field-15-one-to-many";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import type { FieldWrap } from "../fields/field-wrap";
-import { LeftBar } from "../left-bar";
 import { goBack, updateHashLocation } from "../utils";
 
 import type { List } from "./list";
@@ -59,7 +58,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	constructor(props: FormProps) {
 		super(props as T);
 		this.nodeId = this.props.nodeId || this.props.node.id;
-		this.recId = this.props.initialData ? this.props.initialData.id : this.props.recId;
+		this.recId = (this.props.initialData && this.props.initialData.hasOwnProperty('id')) ? this.props.initialData.id : this.props.recId;
 		this.filters = Object.assign({}, this.props.filters);
 		this.editable = this.props.editable;
 
@@ -103,9 +102,6 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		if(this.filters[name] !== val) {
 			this.filters[name] = val;
 			this.forceUpdate();
-			if(name === 'tab' && this.props.isRootForm) {
-				LeftBar.instance.refreshLeftBarActive();
-			}
 			updateHashLocation();
 			return true;
 		}

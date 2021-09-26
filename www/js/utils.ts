@@ -411,7 +411,7 @@ async function goToPageByHash() {
 		const form = Stage.allForms[level].form;
 
 
-		let isTheSame = formParams.nodeId === form.nodeId && formParams.recId === form.recId && Boolean(formParams.editable) === Boolean(form.editable);
+		let isTheSame = form && (formParams.nodeId === form.nodeId && formParams.recId === form.recId && Boolean(formParams.editable) === Boolean(form.editable));
 		if(isTheSame) {
 			if(JSON.stringify(form.filters) !== JSON.stringify(formParams.filters)) {
 				isTheSame = false;

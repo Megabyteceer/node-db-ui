@@ -1,6 +1,5 @@
 import { CLIENT_SIDE_FORM_EVENTS, consoleLog, Filters, getData, L } from "../utils";
 import { BaseForm } from "./base-form";
-import { LeftBar } from "../left-bar";
 import { assert, FieldDesc, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, RecordData } from "../bs-utils";
 import type { FieldWrap } from "../fields/field-wrap";
 
@@ -248,25 +247,7 @@ class eventProcessingMixins extends BaseForm {
 	}
 
 	refreshLeftBar() {
-		if(!this.isSubForm()) {
-			if(!Array.isArray(this.currentData) && this.currentData.id && !this.showAllTabs) {
-				var items = [this.currentData.name || L('NEW', this.props.node.singleName)];
-				var isDefault = true;
-				var fields = this.props.node.fields
-				for(var k in fields) {
-					var f = fields[k];
-					if((f.fieldType === FIELD_TYPE_TAB_17) && (f.maxLength === 0)) {//tab
-						if(this.isFieldVisible(f.fieldNamePure)) {
-							items.push({ icon: f.icon, name: f.name, field: f, form: this, id: false, isDocument: 1, isDefault: isDefault, tabId: f.id, tab: f.fieldName });
-							isDefault = false;
-						}
-					}
-				}
-				LeftBar.instance.setLeftBar(items);
-			} else {
-				LeftBar.instance.setLeftBar();
-			}
-		}
+		this.forceUpdate();
 	}
 
 	async setFieldValue(fieldName: string, val: any, isUserAction = false) {

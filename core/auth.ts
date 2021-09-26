@@ -134,7 +134,7 @@ async function activateUser(key, userSession: UserSession) {
 			return authorizeUserByID(userID);
 		}
 	}
-	throwError('REG_EXPIRED');
+	throwError(L('REG_EXPIRED', userSession));
 }
 
 async function resetPassword(key, userId, userSession) {

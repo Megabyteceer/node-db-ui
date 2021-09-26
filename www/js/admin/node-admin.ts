@@ -4,7 +4,7 @@ import { CLIENT_SIDE_FORM_EVENTS, getNode, getNodeData, keepInWindow, L, reloadL
 import { admin_editSource } from "./admin-event-editor";
 import { admin } from "./admin-utils";
 import { FieldAdmin } from "./field-admin";
-import { NodeDesc } from "../bs-utils";
+import { NodeDesc, NODE_ID_FIELDS, NODE_ID_NODES, NODE_ID_PRIVILEGES, NODE_ID_ROLES } from "../bs-utils";
 
 var showedNodeId;
 
@@ -202,7 +202,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable tool-btn admin-form-btn',
 						title: L('FLD_ADD'),
 						onClick: () => {
-							window.crudJs.Stage.showForm(6, 'new', {
+							window.crudJs.Stage.showForm(NODE_ID_FIELDS, 'new', {
 								node_fields_linker: {
 									id: node.id,
 									name: node.singleName
@@ -313,7 +313,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable tool-btn admin-form-btn',
 						title: L('EDIT_NODE'),
 						onClick: () => {
-							window.crudJs.Stage.showForm(4, nodeId, undefined, true, true, reloadLocation);
+							window.crudJs.Stage.showForm(NODE_ID_NODES, nodeId, undefined, true, true, reloadLocation);
 
 						}
 					},
@@ -323,7 +323,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable tool-btn admin-form-btn',
 						title: L('EDIT_ACCESS'),
 						onClick: () => {
-							window.crudJs.Stage.showForm(1, nodeId, undefined, true, true, reloadLocation);
+							window.crudJs.Stage.showForm(NODE_ID_PRIVILEGES, nodeId, undefined, true, true, reloadLocation);
 						}
 					},
 						renderIcon('user')
@@ -356,7 +356,7 @@ class NodeAdmin extends Component<any, any> {
 
 function createNodeForMenuItem(item) {
 	getNodeData(4, (item.isDocument ? item.parent : item.id) as number).then((data) => {
-		window.crudJs.Stage.showForm(4, 'new', {
+		window.crudJs.Stage.showForm(NODE_ID_NODES, 'new', {
 			prior: data.prior,
 			_nodesID: {
 				id: data.id,

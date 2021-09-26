@@ -168,16 +168,6 @@ function getNodesTree(userSession) { // get nodes tree visible to user
 	return nodesTreeCache.get(cacheKey);
 }
 
-async function reInitNodesData() {
-	if(metadataReloadingInterval) {
-		clearInterval(metadataReloadingInterval);
-		metadataReloadingInterval = null;
-	}
-	setMaintenanceMode(true);
-	await initNodesData();
-	setMaintenanceMode(false);
-}
-
 let metadataReloadingInterval;
 function reloadMetadataSchedule() {
 	if(!metadataReloadingInterval) {
@@ -188,7 +178,11 @@ function reloadMetadataSchedule() {
 
 function attemptToReloadMetadataSchedule() {
 	if(usersSessionsStartedCount() === 0) {
-		reInitNodesData().then(() => {
+		if(metadataReloadingInterval) {
+			clearInterval(metadataReloadingInterval);
+			metadataReloadingInterval = null;
+		}
+		initNodesData().then(() => {
 			setMaintenanceMode(false);
 		});
 	}
@@ -287,6 +281,9 @@ async function initNodesData() { // load whole nodes data in to memory
 	nodes = nodes_new;
 	nodesById = nodesById_new;
 	langs = langs_new;
+	if(langs.length > 1) {
+		options.langs = langs;
+	}
 	eventsHandlers = eventsHandlers_new;
 	clientSideNodes.clear();
 	nodesTreeCache.clear();

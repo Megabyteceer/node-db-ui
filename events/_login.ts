@@ -28,12 +28,12 @@ const handlers: NodeEventsHandlers = {
 					} else {
 						await mysqlExec("UPDATE _users SET mistakes=(mistakes-1) WHERE id='" + userID + "'");
 					}
-					throwError('WRONG_PASS');
+					throwError(L('WRONG_PASS', userSession));
 				}
 				return await authorizeUserByID(userID);
 			}
 		}
-		throwError('WRONG_PASS');
+		throwError(L('WRONG_PASS', userSession));
 	}
 }
 export default handlers;

@@ -26,26 +26,16 @@ function isMustBeExpanded(i) {
 
 const allGroups: BarItem[] = [];
 
-interface LeftBarItemData {
-
-}
+let activeItem;
 
 function isCurrentlyShowedLeftBarItem(item) {
 	const currentFormParameters = Stage.currentForm;
 	if(!currentFormParameters) {
 		return;
 	}
-	if(item.id === false) {
-		if(!currentFormParameters.filters || (Object.keys(currentFormParameters.filters).length === 0)) {
-			return item.isDefault;
-		}
-		return item.tab === currentFormParameters.filters.tab;
-	}
 
 	if(!item.staticLink) {
-		return currentFormParameters.nodeId === item.id &&
-			currentFormParameters.recId === item.recId &&
-			currentFormParameters.editable === item.editable;
+		return currentFormParameters.nodeId === item.id;
 	} else {
 		return isStrictlySelected(item);
 	}
@@ -67,6 +57,7 @@ class BarItem extends Component<any, any> {
 
 	constructor(props) {
 		super(props);
+		itemsById[props.item.id] = this;
 		this.state = {};
 		this.collapseOtherGroups = this.collapseOtherGroups.bind(this);
 	}
@@ -197,11 +188,8 @@ class BarItem extends Component<any, any> {
 		const isActive = isCurrentlyShowedLeftBarItem(item);
 
 		if(isActive) {
+			activeItem = this;
 			className += ' left-bar-item-active not-clickable';
-		}
-
-		if(item.tabId) {
-			className += ' left-bar-item-tab-' + item.tabId;
 		}
 
 		var caret;
@@ -238,12 +226,7 @@ class BarItem extends Component<any, any> {
 		const itemBody = R.div({
 			onClick: (ev) => {
 				if(!isMustBeExpandedVal) {
-					if(item.isDocument) {
-						if(item.id === false) {
-							Stage.rootForm.setFormFilter('tab', item.tab);
-							return;
-						}
-					} else {
+					if(!item.isDocument) {
 						this.toggle(ev);
 						return;
 					}
@@ -269,7 +252,6 @@ class BarItem extends Component<any, any> {
 			} else {
 				props.onClick = () => {
 					window.crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
-					this.collapseOtherGroups();
 				}
 			}
 			return R.a(props,
@@ -285,6 +267,8 @@ class BarItem extends Component<any, any> {
 		}
 	}
 }
+
+const itemsById = {};
 
 function renderItemsArray(itemsArray, level, item?) {
 	/// #if DEBUG
@@ -330,10 +314,25 @@ class LeftBar extends Component<any, any> {
 
 	refreshLeftBarActive() {
 		this.forceUpdate();
-	}
-
-	setLeftBar(menuData?: LeftBarItemData[]) {
-		this.setState({ items: menuData });
+		setTimeout(() => {
+			let item = activeItem.props.item;
+			activeItem.collapseOtherGroups();
+			while(item.parent) {
+				const itemElement: BarItem = itemsById[item.parent];
+				if(!itemElement) {
+					break;
+				}
+				item = itemElement.props.item;
+				if(!item.isDocument) {
+					const e = ReactDOM.findDOMNode(itemElement);
+					let group = e.querySelector('.left-bar-children');
+					if(group.style.maxHeight) {
+						group.style.maxHeight = '';
+						group.style.transform = 'scaleY(1)';
+					}
+				}
+			}
+		}, 10);
 	}
 
 	render() {
@@ -341,30 +340,15 @@ class LeftBar extends Component<any, any> {
 			return R.td(null);
 		}
 
-		var lines;
-		var staticLines;
-
-		staticLines = renderItemsArray(this.props.staticItems, 0);
-		if(this.state) {
-			lines = renderItemsArray(this.state.items, 0);
-			if(lines.length === 1) {
-				lines = undefined;
-			}
-		}
-
-		if(collapsed) {
-			lines = undefined;
-			staticLines = [];
-		}
+		var menuItems = collapsed ? [] : renderItemsArray(this.props.menuItems, 0);
 
 		if(collapsable) {
-			staticLines.unshift(R.div({ key: 'toggle-collapsing', className: "left-bar-collapse-button clickable", onClick: this.toggleCollapse }, renderIcon('bars')));
+			menuItems.unshift(R.div({ key: 'toggle-collapsing', className: "left-bar-collapse-button clickable", onClick: this.toggleCollapse }, renderIcon('bars')));
 		}
 
 		return R.td({ className: collapsed ? 'left-bar left-bar-collapsed' : 'left-bar ' },
 			R.div({ className: "left-bar-body" },
-				staticLines,
-				lines
+				menuItems
 			)
 		);
 	}

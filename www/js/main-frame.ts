@@ -67,7 +67,7 @@ class MainFrame extends Component<any, any> {
 			R.table({ className: "root-table" },
 				R.tbody(null,
 					R.tr(null,
-						ENV.nodesTree ? React.createElement(LeftBar, { staticItems: ENV.rootItem.children }) : undefined,
+						ENV.nodesTree ? React.createElement(LeftBar, { menuItems: ENV.rootItem.children }) : undefined,
 						R.td({ className: "stage-container" },
 							React.createElement(Stage)
 						)

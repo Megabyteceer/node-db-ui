@@ -6,7 +6,7 @@ import { ENV, MainFrame } from "./main-frame";
 import moment from "moment";
 import { Component } from "react";
 import { R } from "./r";
-import { NODE_ID_LOGIN, UserSession } from "./bs-utils";
+import { NODE_ID_LOGIN, NODE_ID_USERS, UserSession } from "./bs-utils";
 import { Stage } from "./stage";
 
 function setUserOrg(orgId) {
@@ -41,7 +41,6 @@ class User extends Component<any, any> {
 					User.instance.forceUpdate();
 				}
 				User.setUserData(data);
-				MainFrame.instance.reloadOptions();
 			})
 		});
 	}
@@ -115,10 +114,9 @@ class User extends Component<any, any> {
 				)
 			} else {
 				let imgUrl = idToImgURL(userData.avatar, 'avatar');
-				// TODO go to edit in showForm modal level
 				btn1 = R.a({
 					onClick: () => {
-						window.crudJs.Stage.showForm(5, userData.id, undefined, true);
+						window.crudJs.Stage.showForm(NODE_ID_USERS, userData.id, undefined, true, true);
 					}, title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn'
 				},
 					R.img({ className: 'user-avatar', src: imgUrl })

@@ -15,7 +15,7 @@ export default {
 
 		let pgs = await mysqlExec("SELECT id FROM _users WHERE _users.status=1 AND email='" + data.email + "' LIMIT 1") as mysqlRowsResult;
 		if(pgs.length > 0) {
-			throwError('EMAIL_ALREADY');
+			throwError(L('EMAIL_ALREADY', userSession));
 		} else {
 			let href = getServerHref() + '#n/' + NODE_ID_RESET + '/r/new/e/f/activationKey/' + encodeURIComponent(data.activationKey);
 			await mail_utf8(data.email, L('CONFIRM_EMAIL_SUBJ', userSession), L('CONFIRM_EMAIL', userSession, ENV.APP_TITLE) + href);

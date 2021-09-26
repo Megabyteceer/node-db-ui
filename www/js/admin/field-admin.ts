@@ -3,7 +3,7 @@ import { Component } from "react";
 import { CLIENT_SIDE_FORM_EVENTS, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from "../utils";
 import { admin_editSource } from "./admin-event-editor";
 import { admin } from "./admin-utils";
-import { FieldDesc, NodeDesc } from "../bs-utils";
+import { FieldDesc, NodeDesc, NODE_ID_FIELDS } from "../bs-utils";
 import { List } from "../forms/list";
 
 var showedFieldId;
@@ -140,7 +140,7 @@ class FieldAdmin extends Component<any, any> {
 						onClick: () => {
 
 							getNodeData(6, field.id).then((data) => {
-								window.crudJs.Stage.showForm(6, 'new', {
+								window.crudJs.Stage.showForm(NODE_ID_FIELDS, 'new', {
 									prior: data.prior,
 									node_fields_linker: {
 										id: node.id,
@@ -155,7 +155,7 @@ class FieldAdmin extends Component<any, any> {
 					),
 					R.button({
 						onClick: () => {
-							window.crudJs.Stage.showForm(6, field.id, undefined, true, true, reloadLocation);
+							window.crudJs.Stage.showForm(NODE_ID_FIELDS, field.id, undefined, true, true, reloadLocation);
 						},
 						className: 'clickable tool-btn admin-form-btn',
 						title: "Edit field properties"

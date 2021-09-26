@@ -15,7 +15,7 @@ export default {
 				const resetCode = randomBytes(24).toString('base64');
 				await mysqlExec("UPDATE _users SET reset_time=NOW(), resetCode = '" + resetCode + "' WHERE id=" + user.id + " LIMIT 1");
 				let href = getServerHref() + '#n/' + NODE_ID_RESET + '/r/new/e/f/userId/' + user.id + '/resetCode/' + encodeURIComponent(resetCode);
-				await mail_utf8(data.email, L('PASSWORD_RESET_EMAIL_HEADER', userSession), L('RESET_EML_BODY', userSession, href));
+				await mail_utf8(data.email, L('PASSWORD_RESET_EMAIL_HEADER', userSession), L('PASSWORD_RESET_EMAIL_BODY', userSession, href));
 			}
 		}
 	}

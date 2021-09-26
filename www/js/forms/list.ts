@@ -2,7 +2,6 @@ import { R } from "../r";
 import { FIELD_TYPE_NUMBER_2, FIELD_TYPE_LOOKUP_7, PRIVILEGES_CREATE, RecordsData } from "../bs-utils";
 import { FieldAdmin } from "../admin/field-admin";
 import { NodeAdmin } from "../admin/node-admin";
-import { LeftBar } from "../left-bar";
 import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
 import { FormFull } from "./form-full";
 import { FormItem } from "./form-item";
@@ -11,6 +10,7 @@ import React from "react";
 import { iAdmin } from "../user";
 import { RefToInput } from "../fields/base-field";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
+import { LeftBar } from "../left-bar";
 
 const sortByOrder = (a, b) => {
 	return a.order - b.order;
@@ -111,7 +111,7 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 
 		if(!this.isSubForm()) {
-			LeftBar.instance.setLeftBar();
+			LeftBar.instance.refreshLeftBarActive();
 		}
 	}
 

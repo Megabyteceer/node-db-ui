@@ -6,7 +6,7 @@ import { eventProcessingMixins } from "./event-processing-mixins";
 import { NodeAdmin } from "../admin/node-admin";
 import { LoadingIndicator } from "../loading-indicator";
 import { R } from "../r";
-import { FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_TAB_17, FIELD_TYPE_BOOL_5, FIELD_TYPE_LOOKUP_7, PRIVILEGES_PUBLISH, RecId, RecordData } from "../bs-utils";
+import { FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_TAB_17, FIELD_TYPE_BOOL_5, FIELD_TYPE_LOOKUP_7, PRIVILEGES_PUBLISH, RecId, RecordData, FieldDesc } from "../bs-utils";
 import React from "react";
 import { iAdmin } from "../user";
 import { HotkeyButton } from "../components/hotkey-button";
@@ -246,6 +246,10 @@ class FormFull extends eventProcessingMixins {
 		await callForEachField(this.fieldsRefs, data, 'beforeSave')
 		if(Object.keys(data).length > 0) {
 			let recId = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
+			if(!recId) {
+				// save error
+				return;
+			}
 			this.recId = recId;
 			if(!this.currentData.hasOwnProperty('id')) {
 				this.currentData.id = recId;
@@ -487,9 +491,25 @@ class FormFull extends eventProcessingMixins {
 				}
 			}
 		}
+
+		let tabsHeader;
+		if(tabs && tabs.length > 1) {
+			tabsHeader = R.div({ className: 'header-tabs' }, tabs.map((tab) => {
+				let tabField: FieldDesc = tab.props.field;
+				return R.span({
+					key: tabField.fieldName,
+					className: tab.props.visible ? 'tab-header-button tab-header-button-active not-clickable' : 'tab-header-button clickable',
+					onClick: tab.props.visible ? undefined : () => {
+						this.setFormFilter('tab', tabField.fieldName);
+					}
+				}, tabField.name);
+			}));
+		}
+
 		return R.div({ className },
 			nodeAdmin,
 			header,
+			tabsHeader,
 			tabs || fields,
 			R.div({ className: (this.state.footerHidden || this.props.inlineEditable) ? 'form-footer hidden' : 'form-footer' },
 				deleteButton,
