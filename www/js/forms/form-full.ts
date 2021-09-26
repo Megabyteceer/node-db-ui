@@ -498,7 +498,7 @@ class FormFull extends eventProcessingMixins {
 				let tabField: FieldDesc = tab.props.field;
 				return R.span({
 					key: tabField.fieldName,
-					className: tab.props.visible ? 'tab-header-button tab-header-button-active not-clickable' : 'tab-header-button clickable',
+					className: tab.props.visible ? 'tab-header-button tab-header-button-active not-clickable' : 'tab-header-button tab-header-button-inactive clickable',
 					onClick: tab.props.visible ? undefined : () => {
 						this.setFormFilter('tab', tabField.fieldName);
 					}

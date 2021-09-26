@@ -1159,6 +1159,35 @@ input[readonly] {
 	margin-left: 27%;
 }
 
+.form .header-tabs {
+	margin: 50px 0;
+	padding-left: 27%;
+	border-bottom: 1px solid #ccc;
+}
+
+.tab-header-button {
+	position: relative;
+	display: inline-block;
+	padding: 10px 30px 10px 20px;
+	margin-right: 2px;
+	border: 1px solid #ccc;
+	border-bottom: none;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 40px;
+	overflow: hidden;
+}
+
+.tab-header-button-active {
+	background: #fff;
+	bottom: -1px;
+	color: var(--BRAND_COLOR);
+}
+
+.tab-header-button-inactive {
+	background: #eee;
+	box-shadow: inset 0px -3px 5px -6px rgba(0, 0, 48, 0.51);
+}
+
 .form-item-row {
 	border-bottom: 1px solid #ddd;
 	padding: 4px 15px;

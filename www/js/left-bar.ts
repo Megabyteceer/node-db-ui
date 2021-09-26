@@ -324,8 +324,8 @@ class LeftBar extends Component<any, any> {
 				}
 				item = itemElement.props.item;
 				if(!item.isDocument) {
-					const e = ReactDOM.findDOMNode(itemElement);
-					let group = e.querySelector('.left-bar-children');
+					const e = ReactDOM.findDOMNode(itemElement) as HTMLDivElement;
+					let group = e.querySelector('.left-bar-children') as HTMLDivElement;
 					if(group.style.maxHeight) {
 						group.style.maxHeight = '';
 						group.style.transform = 'scaleY(1)';
