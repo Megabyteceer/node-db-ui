@@ -124,7 +124,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 			}
 			clientSideNodes.set(nodeId, ret);
 		} else {
-			throwError("Access to node " + nodeId + " is denied");
+			throwError("<access> Access to node " + nodeId + " is denied");
 		}
 	}
 	return clientSideNodes.get(nodeId);

@@ -856,7 +856,7 @@ async function draftRecord(nodeId, recId) {
 }
 
 function isAuthNeed(data) {
-	return (data.isGuest && isUserHaveRole(3)) || (data.error && (data.error.message === 'auth'));
+	return (data.isGuest && isUserHaveRole(3)) || (data.error && data.error.message && (data.error.message.startsWith('<access>')));
 }
 
 function serializeForm(form): FormData {
