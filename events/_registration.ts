@@ -2,7 +2,7 @@ import { generateSalt, getPasswordHash, getServerHref, mail_utf8 } from "../core
 import { L } from "../core/locale";
 import { mysqlExec, mysqlRowsResult } from "../core/mysql-connection";
 import ENV from "../ENV";
-import { NODE_ID_RESET, RecordDataWrite, throwError } from "../www/js/bs-utils";
+import { NODE_ID_RESET, RecordDataWrite, throwError } from "../www/src/bs-utils";
 import { randomBytes } from "crypto";
 import { UserSession } from "../core/auth";
 

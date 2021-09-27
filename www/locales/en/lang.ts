@@ -1,4 +1,4 @@
-import { initDictionary } from "../../js/utils";
+import { initDictionary } from "../../src/utils";
 
 const LANGS = {
 	'NO_TRANSLATION': 'No translation for key "%"',

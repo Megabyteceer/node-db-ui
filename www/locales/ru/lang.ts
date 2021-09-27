@@ -1,4 +1,4 @@
-import { initDictionary } from "../../js/utils";
+import { initDictionary } from "../../src/utils";
 
 initDictionary({
 	'NO_TRANSLATION': 'Не найден перевод для ключа "%"',

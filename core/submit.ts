@@ -2,7 +2,7 @@ import {
 	throwError, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_DATE_TIME_4, FIELD_TYPE_DATE_11, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_TAB_17, FIELD_TYPE_RICH_EDITOR_19,
 	FIELD_TYPE_PASSWORD_10, FIELD_TYPE_TEXT_1, FIELD_TYPE_PICTURE_12, FIELD_TYPE_FILE_21, FIELD_TYPE_BOOL_5, FIELD_TYPE_LOOKUP_1toN_15, PRIVILEGES_ANY,
 	PRIVILEGES_PUBLISH, assert, PRIVILEGES_CREATE, RecId, RecordDataWrite, VIEW_MASK_DROPDOWN_LOOKUP
-} from "../www/js/bs-utils";
+} from "../www/src/bs-utils";
 
 import ENV from "../ENV";
 import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHandlersNames } from "./describe-node";

@@ -1,5 +1,5 @@
 
-import { assert, throwError } from "../www/js/bs-utils";
+import { assert, throwError } from "../www/src/bs-utils";
 
 import { join } from "path";
 import * as fs from "fs";

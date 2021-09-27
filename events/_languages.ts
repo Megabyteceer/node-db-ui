@@ -1,7 +1,7 @@
 import { reloadMetadataSchedule } from "../core/describe-node";
 import { getRecords } from "../core/get-records";
 import { createFieldInTable } from "./_fields";
-import { NODE_ID_FIELDS, RecordData, RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";
+import { NODE_ID_FIELDS, RecordData, RecordDataWrite, throwError, UserSession } from "../www/src/bs-utils";
 import { shouldBeAdmin } from "../core/admin/admin";
 
 export default {

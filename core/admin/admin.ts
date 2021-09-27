@@ -2,7 +2,7 @@
 import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../describe-node";
 import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 
-import { ROLE_ID_SUPER_ADMIN, ROLE_ID_VIEW_ALL, throwError } from "../../www/js/bs-utils";
+import { ROLE_ID_SUPER_ADMIN, ROLE_ID_VIEW_ALL, throwError } from "../../www/src/bs-utils";
 import { join } from "path";
 import { readFileSync, writeFileSync } from "fs";
 import { isAdmin } from "../auth.js";
@@ -101,9 +101,9 @@ async function getClientEventHandler({
 	let node = getNodeDesc(nodeId);
 	if(fieldId) {
 		let field = getFieldDesc(fieldId);
-		return editFunction('../../../www/js/events/fields_events.ts', node.tableName + '_' + field.fieldName + '_' + handler);
+		return editFunction('../../../www/src/events/fields_events.ts', node.tableName + '_' + field.fieldName + '_' + handler);
 	} else {
-		return editFunction('../../../www/js/events/forms_events.ts', node.tableName + '_' + handler);
+		return editFunction('../../../www/src/events/forms_events.ts', node.tableName + '_' + handler);
 	}
 }
 

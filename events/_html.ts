@@ -2,7 +2,7 @@
 import { unlink, readFile, writeFile } from "fs";
 import { join } from "path";
 import { NodeEventsHandlers } from "../core/describe-node";
-import { RecordData, RecordDataWrite, UserSession } from "../www/js/bs-utils";
+import { RecordData, RecordDataWrite, UserSession } from "../www/src/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {

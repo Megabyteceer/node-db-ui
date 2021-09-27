@@ -3,7 +3,7 @@ import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import ENV from "../ENV";
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession, usersSessionsStartedCount } from "./auth";
-import { throwError, assert, FIELD_TYPE_ENUM_6, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_DROPDOWN_LOOKUP, GUEST_ROLE_ID, ADMIN_ROLE_ID, NODE_ID_NODES, NODE_ID_FIELDS, NODE_ID_FILTERS } from "../www/js/bs-utils";
+import { throwError, assert, FIELD_TYPE_ENUM_6, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_DROPDOWN_LOOKUP, GUEST_ROLE_ID, ADMIN_ROLE_ID, NODE_ID_NODES, NODE_ID_FIELDS, NODE_ID_FILTERS } from "../www/src/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 

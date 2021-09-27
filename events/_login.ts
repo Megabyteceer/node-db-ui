@@ -2,7 +2,7 @@ import { authorizeUserByID, getPasswordHash } from "../core/auth";
 import { L } from "../core/locale";
 import { mysqlExec, mysqlRowResultSingle } from "../core/mysql-connection";
 import { NodeEventsHandlers } from "../core/describe-node"
-import { RecordDataWrite, throwError, UserSession } from "../www/js/bs-utils";
+import { RecordDataWrite, throwError, UserSession } from "../www/src/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession): Promise<any> {

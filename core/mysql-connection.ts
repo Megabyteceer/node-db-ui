@@ -1,6 +1,6 @@
 
 /// #if DEBUG
-import { assert, getCurrentStack } from "../www/js/bs-utils";
+import { assert, getCurrentStack } from "../www/src/bs-utils";
 /// #endif
 
 import ENV from "../ENV";

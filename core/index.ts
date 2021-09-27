@@ -7,12 +7,12 @@ import { performance } from 'perf_hooks';
 import { getBoundary, parse } from 'parse-multipart-data';
 import './locale';
 import { mysqlDebug } from "./mysql-connection";
-import { GUEST_ROLE_ID } from "../www/js/bs-utils";
+import { GUEST_ROLE_ID } from "../www/src/bs-utils";
 
 const server = createServer();
 
 /// #if DEBUG
-import { DPromise } from "../www/js/debug-promise";
+import { DPromise } from "../www/src/debug-promise";
 //@ts-ignore
 global.Promise = DPromise;
 /// #endif

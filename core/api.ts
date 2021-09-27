@@ -1,4 +1,4 @@
-import { RecordsDataResponse, UserSession } from 'www/js/bs-utils';
+import { RecordsDataResponse, UserSession } from 'www/src/bs-utils';
 import { nodePrivileges, getClientEventHandler, clearCache } from './admin/admin';
 import { setCurrentOrg, setMultilingual, resetPassword, activateUser, killSession, getGuestUserForBrowserLanguage } from './auth';
 import { getNodeDesc, getNodesTree } from './describe-node';

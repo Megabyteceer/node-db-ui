@@ -23,7 +23,6 @@ import { Stage } from "./stage";
 import ReactDOM from 'react-dom';
 import React from 'react';
 
-
 declare global {
 	interface Window {
 		crudJs: { // helps to avoid circular imports

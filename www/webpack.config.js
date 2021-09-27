@@ -3,7 +3,7 @@ var path = require('path');
 module.exports = {
     mode: 'development',
     entry: {
-        main: './js/index.ts',
+        main: './src/index.ts',
         "rich-editor": {
             //dependOn: 'main',
             import: './rich-editor/rich-editor-main.ts',
