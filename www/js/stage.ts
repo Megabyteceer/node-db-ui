@@ -78,7 +78,7 @@ class Stage extends Component<any, any> {
 			e.formContainer = null;
 
 			formContainer.style.transform = 'scale(0.01)';
-			e.container.style.backgroundColor = '#00112200'
+			e.container.style.backgroundColor = '#00112200';
 			setTimeout(() => {
 				ReactDOM.render(React.createElement(React.Fragment), formContainer);
 				formContainer.remove();

@@ -446,9 +446,7 @@ async function goToPageByHash() {
 
 function goBack(isAfterDelete?: boolean) {
 	const currentFormParameters = window.crudJs.Stage.currentForm;
-	if(window.crudJs.Stage.goBackIfModal()) {
-		return;
-	}
+
 	if(isLitePage() && window.history.length < 2) {
 		window.close();
 	} else if(!isAfterDelete && window.history.length) {

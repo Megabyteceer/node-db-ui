@@ -1,6 +1,4 @@
 
-Remember if modal form pushed in history and pop history on closing of this modal
-
 закомитить все и Проверить сохр енума заменив колбеки форм пустыми функциями.
 
 закомитить все и переименовать js папки в src на клиенте и сервере
