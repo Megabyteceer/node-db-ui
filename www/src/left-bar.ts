@@ -250,9 +250,9 @@ class BarItem extends Component<any, any> {
 				///@ts-ignore
 				props.href = item.staticLink;
 			} else {
-				props.onClick = () => {
+				props.onClick = (isActive ? undefined : () => {
 					window.crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
-				}
+				})
 			}
 			return R.a(props,
 				adminControl,
