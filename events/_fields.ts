@@ -205,7 +205,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 			};
 			const records = await getRecords(6, PRIVILEGES_VIEW_ORG, undefined, undefined, filters);
 			if(records.total) {
-				data.icon = records.items[0].fieldName;
+				data.lookupIcon = records.items[0].fieldName;
 			}
 		}
 	}

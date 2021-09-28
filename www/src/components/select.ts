@@ -109,7 +109,7 @@ class Select extends Component<any, any> {
 			className: 'select-control-wrapper'
 		},
 			R.div({
-				className: this.props.disabled ? 'not-clickable disabled select-control' : 'clickable select-control',
+				className: (this.props.disabled || this.props.readOnly) ? 'not-clickable disabled select-control' : 'clickable select-control',
 				onClick: this.toggle
 			},
 				curVal || '\xa0',

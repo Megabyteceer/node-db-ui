@@ -75,13 +75,13 @@ registerFieldClass(FIELD_TYPE_LOOKUP_7, class LookupManyToOneFiled extends field
 
 				this.toggleList();
 			}
-			if(!this.state.value || (this.state.value.id !== recordData.id) || (this.state.value.name !== recordData.name) || (this.state.value.icon !== recordData[this.props.field.icon])) {
+			if(!this.state.value || (this.state.value.id !== recordData.id) || (this.state.value.name !== recordData.name) || (this.state.value.icon !== recordData[this.props.field.lookupIcon])) {
 				var newVal: any = {
 					id: recordData.id,
 					name: recordData.name
 				};
-				if(this.props.field.icon) {
-					newVal.icon = recordData[this.props.field.icon];
+				if(this.props.field.lookupIcon) {
+					newVal.icon = recordData[this.props.field.lookupIcon];
 				}
 				this.setValue(newVal);
 				this.props.wrapper.valueListener(newVal, false, this);
@@ -147,10 +147,10 @@ registerFieldClass(FIELD_TYPE_LOOKUP_7, class LookupManyToOneFiled extends field
 		var value = this.state.value;
 		var iconPic;
 		if(value) {
-			if(field.icon && (!this.props.hideIcon) && value.icon) {
+			if(field.lookupIcon && (!this.props.hideIcon) && value.icon) {
 				iconPic = R.img({
 					className: 'field-lookup-icon-pic',
-					src: idToImgURL(value.icon, field.icon)
+					src: idToImgURL(value.icon, field.lookupIcon)
 				});
 			} else {
 				iconPic = R.div({

@@ -18,7 +18,7 @@ async function nodePrivileges(reqData, userSession) {
 		return 1;
 	} else { //get node privileges
 		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _role_privileges WHERE (nodeID=' + nodeId + ') AND (_roles.id=roleID) LIMIT 1) AS privileges FROM _roles WHERE id <> ' + ROLE_ID_SUPER_ADMIN + ' AND id <> ' + ROLE_ID_VIEW_ALL + ' AND status = 1');
-		return { privileges, isDocument: getNodeDesc(nodeId).isDocument }
+		return { privileges, nodeType: getNodeDesc(nodeId).nodeType }
 	}
 }
 
@@ -60,7 +60,7 @@ function editFunction(fileName, functionName) {
 
 	let text = readFileSync(fileName, 'utf8').replaceAll("\r\n", "\n");
 
-	const functionSearchPattern = new RegExp('\\s*' + functionName + '\\(', 'gi');
+	const functionSearchPattern = new RegExp('\\s+' + functionName + '\\(', 'gi');
 	const c1 = (text.match(functionSearchPattern) || []).length;
 
 	if(c1 > 1) {

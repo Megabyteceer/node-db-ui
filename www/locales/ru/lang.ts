@@ -22,7 +22,6 @@ initDictionary({
 	'SEARCH': 'Поиск',
 	'CONTENT': 'Содержимое',
 	'LOOKUP_NAME_NOT_UNIQUE': 'Имя ссылочного поля N к M должно быть глобально уникальным.',
-	'FLD_DESC': 'Описание поля',
 	/// #if DEBUG
 	'EMPTY_SECTION': 'Пустой раздел (клик чтобы добавить)',
 	/// #endif
@@ -102,5 +101,6 @@ initDictionary({
 	'REGISTRATION_EMAIL_SENT': 'Cсылка для подтверждения регистрации отправлена на E-mail:',
 	'RESET_EMAIL_SENT': 'We sent link for reset password to E-mail: ',
 	'GO_TO_LOGIN': 'Go to login',
-	'REGISTER': 'Зарегистрироваться'
+	'REGISTER': 'Зарегистрироваться',
+	'REACT_CLASS_NAME': 'Имя React класса'
 });

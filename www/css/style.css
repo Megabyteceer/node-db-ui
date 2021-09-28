@@ -8,6 +8,10 @@ html {
 	line-height: normal;
 }
 
+body {
+	overflow-y: scroll;
+}
+
 hr {
 	border: 0;
 	border-bottom: 1px solid #aaa;
@@ -1168,12 +1172,12 @@ input[readonly] {
 .tab-header-button {
 	position: relative;
 	display: inline-block;
-	padding: 10px 30px 10px 20px;
+	padding: 10px 24px 10px 20px;
 	margin-right: 2px;
 	border: 1px solid #ccc;
 	border-bottom: none;
 	border-top-left-radius: 10px;
-	border-top-right-radius: 40px;
+	border-top-right-radius: 20px 40px;
 	overflow: hidden;
 }
 

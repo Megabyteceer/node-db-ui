@@ -1,4 +1,4 @@
-import { FIELD_TYPE_DATE_11, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_COLOR_20, FIELD_TYPE_FILE_21, FIELD_TYPE_DATE_TIME_4, FIELD_TYPE_BOOL_5, FIELD_TYPE_ENUM_6, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, NODE_ID_LOGIN, NODE_ID_REGISTER, NODE_ID_RESET } from "../bs-utils";
+import { FIELD_TYPE_DATE_11, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_COLOR_20, FIELD_TYPE_FILE_21, FIELD_TYPE_DATE_TIME_4, FIELD_TYPE_BOOL_5, FIELD_TYPE_ENUM_6, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, NODE_ID_LOGIN, NODE_ID_REGISTER, NODE_ID_RESET, NODE_TYPE } from "../bs-utils";
 import ReactDOM from "react-dom";
 
 import { L } from "../utils";
@@ -30,32 +30,37 @@ class FieldsEvents extends FormEvents {
 		this.checkPasswordConfirmation();
 	}
 
-	_nodes_isDocument_onChange() {
-		if(this.fieldValue("isDocument")) {
-			this.showField("tableName", "creationName", "singleName",
-				"captcha", "draftable", "recPerPage");
-			if(this.hasField('creationName_en')) {
-				this.showField("creationName_en", "singleName_en");
-			}
-			if(!this.isNewRecord) {
-				this.showField("_fieldsID", "reverse");
-			} else {
-				this.hideField("_fieldsID", "reverse");
-			}
+	_nodes_nodeType_onChange() {
 
-			if(!this.isUpdateRecord) {
-				this.showField("addCreatedOnFiled", "createUserFld", "addCreatedByFiled", "staticLink",
-					"noStoreForms");
-			}
+		const nodeType = this.fieldValue("nodeType");
 
+		if(nodeType === NODE_TYPE.DOCUMENT) {
+			this.showField('creationName', 'singleName', 'captcha',
+				'reverse', 'draftable', 'addCreatedOnFiled', 'addCreatorUserFld', 'addCreatedByFiled',
+				'storeForms', 'recPerPage');
+			this.makeFieldRequired('singleName');
 		} else {
-			this.hideField("tableName", "creationName", "singleName",
-				"captcha", "_fieldsID", "reverse", "draftable", "addCreatedOnFiled",
-				"createUserFld", "addCreatedByFiled", "staticLink", "noStoreForms", "recPerPage");
-			if(this.hasField('creationName_en')) {
-				this.hideField("creationName_en", "singleName_en");
-			}
+			this.hideField('creationName', 'singleName', 'captcha',
+				'reverse', 'draftable', 'addCreatedOnFiled', 'addCreatorUserFld', 'addCreatedByFiled',
+				'storeForms', 'recPerPage');
+			this.makeFieldRequired('singleName', false);
 		}
+
+		if(nodeType === NODE_TYPE.DOCUMENT || nodeType === NODE_TYPE.REACT_CLASS) {
+			this.makeFieldRequired('tableName');
+			this.showField('tableName');
+		} else {
+			this.hideField('tableName');
+			this.makeFieldRequired('tableName', false);
+		}
+
+		if(nodeType === NODE_TYPE.REACT_CLASS) {
+			this.setFieldLabel('tableName', L("REACT_CLASS_NAME"));
+		} else {
+			this.setFieldLabel('tableName');
+		}
+
+		this._nodes_recalculateFieldsVisibility();
 	}
 
 	_fields_fieldName_onChange() {
@@ -66,8 +71,8 @@ class FieldsEvents extends FormEvents {
 	_fields_fieldType_onChange() {
 		const fieldType = this.fieldValue("fieldType");
 		this.showField();
-		this.setFieldLabel("description", L("FLD_DESC"));
-		this.hideField("selectFieldName", "show", "nodeRef", "enum", "width", "height", "icon");
+		this.setFieldLabel("description");
+		this.hideField("selectFieldName", "show", "nodeRef", "enum", "width", "height", "lookupIcon");
 		this.enableField("visibility_list");
 		if(fieldType === FIELD_TYPE_LOOKUP_NtoM_14) {
 			this.getField('nodeRef').setLookupFilter('excludeIDs', [this.fieldValue("node_fields_linker").id]);
@@ -216,15 +221,6 @@ class FieldsEvents extends FormEvents {
 		this.removeWrongCharactersInField('tableName');
 	}
 
-	_nodes_staticLink_onChange() {
-		if(this.fieldValue('staticLink')) {
-			this.disableField('noStoreForms');
-			this.setFieldValue('noStoreForms', 1);
-		} else if(!this.isUpdateRecord) {
-			this.enableField('noStoreForms');
-		}
-	}
-
 	_registration_passwordConfirm_onChange() {
 		this.checkPasswordConfirmation();
 	}
@@ -239,6 +235,14 @@ class FieldsEvents extends FormEvents {
 
 	_login_forgotPasswordButton_onChange() {
 		window.crudJs.Stage.showForm(NODE_ID_RESET, 'new', undefined, true);
+	}
+
+	_nodes_storeForms_onChange() {
+		if(this.fieldValue('storeForms')) {
+			this.enableField('tableName');
+		} else {
+			this.disableField('tableName');
+		}
 	}
 
 	//_insertNewHandlersHere_

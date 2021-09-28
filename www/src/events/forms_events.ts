@@ -1,6 +1,6 @@
 import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation, getNode, myAlert, getData } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FIELD_TYPE_PASSWORD_10, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RATING_16, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_NUMBER_2, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession, NODE_ID_USERS } from "../bs-utils";
+import { FIELD_TYPE_PASSWORD_10, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RATING_16, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_NUMBER_2, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession, NODE_ID_USERS, NODE_TYPE } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -147,28 +147,51 @@ class FormEvents extends FormFull {
 		this.getField("values").inlineEditable();
 	}
 
+	_nodes_recalculateFieldsVisibility() {
+		if(!this.isNewRecord && (this.fieldValue("nodeType") === NODE_TYPE.DOCUMENT)) {
+			this.showField("_fieldsID");
+			this.showField("reverse");
+			this.showField("defaultFilterId");
+		} else {
+			this.hideField("_fieldsID");
+			this.hideField("reverse");
+			this.hideField("defaultFilterId");
+		}
+
+		if(this.fieldValue('nodeType') === NODE_TYPE.STATIC_LINK) {
+			this.showField('staticLink');
+		} else {
+			this.hideField('staticLink');
+		}
+	}
+
 	_nodes_onLoad() {
+		if(this.isNewRecord || (this.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT)) {
+			this.hideField('t_fields');
+		}
+
 		makeIconSelectionField(this, 'icon');
 
-		if(!this.fieldValue('isDocument')) {
+		if(this.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
 			this.hideField('defaultFilterId');
 		} else if(this.isUpdateRecord) {
 			this.isNewRecord
 			this.addLookupFilters('defaultFilterId', {
 				_nodesID: this.recId
 			});
+		} else {
+			this.setFieldValue('storeForms', 1);
 		}
 
+		this._nodes_recalculateFieldsVisibility();
+
 		if(this.isUpdateRecord) {
-			this.disableField('isDocument');
-			this.disableField('noStoreForms');
+			this.disableField('nodeType');
+			this.disableField('storeForms');
 			this.disableField('tableName');
-			this.hideField('addCreatedByFiled');
-			this.hideField('addCreatedOnFiled');
-			this.hideField('createUserFld');
-			if(!this.fieldValue('isDocument')) {
-				this.hideField('t_fields');
-			}
+			this.disableField('addCreatedByFiled');
+			this.disableField('addCreatedOnFiled');
+			this.disableField('addCreatorUserFld');
 		}
 
 		if(this.isNewRecord) {
@@ -180,7 +203,7 @@ class FormEvents extends FormFull {
 			this.addLookupFilters('_nodesID', 'excludeIDs', [this.recId]);
 			this.addLookupFilters('node_fields', 'n', 200);
 		}
-		this.addLookupFilters('_nodesID', 'isDocument', 0);
+		this.addLookupFilters('_nodesID', 'nodeType', NODE_TYPE.SECTION);
 		this.addLookupFilters('_fieldsID', {
 			node_fields_linker: this.recId,
 			forSearch: 1
@@ -189,9 +212,10 @@ class FormEvents extends FormFull {
 
 	_nodes_onSave() {
 
-		if(!this.fieldValue("isDocument")) {
+		if(this.fieldValue("nodeType") !== NODE_TYPE.DOCUMENT) {
 			var name = this.fieldValue("name");
 			this.setFieldValue("singleName", name);
+			this.setFieldValue("storeForms", 0);
 		}
 		else {
 			if(/[^a-zA-Z_0-9]/.test(this.fieldValue('tableName'))) {
@@ -203,16 +227,21 @@ class FormEvents extends FormFull {
 			}
 		}
 
+		if(!this.fieldValue('storeForms')) {
+			this.setFieldValue('tableName', '');
+		}
 	}
 
 	_fieldsNameIsBad: boolean;
 
 	async _fields_onLoad() {
+		makeIconSelectionField(this, 'icon');
+
 		let parentNodeVal = this.fieldValue('node_fields_linker');
 		let parentNode: NodeDesc;
 		if(parentNodeVal) {
 			parentNode = await getNode(parentNodeVal.id);
-			if(parentNode.noStoreForms) {
+			if(!parentNode.storeForms) {
 				this.setFieldValue('noStore', 1);
 				this.disableField('noStore');
 			}
@@ -274,11 +303,11 @@ class FormEvents extends FormFull {
 		}
 
 		this.addLookupFilters('node_fields_linker', {
-			isDocument: 1
+			nodeType: 2
 		});
 		this.addLookupFilters('nodeRef', {
-			isDocument: 1,
-			noStoreForms: 0
+			nodeType: 2,
+			storeForms: 1
 		});
 		this.hideField("prior");
 		this.hideField("show");

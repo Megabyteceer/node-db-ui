@@ -4,7 +4,7 @@ import { CLIENT_SIDE_FORM_EVENTS, getNode, getNodeData, keepInWindow, L, reloadL
 import { admin_editSource } from "./admin-event-editor";
 import { admin } from "./admin-utils";
 import { FieldAdmin } from "./field-admin";
-import { NodeDesc, NODE_ID_FIELDS, NODE_ID_NODES, NODE_ID_PRIVILEGES, NODE_ID_ROLES } from "../bs-utils";
+import { NodeDesc, NODE_ID_FIELDS, NODE_ID_NODES, NODE_ID_PRIVILEGES, NODE_ID_ROLES, NODE_TYPE } from "../bs-utils";
 
 var showedNodeId;
 
@@ -355,7 +355,7 @@ class NodeAdmin extends Component<any, any> {
 }
 
 function createNodeForMenuItem(item) {
-	getNodeData(4, (item.isDocument ? item.parent : item.id) as number).then((data) => {
+	getNodeData(4, ((item.nodeType === NODE_TYPE.DOCUMENT) ? item.parent : item.id) as number).then((data) => {
 		window.crudJs.Stage.showForm(NODE_ID_NODES, 'new', {
 			prior: data.prior,
 			_nodesID: {

@@ -3,7 +3,7 @@ import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import ENV from "../ENV";
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession, usersSessionsStartedCount } from "./auth";
-import { throwError, assert, FIELD_TYPE_ENUM_6, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_DROPDOWN_LOOKUP, GUEST_ROLE_ID, ADMIN_ROLE_ID, NODE_ID_NODES, NODE_ID_FIELDS, NODE_ID_FILTERS } from "../www/src/bs-utils";
+import { throwError, assert, FIELD_TYPE_ENUM_6, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_DROPDOWN_LOOKUP, GUEST_ROLE_ID, ADMIN_ROLE_ID, NODE_ID_NODES, NODE_ID_FIELDS, NODE_ID_FILTERS, NODE_TYPE } from "../www/src/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
@@ -41,13 +41,15 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				privileges,
 				matchName: srcNode["name" + landQ],
 				description: srcNode["description" + landQ],
-				isDocument: srcNode.isDocument
+				nodeType: srcNode.nodeType
 			}
-			if(srcNode.isDocument) {
+			if(srcNode.nodeType === NODE_TYPE.REACT_CLASS) {
+				ret.tableName = srcNode.tableName;
+			} else if(srcNode.nodeType === NODE_TYPE.DOCUMENT) {
 
 				ret.reverse = srcNode.reverse;
 				ret.creationName = srcNode["creationName" + landQ];
-				ret.noStoreForms = srcNode.noStoreForms;
+				ret.storeForms = srcNode.storeForms;
 				ret.staticLink = srcNode.staticLink;
 				ret.tableName = srcNode.tableName;
 				ret.draftable = srcNode.draftable;
@@ -85,7 +87,8 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 						noStore: srcField.noStore,
 						nodeRef: srcField.nodeRef,
 						clientOnly: srcField.clientOnly,
-						icon: srcField.icon
+						icon: srcField.icon,
+						lookupIcon: srcField.lookupIcon
 					};
 
 					if(field.enum) {
@@ -156,7 +159,7 @@ function getNodesTree(userSession) { // get nodes tree visible to user
 					icon: nodeSrc.icon,
 					id: nodeSrc.id,
 					name: nodeSrc['name' + langId],
-					isDocument: nodeSrc.isDocument,
+					nodeType: nodeSrc.nodeType,
 					parent: nodeSrc._nodesID,
 					privileges,
 					staticLink: nodeSrc.staticLink
@@ -241,7 +244,7 @@ async function initNodesData() { // load whole nodes data in to memory
 		nodeData.privileges = 65535;
 		let sortField = nodeData._fieldsID;
 
-		if(nodeData.isDocument) {
+		if(nodeData.nodeType === NODE_TYPE.DOCUMENT) {
 			let query = "SELECT * FROM _fields WHERE node_fields_linker=" + nodeData.id + " AND status = 1 ORDER BY prior";
 			let fields = await mysqlExec(query) as mysqlRowsResult;
 			for(let field of fields) {

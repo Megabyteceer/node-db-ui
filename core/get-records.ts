@@ -27,11 +27,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 
 	let node = getNodeDesc(nodeId, userSession);
 
-	if(!node.isDocument) {
-		throwError("nodeId " + nodeId + " is not a document.");
-	}
-
-	if(node.noStoreForms) {
+	if(!node.storeForms) {
 		return null;
 	}
 
@@ -58,14 +54,14 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 				selQ.push(tableName, '.rates_1,', tableName, '.rates_2,', tableName, '.rates_3,', tableName, '.rates_4,', tableName, '.rates_5,(SELECT rate FROM ', tableName, '_rates WHERE _recID=', tableName, '.id AND _usersID=', userSession.id as unknown as string, ' LIMIT 1) AS rates_y');
 			} else if(fieldType === FIELD_TYPE_LOOKUP_NtoM_14) {//n2m
 				let tblTmpName = 't' + f.id;
-				if(f.icon) {
-					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name,'␞',", f.icon, ") SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
+				if(f.lookupIcon) {
+					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name,'␞',", f.lookupIcon, ") SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
 				} else {
 					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name) SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
 				}
 			} else if(fieldType === FIELD_TYPE_LOOKUP_7) {//n21
-				if(f.icon) {
-					selQ.push("(SELECT CONCAT(id,'␞',name,'␞',", f.icon, ") FROM ", selectFieldName, " AS t", fieldName, " WHERE ", tableName, ".", fieldName, "=t", fieldName, ".id LIMIT 1) AS `", fieldName, "`");
+				if(f.lookupIcon) {
+					selQ.push("(SELECT CONCAT(id,'␞',name,'␞',", f.lookupIcon, ") FROM ", selectFieldName, " AS t", fieldName, " WHERE ", tableName, ".", fieldName, "=t", fieldName, ".id LIMIT 1) AS `", fieldName, "`");
 				} else {
 					selQ.push("(SELECT CONCAT(id,'␞',name) FROM ", selectFieldName + " AS t", fieldName, " WHERE ", tableName, ".", fieldName, "=t", fieldName, ".id LIMIT 1) AS `", fieldName, "`");
 				}
@@ -314,7 +310,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 							let i = 1;
 							let l = a.length;
 							while(i < l) {
-								if(f.icon) {
+								if(f.lookupIcon) {
 									val.push({ id: parseInt(a[i - 1]), name: a[i], icon: a[i + 1] });
 									i += 3;
 								} else {
@@ -327,7 +323,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 					} else if(fieldType === FIELD_TYPE_LOOKUP_7) { //n21
 						if(pag[fieldName]) {
 							let a = pag[fieldName].split('␞');
-							if(f.icon) {
+							if(f.lookupIcon) {
 								pag[fieldName] = { id: parseInt(a[0]), name: a[1], icon: a[2] };
 							} else {
 								pag[fieldName] = { id: parseInt(a[0]), name: a[1] };

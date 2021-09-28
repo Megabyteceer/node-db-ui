@@ -47,6 +47,10 @@ registerFieldClass(FIELD_TYPE_TEXT_1, class TextField extends BaseField {
 				}
 			}
 
+			if(this.props.fieldDisabled) {
+				className += ' not-clickable'
+			}
+
 			var inputsProps = {
 				className,
 				autoFocus: this.isAutoFocus(),

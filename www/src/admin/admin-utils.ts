@@ -178,7 +178,7 @@ class admin {
 
 	static toggleAdminUI() {
 		if(adminOn) {
-			styleSheet.insertRule('.admin-control{display:none;}', 0);
+			styleSheet.insertRule('.admin-control{display:none !important;}', 0);
 		} else {
 			if(styleSheet.rules.length) {
 				styleSheet.removeRule(0);
@@ -221,7 +221,7 @@ function makeIconSelectionField(form, fieldName) {
 	const input = formElement.querySelector('.field-container-id-' + form.getField(fieldName).props.field.id + ' input') as HTMLInputElement;
 	input.style.display = 'none';
 	const selectContainer = document.createElement('SPAN');
-	selectContainer.id = "icons-selector";
+	selectContainer.className = "icons-selector";
 	input.after(selectContainer);
 	setTimeout(() =>
 		ReactDOM.render(

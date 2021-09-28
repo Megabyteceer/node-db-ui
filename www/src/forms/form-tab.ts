@@ -35,7 +35,7 @@ class FormTab extends Component<any, any> {
 		}
 
 		return R.div({ className },
-			(this.props.highlightFrame ? React.createElement(FieldAdmin, { field: this.props.field, form: this.props.form, x: 13 }) : ''),
+			(this.props.highlightFrame ? React.createElement(FieldAdmin, { field: this.props.field, form: this.props.form }) : ''),
 			this.props.fields);
 	}
 }

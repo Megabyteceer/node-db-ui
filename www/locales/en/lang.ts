@@ -22,7 +22,6 @@ const LANGS = {
 	'SEARCH': 'Search',
 	'CONTENT': 'Content',
 	'LOOKUP_NAME_NOT_UNIQUE': 'Lookup N to M should have globally unique name.',
-	'FLD_DESC': 'Field description',
 	/// #if DEBUG
 	'EMPTY_SECTION': 'Empty section (click to add)',
 	/// #endif
@@ -102,7 +101,8 @@ const LANGS = {
 	'REGISTRATION_EMAIL_SENT': 'We sent confirmation link to E-mail: ',
 	'RESET_EMAIL_SENT': 'We sent link for reset password to E-mail: ',
 	'GO_TO_LOGIN': 'Go to login',
-	'REGISTER': 'Register'
+	'REGISTER': 'Register',
+	'REACT_CLASS_NAME': 'React Class Name'
 };
 
 initDictionary(LANGS);

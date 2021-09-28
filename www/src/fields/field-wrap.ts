@@ -1,4 +1,4 @@
-import { FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_BUTTON_18, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8 } from "../bs-utils";
+import { FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_BUTTON_18, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, FieldDesc } from "../bs-utils";
 import { R } from "../r";
 import React, { Component } from "react";
 import { FieldAdmin } from "../admin/field-admin";
@@ -55,6 +55,11 @@ class FieldWrap extends Component<FieldProps, any> {
 				}
 			}
 		}
+	}
+
+	makeFieldRequired(requirement) {
+		this.props.field.requirement = requirement;
+		this.forceUpdate();
 	}
 
 	getBackupData() {
@@ -256,7 +261,7 @@ class FieldWrap extends Component<FieldProps, any> {
 
 		var fieldAdmin;
 		if(iAdmin() && !field.lang && (!this.props.isCompact || this.props.parentCompactAreaName)) {
-			fieldAdmin = React.createElement(FieldAdmin, { field, form: this.props.form, x: -10 });
+			fieldAdmin = React.createElement(FieldAdmin, { field, form: this.props.form });
 		}
 
 		let className = domId + ' field-wrap field-container-type-' + field.fieldType + ' field-container-name-' + field.fieldName;
@@ -355,7 +360,7 @@ class FieldHelp extends Component<any, any> {
 
 class FieldLabel extends Component<any, any> {
 	render() {
-		var field = this.props.field;
+		var field: FieldDesc = this.props.field;
 		var star;
 		if(this.props.isEdit && field.requirement) {
 			star = R.span({ className: 'field-wrap-required-star' }, '*');
@@ -383,6 +388,7 @@ class FieldLabel extends Component<any, any> {
 
 		return R.div({ className: 'field-wrap-label' },
 			body,
+			renderIcon(field.icon),
 			star,
 			alertBody
 		);

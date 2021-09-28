@@ -88,9 +88,9 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 					}
 				}
 
-				if(f.unique) {
+				if(f.unique && data[fieldName]) {
 					if(!(await uniqueCheckInner(tableName, fieldName, data[fieldName], recId))) {
-						throwError('Record ' + f.name + ' with value "' + data[fieldName] + '" already exist.');
+						throwError('Record with "' + f.fieldName + '" equal to value "' + data[fieldName] + '" is already exist.');
 					}
 				}
 			}
@@ -169,11 +169,11 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeUpdate, currentData, data, userSession);
 		} else {
 			let createHandlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeCreate, data, userSession);
-			if(node.noStoreForms) {
+			if(!node.storeForms) {
 				recId = createHandlerResult as unknown as number || 1; // allows to return no store events results to the client.
 			}
 		}
-		if(!node.noStoreForms) {
+		if(node.storeForms) {
 
 			let needProcess_n2m;
 			for(let f of node.fields) {

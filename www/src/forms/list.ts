@@ -331,7 +331,7 @@ class List extends BaseForm<ListProps, ListState> {
 
 		var nodeAdmin;
 		if(iAdmin()) {
-			nodeAdmin = React.createElement(NodeAdmin, { form: this, x: 400, y: 0 });
+			nodeAdmin = React.createElement(NodeAdmin, { form: this });
 		}
 
 		var createBtn;
@@ -438,7 +438,7 @@ class List extends BaseForm<ListProps, ListState> {
 
 					var fieldAdmin;
 					if(iAdmin()) {
-						fieldAdmin = React.createElement(FieldAdmin, { field, form: this, x: 80 });
+						fieldAdmin = React.createElement(FieldAdmin, { field, form: this });
 					}
 
 					var rowHeader;
@@ -566,7 +566,7 @@ class List extends BaseForm<ListProps, ListState> {
 
 		var nodeAdmin;
 		if(iAdmin()) {
-			nodeAdmin = React.createElement(NodeAdmin, { form: this, x: 400, y: 0 });
+			nodeAdmin = React.createElement(NodeAdmin, { form: this });
 		}
 
 		var title;

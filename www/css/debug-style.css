@@ -110,6 +110,7 @@
 	position: absolute;
 	text-align: left;
 	z-index: 4;
+
 	font-size: 70%;
 	display: inline-block;
 	vertical-align: top;
@@ -121,6 +122,10 @@
 	border: 1px solid #ebb;
 }
 
+.admin-control-field .admin-form-body {
+	left: -30px;
+}
+
 .admin-form-open-btn {
 	display: inline-block;
 	position: absolute;
@@ -128,6 +133,10 @@
 	vertical-align: top;
 	border-radius: 5px;
 	color: #00000040;
+}
+
+.admin-control-field .admin-form-open-btn {
+	right: 0;
 }
 
 .admin-button-highlighted {
@@ -263,16 +272,15 @@
 	padding: 15px 20px;
 }
 
-.field-container-id-397 .select-control-list {
+.icons-selector .select-control-list {
 	white-space: normal;
 }
 
-.field-container-id-397 .select-control-item {
+.icons-selector .select-control-item {
 	display: inline-block;
 	width: 120px;
 	white-space: nowrap;
 }
-
 
 .field-container-id-299 .admin-form-wrap {
 	bottom: 32px;

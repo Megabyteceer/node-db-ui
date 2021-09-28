@@ -3,7 +3,7 @@ import { R } from "./r";
 import { FormFull } from "./forms/form-full";
 import { List } from "./forms/list";
 import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, L, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from "./utils";
-import { assert, RecId, RecordData } from "./bs-utils";
+import { assert, NODE_TYPE, RecId, RecordData, throwError } from "./bs-utils";
 import { BaseForm } from "./forms/base-form";
 import ReactDOM from 'react-dom';
 
@@ -141,7 +141,7 @@ class Stage extends Component<any, any> {
 			}
 		};
 
-		if(node.noStoreForms) {
+		if(!node.storeForms) { // cant render forms without storage as a list. Submit form only
 			if(!recId) {
 				recId = 'new';
 			}
@@ -149,22 +149,29 @@ class Stage extends Component<any, any> {
 		}
 
 		let formType;
-		if(!node.staticLink) {
-			if(recId || (recId === 0) || recId === 'new') {
-				formType = FormFull;
-			} else {
-				formType = List;
-				assert(!modal, "List could not be show at modal level.");
-			}
-		} else if(node.staticLink === 'reactClass') {
-			if(typeof window.crudJs.customClasses[node.tableName] === 'undefined') {
-				myAlert('Unknown react class: ' + node.tableName);
-				formType = 'div';
-			} else {
-				formType = window.crudJs.customClasses[node.tableName];
-			}
-		} else {
-			location.href = node.staticLink;
+		switch(node.nodeType) {
+			case NODE_TYPE.DOCUMENT:
+			case NODE_TYPE.SECTION:
+				if(recId || (recId === 0) || recId === 'new') {
+					formType = FormFull;
+				} else {
+					formType = List;
+					assert(!modal, "List could not be show at modal level.");
+				}
+				break;
+			case NODE_TYPE.REACT_CLASS:
+				if(typeof window.crudJs.customClasses[node.tableName] === 'undefined') {
+					myAlert('Unknown react class: ' + node.tableName);
+					formType = 'div';
+				} else {
+					formType = window.crudJs.customClasses[node.tableName];
+				}
+				break;
+			case NODE_TYPE.STATIC_LINK:
+				location.href = node.staticLink;
+				break;
+			default:
+				throwError('Unknown nodeType ' + node.nodeType);
 		}
 
 		ReactDOM.render(

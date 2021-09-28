@@ -2,7 +2,7 @@
 import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "../core/mysql-connection";
 import { shouldBeAdmin } from "../core/admin/admin";
 import { NodeEventsHandlers, reloadMetadataSchedule } from "../core/describe-node";
-import { FIELD_TYPE_TEXT_1, FIELD_TYPE_DATE_TIME_4, FIELD_TYPE_LOOKUP_7, NODE_ID_ORGANIZATIONS, NODE_ID_USERS, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_READONLY } from "../www/src/bs-utils";
+import { FIELD_TYPE_TEXT_1, FIELD_TYPE_DATE_TIME_4, FIELD_TYPE_LOOKUP_7, NODE_ID_ORGANIZATIONS, NODE_ID_USERS, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_READONLY, NODE_TYPE } from "../www/src/bs-utils";
 import { L } from "../core/locale";
 
 const handlers: NodeEventsHandlers = {
@@ -31,9 +31,7 @@ const handlers: NodeEventsHandlers = {
 			}).join(''));
 		}
 
-
-
-		if(data.isDocument && !data.noStoreForms) {
+		if((data.nodeType === NODE_TYPE.DOCUMENT) && data.storeForms) {
 
 			const tblCrtQ = `CREATE TABLE \`${data.tableName}\` (
 			id bigint(15) unsigned NOT NULL AUTO_INCREMENT,
@@ -76,7 +74,7 @@ const handlers: NodeEventsHandlers = {
 				await mysqlExec(createdByQ);
 			}
 
-			if(data.createUserFld) {
+			if(data.addCreatorUserFld) {
 				const createdByQ = `INSERT INTO _fields
 				(node_fields_linker, status, \`show\`,                                 prior, fieldType,       fieldName,  selectFieldName,  name,           description, maxLength, requirement, unique, _usersID, forSearch, noStore, nodeRef,          icon) VALUES
 				(${createdID},       1,        ${VIEW_MASK_LIST | VIEW_MASK_READONLY}, 4,     ${FIELD_TYPE_LOOKUP_7}, '_usersID', '_users',        '${L('FIELD_OWNER', userSession)}', '',           0,        0,           0,      0,        1,         0,       ${NODE_ID_USERS}, 'avatar');`;

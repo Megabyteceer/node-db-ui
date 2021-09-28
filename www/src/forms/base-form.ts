@@ -70,7 +70,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	}
 
 	UNSAFE_componentWillReceiveProps(newProps) {
-		assert((this.recId === (newProps.initialData ? newProps.initialData.id : newProps.recId)) &&
+		assert(((this.recId || 'new') === ((newProps.initialData ? newProps.initialData.id : newProps.recId) || 'new')) &&
 			(this.nodeId === (newProps.nodeId || newProps.node.id)),
 			"Form should be recreated, and not receive new props. Add 'key' to parent element contains nodeId and recId.");
 	}
@@ -102,7 +102,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		if(this.filters[name] !== val) {
 			this.filters[name] = val;
 			this.forceUpdate();
-			updateHashLocation();
+			updateHashLocation(true);
 			return true;
 		}
 	}

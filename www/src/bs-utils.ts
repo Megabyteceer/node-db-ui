@@ -107,8 +107,10 @@ interface FieldDesc {
 
 	fieldType: FieldType;
 
-	/** name of picture field in relative table. Thin picture will be used as icon in Lookup fields. */
 	icon: string;
+
+	/** name of picture field in relative table. Thin picture will be used as icon in Lookup fields. */
+	lookupIcon: string;
 
 	/** owner node id */
 	nodeRef: RecId;
@@ -158,8 +160,8 @@ interface NodeDesc {
 	privileges: PrivilegesMask;
 	matchName: string;
 	description: string;
-	isDocument: BoolNum;
-	noStoreForms?: BoolNum;
+	nodeType: NODE_TYPE;
+	storeForms?: BoolNum;
 	reverse?: BoolNum;
 	creationName?: string;
 	staticLink?: string;
@@ -245,6 +247,13 @@ const FIELD_TYPE_BUTTON_18: FieldType = 18;
 const FIELD_TYPE_RICH_EDITOR_19: FieldType = 19;
 const FIELD_TYPE_COLOR_20: FieldType = 20;
 const FIELD_TYPE_FILE_21: FieldType = 21;
+
+enum NODE_TYPE {
+	SECTION = 1,
+	DOCUMENT = 2,
+	STATIC_LINK = 3,
+	REACT_CLASS = 4
+}
 
 type PrivilegesMask = number;
 type ViewMask = number;
@@ -339,6 +348,8 @@ export {
 	FIELD_TYPE_STATIC_TEXT_8, FIELD_TYPE_PASSWORD_10, FIELD_TYPE_DATE_11, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14,
 	FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RATING_16, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19,
 	FIELD_TYPE_COLOR_20, FIELD_TYPE_FILE_21,
+
+	NODE_TYPE,
 
 	EVENT_HANDLER_TYPE_NODE, EVENT_HANDLER_TYPE_FIELD,
 

@@ -137,7 +137,7 @@ class eventProcessingMixins extends BaseForm {
 		}
 	}
 
-	setFieldLabel(fieldName, label) {
+	setFieldLabel(fieldName, label?) {
 		this.getField(fieldName).setLabel(label);
 	}
 
@@ -157,6 +157,9 @@ class eventProcessingMixins extends BaseForm {
 				var f = this.getField(fieldName);
 				if(f) {
 					f.hide();
+				}
+				if(f.props.field.fieldType === FIELD_TYPE_TAB_17) {
+					this.forceUpdate();
 				}
 			}
 		}
@@ -205,6 +208,10 @@ class eventProcessingMixins extends BaseForm {
 			delete (this.disabledFields[fieldName]);
 			this.getField(fieldName).enable();
 		}
+	}
+
+	makeFieldRequired(fieldName, required = true) {
+		this.getField(fieldName).makeFieldRequired(required);
 	}
 
 	isFieldDisabled(fieldName) {

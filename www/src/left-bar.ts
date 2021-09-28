@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { FieldAdmin } from "./admin/field-admin";
 import { NodeAdmin, createNodeForMenuItem } from "./admin/node-admin";
-import { assert } from "./bs-utils";
+import { assert, NODE_TYPE } from "./bs-utils";
 import { R } from "./r";
 import { Stage } from "./stage";
 import { iAdmin, User } from "./user";
@@ -34,7 +34,7 @@ function isCurrentlyShowedLeftBarItem(item) {
 		return;
 	}
 
-	if(!item.staticLink) {
+	if(item.nodeType !== NODE_TYPE.STATIC_LINK) {
 		return currentFormParameters.nodeId === item.id;
 	} else {
 		return isStrictlySelected(item);
@@ -46,7 +46,7 @@ function isStrictlySelected(item) {
 		if(item.hasOwnProperty('children')) {
 			return item.children.some(isStrictlySelected);
 		} else {
-			if(item.staticLink) {
+			if(item.nodeType === NODE_TYPE.STATIC_LINK) {
 				return location.hash === item.staticLink;
 			}
 		}
@@ -63,13 +63,13 @@ class BarItem extends Component<any, any> {
 	}
 
 	componentDidMount() {
-		if(!this.props.item.isDocument) {
+		if(this.props.item.nodeType !== NODE_TYPE.DOCUMENT) {
 			allGroups.push(this);
 		}
 	}
 
 	componentWillUnmount() {
-		if(!this.props.item.isDocument) {
+		if(this.props.item.nodeType !== NODE_TYPE.DOCUMENT) {
 			let i = allGroups.indexOf(this);
 			assert(i >= 0, 'BarItem registration is corrupted.');
 			allGroups.splice(i, 1);
@@ -160,14 +160,14 @@ class BarItem extends Component<any, any> {
 		var adminControl;
 		if(iAdmin()) {
 			if(item.field) {
-				adminControl = R.div({ className: "left-bar-admin-button" }, React.createElement(FieldAdmin, { field: item.field, form: item.form, x: -10, y: 0 }));
+				adminControl = R.div({ className: "left-bar-admin-button" }, React.createElement(FieldAdmin, { field: item.field, form: item.form }));
 			} else {
-				adminControl = R.div({ className: "left-bar-admin-button" }, React.createElement(NodeAdmin, { menuItem: item, x: -10, y: 0 }));
+				adminControl = R.div({ className: "left-bar-admin-button" }, React.createElement(NodeAdmin, { menuItem: item }));
 			}
 		}
 		/// #endif
 
-		if(!item.isDocument && (!item.children || (item.children.length === 0))
+		if((item.nodeType !== NODE_TYPE.DOCUMENT) && (!item.children || (item.children.length === 0))
 			/// #if DEBUG
 			&& false// in debug build always show empty nodes
 			/// #endif
@@ -180,10 +180,10 @@ class BarItem extends Component<any, any> {
 		}*/
 
 		var itemsIcon = R.div({ className: "left-bar-item-icon" },
-			renderIcon(item.icon + (item.isDocument ? ' brand-color' : ' no-icon'))
+			renderIcon(item.icon + ((item.nodeType === NODE_TYPE.DOCUMENT) ? ' brand-color' : ' no-icon'))
 		)
 
-		let className = 'left-bar-item ' + (item.isDocument ? 'left-bar-item-doc' : 'left-bar-group');
+		let className = 'left-bar-item ' + ((item.nodeType === NODE_TYPE.DOCUMENT) ? 'left-bar-item-doc' : 'left-bar-group');
 
 		const isActive = isCurrentlyShowedLeftBarItem(item);
 
@@ -203,7 +203,7 @@ class BarItem extends Component<any, any> {
 			this.state.expanded = isExpanded;
 		}
 
-		if(!item.isDocument) {
+		if(item.nodeType !== NODE_TYPE.DOCUMENT) {
 			if(!_isMustBeExpanded) {
 				caret = R.span({ className: "left-bar-group-caret" },
 					renderIcon('caret-' + (isExpanded ? 'up' : 'down'))
@@ -226,7 +226,7 @@ class BarItem extends Component<any, any> {
 		const itemBody = R.div({
 			onClick: (ev) => {
 				if(!isMustBeExpandedVal) {
-					if(!item.isDocument) {
+					if(item.nodeType !== NODE_TYPE.DOCUMENT) {
 						this.toggle(ev);
 						return;
 					}
@@ -241,13 +241,13 @@ class BarItem extends Component<any, any> {
 			)
 		);
 
-		if(item.isDocument && (item.id !== false)) {
+		if((item.nodeType === NODE_TYPE.DOCUMENT) && (item.id !== false)) {
 			const props = {
 				className: 'left-bar-item-container',
-				onClick: this.collapseOtherGroups
+				onClick: this.collapseOtherGroups,
+				href: undefined
 			}
-			if(item.staticLink && item.staticLink !== 'reactClass') {
-				///@ts-ignore
+			if(item.nodeType === NODE_TYPE.STATIC_LINK) {
 				props.href = item.staticLink;
 			} else {
 				props.onClick = (isActive ? undefined : () => {
@@ -323,7 +323,7 @@ class LeftBar extends Component<any, any> {
 					break;
 				}
 				item = itemElement.props.item;
-				if(!item.isDocument) {
+				if(item.nodeType !== NODE_TYPE.DOCUMENT) {
 					const e = ReactDOM.findDOMNode(itemElement) as HTMLDivElement;
 					let group = e.querySelector('.left-bar-children') as HTMLDivElement;
 					if(group.style.maxHeight) {

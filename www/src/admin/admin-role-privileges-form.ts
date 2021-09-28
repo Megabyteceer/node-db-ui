@@ -1,4 +1,4 @@
-import { PRIVILEGES_CREATE, PRIVILEGES_DELETE, PRIVILEGES_EDIT_OWN, PRIVILEGES_PUBLISH, PRIVILEGES_VIEW_OWN, RecordData } from "../bs-utils";
+import { NODE_TYPE, PRIVILEGES_CREATE, PRIVILEGES_DELETE, PRIVILEGES_EDIT_OWN, PRIVILEGES_PUBLISH, PRIVILEGES_VIEW_OWN, RecordData } from "../bs-utils";
 import { R } from "../r";
 import React, { Component } from "react";
 import { BaseForm } from "../forms/base-form";
@@ -126,7 +126,7 @@ class AdminRolePrivilegesForm extends BaseForm {
 				});
 			};
 
-			if(this.state.data.isDocument) {
+			if(this.state.data.nodeType === NODE_TYPE.DOCUMENT) {
 				submit();
 			} else {
 				submit(!await showPrompt(L('APPLY_CHILD'), L('TO_THIS'), L('TO_ALL'), 'check', 'check'));

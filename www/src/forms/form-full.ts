@@ -10,6 +10,7 @@ import { FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_TAB_17
 import React from "react";
 import { iAdmin } from "../user";
 import { HotkeyButton } from "../components/hotkey-button";
+import { FieldAdmin } from "../admin/field-admin";
 
 var backupCallback;
 
@@ -459,7 +460,7 @@ class FormFull extends eventProcessingMixins {
 
 			if(this.props.editable) {
 				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.privileges & PRIVILEGES_PUBLISH)) {
-					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: node.noStoreForms ? node.matchName : L('SAVE') }, this.isSubForm() ? renderIcon('check') : renderIcon(node.noStoreForms ? node.icon : 'floppy-o'), node.noStoreForms ? node.matchName : (this.isSubForm() ? '' : (this.saveButtonTitle || L('SAVE'))));
+					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: node.storeForms ? L('SAVE') : node.matchName }, this.isSubForm() ? renderIcon('check') : renderIcon(node.storeForms ? 'floppy-o' : node.icon), node.storeForms ? (this.isSubForm() ? '' : (this.saveButtonTitle || L('SAVE'))) : node.matchName);
 				} else {
 					if(data.status === 1) {
 						draftButton = R.button({ className: isRestricted ? 'clickable default-button restricted' : 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
@@ -472,13 +473,13 @@ class FormFull extends eventProcessingMixins {
 			}
 
 			if(iAdmin()) {
-				nodeAdmin = React.createElement(NodeAdmin, { form: this, x: 320, y: -40 });
+				nodeAdmin = React.createElement(NodeAdmin, { form: this });
 			}
 
 
 			if(!this.props.isCompact) {
 				let headerContent = this.header || this.state.header || R.span(null, node.icon ? renderIcon(node.icon) : undefined, (this.recId === 'new') ?
-					((node.noStoreForms ? undefined : L('CREATE') + ' '), (node.creationName || node.singleName)) :
+					((node.storeForms ? (L('CREATE') + ' ') : undefined), (node.creationName || node.singleName)) :
 					(this.state.data ? this.state.data.name : this.props.initialData.name));
 				header = R.h4({ className: "form-header" }, headerContent);
 			}
@@ -496,13 +497,14 @@ class FormFull extends eventProcessingMixins {
 		if(tabs && tabs.length > 1) {
 			tabsHeader = R.div({ className: 'header-tabs' }, tabs.map((tab) => {
 				let tabField: FieldDesc = tab.props.field;
-				return R.span({
-					key: tabField.fieldName,
+				return this.isFieldVisible(tabField.fieldName) ? R.span({ key: tabField.fieldName, }, R.span({
 					className: tab.props.visible ? 'tab-header-button tab-header-button-active not-clickable' : 'tab-header-button tab-header-button-inactive clickable',
 					onClick: tab.props.visible ? undefined : () => {
 						this.setFormFilter('tab', tabField.fieldName);
 					}
-				}, tabField.name);
+				}, renderIcon(tabField.icon), tabField.name),
+					React.createElement(FieldAdmin, { field: tabField, form: this })
+				) : undefined;
 			}));
 		}
 

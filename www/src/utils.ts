@@ -50,7 +50,7 @@ function restrictRecordsDeletion(nodes: RestrictDeletionData) {
 }
 
 restrictRecordsDeletion({
-	4: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 50, 52, 53], /* disable critical sections  deletion/hiding*/
+	4: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 20, 22, 50, 52, 53], /* disable critical sections  deletion/hiding*/
 	5: [1, 2, 3], /* disable admin,user,guest deletion*/
 	7: [1, 2, 3], /* disable critical organizations deletion*/
 	8: [1, 2, 3], /* disable critical roles deletion*/
@@ -484,7 +484,7 @@ function assignFilters(src, desc): boolean {
 
 let isHistoryChanging = false;
 
-function updateHashLocation() {
+function updateHashLocation(replaceState = false) {
 	if(isHistoryChanging) {
 		return;
 	}
@@ -495,7 +495,11 @@ function updateHashLocation() {
 	}).join(HASH_DIVIDER);
 
 	if((location.hash != newHash) && (location.hash != newHash.substr(1))) {
-		history.pushState(null, null, newHash);
+		if(replaceState) {
+			history.replaceState(null, null, newHash);
+		} else {
+			history.pushState(null, null, newHash);
+		}
 	}
 }
 
