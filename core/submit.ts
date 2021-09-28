@@ -158,7 +158,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 				}
 
 				/// #if DEBUG
-				if(f.clientOnly && data.hasOwnProperty('fieldName')) {
+				if(!f.sendToServer && data.hasOwnProperty('fieldName')) {
 					notificationOut(userSession, L('CLIENT_ONLY_ON_SERVER', userSession, fieldName));
 				}
 				/// #endif
@@ -289,7 +289,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 				/// #if DEBUG
 				for(let key in data) {
 					if(key !== 'status' && key !== '_organizationID' && key !== '_usersID') {
-						assert(node.fields.find(f => (f.fieldName === key) && !f.clientOnly), "Unknown field '" + key + "' in data set detected.");
+						assert(node.fields.find(f => (f.fieldName === key) && f.sendToServer), "Unknown field '" + key + "' in data set detected.");
 					}
 				}
 				/// #endif

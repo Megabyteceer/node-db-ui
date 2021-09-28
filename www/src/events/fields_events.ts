@@ -1,4 +1,4 @@
-import { FIELD_TYPE_DATE_11, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_COLOR_20, FIELD_TYPE_FILE_21, FIELD_TYPE_DATE_TIME_4, FIELD_TYPE_BOOL_5, FIELD_TYPE_ENUM_6, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, NODE_ID_LOGIN, NODE_ID_REGISTER, NODE_ID_RESET, NODE_TYPE } from "../bs-utils";
+import { FIELD_TYPE_DATE_11, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_COLOR_20, FIELD_TYPE_FILE_21, FIELD_TYPE_DATE_TIME_4, FIELD_TYPE_BOOL_5, FIELD_TYPE_ENUM_6, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, NODE_ID_LOGIN, NODE_ID_REGISTER, NODE_ID_RESET, NODE_TYPE, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_ALL, VIEW_MASK_EDIT_CREATE, VIEW_MASK_LIST, VIEW_MASK_READONLY, VIEW_MASK_DROPDOWN_LOOKUP } from "../bs-utils";
 import ReactDOM from "react-dom";
 
 import { L } from "../utils";
@@ -71,84 +71,12 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_fieldType_onChange() {
-		const fieldType = this.fieldValue("fieldType");
-		this.showField();
-		this.setFieldLabel("description");
-		this.hideField("selectFieldName", "show", "nodeRef", "enum", "width", "height", "lookupIcon");
-		this.enableField("visibility_list");
-		if(fieldType === FIELD_TYPE_LOOKUP_NtoM_14) {
-			this.getField('nodeRef').setLookupFilter('excludeIDs', [this.fieldValue("node_fields_linker").id]);
-		} else {
-			this.getField('nodeRef').setLookupFilter('excludeIDs', undefined);
-		}
-		switch(fieldType) {
-			case FIELD_TYPE_STATIC_TEXT_8:
-				this.setFieldLabel("description", L("CONTENT"));
-
-			case FIELD_TYPE_BUTTON_18:
-				this.hideField("maxLength", "clientOnly", "storeInDB", "requirement", "unique", "forSearch");
-			case FIELD_TYPE_TAB_17:
-				this.showField('maxLength');
-				this.setFieldValue('forSearch', false);
-				this.setFieldValue("clientOnly", 1);
-				this.disableField("clientOnly");
-				this.setFieldValue("storeInDB", 0);
-				this.disableField("storeInDB");
-				break;
-			case FIELD_TYPE_LOOKUP_NtoM_14:
-			case FIELD_TYPE_LOOKUP_1toN_15:
-				this.disableField("visibility_list");
-				this.disableField("storeInDB");
-				this.setFieldValue('storeInDB', 1);
-				this.setFieldValue("visibility_list", 0);
-				this.hideField('forSearch', 'requirement', 'unique');
-			case FIELD_TYPE_LOOKUP_7:
-				this.enableField("storeInDB");
-				this.enableField("clientOnly");
-				this.hideField("maxLength", "unique");
-				this.setFieldValue("unique", false);
-				this.showField("nodeRef");
-				break;
-
-			case FIELD_TYPE_ENUM_6:
-				this.enableField("storeInDB");
-				this.enableField("clientOnly");
-				this.showField('enum');
-				break;
-			case FIELD_TYPE_RICH_EDITOR_19:
-			case FIELD_TYPE_PICTURE_12:
-				this.showField("width", "height");
-				this.hideField("maxLength", "storeInDB", "clientOnly", "unique");
-				this.setFieldValue('storeInDB', 1);
-				this.setFieldValue('clientOnly', false);
-				this.setFieldValue('unique', false);
-				this.enableField("storeInDB");
-				this.enableField("clientOnly");
-				break;
-			case FIELD_TYPE_BOOL_5:
-			case FIELD_TYPE_DATE_TIME_4:
-			case FIELD_TYPE_DATE_11:
-			case FIELD_TYPE_COLOR_20:
-			case FIELD_TYPE_FILE_21:
-				this.enableField("storeInDB");
-				this.enableField("clientOnly");
-				this.hideField("maxLength");
-				break;
-
-		}
-
-		if(fieldType === FIELD_TYPE_TEXT_1 || fieldType === FIELD_TYPE_RICH_EDITOR_19) {
-			this.showField('multilingual');
-		} else {
-			this.hideField('multilingual');
-			this.setFieldValue('multilingual', false);
-		}
-		this.check12nFieldName();
+		this._fields_recalculateFieldsVisibility();
 	}
 
 	_fields_noStore_onChange() {
 		if(this.isFieldVisible('storeInDB')) {
-			if(!this.fieldValue('storeInDB') || this.fieldValue('clientOnly')) {
+			if(!this.fieldValue('storeInDB') || this.fieldValue('sendToServer')) {
 				this.hideField('forSearch', 'unique');
 			} else {
 				this.showField('forSearch', 'unique');
@@ -164,9 +92,9 @@ class FieldsEvents extends FormEvents {
 		var shv = this.fieldValue("show");
 
 		if(this.fieldValue("visibility_create"))
-			shv |= 1;
+			shv |= VIEW_MASK_EDIT_CREATE;
 		else
-			shv &= (65535 - 1);
+			shv &= (VIEW_MASK_ALL - VIEW_MASK_EDIT_CREATE);
 
 		this.setFieldValue("show", shv);
 	}
@@ -175,9 +103,9 @@ class FieldsEvents extends FormEvents {
 		var shv = this.fieldValue("show");
 
 		if(this.fieldValue("visibility_list"))
-			shv |= 2;
+			shv |= VIEW_MASK_LIST;
 		else
-			shv &= (65535 - 2);
+			shv &= (VIEW_MASK_ALL - VIEW_MASK_LIST);
 
 		this.setFieldValue("show", shv);
 	}
@@ -186,9 +114,9 @@ class FieldsEvents extends FormEvents {
 		var shv = this.fieldValue("show");
 
 		if(this.fieldValue("visibility_customList"))
-			shv |= 16;
+			shv |= VIEW_MASK_CUSTOM_LIST;
 		else
-			shv &= (65535 - 16);
+			shv &= (VIEW_MASK_ALL - VIEW_MASK_CUSTOM_LIST);
 
 		this.setFieldValue("show", shv);
 	}
@@ -196,9 +124,9 @@ class FieldsEvents extends FormEvents {
 	_fields_visibility_view_onChange() {
 		var shv = this.fieldValue("show");
 		if(this.fieldValue("visibility_view")) {
-			shv |= 4;
+			shv |= VIEW_MASK_READONLY;
 		} else {
-			shv &= (65535 - 4);
+			shv &= (VIEW_MASK_ALL - VIEW_MASK_READONLY);
 		}
 
 		this.setFieldValue("show", shv);
@@ -207,9 +135,9 @@ class FieldsEvents extends FormEvents {
 	_fields_visibility_dropdownList_onChange() {
 		var shv = this.fieldValue("show");
 		if(this.fieldValue("visibility_dropdownList")) {
-			shv |= 8;
+			shv |= VIEW_MASK_DROPDOWN_LOOKUP;
 		} else {
-			shv &= (65535 - 8);
+			shv &= (VIEW_MASK_ALL - VIEW_MASK_DROPDOWN_LOOKUP);
 		}
 
 		this.setFieldValue("show", shv);
@@ -245,6 +173,119 @@ class FieldsEvents extends FormEvents {
 		} else {
 			this.disableField('tableName');
 		}
+	}
+
+	_fields_recalculateFieldsVisibility() {
+
+
+		const fieldType = this.fieldValue("fieldType");
+
+		this.showField('maxLength', 'requirement', 'storeInDB', 'sendToServer', 'unique', 'forSearch');
+		this.hideField('multilingual', 'nodeRef', 'width', 'height', "selectFieldName", "lookupIcon", "enum");
+		this.setFieldLabel("description");
+
+		this.enableField("visibility_list");
+		this.enableField("visibility_customList");
+		this.enableField("visibility_dropdownList");
+		this.enableField("storeInDB");
+		this.enableField("sendToServer");
+		this.enableField('unique');
+		this.enableField('forSearch');
+
+		if(fieldType === FIELD_TYPE_LOOKUP_NtoM_14) {
+			this.getField('nodeRef').setLookupFilter('excludeIDs', [this.fieldValue("node_fields_linker").id]);
+		} else {
+			this.getField('nodeRef').setLookupFilter('excludeIDs', undefined);
+		}
+		switch(fieldType) {
+			case FIELD_TYPE_STATIC_TEXT_8:
+				this.setFieldLabel("description", L("CONTENT"));
+
+			case FIELD_TYPE_BUTTON_18:
+				this.hideField("maxLength", "sendToServer", "storeInDB", "requirement", "unique", "forSearch");
+			case FIELD_TYPE_TAB_17:
+				this.showField('maxLength');
+				this.setFieldValue('forSearch', false);
+				this.setFieldValue("sendToServer", 0);
+				this.disableField("sendToServer");
+				this.setFieldValue("storeInDB", 0);
+				this.disableField("storeInDB");
+				break;
+			case FIELD_TYPE_LOOKUP_NtoM_14:
+			case FIELD_TYPE_LOOKUP_1toN_15:
+				this.disableField("visibility_list");
+				this.setFieldValue("visibility_list", 0);
+				this.disableField("visibility_customList");
+				this.setFieldValue("visibility_customList", 0);
+				this.disableField("visibility_dropdownList");
+				this.setFieldValue("visibility_dropdownList", 0);
+
+				this.disableField("sendToServer");
+				this.setFieldValue('sendToServer', 1);
+				this.disableField("storeInDB");
+				this.setFieldValue('storeInDB', 1);
+				this.hideField('forSearch', 'requirement', 'unique');
+			case FIELD_TYPE_LOOKUP_7:
+				this.hideField("maxLength", "unique");
+				this.setFieldValue("unique", false);
+				this.showField("nodeRef");
+				break;
+
+			case FIELD_TYPE_ENUM_6:
+				this.showField('enum');
+				this.hideField('maxLength');
+				break;
+			case FIELD_TYPE_RICH_EDITOR_19:
+			case FIELD_TYPE_PICTURE_12:
+				this.showField("width", "height");
+				this.hideField("maxLength");
+				break;
+			case FIELD_TYPE_BOOL_5:
+			case FIELD_TYPE_DATE_TIME_4:
+			case FIELD_TYPE_DATE_11:
+			case FIELD_TYPE_COLOR_20:
+			case FIELD_TYPE_FILE_21:
+				this.hideField("maxLength");
+				break;
+
+		}
+
+		if(fieldType === FIELD_TYPE_TEXT_1 || fieldType === FIELD_TYPE_RICH_EDITOR_19) {
+			this.showField('multilingual');
+		} else {
+			this.hideField('multilingual');
+			this.setFieldValue('multilingual', false);
+		}
+		this.check12nFieldName();
+
+		if(!this.fieldValue('sendToServer')) {
+			this.disableField('storeInDB');
+			this.setFieldValue('storeInDB', 0);
+		}
+
+		if(!this.fieldValue('storeInDB')) {
+			this.disableField('forSearch');
+			this.setFieldValue('forSearch', 0);
+		}
+
+		if(!this.fieldValue('forSearch')) {
+			this.disableField('unique');
+			this.setFieldValue('unique', 0);
+		}
+
+		this.makeFieldRequired('maxLength', this.isFieldVisible('maxLength'));
+	}
+
+	_fields_storeInDB_onChange() {
+		this._fields_recalculateFieldsVisibility();
+	}
+
+	_fields_sendToServer_onChange() {
+		this._fields_recalculateFieldsVisibility();
+	}
+
+	_fields_forSearch_onChange() {
+		this._fields_recalculateFieldsVisibility();
 	}
 
 	//_insertNewHandlersHere_

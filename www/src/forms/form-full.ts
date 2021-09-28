@@ -210,7 +210,7 @@ class FormFull extends eventProcessingMixins {
 
 			var val = this.currentData[field.fieldName];
 
-			if(!field.clientOnly) {
+			if(field.sendToServer) {
 				if((field.fieldType === FIELD_TYPE_LOOKUP_NtoM_14)) {
 					if(!n2mValuesEqual(this.props.initialData[field.fieldName], val)) {
 						data[field.fieldName] = val.map(v => v.id);

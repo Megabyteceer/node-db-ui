@@ -86,7 +86,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 						forSearch: srcField.forSearch,
 						storeInDB: srcField.storeInDB,
 						nodeRef: srcField.nodeRef,
-						clientOnly: srcField.clientOnly,
+						sendToServer: srcField.sendToServer,
 						icon: srcField.icon,
 						lookupIcon: srcField.lookupIcon
 					};

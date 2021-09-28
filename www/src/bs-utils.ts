@@ -97,7 +97,7 @@ interface FieldDesc {
 	unique: BoolNum;
 
 	/** if true - field data do not go to the server on form save. */
-	clientOnly: BoolNum;
+	sendToServer: BoolNum;
 
 	/** fields data go to the server, but has no store in database table. */
 	storeInDB: BoolNum;

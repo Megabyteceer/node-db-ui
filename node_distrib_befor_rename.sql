@@ -143,7 +143,7 @@ CREATE TABLE `_fields` (
   `storeInDB` tinyint(1) NOT NULL DEFAULT 0,
   `nodeRef` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `multilingual` tinyint(1) NOT NULL DEFAULT 0,
-  `clientOnly` tinyint(1) NOT NULL DEFAULT 0,
+  `sendToServer` tinyint(1) NOT NULL DEFAULT 0,
   `icon` varchar(24) NOT NULL DEFAULT '',
   `height` int(4) NOT NULL DEFAULT 0,
   `enum` bigint(15) NOT NULL DEFAULT 0
@@ -153,7 +153,7 @@ CREATE TABLE `_fields` (
 -- Dumping data for table `_fields`
 --
 
-INSERT INTO `_fields` (`id`, `name`, `status`, `_usersID`, `_createdON`, `_organizationID`, `node_fields_linker`, `show`, `prior`, `fieldType`, `fieldName`, `selectFieldName`, `description`, `maxLength`, `requirement`, `unique`, `forSearch`, `storeInDB`, `nodeRef`, `multilingual`, `clientOnly`, `icon`, `height`, `enum`) VALUES
+INSERT INTO `_fields` (`id`, `name`, `status`, `_usersID`, `_createdON`, `_organizationID`, `node_fields_linker`, `show`, `prior`, `fieldType`, `fieldName`, `selectFieldName`, `description`, `maxLength`, `requirement`, `unique`, `forSearch`, `storeInDB`, `nodeRef`, `multilingual`, `sendToServer`, `icon`, `height`, `enum`) VALUES
 (0, '', 0, 0, '2014-12-03 00:47:56', 0, 0, 0, 0, 0, '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (1, 'Section name in the singular', 1, 0, '2014-12-03 00:47:56', 0, 4, 7, 80, 1, 'singleName', '', '', 127, 1, 0, 1, 0, 0, 1, 0, '', 0, 0),
 (2, 'Section name in the plural', 1, 0, '0000-00-00 00:00:00', 0, 4, 255, 21, 1, 'name', '', '', 127, 1, 0, 1, 0, 0, 1, 0, '', 0, 0),
@@ -267,7 +267,7 @@ INSERT INTO `_fields` (`id`, `name`, `status`, `_usersID`, `_createdON`, `_organ
 (352, 'Reverse sorting', 1, 1, '2016-05-16 04:41:01', 0, 4, 5, 117, 5, 'reverse', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (357, 'in custom-view list', 1, 0, '0000-00-00 00:00:00', 0, 6, 5, 66, 5, 'visibility_customList', '', '', 0, 0, 0, 0, 1, 0, 0, 1, '', 0, 0),
 (397, 'Icon', 1, 1, '2016-08-09 04:13:55', 0, 4, 5, 133, 1, 'icon', '', '', 24, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
-(486, 'Client only field', 1, 1, '2016-10-28 06:12:28', 0, 6, 1, 60, 5, 'clientOnly', '', 'If true data of this field will not be sent to server and uses only for client side operating.', 0, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
+(486, 'Client only field', 1, 1, '2016-10-28 06:12:28', 0, 6, 1, 60, 5, 'sendToServer', '', 'If true data of this field will not be sent to server and uses only for client side operating.', 0, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (573, 'High priority query', 1, 1, '2017-03-28 05:47:55', 0, 9, 3, 22, 5, 'hiPriority', '', '', 1, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (619, 'Error', 1, 0, '2017-04-24 02:35:25', 0, 81, 255, 0, 1, 'name', '', '', 200000, 1, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (620, 'Creation date', 1, 0, '2017-04-24 02:35:25', 0, 81, 63, 11, 4, '_createdON', '', '', 0, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
@@ -705,7 +705,7 @@ ALTER TABLE `_fields`
   ADD KEY `fieldName` (`fieldName`),
   ADD KEY `nodeRef` (`nodeRef`),
   ADD KEY `multilingual` (`multilingual`),
-  ADD KEY `clientOnly` (`clientOnly`);
+  ADD KEY `sendToServer` (`sendToServer`);
 
 --
 -- Indexes for table `_files`

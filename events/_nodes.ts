@@ -56,7 +56,7 @@ const handlers: NodeEventsHandlers = {
 			//create default fields
 			const mainFieldQ = `INSERT INTO \`_fields\`
 				(\`node_fields_linker\`, \`status\`, \`show\`,          \`prior\`, \`fieldType\`,         \`fieldName\`, \`selectFieldName\`, \`name\`,                           \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`) VALUES
-				(${createdID},             1,          ${VIEW_MASK_ALL},  1,        ${FIELD_TYPE_TEXT_1}, 'name',        '',                  '${L('FIELD_NAME', userSession)}',   '',              64,             1,               0,         0,            1,             1);`;
+				(${createdID},             1,          ${VIEW_MASK_ALL},  1,        ${FIELD_TYPE_TEXT_1}, 'name',        '',                  '${L('FIELD_NAME', userSession)}',   '',              64,             1,               0,         0,            1,             0);`;
 			await mysqlExec(mainFieldQ);
 
 			if(data.addCreatedOnFiled) {

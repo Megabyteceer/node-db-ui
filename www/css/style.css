@@ -1172,7 +1172,7 @@ input[readonly] {
 .tab-header-button {
 	position: relative;
 	display: inline-block;
-	padding: 10px 24px 10px 20px;
+	padding: 10px 24px 10px 12px;
 	margin-right: 2px;
 	border: 1px solid #ccc;
 	border-bottom: none;

@@ -1,6 +1,6 @@
 import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation, getNode, myAlert, getData } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FIELD_TYPE_PASSWORD_10, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RATING_16, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_NUMBER_2, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession, NODE_ID_USERS, NODE_TYPE } from "../bs-utils";
+import { FIELD_TYPE_PASSWORD_10, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RATING_16, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_NUMBER_2, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession, NODE_ID_USERS, NODE_TYPE, VIEW_MASK_EDIT_CREATE, VIEW_MASK_LIST, VIEW_MASK_READONLY, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_DROPDOWN_LOOKUP } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -256,6 +256,9 @@ class FormEvents extends FormFull {
 				this.setFieldValue("visibility_view", 1);
 				this.setFieldValue("visibility_list", 1);
 				this.setFieldValue("visibility_dropdownList", 0);
+
+				this.setFieldValue("sendToServer", 1);
+				this.setFieldValue("storeInDB", 1);
 			}
 
 			if(!this.fieldValue("prior")) {
@@ -263,27 +266,27 @@ class FormEvents extends FormFull {
 			}
 
 		} else {
-			if(this.fieldValue("show") & 1)
+			if(this.fieldValue("show") & VIEW_MASK_EDIT_CREATE)
 				this.setFieldValue("visibility_create", 1)
 			else
 				this.setFieldValue("visibility_create", 0);
 
-			if(this.fieldValue("show") & 4)
+			if(this.fieldValue("show") & VIEW_MASK_READONLY)
 				this.setFieldValue("visibility_view", 1)
 			else
 				this.setFieldValue("visibility_view", 0);
 
-			if(this.fieldValue("show") & 2)
+			if(this.fieldValue("show") & VIEW_MASK_LIST)
 				this.setFieldValue("visibility_list", 1)
 			else
 				this.setFieldValue("visibility_list", 0);
 
-			if(this.fieldValue("show") & 8)
+			if(this.fieldValue("show") & VIEW_MASK_DROPDOWN_LOOKUP)
 				this.setFieldValue("visibility_dropdownList", 1)
 			else
 				this.setFieldValue("visibility_dropdownList", 0);
 
-			if(this.fieldValue("show") & 16)
+			if(this.fieldValue("show") & VIEW_MASK_CUSTOM_LIST)
 				this.setFieldValue("visibility_customList", 1)
 			else
 				this.setFieldValue("visibility_customList", 0);
@@ -309,24 +312,7 @@ class FormEvents extends FormFull {
 			nodeType: 2,
 			storeForms: 1
 		});
-		this.hideField("prior");
 		this.hideField("show");
-
-		$('.field-container-id-22').css({
-			width: '6%'
-		});
-		$('.field-container-id-23').css({
-			width: '6%'
-		});
-		$('.field-container-id-24').css({
-			width: '6%'
-		});
-		$('.field-container-id-318').css({
-			width: '6%'
-		});
-		$('.field-container-id-357').css({
-			width: '6%'
-		});
 	}
 
 	check12nFieldName() {
