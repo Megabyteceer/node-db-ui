@@ -200,16 +200,14 @@ class FieldsEvents extends FormEvents {
 		switch(fieldType) {
 			case FIELD_TYPE_STATIC_TEXT_8:
 				this.setFieldLabel("description", L("CONTENT"));
-
 			case FIELD_TYPE_BUTTON_18:
 				this.hideField("maxLength", "sendToServer", "storeInDB", "requirement", "unique", "forSearch");
 			case FIELD_TYPE_TAB_17:
-				this.showField('maxLength');
-				this.setFieldValue('forSearch', false);
 				this.setFieldValue("sendToServer", 0);
 				this.disableField("sendToServer");
 				this.setFieldValue("storeInDB", 0);
 				this.disableField("storeInDB");
+				this.disableField("requirement");
 				break;
 			case FIELD_TYPE_LOOKUP_NtoM_14:
 			case FIELD_TYPE_LOOKUP_1toN_15:
@@ -286,6 +284,10 @@ class FieldsEvents extends FormEvents {
 
 	_fields_forSearch_onChange() {
 		this._fields_recalculateFieldsVisibility();
+	}
+
+	_fields_icon_onChange() {
+
 	}
 
 	//_insertNewHandlersHere_

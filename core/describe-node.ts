@@ -57,13 +57,14 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				ret.recPerPage = srcNode.recPerPage;
 				ret.defaultFilterId = srcNode.defaultFilterId;
 
-				ret.filters = [];
+				ret.filters = {};
+				let order = 0;
 				for(let id in srcNode.filters) {
 					const filter = srcNode.filters[id];
-					ret.filters.push({
-						id,
+					ret.filters[id] = {
+						order: order++,
 						name: filter['name' + userSession.lang.prefix]
-					});
+					};
 				}
 
 				ret.sortFieldName = srcNode.sortFieldName
@@ -88,7 +89,8 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 						nodeRef: srcField.nodeRef,
 						sendToServer: srcField.sendToServer,
 						icon: srcField.icon,
-						lookupIcon: srcField.lookupIcon
+						lookupIcon: srcField.lookupIcon,
+						display: srcField.display
 					};
 
 					if(field.enum) {

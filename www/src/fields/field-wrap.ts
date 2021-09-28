@@ -1,4 +1,4 @@
-import { FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_BUTTON_18, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, FieldDesc } from "../bs-utils";
+import { FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_BUTTON_18, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, FieldDesc, FIELD_DISPLAY_TYPE } from "../bs-utils";
 import { R } from "../r";
 import React, { Component } from "react";
 import { FieldAdmin } from "../admin/field-admin";
@@ -273,6 +273,10 @@ class FieldWrap extends Component<FieldProps, any> {
 			className += ' hidden';
 		}
 
+		if(field.display === FIELD_DISPLAY_TYPE.INLINE) {
+			className += ' field-wrap-inline';
+		}
+
 		if(this.fieldDisabled) {
 			className += ' field-wrap-disabled';
 		}
@@ -283,7 +287,7 @@ class FieldWrap extends Component<FieldProps, any> {
 
 		if(this.props.isCompact) {
 			if(this.props.isTable) {
-				className += ' field-wrap-inline';
+				className += ' field-wrap-table-cell';
 			}
 			var tooltip;
 			if(this.state.showToolTip) {
@@ -320,10 +324,10 @@ class FieldWrap extends Component<FieldProps, any> {
 				label,
 				R.div({ className: noLabel ? 'field-wrap-value field-wrap-value-no-label' : 'field-wrap-value' },
 					fieldTypedBody,
-					fieldCustomBody
-				),
-				help,
-				fieldAdmin
+					fieldCustomBody,
+					fieldAdmin,
+					help
+				)
 			);
 		}
 	}
@@ -387,8 +391,8 @@ class FieldLabel extends Component<any, any> {
 		}
 
 		return R.div({ className: 'field-wrap-label' },
-			body,
 			renderIcon(field.icon),
+			body,
 			star,
 			alertBody
 		);

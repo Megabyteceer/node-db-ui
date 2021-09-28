@@ -50,7 +50,7 @@ class Select extends Component<any, any> {
 
 	render() {
 
-		var curVal = this.state.curVal || this.props.defaultValue;
+		var curVal = ((this.state.curVal === 0) || this.state.curVal) ? this.state.curVal : this.props.defaultValue;
 		for(let o of this.props.options) {
 			if(o.value === curVal) {
 				curVal = o.name;

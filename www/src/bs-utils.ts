@@ -112,6 +112,8 @@ interface FieldDesc {
 	/** name of picture field in relative table. Thin picture will be used as icon in Lookup fields. */
 	lookupIcon: string;
 
+	display: FIELD_DISPLAY_TYPE;
+
 	/** owner node id */
 	nodeRef: RecId;
 
@@ -150,8 +152,8 @@ interface FieldDesc {
 }
 
 interface FilterDesc {
-
-
+	order: number;
+	name: string;
 }
 
 interface NodeDesc {
@@ -171,7 +173,7 @@ interface NodeDesc {
 	recPerPage?: number;
 	defaultFilterId?: number;
 	fields?: FieldDesc[];
-	filters?: FilterDesc[];
+	filters?: { [key: string]: FilterDesc };
 	sortFieldName?: string;
 	/** CLIENT SIDE ONLY */
 	fieldsById?: { [key: number]: FieldDesc };
@@ -247,6 +249,11 @@ const FIELD_TYPE_BUTTON_18: FieldType = 18;
 const FIELD_TYPE_RICH_EDITOR_19: FieldType = 19;
 const FIELD_TYPE_COLOR_20: FieldType = 20;
 const FIELD_TYPE_FILE_21: FieldType = 21;
+
+enum FIELD_DISPLAY_TYPE {
+	BLOCK = 0,
+	INLINE = 1
+}
 
 enum NODE_TYPE {
 	SECTION = 1,
@@ -349,7 +356,7 @@ export {
 	FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RATING_16, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19,
 	FIELD_TYPE_COLOR_20, FIELD_TYPE_FILE_21,
 
-	NODE_TYPE,
+	NODE_TYPE, FIELD_DISPLAY_TYPE,
 
 	EVENT_HANDLER_TYPE_NODE, EVENT_HANDLER_TYPE_FIELD,
 

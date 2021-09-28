@@ -696,7 +696,21 @@ input[readonly] {
 }
 
 .field-wrap {
-	margin: 20px 0;
+	margin: 10px 0 30px 0;
+}
+
+.field-wrap.field-container-type-8 {
+	margin: 0;
+}
+
+.field-wrap-inline {
+	display: inline-block;
+	margin-right: 40px;
+	min-width: 70px;
+}
+
+.field-wrap-inline .field-boolean {
+	display: inline-block;
 }
 
 .field-wrap-lang {
@@ -709,17 +723,15 @@ input[readonly] {
 	margin: 1px;
 }
 
-.field-wrap-inline {
+.field-wrap-table-cell {
 	width: 30%;
 }
 
 .field-wrap-value {
 	position: relative;
 	vertical-align: top;
-	width: 73%;
 	color: var(--TEXT_COLOR);
 	font-size: 110%;
-	display: inline-block;
 }
 
 .field-wrap-value-no-label {
@@ -727,24 +739,25 @@ input[readonly] {
 }
 
 .field-wrap-label {
-	font-size: 110%;
+	font-size: 80%;
 	font-weight: bold;
-	height: 34px;
-	width: 25%;
-	padding-right: 2%;
-	color: var(--TEXT_COLOR);
-	display: inline-flex;
+	color: var(--BRAND_COLOR);
+	display: flex;
 	text-align: right;
-	justify-content: flex-end;
+	justify-content: flex-start;
 	align-items: center;
 }
 
+.field-wrap-label .fa {
+	margin-left: 0;
+}
+
 .field-wrap-help-container {
-	display: inline-block;
+	display: inline-flex;
 	position: relative;
 	width: 0;
 	left: 30px;
-	bottom: 10px;
+	bottom: 14px;
 	overflow: visible;
 	color: #707072;
 }
@@ -840,6 +853,7 @@ input[readonly] {
 	position: relative;
 	padding: 7px 8px;
 	color: #333;
+	min-width: 130px;
 	border: 1px solid #a8a8a8;
 	border-radius: 4px;
 }
@@ -975,6 +989,9 @@ input[readonly] {
 
 .field-lookup-wrapper {
 	position: relative;
+	display: inline-flex;
+	width: 100%;
+	min-width: 320px;
 }
 
 .field-lookup-chooser {
@@ -984,6 +1001,7 @@ input[readonly] {
 	white-space: nowrap;
 	border-radius: 3px;
 	padding: 5px 8px;
+	width: 100%;
 }
 
 .field-lookup-value {
@@ -1130,8 +1148,9 @@ input[readonly] {
 }
 
 .form-full {
+	padding-left: 17%;
 	margin-bottom: 7px;
-	max-width: 1124px;
+	max-width: 824px;
 }
 
 .form-layer-modal .form-modal-container {
@@ -1160,12 +1179,10 @@ input[readonly] {
 .form-header {
 	color: var(--BRAND_COLOR_HEADER);
 	margin: 10px;
-	margin-left: 27%;
 }
 
 .form .header-tabs {
 	margin: 50px 0;
-	padding-left: 27%;
 	border-bottom: 1px solid #ccc;
 }
 
