@@ -64,10 +64,10 @@ const handlers: NodeEventsHandlers = {
 		}
 
 		mustBeUnset(newData, 'fieldName');
-		mustBeUnset(newData, 'noStore');
+		mustBeUnset(newData, 'storeInDB');
 		mustBeUnset(newData, 'node_fields_linker');
 
-		if(!currentData.noStore) {
+		if(currentData.storeInDB) {
 
 			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxLength') || newData.hasOwnProperty('multilingual') || newData.hasOwnProperty('forSearch')) {
 
@@ -88,7 +88,7 @@ const handlers: NodeEventsHandlers = {
 				currentData = Object.assign(currentData, newData);
 
 				if((realFieldName !== '_organizationID') && (realFieldName !== '_usersID') && (realFieldName !== '_createdON') && (realFieldName !== 'id')) {
-					if((currentData.noStore === 0) && (fieldType !== FIELD_TYPE_STATIC_TEXT_8) && (fieldType !== FIELD_TYPE_LOOKUP_NtoM_14) && (fieldType !== FIELD_TYPE_LOOKUP_1toN_15)) {
+					if(currentData.storeInDB && (fieldType !== FIELD_TYPE_STATIC_TEXT_8) && (fieldType !== FIELD_TYPE_LOOKUP_NtoM_14) && (fieldType !== FIELD_TYPE_LOOKUP_1toN_15)) {
 						const typeQ = getFieldTypeSQL(currentData);
 						if(typeQ) {
 							const langs = getLangs();
@@ -211,7 +211,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 	}
 
 	if(fieldType === FIELD_TYPE_LOOKUP_1toN_15) {
-		data.noStore = 1;
+		data.storeInDB = 0;
 	} else if(fieldType === FIELD_TYPE_LOOKUP_NtoM_14) {
 
 		data.selectFieldName = linkedNodeName;
@@ -230,7 +230,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 			FOREIGN KEY (\`${fld1}\`) REFERENCES \`${nodeName}\`(id) ON DELETE CASCADE ON UPDATE CASCADE,
 			FOREIGN KEY (\`${fld2}\`) REFERENCES \`${linkedNodeName}\`(id) ON DELETE CASCADE ON UPDATE CASCADE
 		) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4; `);
-	} else if(!data.noStore) {
+	} else if(data.storeInDB) {
 		if(fieldType === FIELD_TYPE_LOOKUP_7) {
 			data.forSearch = 1;
 			data.selectFieldName = linkedNodeName;

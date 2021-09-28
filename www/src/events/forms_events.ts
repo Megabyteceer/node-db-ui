@@ -242,8 +242,8 @@ class FormEvents extends FormFull {
 		if(parentNodeVal) {
 			parentNode = await getNode(parentNodeVal.id);
 			if(!parentNode.storeForms) {
-				this.setFieldValue('noStore', 1);
-				this.disableField('noStore');
+				this.setFieldValue('storeInDB', 0);
+				this.disableField('storeInDB');
 			}
 		}
 
@@ -299,7 +299,7 @@ class FormEvents extends FormFull {
 			this.disableField("fieldType");
 			this.disableField("nodeRef");
 			this.disableField("node_fields_linker");
-			this.disableField("noStore");
+			this.disableField("storeInDB");
 		}
 
 		this.addLookupFilters('node_fields_linker', {
@@ -424,7 +424,7 @@ class FormEvents extends FormFull {
 		}
 
 		if((fieldType === FIELD_TYPE_STATIC_TEXT_8) || (fieldType === FIELD_TYPE_TAB_17) || (fieldType === FIELD_TYPE_BUTTON_18)) {
-			this.setFieldValue('noStore', true);
+			this.setFieldValue('storeInDB', 0);
 		}
 		if(this._fieldsNameIsBad) {
 			this.fieldAlert('fieldName', L('FLD_EXISTS'));

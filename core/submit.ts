@@ -74,7 +74,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			if(data.hasOwnProperty(fieldName) && !isAdmin(userSession)) {
 				throwError('Field ' + f['fieldName'] + ' hidden for update, but present in request.');
 			}
-		} else if(!f.noStore) {
+		} else if(f.storeInDB) {
 
 			if(f.requirement) {
 				if(((!data.hasOwnProperty(fieldName) || !data[fieldName])) && (!currentData || !currentData[fieldName])) {
@@ -147,7 +147,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		if(currentData) {
 			for(let f of node.fields) { // save filenames to delete updated files later
 				let fieldName = f.fieldName;
-				if(!f.noStore && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
+				if(f.storeInDB && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
 					let fieldType = f.fieldType;
 					if((fieldType === FIELD_TYPE_PICTURE_12) || (fieldType === FIELD_TYPE_FILE_21)) {
 						if(!realDataBefore) {
@@ -180,7 +180,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 				let fieldName = f.fieldName;
 
-				if(!f.noStore && data.hasOwnProperty(fieldName)) {
+				if(f.storeInDB && data.hasOwnProperty(fieldName)) {
 
 					let fieldType = f.fieldType;
 

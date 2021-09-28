@@ -43,7 +43,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 	//===== fields list =======================================
 	//=========================================================
 	for(let f of node.fields) {
-		if(!f.noStore && (f.show & viewMask)) {
+		if(f.storeInDB && (f.show & viewMask)) {
 
 			const fieldType = f.fieldType;
 			const fieldName = f.fieldName;
@@ -300,7 +300,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 			}
 
 			for(let f of node.fields) {
-				if(!f.noStore && (f.show & viewMask)) {
+				if(f.storeInDB && (f.show & viewMask)) {
 					const fieldType = f.fieldType;
 					const fieldName = f.fieldName;
 					if(fieldType === FIELD_TYPE_LOOKUP_NtoM_14 || fieldType === FIELD_TYPE_LOOKUP_1toN_15) { //n2m,12n

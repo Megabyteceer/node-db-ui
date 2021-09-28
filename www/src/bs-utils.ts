@@ -100,7 +100,7 @@ interface FieldDesc {
 	clientOnly: BoolNum;
 
 	/** fields data go to the server, but has no store in database table. */
-	noStore: BoolNum;
+	storeInDB: BoolNum;
 
 	/** fields will have index in database, and search will be processed in this field */
 	forSearch: BoolNum;

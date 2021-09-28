@@ -86,24 +86,24 @@ class FieldsEvents extends FormEvents {
 				this.setFieldLabel("description", L("CONTENT"));
 
 			case FIELD_TYPE_BUTTON_18:
-				this.hideField("maxLength", "clientOnly", "noStore", "requirement", "unique", "forSearch");
+				this.hideField("maxLength", "clientOnly", "storeInDB", "requirement", "unique", "forSearch");
 			case FIELD_TYPE_TAB_17:
 				this.showField('maxLength');
 				this.setFieldValue('forSearch', false);
 				this.setFieldValue("clientOnly", 1);
 				this.disableField("clientOnly");
-				this.setFieldValue("noStore", 1);
-				this.disableField("noStore");
+				this.setFieldValue("storeInDB", 0);
+				this.disableField("storeInDB");
 				break;
 			case FIELD_TYPE_LOOKUP_NtoM_14:
 			case FIELD_TYPE_LOOKUP_1toN_15:
 				this.disableField("visibility_list");
-				this.disableField("noStore");
-				this.setFieldValue('noStore', 0);
+				this.disableField("storeInDB");
+				this.setFieldValue('storeInDB', 1);
 				this.setFieldValue("visibility_list", 0);
 				this.hideField('forSearch', 'requirement', 'unique');
 			case FIELD_TYPE_LOOKUP_7:
-				this.enableField("noStore");
+				this.enableField("storeInDB");
 				this.enableField("clientOnly");
 				this.hideField("maxLength", "unique");
 				this.setFieldValue("unique", false);
@@ -111,18 +111,18 @@ class FieldsEvents extends FormEvents {
 				break;
 
 			case FIELD_TYPE_ENUM_6:
-				this.enableField("noStore");
+				this.enableField("storeInDB");
 				this.enableField("clientOnly");
 				this.showField('enum');
 				break;
 			case FIELD_TYPE_RICH_EDITOR_19:
 			case FIELD_TYPE_PICTURE_12:
 				this.showField("width", "height");
-				this.hideField("maxLength", "noStore", "clientOnly", "unique");
-				this.setFieldValue('noStore', false);
+				this.hideField("maxLength", "storeInDB", "clientOnly", "unique");
+				this.setFieldValue('storeInDB', 1);
 				this.setFieldValue('clientOnly', false);
 				this.setFieldValue('unique', false);
-				this.enableField("noStore");
+				this.enableField("storeInDB");
 				this.enableField("clientOnly");
 				break;
 			case FIELD_TYPE_BOOL_5:
@@ -130,7 +130,7 @@ class FieldsEvents extends FormEvents {
 			case FIELD_TYPE_DATE_11:
 			case FIELD_TYPE_COLOR_20:
 			case FIELD_TYPE_FILE_21:
-				this.enableField("noStore");
+				this.enableField("storeInDB");
 				this.enableField("clientOnly");
 				this.hideField("maxLength");
 				break;
@@ -147,8 +147,8 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_noStore_onChange() {
-		if(this.isFieldVisible('noStore')) {
-			if(this.fieldValue('noStore') || this.fieldValue('clientOnly')) {
+		if(this.isFieldVisible('storeInDB')) {
+			if(!this.fieldValue('storeInDB') || this.fieldValue('clientOnly')) {
 				this.hideField('forSearch', 'unique');
 			} else {
 				this.showField('forSearch', 'unique');

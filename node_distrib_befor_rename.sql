@@ -140,7 +140,7 @@ CREATE TABLE `_fields` (
   `requirement` tinyint(1) NOT NULL DEFAULT 0,
   `unique` tinyint(1) NOT NULL DEFAULT 0,
   `forSearch` tinyint(1) NOT NULL DEFAULT 0,
-  `noStore` tinyint(1) NOT NULL DEFAULT 0,
+  `storeInDB` tinyint(1) NOT NULL DEFAULT 0,
   `nodeRef` bigint(15) UNSIGNED NOT NULL DEFAULT 0,
   `multilingual` tinyint(1) NOT NULL DEFAULT 0,
   `clientOnly` tinyint(1) NOT NULL DEFAULT 0,
@@ -153,7 +153,7 @@ CREATE TABLE `_fields` (
 -- Dumping data for table `_fields`
 --
 
-INSERT INTO `_fields` (`id`, `name`, `status`, `_usersID`, `_createdON`, `_organizationID`, `node_fields_linker`, `show`, `prior`, `fieldType`, `fieldName`, `selectFieldName`, `description`, `maxLength`, `requirement`, `unique`, `forSearch`, `noStore`, `nodeRef`, `multilingual`, `clientOnly`, `icon`, `height`, `enum`) VALUES
+INSERT INTO `_fields` (`id`, `name`, `status`, `_usersID`, `_createdON`, `_organizationID`, `node_fields_linker`, `show`, `prior`, `fieldType`, `fieldName`, `selectFieldName`, `description`, `maxLength`, `requirement`, `unique`, `forSearch`, `storeInDB`, `nodeRef`, `multilingual`, `clientOnly`, `icon`, `height`, `enum`) VALUES
 (0, '', 0, 0, '2014-12-03 00:47:56', 0, 0, 0, 0, 0, '', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (1, 'Section name in the singular', 1, 0, '2014-12-03 00:47:56', 0, 4, 7, 80, 1, 'singleName', '', '', 127, 1, 0, 1, 0, 0, 1, 0, '', 0, 0),
 (2, 'Section name in the plural', 1, 0, '0000-00-00 00:00:00', 0, 4, 255, 21, 1, 'name', '', '', 127, 1, 0, 1, 0, 0, 1, 0, '', 0, 0),
@@ -182,7 +182,7 @@ INSERT INTO `_fields` (`id`, `name`, `status`, `_usersID`, `_createdON`, `_organ
 (29, 'For search', 1, 0, '0000-00-00 00:00:00', 0, 6, 5, 72, 5, 'forSearch', '', '', 0, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (30, 'Is Document', 1, 0, '0000-00-00 00:00:00', 0, 4, 7, 79, 5, 'isDocument', '', '', 0, 0, 0, 1, 0, 0, 0, 0, '', 0, 0),
 (31, 'Priority', 1, 0, '0000-00-00 00:00:00', 0, 6, 5, 74, 2, 'prior', '', '', 8, 1, 0, 0, 0, 0, 0, 0, '', 0, 0),
-(32, 'Virtual field (not stored in the database)', 1, 0, '0000-00-00 00:00:00', 0, 6, 5, 59, 5, 'noStore', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
+(32, 'Virtual field (not stored in the database)', 1, 0, '0000-00-00 00:00:00', 0, 6, 5, 59, 5, 'storeInDB', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (33, 'Priority', 1, 0, '0000-00-00 00:00:00', 0, 4, 7, 127, 2, 'prior', '', '', 8, 1, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (35, 'Captcha when creating a document', 1, 0, '0000-00-00 00:00:00', 0, 4, 5, 184, 5, 'captcha', '', '', 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0),
 (36, 'Role name', 1, 0, '0000-00-00 00:00:00', 0, 8, 255, 23, 1, 'name', '', '', 45, 1, 1, 1, 0, 0, 1, 0, '', 0, 0),
