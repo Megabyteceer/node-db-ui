@@ -37,12 +37,14 @@ class FieldsEvents extends FormEvents {
 		if(nodeType === NODE_TYPE.DOCUMENT) {
 			this.showField('creationName', 'singleName', 'captcha',
 				'reverse', 'draftable', 'addCreatedOnFiled', 'addCreatorUserFld', 'addCreatedByFiled',
-				'storeForms', 'recPerPage');
+				'storeForms', 'recPerPage',
+				'dataStorageGroup', 'appearanceGroup', 'createFields');
 			this.makeFieldRequired('singleName');
 		} else {
 			this.hideField('creationName', 'singleName', 'captcha',
 				'reverse', 'draftable', 'addCreatedOnFiled', 'addCreatorUserFld', 'addCreatedByFiled',
-				'storeForms', 'recPerPage');
+				'storeForms', 'recPerPage',
+				'dataStorageGroup', 'appearanceGroup', 'createFields');
 			this.makeFieldRequired('singleName', false);
 		}
 

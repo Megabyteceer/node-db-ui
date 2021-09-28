@@ -452,11 +452,12 @@ class List extends BaseForm<ListProps, ListState> {
 								}
 							}
 						},
+							renderIcon(field.icon),
 							field.name,
 							renderIcon((!filters.r && (filters.o === field.fieldName)) ? 'caret-up' : 'caret-down')
 						);
 					} else {
-						rowHeader = field.name;
+						rowHeader = R.span(null, renderIcon(field.icon), field.name);
 					}
 
 
