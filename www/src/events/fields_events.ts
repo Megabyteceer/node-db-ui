@@ -1,4 +1,4 @@
-import { FIELD_TYPE_DATE_11, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_COLOR_20, FIELD_TYPE_FILE_21, FIELD_TYPE_DATE_TIME_4, FIELD_TYPE_BOOL_5, FIELD_TYPE_ENUM_6, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, NODE_ID_LOGIN, NODE_ID_REGISTER, NODE_ID_RESET, NODE_TYPE, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_ALL, VIEW_MASK_EDIT_CREATE, VIEW_MASK_LIST, VIEW_MASK_READONLY, VIEW_MASK_DROPDOWN_LOOKUP } from "../bs-utils";
+import { FIELD_TYPE, NODE_ID_LOGIN, NODE_ID_REGISTER, NODE_ID_RESET, NODE_TYPE, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_ALL, VIEW_MASK_EDIT_CREATE, VIEW_MASK_LIST, VIEW_MASK_READONLY, VIEW_MASK_DROPDOWN_LOOKUP } from "../bs-utils";
 import ReactDOM from "react-dom";
 
 import { L } from "../utils";
@@ -192,25 +192,25 @@ class FieldsEvents extends FormEvents {
 		this.enableField('unique');
 		this.enableField('forSearch');
 
-		if(fieldType === FIELD_TYPE_LOOKUP_NtoM_14) {
+		if(fieldType === FIELD_TYPE.LOOKUP_NtoM) {
 			this.getField('nodeRef').setLookupFilter('excludeIDs', [this.fieldValue("node_fields_linker").id]);
 		} else {
 			this.getField('nodeRef').setLookupFilter('excludeIDs', undefined);
 		}
 		switch(fieldType) {
-			case FIELD_TYPE_STATIC_TEXT_8:
+			case FIELD_TYPE.STATIC_TEXT:
 				this.setFieldLabel("description", L("CONTENT"));
-			case FIELD_TYPE_BUTTON_18:
+			case FIELD_TYPE.BUTTON:
 				this.hideField("maxLength", "sendToServer", "storeInDB", "requirement", "unique", "forSearch");
-			case FIELD_TYPE_TAB_17:
+			case FIELD_TYPE.TAB:
 				this.setFieldValue("sendToServer", 0);
 				this.disableField("sendToServer");
 				this.setFieldValue("storeInDB", 0);
 				this.disableField("storeInDB");
 				this.disableField("requirement");
 				break;
-			case FIELD_TYPE_LOOKUP_NtoM_14:
-			case FIELD_TYPE_LOOKUP_1toN_15:
+			case FIELD_TYPE.LOOKUP_NtoM:
+			case FIELD_TYPE.LOOKUP_1toN:
 				this.disableField("visibility_list");
 				this.setFieldValue("visibility_list", 0);
 				this.disableField("visibility_customList");
@@ -223,32 +223,32 @@ class FieldsEvents extends FormEvents {
 				this.disableField("storeInDB");
 				this.setFieldValue('storeInDB', 1);
 				this.hideField('forSearch', 'requirement', 'unique');
-			case FIELD_TYPE_LOOKUP_7:
+			case FIELD_TYPE.LOOKUP:
 				this.hideField("maxLength", "unique");
 				this.setFieldValue("unique", false);
 				this.showField("nodeRef");
 				break;
 
-			case FIELD_TYPE_ENUM_6:
+			case FIELD_TYPE.ENUM:
 				this.showField('enum');
 				this.hideField('maxLength');
 				break;
-			case FIELD_TYPE_RICH_EDITOR_19:
-			case FIELD_TYPE_PICTURE_12:
+			case FIELD_TYPE.RICH_EDITOR:
+			case FIELD_TYPE.PICTURE:
 				this.showField("width", "height");
 				this.hideField("maxLength");
 				break;
-			case FIELD_TYPE_BOOL_5:
-			case FIELD_TYPE_DATE_TIME_4:
-			case FIELD_TYPE_DATE_11:
-			case FIELD_TYPE_COLOR_20:
-			case FIELD_TYPE_FILE_21:
+			case FIELD_TYPE.BOOL:
+			case FIELD_TYPE.DATE_TIME:
+			case FIELD_TYPE.DATE:
+			case FIELD_TYPE.COLOR:
+			case FIELD_TYPE.FILE:
 				this.hideField("maxLength");
 				break;
 
 		}
 
-		if(fieldType === FIELD_TYPE_TEXT_1 || fieldType === FIELD_TYPE_RICH_EDITOR_19) {
+		if(fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.RICH_EDITOR) {
 			this.showField('multilingual');
 		} else {
 			this.hideField('multilingual');

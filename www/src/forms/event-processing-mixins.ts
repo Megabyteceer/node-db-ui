@@ -1,6 +1,6 @@
 import { CLIENT_SIDE_FORM_EVENTS, consoleLog, Filters, getData, L } from "../utils";
 import { BaseForm } from "./base-form";
-import { assert, FieldDesc, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, RecordData } from "../bs-utils";
+import { assert, FieldDesc, FIELD_TYPE, RecordData } from "../bs-utils";
 import type { FieldWrap } from "../fields/field-wrap";
 
 let FormEvents;
@@ -106,7 +106,7 @@ class eventProcessingMixins extends BaseForm {
 			for(var k in nodeFields) {
 				var f = nodeFields[k];
 				if(this.isFieldVisibleByFormViewMask(f)) {
-					if((f.fieldType === FIELD_TYPE_TAB_17) && (f.maxLength === 0)) {//tab
+					if((f.fieldType === FIELD_TYPE.TAB) && (f.maxLength === 0)) {//tab
 						if((tabNameToShow === f.fieldName) || !tabNameToShow) {
 							field = f;
 							break;
@@ -154,7 +154,7 @@ class eventProcessingMixins extends BaseForm {
 				if(f) {
 					f.hide();
 				}
-				if(f.props.field.fieldType === FIELD_TYPE_TAB_17) {
+				if(f.props.field.fieldType === FIELD_TYPE.TAB) {
 					this.forceUpdate();
 				}
 			}
@@ -234,7 +234,7 @@ class eventProcessingMixins extends BaseForm {
 
 		for(var k in this.fieldsRefs) {
 			var f = this.fieldsRefs[k];
-			if(f.props.field.fieldType !== FIELD_TYPE_BUTTON_18 && f.props.field.fieldType !== FIELD_TYPE_TAB_17) {
+			if(f.props.field.fieldType !== FIELD_TYPE.BUTTON && f.props.field.fieldType !== FIELD_TYPE.TAB) {
 				await this.processFieldEvent(f.props.field, false);
 			}
 		}

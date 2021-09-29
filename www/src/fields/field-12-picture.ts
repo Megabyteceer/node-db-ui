@@ -7,9 +7,9 @@ import { BaseField, RefToInput } from "./base-field";
 import { Modal } from "../modal";
 import { Component } from "react";
 import { R } from "../r";
-import { FIELD_TYPE_PICTURE_12 } from "../bs-utils";
+import { FIELD_TYPE } from "../bs-utils";
 
-registerFieldClass(FIELD_TYPE_PICTURE_12, class PictureField extends BaseField {
+registerFieldClass(FIELD_TYPE.PICTURE, class PictureField extends BaseField {
 
 	cropperBody: CropperFieldBody;
 

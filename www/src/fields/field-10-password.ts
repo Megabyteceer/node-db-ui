@@ -1,9 +1,9 @@
-import { FIELD_TYPE_PASSWORD_10 } from "../bs-utils";
+import { FIELD_TYPE } from "../bs-utils";
 import { R } from "../r";
 import { registerFieldClass } from "../utils";
 import { BaseField } from "./base-field";
 
-registerFieldClass(FIELD_TYPE_PASSWORD_10, class PasswordField extends BaseField {
+registerFieldClass(FIELD_TYPE.PASSWORD, class PasswordField extends BaseField {
 
 	setValue(val) {
 		this.refToInput.value = val;

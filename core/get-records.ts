@@ -1,6 +1,6 @@
 import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHandlersNames, filtersById } from './describe-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
-import { ViewMask, throwError, assert, FIELD_TYPE_RATING_16, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_TEXT_1, PRIVILEGES_PUBLISH, PRIVILEGES_EDIT_ALL, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_OWN, PRIVILEGES_VIEW_ALL, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_OWN, PRIVILEGES_DELETE, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RICH_EDITOR_19, RecordData, RecordsData, RecId, VIEW_MASK_LIST, VIEW_MASK_CUSTOM_LIST } from "../www/src/bs-utils";
+import { ViewMask, throwError, assert, PRIVILEGES_PUBLISH, PRIVILEGES_EDIT_ALL, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_OWN, PRIVILEGES_VIEW_ALL, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_OWN, PRIVILEGES_DELETE, FIELD_TYPE, RecordData, RecordsData, RecId, VIEW_MASK_LIST, VIEW_MASK_CUSTOM_LIST } from "../www/src/bs-utils";
 import { UserSession } from './auth';
 
 const isASCII = (str) => {
@@ -50,16 +50,16 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 			const selectFieldName = f.selectFieldName;
 
 
-			if(fieldType === FIELD_TYPE_RATING_16) {
+			if(fieldType === FIELD_TYPE.RATING) {
 				selQ.push(tableName, '.rates_1,', tableName, '.rates_2,', tableName, '.rates_3,', tableName, '.rates_4,', tableName, '.rates_5,(SELECT rate FROM ', tableName, '_rates WHERE _recID=', tableName, '.id AND _usersID=', userSession.id as unknown as string, ' LIMIT 1) AS rates_y');
-			} else if(fieldType === FIELD_TYPE_LOOKUP_NtoM_14) {//n2m
+			} else if(fieldType === FIELD_TYPE.LOOKUP_NtoM) {//n2m
 				let tblTmpName = 't' + f.id;
 				if(f.lookupIcon) {
 					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name,'␞',", f.lookupIcon, ") SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
 				} else {
 					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name) SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
 				}
-			} else if(fieldType === FIELD_TYPE_LOOKUP_7) {//n21
+			} else if(fieldType === FIELD_TYPE.LOOKUP) {//n21
 				if(f.lookupIcon) {
 					selQ.push("(SELECT CONCAT(id,'␞',name,'␞',", f.lookupIcon, ") FROM ", selectFieldName, " AS t", fieldName, " WHERE ", tableName, ".", fieldName, "=t", fieldName, ".id LIMIT 1) AS `", fieldName, "`");
 				} else {
@@ -67,7 +67,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 				}
 			} else if(selectFieldName) {
 				selQ.push('(', selectFieldName.replaceAll('@userId', userSession.id.toString()), ')AS `', fieldName, '`');
-			} else if((viewMask === VIEW_MASK_LIST || viewMask === VIEW_MASK_CUSTOM_LIST) && (fieldType === FIELD_TYPE_TEXT_1 || fieldType === FIELD_TYPE_RICH_EDITOR_19) && f.maxLength > 500) {
+			} else if((viewMask === VIEW_MASK_LIST || viewMask === VIEW_MASK_CUSTOM_LIST) && (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.RICH_EDITOR) && f.maxLength > 500) {
 				selQ.push('SUBSTRING(', tableName, '.', fieldName, ',1,500) AS `', fieldName, '`');
 			} else {
 				selQ.push(tableName, '.', fieldName);
@@ -129,7 +129,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 
 
 			if(search && f.forSearch) {
-				if(isAsciiSearch || f.fieldType === FIELD_TYPE_TEXT_1) {
+				if(isAsciiSearch || f.fieldType === FIELD_TYPE.TEXT) {
 					if(!searchWHERE) {
 						searchWHERE = [];
 					} else {
@@ -142,7 +142,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 			if(filterFields.hasOwnProperty(fieldName)) {
 				if(f.forSearch) {
 					const fltVal = filterFields[fieldName];
-					if(f.fieldType === FIELD_TYPE_TEXT_1) {
+					if(f.fieldType === FIELD_TYPE.TEXT) {
 						wheres.push(" AND(LOWER(`", tableName, "`.`", fieldName, "`)=LOWER('", fltVal, '\'))');
 					} else {
 						wheres.push(" AND(`", tableName, "`.`", fieldName, "`=", fltVal, ')');
@@ -303,7 +303,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 				if(f.storeInDB && (f.show & viewMask)) {
 					const fieldType = f.fieldType;
 					const fieldName = f.fieldName;
-					if(fieldType === FIELD_TYPE_LOOKUP_NtoM_14 || fieldType === FIELD_TYPE_LOOKUP_1toN_15) { //n2m,12n
+					if(fieldType === FIELD_TYPE.LOOKUP_NtoM || fieldType === FIELD_TYPE.LOOKUP_1toN) { //n2m,12n
 						if(pag[fieldName]) {
 							let a = pag[fieldName].split('␞');
 							let val = [];
@@ -320,7 +320,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 							}
 							pag[fieldName] = val;
 						}
-					} else if(fieldType === FIELD_TYPE_LOOKUP_7) { //n21
+					} else if(fieldType === FIELD_TYPE.LOOKUP) { //n21
 						if(pag[fieldName]) {
 							let a = pag[fieldName].split('␞');
 							if(f.lookupIcon) {
@@ -331,7 +331,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 						} else {
 							pag[fieldName] = { id: 0, name: 'deleted record.' };
 						}
-					} else if(fieldType === FIELD_TYPE_RATING_16) {
+					} else if(fieldType === FIELD_TYPE.RATING) {
 						let r1 = pag.rates_1;
 						let r2 = pag.rates_2;
 						let r3 = pag.rates_3;

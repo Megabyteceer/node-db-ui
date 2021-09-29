@@ -1,4 +1,4 @@
-import { EnumList, FIELD_TYPE_ENUM_6 } from "../bs-utils";
+import { EnumList, FIELD_TYPE } from "../bs-utils";
 import { R } from "../r";
 import React from "react";
 import { Select } from "../components/select";
@@ -51,6 +51,6 @@ class EnumField extends BaseField {
 	}
 }
 
-registerFieldClass(FIELD_TYPE_ENUM_6, EnumField);
+registerFieldClass(FIELD_TYPE.ENUM, EnumField);
 
 export { EnumField };

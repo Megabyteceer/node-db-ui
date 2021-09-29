@@ -1,13 +1,13 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import { FIELD_TYPE_DATE_11 } from "../bs-utils";
+import { FIELD_TYPE } from "../bs-utils";
 import { R } from "../r";
 import moment from "moment";
 import { innerDateTimeFormat, readableDateFormat, registerFieldClass, renderIcon, toReadableDate } from "../utils";
 import { dateFieldMixins, ReactDateTimeClassHolder } from "./field-4-date-time";
 
-registerFieldClass(FIELD_TYPE_DATE_11, class DateField extends dateFieldMixins {
+registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 
 	static decodeValue(val) {
 		if(val === '0000-00-00 00:00:00') {

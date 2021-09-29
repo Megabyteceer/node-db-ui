@@ -6,7 +6,7 @@ import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } fro
 import { getRecords } from "../core/get-records";
 import { submitRecord } from "../core/submit";
 import { L } from "../core/locale";
-import { FIELD_TYPE_PASSWORD_10, FIELD_TYPE_DATE_11, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RATING_16, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_COLOR_20, FIELD_TYPE_FILE_21, FIELD_TYPE_NUMBER_2, FIELD_TYPE_DATE_TIME_4, FIELD_TYPE_BOOL_5, FIELD_TYPE_ENUM_6, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, FIELD_ID_MAX_LENGTH, NODE_ID_FIELDS, NODE_ID_NODES, PRIVILEGES_VIEW_ORG, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK_EDIT_CREATE } from "../www/src/bs-utils";
+import { FIELD_TYPE, FIELD_ID_MAX_LENGTH, NODE_ID_FIELDS, NODE_ID_NODES, PRIVILEGES_VIEW_ORG, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK_EDIT_CREATE } from "../www/src/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
@@ -32,7 +32,7 @@ const handlers: NodeEventsHandlers = {
 
 		const fieldType = data.fieldType;
 		const fieldName = data.fieldName;
-		if(fieldType === FIELD_TYPE_LOOKUP_1toN_15) {
+		if(fieldType === FIELD_TYPE.LOOKUP_1toN) {
 
 			const parentNode = await getRecords(NODE_ID_NODES, 1, data.node_fields_linker, userSession);
 
@@ -44,7 +44,7 @@ const handlers: NodeEventsHandlers = {
 				name: parentNode.singleName,
 				show: VIEW_MASK_EDIT_CREATE,
 				prior: 1000,
-				fieldType: FIELD_TYPE_LOOKUP_7,
+				fieldType: FIELD_TYPE.LOOKUP,
 				forSearch: 1,
 				selectFieldName: parentNode.tableName,
 				_usersID: userSession.id,
@@ -88,7 +88,7 @@ const handlers: NodeEventsHandlers = {
 				currentData = Object.assign(currentData, newData);
 
 				if((realFieldName !== '_organizationID') && (realFieldName !== '_usersID') && (realFieldName !== '_createdON') && (realFieldName !== 'id')) {
-					if(currentData.storeInDB && (fieldType !== FIELD_TYPE_STATIC_TEXT_8) && (fieldType !== FIELD_TYPE_LOOKUP_NtoM_14) && (fieldType !== FIELD_TYPE_LOOKUP_1toN_15)) {
+					if(currentData.storeInDB && (fieldType !== FIELD_TYPE.STATIC_TEXT) && (fieldType !== FIELD_TYPE.LOOKUP_NtoM) && (fieldType !== FIELD_TYPE.LOOKUP_1toN)) {
 						const typeQ = getFieldTypeSQL(currentData);
 						if(typeQ) {
 							const langs = getLangs();
@@ -135,8 +135,8 @@ export { createFieldInTable };
 
 function getFieldTypeSQL(data) {
 	switch(data.fieldType) {
-		case FIELD_TYPE_PASSWORD_10:
-		case FIELD_TYPE_TEXT_1:
+		case FIELD_TYPE.PASSWORD:
+		case FIELD_TYPE.TEXT:
 			if(data.maxLength <= 255) {
 				return 'VARCHAR(' + data.maxLength + ") NOT NULL DEFAULT ''";
 			} else if(data.maxLength <= 65535) {
@@ -144,29 +144,29 @@ function getFieldTypeSQL(data) {
 			} else {
 				return "MEDIUMTEXT NOT NULL DEFAULT ''";
 			}
-		case FIELD_TYPE_COLOR_20:
+		case FIELD_TYPE.COLOR:
 			return "BIGINT (11) UNSIGNED NOT NULL DEFAULT 4294967295";
-		case FIELD_TYPE_NUMBER_2:
+		case FIELD_TYPE.NUMBER:
 			if(data.maxLength <= 9) {
 				return 'INT(' + data.maxLength + ') NOT NULL DEFAULT 0';
 			} else {
 				return 'BIGINT(' + data.maxLength + ') NOT NULL DEFAULT 0';
 			}
-		case FIELD_TYPE_DATE_TIME_4:
-		case FIELD_TYPE_DATE_11:
+		case FIELD_TYPE.DATE_TIME:
+		case FIELD_TYPE.DATE:
 			return 'timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\'';
-		case FIELD_TYPE_BOOL_5:
+		case FIELD_TYPE.BOOL:
 			return "TINYINT(1) NOT NULL DEFAULT b'0'";
-		case FIELD_TYPE_ENUM_6:
-		case FIELD_TYPE_LOOKUP_7:
+		case FIELD_TYPE.ENUM:
+		case FIELD_TYPE.LOOKUP:
 			return 'BIGINT(15) UNSIGNED NOT NULL DEFAULT 0';
-		case FIELD_TYPE_PICTURE_12:
+		case FIELD_TYPE.PICTURE:
 			return "VARCHAR(32) NOT NULL DEFAULT ''";
-		case FIELD_TYPE_RATING_16:
-			throwError('Field type ' + FIELD_TYPE_RATING_16 + ' is not editable');
-		case FIELD_TYPE_RICH_EDITOR_19:
+		case FIELD_TYPE.RATING:
+			throwError('Field type ' + FIELD_TYPE.RATING + ' is not editable');
+		case FIELD_TYPE.RICH_EDITOR:
 			return "MEDIUMTEXT NOT NULL DEFAULT ''";
-		case FIELD_TYPE_FILE_21:
+		case FIELD_TYPE.FILE:
 			return "VARCHAR(127) NOT NULL DEFAULT ''";
 		default:
 			return false;
@@ -192,16 +192,16 @@ async function createFieldInTable(data: RecordDataWrite) {
 	const nodeName = node.tableName;
 	let linkedNodeName;
 
-	if(fieldType === FIELD_TYPE_LOOKUP_7 || fieldType === FIELD_TYPE_LOOKUP_NtoM_14 || fieldType === FIELD_TYPE_LOOKUP_1toN_15) {
+	if(fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_NtoM || fieldType === FIELD_TYPE.LOOKUP_1toN) {
 		const linkedNodeId = data.nodeRef;
 		linkedNodeName = getNodeDesc(linkedNodeId).tableName;
 
-		if(fieldType === FIELD_TYPE_LOOKUP_7 || fieldType === FIELD_TYPE_LOOKUP_NtoM_14) {
+		if(fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_NtoM) {
 
 			const filters = {
 				status: 1,
 				node_fields_linker: linkedNodeId,
-				fieldType: FIELD_TYPE_PICTURE_12
+				fieldType: FIELD_TYPE.PICTURE
 			};
 			const records = await getRecords(6, PRIVILEGES_VIEW_ORG, undefined, undefined, filters);
 			if(records.total) {
@@ -210,9 +210,9 @@ async function createFieldInTable(data: RecordDataWrite) {
 		}
 	}
 
-	if(fieldType === FIELD_TYPE_LOOKUP_1toN_15) {
+	if(fieldType === FIELD_TYPE.LOOKUP_1toN) {
 		data.storeInDB = 0;
-	} else if(fieldType === FIELD_TYPE_LOOKUP_NtoM_14) {
+	} else if(fieldType === FIELD_TYPE.LOOKUP_NtoM) {
 
 		data.selectFieldName = linkedNodeName;
 		data.forSearch = 1;
@@ -231,7 +231,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 			FOREIGN KEY (\`${fld2}\`) REFERENCES \`${linkedNodeName}\`(id) ON DELETE CASCADE ON UPDATE CASCADE
 		) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4; `);
 	} else if(data.storeInDB) {
-		if(fieldType === FIELD_TYPE_LOOKUP_7) {
+		if(fieldType === FIELD_TYPE.LOOKUP) {
 			data.forSearch = 1;
 			data.selectFieldName = linkedNodeName;
 		}
@@ -246,7 +246,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 
 			await mysqlExec(altQ.join(''));
 
-			if(fieldType === FIELD_TYPE_LOOKUP_7) {
+			if(fieldType === FIELD_TYPE.LOOKUP) {
 				await mysqlExec('ALTER TABLE \`' + nodeName + '\` ADD INDEX(\`' + fieldName + '\`);');
 				await mysqlExec('ALTER TABLE \`' + nodeName + '\` ADD FOREIGN KEY (\`' + fieldName + '\`) REFERENCES \`' + linkedNodeName + '\`(id) ON DELETE RESTRICT ON UPDATE RESTRICT;');
 			}

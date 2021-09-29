@@ -1,5 +1,5 @@
 import React from "react";
-import { FIELD_TYPE_LOOKUP_1toN_15, NodeDesc, RecId, RecordData, RecordsData } from "../bs-utils";
+import { FIELD_TYPE, NodeDesc, RecordData } from "../bs-utils";
 import { FormListItem } from "../forms/form-list-item";
 import { assignFilters, Filters } from "../utils";
 import { LookupManyToManyFiled } from "./field-14-many-to-many";
@@ -49,7 +49,7 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 
 		var parentId = props.wrapper.props.form.props.initialData.id || props.wrapper.props.form.filters[props.field.fieldName] || 'new';
 
-		if(props.field.fieldType === FIELD_TYPE_LOOKUP_1toN_15) {
+		if(props.field.fieldType === FIELD_TYPE.LOOKUP_1toN) {
 			ret[props.field.fieldName + '_linker'] = parentId;
 		}/* else {
 			ret[props.field.fieldName] = parentId;

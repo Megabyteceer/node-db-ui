@@ -1,9 +1,9 @@
-import { FIELD_TYPE_NUMBER_2 } from "../bs-utils";
+import { FIELD_TYPE } from "../bs-utils";
 import { R } from "../r";
 import { registerFieldClass } from "../utils";
 import { BaseField } from "./base-field";
 
-registerFieldClass(FIELD_TYPE_NUMBER_2, class NumericField extends BaseField {
+registerFieldClass(FIELD_TYPE.NUMBER, class NumericField extends BaseField {
 
 	setValue(val) {
 		this.refToInput.value = val;

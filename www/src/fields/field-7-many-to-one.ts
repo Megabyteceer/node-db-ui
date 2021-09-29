@@ -1,4 +1,4 @@
-import { FIELD_TYPE_LOOKUP_7, RecId, RecordData } from "../bs-utils";
+import { FIELD_TYPE, RecId, RecordData } from "../bs-utils";
 import { R } from "../r";
 import React from "react";
 import ReactDOM from "react-dom";
@@ -7,7 +7,7 @@ import { idToImgURL, L, renderIcon, scrollToVisible, sp } from "../utils";
 import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
 
-registerFieldClass(FIELD_TYPE_LOOKUP_7, class LookupManyToOneFiled extends fieldLookupMixins {
+registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLookupMixins {
 	isEnterCreateThroughList: boolean;
 
 	constructor(props) {

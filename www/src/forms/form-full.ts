@@ -1,12 +1,12 @@
 
 import { FieldWrap } from "../fields/field-wrap";
-import { backupCreationData, CLIENT_SIDE_FORM_EVENTS, consoleLog, deleteRecord, getBackupData, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord } from "../utils";
+import { backupCreationData, CLIENT_SIDE_FORM_EVENTS, deleteRecord, getBackupData, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord } from "../utils";
 import { FormTab } from "./form-tab";
 import { eventProcessingMixins } from "./event-processing-mixins";
 import { NodeAdmin } from "../admin/node-admin";
 import { LoadingIndicator } from "../loading-indicator";
 import { R } from "../r";
-import { FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_TAB_17, FIELD_TYPE_BOOL_5, FIELD_TYPE_LOOKUP_7, PRIVILEGES_PUBLISH, RecId, RecordData, FieldDesc } from "../bs-utils";
+import { FIELD_TYPE, PRIVILEGES_PUBLISH, RecordData, FieldDesc } from "../bs-utils";
 import React from "react";
 import { iAdmin } from "../user";
 import { HotkeyButton } from "../components/hotkey-button";
@@ -77,7 +77,7 @@ class FormFull extends eventProcessingMixins {
 		var fields = this.props.node.fields;
 		for(var k in fields) {
 			var f = fields[k];
-			if((f.fieldType === FIELD_TYPE_LOOKUP_1toN_15) && this.isFieldVisibleByFormViewMask(f)) {
+			if((f.fieldType === FIELD_TYPE.LOOKUP_1toN) && this.isFieldVisibleByFormViewMask(f)) {
 				this.currentData[f.fieldName] = this.getField(f.fieldName).getBackupData();
 			}
 		}
@@ -211,11 +211,11 @@ class FormFull extends eventProcessingMixins {
 			var val = this.currentData[field.fieldName];
 
 			if(field.sendToServer) {
-				if((field.fieldType === FIELD_TYPE_LOOKUP_NtoM_14)) {
+				if((field.fieldType === FIELD_TYPE.LOOKUP_NtoM)) {
 					if(!n2mValuesEqual(this.props.initialData[field.fieldName], val)) {
 						data[field.fieldName] = val.map(v => v.id);
 					}
-				} else if((field.fieldType === FIELD_TYPE_LOOKUP_7)) {
+				} else if((field.fieldType === FIELD_TYPE.LOOKUP)) {
 
 					var cVal = val;
 					var iVal = this.props.initialData[field.fieldName];
@@ -337,7 +337,7 @@ class FormFull extends eventProcessingMixins {
 					}
 				}
 
-				if((field.fieldType === FIELD_TYPE_TAB_17) && (field.maxLength === 0) && !this.isSubForm()) {//tab
+				if((field.fieldType === FIELD_TYPE.TAB) && (field.maxLength === 0) && !this.isSubForm()) {//tab
 					var isDefaultTab;
 					if(!tabs) {
 						tabs = [];
@@ -365,7 +365,7 @@ class FormFull extends eventProcessingMixins {
 						fields
 					});
 					tabs.push(currentTab);
-				} else if(this.props.editable || data[field.fieldName] || !field.storeInDB || (field.fieldType === FIELD_TYPE_LOOKUP_1toN_15) || field.fieldType >= 100) {
+				} else if(this.props.editable || data[field.fieldName] || !field.storeInDB || (field.fieldType === FIELD_TYPE.LOOKUP_1toN) || field.fieldType >= 100) {
 					var tf = React.createElement(FieldWrap, {
 						ref,
 						key: field.id,
@@ -388,8 +388,8 @@ class FormFull extends eventProcessingMixins {
 		if(this.props.isCompact) {
 			fields.sort((a, b) => {
 
-				var alow = (a.props.field.fieldType === FIELD_TYPE_LOOKUP_1toN_15 || a.props.field.fieldType === FIELD_TYPE_LOOKUP_NtoM_14 || a.props.field.fieldType === FIELD_TYPE_BOOL_5);
-				var blow = (b.props.field.fieldType === FIELD_TYPE_LOOKUP_1toN_15 || b.props.field.fieldType === FIELD_TYPE_LOOKUP_NtoM_14 || b.props.field.fieldType === FIELD_TYPE_BOOL_5);
+				var alow = (a.props.field.fieldType === FIELD_TYPE.LOOKUP_1toN || a.props.field.fieldType === FIELD_TYPE.LOOKUP_NtoM || a.props.field.fieldType === FIELD_TYPE.BOOL);
+				var blow = (b.props.field.fieldType === FIELD_TYPE.LOOKUP_1toN || b.props.field.fieldType === FIELD_TYPE.LOOKUP_NtoM || b.props.field.fieldType === FIELD_TYPE.BOOL);
 				if(alow !== blow) {
 					if(alow) {
 						return 1;

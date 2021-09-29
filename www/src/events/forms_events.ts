@@ -1,6 +1,6 @@
 import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation, getNode, myAlert, getData } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FIELD_TYPE_PASSWORD_10, FIELD_TYPE_PICTURE_12, FIELD_TYPE_LOOKUP_NtoM_14, FIELD_TYPE_LOOKUP_1toN_15, FIELD_TYPE_RATING_16, FIELD_TYPE_TAB_17, FIELD_TYPE_BUTTON_18, FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_NUMBER_2, FIELD_TYPE_LOOKUP_7, FIELD_TYPE_STATIC_TEXT_8, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession, NODE_ID_USERS, NODE_TYPE, VIEW_MASK_EDIT_CREATE, VIEW_MASK_LIST, VIEW_MASK_READONLY, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_DROPDOWN_LOOKUP } from "../bs-utils";
+import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession, NODE_ID_USERS, NODE_TYPE, VIEW_MASK_EDIT_CREATE, VIEW_MASK_LIST, VIEW_MASK_READONLY, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_DROPDOWN_LOOKUP } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -248,7 +248,7 @@ class FormEvents extends FormFull {
 			}
 		}
 
-		(this.getField('fieldType').fieldRef as EnumField).setFilterValues([FIELD_TYPE_RATING_16]); //TODO ratings is not implemented
+		(this.getField('fieldType').fieldRef as EnumField).setFilterValues([FIELD_TYPE.RATING]); //TODO ratings is not implemented
 
 		if(this.isNewRecord) {
 			if(isNaN(this.fieldValue("show"))) {
@@ -292,7 +292,7 @@ class FormEvents extends FormFull {
 			else
 				this.setFieldValue("visibility_customList", 0);
 
-			if(this.fieldValue("fieldType") === FIELD_TYPE_PICTURE_12 || this.fieldValue("fieldType") === FIELD_TYPE_RICH_EDITOR_19) {
+			if(this.fieldValue("fieldType") === FIELD_TYPE.PICTURE || this.fieldValue("fieldType") === FIELD_TYPE.RICH_EDITOR) {
 				this.setFieldValue("height", this.fieldValue("maxLength") % 10000);
 				this.setFieldValue("width", Math.floor(this.fieldValue("maxLength") / 10000));
 			}
@@ -324,13 +324,13 @@ class FormEvents extends FormFull {
 				let fieldsFilter: Filters = {
 					fieldName: fName
 				}
-				if(this.fieldValue('fieldType') !== FIELD_TYPE_LOOKUP_NtoM_14) {
+				if(this.fieldValue('fieldType') !== FIELD_TYPE.LOOKUP_NtoM) {
 					fieldsFilter.node_fields_linker = nodeId;
 				}
 				getNodeData(6, undefined, fieldsFilter).then((data) => {
 					if(this._fieldsNameIsBad) return;
 					if(data.items.length > 0) {
-						if(this.fieldValue('fieldType') === FIELD_TYPE_LOOKUP_NtoM_14) {
+						if(this.fieldValue('fieldType') === FIELD_TYPE.LOOKUP_NtoM) {
 							this.fieldAlert('fieldName', L('LOOKUP_NAME_NOT_UNIQUE'));
 						} else {
 							this.fieldAlert('fieldName', L('FLD_EXISTS'));
@@ -353,7 +353,7 @@ class FormEvents extends FormFull {
 			}
 
 			if(nodeId && fn && fn.length >= 3) {
-				if((this.fieldValue("fieldType") === FIELD_TYPE_LOOKUP_1toN_15) && nodeRef) {
+				if((this.fieldValue("fieldType") === FIELD_TYPE.LOOKUP_1toN) && nodeRef) {
 					checkFieldExists(fn + '_linker', nodeRef);
 				} else {
 					checkFieldExists(fn, nodeId);
@@ -365,7 +365,7 @@ class FormEvents extends FormFull {
 	_fields_onSave() {
 		var fieldType = this.fieldValue("fieldType");
 
-		if(fieldType === FIELD_TYPE_LOOKUP_7 || fieldType === FIELD_TYPE_LOOKUP_NtoM_14 || fieldType === FIELD_TYPE_LOOKUP_1toN_15) {
+		if(fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_NtoM || fieldType === FIELD_TYPE.LOOKUP_1toN) {
 			if(this.isFieldEmpty('nodeRef')) {
 				this.fieldAlert('nodeRef', L('REQUIRED_FLD'));
 			}
@@ -379,7 +379,7 @@ class FormEvents extends FormFull {
 			this.fieldAlert('fieldName', L('NO_NUMERIC_NAME'));
 		}
 
-		if(fieldType === FIELD_TYPE_PICTURE_12 || fieldType === FIELD_TYPE_RICH_EDITOR_19) {
+		if(fieldType === FIELD_TYPE.PICTURE || fieldType === FIELD_TYPE.RICH_EDITOR) {
 			if(!this.fieldValue("height")) {
 				this.fieldAlert("height", L('REQUIRED_FLD'));
 			}
@@ -395,7 +395,7 @@ class FormEvents extends FormFull {
 
 		if(!this.fieldValue('maxLength')) {
 			this.setFieldValue('maxLength', 0);
-			if((fieldType === FIELD_TYPE_TEXT_1) || (fieldType === FIELD_TYPE_NUMBER_2) || (fieldType === FIELD_TYPE_PASSWORD_10)) {
+			if((fieldType === FIELD_TYPE.TEXT) || (fieldType === FIELD_TYPE.NUMBER) || (fieldType === FIELD_TYPE.PASSWORD)) {
 				this.fieldAlert('maxLength', L('REQUIRED_FLD'));
 			}
 		}
@@ -410,7 +410,7 @@ class FormEvents extends FormFull {
 			this.hideField('selectFieldName');
 		}
 
-		if((fieldType === FIELD_TYPE_STATIC_TEXT_8) || (fieldType === FIELD_TYPE_TAB_17) || (fieldType === FIELD_TYPE_BUTTON_18)) {
+		if((fieldType === FIELD_TYPE.STATIC_TEXT) || (fieldType === FIELD_TYPE.TAB) || (fieldType === FIELD_TYPE.BUTTON)) {
 			this.setFieldValue('storeInDB', 0);
 		}
 		if(this._fieldsNameIsBad) {

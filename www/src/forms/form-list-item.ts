@@ -1,6 +1,6 @@
 import { ComponentProps, R } from "../r";
 import React from "react";
-import { FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_NUMBER_2, FIELD_TYPE_LOOKUP_7, Filters, NodeDesc, RecordData } from "../bs-utils";
+import { FIELD_TYPE, Filters, NodeDesc, RecordData } from "../bs-utils";
 import { FieldWrap } from "../fields/field-wrap";
 import { deleteRecord, draftRecord, isRecordRestrictedForDeletion, L, publishRecord, renderIcon, sp } from "../utils";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
@@ -136,9 +136,9 @@ class FormListItem extends BaseForm {
 			var field = nodeFields[k];
 			if(this.isFieldVisibleByFormViewMask(field)) {
 				let className = 'form-item-row';
-				if(field.fieldType === FIELD_TYPE_NUMBER_2) {
+				if(field.fieldType === FIELD_TYPE.NUMBER) {
 					className += ' form-item-row-num';
-				} else if(field.fieldType !== FIELD_TYPE_TEXT_1 && field.fieldType !== FIELD_TYPE_RICH_EDITOR_19 && field.fieldType !== FIELD_TYPE_LOOKUP_7) {
+				} else if(field.fieldType !== FIELD_TYPE.TEXT && field.fieldType !== FIELD_TYPE.RICH_EDITOR && field.fieldType !== FIELD_TYPE.LOOKUP) {
 					className += ' form-item-row-misc'
 				}
 
