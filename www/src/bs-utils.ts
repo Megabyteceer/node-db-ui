@@ -220,12 +220,14 @@ interface GetRecordsParams {
 }
 
 type BoolNum = 0 | 1;
-type TRoleId = number;
 type FieldType = number;
 
-const ADMIN_ROLE_ID: TRoleId = 1;
-const GUEST_ROLE_ID: TRoleId = 2;
-const USER_ROLE_ID: TRoleId = 3;
+enum ROLE_ID {
+	ADMIN = 1,
+	GUEST = 2,
+	USER = 3
+}
+
 
 
 const FIELD_TYPE_TEXT_1: FieldType = 1;
@@ -345,7 +347,7 @@ export {
 	NODE_ID_PAGES, NODE_ID_ENUMERATIONS, NODE_ID_ENUMERATION_VALUES,
 	NODE_ID_ERROR_REPORTS, NODE_ID_FILES, NODE_ID_LOGIN, NODE_ID_REGISTER, NODE_ID_RESET,
 
-	USER_ROLE_ID, ADMIN_ROLE_ID, GUEST_ROLE_ID,
+	ROLE_ID,
 
 	PRIVILEGES_VIEW_OWN, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_ALL, PRIVILEGES_CREATE, PRIVILEGES_EDIT_OWN, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_ALL,
 	PRIVILEGES_DELETE, PRIVILEGES_PUBLISH, PRIVILEGES_ANY,
@@ -362,5 +364,5 @@ export {
 	VIEW_MASK_DROPDOWN_LOOKUP, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_ALL,
 
 	ViewMask, RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList,
-	PrivilegesMask, UserLangEntry, TRoleId, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
+	PrivilegesMask, UserLangEntry, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
 };

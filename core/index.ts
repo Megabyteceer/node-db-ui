@@ -7,7 +7,7 @@ import { performance } from 'perf_hooks';
 import { getBoundary, parse } from 'parse-multipart-data';
 import './locale';
 import { mysqlDebug } from "./mysql-connection";
-import { GUEST_ROLE_ID } from "../www/src/bs-utils";
+import { ROLE_ID } from "../www/src/bs-utils";
 
 const server = createServer();
 
@@ -122,7 +122,7 @@ server.on('request', (req, res) => {
 						}
 						/// #endif
 
-						if(isUserHaveRole(GUEST_ROLE_ID, userSession)) {
+						if(isUserHaveRole(ROLE_ID.GUEST, userSession)) {
 							ret.isGuest = true;
 						}
 

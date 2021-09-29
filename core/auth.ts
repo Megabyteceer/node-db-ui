@@ -1,7 +1,7 @@
 import ENV from "../ENV";
 import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "./mysql-connection";
 import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from "./describe-node";
-import { throwError, NODE_ID_USERS, GUEST_ROLE_ID, USER_ROLE_ID, assert, UserLangEntry, UserRoles, UserSession, TRoleId, ADMIN_ROLE_ID } from "../www/src/bs-utils";
+import { throwError, NODE_ID_USERS, assert, UserLangEntry, UserRoles, UserSession, ROLE_ID } from "../www/src/bs-utils";
 import { pbkdf2, randomBytes } from "crypto";
 import { L } from "./locale";
 import { submitRecord } from "./submit";
@@ -192,11 +192,11 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 	let cacheKeyGenerator: string[];
 	let userRoles: UserRoles = {};
 	if(userID === 2) {
-		userRoles[GUEST_ROLE_ID] = 1;
-		cacheKeyGenerator = [GUEST_ROLE_ID as unknown as string]
+		userRoles[ROLE_ID.GUEST] = 1;
+		cacheKeyGenerator = [ROLE_ID.GUEST as unknown as string]
 	} else {
-		userRoles[USER_ROLE_ID] = 1;
-		cacheKeyGenerator = [USER_ROLE_ID as unknown as string]
+		userRoles[ROLE_ID.USER] = 1;
+		cacheKeyGenerator = [ROLE_ID.USER as unknown as string]
 	}
 	for(let role of roles) {
 		cacheKeyGenerator.push(role._rolesID);
@@ -330,16 +330,16 @@ const notificationOut = (userSession: UserSession, text: string) => {
 }
 
 const shouldBeAuthorized = (userSession: UserSession) => {
-	if(!userSession || userSession.__temporaryServerSideSession || isUserHaveRole(GUEST_ROLE_ID, userSession)) {
+	if(!userSession || userSession.__temporaryServerSideSession || isUserHaveRole(ROLE_ID.GUEST, userSession)) {
 		throwError("operation permitted for authorized user only");
 	}
 }
 
 const isAdmin = (userSession: UserSession) => {
-	return !userSession || isUserHaveRole(ADMIN_ROLE_ID, userSession);
+	return !userSession || isUserHaveRole(ROLE_ID.ADMIN, userSession);
 }
 
-const isUserHaveRole = (roleId: TRoleId, userSession: UserSession) => {
+const isUserHaveRole = (roleId: ROLE_ID, userSession: UserSession) => {
 	return userSession && userSession.userRoles[roleId];
 }
 

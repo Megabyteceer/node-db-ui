@@ -4,7 +4,7 @@ import type { LANG_KEYS } from "../locales/en/lang";
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
-import { ADMIN_ROLE_ID, assert, FieldDesc, FIELD_TYPE_TEXT_1, Filters, GetRecordsParams, HASH_DIVIDER, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, TRoleId, USER_ROLE_ID } from "./bs-utils";
+import { assert, FieldDesc, FIELD_TYPE_TEXT_1, Filters, GetRecordsParams, HASH_DIVIDER, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, ROLE_ID } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
@@ -843,12 +843,12 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 	});
 }
 
-const isUserHaveRole = (roleId: TRoleId) => {
+const isUserHaveRole = (roleId: ROLE_ID) => {
 	return User.currentUserData && User.currentUserData.userRoles[roleId];
 }
 
 const isAdmin = () => {
-	return isUserHaveRole(ADMIN_ROLE_ID);
+	return isUserHaveRole(ROLE_ID.ADMIN);
 }
 
 async function publishRecord(nodeId, recId) {

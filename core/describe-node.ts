@@ -3,7 +3,7 @@ import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import ENV from "../ENV";
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession, usersSessionsStartedCount } from "./auth";
-import { throwError, assert, FIELD_TYPE_ENUM_6, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_DROPDOWN_LOOKUP, GUEST_ROLE_ID, ADMIN_ROLE_ID, NODE_ID_NODES, NODE_ID_FIELDS, NODE_ID_FILTERS, NODE_TYPE } from "../www/src/bs-utils";
+import { throwError, assert, FIELD_TYPE_ENUM_6, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_DROPDOWN_LOOKUP, ROLE_ID, NODE_ID_NODES, NODE_ID_FIELDS, NODE_ID_FILTERS, NODE_TYPE } from "../www/src/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
@@ -298,10 +298,10 @@ async function initNodesData() { // load whole nodes data in to memory
 		, "dev-admin-session-token"
 		/// #endif
 	));
-	assert(isUserHaveRole(ADMIN_ROLE_ID, ADMIN_USER_SESSION), "User with id 1 expected to be admin.");
+	assert(isUserHaveRole(ROLE_ID.ADMIN, ADMIN_USER_SESSION), "User with id 1 expected to be admin.");
 	Object.assign(GUEST_USER_SESSION, await authorizeUserByID(2, true, 'guest-session'));
 	GUEST_USER_SESSION.isGuest = true;
-	assert(isUserHaveRole(GUEST_ROLE_ID, GUEST_USER_SESSION), "User with id 2 expected to be guest.");
+	assert(isUserHaveRole(ROLE_ID.GUEST, GUEST_USER_SESSION), "User with id 2 expected to be guest.");
 	/// #if DEBUG
 	await authorizeUserByID(3, undefined, "dev-user-session-token");
 	/// #endif
