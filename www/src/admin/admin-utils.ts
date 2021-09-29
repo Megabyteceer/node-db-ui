@@ -50,79 +50,49 @@ class admin {
 			var f;
 			var i;
 
-			if(field.fieldType === FIELD_TYPE_TAB_17) {
-				if(field.maxLength === 0) { //two tabs exchanging
+			if(field.fieldType === FIELD_TYPE_TAB_17) { //two tabs exchanging
+				i = fieldIndex;
+				group1.push(fields[i]);
+				i++;
+				while(i < fields.length && i >= 0) {
+					f = fields[i];
 
-					i = fieldIndex;
-					group1.push(fields[i]);
+					if(f.fieldType === FIELD_TYPE_TAB_17 && f.maxLength === 0) {
+						break;
+					}
+					group1.push(f);
 					i++;
-					while(i < fields.length && i >= 0) {
-						f = fields[i];
+				}
 
-						if(f.fieldType === FIELD_TYPE_TAB_17 && f.maxLength === 0) {
-							break;
-						}
-						group1.push(f);
-						i++;
-					}
-
-					if(direction < 0) {
-						if(fieldIndex > 0) {
-							i = fieldIndex - 1;
-							while(i > 0) {
-								var f = fields[i];
-								if(f.fieldType === FIELD_TYPE_TAB_17 && f.maxLength === 0) {
-									break;
-								}
-								i--;
-							}
-							while(i < fieldIndex) {
-								group2.push(fields[i]);
-								i++;
-							}
-						}
-					} else {
-						if(i < fields.length) {
-							group2.push(fields[i]);
-							i++;
-							while(i < fields.length) {
-								var f = fields[i];
-								if(f.fieldType === FIELD_TYPE_TAB_17 && f.maxLength === 0) {
-									break;
-								}
-								group2.push(f);
-								i++;
-							}
-						}
-					}
-
-				} else { //compact area exchange
-
-					group1.push(fields[fieldIndex]);
-					i = fieldIndex + 1;
-					while(fields[i].isCompactNested) {
-						group1.push(fields[i]);
-						i++;
-					}
-					if(direction < 0) {
+				if(direction < 0) {
+					if(fieldIndex > 0) {
 						i = fieldIndex - 1;
-						while(fields[i].isCompactNested) {
+						while(i > 0) {
+							var f = fields[i];
+							if(f.fieldType === FIELD_TYPE_TAB_17 && f.maxLength === 0) {
+								break;
+							}
 							i--;
 						}
 						while(i < fieldIndex) {
 							group2.push(fields[i]);
 							i++;
 						}
-					} else {
+					}
+				} else {
+					if(i < fields.length) {
 						group2.push(fields[i]);
 						i++;
-						while(fields[i].isCompactNested) {
-							group2.push(fields[i]);
+						while(i < fields.length) {
+							var f = fields[i];
+							if(f.fieldType === FIELD_TYPE_TAB_17 && f.maxLength === 0) {
+								break;
+							}
+							group2.push(f);
 							i++;
 						}
 					}
 				}
-
 			} else { //field and field exchange;
 
 				group1.push(fields[fieldIndex]);

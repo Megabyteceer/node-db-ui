@@ -1,6 +1,4 @@
 
-Remove compact area tab functionality
-
 сконвертить все в енумы
 
 бекап формы при модалах ломатеся.

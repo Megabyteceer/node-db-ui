@@ -12,7 +12,6 @@ import "./fields/field-12-picture";
 import "./fields/field-14-many-to-many";
 import "./fields/field-15-one-to-many";
 import "./fields/field-16-rating";
-import "./fields/field-17-compact-area";
 import "./fields/field-18-button";
 import "./fields/field-19-rich-editor";
 import "./fields/field-20-color";

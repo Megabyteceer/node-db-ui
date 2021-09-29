@@ -324,9 +324,6 @@ class FormFull extends eventProcessingMixins {
 		var forcedValues = this.props.filters;
 		var currentTab;
 		var currentTabName;
-		var currentCompactAreaName;
-		var currentCompactAreaFields = [];
-		var currentCompactAreaCounter = 0;
 
 		for(var k in nodeFields) {
 			let field = nodeFields[k];
@@ -341,7 +338,6 @@ class FormFull extends eventProcessingMixins {
 				}
 
 				if((field.fieldType === FIELD_TYPE_TAB_17) && (field.maxLength === 0) && !this.isSubForm()) {//tab
-					currentCompactAreaCounter = 0;//terminate compact area nesting
 					var isDefaultTab;
 					if(!tabs) {
 						tabs = [];
@@ -377,33 +373,12 @@ class FormFull extends eventProcessingMixins {
 						initialValue: data[field.fieldName],
 						form: this, parentTabName: currentTabName,
 						isEdit: this.props.editable,
-						subFields: currentCompactAreaFields,
-						parentCompactAreaName: currentCompactAreaName,
-						isCompact: this.props.isCompact || (currentCompactAreaCounter > 0),
+						isCompact: this.props.isCompact,
 						hidden: (this.hiddenFields.hasOwnProperty(field.fieldNamePure) || (forcedValues.hasOwnProperty(field.fieldNamePure))),
 						fieldDisabled: this.isFieldDisabled(field.fieldNamePure) || forcedValues.hasOwnProperty(field.fieldNamePure)
 					});
 
-
-					if((field.fieldType === FIELD_TYPE_TAB_17) && (field.maxLength >= 0) && !this.isSubForm()) {//compact area
-						currentCompactAreaCounter = 0;//terminate compact area nesting
-					}
-
-					if(currentCompactAreaCounter > 0) {
-						field.isCompactNested = true;
-						currentCompactAreaFields.push(tf);
-						currentCompactAreaCounter--;
-						if(currentCompactAreaCounter === 0) {
-							currentCompactAreaFields = [];
-							currentCompactAreaName = undefined;
-						}
-					} else {
-						fields.push(tf);
-					}
-					if((field.fieldType === FIELD_TYPE_TAB_17) && (field.maxLength >= 0) && !this.isSubForm()) {//compact area
-						currentCompactAreaCounter = field.maxLength;
-						currentCompactAreaName = field.fieldName;
-					}
+					fields.push(tf);
 				}
 			}
 		}

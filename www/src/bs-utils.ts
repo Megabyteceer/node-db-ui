@@ -146,9 +146,6 @@ interface FieldDesc {
 
 	/** fields which contains other languages data for that field */
 	childrenFields?: FieldDesc[];
-
-	/** used to group fields together in compactArea. Client side only field  */
-	isCompactNested?: boolean;
 }
 
 interface FilterDesc {

@@ -330,9 +330,6 @@ class eventProcessingMixins extends BaseForm {
 	fieldAlert(fieldName: string, text: string = '', isSuccess?: boolean, focus: boolean = !isSuccess) {
 		assert(fieldName, "fieldName expected");
 		var f = this.getField(fieldName);
-		if(f && f.props.parentCompactAreaName) {
-			f = this.getField(f.props.parentCompactAreaName);
-		}
 		if(f) {
 			if(typeof isSuccess === 'undefined') {
 				isSuccess = !Boolean(text);

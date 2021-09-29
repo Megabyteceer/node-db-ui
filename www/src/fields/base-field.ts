@@ -24,10 +24,8 @@ interface FieldProps {
 	wrapper: FieldWrap;
 	initialValue: any;
 	parentTabName?: string;
-	parentCompactAreaName?: string;
 	additionalButtons?: AdditionalButtonsRenderer;
 	isTable?: boolean;
-	subFields?: FieldWrap[]
 }
 
 interface FieldState {

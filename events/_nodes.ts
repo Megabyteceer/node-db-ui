@@ -76,7 +76,7 @@ const handlers: NodeEventsHandlers = {
 
 			if(data.addCreatorUserFld) {
 				const createdByQ = `INSERT INTO _fields
-				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,          \`fieldName\`,  \`selectFieldName\`,  \`name\`,                            \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`, \`nodeRef\`,          \`icon\`) VALUES
+				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,          \`fieldName\`,  \`selectFieldName\`,  \`name\`,                            \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`, \`nodeRef\`,          \`lookupIcon\`) VALUES
 				(${createdID},           1,           ${VIEW_MASK_LIST | VIEW_MASK_READONLY},   4,        ${FIELD_TYPE_LOOKUP_7}, '_usersID',     '_users',            '${L('FIELD_OWNER', userSession)}',   '',              0,              0,              0,           0,             1,            1,             ${NODE_ID_USERS},    'avatar');`;
 				await mysqlExec(createdByQ);
 			}

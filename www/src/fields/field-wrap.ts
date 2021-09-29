@@ -263,7 +263,7 @@ class FieldWrap extends Component<FieldProps, any> {
 		}
 
 		var fieldAdmin;
-		if(iAdmin() && !field.lang && (!this.props.isCompact || this.props.parentCompactAreaName)) {
+		if(iAdmin() && !field.lang && (!this.props.isCompact)) {
 			fieldAdmin = React.createElement(FieldAdmin, { field, form: this.props.form });
 		}
 
