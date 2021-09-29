@@ -213,6 +213,9 @@ class FieldWrap extends Component<FieldProps, any> {
 			this.clearChangeTimeout();
 			this.sendCurrentValueToForm();
 		}
+		if(this.fieldRef.forceBouncingTimeout) {
+			this.fieldRef.forceBouncingTimeout();
+		}
 	}
 
 	valueListener(newVal, withBounceDelay, sender) {
@@ -286,9 +289,6 @@ class FieldWrap extends Component<FieldProps, any> {
 		}
 
 		if(this.props.isCompact) {
-			if(this.props.isTable) {
-				className += ' field-wrap-table-cell';
-			}
 			var tooltip;
 			if(this.state.showToolTip) {
 				tooltip = R.span({ className: 'field-wrap-tooltip' },

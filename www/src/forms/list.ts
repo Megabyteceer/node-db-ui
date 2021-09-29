@@ -4,7 +4,7 @@ import { FieldAdmin } from "../admin/field-admin";
 import { NodeAdmin } from "../admin/node-admin";
 import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
 import { FormFull } from "./form-full";
-import { FormItem } from "./form-item";
+import { FormListItem } from "./form-list-item";
 import { BaseForm, FormProps, FormState } from "./base-form";
 import React from "react";
 import { iAdmin } from "../user";
@@ -414,9 +414,7 @@ class List extends BaseForm<ListProps, ListState> {
 						renderIcon('times')
 					)
 				)
-
 			}
-
 
 			if(createButton || searchPanel) {
 				header = R.div({ className: 'list-header' },
@@ -434,8 +432,6 @@ class List extends BaseForm<ListProps, ListState> {
 			if(!body) {
 				var tableHeader = [];
 				node.fields.some((field) => {
-
-
 					var fieldAdmin;
 					if(iAdmin()) {
 						fieldAdmin = React.createElement(FieldAdmin, { field, form: this });
@@ -475,7 +471,7 @@ class List extends BaseForm<ListProps, ListState> {
 				var hideControls = this.props.hideControls || this.state.hideControls || (this.props.filters && this.props.filters.hideControls);
 
 				var lines = data.items.map((item) => {
-					return React.createElement(FormItem, { key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, parentForm: this.props.parentForm, additionalButtons, hideControls: hideControls, isLookup: this.props.isLookup, list: this, node, initialData: item });
+					return React.createElement(FormListItem, { key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, parentForm: this.props.parentForm, additionalButtons, hideControls: hideControls, isLookup: this.props.isLookup, list: this, node, initialData: item });
 				});
 
 				body = R.table({ className: 'list-table' },

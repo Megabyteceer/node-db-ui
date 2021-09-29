@@ -17,6 +17,7 @@ import "./fields/field-18-button";
 import "./fields/field-19-rich-editor";
 import "./fields/field-20-color";
 import "./fields/field-21-file";
+import "./fields/field-22-splitter";
 import "./views/view_5_users";
 import { Stage } from "./stage";
 

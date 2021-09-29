@@ -103,6 +103,14 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 		}
 	}
 
+	forceBouncingTimeout() {
+		if(this.inlineEditable) {
+			for(let subForm of this.inlineListRef.getSubForms()) {
+				subForm.forceBouncingTimeout();
+			}
+		}
+	}
+
 	render() {
 		var field = this.props.field;
 		var askToSaveParentBeforeCreation = !this.props.form.props.initialData.hasOwnProperty('id');

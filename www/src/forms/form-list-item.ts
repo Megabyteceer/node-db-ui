@@ -4,7 +4,7 @@ import { FIELD_TYPE_RICH_EDITOR_19, FIELD_TYPE_TEXT_1, FIELD_TYPE_NUMBER_2, FIEL
 import { FieldWrap } from "../fields/field-wrap";
 import { deleteRecord, draftRecord, isRecordRestrictedForDeletion, L, publishRecord, renderIcon, sp } from "../utils";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
-import { eventProcessingMixins } from "./event-processing-mixins";
+import { BaseForm } from "./base-form";
 
 const publishClick = (draft, node, data) => {
 	if(draft) {
@@ -14,7 +14,7 @@ const publishClick = (draft, node, data) => {
 	}
 }
 
-const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormItem, editButtonFilters?: Filters): React.Component[] => {
+const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormListItem, editButtonFilters?: Filters): React.Component[] => {
 	if(formItem && formItem.props.isLookup) {
 		if(data.hasOwnProperty('isE')) {
 			buttons = [
@@ -112,11 +112,10 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 }
 
 
-class FormItem extends eventProcessingMixins {
+class FormListItem extends BaseForm {
 
 	constructor(props) {
 		super(props);
-		this.isListItem = true;
 	}
 
 	isFieldVisibleByFormViewMask(field) {
@@ -183,4 +182,4 @@ class FormItem extends eventProcessingMixins {
 	}
 }
 
-export { renderItemsButtons, FormItem };
+export { renderItemsButtons, FormListItem };

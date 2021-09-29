@@ -49,8 +49,6 @@ class eventProcessingMixins extends BaseForm {
 
 	private disabledFields: { [key: string]: 1 | null };
 
-	isListItem?: boolean;
-
 	/** dont close form after it is saved */
 	isPreventCloseFormAfterSave?: boolean;
 
@@ -83,9 +81,7 @@ class eventProcessingMixins extends BaseForm {
 	}
 
 	componentDidMount() {
-		if(!this.isListItem) {
-			this.callOnTabShowEvent(this.props.filters.tab);
-		}
+		this.callOnTabShowEvent(this.props.filters.tab);
 	}
 
 	isFieldVisibleByFormViewMask(field) {

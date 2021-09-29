@@ -409,7 +409,6 @@ input[readonly] {
 	width: 100%;
 	box-shadow: 5px 0px 6px -3px #aaa;
 	vertical-align: top;
-	overflow: hidden;
 }
 
 .left-bar-item {
@@ -696,7 +695,7 @@ input[readonly] {
 }
 
 .field-wrap {
-	margin: 10px 0 30px 0;
+	margin: 20px 0 10px 0;
 }
 
 .field-wrap.field-container-type-8 {
@@ -721,10 +720,6 @@ input[readonly] {
 	display: inline-block;
 	vertical-align: middle;
 	margin: 1px;
-}
-
-.field-wrap-table-cell {
-	width: 30%;
 }
 
 .field-wrap-value {
@@ -914,9 +909,8 @@ input[readonly] {
 .field-boolean {
 	cursor: pointer;
 	display: inline-block;
-	width: 20px;
-	height: 20px;
-	margin: 6px 10px 6px 0;
+	width: 30px;
+	height: 30px;
 	vertical-align: middle;
 	border: 2px solid #ccc;
 	border-radius: 4px;
@@ -925,6 +919,7 @@ input[readonly] {
 
 .field-boolean-check {
 	display: inline-block;
+	font-size: 160%;
 	position: absolute;
 	margin-left: -6px;
 }
@@ -1153,6 +1148,10 @@ input[readonly] {
 	max-width: 824px;
 }
 
+.inline-editable-item .form-full {
+	padding-left: 0;
+}
+
 .form-layer-modal .form-modal-container {
 	position: relative;
 	max-width: 1124px;
@@ -1182,7 +1181,7 @@ input[readonly] {
 }
 
 .form .header-tabs {
-	margin: 50px 0;
+	margin: 20px 0 20px 0;
 	border-bottom: 1px solid #ccc;
 }
 
@@ -1232,14 +1231,18 @@ input[readonly] {
 	opacity: 0.5;
 }
 
-.fields-splitter {
-	font-size: 70%;
-	color: var(--BRAND_COLOR_SHINE);
+.field-container-type-22 {
 	margin-top: 30px;
+	margin-left: -20px;
 	background: var(--BRAND_COLOR);
-	padding: 10px 0 10px 27%;
-	border-top-left-radius: 10px;
-	border-top-right-radius: 10px;
+	padding: 5px;
+	padding-left: 20px;
+	border-radius: 10px;
+}
+
+
+.field-container-type-22 .field-wrap-label {
+	color: var(--BRAND_COLOR_SHINE);
 }
 
 .form-tab-highlight {

@@ -175,12 +175,12 @@ class FieldAdmin extends Component<any, any> {
 		}
 
 		return R.span({
-			className: 'admin-control admin-control-field admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
+			className: 'admin-control admin-control-field admin-form-wrap ' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
 			R.span({
-				className: 'half-visible admin-form-open-btn' + border,
-				onMouseEnter: this.onShow
+				className: 'half-visible admin-form-open-btn clickable' + border,
+				onClick: this.onShow
 			},
 				renderIcon('wrench')
 			),

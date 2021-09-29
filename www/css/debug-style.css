@@ -94,8 +94,9 @@
 }
 
 .field-wrap .admin-form-wrap {
-	display: inline-flex;
-	right: 0;
+	right: -26px;
+	top: -20px;
+	font-size: 85%;
 }
 
 
@@ -116,11 +117,11 @@
 	display: inline-block;
 	vertical-align: top;
 	margin-top: -5px;
-	color: #800;
+	color: rgb(61, 61, 61);
 	padding: 10px;
 	border-radius: 5px;
-	background: #fee;
-	border: 1px solid #ebb;
+	background: rgb(212, 212, 212);
+	border: 1px solid rgb(156, 156, 156);
 }
 
 .admin-control-field .admin-form-body {
@@ -173,8 +174,8 @@
 }
 
 .admin-form-btn {
-	background: #944;
-	color: #fcc;
+	background: rgb(114, 114, 114);
+	color: rgb(255, 255, 255);
 	padding-left: 6px;
 	padding-right: 6px;
 }

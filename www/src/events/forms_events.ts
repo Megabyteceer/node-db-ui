@@ -7,6 +7,7 @@ import { User } from "../user";
 import { EnumField } from "../fields/field-6-enum";
 import { R } from "../r";
 import { ENV } from "../main-frame";
+import type { LookupOneToManyFiled } from "../fields/field-15-one-to-many";
 
 let uiLanguageIsChanged;
 
@@ -435,8 +436,18 @@ class FormEvents extends FormFull {
 	}
 
 	_enums_onSave() {
-		//TODO check if all values unique
-
+		let ret;
+		let exists = {};
+		let valuesForms = (this.getField('values').fieldRef as LookupOneToManyFiled).inlineListRef.getSubForms();
+		for(let form of valuesForms) {
+			let val = form.fieldValue('value');
+			if(exists[val]) {
+				ret = true;
+				form.fieldAlert('value', L('VALUE_EXISTS'));
+			}
+			exists[val] = true;
+		}
+		return ret;
 	}
 
 	_filters_onLoad() {
@@ -509,6 +520,18 @@ class FormEvents extends FormFull {
 				});
 
 			}
+		}
+	}
+
+	_enum_values_onLoad() {
+		if(this.isNewRecord && this.props.parentForm) {
+			let maxEnumVal = 0;
+			for(var item of this.props.parentForm.getBackupData()) {
+				if(item.value > maxEnumVal) {
+					maxEnumVal = item.value;
+				}
+			}
+			this.setFieldValue('value', maxEnumVal + 1);
 		}
 	}
 

@@ -1,5 +1,5 @@
 import { R } from "../r";
-import { renderItemsButtons } from "../forms/form-item";
+import { renderItemsButtons } from "../forms/form-list-item";
 import { idToImgURL, registerListRenderer, renderIcon } from "../utils";
 import { List } from "../forms/list";
 

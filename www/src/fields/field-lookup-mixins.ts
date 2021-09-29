@@ -1,11 +1,11 @@
 import React from "react";
 import { FIELD_TYPE_LOOKUP_1toN_15, NodeDesc, RecId, RecordData, RecordsData } from "../bs-utils";
-import { FormItem } from "../forms/form-item";
+import { FormListItem } from "../forms/form-list-item";
 import { assignFilters, Filters } from "../utils";
 import { LookupManyToManyFiled } from "./field-14-many-to-many";
 import { BaseField, FieldProps, FieldState } from "./base-field";
 
-type AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormItem | LookupManyToManyFiled, editButtonFilters?: Filters) => React.Component[];
+type AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormListItem | LookupManyToManyFiled, editButtonFilters?: Filters) => React.Component[];
 
 interface LookupFieldState extends FieldState {
 	filters?: Filters;

@@ -45,6 +45,7 @@ interface RefToInput extends Component {
 class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = FieldState> extends Component<T, T2> {
 
 	refToInput: RefToInput;
+	forceBouncingTimeout?(): void;
 
 	constructor(props) {
 		assert(props.field, '"field" property  expected.');
