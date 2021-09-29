@@ -1034,39 +1034,18 @@ function shakeDomElement(e) {
 };
 
 function getItem(name: string, def?: any) {
-	if(typeof (Storage) !== "undefined") {
-		if(localStorage.hasOwnProperty(name)) {
-			return JSON.parse(localStorage[name]);
-		}
+	if(localStorage.hasOwnProperty(name)) {
+		return JSON.parse(localStorage[name]);
 	}
 	return def;
 }
 
 function setItem(name, val) {
-	if(typeof (Storage) !== "undefined") {
-		localStorage.setItem(name, JSON.stringify(val));
-	}
+	localStorage.setItem(name, JSON.stringify(val));
 }
 
 function removeItem(name) {
-	if(typeof (Storage) !== "undefined") {
-		localStorage.removeItem(name);
-	}
-}
-
-function backupCreationData(nodeId, data) {
-	// TODO: get prefix of all parent nodes
-	setItem('backup_for_node' + nodeId, data);
-}
-
-function getBackupData(nodeId) {
-	// TODO: get prefix of all parent nodes
-	return getItem('backup_for_node' + nodeId) || {};
-}
-
-function removeBackup(nodeId) {
-	// TODO: get prefix of all parent nodes
-	removeItem('backup_for_node' + nodeId);
+	localStorage.removeItem(name);
 }
 
 function keepInWindow(body) {
@@ -1227,9 +1206,6 @@ export {
 	checkFileSize,
 	strip_tags,
 	keepInWindow,
-	removeBackup,
-	getBackupData,
-	backupCreationData,
 	getItem,
 	setItem,
 	removeItem,

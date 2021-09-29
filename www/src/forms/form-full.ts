@@ -1,6 +1,6 @@
 
 import { FieldWrap } from "../fields/field-wrap";
-import { backupCreationData, CLIENT_SIDE_FORM_EVENTS, deleteRecord, getBackupData, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeBackup, renderIcon, submitRecord } from "../utils";
+import { CLIENT_SIDE_FORM_EVENTS, deleteRecord, getItem, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, submitRecord } from "../utils";
 import { FormTab } from "./form-tab";
 import { eventProcessingMixins } from "./event-processing-mixins";
 import { NodeAdmin } from "../admin/node-admin";
@@ -8,21 +8,20 @@ import { LoadingIndicator } from "../loading-indicator";
 import { R } from "../r";
 import { FIELD_TYPE, PRIVILEGES_MASK, RecordData, FieldDesc } from "../bs-utils";
 import React from "react";
-import { iAdmin } from "../user";
+import { iAdmin, User } from "../user";
 import { HotkeyButton } from "../components/hotkey-button";
 import { FieldAdmin } from "../admin/field-admin";
 
-var backupCallback;
-
-function tryBackup() {
-	if(backupCallback) {
-		backupCallback();
-	}
+const sortEntries = (a, b) => {
+	return (a[0] > b[0]) ? 1 : -1;
 }
-
-
-window.addEventListener('unload', tryBackup);
-setInterval(tryBackup, 15000);
+const linkerEntriesFilter = (entry) => {
+	return typeof entry[1] === 'object';
+}
+const entryToKey = (entry) => {
+	const val = entry[1];
+	return entry[0] + '=' + val.id;
+}
 
 async function callForEachField(fieldRefs, data, functionName) {
 	for(let k of Object.keys(fieldRefs)) {
@@ -42,6 +41,8 @@ async function callForEachField(fieldRefs, data, functionName) {
 
 class FormFull extends eventProcessingMixins {
 
+	backupInterval: NodeJS.Timeout;
+
 	constructor(props) {
 		super(props);
 		this.currentData = Object.assign({}, props.filters, props.initialData);
@@ -49,23 +50,39 @@ class FormFull extends eventProcessingMixins {
 
 		this.showAllDebug = false;
 		this.disableDrafting = false;
+
+		this.tryBackupData = this.tryBackupData.bind(this);
+	}
+
+	tryBackupData() {
+		if(!this.currentData.id && !this.props.inlineEditable && this.editable) {
+			this.prepareToBackup();
+			setItem(this._getBackupKey(), this.currentData);
+		}
+	}
+
+	_getBackupKey() {
+		return 'backup_for_node:' + User.currentUserData.id + ':' + this.props.node.id + ':' + Object.entries(this.props.filters).filter(linkerEntriesFilter).sort(sortEntries).map(entryToKey).join();
 	}
 
 	componentDidMount() {
 		super.componentDidMount(); // TODO merge base class
 		this.recoveryBackupIfNeed();
 		this.onShow();
-		backupCallback = this.backupCurrentDataIfNeed.bind(this);
+
 		if(this.props.overrideOrderData >= 0) {
 			if(this.getField('order')) {
 				this.hideField('order');
 			}
 		}
+
+		window.addEventListener('unload', this.tryBackupData);
+		this.backupInterval = setInterval(this.tryBackupData, 15000);
 	}
 
 	recoveryBackupIfNeed() {
 		if(!this.currentData.id && !this.props.inlineEditable) {
-			var backup = getBackupData(this.props.node.id);
+			var backup = getItem(this._getBackupKey());
 			if(backup) {
 				this.currentData = Object.assign(backup, this.filters);
 				this.resendDataToFields();
@@ -83,20 +100,14 @@ class FormFull extends eventProcessingMixins {
 		}
 	}
 
-	backupCurrentDataIfNeed() {
-		if(!this.currentData.id && !this.props.inlineEditable) {
-			this.prepareToBackup();
-			backupCreationData(this.props.node.id, this.currentData);
-		}
-	}
-
 	deleteBackup() {
-		removeBackup(this.props.node.id);
+		removeItem(this._getBackupKey());
 	}
 
 	componentWillUnmount() {
-		backupCallback = null;
-		this.backupCurrentDataIfNeed();
+		window.removeEventListener('unload', this.tryBackupData);
+		this.tryBackupData();
+		clearInterval(this.backupInterval);
 	}
 
 	resendDataToFields() {
@@ -256,6 +267,7 @@ class FormFull extends eventProcessingMixins {
 				this.currentData.id = recId;
 				this.props.initialData.id = recId;
 			}
+			this.deleteBackup();
 			//renew current data
 			this.currentData = Object.assign(this.currentData, data);
 			//renew initial data;
@@ -281,7 +293,7 @@ class FormFull extends eventProcessingMixins {
 
 			await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE, recId);
 
-			this.deleteBackup();
+
 		} else {
 			await callForEachField(this.fieldsRefs, data, 'afterSave');
 		}
