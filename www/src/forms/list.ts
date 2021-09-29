@@ -1,5 +1,5 @@
 import { R } from "../r";
-import { FIELD_TYPE, PRIVILEGES_CREATE, RecordsData } from "../bs-utils";
+import { FIELD_TYPE, PRIVILEGES_MASK, RecordsData } from "../bs-utils";
 import { FieldAdmin } from "../admin/field-admin";
 import { NodeAdmin } from "../admin/node-admin";
 import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
@@ -335,7 +335,7 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 
 		var createBtn;
-		if(node.privileges & PRIVILEGES_CREATE) {
+		if(node.privileges & PRIVILEGES_MASK.CREATE) {
 			createBtn = R.div(null,
 				R.button({ title: L('ADD', (node.creationName || node.singleName)), className: 'clickable tool-btn create-btn', onClick: () => { data.items.push({}); this.forceUpdate(); } },
 					renderIcon('plus')
@@ -377,7 +377,7 @@ class List extends BaseForm<ListProps, ListState> {
 
 		if(!this.props.omitHeader) {
 			var createButton;
-			if((node.privileges & PRIVILEGES_CREATE) && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
+			if((node.privileges & PRIVILEGES_MASK.CREATE) && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
 				if(this.isSubForm()) {
 					createButton = R.button({
 						className: 'clickable create-button', onClick: async () => {

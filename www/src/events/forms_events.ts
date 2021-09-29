@@ -1,6 +1,6 @@
 import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation, getNode, myAlert, getData } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession, NODE_ID_USERS, NODE_TYPE, VIEW_MASK_EDIT_CREATE, VIEW_MASK_LIST, VIEW_MASK_READONLY, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_DROPDOWN_LOOKUP } from "../bs-utils";
+import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession, NODE_ID_USERS, NODE_TYPE, VIEW_MASK } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -267,27 +267,27 @@ class FormEvents extends FormFull {
 			}
 
 		} else {
-			if(this.fieldValue("show") & VIEW_MASK_EDIT_CREATE)
+			if(this.fieldValue("show") & VIEW_MASK.EDITABLE)
 				this.setFieldValue("visibility_create", 1)
 			else
 				this.setFieldValue("visibility_create", 0);
 
-			if(this.fieldValue("show") & VIEW_MASK_READONLY)
+			if(this.fieldValue("show") & VIEW_MASK.READONLY)
 				this.setFieldValue("visibility_view", 1)
 			else
 				this.setFieldValue("visibility_view", 0);
 
-			if(this.fieldValue("show") & VIEW_MASK_LIST)
+			if(this.fieldValue("show") & VIEW_MASK.LIST)
 				this.setFieldValue("visibility_list", 1)
 			else
 				this.setFieldValue("visibility_list", 0);
 
-			if(this.fieldValue("show") & VIEW_MASK_DROPDOWN_LOOKUP)
+			if(this.fieldValue("show") & VIEW_MASK.DROPDOWN_LIST)
 				this.setFieldValue("visibility_dropdownList", 1)
 			else
 				this.setFieldValue("visibility_dropdownList", 0);
 
-			if(this.fieldValue("show") & VIEW_MASK_CUSTOM_LIST)
+			if(this.fieldValue("show") & VIEW_MASK.CUSTOM_LIST)
 				this.setFieldValue("visibility_customList", 1)
 			else
 				this.setFieldValue("visibility_customList", 0);

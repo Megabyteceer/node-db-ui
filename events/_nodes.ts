@@ -2,7 +2,7 @@
 import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "../core/mysql-connection";
 import { shouldBeAdmin } from "../core/admin/admin";
 import { NodeEventsHandlers, reloadMetadataSchedule } from "../core/describe-node";
-import { FIELD_TYPE, NODE_ID_ORGANIZATIONS, NODE_ID_USERS, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK_ALL, VIEW_MASK_LIST, VIEW_MASK_READONLY, NODE_TYPE } from "../www/src/bs-utils";
+import { FIELD_TYPE, NODE_ID_ORGANIZATIONS, NODE_ID_USERS, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, NODE_TYPE } from "../www/src/bs-utils";
 import { L } from "../core/locale";
 
 const handlers: NodeEventsHandlers = {
@@ -56,13 +56,13 @@ const handlers: NodeEventsHandlers = {
 			//create default fields
 			const mainFieldQ = `INSERT INTO \`_fields\`
 				(\`node_fields_linker\`, \`status\`, \`show\`,          \`prior\`, \`fieldType\`,         \`fieldName\`, \`selectFieldName\`, \`name\`,                           \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`) VALUES
-				(${createdID},             1,          ${VIEW_MASK_ALL},  1,        ${FIELD_TYPE.TEXT}, 'name',        '',                  '${L('FIELD_NAME', userSession)}',   '',              64,             1,               0,         0,            1,             0);`;
+				(${createdID},             1,          ${VIEW_MASK.ALL},  1,        ${FIELD_TYPE.TEXT}, 'name',        '',                  '${L('FIELD_NAME', userSession)}',   '',              64,             1,               0,         0,            1,             0);`;
 			await mysqlExec(mainFieldQ);
 
 			if(data.addCreatedOnFiled) {
 				const createdOnQ = `INSERT INTO \`_fields\`
 				(\`node_fields_linker\`,  \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,                \`fieldName\`,    \`selectFieldName\`, \`name\`,                                \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`) VALUES
-				(${createdID},            1,          ${VIEW_MASK_LIST | VIEW_MASK_READONLY},   2,         ${FIELD_TYPE.DATE_TIME},     '_createdON',    '',                  '${L('FIELD_CREATED_ON', userSession)}',  '',             0,              0,               0,           0,            1,             1);`;
+				(${createdID},            1,          ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   2,         ${FIELD_TYPE.DATE_TIME},     '_createdON',    '',                  '${L('FIELD_CREATED_ON', userSession)}',  '',             0,              0,               0,           0,            1,             1);`;
 				const dateFieldId = (await mysqlExec(createdOnQ) as mysqlInsertResult).insertId;
 				await mysqlExec('UPDATE _nodes SET _fieldsID=' + dateFieldId + ', reverse = 1 WHERE id=' + createdID);
 			}
@@ -70,14 +70,14 @@ const handlers: NodeEventsHandlers = {
 			if(data.addCreatedByFiled) {
 				const createdByQ = `INSERT INTO _fields
 				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,            \`fieldName\`,      \`selectFieldName\`, \`name\`,                                \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`, \`nodeRef\`) VALUES
-				(${createdID},            1,          ${VIEW_MASK_LIST | VIEW_MASK_READONLY},   3,         ${FIELD_TYPE.LOOKUP},  '_organizationID', '_organization',     '${L('FIELD_ORGANIZATION', userSession)}', '',              0,            0,               0,           0,           1,              1,             ${NODE_ID_ORGANIZATIONS});`;
+				(${createdID},            1,          ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   3,         ${FIELD_TYPE.LOOKUP},  '_organizationID', '_organization',     '${L('FIELD_ORGANIZATION', userSession)}', '',              0,            0,               0,           0,           1,              1,             ${NODE_ID_ORGANIZATIONS});`;
 				await mysqlExec(createdByQ);
 			}
 
 			if(data.addCreatorUserFld) {
 				const createdByQ = `INSERT INTO _fields
 				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,          \`fieldName\`,  \`selectFieldName\`,  \`name\`,                            \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`, \`nodeRef\`,          \`lookupIcon\`) VALUES
-				(${createdID},           1,           ${VIEW_MASK_LIST | VIEW_MASK_READONLY},   4,        ${FIELD_TYPE.LOOKUP}, '_usersID',     '_users',            '${L('FIELD_OWNER', userSession)}',   '',              0,              0,              0,           0,             1,            1,             ${NODE_ID_USERS},    'avatar');`;
+				(${createdID},           1,           ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   4,        ${FIELD_TYPE.LOOKUP}, '_usersID',     '_users',            '${L('FIELD_OWNER', userSession)}',   '',              0,              0,              0,           0,             1,            1,             ${NODE_ID_USERS},    'avatar');`;
 				await mysqlExec(createdByQ);
 			}
 		}

@@ -9,11 +9,11 @@ import { Modal } from "./modal";
 import { Notify } from "./notify";
 import { Stage } from "./stage";
 import { TopBar } from "./top-bar";
-import { getData } from "./utils";
+import { getData, goToPageByHash } from "./utils";
 import { User } from "./user";
 
 const ENV: any = {};
-
+var isFirstCall = true;
 
 class MainFrame extends Component<any, any> {
 	static instance: MainFrame;
@@ -58,6 +58,10 @@ class MainFrame extends Component<any, any> {
 			}
 		}
 		this.forceUpdate();
+		if(isFirstCall) {
+			isFirstCall = false;
+			goToPageByHash();
+		}
 	}
 
 	render() {

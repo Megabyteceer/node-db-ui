@@ -1,6 +1,6 @@
 import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHandlersNames, filtersById } from './describe-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
-import { ViewMask, throwError, assert, PRIVILEGES_PUBLISH, PRIVILEGES_EDIT_ALL, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_OWN, PRIVILEGES_VIEW_ALL, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_OWN, PRIVILEGES_DELETE, FIELD_TYPE, RecordData, RecordsData, RecId, VIEW_MASK_LIST, VIEW_MASK_CUSTOM_LIST } from "../www/src/bs-utils";
+import { throwError, assert, PRIVILEGES, FIELD_TYPE, RecordData, RecordsData, RecId, VIEW_MASK } from "../www/src/bs-utils";
 import { UserSession } from './auth';
 
 const isASCII = (str) => {
@@ -21,9 +21,9 @@ const EMPTY_RATING = { all: 0 };
 										['r'] = reverse order;
 										['filterId'] = filter's id to be applied on result;
 */
-async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: RecId, userSession: UserSession): Promise<RecordData>;
-async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId[], userSession: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
-async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId | number[], userSession: UserSession = ADMIN_USER_SESSION, filterFields: any = EMPTY_FILTERS, search?: string): Promise<RecordData | RecordsData> {
+async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: RecId, userSession: UserSession): Promise<RecordData>;
+async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecId[], userSession: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
+async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecId | number[], userSession: UserSession = ADMIN_USER_SESSION, filterFields: any = EMPTY_FILTERS, search?: string): Promise<RecordData | RecordsData> {
 
 	let node = getNodeDesc(nodeId, userSession);
 
@@ -67,7 +67,7 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 				}
 			} else if(selectFieldName) {
 				selQ.push('(', selectFieldName.replaceAll('@userId', userSession.id.toString()), ')AS `', fieldName, '`');
-			} else if((viewMask === VIEW_MASK_LIST || viewMask === VIEW_MASK_CUSTOM_LIST) && (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.RICH_EDITOR) && f.maxLength > 500) {
+			} else if((viewMask === VIEW_MASK.LIST || viewMask === VIEW_MASK.CUSTOM_LIST) && (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.RICH_EDITOR) && f.maxLength > 500) {
 				selQ.push('SUBSTRING(', tableName, '.', fieldName, ',1,500) AS `', fieldName, '`');
 			} else {
 				selQ.push(tableName, '.', fieldName);
@@ -246,17 +246,17 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 	let privileges = node.privileges;
 	if(userSession) {
 
-		if((privileges & (PRIVILEGES_EDIT_OWN | PRIVILEGES_EDIT_ORG | PRIVILEGES_EDIT_ALL | PRIVILEGES_PUBLISH)) !== 0) {
+		if((privileges & (PRIVILEGES.EDIT_OWN | PRIVILEGES.EDIT_ORG | PRIVILEGES.EDIT_ALL | PRIVILEGES.PUBLISH)) !== 0) {
 			wheresBegin.push("(", tableName, ".status > 0)");
 		} else {
 			wheresBegin.push("(", tableName, ".status = 1)");
 		}
 
-		if(privileges & PRIVILEGES_VIEW_ALL) {
+		if(privileges & PRIVILEGES.VIEW_ALL) {
 
-		} else if((privileges & PRIVILEGES_VIEW_ORG) && (userSession.orgId !== 0)) {
+		} else if((privileges & PRIVILEGES.VIEW_ORG) && (userSession.orgId !== 0)) {
 			wheresBegin.push(" AND (", tableName, "._organizationID=", userSession.orgId as unknown as string, ')');
-		} else if(privileges & PRIVILEGES_VIEW_OWN) {
+		} else if(privileges & PRIVILEGES.VIEW_OWN) {
 			if(tableName !== '_messages') {
 				wheresBegin.push(" AND (", tableName, "._usersID=", userSession.id as unknown as string, ')');
 			} else {
@@ -278,19 +278,19 @@ async function getRecords(nodeId: RecId, viewMask: ViewMask, recId: null | RecId
 	for(let pag of items) {
 
 		if(viewMask) {
-			if(privileges & PRIVILEGES_EDIT_ALL) {
+			if(privileges & PRIVILEGES.EDIT_ALL) {
 				pag.isE = 1;
-			} else if((privileges & PRIVILEGES_EDIT_ORG) && (userSession.orgId !== 0) && (pag.creatorORG === userSession.orgId)) {
+			} else if((privileges & PRIVILEGES.EDIT_ORG) && (userSession.orgId !== 0) && (pag.creatorORG === userSession.orgId)) {
 				pag.isE = 1;
-			} else if((privileges & PRIVILEGES_EDIT_OWN) && (pag.creatorUSER === userSession.id)) {
+			} else if((privileges & PRIVILEGES.EDIT_OWN) && (pag.creatorUSER === userSession.id)) {
 				pag.isE = 1;
 			}
 
 			if(pag.isE) {
-				if(privileges & PRIVILEGES_DELETE) {
+				if(privileges & PRIVILEGES.DELETE) {
 					pag.isD = 1;
 				}
-				if(node.draftable && (privileges & PRIVILEGES_PUBLISH)) {
+				if(node.draftable && (privileges & PRIVILEGES.PUBLISH)) {
 					pag.isP = 1;
 				}
 			} else {

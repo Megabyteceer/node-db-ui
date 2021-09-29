@@ -1,6 +1,6 @@
 ﻿import React from "react";
 
-import { getData, getItem, goToPageByHash, idToImgURL, isAdmin, L, renderIcon, setItem } from "./utils";
+import { getData, getItem, idToImgURL, isAdmin, L, renderIcon, setItem } from "./utils";
 import { Select } from "./components/select";
 import { ENV, MainFrame } from "./main-frame";
 import moment from "moment";
@@ -20,8 +20,6 @@ function setUserOrg(orgId) {
 function iAdmin() {
 	return User.currentUserData && isAdmin();
 }
-
-let isFirstCall = true;
 
 class User extends Component<any, any> {
 	static sessionToken: string;
@@ -50,11 +48,6 @@ class User extends Component<any, any> {
 		User.sessionToken = data.sessionToken;
 		setItem('cud-js-session-token', User.sessionToken);
 		MainFrame.instance.reloadOptions();
-		if(isFirstCall) {
-			isFirstCall = false;
-			goToPageByHash();
-		}
-
 	}
 
 	changeOrg(value) {

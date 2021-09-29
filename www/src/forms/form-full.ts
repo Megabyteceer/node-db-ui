@@ -6,7 +6,7 @@ import { eventProcessingMixins } from "./event-processing-mixins";
 import { NodeAdmin } from "../admin/node-admin";
 import { LoadingIndicator } from "../loading-indicator";
 import { R } from "../r";
-import { FIELD_TYPE, PRIVILEGES_PUBLISH, RecordData, FieldDesc } from "../bs-utils";
+import { FIELD_TYPE, PRIVILEGES_MASK, RecordData, FieldDesc } from "../bs-utils";
 import React from "react";
 import { iAdmin } from "../user";
 import { HotkeyButton } from "../components/hotkey-button";
@@ -434,7 +434,7 @@ class FormFull extends eventProcessingMixins {
 			}
 
 			if(this.props.editable) {
-				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.privileges & PRIVILEGES_PUBLISH)) {
+				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.privileges & PRIVILEGES_MASK.PUBLISH)) {
 					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: node.storeForms ? L('SAVE') : node.matchName }, this.isSubForm() ? renderIcon('check') : renderIcon(node.storeForms ? 'floppy-o' : node.icon), node.storeForms ? (this.isSubForm() ? '' : (this.saveButtonTitle || L('SAVE'))) : node.matchName);
 				} else {
 					if(data.status === 1) {

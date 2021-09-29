@@ -1,4 +1,4 @@
-import { NODE_TYPE, PRIVILEGES_CREATE, PRIVILEGES_DELETE, PRIVILEGES_EDIT_OWN, PRIVILEGES_PUBLISH, PRIVILEGES_VIEW_OWN, RecordData } from "../bs-utils";
+import { NODE_TYPE, PRIVILEGES_MASK, RecordData } from "../bs-utils";
 import { R } from "../r";
 import React, { Component } from "react";
 import { BaseForm } from "../forms/base-form";
@@ -152,27 +152,27 @@ class AdminRolePrivilegesForm extends BaseForm {
 					}, i.name),
 					React.createElement(PrivilegesEditor, {
 						bitsCount: 3,
-						baseBit: PRIVILEGES_VIEW_OWN,
+						baseBit: PRIVILEGES_MASK.VIEW_OWN,
 						item: i
 					}),
 					React.createElement(PrivilegesEditor, {
 						bitsCount: 1,
-						baseBit: PRIVILEGES_CREATE,
+						baseBit: PRIVILEGES_MASK.CREATE,
 						item: i
 					}),
 					React.createElement(PrivilegesEditor, {
 						bitsCount: 3,
-						baseBit: PRIVILEGES_EDIT_OWN,
+						baseBit: PRIVILEGES_MASK.EDIT_OWN,
 						item: i
 					}),
 					React.createElement(PrivilegesEditor, {
 						bitsCount: 1,
-						baseBit: PRIVILEGES_DELETE,
+						baseBit: PRIVILEGES_MASK.DELETE,
 						item: i
 					}),
 					node.draftable ? React.createElement(PrivilegesEditor, {
 						bitsCount: 1,
-						baseBit: PRIVILEGES_PUBLISH,
+						baseBit: PRIVILEGES_MASK.PUBLISH,
 						item: i
 					}) : undefined
 				)

@@ -1,6 +1,5 @@
 import {
-	throwError, FIELD_TYPE, PRIVILEGES_ANY,
-	PRIVILEGES_PUBLISH, assert, PRIVILEGES_CREATE, RecId, RecordDataWrite, VIEW_MASK_DROPDOWN_LOOKUP
+	throwError, FIELD_TYPE, PRIVILEGES, assert, RecId, RecordDataWrite, VIEW_MASK
 } from "../www/src/bs-utils";
 
 import ENV from "../ENV";
@@ -29,7 +28,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 	let node = getNodeDesc(nodeId);
 	let currentData;
 	if(recId !== null) {
-		currentData = await getRecords(nodeId, PRIVILEGES_ANY, recId, userSession);
+		currentData = await getRecords(nodeId, VIEW_MASK.ALL, recId, userSession);
 	}
 
 	const tableName = node.tableName;
@@ -37,7 +36,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 	let filesToDelete;
 
 	if(node.draftable) {
-		if((privileges & PRIVILEGES_PUBLISH) === 0) {
+		if((privileges & PRIVILEGES.PUBLISH) === 0) {
 			if(recId !== null) {
 				if(currentData.status !== 1) {
 					data.status = 2;
@@ -60,7 +59,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			throwError('Update access denied.');
 		}
 	} else {
-		if(!(node.privileges & PRIVILEGES_CREATE)) {
+		if(!(node.privileges & PRIVILEGES.CREATE)) {
 			throwError('Creation access denied: ' + node.id);
 		}
 	}
@@ -248,7 +247,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 							case FIELD_TYPE.LOOKUP:
 								if(!isAdmin(userSession) && fieldVal) {
-									await getRecords(f.nodeRef, VIEW_MASK_DROPDOWN_LOOKUP, fieldVal, userSession); //check if you have read access to referenced item
+									await getRecords(f.nodeRef, VIEW_MASK.DROPDOWN_LIST, fieldVal, userSession); //check if you have read access to referenced item
 								}
 								insQ.push(fieldVal);
 								break;

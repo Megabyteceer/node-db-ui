@@ -88,7 +88,7 @@ interface FieldDesc {
 	/** maximal data length in database */
 	maxLength: number;
 
-	show: ViewMask;
+	show: VIEW_MASK;
 
 	/** value is required for form. */
 	requirement: BoolNum;
@@ -156,7 +156,7 @@ interface FilterDesc {
 interface NodeDesc {
 	id: RecId;
 	singleName: string;
-	privileges: PrivilegesMask;
+	privileges: PRIVILEGES_MASK;
 	matchName: string;
 	description: string;
 	nodeType: NODE_TYPE;
@@ -213,7 +213,7 @@ interface RecordsDataResponse {
 
 interface GetRecordsParams {
 	nodeId: RecId;
-	viewFields?: ViewMask;
+	viewFields?: VIEW_MASK;
 	recId?: RecId;
 	s?: string;
 	descNode?: boolean;
@@ -262,26 +262,27 @@ enum NODE_TYPE {
 	REACT_CLASS = 4
 }
 
-type PrivilegesMask = number;
-type ViewMask = number;
+enum VIEW_MASK {
+	EDITABLE = 1,
+	LIST = 2,
+	READONLY = 4,
+	DROPDOWN_LIST = 8,
+	CUSTOM_LIST = 16,
+	ALL = 65535
+}
 
-const VIEW_MASK_ALL = 65535;
-const VIEW_MASK_EDIT_CREATE = 1;
-const VIEW_MASK_LIST = 2;
-const VIEW_MASK_READONLY = 4;
-const VIEW_MASK_DROPDOWN_LOOKUP = 8;
-const VIEW_MASK_CUSTOM_LIST = 16;
-
-const PRIVILEGES_VIEW_OWN: PrivilegesMask = 1;
-const PRIVILEGES_VIEW_ORG: PrivilegesMask = 2;
-const PRIVILEGES_VIEW_ALL: PrivilegesMask = 4;
-const PRIVILEGES_CREATE: PrivilegesMask = 8;
-const PRIVILEGES_EDIT_OWN: PrivilegesMask = 16;
-const PRIVILEGES_EDIT_ORG: PrivilegesMask = 32;
-const PRIVILEGES_EDIT_ALL: PrivilegesMask = 64;
-const PRIVILEGES_DELETE: PrivilegesMask = 128;
-const PRIVILEGES_PUBLISH: PrivilegesMask = 256;
-const PRIVILEGES_ANY: PrivilegesMask = 65535;
+enum PRIVILEGES_MASK {
+	VIEW_OWN = 1,
+	VIEW_ORG = 2,
+	VIEW_ALL = 4,
+	CREATE = 8,
+	EDIT_OWN = 16,
+	EDIT_ORG = 32,
+	EDIT_ALL = 64,
+	DELETE = 128,
+	PUBLISH = 256,
+	ALL = 65535
+}
 
 const EVENT_HANDLER_TYPE_NODE = 'node';
 const EVENT_HANDLER_TYPE_FIELD = 'field';
@@ -349,18 +350,15 @@ export {
 
 	ROLE_ID,
 
-	PRIVILEGES_VIEW_OWN, PRIVILEGES_VIEW_ORG, PRIVILEGES_VIEW_ALL, PRIVILEGES_CREATE, PRIVILEGES_EDIT_OWN, PRIVILEGES_EDIT_ORG, PRIVILEGES_EDIT_ALL,
-	PRIVILEGES_DELETE, PRIVILEGES_PUBLISH, PRIVILEGES_ANY,
+	PRIVILEGES_MASK,
 
 	FIELD_TYPE,
-
 	NODE_TYPE, FIELD_DISPLAY_TYPE,
 
 	EVENT_HANDLER_TYPE_NODE, EVENT_HANDLER_TYPE_FIELD,
 
-	VIEW_MASK_EDIT_CREATE, VIEW_MASK_LIST, VIEW_MASK_READONLY,
-	VIEW_MASK_DROPDOWN_LOOKUP, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_ALL,
+	VIEW_MASK,
 
-	ViewMask, RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList,
-	PrivilegesMask, UserLangEntry, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
+	RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList,
+	UserLangEntry, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
 };

@@ -1,4 +1,4 @@
-import { FIELD_TYPE, NODE_ID_LOGIN, NODE_ID_REGISTER, NODE_ID_RESET, NODE_TYPE, VIEW_MASK_CUSTOM_LIST, VIEW_MASK_ALL, VIEW_MASK_EDIT_CREATE, VIEW_MASK_LIST, VIEW_MASK_READONLY, VIEW_MASK_DROPDOWN_LOOKUP } from "../bs-utils";
+import { FIELD_TYPE, NODE_ID_LOGIN, NODE_ID_REGISTER, NODE_ID_RESET, NODE_TYPE, VIEW_MASK } from "../bs-utils";
 import ReactDOM from "react-dom";
 
 import { L } from "../utils";
@@ -92,9 +92,9 @@ class FieldsEvents extends FormEvents {
 		var shv = this.fieldValue("show");
 
 		if(this.fieldValue("visibility_create"))
-			shv |= VIEW_MASK_EDIT_CREATE;
+			shv |= VIEW_MASK.EDITABLE;
 		else
-			shv &= (VIEW_MASK_ALL - VIEW_MASK_EDIT_CREATE);
+			shv &= (VIEW_MASK.ALL - VIEW_MASK.EDITABLE);
 
 		this.setFieldValue("show", shv);
 	}
@@ -103,9 +103,9 @@ class FieldsEvents extends FormEvents {
 		var shv = this.fieldValue("show");
 
 		if(this.fieldValue("visibility_list"))
-			shv |= VIEW_MASK_LIST;
+			shv |= VIEW_MASK.LIST;
 		else
-			shv &= (VIEW_MASK_ALL - VIEW_MASK_LIST);
+			shv &= (VIEW_MASK.ALL - VIEW_MASK.LIST);
 
 		this.setFieldValue("show", shv);
 	}
@@ -114,9 +114,9 @@ class FieldsEvents extends FormEvents {
 		var shv = this.fieldValue("show");
 
 		if(this.fieldValue("visibility_customList"))
-			shv |= VIEW_MASK_CUSTOM_LIST;
+			shv |= VIEW_MASK.CUSTOM_LIST;
 		else
-			shv &= (VIEW_MASK_ALL - VIEW_MASK_CUSTOM_LIST);
+			shv &= (VIEW_MASK.ALL - VIEW_MASK.CUSTOM_LIST);
 
 		this.setFieldValue("show", shv);
 	}
@@ -124,9 +124,9 @@ class FieldsEvents extends FormEvents {
 	_fields_visibility_view_onChange() {
 		var shv = this.fieldValue("show");
 		if(this.fieldValue("visibility_view")) {
-			shv |= VIEW_MASK_READONLY;
+			shv |= VIEW_MASK.READONLY;
 		} else {
-			shv &= (VIEW_MASK_ALL - VIEW_MASK_READONLY);
+			shv &= (VIEW_MASK.ALL - VIEW_MASK.READONLY);
 		}
 
 		this.setFieldValue("show", shv);
@@ -135,9 +135,9 @@ class FieldsEvents extends FormEvents {
 	_fields_visibility_dropdownList_onChange() {
 		var shv = this.fieldValue("show");
 		if(this.fieldValue("visibility_dropdownList")) {
-			shv |= VIEW_MASK_DROPDOWN_LOOKUP;
+			shv |= VIEW_MASK.DROPDOWN_LIST;
 		} else {
-			shv &= (VIEW_MASK_ALL - VIEW_MASK_DROPDOWN_LOOKUP);
+			shv &= (VIEW_MASK.ALL - VIEW_MASK.DROPDOWN_LIST);
 		}
 
 		this.setFieldValue("show", shv);

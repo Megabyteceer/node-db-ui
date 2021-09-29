@@ -6,7 +6,7 @@ import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } fro
 import { getRecords } from "../core/get-records";
 import { submitRecord } from "../core/submit";
 import { L } from "../core/locale";
-import { FIELD_TYPE, FIELD_ID_MAX_LENGTH, NODE_ID_FIELDS, NODE_ID_NODES, PRIVILEGES_VIEW_ORG, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK_EDIT_CREATE } from "../www/src/bs-utils";
+import { FIELD_TYPE, FIELD_ID_MAX_LENGTH, NODE_ID_FIELDS, NODE_ID_NODES, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK } from "../www/src/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
@@ -42,7 +42,7 @@ const handlers: NodeEventsHandlers = {
 				node_fields_linker: data.nodeRef,
 				nodeRef: data.node_fields_linker,
 				name: parentNode.singleName,
-				show: VIEW_MASK_EDIT_CREATE,
+				show: VIEW_MASK.EDITABLE,
 				prior: 1000,
 				fieldType: FIELD_TYPE.LOOKUP,
 				forSearch: 1,
@@ -203,7 +203,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 				node_fields_linker: linkedNodeId,
 				fieldType: FIELD_TYPE.PICTURE
 			};
-			const records = await getRecords(6, PRIVILEGES_VIEW_ORG, undefined, undefined, filters);
+			const records = await getRecords(6, VIEW_MASK.LIST, undefined, undefined, filters);
 			if(records.total) {
 				data.lookupIcon = records.items[0].fieldName;
 			}
