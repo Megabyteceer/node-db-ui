@@ -1,6 +1,6 @@
 import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHandlersNames, filtersById } from './describe-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
-import { throwError, assert, PRIVILEGES, FIELD_TYPE, RecordData, RecordsData, RecId, VIEW_MASK } from "../www/src/bs-utils";
+import { throwError, assert, PRIVILEGES_MASK, FIELD_TYPE, RecordData, RecordsData, RecId, VIEW_MASK } from "../www/src/bs-utils";
 import { UserSession } from './auth';
 
 const isASCII = (str) => {
@@ -246,17 +246,17 @@ async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecI
 	let privileges = node.privileges;
 	if(userSession) {
 
-		if((privileges & (PRIVILEGES.EDIT_OWN | PRIVILEGES.EDIT_ORG | PRIVILEGES.EDIT_ALL | PRIVILEGES.PUBLISH)) !== 0) {
+		if((privileges & (PRIVILEGES_MASK.EDIT_OWN | PRIVILEGES_MASK.EDIT_ORG | PRIVILEGES_MASK.EDIT_ALL | PRIVILEGES_MASK.PUBLISH)) !== 0) {
 			wheresBegin.push("(", tableName, ".status > 0)");
 		} else {
 			wheresBegin.push("(", tableName, ".status = 1)");
 		}
 
-		if(privileges & PRIVILEGES.VIEW_ALL) {
+		if(privileges & PRIVILEGES_MASK.VIEW_ALL) {
 
-		} else if((privileges & PRIVILEGES.VIEW_ORG) && (userSession.orgId !== 0)) {
+		} else if((privileges & PRIVILEGES_MASK.VIEW_ORG) && (userSession.orgId !== 0)) {
 			wheresBegin.push(" AND (", tableName, "._organizationID=", userSession.orgId as unknown as string, ')');
-		} else if(privileges & PRIVILEGES.VIEW_OWN) {
+		} else if(privileges & PRIVILEGES_MASK.VIEW_OWN) {
 			if(tableName !== '_messages') {
 				wheresBegin.push(" AND (", tableName, "._usersID=", userSession.id as unknown as string, ')');
 			} else {
@@ -278,19 +278,19 @@ async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecI
 	for(let pag of items) {
 
 		if(viewMask) {
-			if(privileges & PRIVILEGES.EDIT_ALL) {
+			if(privileges & PRIVILEGES_MASK.EDIT_ALL) {
 				pag.isE = 1;
-			} else if((privileges & PRIVILEGES.EDIT_ORG) && (userSession.orgId !== 0) && (pag.creatorORG === userSession.orgId)) {
+			} else if((privileges & PRIVILEGES_MASK.EDIT_ORG) && (userSession.orgId !== 0) && (pag.creatorORG === userSession.orgId)) {
 				pag.isE = 1;
-			} else if((privileges & PRIVILEGES.EDIT_OWN) && (pag.creatorUSER === userSession.id)) {
+			} else if((privileges & PRIVILEGES_MASK.EDIT_OWN) && (pag.creatorUSER === userSession.id)) {
 				pag.isE = 1;
 			}
 
 			if(pag.isE) {
-				if(privileges & PRIVILEGES.DELETE) {
+				if(privileges & PRIVILEGES_MASK.DELETE) {
 					pag.isD = 1;
 				}
-				if(node.draftable && (privileges & PRIVILEGES.PUBLISH)) {
+				if(node.draftable && (privileges & PRIVILEGES_MASK.PUBLISH)) {
 					pag.isP = 1;
 				}
 			} else {

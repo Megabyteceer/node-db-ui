@@ -6,7 +6,7 @@ import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } fro
 import { getRecords } from "../core/get-records";
 import { submitRecord } from "../core/submit";
 import { L } from "../core/locale";
-import { FIELD_TYPE, FIELD_ID_MAX_LENGTH, NODE_ID_FIELDS, NODE_ID_NODES, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK } from "../www/src/bs-utils";
+import { FIELD_TYPE, FIELD_ID_MAX_LENGTH, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK } from "../www/src/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
@@ -34,7 +34,7 @@ const handlers: NodeEventsHandlers = {
 		const fieldName = data.fieldName;
 		if(fieldType === FIELD_TYPE.LOOKUP_1toN) {
 
-			const parentNode = await getRecords(NODE_ID_NODES, 1, data.node_fields_linker, userSession);
+			const parentNode = await getRecords(NODE_ID.NODES, 1, data.node_fields_linker, userSession);
 
 			const linkerFieldData = {
 				status: 1,
@@ -50,7 +50,7 @@ const handlers: NodeEventsHandlers = {
 				_usersID: userSession.id,
 				_organizationID: userSession.orgId
 			};
-			await submitRecord(NODE_ID_FIELDS, linkerFieldData);
+			await submitRecord(NODE_ID.FIELDS, linkerFieldData);
 		}
 		reloadMetadataSchedule();
 	},

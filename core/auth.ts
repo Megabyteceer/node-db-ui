@@ -1,7 +1,7 @@
 import ENV from "../ENV";
 import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "./mysql-connection";
 import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from "./describe-node";
-import { throwError, NODE_ID_USERS, assert, UserLangEntry, UserRoles, UserSession, ROLE_ID } from "../www/src/bs-utils";
+import { throwError, NODE_ID, assert, UserLangEntry, UserRoles, UserSession, ROLE_ID } from "../www/src/bs-utils";
 import { pbkdf2, randomBytes } from "crypto";
 import { L } from "./locale";
 import { submitRecord } from "./submit";
@@ -126,7 +126,7 @@ async function activateUser(key, userSession: UserSession) {
 			delete registration.id;
 			delete registration.activationKey;
 			delete registration._createdON;
-			const userID = await submitRecord(NODE_ID_USERS, registration);
+			const userID = await submitRecord(NODE_ID.USERS, registration);
 			let organizationID = (await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_usersID`) VALUES ('', '1', " + userID + ")") as mysqlInsertResult).insertId;
 			await mysqlExec("UPDATE _organization SET _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + organizationID);
 			await mysqlExec("UPDATE _users SET _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + userID);

@@ -2,7 +2,7 @@
 import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "../core/mysql-connection";
 import { shouldBeAdmin } from "../core/admin/admin";
 import { NodeEventsHandlers, reloadMetadataSchedule } from "../core/describe-node";
-import { FIELD_TYPE, NODE_ID_ORGANIZATIONS, NODE_ID_USERS, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, NODE_TYPE } from "../www/src/bs-utils";
+import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, NODE_TYPE } from "../www/src/bs-utils";
 import { L } from "../core/locale";
 
 const handlers: NodeEventsHandlers = {
@@ -70,14 +70,14 @@ const handlers: NodeEventsHandlers = {
 			if(data.addCreatedByFiled) {
 				const createdByQ = `INSERT INTO _fields
 				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,            \`fieldName\`,      \`selectFieldName\`, \`name\`,                                \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`, \`nodeRef\`) VALUES
-				(${createdID},            1,          ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   3,         ${FIELD_TYPE.LOOKUP},  '_organizationID', '_organization',     '${L('FIELD_ORGANIZATION', userSession)}', '',              0,            0,               0,           0,           1,              1,             ${NODE_ID_ORGANIZATIONS});`;
+				(${createdID},            1,          ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   3,         ${FIELD_TYPE.LOOKUP},  '_organizationID', '_organization',     '${L('FIELD_ORGANIZATION', userSession)}', '',              0,            0,               0,           0,           1,              1,             ${NODE_ID.ORGANIZATIONS});`;
 				await mysqlExec(createdByQ);
 			}
 
 			if(data.addCreatorUserFld) {
 				const createdByQ = `INSERT INTO _fields
 				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,          \`fieldName\`,  \`selectFieldName\`,  \`name\`,                            \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`, \`nodeRef\`,          \`lookupIcon\`) VALUES
-				(${createdID},           1,           ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   4,        ${FIELD_TYPE.LOOKUP}, '_usersID',     '_users',            '${L('FIELD_OWNER', userSession)}',   '',              0,              0,              0,           0,             1,            1,             ${NODE_ID_USERS},    'avatar');`;
+				(${createdID},           1,           ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   4,        ${FIELD_TYPE.LOOKUP}, '_usersID',     '_users',            '${L('FIELD_OWNER', userSession)}',   '',              0,              0,              0,           0,             1,            1,             ${NODE_ID.USERS},    'avatar');`;
 				await mysqlExec(createdByQ);
 			}
 		}

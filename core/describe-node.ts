@@ -3,7 +3,7 @@ import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import ENV from "../ENV";
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession, usersSessionsStartedCount } from "./auth";
-import { throwError, assert, FIELD_TYPE, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK, ROLE_ID, NODE_ID_NODES, NODE_ID_FIELDS, NODE_ID_FILTERS, NODE_TYPE } from "../www/src/bs-utils";
+import { throwError, assert, FIELD_TYPE, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK, ROLE_ID, NODE_ID, NODE_TYPE } from "../www/src/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
@@ -110,7 +110,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 						const langs = getLangs();
 						for(const l of langs) {
 							if(l.prefix) {
-								if(nodeId === NODE_ID_NODES || nodeId === NODE_ID_FIELDS || nodeId === NODE_ID_FILTERS) { // for nodes, fields, and filters, add only languages which used in system UI
+								if(nodeId === NODE_ID.NODES || nodeId === NODE_ID.FIELDS || nodeId === NODE_ID.FILTERS) { // for nodes, fields, and filters, add only languages which used in system UI
 									if(!l.isUILanguage) {
 										continue;
 									}

@@ -2,7 +2,7 @@ import { generateSalt, getPasswordHash, getServerHref, mail_utf8 } from "../core
 import { L } from "../core/locale";
 import { mysqlExec, mysqlRowsResult } from "../core/mysql-connection";
 import ENV from "../ENV";
-import { NODE_ID_RESET, RecordDataWrite, throwError } from "../www/src/bs-utils";
+import { NODE_ID, RecordDataWrite, throwError } from "../www/src/bs-utils";
 import { randomBytes } from "crypto";
 import { UserSession } from "../core/auth";
 
@@ -17,7 +17,7 @@ export default {
 		if(pgs.length > 0) {
 			throwError(L('EMAIL_ALREADY', userSession));
 		} else {
-			let href = getServerHref() + '#n/' + NODE_ID_RESET + '/r/new/e/f/activationKey/' + encodeURIComponent(data.activationKey);
+			let href = getServerHref() + '#n/' + NODE_ID.RESET + '/r/new/e/f/activationKey/' + encodeURIComponent(data.activationKey);
 			await mail_utf8(data.email, L('CONFIRM_EMAIL_SUBJ', userSession), L('CONFIRM_EMAIL', userSession, ENV.APP_TITLE) + href);
 		}
 	}

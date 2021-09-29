@@ -1,5 +1,5 @@
 import {
-	throwError, FIELD_TYPE, PRIVILEGES, assert, RecId, RecordDataWrite, VIEW_MASK
+	throwError, FIELD_TYPE, PRIVILEGES_MASK, assert, RecId, RecordDataWrite, VIEW_MASK
 } from "../www/src/bs-utils";
 
 import ENV from "../ENV";
@@ -36,7 +36,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 	let filesToDelete;
 
 	if(node.draftable) {
-		if((privileges & PRIVILEGES.PUBLISH) === 0) {
+		if((privileges & PRIVILEGES_MASK.PUBLISH) === 0) {
 			if(recId !== null) {
 				if(currentData.status !== 1) {
 					data.status = 2;
@@ -59,7 +59,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			throwError('Update access denied.');
 		}
 	} else {
-		if(!(node.privileges & PRIVILEGES.CREATE)) {
+		if(!(node.privileges & PRIVILEGES_MASK.CREATE)) {
 			throwError('Creation access denied: ' + node.id);
 		}
 	}

@@ -6,8 +6,7 @@ import { ENV, MainFrame } from "./main-frame";
 import moment from "moment";
 import { Component } from "react";
 import { R } from "./r";
-import { NODE_ID_LOGIN, NODE_ID_USERS, UserSession } from "./bs-utils";
-import { Stage } from "./stage";
+import { NODE_ID, UserSession } from "./bs-utils";
 
 function setUserOrg(orgId) {
 	if(User.currentUserData.orgId !== orgId) {
@@ -99,7 +98,7 @@ class User extends Component<any, any> {
 
 			var btn1, btn2;
 
-			const loginURL = '#n/' + NODE_ID_LOGIN + '/r/new/e';
+			const loginURL = '#n/' + NODE_ID.LOGIN + '/r/new/e';
 
 			if(userData.id === 2) {
 				btn2 = R.a({ href: loginURL, title: L('LOGIN'), className: 'clickable top-bar-user-btn' },
@@ -109,7 +108,7 @@ class User extends Component<any, any> {
 				let imgUrl = idToImgURL(userData.avatar, 'avatar');
 				btn1 = R.a({
 					onClick: () => {
-						window.crudJs.Stage.showForm(NODE_ID_USERS, userData.id, undefined, true, true);
+						window.crudJs.Stage.showForm(NODE_ID.USERS, userData.id, undefined, true, true);
 					}, title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn'
 				},
 					R.img({ className: 'user-avatar', src: imgUrl })

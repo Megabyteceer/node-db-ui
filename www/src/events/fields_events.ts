@@ -1,4 +1,4 @@
-import { FIELD_TYPE, NODE_ID_LOGIN, NODE_ID_REGISTER, NODE_ID_RESET, NODE_TYPE, VIEW_MASK } from "../bs-utils";
+import { FIELD_TYPE, NODE_ID, NODE_TYPE, VIEW_MASK } from "../bs-utils";
 import ReactDOM from "react-dom";
 
 import { L } from "../utils";
@@ -156,15 +156,15 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_registration_alreadyHaveAccountBtn_onChange() {
-		window.crudJs.Stage.showForm(NODE_ID_LOGIN);
+		window.crudJs.Stage.showForm(NODE_ID.LOGIN);
 	}
 
 	_login_signUpLinkBtn_onChange() {
-		window.crudJs.Stage.showForm(NODE_ID_REGISTER, 'new', undefined, true);
+		window.crudJs.Stage.showForm(NODE_ID.REGISTER, 'new', undefined, true);
 	}
 
 	_login_forgotPasswordButton_onChange() {
-		window.crudJs.Stage.showForm(NODE_ID_RESET, 'new', undefined, true);
+		window.crudJs.Stage.showForm(NODE_ID.RESET, 'new', undefined, true);
 	}
 
 	_nodes_storeForms_onChange() {

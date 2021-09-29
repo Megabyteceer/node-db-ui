@@ -1,6 +1,6 @@
-import { Filters, getNodeData, isAdmin, L, showPrompt, reloadLocation, getNode, myAlert, getData } from "../utils";
+import { Filters, getNodeData, isAdmin, L, showPrompt, getNode, myAlert, getData } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID_LOGIN, UserSession, NODE_ID_USERS, NODE_TYPE, VIEW_MASK } from "../bs-utils";
+import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID, NODE_TYPE, VIEW_MASK } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -477,7 +477,7 @@ class FormEvents extends FormFull {
 				this.fieldValue("email")
 			)), true, false, true,
 			() => {
-				window.crudJs.Stage.showForm(NODE_ID_LOGIN);
+				window.crudJs.Stage.showForm(NODE_ID.LOGIN);
 			},
 			L('GO_TO_LOGIN')
 		);
@@ -514,7 +514,7 @@ class FormEvents extends FormFull {
 			} else {
 				getData('api/reset', this.filters).then((userSession) => {
 					User.setUserData(userSession);
-					window.crudJs.Stage.showForm(NODE_ID_USERS, userSession.id, { tab: 't_pass' }, true);
+					window.crudJs.Stage.showForm(NODE_ID.USERS, userSession.id, { tab: 't_pass' }, true);
 				}).catch((er) => {
 
 				});
