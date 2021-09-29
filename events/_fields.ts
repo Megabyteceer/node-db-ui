@@ -6,7 +6,7 @@ import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } fro
 import { getRecords } from "../core/get-records";
 import { submitRecord } from "../core/submit";
 import { L } from "../core/locale";
-import { FIELD_TYPE, FIELD_ID_MAX_LENGTH, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK } from "../www/src/bs-utils";
+import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, FIELD_ID } from "../www/src/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
@@ -59,7 +59,7 @@ const handlers: NodeEventsHandlers = {
 
 		shouldBeAdmin(userSession);
 
-		if((currentData.id === FIELD_ID_MAX_LENGTH) && newData.hasOwnProperty('maxLength')) {
+		if((currentData.id === FIELD_ID.MAX_LENGTH) && newData.hasOwnProperty('maxLength')) {
 			throwError(L('SIZE_FLD_BLOCKED', userSession));
 		}
 

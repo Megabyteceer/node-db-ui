@@ -2,7 +2,7 @@
 import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../describe-node";
 import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 
-import { ROLE_ID_SUPER_ADMIN, ROLE_ID_VIEW_ALL, throwError } from "../../www/src/bs-utils";
+import { USER_ID, throwError } from "../../www/src/bs-utils";
 import { join } from "path";
 import { readFileSync, writeFileSync } from "fs";
 import { isAdmin } from "../auth.js";
@@ -17,7 +17,7 @@ async function nodePrivileges(reqData, userSession) {
 		reloadMetadataSchedule();
 		return 1;
 	} else { //get node privileges
-		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _role_privileges WHERE (nodeID=' + nodeId + ') AND (_roles.id=roleID) LIMIT 1) AS privileges FROM _roles WHERE id <> ' + ROLE_ID_SUPER_ADMIN + ' AND id <> ' + ROLE_ID_VIEW_ALL + ' AND status = 1');
+		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _role_privileges WHERE (nodeID=' + nodeId + ') AND (_roles.id=roleID) LIMIT 1) AS privileges FROM _roles WHERE id <> ' + USER_ID.SUPER_ADMIN + ' AND id <> ' + USER_ID.VIEW_ALL + ' AND status = 1');
 		return { privileges, nodeType: getNodeDesc(nodeId).nodeType }
 	}
 }
