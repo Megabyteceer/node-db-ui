@@ -26,16 +26,23 @@ function isMustBeExpanded(i) {
 
 const allGroups: BarItem[] = [];
 
+const SELECTED_LIST = 'selected_list';
+
 let activeItem;
 
-function isCurrentlyShowedLeftBarItem(item) {
+function isCurrentlyShowedLeftBarItem(item): boolean | typeof SELECTED_LIST {
 	const currentFormParameters = Stage.currentForm;
 	if(!currentFormParameters) {
 		return;
 	}
 
 	if(item.nodeType !== NODE_TYPE.STATIC_LINK) {
-		return currentFormParameters.nodeId === item.id;
+		if(currentFormParameters.nodeId === item.id) {
+			if(!currentFormParameters.recId) {
+				return SELECTED_LIST;
+			}
+			return true;
+		}
 	} else {
 		return isStrictlySelected(item);
 	}
@@ -213,7 +220,9 @@ class BarItem extends Component<any, any> {
 				renderItemsArray(item.children, this.props.level + 1, item)
 			)
 		} else {
-			if(!isActive) {
+			if(isActive === SELECTED_LIST) {
+				className += ' not-clickable';
+			} else if(!isActive) {
 				className += ' clickable';
 			} else {
 				className += ' clickable left-bar-active-group';
@@ -223,7 +232,7 @@ class BarItem extends Component<any, any> {
 		const itemBody = R.div({
 			onClick: (ev) => {
 				if(!_isMustBeExpanded) {
-					if(item.nodeType !== NODE_TYPE.DOCUMENT) {
+					if(item.nodeType === NODE_TYPE.SECTION) {
 						this.toggle(ev);
 						return;
 					}
@@ -247,7 +256,7 @@ class BarItem extends Component<any, any> {
 			if(item.nodeType === NODE_TYPE.STATIC_LINK) {
 				props.href = item.staticLink;
 			} else {
-				props.onClick = () => {
+				props.onClick = (isActive === SELECTED_LIST) ? undefined : () => {
 					window.crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
 				}
 			}
@@ -320,7 +329,7 @@ class LeftBar extends Component<any, any> {
 					break;
 				}
 				item = itemElement.props.item;
-				if(item.nodeType !== NODE_TYPE.DOCUMENT) {
+				if(item.nodeType === NODE_TYPE.SECTION) {
 					const e = ReactDOM.findDOMNode(itemElement) as HTMLDivElement;
 					let group = e.querySelector('.left-bar-children') as HTMLDivElement;
 					if(group.style.maxHeight) {
