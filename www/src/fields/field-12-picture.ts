@@ -7,7 +7,7 @@ import { BaseField, RefToInput } from "./base-field";
 import { Modal } from "../modal";
 import { Component } from "react";
 import { R } from "../r";
-import { FIELD_TYPE } from "../bs-utils";
+import { FIELD_TYPE, IMAGE_THUMBNAIL_PREFIX } from "../bs-utils";
 import { FieldWrap } from "./field-wrap";
 
 registerFieldClass(FIELD_TYPE.PICTURE, class PictureField extends BaseField {
@@ -40,8 +40,10 @@ registerFieldClass(FIELD_TYPE.PICTURE, class PictureField extends BaseField {
 
 		if(this.props.isEdit) {
 			return React.createElement(CropperFieldBody, { field, ref: (r) => { this.cropperBody = r; }, parent: this, form: this.props.form, currentPicUrl: imgUrl, isCompact: this.props.isCompact });
+		} else if(this.props.isCompact) {
+			return R.img({ src: imgUrl + IMAGE_THUMBNAIL_PREFIX, className: "field-readonly-image" });
 		} else {
-			return R.img({ src: imgUrl, className: "field-readonly-image" })
+			return R.img({ src: imgUrl, className: "field-readonly-image" });
 		}
 	}
 });

@@ -1,4 +1,4 @@
-import { FIELD_TYPE, RecId, RecordData } from "../bs-utils";
+import { FIELD_TYPE, IMAGE_THUMBNAIL_PREFIX, RecId, RecordData } from "../bs-utils";
 import { R } from "../r";
 import React from "react";
 import ReactDOM from "react-dom";
@@ -150,7 +150,7 @@ registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLo
 			if(field.lookupIcon && (!this.props.hideIcon) && value.icon) {
 				iconPic = R.img({
 					className: 'field-lookup-icon-pic',
-					src: idToImgURL(value.icon, field.lookupIcon)
+					src: idToImgURL(value.icon, field.lookupIcon) + IMAGE_THUMBNAIL_PREFIX
 				});
 			} else {
 				iconPic = R.div({

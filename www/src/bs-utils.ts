@@ -44,6 +44,8 @@ const getCurrentStack = () => {
 }
 /// #endif
 
+const IMAGE_THUMBNAIL_PREFIX = '_thumb.jpg';
+
 type RecId = number;
 
 type UserRoles = { [key: number]: 1 };
@@ -340,6 +342,8 @@ export {
 	HASH_DIVIDER,
 
 	LANGUAGE_ID_DEFAULT,
+
+	IMAGE_THUMBNAIL_PREFIX,
 
 	FIELD_ID,
 	USER_ID,

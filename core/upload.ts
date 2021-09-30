@@ -1,5 +1,5 @@
 
-import { assert, throwError } from "../www/src/bs-utils";
+import { assert, IMAGE_THUMBNAIL_PREFIX, throwError } from "../www/src/bs-utils";
 
 import { join } from "path";
 import * as fs from "fs";
@@ -10,6 +10,10 @@ import { L } from "./locale";
 
 const UPLOADS_IMAGES_PATH = join(__dirname, '../../www/images/uploads');
 const UPLOADS_FILES_PATH = join(__dirname, '../../www/uploads/file');
+
+const IMAGE_EXTENSION = '.jpg';
+
+const LOOKUP_ICON_HEIGHT = 30;
 
 const getRadomPattern = () => {
 	return Math.floor(Math.random() * 0xEffffffffffff + 0x1000000000000).toString(16);
@@ -40,19 +44,15 @@ const getNewFileDir = () => {
 
 
 
-const getNewImageID = (originalFileName) => {
+const getNewImageID = () => {
 	return new Promise((resolve, reject) => {
-		let ext = originalFileName.split('.').pop();
-		if(ext === 'jpeg') {
-			ext = 'jpg';
-		}
 		let folder = Math.floor(Math.random() * 256).toString(16);
 
 		const generateId = (err?: NodeJS.ErrnoException) => {
 			if(err) {
 				reject(err);
 			}
-			let id = folder + '/' + getRadomPattern() + '.' + ext;
+			let id = folder + '/' + getRadomPattern() + IMAGE_EXTENSION;
 
 			fs.access(join(UPLOADS_IMAGES_PATH, id), fs.constants.F_OK, (err) => {
 				if(err) {
@@ -192,21 +192,21 @@ async function uploadImage(reqData, userSession) {
 		}
 	}
 
-	let newFileNameID = await getNewImageID('tmp.jpg');
+	let newFileNameID = await getNewImageID();
 	let newFileName = idToImgURLServer(newFileNameID);
 
-	return new Promise((resolve, reject) => {
-		img.toFile(newFileName, (err, info) => {
-			if(err) {
-				reject(err);
-			}
-			if(!userSession.uploaded) {
-				userSession.uploaded = {};
-			}
-			userSession.uploaded[reqData.fid] = newFileNameID;
-			resolve(newFileNameID);
-		});
-	});
+	await img.toFile(newFileName);
+	if(targetH > LOOKUP_ICON_HEIGHT) {
+		await img.resize(Math.floor(LOOKUP_ICON_HEIGHT / targetH * targetW), LOOKUP_ICON_HEIGHT);
+	}
+	await img.toFile(newFileName + IMAGE_THUMBNAIL_PREFIX);
+
+	if(!userSession.uploaded) {
+		userSession.uploaded = {};
+	}
+
+	userSession.uploaded[reqData.fid] = newFileNameID;
+	return newFileNameID;
 }
 
 const idToImgURLServer = (imgId) => {

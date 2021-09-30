@@ -321,6 +321,7 @@ class LeftBar extends Component<any, any> {
 	refreshLeftBarActive() {
 		this.forceUpdate();
 		setTimeout(() => {
+			if(!activeItem) return;
 			let item = activeItem.props.item;
 			activeItem.collapseOtherGroups();
 			while(item.parent) {
@@ -342,6 +343,7 @@ class LeftBar extends Component<any, any> {
 	}
 
 	render() {
+		activeItem = null;
 		if(isLitePage() || !User.currentUserData) {
 			return R.td(null);
 		}

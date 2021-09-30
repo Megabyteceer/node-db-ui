@@ -1,12 +1,7 @@
 
-Generate small icons for all image fields
-
+captcha
 
 try mysql.createPool
-
-в разделе добавить выбор ссылки на _html через клиент онли поле лукапа на старницу
-
-captcha
 
 Lookup nto1 and ntom to user gives access for user if field marked as access opener. Keep such a fields in privilegesFields property. Use it in messages.
 
