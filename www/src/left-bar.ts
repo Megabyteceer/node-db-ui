@@ -189,7 +189,7 @@ class BarItem extends Component<any, any> {
 
 		if(isActive) {
 			activeItem = this;
-			className += ' left-bar-item-active not-clickable';
+			className += ' left-bar-item-active';
 		}
 
 		var caret;
@@ -203,7 +203,7 @@ class BarItem extends Component<any, any> {
 			this.state.expanded = isExpanded;
 		}
 
-		if(item.nodeType !== NODE_TYPE.DOCUMENT) {
+		if(item.nodeType === NODE_TYPE.SECTION) {
 			if(!_isMustBeExpanded) {
 				caret = R.span({ className: "left-bar-group-caret" },
 					renderIcon('caret-' + (isExpanded ? 'up' : 'down'))
@@ -212,20 +212,17 @@ class BarItem extends Component<any, any> {
 			children = R.div({ className: isExpanded ? 'left-bar-children' : 'left-bar-children hidden' },
 				renderItemsArray(item.children, this.props.level + 1, item)
 			)
-		}
-
-		const isMustBeExpandedVal = isMustBeExpanded(this.props.item);
-		if(!isMustBeExpandedVal) {
+		} else {
 			if(!isActive) {
 				className += ' clickable';
+			} else {
+				className += ' clickable left-bar-active-group';
 			}
-		} else {
-			className += ' not-clickable left-bar-active-group';
 		}
 
 		const itemBody = R.div({
 			onClick: (ev) => {
-				if(!isMustBeExpandedVal) {
+				if(!_isMustBeExpanded) {
 					if(item.nodeType !== NODE_TYPE.DOCUMENT) {
 						this.toggle(ev);
 						return;
@@ -250,9 +247,9 @@ class BarItem extends Component<any, any> {
 			if(item.nodeType === NODE_TYPE.STATIC_LINK) {
 				props.href = item.staticLink;
 			} else {
-				props.onClick = (isActive ? undefined : () => {
+				props.onClick = () => {
 					window.crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
-				})
+				}
 			}
 			return R.a(props,
 				adminControl,

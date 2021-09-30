@@ -11,6 +11,7 @@ import React from "react";
 import { iAdmin, User } from "../user";
 import { HotkeyButton } from "../components/hotkey-button";
 import { FieldAdmin } from "../admin/field-admin";
+import { LeftBar } from "../left-bar";
 
 const sortEntries = (a, b) => {
 	return (a[0] > b[0]) ? 1 : -1;
@@ -78,6 +79,9 @@ class FormFull extends eventProcessingMixins {
 
 		window.addEventListener('unload', this.tryBackupData);
 		this.backupInterval = setInterval(this.tryBackupData, 15000);
+		if(this.props.isRootForm) {
+			LeftBar.instance.refreshLeftBarActive();
+		}
 	}
 
 	recoveryBackupIfNeed() {
@@ -256,6 +260,10 @@ class FormFull extends eventProcessingMixins {
 		}
 
 		await callForEachField(this.fieldsRefs, data, 'beforeSave')
+		if(this.invalidAlertInOnSaveHandler) {
+			return;
+		}
+
 		if(Object.keys(data).length > 0) {
 			let recId = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
 			if(!recId) {

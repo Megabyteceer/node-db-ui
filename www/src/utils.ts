@@ -923,12 +923,8 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 		/// #if DEBUG
 		/*
 		/// #endif
-		.catch((r, error) => {
-			if (onError) {
-				onError(error);
-			}
-			debugError(JSON.stringify(error)+';\nDATA:'+JSON.stringify(dataToSend)+';\n'+url+';\n'+callStack+'\n'+r.responseText);
-			myAlert(error);
+		.catch((error) => {
+			myAlert(error.message);
 			consoleDir(error);
 		})
 		//*/

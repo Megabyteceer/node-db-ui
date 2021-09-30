@@ -129,6 +129,9 @@ async function uploadImage(reqData, userSession) {
 
 	if(!isPerfectSize) {
 
+		let resizeTargetW = targetW;
+		let resizeTargetH = targetH;
+
 		let W = parseFloat(reqData.w);
 		let H = parseFloat(reqData.h);
 		let X = parseFloat(reqData.x);
@@ -136,38 +139,54 @@ async function uploadImage(reqData, userSession) {
 
 		let Q = targetW / W;
 
-		//TODO: fix cropping out of image
-		//@ts-ignore
 		let targetX = 0;
-		//@ts-ignore
 		let targetY = 0;
 
-
 		if(X < 0) {
-			targetW -= -X * Q;
+			resizeTargetW -= -X * Q;
 			targetX = -X * Q;
 			W += X;
 			X = 0;
 		}
 		if(Y < 0) {
-			targetH -= -Y * Q;
+			resizeTargetH -= -Y * Q;
 			targetY = -Y * Q;
 			H += Y;
 			Y = 0;
 		}
 
-		if(W > srcW) {
-			targetW -= (W - srcW) * Q;
-			W = srcW;
+		if((X + W) > srcW) {
+			resizeTargetW -= (W - srcW) * Q;
+			W -= (X + W) - srcW;
 		}
 
-		if(H > srcH) {
-			targetH -= (H - srcH) * Q;
-			H = srcH;
+		if((Y + H) > srcH) {
+			resizeTargetH -= ((Y + H) - srcH) * Q;
+			H -= (Y + H) - srcH;
 		}
 
-		await img.extract({ left: Math.floor(X), top: Math.floor(Y), width: Math.floor(W), height: Math.floor(H) })
-			.resize(targetW, targetH);
+		resizeTargetW = Math.round(resizeTargetW);
+		resizeTargetH = Math.round(resizeTargetH);
+
+		H = Math.round(H);
+		W = Math.round(W);
+
+		targetY = Math.round(targetY);
+		targetX = Math.round(targetX);
+
+		await img.extract({ left: Math.round(X), top: Math.round(Y), width: W, height: H })
+		await img.resize(resizeTargetW, resizeTargetH);
+
+		if(resizeTargetW < targetW || resizeTargetH < targetH) {
+			await img.extend({
+				top: targetY,
+				left: targetX,
+				right: targetW - resizeTargetW - targetX,
+				bottom: targetH - resizeTargetH - targetY,
+				background: { r: 255, g: 255, b: 255, alpha: 1 }
+			});
+		}
+
 		if(meta.format === 'png') {
 			await img.flatten({ background: '#FFFFFF' })
 		}

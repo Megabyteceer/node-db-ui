@@ -8,6 +8,7 @@ import { Modal } from "../modal";
 import { Component } from "react";
 import { R } from "../r";
 import { FIELD_TYPE } from "../bs-utils";
+import { FieldWrap } from "./field-wrap";
 
 registerFieldClass(FIELD_TYPE.PICTURE, class PictureField extends BaseField {
 
@@ -22,11 +23,14 @@ registerFieldClass(FIELD_TYPE.PICTURE, class PictureField extends BaseField {
 	}
 
 	focus() {
-		this.cropperBody.references.selectButton.focus();
 	}
 
 	async beforeSave() {
-		return this.cropperBody.save();
+		return this.cropperBody.save(this.props.wrapper);
+	}
+
+	async afterSave() {
+		this.cropperBody.afterSave();
 	}
 
 	render() {
@@ -47,6 +51,7 @@ class CropperFieldBody extends Component<any, any> {
 
 	references: { [key: string]: RefToInput };
 	cropper: any;
+	waitingForUpload: boolean;
 
 	constructor(props) {
 		super(props);
@@ -100,6 +105,7 @@ class CropperFieldBody extends Component<any, any> {
 			Modal.instance.hide();
 			this.props.parent.props.wrapper.hideTooltip();
 		}
+		this.waitingForUpload = true;
 	}
 
 	clear() {
@@ -108,19 +114,27 @@ class CropperFieldBody extends Component<any, any> {
 			cropResult: null,
 			src: ''
 		});
+		this.waitingForUpload = false;
 		this.props.parent.setValue('');
 		this.references.fileInput.value = '';
 	}
 
-	async save() {
-		if(this.state.cropResult) {
+	async save(fieldWrap: FieldWrap) {
+		if(this.waitingForUpload) {
 			let form = ReactDOM.findDOMNode(this.references.form);
-			return submitData('api/uploadImage', serializeForm(form), true).catch((er) => {
-				myAlert(L('UPLOAD_ERROR'));
+			let imageId = await submitData('api/uploadImage', serializeForm(form), true).catch((er) => {
 			});
+			if(!imageId) {
+				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.fieldName, L('IMAGE_UPLOAD_ERROR'));
+			}
+			return imageId;
 		} else if(this.state.cleared) {
 			return '';
 		}
+	}
+
+	afterSave() {
+		this.waitingForUpload = false;
 	}
 
 	_onChange(e) {
@@ -138,7 +152,7 @@ class CropperFieldBody extends Component<any, any> {
 			var reader = new FileReader();
 			reader.onload = () => {
 				this.setState({ waiting: 0, src: reader.result, cropResult: false });
-
+				this.waitingForUpload = false;
 				var selectedImage = new Image();
 				const cropperLoader = import('react-cropper');
 
@@ -240,7 +254,11 @@ class CropperFieldBody extends Component<any, any> {
 				}
 
 				preview = R.img({
-					ref: (r) => { this.references.img = r; }, style: { borderRadius: '5px', width: w / 2, height: h / 2 }, src: imgSrc, className: 'clickable', onClick: () => {
+					ref: (r) => { this.references.img = r; },
+					style: { width: w / 2, height: h / 2 },
+					src: imgSrc,
+					className: 'clickable image-crop-preview',
+					onClick: () => {
 						this.references.fileInput.value = null;
 						this.references.fileInput.click();
 					}

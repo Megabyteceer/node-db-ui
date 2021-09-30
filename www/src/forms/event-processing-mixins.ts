@@ -45,7 +45,7 @@ class eventProcessingMixins extends BaseForm {
 
 	currentTabName: string;
 
-	private invalidAlertInOnSaveHandler: boolean;
+	invalidAlertInOnSaveHandler: boolean;
 
 	private disabledFields: { [key: string]: 1 | null };
 

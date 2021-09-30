@@ -5,6 +5,7 @@ initDictionary({
 	'OK': 'Ок',
 	'CANCEL': 'Отмена',
 	'UPLOAD_ERROR': 'Ошибка загрузки',
+	'IMAGE_UPLOAD_ERROR': 'Ошибка загрузки изображения',
 	'CONNECTION_ERR': 'Ошибка сети',
 	'CHECK_CONNECTION': 'Проверьте подключение к сети.',
 	'SURE_DELETE': 'Вы уверены, что хотите удалить %',

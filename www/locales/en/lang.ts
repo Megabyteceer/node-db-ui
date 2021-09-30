@@ -5,6 +5,7 @@ const LANGS = {
 	'OK': 'Ok',
 	'CANCEL': 'Cancel',
 	'UPLOAD_ERROR': 'Uploading error',
+	'IMAGE_UPLOAD_ERROR': 'Image Uploading error',
 	'CONNECTION_ERR': 'Connection error',
 	'CHECK_CONNECTION': 'Please check you connection.',
 	'SURE_DELETE': 'A you sure, you want to delete %',

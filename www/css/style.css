@@ -1023,6 +1023,11 @@ input[readonly] {
 	width: auto;
 }
 
+.image-crop-preview {
+	border-radius: 5px;
+	border: 1px solid #ddd;
+}
+
 .image-copper-popup {
 	width: 900px;
 }

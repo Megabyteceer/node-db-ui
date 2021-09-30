@@ -1,7 +1,6 @@
 
-crop падает на прозрачной области. когда кроп больше картинки
-
 Generate small icons for all image fields
+
 
 try mysql.createPool
 

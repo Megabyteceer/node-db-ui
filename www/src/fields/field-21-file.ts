@@ -9,6 +9,7 @@ import { Modal } from "../modal";
 import { checkFileSize, getReadableUploadSize, idToFileUrl, L, renderIcon, serializeForm, submitData } from "../utils";
 import { registerFieldClass } from "../utils";
 import { BaseField, RefToInput } from "./base-field";
+import { FieldWrap } from "./field-wrap";
 
 registerFieldClass(FIELD_TYPE.FILE, class FileField extends BaseField {
 
@@ -32,13 +33,17 @@ registerFieldClass(FIELD_TYPE.FILE, class FileField extends BaseField {
 	}
 
 	async beforeSave() {
-		return this.fileFormBodyRef.save();
+		return this.fileFormBodyRef.save(this.props.wrapper);
 	}
 
 	render() {
 		var field = this.props.field;
 
 		var fileName = this.props.initialValue;
+
+		if(fileName && fileName.name) {
+			fileName = fileName.name;
+		}
 
 		if(this.props.isEdit) {
 			let accept = ENV.ALLOWED_UPLOADS.map(i => '.' + i).join(', ');
@@ -53,6 +58,7 @@ class FileFormBody extends Component<any, any> {
 	fileInputRef: RefToInput;
 	formRef: RefToInput;
 	selectButtonRef: RefToInput;
+	waitingForUpload: boolean;
 
 	constructor(props) {
 		super(props);
@@ -69,11 +75,19 @@ class FileFormBody extends Component<any, any> {
 		this.props.parent.props.wrapper.hideTooltip();
 	}
 
-	save(): Promise<void> {
-		if(this.state.file) {
+	async save(fieldWrap: FieldWrap) {
+		if(this.waitingForUpload) {
 			let n = ReactDOM.findDOMNode(this.formRef);
-			return submitData('api/uploadFile', serializeForm(n), true) as Promise<unknown> as Promise<void>;
+			let fileId = await submitData('api/uploadFile', serializeForm(n), true);
+			if(!fileId) {
+				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.fieldName, L('UPLOAD_ERROR'));
+			}
+			return fileId;
 		}
+	}
+
+	afterSave() {
+		this.waitingForUpload = false;
 	}
 
 	_onChange(e) {
@@ -88,6 +102,7 @@ class FileFormBody extends Component<any, any> {
 			return;
 		}
 		this.setState({ file: files[0] });
+		this.waitingForUpload = true;
 
 		this.props.wrapper.valueListener(files[0], true, this);
 	}
