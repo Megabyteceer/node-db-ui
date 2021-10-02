@@ -933,6 +933,41 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 		})
 }
 
+let isCaptchaInitialized;
+
+async function getCaptchaToken(): Promise<string | undefined> {
+	if(!ENV.CAPTCHA_CLIENT_SECRET) {
+		return;
+	}
+
+	let resolve;
+	const requireCaptcha = () => {
+		//@ts-ignore
+		window.grecaptcha.ready(function() {
+			//@ts-ignore
+			window.grecaptcha.execute(ENV.CAPTCHA_CLIENT_SECRET, { action: 'submit' }).then((token) => {
+				resolve(token);
+			});
+		});
+	}
+
+	if(!isCaptchaInitialized) {
+		isCaptchaInitialized = true;
+		var scriptElement = document.createElement('script');
+		scriptElement.src = 'https://www.google.com/recaptcha/api.js?render=' + ENV.CAPTCHA_CLIENT_SECRET;
+		scriptElement.addEventListener('load', requireCaptcha);
+		document.head.appendChild(scriptElement);
+	} else {
+		requireCaptcha();
+	}
+
+
+	return new Promise((resolve_) => {
+		//@ts-ignore
+		resolve = resolve_;
+	});
+}
+
 
 async function deleteRecord(name, nodeId: RecId, recId: RecId, noPrompt?: boolean, onYes?: () => void) {
 	if(noPrompt) {
@@ -1030,18 +1065,24 @@ function shakeDomElement(e) {
 };
 
 function getItem(name: string, def?: any) {
-	if(localStorage.hasOwnProperty(name)) {
-		return JSON.parse(localStorage[name]);
+	if(typeof (Storage) !== "undefined") {
+		if(localStorage.hasOwnProperty(name)) {
+			return JSON.parse(localStorage[name]);
+		}
 	}
 	return def;
 }
 
 function setItem(name, val) {
-	localStorage.setItem(name, JSON.stringify(val));
+	if(typeof (Storage) !== "undefined") {
+		localStorage.setItem(name, JSON.stringify(val));
+	}
 }
 
 function removeItem(name) {
-	localStorage.removeItem(name);
+	if(typeof (Storage) !== "undefined") {
+		localStorage.removeItem(name);
+	}
 }
 
 function keepInWindow(body) {
@@ -1241,5 +1282,6 @@ export {
 	onOneFormShowed,
 	isRecordRestrictedForDeletion,
 	reloadLocation,
-	assignFilters
+	assignFilters,
+	getCaptchaToken
 }
