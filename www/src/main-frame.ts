@@ -39,7 +39,6 @@ class MainFrame extends Component<any, any> {
 		if(!ENV.DEBUG) { throw "DEBUG directives nad not cut of in PRODUCTION mode" };
 		/// #endif
 
-
 		nodesTree.some((i) => {
 			items[i.id] = i;
 			if(i.id === 2) {

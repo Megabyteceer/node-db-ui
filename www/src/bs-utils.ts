@@ -166,6 +166,7 @@ interface NodeDesc {
 	reverse?: BoolNum;
 	creationName?: string;
 	staticLink?: string;
+	captcha?: BoolNum;
 	tableName?: string;
 	draftable?: BoolNum;
 	icon?: string;
@@ -188,6 +189,8 @@ interface UserLangEntry {
 
 interface RecordDataWrite {
 	[key: string]: any;
+	/** Recaptcha v3 token */
+	c?: string;
 }
 
 interface RecordData extends RecordDataWrite {

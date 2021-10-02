@@ -47,6 +47,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				ret.tableName = srcNode.tableName;
 			} else if(srcNode.nodeType === NODE_TYPE.DOCUMENT) {
 
+				ret.captcha = srcNode.captcha;
 				ret.reverse = srcNode.reverse;
 				ret.creationName = srcNode["creationName" + landQ];
 				ret.storeForms = srcNode.storeForms;
@@ -212,6 +213,7 @@ async function initNodesData() { // load whole nodes data in to memory
 		ENABLE_MULTILINGUAL: ENV.ENABLE_MULTILINGUAL,
 		GOOGLE_PLUS: ENV.GOOGLE_PLUS,
 		TERMS_URL: ENV.TERMS_URL,
+		CAPTCHA_CLIENT_SECRET: ENV.CAPTCHA_CLIENT_SECRET,
 		ALLOWED_UPLOADS: ENV.ALLOWED_UPLOADS
 	};
 

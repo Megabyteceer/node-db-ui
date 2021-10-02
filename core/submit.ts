@@ -2,6 +2,11 @@ import {
 	throwError, FIELD_TYPE, PRIVILEGES_MASK, assert, RecId, RecordDataWrite, VIEW_MASK
 } from "../www/src/bs-utils";
 
+const axios = require('axios')
+const captchaRequestConfig = {
+	headers: { "Content-Type": "application/x-www-form-urlencoded" }
+};
+
 import ENV from "../ENV";
 import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHandlersNames } from "./describe-node";
 import { getRecords } from "./get-records";
@@ -26,6 +31,17 @@ for(let tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId | null = null, userSession?: UserSession): Promise<RecId> {
 
 	let node = getNodeDesc(nodeId);
+
+	if(node.captcha && ENV.CAPTCHA_SERVER_SECRET) {
+		let captchaRes = await axios.post('https://www.google.com/recaptcha/api/siteverify',
+			'secret=' + encodeURIComponent(ENV.CAPTCHA_SERVER_SECRET) + '&response=' + data.c,
+			captchaRequestConfig
+		);
+		if(!captchaRes.data || !captchaRes.data.success) {
+			throwError(L("CAPTCHA_ERROR", userSession));
+		}
+	}
+
 	let currentData;
 	if(recId !== null) {
 		currentData = await getRecords(nodeId, VIEW_MASK.ALL, recId, userSession);

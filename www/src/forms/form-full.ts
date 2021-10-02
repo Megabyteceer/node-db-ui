@@ -1,6 +1,6 @@
 
 import { FieldWrap } from "../fields/field-wrap";
-import { CLIENT_SIDE_FORM_EVENTS, deleteRecord, getItem, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, submitRecord } from "../utils";
+import { CLIENT_SIDE_FORM_EVENTS, deleteRecord, getCaptchaToken, getItem, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, submitRecord } from "../utils";
 import { FormTab } from "./form-tab";
 import { eventProcessingMixins } from "./event-processing-mixins";
 import { NodeAdmin } from "../admin/node-admin";
@@ -265,6 +265,10 @@ class FormFull extends eventProcessingMixins {
 		}
 
 		if(Object.keys(data).length > 0) {
+
+			if(this.props.node.captcha) {
+				data.c = await getCaptchaToken();
+			}
 			let recId = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
 			if(!recId) {
 				// save error

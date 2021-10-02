@@ -33,7 +33,10 @@ const ENV = {
 
 	ALLOWED_UPLOADS: ['gif', 'jpg', 'jpeg', 'jpe', 'png', 'zip', 'rar', 'doc', 'docx', 'xls', 'xlsx', 'pdf', 'ppt', 'pptx', 'txt', 'wav'],
 
-	BLOCK_RICH_EDITOR_TAGS: ['script']
+	BLOCK_RICH_EDITOR_TAGS: ['script'],
+
+	CAPTCHA_CLIENT_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
+	CAPTCHA_SERVER_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
 };
 
 export default ENV;
