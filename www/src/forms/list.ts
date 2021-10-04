@@ -11,6 +11,7 @@ import { iAdmin } from "../user";
 import { RefToInput } from "../fields/base-field";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import { LeftBar } from "../left-bar";
+import { Select } from "../components/select";
 
 const sortByOrder = (a, b) => {
 	return a.order - b.order;
@@ -416,10 +417,32 @@ class List extends BaseForm<ListProps, ListState> {
 				)
 			}
 
+			var filtersPanel;
+			if(node.filters) {
+				var options = Object.keys(node.filters).map((k) => {
+					return { value: k, name: node.filters[k].name };
+				});
+				if(!node.defaultFilterId) {
+					options.unshift({ value: undefined, name: '-' });
+				}
+				filtersPanel = R.div({
+					className: 'filter-select'
+				}, React.createElement(Select, {
+					options,
+					defaultValue: node.defaultFilterId ? node.filters[this.filters.filterId || node.defaultFilterId].name : undefined,
+					onChange: (val) => {
+						this.changeFilter('filterId', parseInt(val), true);
+					}
+				}));
+			}
+
 			if(createButton || searchPanel) {
 				header = R.div({ className: 'list-header' },
 					createButton,
-					searchPanel
+					R.div({ className: 'list-header-right-area' },
+						searchPanel,
+						filtersPanel
+					)
 				);
 			}
 		}

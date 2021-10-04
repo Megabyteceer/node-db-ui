@@ -173,20 +173,19 @@ async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecI
 		const filterId = filterFields.filterId;
 		let filter;
 
-
-		/// #if DEBUG
-		const availableFilters = Object.keys(node.filters).join();
-		assert(!filterId || node.filters[filterId],
-			"Unknown filterId " + filterId + ' for node ' + node.tableName +
-			(availableFilters ? ('. Available values is: ' + availableFilters) : ' node has no filters.'));
-		/// #endif
-
-		if(filterId && node.filters[filterId]) { //user selected filter
-			filter = filtersById.get(filterId);
-		} else if(node.defaultFilterId) {
-			filter = filtersById.get(node.defaultFilterId);
+		if(node.filters) {
+			/// #if DEBUG
+			const availableFilters = Object.keys(node.filters).join();
+			assert(!filterId || node.filters[filterId],
+				"Unknown filterId " + filterId + ' for node ' + node.tableName +
+				(availableFilters ? ('. Available values is: ' + availableFilters) : ' node has no filters.'));
+			/// #endif
+			if(filterId && node.filters[filterId]) { //user selected filter
+				filter = filtersById.get(filterId);
+			} else if(node.defaultFilterId) {
+				filter = filtersById.get(node.defaultFilterId);
+			}
 		}
-
 
 		if(filter) {
 			let fw = filter['filter'];
@@ -257,11 +256,7 @@ async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecI
 		} else if((privileges & PRIVILEGES_MASK.VIEW_ORG) && (userSession.orgId !== 0)) {
 			wheresBegin.push(" AND (", tableName, "._organizationID=", userSession.orgId as unknown as string, ')');
 		} else if(privileges & PRIVILEGES_MASK.VIEW_OWN) {
-			if(tableName !== '_messages') {
-				wheresBegin.push(" AND (", tableName, "._usersID=", userSession.id as unknown as string, ')');
-			} else {
-				wheresBegin.push(" AND ((", tableName, "._usersID=", userSession.id as unknown as string, ")OR(", tableName, "._receiverID=", userSession.id as unknown as string, '))');
-			}
+			wheresBegin.push(" AND (", tableName, "._usersID=", userSession.id as unknown as string, ')');
 		} else {
 			throwError('Access denied 3.');
 		}

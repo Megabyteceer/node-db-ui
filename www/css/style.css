@@ -1284,9 +1284,10 @@ input[readonly] {
 }
 
 .list-search {
-	display: block;
+	display: inline-block;
 	border: 1px solid #a8a8a8;
 	border-radius: 6px;
+	margin-right: 10px;
 }
 
 .list-search .tool-btn {
@@ -1383,6 +1384,13 @@ input[readonly] {
 	text-decoration: underline;
 	font-weight: 600;
 }
+
+.filter-select {
+	display: inline-block;
+	width: 200px;
+}
+
+
 
 
 .shake {

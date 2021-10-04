@@ -295,3 +295,8 @@
 	color: #ccc;
 	font-size: 80%;
 }
+
+.field-container-id-1036 .field-wrap-label,
+.field-container-id-1036 .field-boolean {
+	color: #d00;
+}

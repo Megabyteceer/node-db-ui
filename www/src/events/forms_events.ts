@@ -169,6 +169,7 @@ class FormEvents extends FormFull {
 	_nodes_onLoad() {
 		if(this.isNewRecord || (this.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT)) {
 			this.hideField('t_fields');
+			this.hideField('t_filters');
 		}
 
 		makeIconSelectionField(this, 'icon');
@@ -451,7 +452,7 @@ class FormEvents extends FormFull {
 	}
 
 	_filters_onLoad() {
-		this.addLookupFilters('_nodesID', {
+		this.addLookupFilters('node_filters_linker', {
 			filterId: 8,
 			excludeIDs: [9]
 		});

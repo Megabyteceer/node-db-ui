@@ -1,8 +1,6 @@
 
 try mysql.createPool
 
-Lookup nto1 and ntom to user gives access for user if field marked as access opener. Keep such a fields in privilegesFields property. Use it in messages.
-
 проверить все TODO
 
 проверить сессии на глючность

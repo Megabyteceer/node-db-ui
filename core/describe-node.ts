@@ -58,9 +58,11 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				ret.recPerPage = srcNode.recPerPage;
 				ret.defaultFilterId = srcNode.defaultFilterId;
 
-				ret.filters = {};
 				let order = 0;
 				for(let id in srcNode.filters) {
+					if(!ret.filters) {
+						ret.filters = {};
+					}
 					const filter = srcNode.filters[id];
 					ret.filters[id] = {
 						order: order++,
@@ -266,7 +268,7 @@ async function initNodesData() { // load whole nodes data in to memory
 				fields_new.set(field.id, field);
 			}
 			nodeData.fields = fields;
-			const filtersRes = await mysqlExec("SELECT * FROM _filters WHERE status = 1 AND _nodesID=" + nodeData.id) as mysqlRowsResult;
+			const filtersRes = await mysqlExec("SELECT * FROM _filters WHERE status = 1 AND node_filters_linker=" + nodeData.id) as mysqlRowsResult;
 
 			const filters = {};
 			for(let f of filtersRes) {
