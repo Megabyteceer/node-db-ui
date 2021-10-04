@@ -27,7 +27,7 @@ declare global {
 	interface Window {
 		crudJs: { // helps to avoid circular imports
 			customClasses: {
-				[key: string]: Function
+				[key: string]: typeof React.Component;
 			};
 			Stage: typeof Stage;
 		}

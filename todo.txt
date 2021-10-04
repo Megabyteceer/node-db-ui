@@ -1,3 +1,5 @@
+check if data is modified and ask if user is sure to exit
+
 
 try mysql.createPool
 

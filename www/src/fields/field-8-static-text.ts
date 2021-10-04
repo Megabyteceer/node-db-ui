@@ -1,3 +1,4 @@
+import React from "react";
 import { FIELD_TYPE } from "../bs-utils";
 import { R } from "../r";
 import { registerFieldClass } from "../utils";
@@ -10,9 +11,8 @@ registerFieldClass(FIELD_TYPE.STATIC_TEXT, class StaticTextField extends BaseFie
 	render() {
 		var field = this.props.field;
 		if(window.crudJs.customClasses[field.description]) {
-			//TODO: custom class forms
-			debugger;
-			//return React.createElement(window.crudJs.customClasses[field.description], this.props);
+			//@ts-ignore
+			return React.createElement(window.crudJs.customClasses[field.description], this.props);
 		} else {
 			return R.span({
 				dangerouslySetInnerHTML: {

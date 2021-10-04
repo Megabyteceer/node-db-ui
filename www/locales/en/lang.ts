@@ -103,7 +103,9 @@ const LANGS = {
 	'RESET_EMAIL_SENT': 'We sent link for reset password to E-mail: ',
 	'GO_TO_LOGIN': 'Go to login',
 	'REGISTER': 'Register',
-	'REACT_CLASS_NAME': 'React Class Name'
+	'REACT_CLASS_NAME': 'React Class Name',
+	'FORM_IS_MODIFIED': 'Current data in the form is modified!',
+	'LEAVE_WITHOUT_SAVING': 'Leave form without saving.'
 };
 
 initDictionary(LANGS);

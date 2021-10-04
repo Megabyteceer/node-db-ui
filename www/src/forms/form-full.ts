@@ -2,7 +2,7 @@
 import { FieldWrap } from "../fields/field-wrap";
 import { CLIENT_SIDE_FORM_EVENTS, deleteRecord, getCaptchaToken, getItem, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, submitRecord } from "../utils";
 import { FormTab } from "./form-tab";
-import { eventProcessingMixins } from "./event-processing-mixins";
+import { FormEventProcessingMixins } from "./event-processing-mixins";
 import { NodeAdmin } from "../admin/node-admin";
 import { LoadingIndicator } from "../loading-indicator";
 import { R } from "../r";
@@ -40,7 +40,7 @@ async function callForEachField(fieldRefs, data, functionName) {
 	}
 }
 
-class FormFull extends eventProcessingMixins {
+class FormFull extends FormEventProcessingMixins {
 
 	backupInterval: NodeJS.Timeout;
 
@@ -67,7 +67,7 @@ class FormFull extends eventProcessingMixins {
 	}
 
 	componentDidMount() {
-		super.componentDidMount(); // TODO merge base class
+		super.componentDidMount();
 		this.recoveryBackupIfNeed();
 		this.onShow();
 
@@ -274,6 +274,7 @@ class FormFull extends eventProcessingMixins {
 				// save error
 				return;
 			}
+			this.isDataModified = false;
 			this.recId = recId;
 			if(!this.currentData.hasOwnProperty('id')) {
 				this.currentData.id = recId;

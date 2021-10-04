@@ -3,7 +3,8 @@ import { assert, BoolNum, Filters, NodeDesc, RecId, RecordData, throwError } fro
 import { LookupOneToManyFiled } from "../fields/field-15-one-to-many";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import type { FieldWrap } from "../fields/field-wrap";
-import { goBack, updateHashLocation } from "../utils";
+import { R } from "../r";
+import { goBack, L, showPrompt, updateHashLocation } from "../utils";
 
 import type { List } from "./list";
 
@@ -55,6 +56,8 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	header: string | React.Component;
 	hiddenFields: { [key: string]: BoolNum };
 
+	isDataModified: boolean;
+
 	constructor(props: FormProps) {
 		super(props as T);
 		this.nodeId = this.props.nodeId || this.props.node.id;
@@ -67,6 +70,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		this.fieldsRefs = {};
 		this.cancelClick = this.cancelClick.bind(this);
 		this.header = '';
+		this.isDataModified = false;
 	}
 
 	UNSAFE_componentWillReceiveProps(newProps) {
@@ -86,8 +90,18 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		return false;
 	}
 
-	cancelClick() {
-		//TODO: check if data is modified and ask if user is sure to exit
+	forceBouncingTimeout() {
+	}
+
+	async cancelClick() {
+		this.forceBouncingTimeout();
+		if(this.isDataModified) {
+			let answer = await showPrompt(L('FORM_IS_MODIFIED'), L('LEAVE_WITHOUT_SAVING'));
+			if(!answer) {
+				return;
+			}
+		}
+
 		if(this.props.onCancel) {
 			this.props.onCancel();
 			return;

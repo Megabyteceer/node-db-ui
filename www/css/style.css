@@ -834,11 +834,6 @@ input[readonly] {
 	background: unset,
 }
 
-.form-compact .select-control-wrapper {
-	width: 230px;
-	/*TODO is it necessary? */
-}
-
 .select-control {
 	position: relative;
 	padding: 7px 8px;

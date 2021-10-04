@@ -4,7 +4,7 @@ import type { LANG_KEYS } from "../locales/en/lang";
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
-import { assert, FieldDesc, FIELD_TYPE, Filters, GetRecordsParams, HASH_DIVIDER, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, ROLE_ID } from "./bs-utils";
+import { assert, FieldDesc, FIELD_TYPE, Filters, GetRecordsParams, HASH_DIVIDER, IFormParameters, NodeDesc, NODE_ID, RecId, RecordData, RecordsData, ROLE_ID } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
@@ -158,7 +158,7 @@ function debugError(txt) {
 
 var triesGotoHome = 0;
 
-var _oneFormShowed; //TODO set true after one form rendered with data
+var _oneFormShowed;
 const onOneFormShowed = () => {
 	_oneFormShowed = true;
 }
@@ -805,8 +805,7 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 			}).then((data) => {
 				handleAdditionalData(data, url);
 				if(isAuthNeed(data)) {
-					alert('authHerePopup');
-					//TODO authHerePopup
+					window.crudJs.Stage.showForm(NODE_ID.LOGIN, 'new', undefined, true);
 				} else if(data.hasOwnProperty('result')) {
 					/// #if DEBUG
 					isOrderNeedDispose = false;
@@ -943,7 +942,7 @@ async function getCaptchaToken(): Promise<string | undefined> {
 	let resolve;
 	const requireCaptcha = () => {
 		//@ts-ignore
-		window.grecaptcha.ready(function() {
+		window.grecaptcha.ready(function () {
 			//@ts-ignore
 			window.grecaptcha.execute(ENV.CAPTCHA_CLIENT_SECRET, { action: 'submit' }).then((token) => {
 				resolve(token);

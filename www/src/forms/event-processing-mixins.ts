@@ -15,7 +15,7 @@ import("../events/fields_events").then((m) => {
 
 let isHandlersInitialized;
 
-class eventProcessingMixins extends BaseForm {
+class FormEventProcessingMixins extends BaseForm {
 	/** true if form opened for new record creation */
 	isNewRecord: boolean;
 	/** true if form opened for editing existing form */
@@ -64,8 +64,8 @@ class eventProcessingMixins extends BaseForm {
 					if(name !== 'constructor') {
 						const method = proto[name];
 						if(typeof method === 'function') {
-							assert(!eventProcessingMixins.prototype[name], FormEvents.name + " contains wrong method name: " + name);
-							eventProcessingMixins.prototype[name] = method;
+							assert(!FormEventProcessingMixins.prototype[name], FormEvents.name + " contains wrong method name: " + name);
+							FormEventProcessingMixins.prototype[name] = method;
 						}
 					}
 				}
@@ -265,16 +265,15 @@ class eventProcessingMixins extends BaseForm {
 			if(!isUserAction) {
 				f.setValue(val);
 			}
+			if(isUserAction) {
+				this.isDataModified = true;
+			}
 			var prev_value = this.currentData[fieldName];
 			this.currentData[fieldName] = val;
 
 			await this.processFieldEvent(field, isUserAction, prev_value);
 
 			this.checkUniqueValue(field, val);
-
-			if(fieldName === 'name') {
-				this.refreshLeftBar();
-			}
 		}
 	}
 
@@ -375,4 +374,4 @@ class eventProcessingMixins extends BaseForm {
 	}
 }
 
-export { eventProcessingMixins };
+export { FormEventProcessingMixins };
