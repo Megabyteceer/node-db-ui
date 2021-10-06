@@ -7,13 +7,16 @@ import ENV from "../ENV";
 import * as mysql from 'mysql2';
 import { performance } from 'perf_hooks';
 
-const connection = mysql.createConnection({
+const pool = mysql.createPool({
 	user: ENV.DB_USER,
 	database: ENV.DB_NAME,
 	host: ENV.DB_HOST,
 	password: ENV.DB_PASS,
 	multipleStatements: true,
-	timezone: 'Z'
+	timezone: 'Z',
+	waitForConnections: true,
+	connectionLimit: ENV.DB_CONNECTIONS_COUNT,
+	queueLimit: 0
 });
 
 const mysqlDebug = {
@@ -34,7 +37,7 @@ const mysqlExec = (query: string): Promise<mysqlRowsResult | mysqlRowsResult[] |
 	/// #endif
 
 	return new Promise((resolve, reject) => {
-		connection.query(query, (er, rows) => {
+		pool.query(query, (er, rows) => {
 			if(er) {
 				/// #if DEBUG
 				er.stack = preparedError.stack;

@@ -286,6 +286,8 @@ let transporter;
 async function mail_utf8(email, subject, text): Promise<void> {
 	return new Promise((resolve, rejects) => {
 		if(ENV.DEBUG) {
+			console.log('E-mail sent: ' + subject);
+			console.log(text);
 			resolve();
 			return;
 		}

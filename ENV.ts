@@ -2,7 +2,7 @@ const ENV = {
 	SERVER_NAME: 'https://node-db-ui.com:1443/',
 	DEBUG: true,
 	ADMIN_ENABLED_DEFAULT: true,
-	ERROR_NOTIFY_EMAIL: 'vasiliy.p.kostin@gmail.com,example@example.com',
+	ERROR_NOTIFY_EMAIL: 'vasiliy.p.kostin@gmail.com',
 
 	EMAIL_FROM: 'test@test.com',
 
@@ -12,6 +12,7 @@ const ENV = {
 	DB_USER: 'root',
 	DB_PASS: '',
 	DB_NAME: 'crud_js_base',
+	DB_CONNECTIONS_COUNT: 10,
 
 	DEPLOY_TO: 'http: //test.server.org',
 	DEPLOYMENT_KEY_LOCAL: '',

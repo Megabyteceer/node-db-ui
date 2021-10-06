@@ -267,7 +267,7 @@ class FormEventProcessingMixins extends BaseForm {
 			}
 			if(isUserAction) {
 				this.isDataModified = true;
-				if(this.isSubForm) {
+				if(this.isSubForm()) {
 					this.props.parentForm.props.form.isDataModified = true;
 				}
 			}

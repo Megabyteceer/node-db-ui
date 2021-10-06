@@ -503,7 +503,6 @@ class FormEvents extends FormFull {
 		let activationKey = this.filters.activationKey;
 		let resetCode = this.filters.resetCode;
 		if(activationKey || resetCode) {
-			this.hideField('resetCode');
 			this.hideField('email');
 			this.hideFooter();
 			if(activationKey) {
