@@ -1,8 +1,8 @@
 {
 	"scripts": {
-		"build": "webpack"
+		"build": "node ../node_modules/snowpack/index.bin.js build --watch"
 	},
 	"browserslist": [
 		"> 6%"
-	  ]
+	]
 }

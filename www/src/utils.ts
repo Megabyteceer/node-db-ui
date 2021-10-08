@@ -4,7 +4,8 @@ import type { LANG_KEYS } from "../locales/en/lang";
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
-import { assert, FieldDesc, FIELD_TYPE, Filters, GetRecordsParams, HASH_DIVIDER, IFormParameters, NodeDesc, NODE_ID, RecId, RecordData, RecordsData, ROLE_ID } from "./bs-utils";
+import { assert, FieldDesc, FIELD_TYPE, GetRecordsParams, HASH_DIVIDER, NODE_ID, ROLE_ID } from "./bs-utils";
+import type { Filters, IFormParameters, NodeDesc, RecId, RecordData, RecordsData } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
@@ -1203,7 +1204,8 @@ function L(key: LANG_KEYS, param?: any) {
 		return dictionary[key];
 	}
 	/// #if DEBUG
-	throw new Error(L('NO_TRANSLATION', key));
+	debugger;
+	throw new Error('NO_TRANSLATION FOR KEY: ' + key);
 	/// #endif
 	return ('#' + key);
 }

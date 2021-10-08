@@ -1,7 +1,7 @@
 {
 	"editor.formatOnSave": true,
 	"files.exclude": {
-		"**/dist/**": true,
+		"**/src/build/**": true,
 		"**/uploads/**": true,
 		"**/fonts/**": true
 	},

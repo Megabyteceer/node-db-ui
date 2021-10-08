@@ -88,7 +88,6 @@ server.on('request', (req, res) => {
 				/// #endif
 
 				const onError = (error) => {
-					debugger;
 					/// #if DEBUG
 					console.log(error.stack);
 					res.end(JSON.stringify({ error: error.stack }));
