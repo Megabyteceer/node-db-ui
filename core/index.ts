@@ -21,7 +21,7 @@ server.on('request', (req, res) => {
 	if(req.method === 'POST') {
 		let handler = req.url.substr(6);
 		if(api.hasOwnProperty(handler)) {
-			let isMultipart = req.headers['content-type'].indexOf('multipart/form-data') >= 0;
+			let isMultipart = req.headers['content-type'].startsWith('multipart/form-data');
 
 			handler = api[handler];
 			let body;
