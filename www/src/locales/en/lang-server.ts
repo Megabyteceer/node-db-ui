@@ -1,4 +1,4 @@
-import { initDictionaryServerSide } from "../../../core/locale";
+import { initDictionaryServerSide } from "../../../../core/locale";
 
 const LANGS = {
 	'UPL_ERROR_WFN': 'File uploading error. Wrong file name.',

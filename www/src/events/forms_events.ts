@@ -177,7 +177,6 @@ class FormEvents extends FormFull {
 		if(this.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
 			this.hideField('defaultFilterId');
 		} else if(this.isUpdateRecord) {
-			this.isNewRecord
 			this.addLookupFilters('defaultFilterId', {
 				_nodesID: this.recId
 			});

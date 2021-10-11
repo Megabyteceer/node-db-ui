@@ -1,5 +1,5 @@
 
-import type { LANG_KEYS } from "../locales/en/lang";
+import type { LANG_KEYS } from "./locales/en/lang";
 
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
@@ -22,7 +22,7 @@ enum CLIENT_SIDE_FORM_EVENTS {
 	ON_FIELD_CHANGE = 'onChange',
 }
 
-const __corePath = 'https://node-db-ui.com:1443/core/';
+const __corePath = 'http://node-db-ui.com:1443/core/';
 
 const headersJSON = new Headers();
 headersJSON.append("Content-Type", "application/json");

@@ -146,7 +146,7 @@ class FileFormBody extends Component<any, any> {
 
 
 		var form = R.form({ ref: (r) => { this.formRef = r; }, encType: "multipart/form-data", className: 'hidden' },
-			R.input({ name: "all files", ref: (r) => { this.fileInputRef = r; }, type: 'file', accept: this.props.accept, onChange: this._onChange }),
+			R.input({ name: "file", ref: (r) => { this.fileInputRef = r; }, type: 'file', accept: this.props.accept, onChange: this._onChange }),
 			R.input({ name: "MAX_FILE_SIZE", defaultValue: 30000000 }),
 			R.input({ name: "fid", defaultValue: field.id }),
 			R.input({ name: "nid", defaultValue: field.node.id }),

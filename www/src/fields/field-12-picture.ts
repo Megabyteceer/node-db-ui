@@ -282,7 +282,7 @@ class CropperFieldBody extends Component<any, any> {
 		}
 
 		var form = R.form({ ref: (r) => { this.references.form = r; }, encType: "multipart/form-data", className: 'hidden' },
-			R.input({ name: "picture", ref: (r) => { this.references.fileInput = r; }, type: 'file', accept: ".jpg, .jpeg, .png, .gif", onChange: this._onChange }),
+			R.input({ name: "file", ref: (r) => { this.references.fileInput = r; }, type: 'file', accept: ".jpg, .jpeg, .png, .gif", onChange: this._onChange }),
 			R.input({ name: "MAX_FILE_SIZE", defaultValue: 3000000 }),
 			R.input({ name: "fid", defaultValue: field.id }),
 			R.input({ name: "nid", defaultValue: field.node.id }),

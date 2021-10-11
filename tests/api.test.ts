@@ -1,5 +1,6 @@
-import {Builder, By, Key, until} from 'selenium-webdriver';
-import {Driver} from "selenium-webdriver/chrome";
+import { Builder, By, Key, until } from 'selenium-webdriver';
+import { Driver } from "selenium-webdriver/chrome";
+import ENV from "../ENV";
 
 /** @type Driver */
 let driver;
@@ -9,12 +10,8 @@ async function testMyRecordCreate() {
 	driver = await new Builder().forBrowser('chrome').build();
 	let passAll = false;
 	try {
-		await driver.get('https://node-db-ui.com:1443/');
-
+		await driver.get(ENV.SERVER_NAME);
 		await click('.form-node-82 .create-button');
-
-
-
 		passAll = true;
 	} finally {
 		await driver.quit();

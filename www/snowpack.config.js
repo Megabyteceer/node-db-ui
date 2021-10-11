@@ -12,6 +12,8 @@ module.exports = {
 		hmr: false
 	},
 	exclude: [
-		"**/.vscode/**/**"
+		"**/.vscode/**/**",
+		"**/uploads/**/**",
+		"**/images/**/**"
 	]
 };

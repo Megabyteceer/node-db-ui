@@ -310,8 +310,8 @@ async function initNodesData() { // load whole nodes data in to memory
 	await authorizeUserByID(3, undefined, "dev-user-session-token");
 	/// #endif
 
-	await import("../www/locales/en/lang-server");
-	await import("../www/locales/ru/lang-server");
+	await import("../www/src/locales/en/lang-server");
+	await import("../www/src/locales/ru/lang-server");
 
 }
 

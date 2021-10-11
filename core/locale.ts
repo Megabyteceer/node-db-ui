@@ -1,6 +1,6 @@
 
 import ENV from "../ENV";
-import type { LANG_KEYS_SERVER_SIDE } from "../www/locales/en/lang-server";
+import type { LANG_KEYS_SERVER_SIDE } from "../www/src/locales/en/lang-server";
 import { UserSession } from "./auth";
 
 const dictionaries: Map<string, {}> = new Map();

@@ -1,4 +1,4 @@
-import { RecordsDataResponse, UserSession } from 'www/src/bs-utils';
+import { RecordsDataResponse, UserSession } from '../www/src/bs-utils';
 import { nodePrivileges, getClientEventHandler, clearCache } from './admin/admin';
 import { setCurrentOrg, setMultilingual, resetPassword, activateUser, killSession, getGuestUserForBrowserLanguage } from './auth';
 import { getNodeDesc, getNodesTree } from './describe-node';
@@ -6,7 +6,7 @@ import { getRecords, deleteRecord } from './get-records';
 import { submitRecord, uniqueCheck } from './submit';
 import { uploadImage, uploadFile } from './upload';
 
-const api = {
+const api: Object = {
 	"api/": async (reqData, userSession: UserSession) => {
 		const data = await getRecords(reqData.nodeId, reqData.viewFields, reqData.recId, userSession, reqData, reqData.s);
 		let ret: RecordsDataResponse = { data };

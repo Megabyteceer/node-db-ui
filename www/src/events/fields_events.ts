@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 
 import { L } from "../utils";
 import { FormEvents } from "./forms_events";
+import { makeReactClassSelectionField, removeReactClassSelectionField } from "../admin/admin-utils";
 
 class FieldsEvents extends FormEvents {
 
@@ -58,8 +59,10 @@ class FieldsEvents extends FormEvents {
 
 		if(nodeType === NODE_TYPE.REACT_CLASS) {
 			this.setFieldLabel('tableName', L("REACT_CLASS_NAME"));
+			makeReactClassSelectionField(this, 'tableName');
 		} else {
 			this.setFieldLabel('tableName');
+			removeReactClassSelectionField(this, 'tableName');
 		}
 
 		this._nodes_recalculateFieldsVisibility();

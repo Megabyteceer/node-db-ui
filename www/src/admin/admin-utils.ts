@@ -5,6 +5,7 @@ import { R } from "../r";
 import { Select } from "../components/select";
 import { consoleDir, getItem, getNode, getNodeData, isLitePage, renderIcon, setItem, submitRecord } from "../utils";
 import { MainFrame } from "../main-frame";
+import type { FormFull } from "../forms/form-full";
 
 function debugInfoGetter() {
 	consoleDir(this);
@@ -181,8 +182,7 @@ function initIconsList() {
 	}
 }
 
-/** @param {FormFull} form */
-function makeIconSelectionField(form, fieldName) {
+function makeIconSelectionField(form: FormFull, fieldName) {
 
 	if(!iconsList) {
 		initIconsList();
@@ -198,7 +198,7 @@ function makeIconSelectionField(form, fieldName) {
 			React.createElement(Select, {
 				isCompact: form.props.isCompact,
 				defaultValue: form.fieldValue(fieldName),
-				readOnly: form.props.fieldDisabled,
+				readOnly: form.isFieldDisabled(fieldName),
 				onChange: (value) => {
 					form.setFieldValue(fieldName, value);
 				},
@@ -209,4 +209,49 @@ function makeIconSelectionField(form, fieldName) {
 		10);
 }
 
-export { makeIconSelectionField, admin };
+function makeReactClassSelectionField(form: FormFull, fieldName) {
+
+	const options = Object.keys(window.crudJs.customClasses).map((k) => {
+		return { name: k, value: k };
+	});
+
+	const formElement = ReactDOM.findDOMNode(form) as HTMLDivElement;
+	const input = formElement.querySelector('.field-container-id-' + form.getField(fieldName).props.field.id + ' input') as HTMLInputElement;
+	input.style.display = 'none';
+	const selectContainer = document.createElement('SPAN');
+	selectContainer.className = "classes-selector";
+	input.after(selectContainer);
+	setTimeout(() => {
+		ReactDOM.render(
+			React.createElement(Select, {
+				isCompact: form.props.isCompact,
+				defaultValue: form.fieldValue(fieldName),
+				readOnly: form.isFieldDisabled(fieldName),
+				onChange: (value) => {
+					form.setFieldValue(fieldName, value);
+				},
+				options
+			}),
+			selectContainer
+		);
+	}, 10);
+}
+
+function removeReactClassSelectionField(form: FormFull, fieldName) {
+	const formElement = ReactDOM.findDOMNode(form) as HTMLDivElement;
+	const input = formElement.querySelector('.field-container-id-' + form.getField(fieldName).props.field.id + ' input') as HTMLInputElement;
+	input.style.display = '';
+	const selectContainer = input.parentElement.querySelector('.classes-selector');
+	if(selectContainer) {
+		input.value = '';
+		ReactDOM.render(
+			React.createElement('span', null),
+			selectContainer
+		);
+		setTimeout(() => {
+			selectContainer.remove();
+		}, 10);
+	}
+}
+
+export { makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField, admin };

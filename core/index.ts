@@ -1,15 +1,11 @@
 
-import { createServer } from 'http';
 import api from './api';
 import { startSession, finishSession, isUserHaveRole } from './auth';
 import { initNodesData } from './describe-node';
 import { performance } from 'perf_hooks';
-import { getBoundary, parse } from 'parse-multipart-data';
 import './locale';
 import { mysqlDebug } from "./mysql-connection";
 import { ROLE_ID } from "../www/src/bs-utils";
-
-const server = createServer();
 
 /// #if DEBUG
 import { DPromise } from "../www/src/debug-promise";
@@ -17,141 +13,122 @@ import { DPromise } from "../www/src/debug-promise";
 global.Promise = DPromise;
 /// #endif
 
-server.on('request', (req, res) => {
-	if(req.method === 'POST') {
-		let handler = req.url.substr(6);
-		if(api.hasOwnProperty(handler)) {
-			let isMultipart = req.headers['content-type'].startsWith('multipart/form-data');
+const express = require('express');
+var bodyParser = require('body-parser');
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+const multer = require('multer')
+const upload = multer()
 
-			handler = api[handler];
-			let body;
-			req.on('data', chunk => {
-				if(!isMultipart) {
-					chunk = chunk.toString();
-				}
-				if(body) {
-					if(Array.isArray(body)) {
-						body.push(chunk);
-					} else {
-						body = [body, chunk];
-					}
-				} else {
-					body = chunk;
-				}
-			});
-			req.on('end', () => {
-				/// #if DEBUG
-				/*
-				/// #endif
-				try {
-				//*/
-				/// #if DEBUG
-				let startTime = performance.now();
-				/// #endif
+const path = require('path')
 
+const upload2 = upload.single('file');
 
-				if(isMultipart) {
-					let boundary = getBoundary(req.headers['content-type']);
-					if(Array.isArray(body)) {
-						body = Buffer.concat(body);
-					}
-					let parts = parse(body, boundary);
-					body = {};
-					for(let part of parts) {
-						if(part.filename) {
-							// @ts-ignore
-							body.filename = part.filename;
-							// @ts-ignore
-							body.fileContent = part.data;
-						} else {
-							body[part.name] = part.data.toString();
-						}
-					}
-				} else {
-					if(Array.isArray(body)) {
-						if(body.length > 1) {
-							body = body.join('');
-						} else {
-							body = body[0];
-						}
-					}
-					body = JSON.parse(body);
-				}
-				/// #if DEBUG
-				//console.log(req.url);
-				//console.dir(body);
-				/// #endif
-				mysql_real_escape_object(body);
-				let userSession;
-				/// #if DEBUG
-				mysqlDebug.debug = { requestTime: new Date(), stack: [] };
-				/// #endif
+const handleRequest = (req, res) => {
 
-				const onError = (error) => {
-					/// #if DEBUG
-					console.log(error.stack);
-					res.end(JSON.stringify({ error: error.stack }));
-					/*
-					/// #endif
-					res.writeHead(500);
-					error = true;
-					res.end("{error:1}");
-					//*/
-				}
+	/// #if DEBUG
+	/*
+	/// #endif
+	try {
+	//*/
+	/// #if DEBUG
+	let startTime = performance.now();
+	/// #endif
 
-				startSession(body.sessionToken, req.headers['accept-language']).then((session) => {
-					userSession = session;
-					handler(body, session).then((result) => {
+	let handler = req.url.substr(6);
+	if(api.hasOwnProperty(handler)) {
+		handler = api[handler];
+		const body = req.body;
+		/// #if DEBUG
+		//console.log(req.url);
+		//console.dir(body);
+		/// #endif
+		mysql_real_escape_object(body);
+		let userSession;
+		/// #if DEBUG
+		mysqlDebug.debug = { requestTime: new Date(), stack: [] };
+		/// #endif
 
-						const resHeaders = {
-							'content-type': 'application/json'
-						};
-						let ret: any = {
-							result, isGuest: false,
-							/// #if DEBUG
-							debug: null
-							/// #endif
-						};
-						/// #if DEBUG
-						resHeaders['Access-Control-Allow-Origin'] = '*';
-						if(mysqlDebug.debug) {
-							ret.debug = mysqlDebug.debug;
-							delete mysqlDebug.debug;
-							ret.debug.timeElapsed_ms = performance.now() - startTime;
-						}
-						/// #endif
-
-						if(isUserHaveRole(ROLE_ID.GUEST, userSession)) {
-							ret.isGuest = true;
-						}
-
-						res.writeHead(200, resHeaders);
-
-						if(userSession.hasOwnProperty('notifications')) {
-							ret.notifications = userSession.notifications;
-							delete userSession.notifications;
-						}
-						res.end(JSON.stringify(ret));
-					}).catch(onError);
-				})
-					.catch(onError)
-					.finally(() => {
-						finishSession(body.sessionToken);
-					});
-			});
-		} else {
-			res.writeHead(404);
-			res.end("wrong api request");
+		const onError = (error) => {
+			/// #if DEBUG
+			console.log(error.stack);
+			res.end(JSON.stringify({ error: error.stack }));
+			/*
+			/// #endif
+			res.writeHead(500);
+			error = true;
+			res.end("{error:1}");
+			//*/
 		}
+
+		startSession(body.sessionToken, req.headers['accept-language']).then((session) => {
+			userSession = session;
+			handler(body, session).then((result) => {
+
+				const resHeaders = {
+					'content-type': 'application/json'
+				};
+				let ret: any = {
+					result, isGuest: false,
+					/// #if DEBUG
+					debug: null
+					/// #endif
+				};
+				/// #if DEBUG
+				resHeaders['Access-Control-Allow-Origin'] = '*';
+				if(mysqlDebug.debug) {
+					ret.debug = mysqlDebug.debug;
+					delete mysqlDebug.debug;
+					ret.debug.timeElapsed_ms = performance.now() - startTime;
+				}
+				/// #endif
+
+				if(isUserHaveRole(ROLE_ID.GUEST, userSession)) {
+					ret.isGuest = true;
+				}
+
+				res.writeHead(200, resHeaders);
+
+				if(userSession.hasOwnProperty('notifications')) {
+					ret.notifications = userSession.notifications;
+					delete userSession.notifications;
+				}
+				res.end(JSON.stringify(ret));
+			}).catch(onError);
+		})
+			.catch(onError)
+			.finally(() => {
+				finishSession(body.sessionToken);
+			});
 	} else {
 		res.writeHead(404);
-		res.end("POST expected.");
+		res.end("wrong api request");
 	}
-});
+};
+
+const handleUpload = (req, res) => {
+	upload2(req, res, () => {
+		req.body.filename = req.file.originalname;
+		req.body.fileContent = req.file.buffer;
+		handleRequest(req, res);
+	});
+};
+
+app.post("/core/api/uploadFile", handleUpload);
+app.post("/core/api/uploadImage", handleUpload);
+
+app.post("/core/*", handleRequest);
+
+app.use('/src/', express.static(path.join(__dirname, '../../www/build/src')));
+app.use('/_snowpack/', express.static(path.join(__dirname, '../../www/build/_snowpack')));
+app.use('/node_modules/', express.static(path.join(__dirname, '../../node_modules')));
+app.use('/node_modules/', express.static(path.join(__dirname, '../../node_modules')));
+app.use('/', express.static(path.join(__dirname, '../../www')));
 
 initNodesData().then(async function() {
-	server.listen(7778);
-	console.log('HTTPS listen 7778...');
+	app.listen(1443)
+	console.log('HTTP listen 1443...');
 });
 
 const mysql_real_escape_object = (o) => {

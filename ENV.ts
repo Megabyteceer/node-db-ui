@@ -1,5 +1,5 @@
 const ENV = {
-	SERVER_NAME: 'https://node-db-ui.com:1443/',
+	SERVER_NAME: 'http://node-db-ui.com:1443/',
 	DEBUG: true,
 	ADMIN_ENABLED_DEFAULT: true,
 	ERROR_NOTIFY_EMAIL: 'vasiliy.p.kostin@gmail.com',
