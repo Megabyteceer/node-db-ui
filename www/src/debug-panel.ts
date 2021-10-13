@@ -58,6 +58,10 @@ class DebugPanel extends Component<any, any> {
 
 	async deployClick(ev) {
 		sp(ev);
+
+		let ret = await getData('admin/getDeployPackage');
+
+		/*
 		if(await showPrompt(L('DEPLOY_TO', ENV.DEPLOY_TO))) {
 			let testResult = await getData('/test');
 			if(testResult === 'ok') {
@@ -75,7 +79,7 @@ class DebugPanel extends Component<any, any> {
 			} else {
 				myAlert(R.div(null, R.h2(null, L('TESTS_ERROR')), testResult));
 			}
-		}
+		}*/
 	}
 
 	render() {

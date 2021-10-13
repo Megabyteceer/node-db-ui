@@ -5,6 +5,7 @@ import { getNodeDesc, getNodesTree } from './describe-node';
 import { getRecords, deleteRecord } from './get-records';
 import { submitRecord, uniqueCheck } from './submit';
 import { uploadImage, uploadFile } from './upload';
+import { getDeployPackage } from './admin/deploy';
 
 const api: Object = {
 	"api/": async (reqData, userSession: UserSession) => {
@@ -63,6 +64,9 @@ const api: Object = {
 	},
 	"admin/editEventHandler": (reqData, userSession: UserSession) => {
 		return getClientEventHandler(reqData, userSession);
+	},
+	"admin/getDeployPackage": (reqData, userSession: UserSession) => {
+		return getDeployPackage(reqData, userSession);
 	}
 };
 

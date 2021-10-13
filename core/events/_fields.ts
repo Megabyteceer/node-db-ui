@@ -1,12 +1,12 @@
 
-import { mysqlExec } from "../core/mysql-connection";
-import { shouldBeAdmin } from "../core/admin/admin";
-import { mustBeUnset } from "../core/auth";
-import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } from "../core/describe-node";
-import { getRecords } from "../core/get-records";
-import { submitRecord } from "../core/submit";
-import { L } from "../core/locale";
-import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, FIELD_ID } from "../www/src/bs-utils";
+import { mysqlExec } from "../mysql-connection";
+import { shouldBeAdmin } from "../admin/admin";
+import { mustBeUnset } from "../auth";
+import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } from "../describe-node";
+import { getRecords } from "../get-records";
+import { submitRecord } from "../submit";
+import { L } from "../locale";
+import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, FIELD_ID } from "../../www/src/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {

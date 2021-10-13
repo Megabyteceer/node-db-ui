@@ -123,7 +123,6 @@ app.post("/core/*", handleRequest);
 app.use('/src/', express.static(path.join(__dirname, '../../www/build/src')));
 app.use('/_snowpack/', express.static(path.join(__dirname, '../../www/build/_snowpack')));
 app.use('/node_modules/', express.static(path.join(__dirname, '../../node_modules')));
-app.use('/node_modules/', express.static(path.join(__dirname, '../../node_modules')));
 app.use('/', express.static(path.join(__dirname, '../../www')));
 
 initNodesData().then(async function() {

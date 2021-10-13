@@ -7,6 +7,8 @@
 /www/node_modules
 /www/.cache
 /www/build
+/www/dist
+/www/dist-build
 /www/images/uploads
 /www/uploads
 /www/js/libs/libs.js

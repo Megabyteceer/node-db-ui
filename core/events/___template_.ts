@@ -1,5 +1,5 @@
-import { NodeEventsHandlers } from "../core/describe-node"
-import type { RecordData, RecordDataWrite, UserSession } from "../www/src/bs-utils";
+import { NodeEventsHandlers } from "../describe-node"
+import type { RecordData, RecordDataWrite, UserSession } from "../../www/src/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 

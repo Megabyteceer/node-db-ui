@@ -2,21 +2,27 @@ var path = require('path');
 
 module.exports = {
     mode: 'development',
+    //  mode: 'production',
     entry: {
         main: './src/index.ts',
         "rich-editor": {
-            //dependOn: 'main',
-            import: './rich-editor/rich-editor-main.ts',
+            dependOn: 'main',
+            import: './src/rich-editor/rich-editor-main.ts',
         },
+        "en": {
+            dependOn: 'main',
+            import: './src/locales/en/lang.ts',
+        },
+        "ru": {
+            dependOn: 'main',
+            import: './src/locales/ru/lang.ts',
+        }
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].bundle.js'
     },
-
     target: ['web', 'es2020'],
-    watch: true,
-    devtool: 'source-map',
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.json']
     },
@@ -32,9 +38,10 @@ module.exports = {
                 {
                     loader: "ifdef-loader",
                     options: {
-                        DEBUG: true,
+                        DEBUG: false,
                     }
-                }
+                },
+                path.resolve(__dirname, '../assert-strip-loader.js')
             ]
         }],
     }

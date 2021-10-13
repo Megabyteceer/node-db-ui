@@ -1,8 +1,8 @@
-import { getServerHref, mail_utf8 } from "../core/auth";
-import { L } from "../core/locale";
-import { mysqlExec, mysqlRowsResult } from "../core/mysql-connection";
-import { NODE_ID, RecordDataWrite } from "../www/src/bs-utils";
-import { UserSession } from "../core/auth";
+import { getServerHref, mail_utf8 } from "../auth";
+import { L } from "../locale";
+import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
+import { NODE_ID, RecordDataWrite } from "../../www/src/bs-utils";
+import { UserSession } from "../auth";
 import { randomBytes } from "crypto";
 
 export default {

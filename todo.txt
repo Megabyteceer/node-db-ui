@@ -1,3 +1,8 @@
+попробовать Vite
+
+encodeURIComponent(ENV.DEPLOY_TO) - MD5
+
+Deploy data for _tables
 
 сделать деплой релизного билда. версионность по папкам.
 

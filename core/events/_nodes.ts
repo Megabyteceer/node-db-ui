@@ -1,9 +1,9 @@
 
-import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "../core/mysql-connection";
-import { shouldBeAdmin } from "../core/admin/admin";
-import { NodeEventsHandlers, reloadMetadataSchedule } from "../core/describe-node";
-import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, NODE_TYPE } from "../www/src/bs-utils";
-import { L } from "../core/locale";
+import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "../mysql-connection";
+import { shouldBeAdmin } from "../admin/admin";
+import { NodeEventsHandlers, reloadMetadataSchedule } from "../describe-node";
+import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, NODE_TYPE } from "../../www/src/bs-utils";
+import { L } from "../locale";
 
 const handlers: NodeEventsHandlers = {
 

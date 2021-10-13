@@ -5,6 +5,12 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Attach node",
+			"port": 9229,
+			"request": "attach",
+			"type": "pwa-node"
+		},
+		{
 			"type": "pwa-chrome",
 			"request": "launch",
 			"name": "Client",

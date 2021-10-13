@@ -1,7 +1,7 @@
 
-import { mysqlExec } from "../core/mysql-connection";
-import { generateSalt, getPasswordHash, isAdmin } from "../core/auth";
-import { submitRecord } from "../core/submit";
+import { mysqlExec } from "../mysql-connection";
+import { generateSalt, getPasswordHash, isAdmin } from "../auth";
+import { submitRecord } from "../submit";
 
 async function clearUserParams(data, currentData, userSession) {
 	if(!isAdmin(userSession)) {

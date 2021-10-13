@@ -4,9 +4,13 @@
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
 	mode: 'development',
+	plugins: [
+		'if-def-loader-snowpack'
+	],
 	buildOptions: {
-		watch: true,
-		sourcemap: true
+		//	out: "dist-build",
+		watch: false,
+		sourcemap: false
 	},
 	devOptions: {
 		hmr: false
