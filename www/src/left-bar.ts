@@ -215,6 +215,9 @@ class BarItem extends Component<any, any> {
 				caret = R.span({ className: "left-bar-group-caret" },
 					renderIcon('caret-' + (isExpanded ? 'up' : 'down'))
 				)
+				className += ' clickable';
+			} else {
+				className += ' not-clickable';
 			}
 			children = R.div({ className: isExpanded ? 'left-bar-children' : 'left-bar-children hidden' },
 				renderItemsArray(item.children, this.props.level + 1, item)
