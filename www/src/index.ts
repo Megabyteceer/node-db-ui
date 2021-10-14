@@ -1,3 +1,13 @@
+import "reset-css/reset.css";
+import "font-awesome/css/font-awesome.min.css";
+import "react-datetime/css/react-datetime.css";
+import "cropperjs/dist/cropper.min.css";
+import "../css/consts.css";
+import "../css/style.css";
+import "../css/debug-style.css";
+import "../css/animations.css";
+import "../src/views/view_5_users.css";
+
 import { MainFrame } from "./main-frame";
 import "./fields/field-1-text-default";
 import "./fields/field-2-numeric";
@@ -23,8 +33,11 @@ import { Stage } from "./stage";
 import ReactDOM from 'react-dom';
 import React from 'react';
 
+import jQuery from 'jquery';
+
 declare global {
 	interface Window {
+		$: typeof jQuery;
 		crudJs: { // helps to avoid circular imports
 			customClasses: {
 				[key: string]: typeof React.Component;

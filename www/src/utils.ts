@@ -1,3 +1,6 @@
+import jQuery from 'jquery';
+window.jQuery = jQuery;
+window.$ = jQuery;
 
 import type { LANG_KEYS } from "./locales/en/lang";
 
@@ -22,7 +25,7 @@ enum CLIENT_SIDE_FORM_EVENTS {
 	ON_FIELD_CHANGE = 'onChange',
 }
 
-const __corePath = 'http://node-db-ui.com:1443/core/';
+const __corePath = '/core/';
 
 const headersJSON = new Headers();
 headersJSON.append("Content-Type", "application/json");

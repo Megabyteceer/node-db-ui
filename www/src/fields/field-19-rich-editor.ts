@@ -112,7 +112,7 @@ registerFieldClass(FIELD_TYPE.RICH_EDITOR, class RichEditorField extends BaseFie
 				cog = R.div(null, renderIcon('cog fa-spin'));
 			}
 
-			return R.div(null, cog, R.iframe({ ref: (r) => { this.viewportRef = r; }, allowFullScreen: true, sandbox: 'allow-scripts allow-forms allow-same-origin', style, src: 'rich-editor/index.html?iframeId=' + this.iframeId }));
+			return R.div(null, cog, R.iframe({ ref: (r) => { this.viewportRef = r; }, allowFullScreen: true, sandbox: 'allow-scripts allow-forms allow-same-origin', style, src: './src/rich-editor/index.html?iframeId=' + this.iframeId }));
 		} else {
 			return R.div({ dangerouslySetInnerHTML: { __html: this.props.initialValue } });
 		}

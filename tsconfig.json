@@ -18,7 +18,7 @@
 	"typeAcquisition": {
         "include": ["node"]
     },
-	"include": ["core/index.ts", "events/*"],
+	"include": ["core/index.ts", "core/events/*"],
 	"exclude": [
 		"**/www/**",
 		"**/dist/**",

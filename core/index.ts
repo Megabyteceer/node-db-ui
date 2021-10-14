@@ -26,7 +26,6 @@ const path = require('path')
 const upload2 = upload.single('file');
 
 const handleRequest = (req, res) => {
-
 	/// #if DEBUG
 	/*
 	/// #endif
@@ -76,7 +75,8 @@ const handleRequest = (req, res) => {
 					/// #endif
 				};
 				/// #if DEBUG
-				resHeaders['Access-Control-Allow-Origin'] = '*';
+				resHeaders['Access-Control-Allow-Origin'] = 'http://node-db-ui.com:3000';
+				resHeaders['Access-Control-Allow-Methods'] = 'POST';
 				if(mysqlDebug.debug) {
 					ret.debug = mysqlDebug.debug;
 					delete mysqlDebug.debug;
@@ -88,7 +88,7 @@ const handleRequest = (req, res) => {
 					ret.isGuest = true;
 				}
 
-				res.writeHead(200, resHeaders);
+				res.set(resHeaders);
 
 				if(userSession.hasOwnProperty('notifications')) {
 					ret.notifications = userSession.notifications;
@@ -120,9 +120,8 @@ app.post("/core/api/uploadImage", handleUpload);
 
 app.post("/core/*", handleRequest);
 
-app.use('/src/', express.static(path.join(__dirname, '../../www/build/src')));
-app.use('/_snowpack/', express.static(path.join(__dirname, '../../www/build/_snowpack')));
-app.use('/node_modules/', express.static(path.join(__dirname, '../../node_modules')));
+app.use('/dist/images/', express.static(path.join(__dirname, '../../www/images')));
+app.use('/assets/', express.static(path.join(__dirname, '../../www/dist/assets')));
 app.use('/', express.static(path.join(__dirname, '../../www')));
 
 initNodesData().then(async function() {

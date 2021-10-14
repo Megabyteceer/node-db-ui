@@ -1,4 +1,14 @@
-$(async function() {
+import jQuery from 'jquery';
+//@ts-ignore
+window.jQuery = jQuery;
+window.$ = jQuery;
+$(async function () {
+	await Promise.all([
+		import("bootstrap/dist/css/bootstrap.min.css"),
+		import("summernote/dist/summernote.min.css"),
+		import("summernote/dist/summernote.min.js")
+	]);
+
 	//@ts-ignore
 	window.Bootstrap = await import("bootstrap");
 	//@ts-ignore
@@ -14,7 +24,7 @@ $(async function() {
 		if(data.hasOwnProperty('options')) {
 
 			data.options.callbacks = {
-				onChange: function(contents, $editable) {
+				onChange: function (contents, $editable) {
 					sendValueToParent();
 				}
 			};

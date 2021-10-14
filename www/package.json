@@ -1,7 +1,7 @@
 {
 	"scripts": {
-		"build": "node ../node_modules/snowpack/index.bin.js build --watch",
-		"build-release": "webpack build"
+		"build": "npx vite --config vite.config.js",
+		"build-release": "npx vite build"
 	},
 	"browserslist": [
 		"> 6%"

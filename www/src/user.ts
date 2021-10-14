@@ -33,13 +33,7 @@ class User extends Component<any, any> {
 		getData('api/getMe').then((data) => {
 			data.lang.code = data.lang.code || 'en';
 			moment.locale(data.lang.code);
-			/// #if DEBUG
-			import('/dist/en.bundle.js')
-				//import('./locales/' + data.lang.code + '/lang.js')
-				/*
-				/// #endif
-							import('./' + data.lang.code + '.bundle.js')
-				//*/
+			import(`./locales/${data.lang.code}/lang.ts`)
 				.then(() => {
 					if(User.instance) {
 						User.instance.forceUpdate();
