@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { FieldAdmin } from "./admin/field-admin";
 import { NodeAdmin, createNodeForMenuItem } from "./admin/node-admin";
-import { assert, NODE_TYPE } from "./bs-utils";
+import { NODE_TYPE } from "./bs-utils";
 import { R } from "./r";
 import { Stage } from "./stage";
 import { iAdmin, User } from "./user";
@@ -78,7 +78,7 @@ class BarItem extends Component<any, any> {
 	componentWillUnmount() {
 		if(this.props.item.nodeType !== NODE_TYPE.DOCUMENT) {
 			let i = allGroups.indexOf(this);
-			assert(i >= 0, 'BarItem registration is corrupted.');
+			window.crudJs.assert(i >= 0, 'BarItem registration is corrupted.');
 			allGroups.splice(i, 1);
 		}
 	}
@@ -264,12 +264,16 @@ class BarItem extends Component<any, any> {
 				}
 			}
 			return R.a(props,
+				/// #if DEBUG
 				adminControl,
+				/// #endif
 				itemBody
 			)
 		} else {
 			return R.div({ className: 'left-bar-group-container' },
+				/// #if DEBUG
 				adminControl,
+				/// #endif
 				itemBody,
 				children
 			);

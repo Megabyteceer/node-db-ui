@@ -1,4 +1,3 @@
-попробовать Vite
 
 encodeURIComponent(ENV.DEPLOY_TO) - MD5
 

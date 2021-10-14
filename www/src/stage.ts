@@ -3,7 +3,7 @@ import { R } from "./r";
 import { FormFull } from "./forms/form-full";
 import { List } from "./forms/list";
 import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, L, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from "./utils";
-import { assert, NODE_TYPE, RecId, RecordData, throwError } from "./bs-utils";
+import { NODE_TYPE, RecId, RecordData, throwError } from "./bs-utils";
 import { BaseForm } from "./forms/base-form";
 import ReactDOM from 'react-dom';
 
@@ -156,7 +156,7 @@ class Stage extends Component<any, any> {
 					formType = FormFull;
 				} else {
 					formType = List;
-					assert(!modal, "List could not be show at modal level.");
+					window.crudJs.assert(!modal, "List could not be show at modal level.");
 				}
 				break;
 			case NODE_TYPE.REACT_CLASS:

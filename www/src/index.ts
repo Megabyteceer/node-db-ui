@@ -39,6 +39,7 @@ declare global {
 	interface Window {
 		$: typeof jQuery;
 		crudJs: { // helps to avoid circular imports
+			assert: (condition: any, errorTxt: string) => void;
 			customClasses: {
 				[key: string]: typeof React.Component;
 			};
@@ -48,6 +49,13 @@ declare global {
 }
 
 window.crudJs = {
+	/// #if DEBUG
+	assert: (condition: any, errorTxt: string) => {
+		if(!condition) {
+			throwError(errorTxt);
+		}
+	},
+	/// #endif
 	Stage,
 	customClasses: {}
 }
@@ -56,6 +64,7 @@ window.crudJs = {
 import { AdminRolePrivilegesForm } from "./admin/admin-role-privileges-form";
 
 import { DPromise } from "./debug-promise";
+import { throwError } from "./bs-utils";
 
 //@ts-ignore
 window.Promise = DPromise;

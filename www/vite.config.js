@@ -1,5 +1,7 @@
 import {defineConfig} from 'vite';
 
+const ifDefPlugin = require('../vite-plugin-ifdef/index.js');
+
 export default defineConfig({
 	mode: "development",
 	build: {
@@ -9,6 +11,9 @@ export default defineConfig({
 		write: true,
 		watch: true,
 	},
+	plugins: [
+		ifDefPlugin()
+	],
 	server: {
 		proxy: {
 			'/core': 'http://127.0.0.1:1443'

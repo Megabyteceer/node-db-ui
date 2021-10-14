@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"lib": ["ESNext"],
 		"noUnusedLocals": true,
-		"target": "es5",
+		"target": "esnext",
 		"rootDir": ".",
 		"baseUrl": ".",
 		"sourceMap": true,

@@ -1,6 +1,6 @@
 import { CLIENT_SIDE_FORM_EVENTS, consoleLog, Filters, getData, L } from "../utils";
 import { BaseForm } from "./base-form";
-import { assert, FieldDesc, FIELD_TYPE, RecordData } from "../bs-utils";
+import { FieldDesc, FIELD_TYPE, RecordData } from "../bs-utils";
 import type { FieldWrap } from "../fields/field-wrap";
 
 let FormEvents;
@@ -64,7 +64,7 @@ class FormEventProcessingMixins extends BaseForm {
 					if(name !== 'constructor') {
 						const method = proto[name];
 						if(typeof method === 'function') {
-							assert(!FormEventProcessingMixins.prototype[name], FormEvents.name + " contains wrong method name: " + name);
+							window.crudJs.assert(!FormEventProcessingMixins.prototype[name], FormEvents.name + " contains wrong method name: " + name);
 							FormEventProcessingMixins.prototype[name] = method;
 						}
 					}
@@ -330,7 +330,7 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	fieldAlert(fieldName: string, text: string = '', isSuccess?: boolean, focus: boolean = !isSuccess) {
-		assert(fieldName, "fieldName expected");
+		window.crudJs.assert(fieldName, "fieldName expected");
 		var f = this.getField(fieldName);
 		if(f) {
 			if(typeof isSuccess === 'undefined') {

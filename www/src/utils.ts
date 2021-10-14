@@ -7,7 +7,7 @@ import type { LANG_KEYS } from "./locales/en/lang";
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
-import { assert, FieldDesc, FIELD_TYPE, GetRecordsParams, HASH_DIVIDER, NODE_ID, ROLE_ID } from "./bs-utils";
+import { FieldDesc, FIELD_TYPE, GetRecordsParams, HASH_DIVIDER, NODE_ID, ROLE_ID } from "./bs-utils";
 import type { Filters, IFormParameters, NodeDesc, RecId, RecordData, RecordsData } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
@@ -762,7 +762,7 @@ function releaseQuiresOrder(requestRecord) {
 
 async function getData(url: string, params?: { [key: string]: any }, callStack?: string, noLoadingIndicator?: boolean): Promise<any> {
 	return new Promise((resolve) => {
-		assert(url.indexOf('?') < 0, 'More parameters to data');
+		window.crudJs.assert(url.indexOf('?') < 0, 'More parameters to data');
 
 		var requestRecord: {
 			url: string;

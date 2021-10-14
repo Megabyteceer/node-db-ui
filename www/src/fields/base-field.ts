@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom";
 import React from "react";
 
-import { assert, FieldDesc, RecordData } from "../bs-utils";
+import { FieldDesc, RecordData } from "../bs-utils";
 import { Component } from "react";
 import Highlighter from "react-highlight-words";
 import { FormFull } from "../forms/form-full";
@@ -46,7 +46,7 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 	forceBouncingTimeout?(): void;
 
 	constructor(props) {
-		assert(props.field, '"field" property  expected.');
+		window.crudJs.assert(props.field, '"field" property  expected.');
 		super(props);
 		let value = props.initialValue;
 		if(Array.isArray(value)) {

@@ -25,24 +25,6 @@ const throwError = (message: string): never => {
 	throw new Error(message);
 }
 
-/// #if DEBUG
-const assert = (condition: any, errorTxt: string) => {
-	if(!condition) {
-		throwError(errorTxt);
-	}
-}
-/// #endif
-
-/// #if DEBUG
-const getCurrentStack = () => {
-	let a = new Error().stack?.split('\n');
-	if(a) {
-		a.splice(0, 3);
-	}
-	return a;
-}
-/// #endif
-
 const IMAGE_THUMBNAIL_PREFIX = '_thumb.jpg';
 
 type RecId = number;
@@ -334,10 +316,6 @@ interface IFormParameters {
 
 export {
 	throwError,
-	/// #if DEBUG
-	getCurrentStack,
-	assert,
-	/// #endif
 
 	IFormParameters,
 
