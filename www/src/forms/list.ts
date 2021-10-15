@@ -125,7 +125,9 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	async refreshData() {
-		updateHashLocation();
+		if(!this.isSubForm()) {
+			updateHashLocation();
+		}
 		var nodeIdToFetch = this.props.nodeId || this.props.node.id;
 		if(nodeIdToFetch !== this.currentFetchingNodeId) {
 			this.currentFetchingNodeId = nodeIdToFetch;

@@ -1,15 +1,4 @@
-
-encodeURIComponent(ENV.DEPLOY_TO) - MD5
-
-Deploy data for _tables
-
-сделать деплой релизного билда. версионность по папкам.
-
-в релизе настроить CDN заголовки кеша. апи на поддомене.
-
-проверить обработку и показ ошибок в релизном билде клиента и бека.
-
-проверить просить вход если ответ нет прав и юзер гость  <access>
+count transactions in userSession
 
 портировать Linemaster
 
@@ -17,7 +6,18 @@ Deploy data for _tables
 
 кастомные евент хендлеры в добавок имеющимся
 
+проверить обработку и показ ошибок в релизном билде клиента и бека.
+
+проверить просить вход если ответ нет прав и юзер гость  <access>
+
 Linemaster list. render items one by one with delay
+
+Deploy data for _tables by default
+
+сделать деплой релизного билда. версионность по папкам.
+
+в релизе настроить CDN заголовки кеша. апи на поддомене.
+
 
 Use mysql>Alter table students ADD FULLTEXT (first_name, last_name);
 mysql>Select * from students where match(first_name, last_name) AGAINST (‘Jones’);

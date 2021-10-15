@@ -11,7 +11,7 @@ module.exports = function vitePluginIfDef() {
 				let cut = 0;
 				a = a.map((line) => {
 					var trimmedLine = line.trim();
-					if(trimmedLine.startsWith('window.crudJs.assert(')) {
+					if(trimmedLine.startsWith('assert(')) {
 						return '///' + line;
 					}
 					if(cut === 0) {

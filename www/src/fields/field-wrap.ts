@@ -351,14 +351,13 @@ class FieldHelp extends Component<any, any> {
 
 	render() {
 		var body;
+		var btn = R.div({ className: 'field-wrap-help' }, renderIcon('question-circle'));;
 		if(this.state && this.state.hovered) {
-			body = R.div({ className: 'field-wrap-help field-wrap-help-open' },
+			body = R.div({ className: 'field-wrap-help-body' },
 				this.props.text
 			);
-		} else {
-			body = R.div({ className: 'field-wrap-help' }, renderIcon('question-circle'));
 		}
-		return R.div({ onMouseOver: this.mouseOver, onMouseOut: this.mouseOut, className: 'field-wrap-help-container' }, body);
+		return R.div({ onMouseEnter: this.mouseOver, onMouseLeave: this.mouseOut, className: 'field-wrap-help-container' }, btn, body);
 	}
 }
 

@@ -39,7 +39,6 @@ declare global {
 	interface Window {
 		$: typeof jQuery;
 		crudJs: { // helps to avoid circular imports
-			assert: (condition: any, errorTxt: string) => void;
 			customClasses: {
 				[key: string]: typeof React.Component;
 			};
@@ -49,13 +48,6 @@ declare global {
 }
 
 window.crudJs = {
-	/// #if DEBUG
-	assert: (condition: any, errorTxt: string) => {
-		if(!condition) {
-			throwError(errorTxt);
-		}
-	},
-	/// #endif
 	Stage,
 	customClasses: {}
 }

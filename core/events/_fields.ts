@@ -44,6 +44,7 @@ const handlers: NodeEventsHandlers = {
 				name: parentNode.singleName,
 				show: VIEW_MASK.EDITABLE,
 				prior: 1000,
+				storeInDB: 1,
 				fieldType: FIELD_TYPE.LOOKUP,
 				forSearch: 1,
 				selectFieldName: parentNode.tableName,

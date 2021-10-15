@@ -163,20 +163,21 @@ class admin {
 
 function initIconsList() {
 	iconsList = [];
-	let ruleList = Array.from(document.styleSheets).filter((r) => {
-		return r.href && (r.href.indexOf('font-awesome') >= 0);
-	});
+	let ruleList = Array.from(document.styleSheets);
 	for(let style of ruleList) {
-		for(let rule of Array.from(style.cssRules)) {
-			let s = rule.cssText.split('.fa-');
-			let allNames = s.filter(s => s.indexOf('::before') > 0).map(s => s.substr(0, s.indexOf('::before')));
-			if(allNames.length) {
-				let iconName = allNames[0];
-				iconsList.push({
-					search: allNames.join(', '),
-					name: R.span(null, renderIcon(iconName), allNames.join(', ')),
-					value: iconName
-				});
+		let rules = Array.from(style.cssRules);
+		if(rules.find(r => (r.selectorText === '.fa'))) {
+			for(let rule of rules) {
+				let s = rule.cssText.split('.fa-');
+				let allNames = s.filter(s => s.indexOf('::before') > 0).map(s => s.substr(0, s.indexOf('::before')));
+				if(allNames.length) {
+					let iconName = allNames[0];
+					iconsList.push({
+						search: allNames.join(', '),
+						name: R.span(null, renderIcon(iconName), allNames.join(', ')),
+						value: iconName
+					});
+				}
 			}
 		}
 	}

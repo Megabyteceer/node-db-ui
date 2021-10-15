@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BoolNum, Filters, NodeDesc, RecId, RecordData, throwError } from "../bs-utils";
+import { assert, BoolNum, Filters, NodeDesc, RecId, RecordData, throwError } from "../bs-utils";
 import { LookupOneToManyFiled } from "../fields/field-15-one-to-many";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import type { FieldWrap } from "../fields/field-wrap";
@@ -11,7 +11,6 @@ import type { List } from "./list";
 interface FormProps {
 	initialData?: RecordData;
 	list?: List;
-	onCancel?: () => void;
 	parentForm?: LookupOneToManyFiled;
 	filters?: Filters;
 	node: NodeDesc;
@@ -74,7 +73,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	}
 
 	UNSAFE_componentWillReceiveProps(newProps) {
-		window.crudJs.assert(((this.recId || 'new') === ((newProps.initialData ? newProps.initialData.id : newProps.recId) || 'new')) && (this.nodeId === (newProps.nodeId || newProps.node.id)), "Form should be recreated, and not receive new props. Add 'key' to parent element contains nodeId and recId.");
+		assert(((this.recId || 'new') === ((newProps.initialData ? newProps.initialData.id : newProps.recId) || 'new')) && (this.nodeId === (newProps.nodeId || newProps.node.id)), "Form should be recreated, and not receive new props. Add 'key' to parent element contains nodeId and recId.");
 	}
 
 	callOnTabShowEvent(tabNameToShow) {
@@ -98,11 +97,6 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 			if(!answer) {
 				return;
 			}
-		}
-
-		if(this.props.onCancel) {
-			this.props.onCancel();
-			return;
 		}
 		goBack();
 	}

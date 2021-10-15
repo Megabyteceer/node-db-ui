@@ -6,6 +6,7 @@ import * as fs from "fs";
 import ENV from "../../ENV";
 import type { UserSession } from '../../www/src/bs-utils';
 import { isAdmin } from "../auth";
+var crypto = require('crypto');
 
 async function getDeployPackage(reqData, userSession: UserSession) {
 	isAdmin(userSession);
@@ -226,8 +227,9 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 	var prevFiles;
 
 	var files = walkSync(path.join(__dirname, '../..'));
+	var hash = crypto.createHash('md5').update(ENV.DEPLOY_TO).digest('hex');
 
-	var prevFilesFileName = path.join(__dirname, "/settings_store/", encodeURIComponent(ENV.DEPLOY_TO), "_files_tree.json");
+	var prevFilesFileName = path.join(__dirname, "/settings_store/", hash + "_files_tree.json");
 
 	if(!isFull && fs.existsSync(prevFilesFileName)) {
 		prevFiles = JSON.parse(fs.readFileSync(prevFilesFileName, 'utf8'));
