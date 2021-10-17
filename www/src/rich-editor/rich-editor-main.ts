@@ -4,8 +4,11 @@ window.jQuery = jQuery;
 window.$ = jQuery;
 $(async function () {
 	await Promise.all([
+		//@ts-ignore
 		import("bootstrap/dist/css/bootstrap.min.css"),
+		//@ts-ignore
 		import("summernote/dist/summernote.min.css"),
+		//@ts-ignore
 		import("summernote/dist/summernote.min.js")
 	]);
 

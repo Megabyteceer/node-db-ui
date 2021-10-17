@@ -166,6 +166,7 @@ function initIconsList() {
 	let ruleList = Array.from(document.styleSheets);
 	for(let style of ruleList) {
 		let rules = Array.from(style.cssRules);
+		//@ts-ignore
 		if(rules.find(r => (r.selectorText === '.fa'))) {
 			for(let rule of rules) {
 				let s = rule.cssText.split('.fa-');

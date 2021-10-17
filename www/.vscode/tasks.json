@@ -8,6 +8,15 @@
 			"runOptions": {
 			  "runOn": "folderOpen"
 			}
+		},
+		{
+			"type": "shell",
+			"command": "tsc --watch",
+			"label": "ts watch",
+			"isBackground": true,
+			"runOptions": {
+			  "runOn": "folderOpen"
+			}
 		}
 	]
 }
