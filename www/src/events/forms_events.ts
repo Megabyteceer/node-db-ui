@@ -298,14 +298,6 @@ class FormEvents extends FormFull {
 			}
 		}
 
-		if(this.isUpdateRecord) {
-			this.disableField("fieldName");
-			this.disableField("fieldType");
-			this.disableField("nodeRef");
-			this.disableField("node_fields_linker");
-			this.disableField("storeInDB");
-		}
-
 		this.addLookupFilters('node_fields_linker', {
 			nodeType: 2
 		});

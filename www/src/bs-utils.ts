@@ -22,6 +22,7 @@ interface Filters {
 }
 
 const throwError = (message: string): never => {
+	debugger;
 	throw new Error(message);
 }
 

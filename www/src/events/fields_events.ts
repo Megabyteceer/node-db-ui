@@ -251,6 +251,20 @@ class FieldsEvents extends FormEvents {
 
 		}
 
+		if(this.isUpdateRecord) {
+			this.disableField("fieldName");
+			this.disableField("fieldType");
+			this.disableField("nodeRef");
+			this.disableField("node_fields_linker");
+			this.disableField("storeInDB");
+			this.disableField("sendToServer");
+		}
+
+		if(this.fieldValue('fieldType') === FIELD_TYPE.LOOKUP) {
+			this.disableField('forSearch');
+			this.setFieldValue('forSearch', 1);
+		}
+
 		if(fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.RICH_EDITOR) {
 			this.showField('multilingual');
 		} else {

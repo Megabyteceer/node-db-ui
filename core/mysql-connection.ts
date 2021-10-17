@@ -80,6 +80,7 @@ function waitPrevTransactionFinish() {
 
 async function mysqlStartTransaction() {
 	if(mysqlTransactStarted) {
+		debugger;
 		await waitPrevTransactionFinish();
 	}
 	const ret = mysqlExec("START TRANSACTION;");

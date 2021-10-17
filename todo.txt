@@ -1,8 +1,5 @@
 добавить ассерт на неснятый флаг транщакции?
 
-Who mofal back calls data refresh in list
-Why hash refresh with clising form crashes. Clising form should remove entry?
-
 
 портировать Linemaster
 
