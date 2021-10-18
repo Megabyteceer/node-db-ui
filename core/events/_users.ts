@@ -2,6 +2,7 @@
 import { mysqlExec } from "../mysql-connection";
 import { generateSalt, getPasswordHash, isAdmin } from "../auth";
 import { submitRecord } from "../submit";
+import { NODE_ID } from "../../www/src/bs-utils";
 
 async function clearUserParams(data, currentData, userSession) {
 	if(!isAdmin(userSession)) {
@@ -42,7 +43,7 @@ export default {
 
 		if(newData.hasOwnProperty('company')) {
 			if(currentData._organizationID.id) {
-				await submitRecord(7, { name: newData.company }, currentData._organizationID.id);
+				await submitRecord(NODE_ID.ORGANIZATIONS, { name: newData.company }, currentData._organizationID.id);
 			}
 		}
 		return clearUserParams(newData, currentData, userSession);

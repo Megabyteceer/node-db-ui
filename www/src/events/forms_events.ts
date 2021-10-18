@@ -402,7 +402,11 @@ class FormEvents extends FormFull {
 			this.hideField('selectFieldName');
 		}
 
-		if((fieldType === FIELD_TYPE.STATIC_TEXT) || (fieldType === FIELD_TYPE.TAB) || (fieldType === FIELD_TYPE.BUTTON)) {
+		if((fieldType === FIELD_TYPE.STATIC_TEXT) ||
+			(fieldType === FIELD_TYPE.TAB) ||
+			(fieldType === FIELD_TYPE.BUTTON) ||
+			(fieldType === FIELD_TYPE.SPLITTER)
+		) {
 			this.setFieldValue('storeInDB', 0);
 		}
 		if(this._fieldsNameIsBad) {

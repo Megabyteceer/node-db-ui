@@ -45,7 +45,7 @@ class EnumField extends BaseField {
 			return React.createElement(Select, inputsProps);
 		} else {
 			return R.span({
-				className: 'enum-' + field.id + '_' + value
+				className: 'enum-type-' + field.enumId + ' enum-val-' + value,
 			}, field.enumNamesById[value]);
 		}
 	}

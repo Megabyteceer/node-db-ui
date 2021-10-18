@@ -45,7 +45,7 @@ const usersSessionsStartedCount = () => {
 function setMaintenanceMode(val) {
 	/// #if DEBUG
 	console.log('setMaintenanceMode ' + val);
-	console.log((new Error('')).stack);
+	console.log((new Error('')).stack.replace('Error', '').trim());
 	/// #endif
 
 	if(val) {

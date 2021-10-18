@@ -138,6 +138,7 @@ interface FieldDesc {
 
 	/** client side only field */
 	enum?: EnumList;
+	enumId?: RecId;
 
 	/** client side only field */
 	enumNamesById?: { [key: number]: string };

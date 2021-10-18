@@ -204,8 +204,9 @@ class FieldsEvents extends FormEvents {
 			case FIELD_TYPE.STATIC_TEXT:
 				this.setFieldLabel("description", L("CONTENT"));
 			case FIELD_TYPE.BUTTON:
-				this.hideField("maxLength", "sendToServer", "storeInDB", "requirement", "unique", "forSearch");
 			case FIELD_TYPE.TAB:
+			case FIELD_TYPE.SPLITTER:
+				this.hideField("maxLength", "sendToServer", "storeInDB", "requirement", "unique", "forSearch");
 				this.setFieldValue("sendToServer", 0);
 				this.disableField("sendToServer");
 				this.setFieldValue("storeInDB", 0);

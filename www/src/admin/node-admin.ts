@@ -136,12 +136,7 @@ class NodeAdmin extends Component<any, any> {
 						allFields.push(R.span({
 							key: f.id + 'a',
 							className: 'admin-form-header'
-						}, React.createElement(FieldAdmin, {
-							field: f,
-							form: form,
-							x: 370,
-							zIndex: 10
-						}))),
+						})),
 							allFields.push(R.div({
 								key: f.id,
 								className: "admin-form-all-fields"
@@ -155,8 +150,13 @@ class NodeAdmin extends Component<any, any> {
 								renderIcon((f.show & 4) ? 'eye' : 'eye-slash half-visible'),
 								renderIcon((f.show & 8) ? 'eye' : 'eye-slash half-visible'),
 
-								renderIcon((f.forSearch) ? 'search-plus' : 'search half-visible')
-
+								renderIcon((f.forSearch) ? 'search-plus' : 'search half-visible'),
+								React.createElement(FieldAdmin, {
+									field: f,
+									form: form,
+									x: 370,
+									zIndex: 10
+								})
 							))
 					}
 				}

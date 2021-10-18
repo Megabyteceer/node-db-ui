@@ -180,6 +180,10 @@
 	padding-right: 6px;
 }
 
+.admin-form-all-fields .admin-control-field .admin-form-open-btn {
+	margin-right: -20px;
+}
+
 .admin-control .clickable:hover {
 	color: #def !important;
 	background: #567 !important;
@@ -299,4 +303,29 @@
 .field-container-id-1036 .field-wrap-label,
 .field-container-id-1036 .field-boolean {
 	color: #d00;
+}
+
+.enum-type-100 {
+	font-weight: bold;
+	font-size: 80%;
+}
+
+.enum-type-100.enum-val-1 {
+	color: rgb(135, 128, 136);
+}
+
+.enum-type-100.enum-val-2 {
+	color: #070;
+}
+
+.enum-type-100.enum-val-2 {
+	color: #070;
+}
+
+.enum-type-100.enum-val-3 {
+	color: rgb(135, 128, 136);
+}
+
+.enum-type-100.enum-val-4 {
+	color: rgb(129, 0, 146);
 }

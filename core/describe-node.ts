@@ -103,6 +103,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 								value: item.value
 							};
 						});
+						field.enumId = srcField.enumId;
 					}
 
 					fields.push(field);
@@ -263,6 +264,7 @@ async function initNodesData() { // load whole nodes data in to memory
 					let enums = await mysqlExec("SELECT value," + langs_new.map((l) => {
 						return 'name' + l.prefix;
 					}).join() + " FROM _enum_values WHERE status = 1 AND values_linker=" + field.enum + " ORDER BY `order`");
+					field.enumId = field.enum;
 					field.enum = enums;
 				}
 				fields_new.set(field.id, field);
