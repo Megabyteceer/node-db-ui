@@ -1,5 +1,7 @@
-добавить ассерт на неснятый флаг транзакции?
+build release server  (ifdef loader)
+build release client
 
+import ENV dynamically on server
 
 портировать Linemaster
 

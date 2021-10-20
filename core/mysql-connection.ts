@@ -41,9 +41,8 @@ const mysqlExec = (query: string): Promise<mysqlRowsResult | mysqlRowsResult[] |
 			if(er) {
 				/// #if DEBUG
 				er.stack = preparedError.stack;
-
-				/// #endif
 				debugger;
+				/// #endif
 				reject(er);
 				console.dir(preparedError);
 				console.log(query);
@@ -80,7 +79,9 @@ function waitPrevTransactionFinish() {
 
 async function mysqlStartTransaction() {
 	if(mysqlTransactStarted) {
+		/// #if DEBUG
 		debugger;
+		/// #endif
 		await waitPrevTransactionFinish();
 	}
 	const ret = mysqlExec("START TRANSACTION;");

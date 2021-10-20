@@ -7,7 +7,7 @@ export default defineConfig({
 	build: {
 		minify: true,
 		sourcemap: false,
-		outDir: 'dist',
+		outDir: 'build-www-prod',
 		write: true,
 		watch: false,
 	},

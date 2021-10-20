@@ -20,7 +20,7 @@ const ENV = {
 
 	DEPLOYMENT_KEEP_DEBUG: true,
 
-	HOME_NODE: 5,
+	HOME_NODE: 20,
 
 	REQUIRE_NAME: true,
 	REQUIRE_COMPANY: true,

@@ -183,7 +183,6 @@ class FormFull extends FormEventProcessingMixins {
 			/*
 			/// #endif
 			.catch((er) => {
-				debugger;
 				console.log('invalid form.');
 				console.dir(er);
 			})

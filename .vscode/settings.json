@@ -5,7 +5,8 @@
 	"typescript.format.insertSpaceBeforeFunctionParenthesis": false,
 	"typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": false,
 	"files.exclude": {
-		"**/dist/**": true,
+		"**/build-debug/**": true,
+		"**/build-prod/**": true,
 		"**/node_modules_pached_for_debug/**": true,
 		"**/www/**": true,
 		"**/cert/**": true,

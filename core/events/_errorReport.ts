@@ -5,7 +5,9 @@ import { RecordDataWrite } from "../../www/src/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	afterCreate: async function(data: RecordDataWrite, userSession: UserSession) {
+		/// #if DEBUG
 		debugger;
+		/// #endif
 		if(ENV.ERROR_NOTIFY_EMAIL) {
 			let emails = ENV.ERROR_NOTIFY_EMAIL.split(',');
 			for(let email of emails) {

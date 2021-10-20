@@ -2,7 +2,7 @@
 import { R } from "./r";
 import { FormFull } from "./forms/form-full";
 import { List } from "./forms/list";
-import { Filters, getNode, getNodeData, isLitePage, isPresentListRenderer, L, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from "./utils";
+import { Filters, getNode, getNodeData, getNodeIfPresentOnClient, isLitePage, isPresentListRenderer, L, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from "./utils";
 import { assert, NODE_TYPE, RecId, RecordData, throwError } from "./bs-utils";
 import { BaseForm } from "./forms/base-form";
 import ReactDOM from 'react-dom';
@@ -122,14 +122,19 @@ class Stage extends Component<any, any> {
 		formEntry.onModified = onModified;
 
 		let data;
-		if(recId !== 'new') {
-			if(typeof recId === 'number') {
-				data = await getNodeData(nodeId, recId, undefined, editable, false, isPresentListRenderer(nodeId));
-			} else {
-				data = await getNodeData(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
+		let node = getNodeIfPresentOnClient(nodeId);
+		if(!node || node.nodeType === NODE_TYPE.DOCUMENT) {
+			if(recId !== 'new') {
+				if(typeof recId === 'number') {
+					data = await getNodeData(nodeId, recId, undefined, editable, false, isPresentListRenderer(nodeId));
+				} else {
+					data = await getNodeData(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
+				}
 			}
 		}
-		let node = await getNode(nodeId);
+		if(!node) {
+			node = await getNode(nodeId);
+		}
 
 		if(!formEntry.formContainer) { // popup is hidden already
 			return;

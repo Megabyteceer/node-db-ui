@@ -6,7 +6,6 @@ import { pbkdf2, randomBytes } from "crypto";
 import { L } from "./locale";
 import { submitRecord } from "./submit";
 
-
 const sessions = new Map();
 const sessionsByUserId = new Map();
 

@@ -536,6 +536,10 @@ async function waitForNode(nodeId) {
 	});
 }
 
+function getNodeIfPresentOnClient(nodeId: RecId): NodeDesc {
+	return nodes[nodeId];
+}
+
 async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string): Promise<NodeDesc> {
 
 	if(!callStack) {
@@ -1274,6 +1278,7 @@ export {
 	goBack,
 	getNodeData,
 	getNode,
+	getNodeIfPresentOnClient,
 	showPrompt,
 	UID,
 	myAlert,

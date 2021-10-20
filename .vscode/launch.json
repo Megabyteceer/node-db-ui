@@ -20,7 +20,25 @@
 				"--trace-uncaught=true",
 				"--unhandled-rejections=throw"
 			],
-			"program": "${workspaceFolder}\\dist\\core\\index.js"
+			"program": "${workspaceFolder}\\build-debug\\core\\index.js"
+		},
+		{
+			"type": "pwa-node",
+			"request": "launch",
+			"name": "Server Prod",
+			"sourceMaps": false,
+			"skipFiles": [
+				"<node_internals>/**",
+				"**/node_modules/**",
+				"**/debug-promise.ts"
+			],
+			"args": [
+				"--abort-on-uncaught-exception=true",
+				"--report-uncaught-exception=true",
+				"--trace-uncaught=true",
+				"--unhandled-rejections=throw"
+			],
+			"program": "${workspaceFolder}\\build-prod\\index.js"
 		}
 	]
 }

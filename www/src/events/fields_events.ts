@@ -170,14 +170,6 @@ class FieldsEvents extends FormEvents {
 		window.crudJs.Stage.showForm(NODE_ID.RESET, 'new', undefined, true);
 	}
 
-	_nodes_storeForms_onChange() {
-		if(this.fieldValue('storeForms')) {
-			this.enableField('tableName');
-		} else {
-			this.disableField('tableName');
-		}
-	}
-
 	_fields_recalculateFieldsVisibility() {
 
 
