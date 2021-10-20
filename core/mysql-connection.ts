@@ -1,11 +1,12 @@
 
 /// #if DEBUG
 import { assert, getCurrentStack } from "../www/src/bs-utils";
+import { performance } from 'perf_hooks';
 /// #endif
 
 import ENV from "../ENV";
 import * as mysql from 'mysql2';
-import { performance } from 'perf_hooks';
+
 
 const pool = mysql.createPool({
 	user: ENV.DB_USER,

@@ -2,12 +2,13 @@
 import api from './api';
 import { startSession, finishSession, isUserHaveRole } from './auth';
 import { initNodesData } from './describe-node';
-import { performance } from 'perf_hooks';
+
 import './locale';
 import { mysqlDebug } from "./mysql-connection";
 import { ROLE_ID } from "../www/src/bs-utils";
 
 /// #if DEBUG
+import { performance } from 'perf_hooks';
 import { DPromise } from "../www/src/debug-promise";
 //@ts-ignore
 global.Promise = DPromise;
@@ -26,12 +27,6 @@ const path = require('path')
 const upload2 = upload.single('file');
 
 const handleRequest = (req, res) => {
-	/// #if DEBUG
-	/*
-	/// #endif
-	try {
-		
-	//*/
 	/// #if DEBUG
 	let startTime = performance.now();
 	/// #endif
