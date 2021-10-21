@@ -296,10 +296,6 @@ class FieldsEvents extends FormEvents {
 		this._fields_recalculateFieldsVisibility();
 	}
 
-	_fields_icon_onChange() {
-
-	}
-
 	//_insertNewHandlersHere_
 }
 

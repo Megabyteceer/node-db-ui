@@ -276,6 +276,10 @@ class FieldWrap extends Component<FieldProps, any> {
 			className += ' hidden';
 		}
 
+		if(field.cssClass) {
+			className += ' ' + field.cssClass;
+		}
+
 		if(field.display === FIELD_DISPLAY_TYPE.INLINE) {
 			className += ' field-wrap-inline';
 		}

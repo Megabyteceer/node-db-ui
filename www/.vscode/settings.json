@@ -1,7 +1,7 @@
 {
 	"editor.formatOnSave": true,
 	"files.exclude": {
-		"**/src/build/**": true,
+		"**/build-www-prod/**": true,
 		"**/uploads/**": true,
 		"**/fonts/**": true
 	},

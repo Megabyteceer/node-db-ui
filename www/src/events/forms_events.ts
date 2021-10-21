@@ -227,10 +227,6 @@ class FormEvents extends FormFull {
 				this.fieldAlert('tableName', L('NO_NUMERIC_NAME'));
 			}
 		}
-
-		if(!this.fieldValue('storeForms')) {
-			this.setFieldValue('tableName', '');
-		}
 	}
 
 	_fieldsNameIsBad: boolean;

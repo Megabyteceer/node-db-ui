@@ -10,7 +10,7 @@
   "scripts": {
     "test": "jest --detectOpenHandles --verbose=true",
     "build": "tsc",
-    "build-prod": "tsc --project tsconfig-prod.json"
+    "build-prod": "rmdir /s /q build-prod & npx rollup --config"
   },
   "author": "",
   "license": "MIT",

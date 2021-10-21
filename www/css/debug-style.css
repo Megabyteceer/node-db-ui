@@ -95,10 +95,8 @@
 
 .field-wrap .admin-form-wrap {
 	right: -26px;
-	top: -20px;
 	font-size: 85%;
 }
-
 
 .left-bar-group-container>.left-bar-admin-button>.admin-form-wrap {
 	height: 22px;
@@ -288,18 +286,9 @@
 	white-space: nowrap;
 }
 
-.field-container-id-299 .admin-form-wrap {
-	bottom: 32px;
-}
-
 .form-item-row-num .field-container-name-id {
 	color: #ccc;
 	font-size: 80%;
-}
-
-.field-container-id-1036 .field-wrap-label,
-.field-container-id-1036 .field-boolean {
-	color: #d00;
 }
 
 .enum-type-100 {

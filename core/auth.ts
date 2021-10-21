@@ -66,14 +66,14 @@ async function startSession(sessionToken, browserLanguageId: string) {
 		userSession = sessions.get(sessionToken);
 	}
 
-	if(!userSession.hasOwnProperty('_isStarted') && !maintenanceMode) {
+	if(!userSession._isStarted && !maintenanceMode) {
 		userSession._isStarted = true;
 		startedSessionsCount++;
 		return Promise.resolve(userSession);
 	}
 	return new Promise((resolve, rejects) => {
 		let i = setInterval(() => {
-			if(!userSession.hasOwnProperty('_isStarted') && !maintenanceMode) {
+			if(!userSession._isStarted && !maintenanceMode) {
 				clearInterval(i);
 				if(userSession.id === 0) {
 					rejects(new Error('session expired'));
@@ -89,7 +89,7 @@ async function startSession(sessionToken, browserLanguageId: string) {
 function finishSession(sessionToken) {
 	const userSession = sessions.get(sessionToken);
 	if(userSession) {
-		delete userSession._isStarted;
+		userSession._isStarted = false;
 		startedSessionsCount--;
 		assert(startedSessionsCount >= 0, "Sessions counter is corrupted.");
 	}
@@ -160,7 +160,7 @@ function getPasswordHash(password, salt) {
 }
 
 
-async function authorizeUserByID(userID, isItServerSideRole: boolean = false, sessionToken: string | null = null): Promise<UserSession> {
+async function authorizeUserByID(userID, isItServerSideSession: boolean = false, sessionToken: string | null = null): Promise<UserSession> {
 
 	if(sessionsByUserId.has(userID)) {
 		return sessionsByUserId.get(userID);
@@ -236,13 +236,14 @@ async function authorizeUserByID(userID, isItServerSideRole: boolean = false, se
 		await setCurrentOrg(organID, userSession, true);
 	}
 	createSession(userSession, sessionToken);
-	if(isItServerSideRole) {
+	if(isItServerSideSession) {
 		/// #if DEBUG
 
 		/*
 		/// #endif
 			userSession.__temporaryServerSideSession = true
-			Object.freeze(userSession);
+			userSession._isStarted = false
+			Object.seal(userSession);
 		//*/
 	} else {
 		await setMultilingual(user.multilingualEnabled, userSession);

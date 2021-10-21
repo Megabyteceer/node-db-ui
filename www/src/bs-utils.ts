@@ -118,6 +118,8 @@ interface FieldDesc {
 	/** name of picture field in relative table. Thin picture will be used as icon in Lookup fields. */
 	lookupIcon: string;
 
+	cssClass?: string;
+
 	display: FIELD_DISPLAY_TYPE;
 
 	/** owner node id */
@@ -178,6 +180,7 @@ interface NodeDesc {
 	recPerPage?: number;
 	defaultFilterId?: number;
 	fields?: FieldDesc[];
+	cssClass?: string;
 	filters?: { [key: string]: FilterDesc };
 	sortFieldName?: string;
 	/** CLIENT SIDE ONLY */

@@ -7,6 +7,9 @@ import './locale';
 import { mysqlDebug } from "./mysql-connection";
 import { ROLE_ID } from "../www/src/bs-utils";
 
+import "../www/src/locales/en/lang-server";
+import "../www/src/locales/ru/lang-server";
+
 /// #if DEBUG
 import { performance } from 'perf_hooks';
 import { DPromise } from "../www/src/debug-promise";
@@ -33,6 +36,7 @@ const handleRequest = (req, res) => {
 
 	let handler = req.url.substr(6);
 	if(api.hasOwnProperty(handler)) {
+
 		handler = api[handler];
 		const body = req.body;
 		/// #if DEBUG
@@ -47,16 +51,14 @@ const handleRequest = (req, res) => {
 
 		const onError = (error) => {
 			/// #if DEBUG
-			console.log(error.stack);
+			console.error(error.stack);
 			res.end(JSON.stringify({ error: error.stack }));
 			/*
 			/// #endif
-			res.writeHead(500);
-			error = true;
-			res.end("{error:1}");
+			console.error(error.stack);
+			res.end('{"error":1}');
 			//*/
 		}
-
 		startSession(body.sessionToken, req.headers['accept-language']).then((session) => {
 			userSession = session;
 			handler(body, session).then((result) => {

@@ -43,6 +43,11 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				description: srcNode["description" + landQ],
 				nodeType: srcNode.nodeType
 			}
+
+			if(srcNode.cssClass) {
+				ret.cssClass = srcNode.cssClass;
+			}
+
 			if(srcNode.nodeType === NODE_TYPE.REACT_CLASS) {
 				ret.tableName = srcNode.tableName;
 			} else if(srcNode.nodeType === NODE_TYPE.DOCUMENT) {
@@ -104,6 +109,9 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 							};
 						});
 						field.enumId = srcField.enumId;
+					}
+					if(srcField.cssClass) {
+						field.cssClass = srcField.cssClass;
 					}
 
 					fields.push(field);
@@ -311,10 +319,6 @@ async function initNodesData() { // load whole nodes data in to memory
 	/// #if DEBUG
 	await authorizeUserByID(3, undefined, "dev-user-session-token");
 	/// #endif
-
-	await import("../www/src/locales/en/lang-server");
-	await import("../www/src/locales/ru/lang-server");
-
 }
 
 

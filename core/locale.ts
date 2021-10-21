@@ -10,7 +10,7 @@ function initDictionaryServerSide(o, langId) {
 }
 
 function L(key: LANG_KEYS_SERVER_SIDE, userSession: UserSession, param?: any) {
-	const dictionary = dictionaries.get(userSession.lang.code || ENV.DEFAULT_LANG_CODE);
+	const dictionary = dictionaries.get(userSession.lang.code || ENV.DEFAULT_LANG_CODE) || dictionaries.get(ENV.DEFAULT_LANG_CODE);
 	if(dictionary.hasOwnProperty(key)) {
 		if(typeof (param) !== 'undefined') {
 			return dictionary[key].replace('%', param);

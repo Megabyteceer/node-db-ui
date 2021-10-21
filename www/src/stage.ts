@@ -179,8 +179,14 @@ class Stage extends Component<any, any> {
 				throwError('Unknown nodeType ' + node.nodeType);
 		}
 
+		let className = 'form-container-node-' + nodeId +
+			(isRootForm ? ' form-root-container' : ' form-modal-container');
+		if(node.cssClass) {
+			className += ' ' + node.cssClass;
+		}
+
 		ReactDOM.render(
-			React.createElement('div', { key: node.id + '_' + recId, className: isRootForm ? 'form-root-container form-root-container-node-' + nodeId : 'form-modal-container form-modal-container-node-' + nodeId },
+			React.createElement('div', { key: node.id + '_' + recId, className },
 				React.createElement(formType, { ref, node, recId, isRootForm, initialData: data || {}, filters, editable })
 			),
 			formEntry.formContainer
