@@ -56,7 +56,7 @@ const handleRequest = (req, res) => {
 			/*
 			/// #endif
 			console.error(error.stack);
-			res.end('{"error":1}');
+			res.end(JSON.stringify({ error: error.message }));
 			//*/
 		}
 		startSession(body.sessionToken, req.headers['accept-language']).then((session) => {
