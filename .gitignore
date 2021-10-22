@@ -18,3 +18,5 @@
 /www/js/libs/code-mirror.js
 
 /www/tsconfig.tsbuildinfo
+
+core/events/___index.ts

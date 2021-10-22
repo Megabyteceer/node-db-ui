@@ -1083,6 +1083,7 @@ function getItem(name: string, def?: any) {
 
 function setItem(name, val) {
 	if(typeof (Storage) !== "undefined") {
+		assert(typeof val !== 'undefined', 'setItem() got an invalid value.');
 		localStorage.setItem(name, JSON.stringify(val));
 	}
 }

@@ -1,3 +1,9 @@
+/// #if DEBUG
+/*
+/// #endif
+import handlers from './events/___index';
+//*/
+
 import { existsSync } from "fs";
 import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
@@ -10,6 +16,7 @@ const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 let fields;
 let nodes;
 let nodesById;
+let nodesByTableName;
 let langs: UserLangEntry[];
 let eventsHandlers;
 
@@ -229,6 +236,8 @@ async function initNodesData() { // load whole nodes data in to memory
 	};
 
 	nodesById_new = new Map();
+	nodesByTableName = new Map();
+
 	/// #if DEBUG
 	await mysqlExec('-- ======== NODES RELOADING STARTED ===================================================================================================================== --');
 	/// #endif
@@ -247,6 +256,9 @@ async function initNodesData() { // load whole nodes data in to memory
 
 	for(let nodeData of nodes_new) {
 		nodesById_new.set(nodeData.id, nodeData);
+		if(nodeData.tableName) {
+			nodesByTableName.set(nodeData.tableName, nodeData);
+		}
 		nodeData.sortFieldName = '_createdON';
 
 		let rolesToAccess = await mysqlExec("SELECT roleId, privileges FROM _role_privileges WHERE nodeID = 0 OR nodeID = " + nodeData.id);
@@ -288,14 +300,27 @@ async function initNodesData() { // load whole nodes data in to memory
 			nodeData.filters = filters;
 
 			//events handlers
+			/// #if DEBUG
 			let moduleFileName = join(__dirname, 'events/' + nodeData.tableName + '.js');
 			if(existsSync(moduleFileName)) {
-				let handler = (await import(moduleFileName)).default;
-				eventsHandlers_new.set(nodeData.id, handler);
+				let handler = await import(`./events/${nodeData.tableName}`);
+				eventsHandlers_new.set(nodeData.id, handler.default);
 			}
+			/// #endif
 		}
 	}
-
+	//events handlers
+	/// #if DEBUG
+	/*
+	/// #endif
+	for(let tableName in handlers) {
+		if(!nodesByTableName.has(tableName)) {
+			throwError('Event handler ./events/' + tableName + '.ts has no related node in database.');
+		}
+		let nodeId = nodesByTableName.get(tableName).id;
+		eventsHandlers_new.set(nodeId, handlers[tableName]);
+	}
+	//*/
 	fields = fields_new;
 	nodes = nodes_new;
 	nodesById = nodesById_new;

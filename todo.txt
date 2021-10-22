@@ -1,6 +1,7 @@
+guests access to node 4 freezes node request
 
+build release server  node events
 
-build release server  (ifdef loader)
 build release client
 
 import ENV dynamically on server
