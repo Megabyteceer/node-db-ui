@@ -1,8 +1,7 @@
 const ENV = {
 	SERVER_NAME: 'http://node-db-ui.com:1443/',
-	DEBUG: true,
 	ADMIN_ENABLED_DEFAULT: true,
-	ERROR_NOTIFY_EMAIL: 'vasiliy.p.kostin@gmail.com',
+	ERROR_NOTIFY_EMAIL: '',
 
 	EMAIL_FROM: 'test@test.com',
 
@@ -39,5 +38,14 @@ const ENV = {
 	CAPTCHA_CLIENT_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
 	CAPTCHA_SERVER_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
 };
+
+import * as fs from "fs";
+import * as path from "path";
+
+const envPath = path.join(__dirname, '../ENV.json')
+if(fs.existsSync(envPath)) {
+	let env = JSON.parse(fs.readFileSync(envPath, 'utf8'));
+	Object.assign(ENV, env);
+}
 
 export default ENV;

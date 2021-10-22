@@ -136,7 +136,7 @@ class Stage extends Component<any, any> {
 			node = await getNode(nodeId);
 		}
 
-		if(!formEntry.formContainer) { // popup is hidden already
+		if(!formEntry.formContainer || !node) { // popup is hidden already
 			return;
 		}
 

@@ -9,7 +9,7 @@ import { Modal } from "./modal";
 import { Notify } from "./notify";
 import { Stage } from "./stage";
 import { TopBar } from "./top-bar";
-import { getData, goToPageByHash } from "./utils";
+import { getData, goToPageByHash, onNewUser } from "./utils";
 import { User } from "./user";
 
 const ENV: any = {};
@@ -28,16 +28,14 @@ class MainFrame extends Component<any, any> {
 	}
 
 	async reloadOptions() {
+		onNewUser();
+
 		let data = await getData('api/getOptions');
 
 		const nodesTree = data.nodesTree;
 		var items = {};
 		Object.assign(ENV, data.options);
 		ENV.nodesTree = nodesTree;
-
-		/// #if DEBUG
-		if(!ENV.DEBUG) { throw "DEBUG directives nad not cut of in PRODUCTION mode" };
-		/// #endif
 
 		nodesTree.some((i) => {
 			items[i.id] = i;

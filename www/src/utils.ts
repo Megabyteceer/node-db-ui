@@ -202,7 +202,10 @@ function handleError(error, url, callStack) {
 		}
 	} else {
 		if(error.message) {
-			myAlert(error.message);
+			error = error.message;
+		}
+		if(typeof error === 'string') {
+			myAlert(error);
 		} else {
 			myAlert(L("CONNECTION_ERR"), false, true);
 		}
@@ -514,8 +517,13 @@ $(window).on('hashchange', () => {
 	isHistoryChanging = false;
 });
 
-var nodes = {};
-var nodesRequested = {};
+var nodes;
+var nodesRequested;
+
+function onNewUser() {
+	nodes = {};
+	nodesRequested = {};
+}
 
 function waitForNodeInner(nodeId, callback) {
 	if(nodes.hasOwnProperty(nodeId)) {
@@ -557,11 +565,15 @@ async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string):
 		if(nodesRequested.hasOwnProperty(nodeId)) {
 			return waitForNode(nodeId);
 		} else {
-			nodesRequested[nodeId] = true;
-			let data = await getData('api/descNode', { nodeId });
-			normalizeNode(data);
-			nodes[nodeId] = data;
-			return data;
+			try {
+				nodesRequested[nodeId] = true;
+				let data = await getData('api/descNode', { nodeId });
+				normalizeNode(data);
+				nodes[nodeId] = data;
+				return data;
+			} catch(er) {
+				delete (nodesRequested[nodeId]);
+			}
 		}
 	}
 }
@@ -662,9 +674,6 @@ async function getNodeData(nodeId: RecId, recId: RecId | undefined, filters?: un
 			}
 		}
 		return data;
-
-
-
 	} catch(err) {
 		delete (nodesRequested[nodeId]);
 	}
@@ -762,22 +771,25 @@ function releaseQuiresOrder(requestRecord) {
 		throw new Error('requests order is corrupted');
 	}
 	/// #endif
+	requestRecord.reject(requestRecord.result);
 	__requestsOrder.splice(roi, 1);
 }
 
 async function getData(url: string, params?: { [key: string]: any }, callStack?: string, noLoadingIndicator?: boolean): Promise<any> {
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		assert(url.indexOf('?') < 0, 'More parameters to data');
 
 		var requestRecord: {
 			url: string;
 			resolve: (value: unknown) => void;
+			reject: (value: unknown) => void;
 			result?: any
 		} = {
 			/// #if DEBUG
 			url: url,
 			/// #endif
-			resolve
+			resolve,
+			reject
 		}
 
 		if(!params) {
@@ -798,12 +810,7 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 		} else {
 			noLoadingIndicator = true;
 		}
-
-		/// #if DEBUG
 		let isOrderNeedDispose = true;
-
-		/// #endif
-
 		fetch(__corePath + url, {
 			method: 'POST',
 			headers: headersJSON,
@@ -816,9 +823,7 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 				if(isAuthNeed(data)) {
 					window.crudJs.Stage.showForm(NODE_ID.LOGIN, 'new', undefined, true);
 				} else if(data.hasOwnProperty('result')) {
-					/// #if DEBUG
 					isOrderNeedDispose = false;
-					/// #endif
 					requestRecord.result = data.result;
 				} else {
 					handleError(data, url, callStack);
@@ -835,11 +840,9 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 			})
 			//*/
 			.finally(() => {
-				/// #if DEBUG
 				if(isOrderNeedDispose) {
 					releaseQuiresOrder(requestRecord);
 				}
-				/// #endif
 				while(__requestsOrder.length > 0 && __requestsOrder[0].hasOwnProperty('result')) {
 					var rr = __requestsOrder.shift();
 					rr.resolve(rr.result);
@@ -1185,7 +1188,7 @@ function submitErrorReport(name, stack) {
 	var k = stack;
 	if(!__errorsSent.hasOwnProperty(k)) {
 		__errorsSent[k] = 1;
-		submitRecord(81, {
+		submitRecord(NODE_ID.ERROR_REPORTS, {
 			name: name + ' (' + window.location.href + ')',
 			stack: stack.substring(0, 3999)
 		});
@@ -1237,6 +1240,7 @@ function getListRenderer(nodeId: RecId): (this: List) => any[] {
 }
 
 export {
+	onNewUser,
 	registerListRenderer,
 	isPresentListRenderer,
 	getListRenderer,

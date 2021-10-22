@@ -39,7 +39,7 @@ class DebugPanel extends Component<any, any> {
 	addEntry(entry: any, expand?: boolean, url?: string) {
 
 		if(typeof (entry) !== 'object') {
-			entry = { message: entry }
+			entry = { message: entry + '' }
 		}
 		if(url) {
 			entry.request = url;

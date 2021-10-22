@@ -4,6 +4,7 @@
 /cert
 /dist
 
+ENV.json
 /www/node_modules
 /www/.cache
 /www/build-www-prod

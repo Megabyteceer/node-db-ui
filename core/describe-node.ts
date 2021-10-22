@@ -220,7 +220,6 @@ async function initNodesData() { // load whole nodes data in to memory
 	let eventsHandlers_new = new Map();
 
 	options = {
-		DEBUG: ENV.DEBUG,
 		ADMIN_ENABLED_DEFAULT: ENV.ADMIN_ENABLED_DEFAULT,
 		APP_TITLE: ENV.APP_TITLE,
 		HOME_NODE: ENV.HOME_NODE,

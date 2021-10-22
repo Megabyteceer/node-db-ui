@@ -169,6 +169,10 @@ class FieldsEvents extends FormEvents {
 	_login_forgotPasswordButton_onChange() {
 		window.crudJs.Stage.showForm(NODE_ID.RESET, 'new', undefined, true);
 	}
+	
+	_resetPassword_backToLogin_onChange() {
+		this._registration_alreadyHaveAccountBtn_onChange();
+	}
 
 	_fields_recalculateFieldsVisibility() {
 
