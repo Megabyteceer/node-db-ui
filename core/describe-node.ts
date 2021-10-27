@@ -231,7 +231,8 @@ async function initNodesData() { // load whole nodes data in to memory
 		GOOGLE_PLUS: ENV.GOOGLE_PLUS,
 		TERMS_URL: ENV.TERMS_URL,
 		CAPTCHA_CLIENT_SECRET: ENV.CAPTCHA_CLIENT_SECRET,
-		ALLOWED_UPLOADS: ENV.ALLOWED_UPLOADS
+		ALLOWED_UPLOADS: ENV.ALLOWED_UPLOADS,
+		clientOptions: ENV.clientOptions,
 	};
 
 	nodesById_new = new Map();

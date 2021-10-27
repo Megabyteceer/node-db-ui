@@ -2,6 +2,8 @@ import { CLIENT_SIDE_FORM_EVENTS, consoleLog, Filters, getData, L } from "../uti
 import { BaseForm } from "./base-form";
 import { assert, FieldDesc, FIELD_TYPE, RecordData } from "../bs-utils";
 import type { FieldWrap } from "../fields/field-wrap";
+import ReactDOM from "react-dom";
+import React from "react";
 
 let FormEvents;
 let FieldsEvents;
@@ -247,6 +249,27 @@ class FormEventProcessingMixins extends BaseForm {
 		if(this.props.filters && this.props.filters.tab) {
 			this.callOnTabShowEvent(this.props.filters.tab);
 		}
+	}
+
+	getFieldDomElement(fieldName: string): HTMLDivElement {
+		const formElement = ReactDOM.findDOMNode(this) as HTMLDivElement;
+		return formElement.querySelector('.field-container-id-' + this.getField(fieldName).props.field.id) as HTMLDivElement;
+	}
+
+	renderToField(fieldName: string, containerClassName: string, reactContent: React.ReactElement) {
+		const el = this.getFieldDomElement(fieldName);
+		let container = el.querySelector('.' + containerClassName);
+		if(!container) {
+			container = document.createElement('SPAN');
+			container.className = containerClassName;
+			el.appendChild(container);
+		}
+		ReactDOM.render(reactContent, container);
+	}
+
+	save() {
+		//@ts-ignore
+		this.saveClick();
 	}
 
 	refreshLeftBar() {

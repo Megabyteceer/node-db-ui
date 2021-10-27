@@ -1,5 +1,4 @@
 import { Component } from "react";
-import { ENV } from "./main-frame";
 import { R } from "./r";
 import { iAdmin } from "./user";
 import { getData, isLitePage, L, myAlert, showPrompt, reloadLocation, renderIcon, sp, strip_tags } from "./utils";

@@ -52,7 +52,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 
 	fieldsRefs: { [key: string]: FieldWrap };
 	/** set content of form header */
-	header: string | React.Component;
+	header: string | React.ReactElement;
 	hiddenFields: { [key: string]: BoolNum };
 
 	isDataModified: boolean;
