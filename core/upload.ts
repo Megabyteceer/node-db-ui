@@ -4,7 +4,7 @@ import { assert, IMAGE_THUMBNAIL_PREFIX, throwError } from "../www/src/bs-utils"
 import { join } from "path";
 import * as fs from "fs";
 const sharp = require("sharp");
-import ENV from "../ENV";
+import ENV from "./ENV";
 import { getNodeDesc, getFieldDesc } from "./describe-node";
 import { L } from "./locale";
 

@@ -4,7 +4,7 @@ import { assert, getCurrentStack } from "../www/src/bs-utils";
 import { performance } from 'perf_hooks';
 /// #endif
 
-import ENV from "../ENV";
+import ENV from "./ENV";
 import * as mysql from 'mysql2';
 
 const pool = mysql.createPool({

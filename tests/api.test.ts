@@ -1,6 +1,6 @@
 import { Builder, By, Key, until } from 'selenium-webdriver';
 import { Driver } from "selenium-webdriver/chrome";
-import ENV from "../ENV";
+import ENV from "../core/ENV";
 
 /** @type Driver */
 let driver;

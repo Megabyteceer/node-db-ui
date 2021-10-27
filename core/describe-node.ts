@@ -7,7 +7,7 @@ import handlers from './events/___index';
 import { existsSync } from "fs";
 import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
-import ENV from "../ENV";
+import ENV from "./ENV";
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession, usersSessionsStartedCount } from "./auth";
 import { throwError, assert, FIELD_TYPE, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK, ROLE_ID, NODE_ID, NODE_TYPE } from "../www/src/bs-utils";
 

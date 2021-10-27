@@ -7,7 +7,7 @@ const captchaRequestConfig = {
 	headers: { "Content-Type": "application/x-www-form-urlencoded" }
 };
 
-import ENV from "../ENV";
+import ENV from "./ENV";
 import { getNodeEventHandler, getNodeDesc, getFieldDesc, ServerSideEventHandlersNames } from "./describe-node";
 import { getRecords } from "./get-records";
 import { mysqlExec, mysqlStartTransaction, mysqlRollback, mysqlCommit, mysqlRowsResult } from "./mysql-connection";

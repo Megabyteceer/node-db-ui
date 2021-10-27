@@ -3,7 +3,7 @@ import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 import * as os from "os";
 import * as path from "path";
 import * as fs from "fs";
-import ENV from "../../ENV";
+import ENV from "../ENV";
 import type { UserSession } from '../../www/src/bs-utils';
 import { isAdmin } from "../auth";
 var crypto = require('crypto');
@@ -280,7 +280,7 @@ var skipFiles = [
 	/.*\/uploads\/*/,
 	/.*\/src\/*/,
 	/.*..\/deploy\/settings_store\/*/,
-	/.*\/ENV.js/,
+	/.*\/ENV.json/,
 	/.*\/.git\/*/,
 	/.*\/.vscode\/*/,
 	/.*.log/,

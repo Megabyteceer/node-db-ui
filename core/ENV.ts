@@ -46,7 +46,7 @@ const ENV = {
 
 import * as fs from "fs";
 
-const envPath = './ENV.json';
+const envPath = '../ENV.json';
 if(fs.existsSync(envPath)) {
 	let env = JSON.parse(fs.readFileSync(envPath, 'utf8'));
 	if(env.clientOptions) {

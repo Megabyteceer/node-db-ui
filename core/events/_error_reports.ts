@@ -1,6 +1,6 @@
 import { mail_utf8, UserSession } from "../auth";
 import { NodeEventsHandlers } from "../describe-node";
-import ENV from "../../ENV";
+import ENV from "../ENV";
 import { RecordDataWrite } from "../../www/src/bs-utils";
 
 const handlers: NodeEventsHandlers = {

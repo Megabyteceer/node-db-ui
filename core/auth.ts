@@ -1,4 +1,4 @@
-import ENV from "../ENV";
+import ENV from "./ENV";
 import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "./mysql-connection";
 import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from "./describe-node";
 import { throwError, NODE_ID, assert, UserLangEntry, UserRoles, UserSession, ROLE_ID, RecId } from "../www/src/bs-utils";

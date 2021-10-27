@@ -13,7 +13,7 @@ import "../www/src/locales/ru/lang-server";
 /// #if DEBUG
 import { performance } from 'perf_hooks';
 import { DPromise } from "../www/src/debug-promise";
-import ENV from '../ENV';
+import ENV from './ENV';
 //@ts-ignore
 global.Promise = DPromise;
 /// #endif
