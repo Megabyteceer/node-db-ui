@@ -3,11 +3,16 @@ import { L } from "../locale";
 import { mysqlExec, mysqlRowResultSingle } from "../mysql-connection";
 import { NodeEventsHandlers } from "../describe-node"
 import { RecordDataWrite, throwError, UserSession } from "../../www/src/bs-utils";
+import { loginWithGoogle } from "../login-social";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession): Promise<any> {
 		const username = data.username;
 		const password = data.password;
+		if(username === 'google-auth-sign-in') {
+			return await loginWithGoogle(password, userSession);
+		}
+
 		let user = await mysqlExec("SELECT id, salt, TIMESTAMPDIFF(SECOND, NOW(), blocked_to) AS blocked, password, mistakes FROM _users WHERE email='" + username + "' AND _users.status=1 LIMIT 1") as mysqlRowResultSingle;
 		user = user[0];
 		if(user) {

@@ -1,7 +1,15 @@
-build release server  node events
-build release client
+Все папки и конфиги круда симлинками
+ret rec id and data on submit in differenr fields
+Users view render all unrendered not empty fields at right block
 
-import ENV dynamically on server
+Prod and release bundles in same config?
+
+
+
+
+no inline css and dontawesome
+
+
 
 портировать Linemaster
 

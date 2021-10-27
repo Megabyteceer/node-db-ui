@@ -1355,8 +1355,9 @@ input[readonly] {
 	border: 3px solid var(--BRAND_COLOR_LIGHT);
 }
 
-.max-width-550 {
+.login-form {
 	max-width: 550px !important;
+	text-align: center;
 }
 
 .email-highlight {
@@ -1377,6 +1378,19 @@ input[readonly] {
 	width: 200px;
 }
 
+.social-buttons {
+	margin-top: 20px;
+	display: inline-block;
+}
+
+.sign-in-button .field-button {
+	padding: 15px 30px;
+}
+
+
+
+
+
 
 
 
@@ -1385,6 +1399,8 @@ input[readonly] {
 	animation-iteration-count: 2;
 	transform-origin: 50% 50%;
 }
+
+
 
 @keyframes shake-animation {
 	0% {

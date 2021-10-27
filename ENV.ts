@@ -1,4 +1,5 @@
 const ENV = {
+	PORT: 1443,
 	SERVER_NAME: 'http://node-db-ui.com:1443/',
 	ADMIN_ENABLED_DEFAULT: true,
 	ERROR_NOTIFY_EMAIL: '',
@@ -37,14 +38,20 @@ const ENV = {
 
 	CAPTCHA_CLIENT_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
 	CAPTCHA_SERVER_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
+
+	clientOptions: {
+		"googleSigninClientId": ""
+	}
 };
 
 import * as fs from "fs";
-import * as path from "path";
 
-const envPath = path.join(__dirname, '../ENV.json')
+const envPath = './ENV.json';
 if(fs.existsSync(envPath)) {
 	let env = JSON.parse(fs.readFileSync(envPath, 'utf8'));
+	if(env.clientOptions) {
+		Object.assign(ENV.clientOptions, env.clientOptions);
+	}
 	Object.assign(ENV, env);
 }
 

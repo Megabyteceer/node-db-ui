@@ -70,7 +70,7 @@ function isRecordRestrictedForDeletion(nodeId, recordId) {
 	}
 }
 
-function myAlert(txt: string | React.Component, isSuccess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean, onOk?: () => void, okButtonText?: string) {
+function myAlert(txt: string | React.ReactElement, isSuccess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean, onOk?: () => void, okButtonText?: string) {
 	if(!Modal.instance) {
 		alert(txt);
 	} else {
@@ -157,7 +157,6 @@ function debugError(txt) {
 	debugger;
 	DebugPanel.instance.addEntry('ERROR: ' + txt, true);
 	/// #endif
-	submitErrorReport(txt, 'at debugError');
 	console.error(txt);
 }
 
@@ -176,8 +175,6 @@ function handleError(error, url, callStack) {
 		callStack = '';
 	}
 
-
-	submitErrorReport(url + JSON.stringify(error), callStack);
 	/// #if DEBUG
 	if(error.debug) {
 		error.debug.message = (error.message || error) + callStack;
@@ -190,9 +187,8 @@ function handleError(error, url, callStack) {
 	} else {
 		throw error;
 	}
-	return;
+	/*
 	/// #endif
-
 
 
 	if(!_oneFormShowed) {
@@ -200,7 +196,9 @@ function handleError(error, url, callStack) {
 			triesGotoHome++;
 			goToHome();
 		}
-	} else {
+	} else 
+	//*/
+	{
 		if(error.message) {
 			error = error.message;
 		}
@@ -754,6 +752,9 @@ function UID(obj): number {
 
 function idToImgURL(imgId, holder) {
 	if(imgId) {
+		if(imgId.indexOf('//') >= 0) {
+			return imgId;
+		}
 		return 'images/uploads/' + imgId;
 	}
 	return 'images/placeholder_' + holder + '.png';

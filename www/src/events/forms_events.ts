@@ -178,7 +178,7 @@ class FormEvents extends FormFull {
 			this.hideField('defaultFilterId');
 		} else if(this.isUpdateRecord) {
 			this.addLookupFilters('defaultFilterId', {
-				_nodesID: this.recId
+				node_filters_linker: this.recId
 			});
 		} else {
 			this.setFieldValue('storeForms', 1);
@@ -486,7 +486,31 @@ class FormEvents extends FormFull {
 	}
 
 	_login_onLoad() {
-		this.hideCancelButton();
+		this.hideFooter();
+		if(this.hasField('socialLoginButtons') && ENV.clientOptions.googleSigninClientId) {
+			/// #if DEBUG
+			return;
+			/// #endif
+			//@ts-ignore
+			window.onGoogleSignIn = (googleUser) => {
+				debugger;
+				var id_token = googleUser.getAuthResponse().id_token;
+				this.setFieldValue('username', 'google-auth-sign-in');
+				this.setFieldValue('password', id_token);
+				this.save();
+			}
+			this.renderToField('socialLoginButtons', 'social-buttons',
+				R.span(null,
+					R.div({ className: "g-signin2", "data-onsuccess": "onGoogleSignIn" }),
+					R.meta({ name: "google-signin-client_id", content: ENV.clientOptions.googleSigninClientId })
+				)
+			);
+			let s = document.createElement('script');
+			s.src = "https://apis.google.com/js/platform.js";
+			s.async = true;
+			s.defer = true;
+			document.head.append(s);
+		}
 	}
 
 	_resetPassword_onLoad() {

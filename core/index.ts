@@ -13,6 +13,7 @@ import "../www/src/locales/ru/lang-server";
 /// #if DEBUG
 import { performance } from 'perf_hooks';
 import { DPromise } from "../www/src/debug-promise";
+import ENV from '../ENV';
 //@ts-ignore
 global.Promise = DPromise;
 /// #endif
@@ -122,10 +123,18 @@ app.use('/dist/images/', express.static(path.join(__dirname, '../../www/images')
 app.use('/assets/', express.static(path.join(__dirname, '../../www/dist/assets')));
 app.use('/', express.static(path.join(__dirname, '../../www')));
 
-initNodesData().then(async function() {
-	app.listen(1443)
-	console.log('HTTP listen 1443...');
-});
+
+function crudJSServer() {
+	initNodesData().then(async function() {
+		app.listen(ENV.PORT)
+		console.log('HTTP listen ' + ENV.PORT + '...');
+	});
+}
+
+export default crudJSServer;
+if(require.main === module) {
+	crudJSServer();
+}
 
 const mysql_real_escape_object = (o) => {
 	for(let key in o) {

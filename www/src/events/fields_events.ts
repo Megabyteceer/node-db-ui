@@ -169,7 +169,7 @@ class FieldsEvents extends FormEvents {
 	_login_forgotPasswordButton_onChange() {
 		window.crudJs.Stage.showForm(NODE_ID.RESET, 'new', undefined, true);
 	}
-	
+
 	_resetPassword_backToLogin_onChange() {
 		this._registration_alreadyHaveAccountBtn_onChange();
 	}
@@ -202,7 +202,7 @@ class FieldsEvents extends FormEvents {
 			case FIELD_TYPE.BUTTON:
 			case FIELD_TYPE.TAB:
 			case FIELD_TYPE.SPLITTER:
-				this.hideField("maxLength", "sendToServer", "storeInDB", "requirement", "unique", "forSearch");
+				this.hideField("storageSettingSplitter", "maxLength", "sendToServer", "storeInDB", "requirement", "unique", "forSearch");
 				this.setFieldValue("sendToServer", 0);
 				this.disableField("sendToServer");
 				this.setFieldValue("storeInDB", 0);
@@ -298,6 +298,10 @@ class FieldsEvents extends FormEvents {
 
 	_fields_forSearch_onChange() {
 		this._fields_recalculateFieldsVisibility();
+	}
+
+	_login_signInBtn_onChange() {
+		this.save();
 	}
 
 	//_insertNewHandlersHere_

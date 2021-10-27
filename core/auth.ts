@@ -114,26 +114,34 @@ async function activateUser(key, userSession: UserSession) {
 		const registrations = await mysqlExec("SELECT * FROM _registration WHERE status = 1 AND activationKey='" + key + "' AND _createdON > DATE_ADD(CURDATE(), INTERVAL -1 DAY) LIMIT 1") as mysqlRowsResult;
 		const registration = registrations[0];
 		if(registration) {
-			let existingUser = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND email='" + registration.email + "' LIMIT 1") as mysqlRowsResult;
-			if(existingUser.length > 0) {
-				throwError(L('EMAIL_ALREADY', userSession));
-			}
-			if(!registration.name) {
-				registration.name = registration.email.split('@')[0];
-			}
 			let registrationID = registration.id;
 			delete registration.id;
 			delete registration.activationKey;
 			delete registration._createdON;
-			const userID = await submitRecord(NODE_ID.USERS, registration);
-			let organizationID = (await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_usersID`) VALUES ('', '1', " + userID + ")") as mysqlInsertResult).insertId;
-			await mysqlExec("UPDATE _organization SET _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + organizationID);
-			await mysqlExec("UPDATE _users SET _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + userID);
+			let ret = await authorizeUserByID(await createUser(registration as any, userSession));
 			await mysqlExec("UPDATE _registration SET activationKey = '', status = 0 WHERE id = " + registrationID);
-			return authorizeUserByID(userID);
+			return ret;
 		}
 	}
 	throwError(L('REG_EXPIRED', userSession));
+}
+
+async function createUser(userData: {
+	email: string,
+	name?: string
+}, userSession: UserSession) {
+	let existingUser = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND email='" + userData.email + "' LIMIT 1") as mysqlRowsResult;
+	if(existingUser.length > 0) {
+		throwError(L('EMAIL_ALREADY', userSession));
+	}
+	if(!userData.name) {
+		userData.name = userData.email.split('@')[0];
+	}
+	const userID = await submitRecord(NODE_ID.USERS, userData);
+	let organizationID = (await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_usersID`) VALUES ('', '1', " + userID + ")") as mysqlInsertResult).insertId;
+	await mysqlExec("UPDATE _organization SET _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + organizationID);
+	await mysqlExec("UPDATE _users SET _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + userID);
+	return userID;
 }
 
 async function resetPassword(key, userId, userSession) {
@@ -158,7 +166,6 @@ function getPasswordHash(password, salt) {
 		});
 	});
 }
-
 
 async function authorizeUserByID(userID, isItServerSideSession: boolean = false, sessionToken: string | null = null): Promise<UserSession> {
 
@@ -345,4 +352,4 @@ const isUserHaveRole = (roleId: ROLE_ID, userSession: UserSession) => {
 	return userSession && userSession.userRoles[roleId];
 }
 
-export { UserSession, getGuestUserForBrowserLanguage, generateSalt, notificationOut, shouldBeAuthorized, isAdmin, isUserHaveRole, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultilingual, authorizeUserByID, resetPassword, activateUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMaintenanceMode };
+export { createUser, UserSession, getGuestUserForBrowserLanguage, generateSalt, notificationOut, shouldBeAuthorized, isAdmin, isUserHaveRole, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultilingual, authorizeUserByID, resetPassword, activateUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMaintenanceMode };

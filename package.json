@@ -1,5 +1,5 @@
 {
-  "name": "node-db-ui",
+  "name": "crud-js",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -24,6 +24,7 @@
     "bootstrap": "^3.4.1",
     "express": "^4.17.1",
     "font-awesome": "^4.7.0",
+    "google-auth-library": "^7.10.1",
     "ifdef-loader": "^2.3.0",
     "jquery": "^3.6.0",
     "moment": "^2.29.1",
