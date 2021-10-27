@@ -55,8 +55,8 @@ const handlers: NodeEventsHandlers = {
 
 			//create default fields
 			const mainFieldQ = `INSERT INTO \`_fields\`
-				(\`node_fields_linker\`, \`status\`, \`show\`,          \`prior\`, \`fieldType\`,         \`fieldName\`, \`selectFieldName\`, \`name\`,                           \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`) VALUES
-				(${createdID},             1,          ${VIEW_MASK.ALL},  1,        ${FIELD_TYPE.TEXT}, 'name',        '',                  '${L('FIELD_NAME', userSession)}',   '',              64,             1,               0,         0,            1,             0);`;
+				(\`node_fields_linker\`, \`status\`, \`show\`,          \`prior\`, \`fieldType\`,         \`fieldName\`, \`selectFieldName\`, \`name\`,                           \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`, \`sendToServer\`) VALUES
+				(${createdID},             1,          ${VIEW_MASK.ALL},  1,        ${FIELD_TYPE.TEXT}, 'name',        '',                  '${L('FIELD_NAME', userSession)}',   '',              64,             1,               0,         0,             1,              0,              1);`;
 			await mysqlExec(mainFieldQ);
 
 			if(data.addCreatedOnFiled) {
@@ -70,14 +70,14 @@ const handlers: NodeEventsHandlers = {
 			if(data.addCreatedByFiled) {
 				const createdByQ = `INSERT INTO _fields
 				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,            \`fieldName\`,      \`selectFieldName\`, \`name\`,                                \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`, \`nodeRef\`) VALUES
-				(${createdID},            1,          ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   3,         ${FIELD_TYPE.LOOKUP},  '_organizationID', '_organization',     '${L('FIELD_ORGANIZATION', userSession)}', '',              0,            0,               0,           0,           1,              1,             ${NODE_ID.ORGANIZATIONS});`;
+				(${createdID},            1,          ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   3,         ${FIELD_TYPE.LOOKUP},    '_organizationID',  '_organization',     '${L('FIELD_ORGANIZATION', userSession)}', '',              0,            0,               0,           0,           1,              1,             ${NODE_ID.ORGANIZATIONS});`;
 				await mysqlExec(createdByQ);
 			}
 
 			if(data.addCreatorUserFld) {
 				const createdByQ = `INSERT INTO _fields
 				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,          \`fieldName\`,  \`selectFieldName\`,  \`name\`,                            \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`, \`nodeRef\`,          \`lookupIcon\`) VALUES
-				(${createdID},           1,           ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   4,        ${FIELD_TYPE.LOOKUP}, '_usersID',     '_users',            '${L('FIELD_OWNER', userSession)}',   '',              0,              0,              0,           0,             1,            1,             ${NODE_ID.USERS},    'avatar');`;
+				(${createdID},           1,           ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   4,        ${FIELD_TYPE.LOOKUP},   '_usersID',     '_users',            '${L('FIELD_OWNER', userSession)}',     '',               0,              0,              0,           0,             1,            1,             ${NODE_ID.USERS},    'avatar');`;
 				await mysqlExec(createdByQ);
 			}
 		}
