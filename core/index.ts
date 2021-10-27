@@ -7,8 +7,8 @@ import './locale';
 import { mysqlDebug } from "./mysql-connection";
 import { ROLE_ID } from "../www/client-core/src/bs-utils";
 
-import "../www/src/locales/en/lang-server";
-import "../www/src/locales/ru/lang-server";
+import "../www/client-core/src/locales/en/lang-server";
+import "../www/client-core/src/locales/ru/lang-server";
 
 /// #if DEBUG
 import { performance } from 'perf_hooks';

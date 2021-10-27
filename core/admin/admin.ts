@@ -102,9 +102,9 @@ async function getClientEventHandler({
 	let node = getNodeDesc(nodeId);
 	if(fieldId) {
 		let field = getFieldDesc(fieldId);
-		return editFunction('../../../www/src/events/fields_events.ts', node.tableName + '_' + field.fieldName + '_' + handler, args);
+		return editFunction('../../../www/client-core/src/events/fields_events.ts', node.tableName + '_' + field.fieldName + '_' + handler, args);
 	} else {
-		return editFunction('../../../www/src/events/forms_events.ts', node.tableName + '_' + handler, args);
+		return editFunction('../../../www/client-core/src/events/forms_events.ts', node.tableName + '_' + handler, args);
 	}
 }
 
