@@ -195,7 +195,7 @@
 	position: fixed;
 	top: 130px;
 	right: 0;
-	background: #a44;
+	background: rgb(165, 165, 165);
 	border: 2px solid #fff;
 	border-top-left-radius: 10px;
 	border-bottom-left-radius: 10px;
@@ -213,7 +213,7 @@
 }
 
 .debug-panel-item {
-	background: #ffd;
+	background: #f4f4f4;
 	margin: 8px;
 	color: #887;
 	padding: 14px;

@@ -90,9 +90,9 @@ class DebugPanel extends Component<any, any> {
 			renderIcon('trash')
 		)
 		if(iAdmin()) {
-			deployBtn = R.a({ className: 'clickable admin-control', title: L('DEPLOY'), onClick: this.deployClick },
+			/*deployBtn = R.a({ className: 'clickable admin-control', title: L('DEPLOY'), onClick: this.deployClick },
 				renderIcon('upload')
-			);
+			);*/
 			cacheClearBtn = R.a({
 				className: 'clickable admin-control', title: L('CLEAR_CACHE'), onClick: (ev) => {
 					sp(ev);

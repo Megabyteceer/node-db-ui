@@ -1,5 +1,3 @@
-Users view render all unrendered not empty fields at right block
-
 
 Все папки и конфиги круда симлинками
 Prod and release bundles in same config?
