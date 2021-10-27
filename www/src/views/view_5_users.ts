@@ -3,6 +3,17 @@ import { renderItemsButtons } from "../forms/form-list-item";
 import { idToImgURL, registerListRenderer, renderIcon } from "../utils";
 import { List } from "../forms/list";
 
+const RENDERED_FIELDS = {
+	avatar: true,
+	name: true,
+	company: true,
+	email: true,
+	PHONE: true,
+	public_email: true,
+	public_phone: true,
+	creatorORG: true,
+	creatorUSER: true,
+};
 
 registerListRenderer(5, function (this: List) {
 
@@ -24,6 +35,14 @@ registerListRenderer(5, function (this: List) {
 				)
 			)
 		}
+		var additionalFields = [];
+		for(let key of Object.keys(item)) {
+			if(key.length > 3 && !RENDERED_FIELDS[key] && item[key]) {
+				additionalFields.push(R.div({ key, className: 'user-item-info' },
+					node.fieldsByName[key].name, ': ', item[key]
+				));
+			}
+		}
 
 		return R.div({ key: item.id, className: 'user-item user-item-id-' + item.id },
 			R.img({ src: imgUrl, className: 'user-item-image' }),
@@ -33,7 +52,8 @@ registerListRenderer(5, function (this: List) {
 			),
 			R.div({ className: 'user-item-block user-item-block-small' },
 				phone,
-				email
+				email,
+				additionalFields
 			),
 			R.div({ className: 'user-item-controls' },
 				renderItemsButtons(node, item, this.refreshData)
