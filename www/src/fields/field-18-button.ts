@@ -28,9 +28,9 @@ registerFieldClass(FIELD_TYPE.BUTTON, class ButtonField extends BaseField {
 			bIcon = renderIcon(field.icon);
 		}
 
-		return R.button({ className: (this.props.disabled ? 'not-clickable field-button' : 'clickable field-button'), onClick: this.onClick },
-			bIcon,
-			field.name
+		return R.button({ className: (this.props.disabled ? 'not-clickable field-button' : 'clickable field-button'), onClick: this.onClick, title: field.name },
+			R.span({ className: 'icon' }, bIcon),
+			R.span({ className: 'label' }, field.name)
 		);
 	}
 });

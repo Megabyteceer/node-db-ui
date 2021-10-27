@@ -391,10 +391,11 @@ class FieldLabel extends Component<any, any> {
 			)
 		} else {
 			body = (field.fieldType !== FIELD_TYPE.BUTTON) ? (this.props.labelOverride || field.name) : '';
+
 		}
 
 		return R.div({ className: 'field-wrap-label' },
-			renderIcon(field.icon),
+			(field.fieldType !== FIELD_TYPE.BUTTON) ? renderIcon(field.icon) : '',
 			body,
 			star,
 			alertBody
