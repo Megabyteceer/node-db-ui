@@ -1227,7 +1227,7 @@ function L(key: LANG_KEYS, param?: any) {
 
 var listRenderers = [];
 
-function registerListRenderer(nodeId: RecId, renderFunction: (this: List) => any[]) {
+function registerListRenderer(nodeId: RecId, renderFunction: (this: List) => React.ReactNode) {
 	if(listRenderers.hasOwnProperty(nodeId)) {
 		throw 'List renderer for node ' + nodeId + ' is already registered.';
 	}
@@ -1238,7 +1238,7 @@ function isPresentListRenderer(nodeId: RecId) {
 	return listRenderers.hasOwnProperty(nodeId);
 }
 
-function getListRenderer(nodeId: RecId): (this: List) => any[] {
+function getListRenderer(nodeId: RecId): (this: List) => React.ReactNode {
 	return listRenderers[nodeId];
 }
 

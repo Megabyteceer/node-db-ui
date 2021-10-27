@@ -2,6 +2,7 @@ import { R } from "../r";
 import { renderItemsButtons } from "../forms/form-list-item";
 import { idToImgURL, registerListRenderer, renderIcon } from "../utils";
 import { List } from "../forms/list";
+import { NODE_ID } from "../bs-utils";
 
 const RENDERED_FIELDS = {
 	avatar: true,
@@ -15,7 +16,7 @@ const RENDERED_FIELDS = {
 	creatorUSER: true,
 };
 
-registerListRenderer(5, function (this: List) {
+registerListRenderer(NODE_ID.USERS, function (this: List): React.ReactNode {
 
 	var node = this.state.node;
 	var data = this.state.data;
