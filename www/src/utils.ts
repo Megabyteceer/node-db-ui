@@ -8,7 +8,7 @@ import type { LANG_KEYS } from "./locales/en/lang";
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
-import { assert, FieldDesc, FIELD_TYPE, GetRecordsParams, HASH_DIVIDER, NODE_ID, ROLE_ID } from "./bs-utils";
+import { assert, FieldDesc, FIELD_TYPE, GetRecordsParams, HASH_DIVIDER, NODE_ID, RecordSubmitResult, ROLE_ID } from "./bs-utils";
 import type { Filters, IFormParameters, NodeDesc, RecId, RecordData, RecordsData } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
@@ -577,12 +577,14 @@ async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string):
 }
 
 function normalizeNode(node: NodeDesc) {
-	node.fieldsById = [];
+	node.fieldsById = {};
+	node.fieldsByName = {};
 	if(node.fields) {
 		node.fields.forEach((f: FieldDesc, i) => {
 			f.index = i;
 			f.node = node;
 			node.fieldsById[f.id] = f;
+			node.fieldsByName[f.fieldName] = f;
 			if(f.enum) {
 				f.enumNamesById = {};
 				for(let e of f.enum) {
@@ -734,7 +736,7 @@ function addMixins(Class, mixins) {
 	Object.assign(Class.prototype, mixins);
 }
 
-async function submitRecord(nodeId: RecId, data: RecordData, recId?: RecId): Promise<RecId> {
+async function submitRecord(nodeId: RecId, data: RecordData, recId?: RecId): Promise<RecordSubmitResult> {
 	if(Object.keys(data).length === 0) {
 		throw 'Tried to submit empty object';
 	}
@@ -863,11 +865,11 @@ const isAdmin = () => {
 	return isUserHaveRole(ROLE_ID.ADMIN);
 }
 
-async function publishRecord(nodeId, recId) {
+async function publishRecord(nodeId, recId): Promise<RecordSubmitResult> {
 	return submitRecord(nodeId, { status: 1 }, recId);
 }
 
-async function draftRecord(nodeId, recId) {
+async function draftRecord(nodeId, recId): Promise<RecordSubmitResult> {
 	return submitRecord(nodeId, { status: 2 }, recId);
 }
 
@@ -894,9 +896,9 @@ function serializeForm(form): FormData {
 	return formData;
 }
 
-function submitData(url: string, dataToSend: FormData, noProcessData): Promise<RecId>;
-function submitData(url: string, dataToSend: any): Promise<RecId>;
-function submitData(url: string, dataToSend: any, noProcessData?: boolean): Promise<RecId> {
+function submitData(url: string, dataToSend: FormData, noProcessData): Promise<any>;
+function submitData(url: string, dataToSend: any): Promise<any>;
+function submitData(url: string, dataToSend: any, noProcessData?: boolean): Promise<any> {
 	LoadingIndicator.instance.show();
 
 	let body: FormData;

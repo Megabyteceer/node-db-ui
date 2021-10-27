@@ -1,6 +1,6 @@
 import { getData, L } from "../utils";
 
-function admin_editSource(handler, node, field) {
+function admin_editSource(handler, node, field, args = '') {
 	var nodeId, fieldId;
 	if(field) {
 		fieldId = field.id;
@@ -9,7 +9,8 @@ function admin_editSource(handler, node, field) {
 	let data = {
 		handler,
 		nodeId,
-		fieldId
+		fieldId,
+		args
 	}
 	getData('admin/editEventHandler', data);
 }

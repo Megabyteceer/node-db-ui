@@ -21,6 +21,11 @@ interface Filters {
 	r?: boolean;
 }
 
+interface RecordSubmitResult {
+	recId: RecId;
+	handlerResult: any;
+}
+
 const throwError = (message: string): never => {
 	/// #if DEBUG
 	debugger;
@@ -185,6 +190,7 @@ interface NodeDesc {
 	sortFieldName?: string;
 	/** CLIENT SIDE ONLY */
 	fieldsById?: { [key: number]: FieldDesc };
+	fieldsByName?: { [key: string]: FieldDesc };
 }
 
 interface UserLangEntry {
@@ -363,6 +369,6 @@ export {
 	NODE_TYPE, FIELD_DISPLAY_TYPE,
 	VIEW_MASK,
 
-	RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList,
+	RecordSubmitResult, RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList,
 	UserLangEntry, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
 };

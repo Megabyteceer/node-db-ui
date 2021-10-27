@@ -54,7 +54,7 @@ async function setRolePrivilegesForNode(nodeID, rolePrivileges, toChild, userSes
 	}
 }
 
-function editFunction(fileName, functionName) {
+function editFunction(fileName, functionName, args = '') {
 
 	fileName = join(__dirname, fileName);
 
@@ -71,7 +71,7 @@ function editFunction(fileName, functionName) {
 		if(i < 0) {
 			throwError("marker (" + NEW_FUNCTION_MARKER + ") is not detected in file: " + fileName);
 		}
-		text = text.substr(0, i) + functionName + `() {
+		text = text.substr(0, i) + functionName + `(` + args + `) {
 		
 	}
 
@@ -94,16 +94,17 @@ function editFunction(fileName, functionName) {
 async function getClientEventHandler({
 	handler,
 	nodeId,
-	fieldId
+	fieldId,
+	args
 }, userSession) {
 	shouldBeAdmin(userSession);
 
 	let node = getNodeDesc(nodeId);
 	if(fieldId) {
 		let field = getFieldDesc(fieldId);
-		return editFunction('../../../www/src/events/fields_events.ts', node.tableName + '_' + field.fieldName + '_' + handler);
+		return editFunction('../../../www/src/events/fields_events.ts', node.tableName + '_' + field.fieldName + '_' + handler, args);
 	} else {
-		return editFunction('../../../www/src/events/forms_events.ts', node.tableName + '_' + handler);
+		return editFunction('../../../www/src/events/forms_events.ts', node.tableName + '_' + handler, args);
 	}
 }
 

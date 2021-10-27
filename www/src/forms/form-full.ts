@@ -6,7 +6,7 @@ import { FormEventProcessingMixins } from "./event-processing-mixins";
 import { NodeAdmin } from "../admin/node-admin";
 import { LoadingIndicator } from "../loading-indicator";
 import { R } from "../r";
-import { FIELD_TYPE, PRIVILEGES_MASK, RecordData, FieldDesc } from "../bs-utils";
+import { FIELD_TYPE, PRIVILEGES_MASK, RecordData, FieldDesc, RecordSubmitResult } from "../bs-utils";
 import React from "react";
 import { iAdmin, User } from "../user";
 import { HotkeyButton } from "../components/hotkey-button";
@@ -268,7 +268,8 @@ class FormFull extends FormEventProcessingMixins {
 			if(this.props.node.captcha) {
 				data.c = await getCaptchaToken();
 			}
-			let recId = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
+			let submitResult: RecordSubmitResult = (await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined));
+			let recId = submitResult.recId;
 			if(!recId) {
 				// save error
 				return;
@@ -303,7 +304,7 @@ class FormFull extends FormEventProcessingMixins {
 			}
 			await callForEachField(this.fieldsRefs, data, 'afterSave');
 
-			await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE, recId);
+			await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE, submitResult);
 
 
 		} else {

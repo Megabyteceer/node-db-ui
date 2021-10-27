@@ -1,5 +1,5 @@
 import {
-	throwError, FIELD_TYPE, PRIVILEGES_MASK, assert, RecId, RecordDataWrite, VIEW_MASK
+	throwError, FIELD_TYPE, PRIVILEGES_MASK, assert, RecId, RecordDataWrite, VIEW_MASK, RecordSubmitResult
 } from "../www/src/bs-utils";
 
 const axios = require('axios')
@@ -28,7 +28,7 @@ for(let tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 	});
 }
 
-async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId | null = null, userSession?: UserSession): Promise<RecId> {
+async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult> {
 
 	let node = getNodeDesc(nodeId);
 
@@ -114,6 +114,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 	if(userSession) {
 		await mysqlStartTransaction();
 	}
+	let handlerResult;
 	try {
 
 		let insQ;
@@ -180,11 +181,11 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		}
 
 		if(recId !== null) {
-			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeUpdate, currentData, data, userSession);
+			handlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeUpdate, currentData, data, userSession);
 		} else {
-			let createHandlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeCreate, data, userSession);
+			handlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeCreate, data, userSession);
 			if(!node.storeForms) {
-				recId = createHandlerResult as unknown as number || 1; // allows to return no store events results to the client.
+				recId = 1;
 			}
 		}
 		if(node.storeForms) {
@@ -363,7 +364,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 				unlink(f, () => { });
 			}
 		}
-		return recId;
+		return { recId, handlerResult };
 
 	} catch(er) {
 		if(userSession) {

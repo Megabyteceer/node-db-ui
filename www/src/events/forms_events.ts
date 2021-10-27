@@ -1,6 +1,6 @@
 import { Filters, getNodeData, isAdmin, L, showPrompt, getNode, myAlert, getData } from "../utils";
 import { makeIconSelectionField } from "../admin/admin-utils";
-import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID, NODE_TYPE, VIEW_MASK } from "../bs-utils";
+import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID, NODE_TYPE, RecordSubmitResult, VIEW_MASK } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
 import { User } from "../user";
@@ -449,8 +449,8 @@ class FormEvents extends FormFull {
 		});
 	}
 
-	_login_onAfterSave(saveResult) {
-		User.setUserData(saveResult);
+	_login_onAfterSave(saveResult: RecordSubmitResult) {
+		User.setUserData(saveResult.handlerResult);
 	}
 
 	_registration_onSave() {
@@ -549,7 +549,6 @@ class FormEvents extends FormFull {
 			this.setFieldValue('value', maxEnumVal + 1);
 		}
 	}
-
 	//_insertNewHandlersHere_
 }
 

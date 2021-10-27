@@ -192,7 +192,7 @@ class NodeAdmin extends Component<any, any> {
 					R.button({
 						className: 'clickable tool-btn admin-form-btn' + borderOnAfterSave,
 						onClick: () => {
-							admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE, node, undefined);
+							admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE, node, undefined, 'saveResult: RecordSubmitResult');
 						},
 						title: "Edit client side script which execute after form save."
 					},
