@@ -1,10 +1,10 @@
-import { throwError } from "../../www/src/bs-utils";
+import { throwError } from "../../www/client-core/src/bs-utils";
 import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 import * as os from "os";
 import * as path from "path";
 import * as fs from "fs";
 import ENV from "../ENV";
-import type { UserSession } from '../../www/src/bs-utils';
+import type { UserSession } from '../../www/client-core/src/bs-utils';
 import { isAdmin } from "../auth";
 var crypto = require('crypto');
 

@@ -1,6 +1,6 @@
 import {
 	throwError, FIELD_TYPE, PRIVILEGES_MASK, assert, RecId, RecordDataWrite, VIEW_MASK, RecordSubmitResult
-} from "../www/src/bs-utils";
+} from "../www/client-core/src/bs-utils";
 
 const axios = require('axios')
 const captchaRequestConfig = {

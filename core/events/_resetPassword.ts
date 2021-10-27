@@ -1,7 +1,7 @@
 import { getServerHref, mail_utf8 } from "../auth";
 import { L } from "../locale";
 import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
-import { NODE_ID, RecordDataWrite } from "../../www/src/bs-utils";
+import { NODE_ID, RecordDataWrite } from "../../www/client-core/src/bs-utils";
 import { UserSession } from "../auth";
 import { randomBytes } from "crypto";
 

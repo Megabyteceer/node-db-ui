@@ -2,7 +2,7 @@
 import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "../mysql-connection";
 import { shouldBeAdmin } from "../admin/admin";
 import { NodeEventsHandlers, reloadMetadataSchedule } from "../describe-node";
-import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, NODE_TYPE } from "../../www/src/bs-utils";
+import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, NODE_TYPE } from "../../www/client-core/src/bs-utils";
 import { L } from "../locale";
 
 const handlers: NodeEventsHandlers = {

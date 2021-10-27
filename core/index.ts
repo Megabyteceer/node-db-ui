@@ -5,14 +5,14 @@ import { initNodesData } from './describe-node';
 
 import './locale';
 import { mysqlDebug } from "./mysql-connection";
-import { ROLE_ID } from "../www/src/bs-utils";
+import { ROLE_ID } from "../www/client-core/src/bs-utils";
 
 import "../www/src/locales/en/lang-server";
 import "../www/src/locales/ru/lang-server";
 
 /// #if DEBUG
 import { performance } from 'perf_hooks';
-import { DPromise } from "../www/src/debug-promise";
+import { DPromise } from "../www/client-core/src/debug-promise";
 import ENV from './ENV';
 //@ts-ignore
 global.Promise = DPromise;

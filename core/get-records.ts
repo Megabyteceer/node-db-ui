@@ -1,6 +1,6 @@
 import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHandlersNames, filtersById } from './describe-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
-import { throwError, assert, PRIVILEGES_MASK, FIELD_TYPE, RecordData, RecordsData, RecId, VIEW_MASK } from "../www/src/bs-utils";
+import { throwError, assert, PRIVILEGES_MASK, FIELD_TYPE, RecordData, RecordsData, RecId, VIEW_MASK } from "../www/client-core/src/bs-utils";
 import { UserSession } from './auth';
 
 const isASCII = (str) => {

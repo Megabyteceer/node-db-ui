@@ -1,7 +1,7 @@
 import ENV from "./ENV";
 import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "./mysql-connection";
 import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from "./describe-node";
-import { throwError, NODE_ID, assert, UserLangEntry, UserRoles, UserSession, ROLE_ID, RecId } from "../www/src/bs-utils";
+import { throwError, NODE_ID, assert, UserLangEntry, UserRoles, UserSession, ROLE_ID, RecId } from "../www/client-core/src/bs-utils";
 import { pbkdf2, randomBytes } from "crypto";
 import { L } from "./locale";
 import { submitRecord } from "./submit";

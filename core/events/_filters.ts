@@ -1,5 +1,5 @@
 import { reloadMetadataSchedule } from "../describe-node";
-import { RecordData, RecordDataWrite, UserSession } from "../../www/src/bs-utils";
+import { RecordData, RecordDataWrite, UserSession } from "../../www/client-core/src/bs-utils";
 
 export default {
 

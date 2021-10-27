@@ -1,5 +1,5 @@
 
-import { assert, IMAGE_THUMBNAIL_PREFIX, throwError } from "../www/src/bs-utils";
+import { assert, IMAGE_THUMBNAIL_PREFIX, throwError } from "../www/client-core/src/bs-utils";
 
 import { join } from "path";
 import * as fs from "fs";

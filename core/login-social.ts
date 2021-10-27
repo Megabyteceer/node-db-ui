@@ -1,7 +1,7 @@
 
 import { OAuth2Client } from 'google-auth-library';
 import ENV from "./ENV";
-import { throwError, UserSession } from "../www/src/bs-utils";
+import { throwError, UserSession } from "../www/client-core/src/bs-utils";
 import { authorizeUserByID, createUser } from './auth';
 import { L } from "./locale";
 import { mysqlExec, mysqlRowsResult } from './mysql-connection';

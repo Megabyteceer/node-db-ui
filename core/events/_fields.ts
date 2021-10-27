@@ -6,7 +6,7 @@ import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } fro
 import { getRecords } from "../get-records";
 import { submitRecord } from "../submit";
 import { L } from "../locale";
-import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, FIELD_ID } from "../../www/src/bs-utils";
+import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, FIELD_ID } from "../../www/client-core/src/bs-utils";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {

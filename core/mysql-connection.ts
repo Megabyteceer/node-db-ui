@@ -1,6 +1,6 @@
 
 /// #if DEBUG
-import { assert, getCurrentStack } from "../www/src/bs-utils";
+import { assert, getCurrentStack } from "../www/client-core/src/bs-utils";
 import { performance } from 'perf_hooks';
 /// #endif
 

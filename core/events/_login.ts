@@ -2,7 +2,7 @@ import { authorizeUserByID, getPasswordHash } from "../auth";
 import { L } from "../locale";
 import { mysqlExec, mysqlRowResultSingle } from "../mysql-connection";
 import { NodeEventsHandlers } from "../describe-node"
-import { RecordDataWrite, throwError, UserSession } from "../../www/src/bs-utils";
+import { RecordDataWrite, throwError, UserSession } from "../../www/client-core/src/bs-utils";
 import { loginWithGoogle } from "../login-social";
 
 const handlers: NodeEventsHandlers = {

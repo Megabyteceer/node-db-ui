@@ -9,7 +9,7 @@ import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import ENV from "./ENV";
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession, usersSessionsStartedCount } from "./auth";
-import { throwError, assert, FIELD_TYPE, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK, ROLE_ID, NODE_ID, NODE_TYPE } from "../www/src/bs-utils";
+import { throwError, assert, FIELD_TYPE, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK, ROLE_ID, NODE_ID, NODE_TYPE } from "../www/client-core/src/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 

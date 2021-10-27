@@ -1,3 +1,5 @@
+move client src to client-core folder
+
 
 Все папки и конфиги круда симлинками
 Prod and release bundles in same config?

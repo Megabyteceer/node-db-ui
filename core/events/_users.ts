@@ -2,7 +2,7 @@
 import { mysqlExec } from "../mysql-connection";
 import { generateSalt, getPasswordHash, isAdmin } from "../auth";
 import { submitRecord } from "../submit";
-import { NODE_ID } from "../../www/src/bs-utils";
+import { NODE_ID } from "../../www/client-core/src/bs-utils";
 
 async function clearUserParams(data, currentData, userSession) {
 	if(!isAdmin(userSession)) {

@@ -2,7 +2,7 @@
 import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../describe-node";
 import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 
-import { USER_ID, throwError } from "../../www/src/bs-utils";
+import { USER_ID, throwError } from "../../www/client-core/src/bs-utils";
 import { join } from "path";
 import { readFileSync, writeFileSync } from "fs";
 import { isAdmin } from "../auth.js";
