@@ -238,7 +238,7 @@ async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecI
 
 	const wheresBegin = [' FROM ', tables, ' WHERE '];
 	if(hiPriorityFilter) {
-		wheresBegin.push(hiPriorityFilter);
+		wheresBegin.push.apply(wheresBegin, hiPriorityFilter);
 	}
 
 
