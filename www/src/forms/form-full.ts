@@ -457,13 +457,15 @@ class FormFull extends FormEventProcessingMixins {
 				}, renderIcon('trash'), this.isSubForm() ? '' : L('DELETE'));
 			}
 
+			const saveButtonLabel = node.storeForms ? (this.isSubForm() ? '' : (this.saveButtonTitle || L('SAVE'))) : node.matchName;
+
 			if(this.props.editable) {
 				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.privileges & PRIVILEGES_MASK.PUBLISH)) {
-					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: node.storeForms ? L('SAVE') : node.matchName }, this.isSubForm() ? renderIcon('check') : renderIcon(node.storeForms ? 'floppy-o' : node.icon), node.storeForms ? (this.isSubForm() ? '' : (this.saveButtonTitle || L('SAVE'))) : node.matchName);
+					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: saveButtonLabel }, this.isSubForm() ? renderIcon('check') : renderIcon(node.storeForms ? 'floppy-o' : node.icon), saveButtonLabel);
 				} else {
 					if(data.status === 1) {
 						draftButton = R.button({ className: isRestricted ? 'clickable default-button restricted' : 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
-						saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick }, L('SAVE'));
+						saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick }, saveButtonLabel);
 					} else {
 						draftButton = R.button({ className: 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('SAVE_TEMPLATE') }, L('SAVE_TEMPLATE'));
 						saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('PUBLISH') }, L('PUBLISH'));

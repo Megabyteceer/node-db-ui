@@ -7,7 +7,6 @@ import { performance } from 'perf_hooks';
 import ENV from "../ENV";
 import * as mysql from 'mysql2';
 
-
 const pool = mysql.createPool({
 	user: ENV.DB_USER,
 	database: ENV.DB_NAME,
