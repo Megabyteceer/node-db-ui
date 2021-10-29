@@ -6,7 +6,6 @@ import "../css/consts.css";
 import "../css/style.css";
 import "../css/debug-style.css";
 import "../css/animations.css";
-import "../src/views/view_5_users.css";
 
 import { MainFrame } from "./main-frame";
 import "./fields/field-1-text-default";

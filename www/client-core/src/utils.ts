@@ -236,7 +236,9 @@ function handleAdditionalData(data, url) {
 	if(data.hasOwnProperty('debug') && data.debug) {
 		/// #if DEBUG
 		data.debug.request = url;
-		DebugPanel.instance.addEntry(data.debug);
+		if(DebugPanel.instance) {
+			DebugPanel.instance.addEntry(data.debug);
+		}
 		/// #endif
 		delete data.debug;
 	}
@@ -799,7 +801,7 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 			params = {};
 		}
 
-		params.sessionToken = User.sessionToken;
+		params.sessionToken = getSessionToken();
 
 		__requestsOrder.push(requestRecord);
 
@@ -888,7 +890,7 @@ function serializeForm(form): FormData {
 			formData.append(tag.name, file);
 		});
 	});
-	formData.append('sessionToken', User.sessionToken);
+	formData.append('sessionToken', getSessionToken());
 	var params = $(obj).serializeArray();
 	$.each(params, (i, val) => {
 		formData.append(val.name, val.value);
@@ -903,8 +905,8 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 
 	let body: FormData;
 	if(!noProcessData) {
-		if(User.sessionToken) {
-			dataToSend.sessionToken = User.sessionToken;
+		if(getSessionToken()) {
+			dataToSend.sessionToken = getSessionToken();
 		}
 		body = JSON.stringify(dataToSend) as unknown as FormData;
 	} else {
@@ -1242,7 +1244,12 @@ function getListRenderer(nodeId: RecId): (this: List) => React.ReactNode {
 	return listRenderers[nodeId];
 }
 
+function getSessionToken() {
+	return getItem('cud-js-session-token');
+}
+
 export {
+	getSessionToken,
 	onNewUser,
 	registerListRenderer,
 	isPresentListRenderer,
@@ -1301,5 +1308,6 @@ export {
 	isRecordRestrictedForDeletion,
 	reloadLocation,
 	assignFilters,
-	getCaptchaToken
+	getCaptchaToken,
+	__corePath
 }

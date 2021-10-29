@@ -45,7 +45,6 @@ class User extends Component<any, any> {
 
 	static setUserData(data: UserSession) {
 		User.currentUserData = data;
-		User.sessionToken = data.sessionToken;
 		setItem('cud-js-session-token', User.sessionToken);
 		MainFrame.instance.reloadOptions();
 	}
@@ -142,6 +141,5 @@ class User extends Component<any, any> {
 /** @type User */
 User.instance = null;
 User.currentUserData = null;
-User.sessionToken = getItem('cud-js-session-token');
 
 export { iAdmin, User };

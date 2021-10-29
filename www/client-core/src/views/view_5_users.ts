@@ -1,3 +1,4 @@
+import "./view_5_users.css";
 import { R } from "../r";
 import { renderItemsButtons } from "../forms/form-list-item";
 import { idToImgURL, registerListRenderer, renderIcon } from "../utils";

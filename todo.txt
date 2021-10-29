@@ -1,13 +1,17 @@
-move client src to client-core folder
+выбор фильтров с прочерком. Показывать по умолчанию 
 
+прокликать все кнопки меню.
 
-Все папки и конфиги круда симлинками
+проверить сколько тянет в бандл рисовалки
+
 Prod and release bundles in same config?
 
 no inline css and dontawesome
 
 
 портировать Linemaster
+
+check png export
 
 кастомные Переводы.
 
@@ -18,6 +22,8 @@ no inline css and dontawesome
 проверить просить вход если ответ нет прав и юзер гость  <access>
 
 Linemaster list. render items one by one with delay
+
+проверить логин гугла
 
 Deploy data for _tables by default
 
