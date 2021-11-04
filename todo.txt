@@ -1,35 +1,18 @@
 
- 
-кастомные евент хендлеры в добавок имеющимся
-lm_drawings_onLoad lm_drawings_onAfterSave переместить в кастомные хендлеры
-
-
 Do not push same history items and pop history on login until non login reset remind item.
-
-ENV enforce login option
-
-save/load image from data
 
 login to save
 
-
 превью тянет в админку события мыши из рисовалки
-
-проверить сколько тянет в бандл рисовалки
 
 
 add custom gif cursors with disable option
 
 
+
 Prod and release bundles in same config?
 
 no inline css and fontawesome
-
-
-
-портировать Linemaster
-
-check png export
 
 проверить обработку и показ ошибок в релизном билде клиента и бека.
 
@@ -38,6 +21,12 @@ check png export
 Linemaster list. render items one by one with delay
 
 проверить логин гугла
+
+
+
+ENV enforce login option
+
+кнопки перехода к евент хендлерам не подсвечены зеленым в List
 
 Deploy data for _tables by default
 

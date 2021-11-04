@@ -402,6 +402,11 @@ function hashToFormParams(hashTxt: string): IFormParameters {
 	return { recId, nodeId, editable, filters };
 }
 
+function getTopHashNodeId() {
+	let hash = window.location.hash.substr(1);
+	return hashToFormParams(hash.split(HASH_DIVIDER).pop()).nodeId;
+}
+
 async function goToPageByHash() {
 	const isPageLoading = !_oneFormShowed;
 
@@ -449,7 +454,12 @@ async function goToPageByHash() {
 };
 
 
-function goBack(isAfterDelete?: boolean) {
+const SKIP_HISTORY_NODES = {};
+SKIP_HISTORY_NODES[NODE_ID.LOGIN] = true;
+SKIP_HISTORY_NODES[NODE_ID.REGISTER] = true;
+SKIP_HISTORY_NODES[NODE_ID.RESET] = true;
+
+async function goBack(isAfterDelete?: boolean) {
 	const currentFormParameters = window.crudJs.Stage.currentForm;
 
 	if(isLitePage() && window.history.length < 2) {
@@ -458,6 +468,7 @@ function goBack(isAfterDelete?: boolean) {
 
 		if(window.history.length > 0) {
 			isHistoryChanging = true;
+			goBackUntilValidNode = true;
 			window.history.back();
 			isHistoryChanging = false;
 		} else {
@@ -488,6 +499,7 @@ function assignFilters(src, desc): boolean {
 
 
 let isHistoryChanging = false;
+let goBackUntilValidNode = false;
 
 function updateHashLocation(replaceState = false) {
 	if(isHistoryChanging) {
@@ -509,6 +521,12 @@ function updateHashLocation(replaceState = false) {
 }
 
 $(window).on('hashchange', () => {
+	if(goBackUntilValidNode && SKIP_HISTORY_NODES[getTopHashNodeId()]) {
+		goBack();
+		return;
+	} else {
+		goBackUntilValidNode = false;
+	}
 	isHistoryChanging = true;
 	goToPageByHash();
 	isHistoryChanging = false;
@@ -1125,7 +1143,7 @@ function openIndexedDB() {
 	return openDB;
 }
 
-function getStoreIndexedDB(openDB) {
+function getStoreIndexedDB(openDB: IDBOpenDBRequest) {
 	var db: any = {};
 	db.result = openDB.result;
 	db.tx = db.result.transaction("MyObjectStore", "readwrite");
@@ -1168,6 +1186,15 @@ async function loadIndexedDB(filename: string): Promise<any> {
 			}
 		};
 	});
+}
+
+async function deleteIndexedDB(filename: string): Promise<any> {
+	var openDB = openIndexedDB();
+	openDB.onsuccess = function () {
+		var db = getStoreIndexedDB(openDB);
+		db.store.delete(filename);
+	};
+	return true;
 }
 
 function keepInWindow(body) {
@@ -1381,5 +1408,6 @@ export {
 	saveIndexedDB,
 	loadIndexedDB,
 	isDBWriteInProgress,
-	goToHome
+	goToHome,
+	deleteIndexedDB
 }

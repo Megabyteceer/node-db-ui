@@ -17,10 +17,12 @@ import("../events/fields_events").then((m) => {
 	FieldsEvents = m.FieldsEvents;
 });
 
-import("../../../src/events/forms_events_custom").then((m) => {
+//@ts-ignore
+import("/src/events/forms_events_custom").then((m) => {
 	FormEventsCustom = m.FormEventsCustom;
 });
-import("../../../src/events/fields_events_custom").then((m) => {
+//@ts-ignore
+import("/src/events/fields_events_custom").then((m) => {
 	FieldsEventsCustom = m.FieldsEventsCustom;
 });
 
@@ -76,7 +78,6 @@ class FormEventProcessingMixins extends BaseForm {
 					if(name !== 'constructor') {
 						const method = proto[name];
 						if(typeof method === 'function') {
-							assert(!FormEventProcessingMixins.prototype[name], FormEvents.name + " contains wrong method name: " + name);
 							FormEventProcessingMixins.prototype[name] = method;
 						}
 					}
@@ -377,11 +378,15 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	_getFormEventHandler(eventName: CLIENT_SIDE_FORM_EVENTS) {
-		return FormEvents.prototype[this.props.node.tableName + '_' + eventName];
+		let name = this.props.node.tableName + '_' + eventName;
+		let ret = [FormEvents.prototype[name], FormEventsCustom.prototype[name]].filter(i => i);
+		return ret.length > 0 && ret;
 	}
 
 	_getFieldEventHandler(field: FieldDesc) {
-		return FieldsEvents.prototype[this.props.node.tableName + '_' + field.fieldName + '_' + CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE];
+		let name = this.props.node.tableName + '_' + field.fieldName + '_' + CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE;
+		let ret = [FieldsEvents.prototype, FieldsEventsCustom.prototype].filter(i => i.hasOwnProperty(name)).map(i => i[name]);
+		return ret.length > 0 && ret;
 	}
 
 	processFieldEvent(field: FieldDesc, isUserAction?: boolean, prev_val?) {
@@ -393,20 +398,24 @@ class FormEventProcessingMixins extends BaseForm {
 		return this.processEvent(this._getFormEventHandler(eventName), undefined, undefined, arg);
 	}
 
-	processEvent(handler, isUserAction = false, prev_val = undefined, arg?: any) {
-		if(handler) {
-			this.prev_value = prev_val;
-			this.recId = this.props.initialData.id || 'new';
-			this.isUpdateRecord = this.props.editable;
-			if(this.isUpdateRecord) {
-				this.isNewRecord = !this.props.initialData.hasOwnProperty('id');
-				if(this.isNewRecord) {
-					this.isUpdateRecord = false;
+	async processEvent(handlers, isUserAction = false, prev_val = undefined, arg?: any) {
+		var ret;
+		if(handlers) {
+			for(var handler of handlers) {
+				this.prev_value = prev_val;
+				this.recId = this.props.initialData.id || 'new';
+				this.isUpdateRecord = this.props.editable;
+				if(this.isUpdateRecord) {
+					this.isNewRecord = !this.props.initialData.hasOwnProperty('id');
+					if(this.isNewRecord) {
+						this.isUpdateRecord = false;
+					}
 				}
+				this.isUserEdit = isUserAction;
+				ret = (await handler.call(this, arg)) || ret;
 			}
-			this.isUserEdit = isUserAction;
-			return handler.call(this, arg);
 		}
+		return ret;
 	}
 }
 
