@@ -4,7 +4,7 @@ import { List } from "../forms/list";
 import { assignFilters, deleteRecord, L } from "../utils";
 import { registerFieldClass } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
-import { FIELD_TYPE, Filters, RecId, RecordData, RecordsData } from "../bs-utils";
+import { FIELD_TYPE, Filters, RecId, RecordData, RecordsData, VIEW_MASK } from "../bs-utils";
 
 class LookupOneToManyFiled extends fieldLookupMixins {
 
@@ -125,8 +125,8 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 				noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton,
 				disableDrafting: this.state.disableDrafting,
 				additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
-				isLookup: true,
 				initialData,
+				viewMask: VIEW_MASK.SUB_FORM,
 				preventCreateButton: this.state.preventCreateButton,
 				askToSaveParentBeforeCreation,
 				editable: this.state.inlineEditing,

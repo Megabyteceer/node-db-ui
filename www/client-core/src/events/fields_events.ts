@@ -146,6 +146,17 @@ class FieldsEvents extends FormEvents {
 		this.setFieldValue("show", shv);
 	}
 
+	_fields_visibility_subFormList_onChange() {
+		var shv = this.fieldValue("show");
+		if(this.fieldValue("visibility_subFormList")) {
+			shv |= VIEW_MASK.SUB_FORM;
+		} else {
+			shv &= (VIEW_MASK.ALL - VIEW_MASK.SUB_FORM);
+		}
+
+		this.setFieldValue("show", shv);
+	}
+
 	_fields_nodeRef_onChange() {
 		this.check12nFieldName();
 	}
@@ -186,6 +197,7 @@ class FieldsEvents extends FormEvents {
 		this.enableField("visibility_list");
 		this.enableField("visibility_customList");
 		this.enableField("visibility_dropdownList");
+		this.enableField("visibility_subFormList");
 		this.enableField("storeInDB");
 		this.enableField("sendToServer");
 		this.enableField('unique');
@@ -217,6 +229,8 @@ class FieldsEvents extends FormEvents {
 				this.setFieldValue("visibility_customList", 0);
 				this.disableField("visibility_dropdownList");
 				this.setFieldValue("visibility_dropdownList", 0);
+				this.disableField("visibility_subFormList");
+				this.setFieldValue("visibility_subFormList", 0);
 
 				this.disableField("sendToServer");
 				this.setFieldValue('sendToServer', 1);

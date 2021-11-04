@@ -1,5 +1,5 @@
 import { R } from "../r";
-import { FIELD_TYPE, PRIVILEGES_MASK, RecordsData } from "../bs-utils";
+import { FIELD_TYPE, PRIVILEGES_MASK, RecordsData, VIEW_MASK } from "../bs-utils";
 import { FieldAdmin } from "../admin/field-admin";
 import { NodeAdmin } from "../admin/node-admin";
 import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
@@ -48,6 +48,7 @@ interface ListState extends Omit<FormState, 'data'> {
 	hideControls?: boolean;
 	noPreviewButton?: boolean;
 	data: RecordsData;
+	viewMask: VIEW_MASK;
 }
 
 class List extends BaseForm<ListProps, ListState> {
@@ -65,6 +66,8 @@ class List extends BaseForm<ListProps, ListState> {
 		this.state.node = props.node;
 		//@ts-ignore
 		this.state.data = props.initialData;
+		//@ts-ignore
+		this.state.viewMask = this.props.viewMask || (this.props.isLookup ? VIEW_MASK.DROPDOWN_LIST : VIEW_MASK.LIST);
 		this.refreshData = this.refreshData.bind(this);
 		this.changeSearch = this.changeSearch.bind(this);
 		this.subFormRef = this.subFormRef.bind(this);
@@ -117,11 +120,7 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	isFieldVisibleByFormViewMask(field) {
-		if(this.props.isLookup) {
-			return field.show & 8;
-		} else {
-			return field.show & 2;
-		}
+		return field.show & this.state.viewMask;
 	}
 
 	async refreshData() {
@@ -136,7 +135,7 @@ class List extends BaseForm<ListProps, ListState> {
 				this.filters.p = '*';
 			}
 
-			let data = await getNodeData(nodeIdToFetch, undefined, this.filters, this.props.editable, this.props.isLookup, this.isCustomListRendering());
+			let data = await getNodeData(nodeIdToFetch, undefined, this.filters, this.props.editable, this.state.viewMask, this.isCustomListRendering());
 
 			if(this.unmounted) {
 				return;
@@ -496,7 +495,7 @@ class List extends BaseForm<ListProps, ListState> {
 				var hideControls = this.props.hideControls || this.state.hideControls || (this.props.filters && this.props.filters.hideControls);
 
 				var lines = data.items.map((item) => {
-					return React.createElement(FormListItem, { key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, parentForm: this.props.parentForm, additionalButtons, hideControls: hideControls, isLookup: this.props.isLookup, list: this, node, initialData: item });
+					return React.createElement(FormListItem, { key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, viewMask: this.state.viewMask, parentForm: this.props.parentForm, additionalButtons, hideControls: hideControls, isLookup: this.props.isLookup, list: this, node, initialData: item });
 				});
 
 				body = R.table({ className: 'list-table' },

@@ -4,11 +4,12 @@ window.jQuery = jQuery;
 window.$ = jQuery;
 
 import type { LANG_KEYS } from "./locales/en/lang";
+import type { LANG_KEYS_CUSTOM } from "../../src/locales/en/lang";
 
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
-import { assert, FieldDesc, FIELD_TYPE, GetRecordsParams, HASH_DIVIDER, NODE_ID, RecordSubmitResult, ROLE_ID } from "./bs-utils";
+import { assert, FieldDesc, FIELD_TYPE, GetRecordsParams, HASH_DIVIDER, NODE_ID, RecordSubmitResult, ROLE_ID, VIEW_MASK } from "./bs-utils";
 import type { Filters, IFormParameters, NodeDesc, RecId, RecordData, RecordsData } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
@@ -283,11 +284,7 @@ function toReadableTime(d) {
 
 
 function goToHome() {
-	if(typeof (ENV.HOME_NODE) !== 'undefined') {
-		window.crudJs.Stage.showForm(ENV.HOME_NODE);
-	} else {
-		location.href = '/';
-	}
+	location.href = '/';
 }
 
 function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, editable?: boolean) {
@@ -525,6 +522,8 @@ function onNewUser() {
 	nodesRequested = {};
 }
 
+onNewUser();
+
 function waitForNodeInner(nodeId, callback) {
 	if(nodes.hasOwnProperty(nodeId)) {
 		callback(nodes[nodeId]);
@@ -608,9 +607,9 @@ function normalizeNode(node: NodeDesc) {
 	}
 }
 
-async function getNodeData(nodeId: RecId, recId: undefined, filters?: { [key: string]: any }, editable?: boolean, isForRefList?: boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordsData>;
-async function getNodeData(nodeId: RecId, recId: RecId, filters?: undefined, editable?: boolean, isForRefList?: boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordData>;
-async function getNodeData(nodeId: RecId, recId: RecId | undefined, filters?: undefined, editable?: boolean, isForRefList?: boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordData | RecordsData> {
+async function getNodeData(nodeId: RecId, recId: undefined, filters?: { [key: string]: any }, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordsData>;
+async function getNodeData(nodeId: RecId, recId: RecId, filters?: undefined, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordData>;
+async function getNodeData(nodeId: RecId, recId: RecId | undefined, filters?: undefined, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordData | RecordsData> {
 
 	/// #if DEBUG
 	if(typeof (recId) !== 'undefined' && typeof (filters) !== 'undefined') {
@@ -625,20 +624,20 @@ async function getNodeData(nodeId: RecId, recId: RecId | undefined, filters?: un
 	if(typeof (recId) !== 'undefined') {
 		params.recId = recId;
 		if(editable) {
-			params.viewFields = 1;
+			params.viewFields = VIEW_MASK.EDITABLE;
 		} else {
-			params.viewFields = 4
+			params.viewFields = VIEW_MASK.READONLY;
 		}
 	} else {
 		if(editable) {
-			params.viewFields = 1;
+			params.viewFields = VIEW_MASK.EDITABLE;
 		} else {
-			if(isForRefList) {
-				params.viewFields = 8;
+			if(typeof viewMask === 'number') {
+				params.viewFields = viewMask;
 			} else if(isForCustomList) {
-				params.viewFields = 16;
+				params.viewFields = VIEW_MASK.CUSTOM_LIST;
 			} else {
-				params.viewFields = 2;
+				params.viewFields = VIEW_MASK.LIST;
 			}
 		}
 	}
@@ -898,6 +897,16 @@ function serializeForm(form): FormData {
 	return formData;
 }
 
+var requestsInProgress = 0;
+
+window.addEventListener("beforeunload", function (e) {
+	if(requestsInProgress) {
+		var confirmationMessage = L("DATA_NOT_SAVED");
+		(e || window.event).returnValue = confirmationMessage;
+		return confirmationMessage;
+	}
+});
+
 function submitData(url: string, dataToSend: FormData, noProcessData): Promise<any>;
 function submitData(url: string, dataToSend: any): Promise<any>;
 function submitData(url: string, dataToSend: any, noProcessData?: boolean): Promise<any> {
@@ -921,6 +930,7 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 	if(!noProcessData) {
 		options.headers = headersJSON;
 	}
+	requestsInProgress++;
 	return fetch(__corePath + url, options)
 		.then((res) => {
 			return res.json();
@@ -945,6 +955,7 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 		})
 		//*/
 		.finally(() => {
+			requestsInProgress--;
 			LoadingIndicator.instance.hide();
 		})
 }
@@ -1102,6 +1113,63 @@ function removeItem(name) {
 	}
 }
 
+
+function openIndexedDB() {
+	var indexedDB = window.indexedDB;
+	var openDB = indexedDB.open("MyDatabase", 1);
+	openDB.onupgradeneeded = function () {
+		var db: any = {};
+		db.result = openDB.result;
+		db.store = db.result.createObjectStore("MyObjectStore", { keyPath: "id" });
+	};
+	return openDB;
+}
+
+function getStoreIndexedDB(openDB) {
+	var db: any = {};
+	db.result = openDB.result;
+	db.tx = db.result.transaction("MyObjectStore", "readwrite");
+	db.store = db.tx.objectStore("MyObjectStore");
+	return db;
+}
+
+var dbWriteInProgress;
+
+function saveIndexedDB(filename: string, fileData: any) {
+	dbWriteInProgress = true;
+	var openDB = openIndexedDB();
+	openDB.onsuccess = function () {
+		dbWriteInProgress = false;
+		var db = getStoreIndexedDB(openDB);
+		db.store.put({ id: filename, data: fileData });
+	};
+	return true;
+}
+
+function isDBWriteInProgress() {
+	return dbWriteInProgress;
+}
+
+async function loadIndexedDB(filename: string): Promise<any> {
+	return new Promise((resolve) => {
+		var openDB = openIndexedDB();
+		openDB.onsuccess = function () {
+			var db = getStoreIndexedDB(openDB);
+
+			var getData;
+			if(filename) {
+				getData = db.store.get(filename);
+				getData.onsuccess = function () {
+					resolve(getData.result && getData.result.data);
+				};
+				db.tx.oncomplete = function () {
+					db.result.close();
+				};
+			}
+		};
+	});
+}
+
 function keepInWindow(body) {
 	if(body) {
 		body = ReactDOM.findDOMNode(body);
@@ -1213,7 +1281,7 @@ function initDictionary(o) {
 	dictionary = Object.assign(dictionary, o);
 }
 
-function L(key: LANG_KEYS, param?: any) {
+function L(key: LANG_KEYS | LANG_KEYS_CUSTOM, param?: any) {
 	if(dictionary.hasOwnProperty(key)) {
 		if(typeof (param) !== 'undefined') {
 			return dictionary[key].replace('%', param);
@@ -1309,5 +1377,9 @@ export {
 	reloadLocation,
 	assignFilters,
 	getCaptchaToken,
-	__corePath
+	__corePath,
+	saveIndexedDB,
+	loadIndexedDB,
+	isDBWriteInProgress,
+	goToHome
 }

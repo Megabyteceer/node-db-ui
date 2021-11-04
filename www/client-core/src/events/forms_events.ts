@@ -253,6 +253,7 @@ class FormEvents extends FormFull {
 				this.setFieldValue("visibility_view", 1);
 				this.setFieldValue("visibility_list", 1);
 				this.setFieldValue("visibility_dropdownList", 0);
+				this.setFieldValue("visibility_subFormList", 1);
 
 				this.setFieldValue("sendToServer", 1);
 				this.setFieldValue("storeInDB", 1);
@@ -282,6 +283,11 @@ class FormEvents extends FormFull {
 				this.setFieldValue("visibility_dropdownList", 1)
 			else
 				this.setFieldValue("visibility_dropdownList", 0);
+
+			if(this.fieldValue("show") & VIEW_MASK.SUB_FORM)
+				this.setFieldValue("visibility_subFormList", 1)
+			else
+				this.setFieldValue("visibility_subFormList", 0);
 
 			if(this.fieldValue("show") & VIEW_MASK.CUSTOM_LIST)
 				this.setFieldValue("visibility_customList", 1)

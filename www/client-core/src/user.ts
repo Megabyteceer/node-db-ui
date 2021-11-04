@@ -21,7 +21,7 @@ function iAdmin() {
 }
 
 class User extends Component<any, any> {
-	static sessionToken: string;
+
 	static instance: User;
 	static currentUserData: UserSession;
 
@@ -33,19 +33,21 @@ class User extends Component<any, any> {
 		getData('api/getMe').then((data) => {
 			data.lang.code = data.lang.code || 'en';
 			moment.locale(data.lang.code);
-			import(`./locales/${data.lang.code}/lang.ts`)
-				.then(() => {
-					if(User.instance) {
-						User.instance.forceUpdate();
-					}
-					User.setUserData(data);
-				})
+			Promise.all([
+				import(`./locales/${data.lang.code}/lang.ts`),
+				import(`/src/locales/${data.lang.code}/lang.ts`)
+			]).then(() => {
+				if(User.instance) {
+					User.instance.forceUpdate();
+				}
+				User.setUserData(data);
+			})
 		});
 	}
 
 	static setUserData(data: UserSession) {
 		User.currentUserData = data;
-		setItem('cud-js-session-token', User.sessionToken);
+		setItem('cud-js-session-token', data.sessionToken);
 		MainFrame.instance.reloadOptions();
 	}
 

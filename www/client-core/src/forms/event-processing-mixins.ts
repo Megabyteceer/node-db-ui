@@ -7,6 +7,8 @@ import React from "react";
 
 let FormEvents;
 let FieldsEvents;
+let FormEventsCustom;
+let FieldsEventsCustom;
 
 import("../events/forms_events").then((m) => {
 	FormEvents = m.FormEvents;
@@ -14,6 +16,14 @@ import("../events/forms_events").then((m) => {
 import("../events/fields_events").then((m) => {
 	FieldsEvents = m.FieldsEvents;
 });
+
+import("../../../src/events/forms_events_custom").then((m) => {
+	FormEventsCustom = m.FormEventsCustom;
+});
+import("../../../src/events/fields_events_custom").then((m) => {
+	FieldsEventsCustom = m.FieldsEventsCustom;
+});
+
 
 let isHandlersInitialized;
 
@@ -59,7 +69,7 @@ class FormEventProcessingMixins extends BaseForm {
 
 		if(!isHandlersInitialized) {
 
-			for(let h of [FormEvents, FieldsEvents]) {
+			for(let h of [FormEvents, FieldsEvents, FormEventsCustom, FieldsEventsCustom]) {
 				const proto = h.prototype;
 				const names = Object.getOwnPropertyNames(proto);
 				for(let name of names) {

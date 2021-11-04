@@ -4,6 +4,7 @@ import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 
 import { USER_ID, throwError } from "../../www/client-core/src/bs-utils";
 import { join } from "path";
+import * as fs from "fs";
 import { readFileSync, writeFileSync } from "fs";
 import { isAdmin } from "../auth.js";
 const { exec } = require('child_process');
@@ -102,9 +103,11 @@ async function getClientEventHandler({
 	let node = getNodeDesc(nodeId);
 	if(fieldId) {
 		let field = getFieldDesc(fieldId);
-		return editFunction('../../../www/client-core/src/events/fields_events.ts', node.tableName + '_' + field.fieldName + '_' + handler, args);
+		let customPath = '../../../www/src/events/fields_events_custom.ts';
+		return editFunction(fs.existsSync(join(__dirname, customPath)) ? customPath : '../../../www/client-core/src/events/fields_events.ts', node.tableName + '_' + field.fieldName + '_' + handler, args);
 	} else {
-		return editFunction('../../../www/client-core/src/events/forms_events.ts', node.tableName + '_' + handler, args);
+		let customPath = '../../../www/src/events/forms_events_custom.ts';
+		return editFunction(fs.existsSync(join(__dirname, customPath)) ? customPath : '../../../www/client-core/src/events/forms_events.ts', node.tableName + '_' + handler, args);
 	}
 }
 

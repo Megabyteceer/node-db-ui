@@ -98,6 +98,11 @@
 	font-size: 85%;
 }
 
+.field-wrap .list-row-header .admin-form-wrap {
+	right: -23px;
+	position: relative;
+}
+
 .left-bar-group-container>.left-bar-admin-button>.admin-form-wrap {
 	height: 22px;
 }

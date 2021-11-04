@@ -234,7 +234,7 @@ registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLo
 			)
 		} else {
 			return R.span(null,
-				iconPic, value.name
+				iconPic, value && value.name
 			)
 		}
 

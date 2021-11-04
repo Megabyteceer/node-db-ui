@@ -119,11 +119,7 @@ class FormListItem extends BaseForm {
 	}
 
 	isFieldVisibleByFormViewMask(field) {
-		if(this.props.isLookup) {
-			return (field.show & 8) > 0;
-		} else {
-			return (field.show & 2) > 0;
-		}
+		return (field.show & this.props.viewMask) > 0;
 	}
 
 	render() {

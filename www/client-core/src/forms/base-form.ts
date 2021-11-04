@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { assert, BoolNum, Filters, NodeDesc, RecId, RecordData, throwError } from "../bs-utils";
+import { assert, BoolNum, Filters, NodeDesc, RecId, RecordData, throwError, VIEW_MASK } from "../bs-utils";
 import { LookupOneToManyFiled } from "../fields/field-15-one-to-many";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import type { FieldWrap } from "../fields/field-wrap";
@@ -18,6 +18,7 @@ interface FormProps {
 	nodeId: RecId;
 	recId: RecId;
 	isLookup?: boolean;
+	viewMask?: VIEW_MASK;
 	editable?: boolean;
 	isCompact?: boolean;
 	inlineEditable?: boolean;

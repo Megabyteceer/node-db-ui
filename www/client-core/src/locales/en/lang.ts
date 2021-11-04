@@ -105,7 +105,8 @@ const LANGS = {
 	'REGISTER': 'Register',
 	'REACT_CLASS_NAME': 'React Class Name',
 	'FORM_IS_MODIFIED': 'Current data in the form is modified!',
-	'LEAVE_WITHOUT_SAVING': 'Leave form without saving.'
+	'LEAVE_WITHOUT_SAVING': 'Leave form without saving.',
+	'DATA_NOT_SAVED': 'Page contains modified data.'
 };
 
 initDictionary(LANGS);
