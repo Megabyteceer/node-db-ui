@@ -70,14 +70,18 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				ret.recPerPage = srcNode.recPerPage;
 				ret.defaultFilterId = srcNode.defaultFilterId;
 
-				let order = 0;
 				for(let id in srcNode.filters) {
+					const filter = srcNode.filters[id];
+					if(filter.roles) {
+						if(!filter.roles.find(roleId => isUserHaveRole(roleId, userSession))) {
+							continue;
+						}
+					}
 					if(!ret.filters) {
 						ret.filters = {};
 					}
-					const filter = srcNode.filters[id];
 					ret.filters[id] = {
-						order: order++,
+						order: filter.order,
 						name: filter['name' + userSession.lang.prefix]
 					};
 				}
@@ -290,10 +294,14 @@ async function initNodesData() { // load whole nodes data in to memory
 				fields_new.set(field.id, field);
 			}
 			nodeData.fields = fields;
-			const filtersRes = await mysqlExec("SELECT * FROM _filters WHERE status = 1 AND node_filters_linker=" + nodeData.id) as mysqlRowsResult;
+			const filtersRes = await mysqlExec("SELECT * FROM _filters WHERE status = 1 AND node_filters_linker=" + nodeData.id + " ORDER BY `order`") as mysqlRowsResult;
 
 			const filters = {};
 			for(let f of filtersRes) {
+				let filterRoles = await mysqlExec("SELECT _rolesId FROM _filter_access_roles WHERE _filtersId=" + f.id) as mysqlRowsResult;
+				if(filterRoles.length > 0) {
+					f.roles = filterRoles.map(i => i._rolesId);
+				}
 				filtersById.set(f.id, f);
 				filters[f.id] = f;
 			}

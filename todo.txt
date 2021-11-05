@@ -1,9 +1,6 @@
-filters roles add
-
 
 hide left menu if one non section item only
 
-filter priority property to reorder filters
 
 login to save
 

@@ -931,6 +931,10 @@ input[readonly] {
 	vertical-align: middle;
 }
 
+.field-lookup-right-block {
+	white-space: nowrap;
+}
+
 .field-lookup-icon-pic-empty {
 	display: inline-block;
 	background-color: #ccc;
@@ -984,6 +988,7 @@ input[readonly] {
 
 .field-lookup-chooser {
 	display: flex;
+	box-sizing: border-box;
 	justify-content: space-between;
 	border: 1px solid #a8a8a8;
 	white-space: nowrap;

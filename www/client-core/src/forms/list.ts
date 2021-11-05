@@ -419,13 +419,8 @@ class List extends BaseForm<ListProps, ListState> {
 			}
 
 			var filtersPanel;
-			if(node.filters) {
-				var options = Object.keys(node.filters).map((k) => {
-					return { value: k, name: node.filters[k].name };
-				});
-				if(!node.defaultFilterId) {
-					options.unshift({ value: undefined, name: '-' });
-				}
+			if(node.filtersList && (node.filtersList.length > 1)) {
+				var options = node.filtersList;
 				filtersPanel = R.div({
 					className: 'filter-select'
 				}, React.createElement(Select, {

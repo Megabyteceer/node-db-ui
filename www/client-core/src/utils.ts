@@ -622,6 +622,19 @@ function normalizeNode(node: NodeDesc) {
 			}
 		});
 	}
+	if(node.filters) {
+		node.filtersList = Object.keys(node.filters).sort((a, b) => {
+			return node.filters[a].order - node.filters[b].order;
+		}).map((k) => {
+			return { value: k, name: node.filters[k].name };
+		});
+		if(node.defaultFilterId && !node.filters[node.defaultFilterId]) {
+			node.defaultFilterId = node.filtersList.length ? node.filtersList[0].value : 0;
+		}
+		if(!node.defaultFilterId) {
+			node.filtersList.unshift({ value: undefined, name: '-' });
+		}
+	}
 }
 
 async function getNodeData(nodeId: RecId, recId: undefined, filters?: { [key: string]: any }, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordsData>;

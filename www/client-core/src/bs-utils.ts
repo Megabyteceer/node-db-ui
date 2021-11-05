@@ -163,11 +163,11 @@ interface FieldDesc {
 }
 
 interface FilterDesc {
-	order: number;
+	order?: number;
 	name: string;
 	hiPriority?: BoolNum;
-	view?:string;
-	fields?:string;
+	view?: string;
+	fields?: string;
 }
 
 interface NodeDesc {
@@ -190,6 +190,7 @@ interface NodeDesc {
 	fields?: FieldDesc[];
 	cssClass?: string;
 	filters?: { [key: string]: FilterDesc };
+	filtersList?: { name: string, value: any }[];
 	sortFieldName?: string;
 	/** CLIENT SIDE ONLY */
 	fieldsById?: { [key: number]: FieldDesc };

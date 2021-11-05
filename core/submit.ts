@@ -311,7 +311,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 				qResult = (await mysqlExec(insQ.join('')));
 			}
 			/// #if DEBUG
-			else {
+			else if(!needProcess_n2m) {
 				throwError('No fields updated in submitRecord.');
 			}
 			/// #endif
@@ -329,12 +329,12 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 						if(data.hasOwnProperty(fieldName)) {
 
 							//clear all n2m links
-							await mysqlExec("DELETE FROM `" + fieldName + "` WHERE `" + tableName + "id` = " + recId);
+							await mysqlExec("DELETE FROM `" + fieldName + "` WHERE `" + tableName + "Id` = " + recId);
 							let fieldVal = data[fieldName];
 
 							if(fieldVal.length) {
 								//add new n2m links
-								const n2miQ = ['INSERT INTO `', fieldName, '` (`', tableName, 'id`, `', f.selectFieldName, "id`) VALUES"];
+								const n2miQ = ['INSERT INTO `', fieldName, '` (`', tableName, 'Id`, `', f.selectFieldName, "Id`) VALUES"];
 
 								let isNotFirst = false;
 								for(let id of fieldVal) {

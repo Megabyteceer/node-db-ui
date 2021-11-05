@@ -219,8 +219,8 @@ async function createFieldInTable(data: RecordDataWrite) {
 		data.selectFieldName = linkedNodeName;
 		data.forSearch = 1;
 
-		const fld1 = nodeName + 'id';
-		const fld2 = linkedNodeName + 'id';
+		const fld1 = nodeName + 'Id';
+		const fld2 = linkedNodeName + 'Id';
 
 		await mysqlExec(`CREATE TABLE \`${fieldName}\` (
 			id bigint(15) unsigned NOT NULL AUTO_INCREMENT,
@@ -229,8 +229,8 @@ async function createFieldInTable(data: RecordDataWrite) {
 			primary key(id),
 			INDEX(\`${fld1}\`),
 			INDEX(\`${fld2}\`),
-			FOREIGN KEY (\`${fld1}\`) REFERENCES \`${nodeName}\`(id) ON DELETE CASCADE ON UPDATE CASCADE,
-			FOREIGN KEY (\`${fld2}\`) REFERENCES \`${linkedNodeName}\`(id) ON DELETE CASCADE ON UPDATE CASCADE
+			FOREIGN KEY (\`${fld1}\`) REFERENCES \`${nodeName}\`(Id) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (\`${fld2}\`) REFERENCES \`${linkedNodeName}\`(Id) ON DELETE CASCADE ON UPDATE CASCADE
 		) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4; `);
 	} else if(data.storeInDB) {
 		if(fieldType === FIELD_TYPE.LOOKUP) {

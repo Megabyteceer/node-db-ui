@@ -55,9 +55,9 @@ async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecI
 			} else if(fieldType === FIELD_TYPE.LOOKUP_NtoM) {//n2m
 				let tblTmpName = 't' + f.id;
 				if(f.lookupIcon) {
-					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name,'␞',", f.lookupIcon, ") SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
+					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name,'␞',", f.lookupIcon, ") SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "Id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "Id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
 				} else {
-					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name) SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
+					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name) SEPARATOR '␞') AS v FROM ", selectFieldName, " AS ", tblTmpName, ", ", fieldName, " WHERE ", fieldName, ".", selectFieldName, "Id=", tblTmpName, ".id AND ", fieldName, ".", tableName, "Id=", tableName, ".id ORDER BY ", fieldName, ".id) AS `", fieldName, "`");
 				}
 			} else if(fieldType === FIELD_TYPE.LOOKUP) {//n21
 				if(f.lookupIcon) {
@@ -251,7 +251,7 @@ async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecI
 			wheresBegin.push("(", tableName, ".status = 1)");
 		}
 
-		if((privileges & PRIVILEGES_MASK.VIEW_ALL) || (filter  && filter.hiPriority) ) {
+		if((privileges & PRIVILEGES_MASK.VIEW_ALL) || (filter && filter.hiPriority)) {
 
 		} else if((privileges & PRIVILEGES_MASK.VIEW_ORG) && (userSession.orgId !== 0)) {
 			wheresBegin.push(" AND (", tableName, "._organizationID=", userSession.orgId as unknown as string, ')');
