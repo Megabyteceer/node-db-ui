@@ -1,12 +1,15 @@
+filters roles add
 
-Do not push same history items and pop history on login until non login reset remind item.
+
+hide left menu if one non section item only
+
+filter priority property to reorder filters
 
 login to save
 
-превью тянет в админку события мыши из рисовалки
-
-
 add custom gif cursors with disable option
+
+
 
 
 
@@ -18,7 +21,6 @@ no inline css and fontawesome
 
 проверить просить вход если ответ нет прав и юзер гость  <access>
 
-Linemaster list. render items one by one with delay
 
 проверить логин гугла
 

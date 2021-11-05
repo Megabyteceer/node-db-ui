@@ -5,29 +5,21 @@ import type { FieldWrap } from "../fields/field-wrap";
 import ReactDOM from "react-dom";
 import React from "react";
 
-let FormEvents;
-let FieldsEvents;
-let FormEventsCustom;
-let FieldsEventsCustom;
+let eventsHandlers = [];
 
-import("../events/forms_events").then((m) => {
-	FormEvents = m.FormEvents;
-});
-import("../events/fields_events").then((m) => {
-	FieldsEvents = m.FieldsEvents;
-});
-
-//@ts-ignore
-import("/src/events/forms_events_custom").then((m) => {
-	FormEventsCustom = m.FormEventsCustom;
-});
-//@ts-ignore
-import("/src/events/fields_events_custom").then((m) => {
-	FieldsEventsCustom = m.FieldsEventsCustom;
-});
-
-
-let isHandlersInitialized;
+function registerEventHandler(classInstance) {
+	const proto = classInstance.prototype;
+	eventsHandlers.push(proto);
+	const names = Object.getOwnPropertyNames(proto);
+	for(let name of names) {
+		if(name !== 'constructor') {
+			const method = proto[name];
+			if(typeof method === 'function') {
+				FormEventProcessingMixins.prototype[name] = method;
+			}
+		}
+	}
+}
 
 class FormEventProcessingMixins extends BaseForm {
 	/** true if form opened for new record creation */
@@ -68,24 +60,6 @@ class FormEventProcessingMixins extends BaseForm {
 
 	constructor(props) {
 		super(props);
-
-		if(!isHandlersInitialized) {
-
-			for(let h of [FormEvents, FieldsEvents, FormEventsCustom, FieldsEventsCustom]) {
-				const proto = h.prototype;
-				const names = Object.getOwnPropertyNames(proto);
-				for(let name of names) {
-					if(name !== 'constructor') {
-						const method = proto[name];
-						if(typeof method === 'function') {
-							FormEventProcessingMixins.prototype[name] = method;
-						}
-					}
-				}
-				FieldsEvents.prototype;
-				isHandlersInitialized = true;
-			}
-		}
 		this.recId = this.props.initialData.id || 'new';
 		this.currentData = null;
 		this.hiddenFields = {};
@@ -379,13 +353,16 @@ class FormEventProcessingMixins extends BaseForm {
 
 	_getFormEventHandler(eventName: CLIENT_SIDE_FORM_EVENTS) {
 		let name = this.props.node.tableName + '_' + eventName;
-		let ret = [FormEvents.prototype[name], FormEventsCustom.prototype[name]].filter(i => i);
-		return ret.length > 0 && ret;
+		return this._getEventHandler(name);
 	}
 
 	_getFieldEventHandler(field: FieldDesc) {
 		let name = this.props.node.tableName + '_' + field.fieldName + '_' + CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE;
-		let ret = [FieldsEvents.prototype, FieldsEventsCustom.prototype].filter(i => i.hasOwnProperty(name)).map(i => i[name]);
+		return this._getEventHandler(name);
+	}
+
+	_getEventHandler(name) {
+		let ret = eventsHandlers.filter(i => i.hasOwnProperty(name)).map(i => i[name]);
 		return ret.length > 0 && ret;
 	}
 
@@ -419,4 +396,4 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 }
 
-export { FormEventProcessingMixins };
+export { FormEventProcessingMixins, registerEventHandler };

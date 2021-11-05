@@ -33,6 +33,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 
 import jQuery from 'jquery';
+import { registerEventHandler } from './forms/event-processing-mixins';
 
 declare global {
 	interface Window {
@@ -41,6 +42,7 @@ declare global {
 			customClasses: {
 				[key: string]: typeof React.Component;
 			};
+			registerEventHandler: (classInstance) => void;
 			Stage: typeof Stage;
 		}
 	}
@@ -48,6 +50,7 @@ declare global {
 
 window.crudJs = {
 	Stage,
+	registerEventHandler,
 	customClasses: {}
 }
 
@@ -56,6 +59,8 @@ import { AdminRolePrivilegesForm } from "./admin/admin-role-privileges-form";
 
 import { DPromise } from "./debug-promise";
 import { throwError } from "./bs-utils";
+import { FormEvents } from "./events/forms_events";
+import { FieldsEvents } from "./events/fields_events";
 
 //@ts-ignore
 window.Promise = DPromise;
@@ -75,6 +80,8 @@ window.onerror = (msg, url, line, col, error) => {
 
 window.addEventListener('load', () => {
 	setTimeout(() => {
+		window.crudJs.registerEventHandler(FormEvents);
+		window.crudJs.registerEventHandler(FieldsEvents);
 		ReactDOM.render(
 			React.createElement(MainFrame),
 			document.getElementById('container')

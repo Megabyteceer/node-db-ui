@@ -165,6 +165,9 @@ interface FieldDesc {
 interface FilterDesc {
 	order: number;
 	name: string;
+	hiPriority?: BoolNum;
+	view?:string;
+	fields?:string;
 }
 
 interface NodeDesc {
@@ -370,6 +373,6 @@ export {
 	NODE_TYPE, FIELD_DISPLAY_TYPE,
 	VIEW_MASK,
 
-	RecordSubmitResult, RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList,
+	RecordSubmitResult, RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList, FilterDesc,
 	UserLangEntry, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
 };

@@ -184,7 +184,6 @@ function handleError(error, url, callStack) {
 
 
 	if(DebugPanel.instance) {
-		DebugPanel.instance.addEntry((error.debug || error), true, url);
 	} else {
 		throw error;
 	}

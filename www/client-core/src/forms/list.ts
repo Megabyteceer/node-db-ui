@@ -437,9 +437,9 @@ class List extends BaseForm<ListProps, ListState> {
 				}));
 			}
 
-			if(createButton || searchPanel) {
+			if(createButton || searchPanel || filtersPanel) {
 				header = R.div({ className: 'list-header' },
-					createButton,
+					createButton || R.span(),
 					R.div({ className: 'list-header-right-area' },
 						searchPanel,
 						filtersPanel

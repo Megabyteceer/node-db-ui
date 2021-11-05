@@ -30,6 +30,16 @@ const path = require('path')
 
 const upload2 = upload.single('file');
 
+function addDebugDataToResponse(resHeaders, ret, startTime) {
+	resHeaders['Access-Control-Allow-Origin'] = 'http://node-db-ui.com:3000';
+	resHeaders['Access-Control-Allow-Methods'] = 'POST';
+	if(mysqlDebug.debug) {
+		ret.debug = mysqlDebug.debug;
+		delete mysqlDebug.debug;
+		ret.debug.timeElapsed_ms = performance.now() - startTime;
+	}
+}
+
 const handleRequest = (req, res) => {
 	/// #if DEBUG
 	let startTime = performance.now();
@@ -50,23 +60,29 @@ const handleRequest = (req, res) => {
 		mysqlDebug.debug = { requestTime: new Date(), stack: [] };
 		/// #endif
 
+		const resHeaders = {
+			'content-type': 'application/json'
+		};
+
 		const onError = (error) => {
+			var ret;
 			/// #if DEBUG
+			ret = { error: error.stack };
+			addDebugDataToResponse(resHeaders, ret, startTime );
 			console.error(error.stack);
-			res.end(JSON.stringify({ error: error.stack }));
 			/*
 			/// #endif
 			console.error(error.stack);
-			res.end(JSON.stringify({ error: error.message }));
+			ret = { error: error.message };
 			//*/
+			res.set(resHeaders);
+			res.end(JSON.stringify(ret));
 		}
 		startSession(body.sessionToken, req.headers['accept-language']).then((session) => {
 			userSession = session;
 			handler(body, session).then((result) => {
 
-				const resHeaders = {
-					'content-type': 'application/json'
-				};
+				
 				let ret: any = {
 					result, isGuest: false,
 					/// #if DEBUG
@@ -74,13 +90,7 @@ const handleRequest = (req, res) => {
 					/// #endif
 				};
 				/// #if DEBUG
-				resHeaders['Access-Control-Allow-Origin'] = 'http://node-db-ui.com:3000';
-				resHeaders['Access-Control-Allow-Methods'] = 'POST';
-				if(mysqlDebug.debug) {
-					ret.debug = mysqlDebug.debug;
-					delete mysqlDebug.debug;
-					ret.debug.timeElapsed_ms = performance.now() - startTime;
-				}
+				addDebugDataToResponse(resHeaders, ret, startTime );
 				/// #endif
 
 				if(isUserHaveRole(ROLE_ID.GUEST, userSession)) {

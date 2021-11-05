@@ -1,6 +1,6 @@
 import { getNodeDesc, getNodeEventHandler, ADMIN_USER_SESSION, ServerSideEventHandlersNames, filtersById } from './describe-node';
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
-import { throwError, assert, PRIVILEGES_MASK, FIELD_TYPE, RecordData, RecordsData, RecId, VIEW_MASK } from "../www/client-core/src/bs-utils";
+import { throwError, assert, PRIVILEGES_MASK, FIELD_TYPE, RecordData, RecordsData, RecId, VIEW_MASK, FilterDesc } from "../www/client-core/src/bs-utils";
 import { UserSession } from './auth';
 
 const isASCII = (str) => {
@@ -88,6 +88,23 @@ async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecI
 	//===== filters ===========================================
 	//=========================================================
 
+	const filterId = filterFields.filterId;
+	let filter: FilterDesc;
+
+	if(node.filters) {
+		/// #if DEBUG
+		const availableFilters = Object.keys(node.filters).join();
+		assert(!filterId || node.filters[filterId],
+			"Unknown filterId " + filterId + ' for node ' + node.tableName +
+			(availableFilters ? ('. Available values is: ' + availableFilters) : ' node has no filters.'));
+		/// #endif
+		if(filterId && node.filters[filterId]) { //user selected filter
+			filter = filtersById.get(filterId);
+		} else if(node.defaultFilterId) {
+			filter = filtersById.get(node.defaultFilterId);
+		}
+	}
+
 	let hiPriorityFilter;
 	let wheres;
 	let ordering;
@@ -170,23 +187,6 @@ async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecI
 			wheres.push('AND(', tableName, '.id IN (', filterFields.onlyIDs, '))');
 		}
 
-		const filterId = filterFields.filterId;
-		let filter;
-
-		if(node.filters) {
-			/// #if DEBUG
-			const availableFilters = Object.keys(node.filters).join();
-			assert(!filterId || node.filters[filterId],
-				"Unknown filterId " + filterId + ' for node ' + node.tableName +
-				(availableFilters ? ('. Available values is: ' + availableFilters) : ' node has no filters.'));
-			/// #endif
-			if(filterId && node.filters[filterId]) { //user selected filter
-				filter = filtersById.get(filterId);
-			} else if(node.defaultFilterId) {
-				filter = filtersById.get(node.defaultFilterId);
-			}
-		}
-
 		if(filter) {
 			let fw = filter['filter'];
 			if(fw) {
@@ -251,7 +251,7 @@ async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecI
 			wheresBegin.push("(", tableName, ".status = 1)");
 		}
 
-		if(privileges & PRIVILEGES_MASK.VIEW_ALL) {
+		if((privileges & PRIVILEGES_MASK.VIEW_ALL) || (filter  && filter.hiPriority) ) {
 
 		} else if((privileges & PRIVILEGES_MASK.VIEW_ORG) && (userSession.orgId !== 0)) {
 			wheresBegin.push(" AND (", tableName, "._organizationID=", userSession.orgId as unknown as string, ')');

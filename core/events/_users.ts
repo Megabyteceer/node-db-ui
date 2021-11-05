@@ -22,7 +22,9 @@ async function clearUserParams(data, currentData, userSession) {
 	}
 
 	if(currentData) {
-		delete data.email;
+		if(!isAdmin(userSession)) {
+			delete data.email;
+		}
 		currentData = Object.assign(currentData, data);
 	} else {
 		currentData = data;
