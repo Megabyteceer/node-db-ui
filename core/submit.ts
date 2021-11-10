@@ -111,7 +111,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		}
 	}
 
-	if(userSession) {
+	if(userSession && node.storeForms) {
 		await mysqlStartTransaction();
 	}
 	let handlerResult;
@@ -356,7 +356,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 				}
 			}
 		}
-		if(userSession) {
+		if(userSession && node.storeForms) {
 			await mysqlCommit();
 		}
 		if(filesToDelete) {
@@ -367,7 +367,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		return { recId, handlerResult };
 
 	} catch(er) {
-		if(userSession) {
+		if(userSession && node.storeForms) {
 			mysqlRollback();
 		}
 		throw er;
