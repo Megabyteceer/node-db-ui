@@ -44,10 +44,10 @@ const mysqlExec = (query: string): Promise<mysqlRowsResult | mysqlRowsResult[] |
 				/// #if DEBUG
 				er.stack = preparedError.stack;
 				debugger;
-				/// #endif
-				reject(er);
 				console.dir(preparedError);
 				console.log(query);
+				/// #endif
+				reject(er);
 			}
 			/// #if DEBUG
 			SQL.timeElapsed_ms = performance.now() - SQL.timeElapsed_ms;
