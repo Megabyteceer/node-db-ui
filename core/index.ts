@@ -10,10 +10,11 @@ import { ROLE_ID } from "../www/client-core/src/bs-utils";
 import "../www/client-core/src/locales/en/lang-server";
 import "../www/client-core/src/locales/ru/lang-server";
 
+import ENV from './ENV';
+
 /// #if DEBUG
 import { performance } from 'perf_hooks';
 import { DPromise } from "../www/client-core/src/debug-promise";
-import ENV from './ENV';
 //@ts-ignore
 global.Promise = DPromise;
 /// #endif
