@@ -23,12 +23,6 @@ class FormLoaderCog extends Component<any, any> {
 	}
 }
 
-document.addEventListener('load', () => {
-	if(isLitePage()) {
-		document.body.classList.add('lite-ui');
-	}
-});
-
 interface FormEntry {
 	form?: BaseForm;
 	formContainer: HTMLDivElement;

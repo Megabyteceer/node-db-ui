@@ -548,7 +548,8 @@ input[readonly] {
 	z-index: 8;
 }
 
-.lite-ui .top-bar {
+.lite-ui .top-bar,
+.lite-ui .footer {
 	display: none;
 }
 
@@ -1149,6 +1150,10 @@ input[readonly] {
 	padding-left: 17%;
 	margin-bottom: 7px;
 	max-width: 824px;
+}
+
+.lite-ui .form-full {
+	padding-left: 0;
 }
 
 .inline-editable-item .form-full {

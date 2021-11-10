@@ -1,6 +1,6 @@
 ﻿import React from "react";
 
-import { getData, getItem, idToImgURL, isAdmin, L, renderIcon, setItem } from "./utils";
+import { getData, LITE_UI_PREFIX, idToImgURL, isAdmin, L, renderIcon, setItem } from "./utils";
 import { Select } from "./components/select";
 import { ENV, MainFrame } from "./main-frame";
 import moment from "moment";
@@ -29,20 +29,26 @@ class User extends Component<any, any> {
 		User.instance = this;
 	}
 
-	static refreshUser() {
-		getData('api/getMe').then((data) => {
-			data.lang.code = data.lang.code || 'en';
-			moment.locale(data.lang.code);
-			Promise.all([
-				import(`./locales/${data.lang.code}/lang.ts`),
-				import(`/src/locales/${data.lang.code}/lang.ts`)
-			]).then(() => {
-				if(User.instance) {
-					User.instance.forceUpdate();
-				}
-				User.setUserData(data);
-			})
-		});
+	static async requireUserData(): Promise<UserSession> {
+		let ret = await getData('api/getMe');
+		User.currentUserData = ret;
+		return ret;
+	}
+
+	static async refreshUser() {
+		var data = await User.requireUserData();
+		data.lang.code = data.lang.code || 'en';
+		moment.locale(data.lang.code);
+		Promise.all([
+			import(`./locales/${data.lang.code}/lang.ts`),
+			import(`/src/locales/${data.lang.code}/lang.ts`)
+		]).then(() => {
+			if(User.instance) {
+				User.instance.forceUpdate();
+			}
+			User.setUserData(data);
+		})
+		return data;
 	}
 
 	static setUserData(data: UserSession) {
@@ -62,6 +68,10 @@ class User extends Component<any, any> {
 		getData('api/toggleMultilingual').then(() => {
 			window.location.reload();
 		});
+	}
+
+	static getLoginURL(isLiteUI = false) {
+		return '/' + (isLiteUI ? LITE_UI_PREFIX : '') + '#n/' + NODE_ID.LOGIN + '/r/new/e';
 	}
 
 	render() {
@@ -100,7 +110,7 @@ class User extends Component<any, any> {
 
 			var btn1, btn2;
 
-			const loginURL = '#n/' + NODE_ID.LOGIN + '/r/new/e';
+			const loginURL = User.getLoginURL();
 
 			if(userData.id === 2) {
 				btn2 = R.a({ href: loginURL, title: L('LOGIN'), className: 'clickable top-bar-user-btn' },

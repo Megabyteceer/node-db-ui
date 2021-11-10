@@ -38,6 +38,7 @@ import { registerEventHandler } from './forms/event-processing-mixins';
 declare global {
 	interface Window {
 		$: typeof jQuery;
+		onCurdJSLogin: (userSession: UserSession) => void;
 		crudJs: { // helps to avoid circular imports
 			customClasses: {
 				[key: string]: typeof React.Component;
@@ -58,7 +59,7 @@ window.crudJs = {
 import { AdminRolePrivilegesForm } from "./admin/admin-role-privileges-form";
 
 import { DPromise } from "./debug-promise";
-import { throwError } from "./bs-utils";
+import { throwError, UserSession } from "./bs-utils";
 import { FormEvents } from "./events/forms_events";
 import { FieldsEvents } from "./events/fields_events";
 

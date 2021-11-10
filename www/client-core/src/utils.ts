@@ -9,7 +9,7 @@ import type { LANG_KEYS_CUSTOM } from "../../src/locales/en/lang";
 import { Notify } from "./notify";
 import ReactDOM from "react-dom";
 import { R } from "./r";
-import { assert, FieldDesc, FIELD_TYPE, GetRecordsParams, HASH_DIVIDER, NODE_ID, RecordSubmitResult, ROLE_ID, VIEW_MASK } from "./bs-utils";
+import { assert, FieldDesc, FIELD_TYPE, GetRecordsParams, HASH_DIVIDER, NODE_ID, RecordSubmitResult, ROLE_ID, UserSession, USER_ID, VIEW_MASK } from "./bs-utils";
 import type { Filters, IFormParameters, NodeDesc, RecId, RecordData, RecordsData } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
@@ -19,6 +19,8 @@ import { DebugPanel } from "./debug-panel";
 import React, { Component } from "react";
 import { HotkeyButton } from "./components/hotkey-button";
 import { List } from "./forms/list";
+
+const LITE_UI_PREFIX = '?liteUI';
 
 enum CLIENT_SIDE_FORM_EVENTS {
 	ON_FORM_SAVE = 'onSave',
@@ -1084,7 +1086,11 @@ function renderIcon(name) {
 }
 
 function isLitePage() {
-	return window.location.href.indexOf('?liteUI') >= 0;
+	return window.location.href.indexOf(LITE_UI_PREFIX) >= 0;
+}
+
+if(isLitePage()) {
+	document.body.classList.add('lite-ui');
 }
 
 function scrollToVisible(elem, doNotShake = false) {
@@ -1166,14 +1172,16 @@ function getStoreIndexedDB(openDB: IDBOpenDBRequest) {
 var dbWriteInProgress;
 
 function saveIndexedDB(filename: string, fileData: any) {
-	dbWriteInProgress = true;
-	var openDB = openIndexedDB();
-	openDB.onsuccess = function () {
-		dbWriteInProgress = false;
-		var db = getStoreIndexedDB(openDB);
-		db.store.put({ id: filename, data: fileData });
-	};
-	return true;
+	return new Promise((resolve) => {
+		dbWriteInProgress = true;
+		var openDB = openIndexedDB();
+		openDB.onsuccess = function () {
+			dbWriteInProgress = false;
+			var db = getStoreIndexedDB(openDB);
+			db.store.put({ id: filename, data: fileData });
+			resolve(true);
+		};
+	});
 }
 
 function isDBWriteInProgress() {
@@ -1355,8 +1363,33 @@ function getSessionToken() {
 	return getItem('cud-js-session-token');
 }
 
+async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
+	if(User.currentUserData && User.currentUserData.id !== USER_ID.GUEST) {
+		return User.currentUserData;
+	} else {
+		let backdrop = document.createElement('div');
+		backdrop.className = 'modal-back' + (enforced ? '' : ' clickable');
+		let iframe = document.createElement('iframe');
+		iframe.className = 'login-iframe';
+		iframe.src = location.origin + User.getLoginURL(true);
+		backdrop.appendChild(iframe);
+		document.body.appendChild(backdrop);
+		backdrop.addEventListener('pointerdown', () => {
+			backdrop.remove();
+		});
+		return new Promise((resolve) => {
+			iframe.contentWindow.onCurdJSLogin = (userData) => {
+				User.currentUserData = userData;
+				resolve(userData);
+				backdrop.remove();
+			};
+		});
+	}
+}
+
 export {
 	getSessionToken,
+	loginIfNotLoggedIn,
 	onNewUser,
 	registerListRenderer,
 	isPresentListRenderer,
@@ -1421,5 +1454,6 @@ export {
 	loadIndexedDB,
 	isDBWriteInProgress,
 	goToHome,
-	deleteIndexedDB
+	deleteIndexedDB,
+	LITE_UI_PREFIX
 }

@@ -1,13 +1,4 @@
 
-hide left menu if one non section item only
-
-
-login to save
-
-add custom gif cursors with disable option
-
-
-
 
 
 Prod and release bundles in same config?
@@ -18,12 +9,19 @@ no inline css and fontawesome
 
 проверить просить вход если ответ нет прав и юзер гость  <access>
 
-
 проверить логин гугла
 
 
 
+
+
+go to core/ custom event handler by ENV option
+
+hide left menu if one non section item only
+
 ENV enforce login option
+
+Просмотр и редактирование всего доступа у роли
 
 кнопки перехода к евент хендлерам не подсвечены зеленым в List
 
@@ -32,7 +30,6 @@ Deploy data for _tables by default
 сделать деплой релизного билда. версионность по папкам.
 
 в релизе настроить CDN заголовки кеша. апи на поддомене.
-
 
 Use mysql>Alter table students ADD FULLTEXT (first_name, last_name);
 mysql>Select * from students where match(first_name, last_name) AGAINST (‘Jones’);

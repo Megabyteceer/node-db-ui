@@ -457,6 +457,9 @@ class FormEvents extends FormFull {
 
 	_login_onAfterSave(saveResult: RecordSubmitResult) {
 		User.setUserData(saveResult.handlerResult);
+		if(window.onCurdJSLogin) {
+			window.onCurdJSLogin(saveResult.handlerResult);
+		}
 	}
 
 	_registration_onSave() {
