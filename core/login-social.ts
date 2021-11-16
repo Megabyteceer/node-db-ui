@@ -4,7 +4,7 @@ import ENV from "./ENV";
 import { throwError, UserSession } from "../www/client-core/src/bs-utils";
 import { authorizeUserByID, createUser } from './auth';
 import { L } from "./locale";
-import { mysqlExec, mysqlRowsResult } from './mysql-connection';
+import { mysqlExec, mysqlRowsResult, mysql_real_escape_string } from './mysql-connection';
 
 const client = new OAuth2Client(ENV.clientOptions.googleSigninClientId);
 
@@ -30,6 +30,7 @@ async function loginWithGoogle(token, userSession: UserSession) {
 		let ret = await authorizeUserByID(userId);
 		if(payload.picture) {
 			ret.avatar = payload.picture;
+			await mysqlExec("UPDATE _users SET avatar = '" + mysql_real_escape_string(payload.picture) + "' WHERE id = " + userId);
 		}
 		return ret;
 	}

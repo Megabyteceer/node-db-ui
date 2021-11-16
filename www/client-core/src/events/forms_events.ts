@@ -1,4 +1,4 @@
-import { Filters, getNodeData, isAdmin, L, showPrompt, getNode, myAlert, getData } from "../utils";
+import { Filters, getNodeData, isAdmin, L, showPrompt, getNode, myAlert, getData, attachGoogleLoginAPI } from "../utils";
 /// #if DEBUG
 import { makeIconSelectionField } from "../admin/admin-utils";
 /// #endif
@@ -514,15 +514,10 @@ class FormEvents extends FormFull {
 			}
 			this.renderToField('socialLoginButtons', 'social-buttons',
 				R.span(null,
-					R.div({ className: "g-signin2", "data-onsuccess": "onGoogleSignIn" }),
-					R.meta({ name: "google-signin-client_id", content: ENV.clientOptions.googleSigninClientId })
+					R.div({ className: "g-signin2", "data-onsuccess": "onGoogleSignIn" })
 				)
 			);
-			let s = document.createElement('script');
-			s.src = "https://apis.google.com/js/platform.js";
-			s.async = true;
-			s.defer = true;
-			document.head.append(s);
+			attachGoogleLoginAPI(true);
 		}
 	}
 

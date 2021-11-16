@@ -1393,7 +1393,35 @@ async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
 	}
 }
 
+var googleLoginAPIattached;
+async function attachGoogleLoginAPI(enforces = false) {
+	if(ENV.clientOptions.googleSigninClientId && !googleLoginAPIattached) {
+		googleLoginAPIattached = true;
+
+		var meta = document.createElement('meta');
+		meta.name = "google-signin-client_id";
+		meta.content = ENV.clientOptions.googleSigninClientId;
+		document.getElementsByTagName('head')[0].appendChild(meta);
+	}
+	if(ENV.clientOptions.googleSigninClientId && (!googleLoginAPIattached || enforces)) {
+		let s = document.createElement('script');
+		s.src = "https://apis.google.com/js/platform.js";
+		s.async = true;
+		s.defer = true;
+		document.head.append(s);
+		await (new Promise((resolve) => {
+			setInterval(() => {
+				//@ts-ignore
+				if(window.gapi) {
+					resolve(true);
+				}
+			}, 10);
+		}));
+	}
+}
+
 export {
+	attachGoogleLoginAPI,
 	getSessionToken,
 	loginIfNotLoggedIn,
 	onNewUser,

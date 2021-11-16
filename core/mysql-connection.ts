@@ -114,4 +114,50 @@ async function mysqlRollback() {
 type mysqlInsertResult = mysql.OkPacket;
 type mysqlRowResultSingle = mysql.RowDataPacket;
 type mysqlRowsResult = mysql.RowDataPacket[];
-export { mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback, mysqlDebug, mysqlRowsResult, mysqlRowResultSingle, mysqlInsertResult };
+
+
+
+const mysql_real_escape_object = (o) => {
+    for (let key in o) {
+        if (key !== '__UNSAFE_UNESCAPED') {
+            let val = o[key];
+            switch (typeof val) {
+                case 'string':
+                    o[key] = mysql_real_escape_string(val);
+                    break;
+                case 'object':
+                    if (val) {
+                        mysql_real_escape_object(val);
+                    }
+            }
+        }
+    }
+};
+const mysql_real_escape_string = (str) => {
+    return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
+        switch (char) {
+            case "\0":
+                return "\\0";
+            case "\x08":
+                return "\\b";
+            case "\x09":
+                return "\\t";
+            case "\x1a":
+                return "\\z";
+            case "\n":
+                return "\\n";
+            case "\r":
+                return "\\r";
+            case "\"":
+            case "'":
+            case "\\":
+            case "%":
+                return "\\" + char; // prepends a backslash to backslash, percent,
+            // and double/single quotes
+            default:
+                return char;
+        }
+    });
+};
+
+export {mysql_real_escape_object, mysql_real_escape_string, mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback, mysqlDebug, mysqlRowsResult, mysqlRowResultSingle, mysqlInsertResult };

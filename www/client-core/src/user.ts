@@ -1,12 +1,13 @@
 ﻿import React from "react";
 
-import { getData, LITE_UI_PREFIX, idToImgURL, isAdmin, L, renderIcon, setItem } from "./utils";
+import { getData, LITE_UI_PREFIX, idToImgURL, isAdmin, L, renderIcon, setItem, attachGoogleLoginAPI } from "./utils";
 import { Select } from "./components/select";
 import { ENV, MainFrame } from "./main-frame";
 import moment from "moment";
 import { Component } from "react";
 import { R } from "./r";
-import { NODE_ID, UserSession } from "./bs-utils";
+import { NODE_ID, UserSession, USER_ID } from "./bs-utils";
+import { LoadingIndicator } from "./loading-indicator";
 
 function setUserOrg(orgId) {
 	if(User.currentUserData.orgId !== orgId) {
@@ -108,7 +109,7 @@ class User extends Component<any, any> {
 
 			const loginURL = User.getLoginURL();
 
-			if(userData.id === 2) {
+			if(userData.id === USER_ID.GUEST) {
 				btn2 = R.a({ href: loginURL, title: L('LOGIN'), className: 'clickable top-bar-user-btn' },
 					renderIcon('sign-in fa-2x')
 				)
@@ -123,6 +124,15 @@ class User extends Component<any, any> {
 				);
 				btn2 = R.a({
 					title: L('LOGOUT'), className: 'clickable top-bar-user-btn', onClick: async () => {
+						LoadingIndicator.instance.show();
+						await attachGoogleLoginAPI();
+						//@ts-ignore
+						if(window.gapi.auth2) {
+							//@ts-ignore
+							var auth2 = window.gapi.auth2.getAuthInstance();
+							await auth2.signOut();
+						}
+						LoadingIndicator.instance.hide();
 						let guestUserSession = await getData('api/logout');
 						User.setUserData(guestUserSession);
 						document.location.href = loginURL;
