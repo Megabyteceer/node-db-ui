@@ -44,7 +44,7 @@ const LANGS = {
 	'MOVE_UP': 'Move up',
 	'MOVE_DOWN': 'Move down',
 	'ADD': 'Add %',
-	'SEARCH_LIST': 'Search in full list',
+	'SEARCH_LIST': 'Search',
 	'NO_RESULTS': 'No results found for "%"',
 	'PUSH_CREATE': 'Press "Create %" button,',
 	'TO_CONTINUE': 'to continue your work...',

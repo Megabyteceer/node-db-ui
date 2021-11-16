@@ -1,6 +1,8 @@
+/// #if DEBUG
+import { FieldAdmin } from "../admin/field-admin";
+/// #endif
 import { R } from "../r";
 import React, { Component } from "react";
-import { FieldAdmin } from "../admin/field-admin";
 
 class FormTab extends Component<any, any> {
 
@@ -35,7 +37,9 @@ class FormTab extends Component<any, any> {
 		}
 
 		return R.div({ className },
+			/// #if DEBUG
 			(this.props.highlightFrame ? React.createElement(FieldAdmin, { field: this.props.field, form: this.props.form }) : ''),
+			/// #endif
 			this.props.fields);
 	}
 }

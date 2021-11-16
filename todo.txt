@@ -1,10 +1,5 @@
 
 
-
-Prod and release bundles in same config?
-
-no inline css and fontawesome
-
 проверить обработку и показ ошибок в релизном билде клиента и бека.
 
 проверить просить вход если ответ нет прав и юзер гость  <access>
@@ -13,7 +8,7 @@ no inline css and fontawesome
 
 
 
-
+check if guest try to upliad file or image to prevent sessions collizion
 
 go to core/ custom event handler by ENV option
 

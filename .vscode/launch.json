@@ -29,8 +29,7 @@
 			"sourceMaps": false,
 			"skipFiles": [
 				"<node_internals>/**",
-				"**/node_modules/**",
-				"**/debug-promise.ts"
+				"**/node_modules/**"
 			],
 			"args": [
 				"--abort-on-uncaught-exception=true",

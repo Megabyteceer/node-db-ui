@@ -178,6 +178,22 @@ function getNodesTree(userSession) { // get nodes tree visible to user
 		let nodesTree = [];
 		let ret = { nodesTree, options };
 		for(let nodeSrc of nodes) {
+
+			/// #if DEBUG
+			/*
+			/// #endif
+			const ADMIN_NODES = {
+				4: true,
+				6:true,
+				9:true,
+				10:true,
+				12:true
+			};
+			if(ADMIN_NODES[nodeSrc.id]) {
+				continue;
+			}
+			//*/
+
 			let privileges = getUserAccessToNode(nodeSrc, userSession);
 			if(privileges) {
 				nodesTree.push({
@@ -257,7 +273,6 @@ async function initNodesData() { // load whole nodes data in to memory
 
 	let query = "SELECT * FROM _nodes WHERE status = 1 ORDER BY prior";
 	nodes_new = await mysqlExec(query);
-
 	for(let nodeData of nodes_new) {
 		nodesById_new.set(nodeData.id, nodeData);
 		if(nodeData.tableName) {
@@ -329,6 +344,8 @@ async function initNodesData() { // load whole nodes data in to memory
 		eventsHandlers_new.set(nodeId, handlers[tableName]);
 	}
 	//*/
+
+	
 	fields = fields_new;
 	nodes = nodes_new;
 	nodesById = nodesById_new;

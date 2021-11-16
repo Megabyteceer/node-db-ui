@@ -1,5 +1,8 @@
 import { Filters, getNodeData, isAdmin, L, showPrompt, getNode, myAlert, getData } from "../utils";
+/// #if DEBUG
 import { makeIconSelectionField } from "../admin/admin-utils";
+/// #endif
+
 import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID, NODE_TYPE, RecordSubmitResult, VIEW_MASK } from "../bs-utils";
 import { FormFull } from "../forms/form-full";
 import { iAdmin } from "../user";
@@ -166,6 +169,7 @@ class FormEvents extends FormFull {
 		}
 	}
 
+	/// #if DEBUG
 	_nodes_onLoad() {
 		if(this.isNewRecord || (this.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT)) {
 			this.hideField('t_fields');
@@ -415,6 +419,7 @@ class FormEvents extends FormFull {
 			this.fieldAlert('fieldName', L('FLD_EXISTS'));
 		}
 	}
+	/// #endif
 
 	_languages_onLoad() {
 		if(this.recId === LANGUAGE_ID_DEFAULT) {
@@ -502,7 +507,6 @@ class FormEvents extends FormFull {
 			/// #endif
 			//@ts-ignore
 			window.onGoogleSignIn = (googleUser) => {
-				debugger;
 				var id_token = googleUser.getAuthResponse().id_token;
 				this.setFieldValue('username', 'google-auth-sign-in');
 				this.setFieldValue('password', id_token);

@@ -6,6 +6,11 @@ import { getData, isLitePage, L, myAlert, showPrompt, reloadLocation, renderIcon
 var currentId = 10;
 var debugInfo = [];
 
+/// #if DEBUG
+/*
+/// #endif
+throw new Error("debug-panel imported in release build.");
+//*/
 
 class DebugPanel extends Component<any, any> {
 	static instance: DebugPanel;

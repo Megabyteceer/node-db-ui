@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+/// #if DEBUG
 import { FieldAdmin } from "./admin/field-admin";
-import { NodeAdmin, createNodeForMenuItem } from "./admin/node-admin";
+import { NodeAdmin, createNodeForMenuItem } from "./admin/admin-control";
+/// #endif	
 import { assert, NODE_TYPE } from "./bs-utils";
 import { R } from "./r";
 import { Stage } from "./stage";
@@ -270,7 +272,7 @@ class BarItem extends Component<any, any> {
 				itemBody
 			)
 		} else {
-			return R.div({ className: 'left-bar-group-container' },
+			return R.div({ className: 'left-bar-group-container left-bar-group-container-node-' + item.id },
 				/// #if DEBUG
 				adminControl,
 				/// #endif

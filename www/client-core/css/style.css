@@ -180,7 +180,7 @@ img {
 .clickable:hover::after,
 .clickable:focus:after,
 .clickable:active:after {
-	opacity: 0.15;
+	opacity: 0.1;
 }
 
 .drag:after,
@@ -1292,7 +1292,6 @@ input[readonly] {
 	display: inline-block;
 	border: 1px solid #a8a8a8;
 	border-radius: 6px;
-	margin-right: 10px;
 }
 
 .list-search .tool-btn {

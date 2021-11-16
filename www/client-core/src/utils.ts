@@ -15,7 +15,9 @@ import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
 import { ENV } from "./main-frame";
+/// #if DEBUG
 import { DebugPanel } from "./debug-panel";
+/// #endif
 import React, { Component } from "react";
 import { HotkeyButton } from "./components/hotkey-button";
 import { List } from "./forms/list";
@@ -285,7 +287,11 @@ function toReadableTime(d) {
 
 
 function goToHome() {
-	location.href = '/';
+	if(location.pathname !== '/') {
+		location.href = '/';
+	} else {
+		location.hash = '#';
+	}
 }
 
 function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, editable?: boolean) {

@@ -3,14 +3,18 @@ import { FieldWrap } from "../fields/field-wrap";
 import { CLIENT_SIDE_FORM_EVENTS, deleteRecord, getCaptchaToken, getItem, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, submitRecord } from "../utils";
 import { FormTab } from "./form-tab";
 import { FormEventProcessingMixins } from "./event-processing-mixins";
-import { NodeAdmin } from "../admin/node-admin";
+/// #if DEBUG
+import { NodeAdmin } from "../admin/admin-control";
+import { FieldAdmin } from "../admin/field-admin";
+/// #endif
+
 import { LoadingIndicator } from "../loading-indicator";
 import { R } from "../r";
 import { FIELD_TYPE, PRIVILEGES_MASK, RecordData, FieldDesc, RecordSubmitResult } from "../bs-utils";
 import React from "react";
 import { iAdmin, User } from "../user";
 import { HotkeyButton } from "../components/hotkey-button";
-import { FieldAdmin } from "../admin/field-admin";
+
 import { LeftBar } from "../left-bar";
 
 const sortEntries = (a, b) => {
@@ -441,7 +445,9 @@ class FormFull extends FormEventProcessingMixins {
 		var deleteButton;
 		var saveButton;
 		var draftButton;
+		/// #if DEBUG
 		var nodeAdmin;
+		/// #endif
 		const isRestricted = isRecordRestrictedForDeletion(node.id, data.id);
 		if(!this.props.inlineEditable) {
 			if(data.isD && isMainTab && !this.props.preventDeleteButton) {
@@ -473,12 +479,11 @@ class FormFull extends FormEventProcessingMixins {
 					}
 				}
 			}
-
+			/// #if DEBUG
 			if(iAdmin()) {
 				nodeAdmin = React.createElement(NodeAdmin, { form: this });
 			}
-
-
+			/// #endif
 			if(!this.props.isCompact) {
 				let headerContent = this.header || this.state.header || R.span(null, node.icon ? renderIcon(node.icon) : undefined, (this.recId === 'new') ?
 					((node.storeForms ? (L('CREATE') + ' ') : undefined), (node.creationName || node.singleName)) :
@@ -504,14 +509,18 @@ class FormFull extends FormEventProcessingMixins {
 					onClick: tab.props.visible ? undefined : () => {
 						this.setFormFilter('tab', tabField.fieldName);
 					}
-				}, renderIcon(tabField.icon), tabField.name),
-					React.createElement(FieldAdmin, { field: tabField, form: this })
+				}, renderIcon(tabField.icon), tabField.name)
+					/// #if DEBUG
+					, React.createElement(FieldAdmin, { field: tabField, form: this })
+					/// #endif
 				) : undefined;
 			}));
 		}
 
 		return R.div({ className },
+			/// #if DEBUG
 			nodeAdmin,
+			/// #endif
 			header,
 			tabsHeader,
 			tabs || fields,

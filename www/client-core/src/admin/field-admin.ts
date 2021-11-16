@@ -8,6 +8,12 @@ import { List } from "../forms/list";
 
 var showedFieldId;
 
+/// #if DEBUG
+/*
+/// #endif
+throw new Error("field-admin imported in release build.");
+//*/
+
 class FieldAdmin extends Component<any, any> {
 
 	private timeout: NodeJS.Timeout;

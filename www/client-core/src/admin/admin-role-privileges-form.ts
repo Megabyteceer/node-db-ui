@@ -5,7 +5,13 @@ import { BaseForm } from "../forms/base-form";
 import { FormLoaderCog } from "../stage";
 import { iAdmin } from "../user";
 import { getData, getNode, L, showPrompt, renderIcon, submitData } from "../utils";
-import { NodeAdmin } from "./node-admin";
+import { NodeAdmin } from "./admin-control";
+
+/// #if DEBUG
+/*
+/// #endif
+throw new Error("admin-role-privileges-form imported in release build.");
+//*/
 
 function check() {
 	return R.span({
@@ -216,6 +222,7 @@ class AdminRolePrivilegesForm extends BaseForm {
 				onClick: this.saveClick
 			}, this.isSubForm() ? renderIcon('check') : renderIcon('floppy-o'), this.isSubForm() ? '' : L('SAVE'));
 
+			/// #if DEBUG
 			var nodeAdmin;
 			if(iAdmin()) {
 				nodeAdmin = React.createElement(NodeAdmin, {
@@ -224,6 +231,7 @@ class AdminRolePrivilegesForm extends BaseForm {
 					y: -40
 				});
 			}
+			/// #endif
 
 			var closeButton = R.button({
 				className: 'clickable default-button',
@@ -231,7 +239,9 @@ class AdminRolePrivilegesForm extends BaseForm {
 			}, renderIcon('times'), this.isSubForm() ? '' : L('CANCEL'));
 
 			return R.div({ className: "admin-role-privileges-body" },
+				/// #if DEBUG
 				nodeAdmin,
+				/// #endif
 				body,
 
 				R.div(null,

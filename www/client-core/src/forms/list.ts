@@ -1,7 +1,11 @@
 import { R } from "../r";
 import { FIELD_TYPE, PRIVILEGES_MASK, RecordsData, VIEW_MASK } from "../bs-utils";
+
+/// #if DEBUG
 import { FieldAdmin } from "../admin/field-admin";
-import { NodeAdmin } from "../admin/node-admin";
+import { NodeAdmin } from "../admin/admin-control";
+/// #endif
+
 import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
 import { FormFull } from "./form-full";
 import { FormListItem } from "./form-list-item";
@@ -330,11 +334,12 @@ class List extends BaseForm<ListProps, ListState> {
 
 			}
 		}
-
+		/// #if DEBUG
 		var nodeAdmin;
 		if(iAdmin()) {
 			nodeAdmin = React.createElement(NodeAdmin, { form: this });
 		}
+		/// #endif
 
 		var createBtn;
 		if(node.privileges & PRIVILEGES_MASK.CREATE) {
@@ -346,13 +351,12 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 
 		return R.div({ className: 'editable-list editable-list-node-' + node.id },
+			/// #if DEBUG
 			nodeAdmin,
+			/// #endif
 			lines,
 			createBtn
 		);
-
-
-
 	}
 
 	render() {
@@ -451,10 +455,12 @@ class List extends BaseForm<ListProps, ListState> {
 			if(!body) {
 				var tableHeader = [];
 				node.fields.some((field) => {
+					/// #if DEBUG
 					var fieldAdmin;
 					if(iAdmin()) {
 						fieldAdmin = React.createElement(FieldAdmin, { field, form: this });
 					}
+					/// #endif
 
 					var rowHeader;
 					if(field.forSearch === 1) {
@@ -478,8 +484,11 @@ class List extends BaseForm<ListProps, ListState> {
 
 					if(this.isFieldVisibleByFormViewMask(field)) {
 						tableHeader.push(R.td({ key: field.id, className: (field.fieldType === FIELD_TYPE.NUMBER) ? 'list-row-header list-row-header-num' : 'list-row-header' },
-							rowHeader,
+							rowHeader
+							/// #if DEBUG
+							,
 							fieldAdmin
+							/// #endif
 						));
 					}
 				});
@@ -579,11 +588,12 @@ class List extends BaseForm<ListProps, ListState> {
 				)
 			}
 		}
-
+		/// #if DEBUG
 		var nodeAdmin;
 		if(iAdmin()) {
 			nodeAdmin = React.createElement(NodeAdmin, { form: this });
 		}
+		/// #endif
 
 		var title;
 		if(!this.props.isCompact) {
@@ -594,7 +604,9 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 
 		return R.div({ className: 'form list-container form-node-' + node.id },
+			/// #if DEBUG
 			nodeAdmin,
+			/// #endif
 			title,
 			header,
 			footer,

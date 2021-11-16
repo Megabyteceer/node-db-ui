@@ -1,5 +1,12 @@
 'use strict';
 
+/// #if DEBUG
+/*
+/// #endif
+throw new Error("debug-promise imported in release build.");
+//*/
+
+
 /**
  * @this {DPromise}
  */

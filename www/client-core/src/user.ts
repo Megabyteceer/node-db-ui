@@ -29,32 +29,28 @@ class User extends Component<any, any> {
 		User.instance = this;
 	}
 
-	static async requireUserData(): Promise<UserSession> {
-		let ret = await getData('api/getMe');
-		User.currentUserData = ret;
-		return ret;
-	}
-
 	static async refreshUser() {
-		var data = await User.requireUserData();
+		var data = await getData('api/getMe');
 		data.lang.code = data.lang.code || 'en';
 		moment.locale(data.lang.code);
-		Promise.all([
+		await Promise.all([
+
 			import(`./locales/${data.lang.code}/lang.ts`),
-			import(`/src/locales/${data.lang.code}/lang.ts`)
-		]).then(() => {
-			if(User.instance) {
-				User.instance.forceUpdate();
-			}
-			User.setUserData(data);
-		})
+			import(`../../src/locales/${data.lang.code}/lang.ts`)
+		]);
+		User.setUserData(data);
+		if(User.instance) {
+			User.instance.forceUpdate();
+		}
 		return data;
 	}
 
 	static setUserData(data: UserSession) {
 		User.currentUserData = data;
 		setItem('cud-js-session-token', data.sessionToken);
-		MainFrame.instance.reloadOptions();
+		if(MainFrame.instance) {
+			MainFrame.instance.reloadOptions();
+		}
 	}
 
 	changeOrg(value) {

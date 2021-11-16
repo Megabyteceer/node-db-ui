@@ -4,7 +4,10 @@ import "react-datetime/css/react-datetime.css";
 import "cropperjs/dist/cropper.min.css";
 import "../css/consts.css";
 import "../css/style.css";
+/// #if DEBUG
 import "../css/debug-style.css";
+/// #endif
+
 import "../css/animations.css";
 
 import { MainFrame } from "./main-frame";
@@ -35,6 +38,15 @@ import React from 'react';
 import jQuery from 'jquery';
 import { registerEventHandler } from './forms/event-processing-mixins';
 
+/// #if DEBUG
+import { AdminRolePrivilegesForm } from "./admin/admin-role-privileges-form";
+import { DPromise } from "./debug-promise";
+/// #endif
+
+import { UserSession } from "./bs-utils";
+import { FormEvents } from "./events/forms_events";
+import { FieldsEvents } from "./events/fields_events";
+
 declare global {
 	interface Window {
 		$: typeof jQuery;
@@ -56,12 +68,6 @@ window.crudJs = {
 }
 
 /// #if DEBUG
-import { AdminRolePrivilegesForm } from "./admin/admin-role-privileges-form";
-
-import { DPromise } from "./debug-promise";
-import { throwError, UserSession } from "./bs-utils";
-import { FormEvents } from "./events/forms_events";
-import { FieldsEvents } from "./events/fields_events";
 
 //@ts-ignore
 window.Promise = DPromise;

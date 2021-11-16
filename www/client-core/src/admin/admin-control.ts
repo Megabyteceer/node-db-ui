@@ -8,6 +8,11 @@ import { NodeDesc, NODE_ID, NODE_TYPE } from "../bs-utils";
 
 var showedNodeId;
 
+/// #if DEBUG
+/*
+/// #endif
+throw new Error("admin-control imported in release build.");
+//*/
 class NodeAdmin extends Component<any, any> {
 
 	private timeout: NodeJS.Timeout;

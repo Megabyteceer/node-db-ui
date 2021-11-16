@@ -3,7 +3,9 @@ import ReactDOM from "react-dom";
 
 import { L } from "../utils";
 import { FormEvents } from "./forms_events";
+/// #if DEBUG
 import { makeReactClassSelectionField, removeReactClassSelectionField } from "../admin/admin-utils";
+/// #endif
 
 class FieldsEvents extends FormEvents {
 
@@ -31,6 +33,7 @@ class FieldsEvents extends FormEvents {
 		this.checkPasswordConfirmation();
 	}
 
+	/// #if DEBUG
 	_nodes_nodeType_onChange() {
 
 		const nodeType = this.fieldValue("nodeType");
@@ -164,6 +167,7 @@ class FieldsEvents extends FormEvents {
 	_nodes_tableName_onChange() {
 		this.removeWrongCharactersInField('tableName');
 	}
+	/// #endif
 
 	_registration_passwordConfirm_onChange() {
 		this.checkPasswordConfirmation();

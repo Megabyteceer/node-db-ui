@@ -1,4 +1,3 @@
-import ReactDOM from "react-dom";
 import React from "react";
 import { FieldDesc, FIELD_TYPE } from "../bs-utils";
 import { R } from "../r";
@@ -6,6 +5,12 @@ import { Select } from "../components/select";
 import { consoleDir, getItem, getNode, getNodeData, isLitePage, renderIcon, setItem, submitRecord } from "../utils";
 import { MainFrame } from "../main-frame";
 import type { FormFull } from "../forms/form-full";
+
+/// #if DEBUG
+/*
+/// #endif
+throw new Error("admin-utils imported in release build.");
+//*/
 
 function debugInfoGetter() {
 	consoleDir(this);

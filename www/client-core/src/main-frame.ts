@@ -1,7 +1,8 @@
-
-
 import React, { Component } from "react";
+/// #if DEBUG
 import { DebugPanel } from "./debug-panel";
+/// #endif
+
 import { R } from "./r";
 import { LeftBar } from "./left-bar";
 import { LoadingIndicator } from "./loading-indicator";
@@ -62,7 +63,6 @@ class MainFrame extends Component<any, any> {
 	}
 
 	render() {
-		var debug = React.createElement(DebugPanel);
 		return R.div(null,
 			React.createElement(TopBar),
 			R.table({ className: "root-table" },
@@ -78,7 +78,9 @@ class MainFrame extends Component<any, any> {
 			R.div({ className: "footer" }, ENV.APP_TITLE),
 			React.createElement(Modal),
 			React.createElement(Notify),
-			debug,
+			/// #if DEBUG
+			React.createElement(DebugPanel),
+			/// #endif
 			React.createElement(LoadingIndicator)
 
 		);

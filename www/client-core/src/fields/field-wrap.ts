@@ -1,7 +1,9 @@
 import { FIELD_TYPE, FieldDesc, FIELD_DISPLAY_TYPE } from "../bs-utils";
 import { R } from "../r";
 import React, { Component } from "react";
+/// #if DEBUG
 import { FieldAdmin } from "../admin/field-admin";
+/// #endif
 import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible } from "../utils";
 import { iAdmin } from "../user";
 import { BaseField, FieldProps } from "./base-field";
@@ -261,12 +263,12 @@ class FieldWrap extends Component<FieldProps, any> {
 		if(field.description && field.fieldType !== FIELD_TYPE.STATIC_TEXT) {
 			help = React.createElement(FieldHelp, { text: R.div(null, R.h4(null, field.name), field.description) });
 		}
-
+		/// #if DEBUG
 		var fieldAdmin;
 		if(iAdmin() && !field.lang && (!this.props.isCompact)) {
 			fieldAdmin = React.createElement(FieldAdmin, { field, form: this.props.form });
 		}
-
+		/// #endif
 		let className = domId + ' field-wrap field-container-type-' + field.fieldType + ' field-container-name-' + field.fieldName;
 		if(this.hidden
 			/// #if DEBUG
@@ -313,7 +315,9 @@ class FieldWrap extends Component<FieldProps, any> {
 			},
 				fieldTypedBody,
 				fieldCustomBody,
+				/// #if DEBUG
 				fieldAdmin,
+				/// #endif
 				tooltip
 			);
 		} else {
@@ -329,7 +333,9 @@ class FieldWrap extends Component<FieldProps, any> {
 				R.div({ className: noLabel ? 'field-wrap-value field-wrap-value-no-label' : 'field-wrap-value' },
 					fieldTypedBody,
 					fieldCustomBody,
+					/// #if DEBUG
 					fieldAdmin,
+					/// #endif
 					help
 				)
 			);
