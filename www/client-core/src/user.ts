@@ -127,7 +127,7 @@ class User extends Component<any, any> {
 						LoadingIndicator.instance.show();
 						await attachGoogleLoginAPI();
 						//@ts-ignore
-						if(window.gapi.auth2) {
+						if(window.gapi && window.gapi.auth2) {
 							//@ts-ignore
 							var auth2 = window.gapi.auth2.getAuthInstance();
 							await auth2.signOut();

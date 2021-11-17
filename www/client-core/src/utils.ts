@@ -1396,8 +1396,6 @@ async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
 var googleLoginAPIattached;
 async function attachGoogleLoginAPI(enforces = false) {
 	if(ENV.clientOptions.googleSigninClientId && !googleLoginAPIattached) {
-		googleLoginAPIattached = true;
-
 		var meta = document.createElement('meta');
 		meta.name = "google-signin-client_id";
 		meta.content = ENV.clientOptions.googleSigninClientId;
@@ -1418,6 +1416,7 @@ async function attachGoogleLoginAPI(enforces = false) {
 			}, 10);
 		}));
 	}
+	googleLoginAPIattached = true;
 }
 
 export {
