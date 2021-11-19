@@ -118,6 +118,8 @@ async function activateUser(key, userSession: UserSession) {
 			delete registration.id;
 			delete registration.activationKey;
 			delete registration._createdON;
+			delete registration._organizationID;
+			delete registration._usersID;
 			let ret = await authorizeUserByID(await createUser(registration as any, userSession));
 			await mysqlExec("UPDATE _registration SET activationKey = '', status = 0 WHERE id = " + registrationID);
 			return ret;
@@ -128,7 +130,8 @@ async function activateUser(key, userSession: UserSession) {
 
 async function createUser(userData: {
 	email: string,
-	name?: string
+	name?: string,
+	salt?: string
 }, userSession: UserSession) {
 	let existingUser = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND email='" + userData.email + "' LIMIT 1") as mysqlRowsResult;
 	if(existingUser.length > 0) {
@@ -137,10 +140,12 @@ async function createUser(userData: {
 	if(!userData.name) {
 		userData.name = userData.email.split('@')[0];
 	}
+	var salt = userData.salt || '';
+	delete userData.salt;
 	const userID: RecId = (await submitRecord(NODE_ID.USERS, userData, undefined, userSession)).recId;
 	let organizationID = (await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_usersID`) VALUES ('', '1', " + userID + ")") as mysqlInsertResult).insertId;
 	await mysqlExec("UPDATE _organization SET _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + organizationID);
-	await mysqlExec("UPDATE _users SET _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + userID);
+	await mysqlExec("UPDATE _users SET `salt`= '" + salt + "', _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + userID);
 	return userID;
 }
 
@@ -299,7 +304,7 @@ async function mail_utf8(email, subject, text): Promise<void> {
 		return;
 		/// #endif
 		if(!transporter) {
-			require("nodemailer").createTransport({
+			transporter = require("nodemailer").createTransport({
 				sendmail: true,
 				newline: 'unix',
 				path: '/usr/sbin/sendmail'

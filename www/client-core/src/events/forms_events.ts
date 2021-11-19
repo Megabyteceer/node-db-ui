@@ -1,4 +1,4 @@
-import { Filters, getNodeData, isAdmin, L, showPrompt, getNode, myAlert, getData, attachGoogleLoginAPI } from "../utils";
+import { Filters, getNodeData, isAdmin, L, showPrompt, getNode, myAlert, getData, attachGoogleLoginAPI, goToHome } from "../utils";
 /// #if DEBUG
 import { makeIconSelectionField } from "../admin/admin-utils";
 /// #endif
@@ -491,7 +491,7 @@ class FormEvents extends FormFull {
 
 	_resetPassword_onAfterSave() {
 		this.showMessageAboutEmailSent(L("RESET_EMAIL_SENT"));
-		this.isPreventCloseFormAfterSave;
+		this.isPreventCloseFormAfterSave = true;
 	}
 
 	_registration_onLoad() {
@@ -531,6 +531,7 @@ class FormEvents extends FormFull {
 			if(activationKey) {
 				getData('api/activate', this.filters).then((userSession) => {
 					User.setUserData(userSession);
+					goToHome();
 				}).catch((er) => {
 
 				});
