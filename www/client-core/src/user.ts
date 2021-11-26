@@ -1,6 +1,6 @@
 ﻿import React from "react";
 
-import { getData, LITE_UI_PREFIX, idToImgURL, isAdmin, L, renderIcon, setItem, attachGoogleLoginAPI } from "./utils";
+import { getData, LITE_UI_PREFIX, idToImgURL, isAdmin, L, renderIcon, setItem, attachGoogleLoginAPI, getItem, removeItem } from "./utils";
 import { Select } from "./components/select";
 import { ENV, MainFrame } from "./main-frame";
 import moment from "moment";
@@ -49,6 +49,15 @@ class User extends Component<any, any> {
 	static setUserData(data: UserSession) {
 		User.currentUserData = data;
 		setItem('cud-js-session-token', data.sessionToken);
+
+		if(data.id !== USER_ID.GUEST) {
+			let gotoAfterLogin = getItem('go-to-after-login');
+			removeItem('go-to-after-login');
+			if(gotoAfterLogin && (gotoAfterLogin !== location.href)) {
+				location.href = gotoAfterLogin;
+				return;
+			}
+		}
 		if(MainFrame.instance) {
 			MainFrame.instance.reloadOptions();
 		}
@@ -125,6 +134,7 @@ class User extends Component<any, any> {
 				btn2 = R.a({
 					title: L('LOGOUT'), className: 'clickable top-bar-user-btn', onClick: async () => {
 						LoadingIndicator.instance.show();
+						removeItem('go-to-after-login');
 						await attachGoogleLoginAPI();
 						//@ts-ignore
 						if(window.gapi && window.gapi.auth2) {

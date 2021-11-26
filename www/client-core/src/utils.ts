@@ -1373,6 +1373,7 @@ async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
 	if(User.currentUserData && User.currentUserData.id !== USER_ID.GUEST) {
 		return User.currentUserData;
 	} else {
+		setItem('go-to-after-login', location.href);
 		let backdrop = document.createElement('div');
 		backdrop.className = 'modal-back' + (enforced ? '' : ' clickable');
 		let iframe = document.createElement('iframe');
