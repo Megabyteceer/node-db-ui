@@ -247,9 +247,9 @@ class BarItem extends Component<any, any> {
 		},
 			itemsIcon,
 			collapsed ? undefined : R.div({ className: 'left-bar-item-body' },
-				item.name,
-				caret
-			)
+				item.name
+			),
+			caret
 		);
 
 		if((item.nodeType === NODE_TYPE.DOCUMENT) && (item.id !== false)) {
@@ -363,7 +363,15 @@ class LeftBar extends Component<any, any> {
 			menuItems.unshift(R.div({ key: 'toggle-collapsing', className: "left-bar-collapse-button clickable", onClick: this.toggleCollapse }, renderIcon('bars')));
 		}
 
-		return R.td({ className: collapsed ? 'left-bar left-bar-collapsed' : 'left-bar ' },
+		let className = 'left-bar';
+		if(collapsable) {
+			className += ' left-bar-collapsable';
+		}
+		if(collapsed) {
+			className += ' left-bar-collapsed';
+		}
+
+		return R.div({ className },
 			R.div({ className: "left-bar-body" },
 				menuItems
 			)

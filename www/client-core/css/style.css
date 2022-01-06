@@ -399,10 +399,19 @@ input[readonly] {
 
 .left-bar {
 	width: 300px;
+	flex-grow: 0.1;
 }
 
 .left-bar-collapsed {
 	width: 33px;
+}
+
+.left-bar-collapsable {
+	position: absolute;
+	background: white;
+	z-index: 1;
+	border-bottom-right-radius: 8px;
+	overflow: hidden;
 }
 
 .left-bar-body {
@@ -434,6 +443,7 @@ input[readonly] {
 
 .left-bar-group {
 	padding: 12px 11px;
+	padding-right: 40px;
 	background: var(--BRAND_COLOR);
 	color: var(--BRAND_COLOR_SHINE);
 	font-size: 80%;
@@ -602,8 +612,9 @@ input[readonly] {
 	text-align: center;
 }
 
-.root-table {
+.main-frame {
 	width: 100%;
+	display: flex;
 }
 
 #stage {
@@ -626,6 +637,7 @@ input[readonly] {
 
 .stage-container {
 	vertical-align: top;
+	flex-grow: 2;
 }
 
 .modal {
@@ -840,7 +852,7 @@ input[readonly] {
 
 .select-control {
 	position: relative;
-	padding: 7px 8px;
+	padding: 8px;
 	color: #333;
 	min-width: 130px;
 	border: 1px solid #a8a8a8;
@@ -1289,6 +1301,7 @@ input[readonly] {
 }
 
 .list-search {
+	position: relative;
 	display: inline-block;
 	border: 1px solid #a8a8a8;
 	border-radius: 6px;
@@ -1300,7 +1313,7 @@ input[readonly] {
 }
 
 .list-search-input {
-	width: 200px;
+	width: calc(100% - 31px);
 	border-radius: 6px;
 	vertical-align: middle;
 	padding: 2px 8px;

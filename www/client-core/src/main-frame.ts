@@ -65,14 +65,10 @@ class MainFrame extends Component<any, any> {
 	render() {
 		return R.div(null,
 			React.createElement(TopBar),
-			R.table({ className: "root-table" },
-				R.tbody(null,
-					R.tr(null,
-						ENV.nodesTree ? React.createElement(LeftBar, { menuItems: ENV.rootItem.children }) : undefined,
-						R.td({ className: "stage-container" },
-							React.createElement(Stage)
-						)
-					)
+			R.div({ className: "main-frame" },
+				ENV.nodesTree ? React.createElement(LeftBar, { menuItems: ENV.rootItem.children }) : undefined,
+				R.div({ className: "stage-container" },
+					React.createElement(Stage)
 				)
 			),
 			R.div({ className: "footer" }, ENV.APP_TITLE),

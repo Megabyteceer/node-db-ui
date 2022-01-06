@@ -6,13 +6,11 @@
 
 проверить просить вход если ответ нет прав и юзер гость  <access>
 
-Add viewport x2 for mobile?
-
 
 
 hide left menu if one non section item only
 
-check if guest try to upliad file or image to prevent sessions collizion
+check if guest try to upload file or image to prevent sessions collision
 
 go to core/ custom event handler by ENV option
 
