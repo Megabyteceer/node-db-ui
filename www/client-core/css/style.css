@@ -400,6 +400,7 @@ input[readonly] {
 .left-bar {
 	width: 300px;
 	flex-grow: 0.1;
+	box-shadow: 5px 3px 6px -3px #aaa;
 }
 
 .left-bar-collapsed {
@@ -416,7 +417,6 @@ input[readonly] {
 
 .left-bar-body {
 	width: 100%;
-	box-shadow: 5px 0px 6px -3px #aaa;
 	vertical-align: top;
 }
 
@@ -644,9 +644,10 @@ input[readonly] {
 	margin-top: 10%;
 	display: inline-block;
 	cursor: default;
+	max-width: 90%;
 	max-height: 80%;
 	overflow-y: auto;
-	overflow-x: hidden;
+	overflow-x: auto;
 }
 
 .modal-backdrop {
