@@ -9,7 +9,7 @@ import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import ENV from "./ENV";
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession, usersSessionsStartedCount } from "./auth";
-import { throwError, assert, FIELD_TYPE, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK, ROLE_ID, NODE_ID, NODE_TYPE } from "../www/client-core/src/bs-utils";
+import { throwError, assert, FIELD_TYPE, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK, ROLE_ID, NODE_ID, NODE_TYPE, USER_ID } from "../www/client-core/src/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
@@ -356,14 +356,13 @@ async function initNodesData() { // load whole nodes data in to memory
 	eventsHandlers = eventsHandlers_new;
 	clientSideNodes.clear();
 	nodesTreeCache.clear();
-
-	Object.assign(ADMIN_USER_SESSION, await authorizeUserByID(1, true
+	Object.assign(ADMIN_USER_SESSION, await authorizeUserByID(USER_ID.SUPER_ADMIN, false
 		/// #if DEBUG
 		, "dev-admin-session-token"
 		/// #endif
 	));
 	assert(isUserHaveRole(ROLE_ID.ADMIN, ADMIN_USER_SESSION), "User with id 1 expected to be admin.");
-	Object.assign(GUEST_USER_SESSION, await authorizeUserByID(2, true, 'guest-session'));
+	Object.assign(GUEST_USER_SESSION, await authorizeUserByID(USER_ID.GUEST, true, 'guest-session'));
 	GUEST_USER_SESSION.isGuest = true;
 	assert(isUserHaveRole(ROLE_ID.GUEST, GUEST_USER_SESSION), "User with id 2 expected to be guest.");
 	/// #if DEBUG

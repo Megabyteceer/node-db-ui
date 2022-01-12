@@ -8,8 +8,17 @@ import ENV from "./ENV";
 import { getNodeDesc, getFieldDesc } from "./describe-node";
 import { L } from "./locale";
 
+/// #if DEBUG
 const UPLOADS_IMAGES_PATH = join(__dirname, '../../www/images/uploads');
 const UPLOADS_FILES_PATH = join(__dirname, '../../www/uploads/file');
+/*
+/// #endif
+const UPLOADS_IMAGES_PATH = join(__dirname, './www/images/uploads');
+const UPLOADS_FILES_PATH = join(__dirname, './www/uploads/file');
+//*/
+
+
+
 
 const IMAGE_EXTENSION = '.jpg';
 
