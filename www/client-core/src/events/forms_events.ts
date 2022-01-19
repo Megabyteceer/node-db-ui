@@ -138,6 +138,10 @@ class FormEvents extends FormFull {
 				}
 			});
 		}
+		if(this.recId === User.currentUserData.id) {
+			User.currentUserData.avatar = this.fieldValue('avatar');
+			User.instance.forceUpdate();
+		}
 	}
 
 	_roles_onLoad() {
