@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { LeftBar } from "./left-bar";
 import { R } from "./r";
 import { debugError, sp } from "./utils";
 
@@ -28,6 +29,7 @@ class Modal extends Component<any, any> {
 			modalStack.push({ content: content, noDiscardByBackdrop: noDiscardByBackdrop, id: idCounter });
 		}
 		this.forceUpdate();
+		LeftBar.instance.refreshLeftBarActive();
 		return idCounter;
 	}
 
@@ -49,6 +51,7 @@ class Modal extends Component<any, any> {
 			});
 		}
 		this.forceUpdate();
+		LeftBar.instance.refreshLeftBarActive();
 	}
 
 	render() {
@@ -77,6 +80,9 @@ class Modal extends Component<any, any> {
 		}
 	}
 }
+
+
+//TODO: block scroll body under modals
 
 /* @type = {Modal}*/// #if DEBUG
 Modal.instance = null;

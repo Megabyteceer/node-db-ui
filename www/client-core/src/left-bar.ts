@@ -9,6 +9,7 @@ import { R } from "./r";
 import { Stage } from "./stage";
 import { iAdmin, User } from "./user";
 import { isLitePage, L, renderIcon } from "./utils";
+import { Modal } from "./modal";
 
 let collapsed;
 
@@ -366,6 +367,9 @@ class LeftBar extends Component<any, any> {
 		let className = 'left-bar';
 		if(collapsable) {
 			className += ' left-bar-collapsable';
+			if(Modal.instance && Modal.instance.isShowed() || Stage.allForms.length > 1) {
+				className += ' hidden';
+			}
 		}
 		if(collapsed) {
 			className += ' left-bar-collapsed';

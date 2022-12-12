@@ -118,9 +118,7 @@ class List extends BaseForm<ListProps, ListState> {
 			});
 		}
 
-		if(!this.isSubForm()) {
-			LeftBar.instance.refreshLeftBarActive();
-		}
+		LeftBar.instance.refreshLeftBarActive();
 	}
 
 	isFieldVisibleByFormViewMask(field) {
@@ -448,7 +446,7 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 
 		var body;
-		if(data.total > 0) {
+		if(data.total > 0 || this.isCustomListRendering()) {
 			if(this.isCustomListRendering()) {
 				body = getListRenderer(node.id).call(this);
 			}

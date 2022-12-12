@@ -6,6 +6,7 @@ import { Filters, getNode, getNodeData, getNodeIfPresentOnClient, isLitePage, is
 import { assert, NODE_TYPE, RecId, RecordData, throwError } from "./bs-utils";
 import { BaseForm } from "./forms/base-form";
 import ReactDOM from 'react-dom';
+import { LeftBar } from "./left-bar";
 
 let mouseX: number;
 let mouseY: number;
@@ -86,6 +87,7 @@ class Stage extends Component<any, any> {
 				document.body.style.boxSizing = '';
 			}
 			updateHashLocation();
+			LeftBar.instance.refreshLeftBarActive();
 			return true;
 		}
 	}
@@ -249,6 +251,7 @@ function addFormEntry(noAnimation = false) {
 		document.body.style.overflowY = 'hidden';
 	}
 	allForms.push(entry);
+	LeftBar.instance.refreshLeftBarActive();
 }
 
 export { Stage, FormLoaderCog }
