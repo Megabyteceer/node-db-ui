@@ -229,7 +229,7 @@ function makeReactClassSelectionField(form: FormFull, fieldName) {
 
 function removeReactClassSelectionField(form: FormFull, fieldName) {
 	const input = form.getFieldDomElement(fieldName).querySelector('input') as HTMLInputElement;
-	input.style.display = 'none';
+	input.style.display = '';
 	form.renderToField(fieldName, 'classes-selector', null);
 }
 
