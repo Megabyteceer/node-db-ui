@@ -10,6 +10,7 @@ html {
 
 body {
 	overflow-y: scroll;
+	overflow-y: overlay;
 }
 
 hr {
@@ -399,12 +400,13 @@ input[readonly] {
 
 .left-bar {
 	width: 300px;
-	flex-grow: 0.1;
+	min-width: 300px;
 	box-shadow: 5px 3px 6px -3px #aaa;
 }
 
 .left-bar-collapsed {
 	width: 33px;
+	min-width: 33px;
 }
 
 .left-bar-collapsable {
@@ -427,6 +429,7 @@ input[readonly] {
 }
 
 .left-bar-item-body {
+	text-overflow: ellipsis;
 	position: relative;
 	display: inline-block;
 	overflow-x: hidden;
