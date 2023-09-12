@@ -184,7 +184,7 @@ registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLo
 				);
 			}
 
-			if(!field.requirement && !this.props.isN2M) {
+			if(!this.isRequired() && !this.props.isN2M) {
 				clearBtn = R.div({
 					title: L('CLEAR'),
 					className: 'clickable clear-btn',

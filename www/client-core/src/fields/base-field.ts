@@ -31,6 +31,7 @@ interface FieldProps {
 interface FieldState {
 	focused?: boolean;
 	value?: any;
+	requirement?: boolean;
 }
 
 interface RefToInput extends Component {
@@ -65,6 +66,10 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 			setTimeout(resetAutofocus, 10);
 		}
 		return ret;
+	}
+
+	isRequired() {
+		return this.state.hasOwnProperty('requirement') ? this.state.requirement : this.props.field.requirement;
 	}
 
 	isEmpty(): boolean {

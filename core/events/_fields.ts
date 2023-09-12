@@ -54,6 +54,20 @@ const handlers: NodeEventsHandlers = {
 			};
 			await submitRecord(NODE_ID.FIELDS, linkerFieldData);
 		}
+
+		// update priority
+		let fields = await getRecords(NODE_ID.FIELDS, VIEW_MASK.ALL, null, userSession, {node_fields_linker: data.node_fields_linker});
+		fields.items.sort((a, b) => {
+			return a.prior - b.prior;
+		});
+		let prior = 0;
+		await Promise.all(fields.items.map((i) => {
+			prior += 10;
+			if(i.prior !== prior) {
+				return submitRecord(NODE_ID.FIELDS, {prior}, i.id, userSession);
+			}
+		}));
+
 		reloadMetadataSchedule();
 	},
 
@@ -184,8 +198,6 @@ async function createFieldInTable(data: RecordDataWrite) {
 
 	// prepare space for field
 	await mysqlExec("UPDATE _fields SET prior=prior+20 WHERE (node_fields_linker =" + nodeId + ") AND (prior >" + data.prior + ")");
-
-	data.prior += 10;
 
 	const fieldType = data.fieldType;
 	const fieldName = data.fieldName;

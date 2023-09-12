@@ -32,8 +32,6 @@ const path = require('path')
 const upload2 = upload.single('file');
 
 function addDebugDataToResponse(resHeaders, ret, startTime) {
-	resHeaders['Access-Control-Allow-Origin'] = 'http://node-db-ui.com:3000';
-	resHeaders['Access-Control-Allow-Methods'] = 'POST';
 	if(mysqlDebug.debug) {
 		ret.debug = mysqlDebug.debug;
 		delete mysqlDebug.debug;
@@ -62,7 +60,9 @@ const handleRequest = (req, res) => {
 		/// #endif
 
 		const resHeaders = {
-			'content-type': 'application/json'
+			'content-type': 'application/json',
+			'Access-Control-Allow-Origin': ENV.ALLOW_ORIGIN,
+			'Access-Control-Allow-Methods': 'POST'
 		};
 
 		const onError = (error) => {
@@ -124,6 +124,16 @@ const handleUpload = (req, res) => {
 		handleRequest(req, res);
 	});
 };
+
+app.options("/core/*", (req, res) => {
+	res.set({
+		'Access-Control-Allow-Origin': ENV.ALLOW_ORIGIN,
+		'Access-Control-Allow-Credentials': true,
+		'Access-Control-Allow-Methods': 'POST',
+		'Access-Control-Allow-Headers': 'Content-Type'
+	});
+	res.end();
+});
 
 app.post("/core/api/uploadFile", handleUpload);
 app.post("/core/api/uploadImage", handleUpload);

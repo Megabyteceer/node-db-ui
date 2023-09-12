@@ -60,7 +60,7 @@ class FieldWrap extends Component<FieldProps, any> {
 	}
 
 	makeFieldRequired(requirement) {
-		this.props.field.requirement = requirement;
+		this.fieldRef.state.requirement = requirement;
 		this.forceUpdate();
 	}
 

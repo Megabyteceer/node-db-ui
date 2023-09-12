@@ -1,14 +1,14 @@
 /// #if DEBUG
 /*
 /// #endif
-import handlers from './events/___index';
+import handlers from '../___index';
 //*/
 
 import { existsSync } from "fs";
 import { join } from "path";
 import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
 import ENV from "./ENV";
-import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession, usersSessionsStartedCount } from "./auth";
+import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession/*, usersSessionsStartedCount*/  } from "./auth";
 import { throwError, assert, FIELD_TYPE, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK, ROLE_ID, NODE_ID, NODE_TYPE, USER_ID } from "../www/client-core/src/bs-utils";
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
@@ -18,7 +18,7 @@ let nodes;
 let nodesById;
 let nodesByTableName;
 let langs: UserLangEntry[];
-let eventsHandlers;
+let eventsHandlersServerSide;
 
 const ADMIN_USER_SESSION: UserSession = {} as UserSession;
 const GUEST_USER_SESSION: UserSession = {} as UserSession;
@@ -35,7 +35,8 @@ function getFieldDesc(fieldId): FieldDesc {
 
 function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 	assert(!isNaN(nodeId), 'nodeId expected');
-	if(!clientSideNodes.has(userSession.cacheKey)) {
+	let userNodesCacheKey = nodeId + 'n_' + userSession.cacheKey;
+	if(!clientSideNodes.has(userNodesCacheKey)) {
 		const srcNode = nodesById.get(nodeId);
 		let privileges;
 
@@ -72,7 +73,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 
 				for(let id in srcNode.filters) {
 					const filter = srcNode.filters[id];
-					if(filter.roles) {
+					if(filter.roles && !isUserHaveRole(ROLE_ID.ADMIN, userSession)) {
 						if(!filter.roles.find(roleId => isUserHaveRole(roleId, userSession))) {
 							continue;
 						}
@@ -150,12 +151,12 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				}
 				ret.fields = fields;
 			}
-			clientSideNodes.set(nodeId, ret);
+			clientSideNodes.set(userNodesCacheKey, ret);
 		} else {
 			throwError("<access> Access to node " + nodeId + " is denied");
 		}
 	}
-	return clientSideNodes.get(nodeId);
+	return clientSideNodes.get(userNodesCacheKey);
 }
 
 function getUserAccessToNode(node, userSession) {
@@ -221,7 +222,7 @@ function reloadMetadataSchedule() {
 }
 
 function attemptToReloadMetadataSchedule() {
-	if(usersSessionsStartedCount() === 0) {
+	//if(usersSessionsStartedCount() === 0) { //TODO: disabled because of freezes
 		if(metadataReloadingInterval) {
 			clearInterval(metadataReloadingInterval);
 			metadataReloadingInterval = null;
@@ -229,7 +230,7 @@ function attemptToReloadMetadataSchedule() {
 		initNodesData().then(() => {
 			setMaintenanceMode(false);
 		});
-	}
+//	}
 }
 
 async function initNodesData() { // load whole nodes data in to memory
@@ -324,11 +325,16 @@ async function initNodesData() { // load whole nodes data in to memory
 
 			//events handlers
 			/// #if DEBUG
-			let moduleFileName = join(__dirname, 'events/' + nodeData.tableName + '.js');
-			if(existsSync(moduleFileName)) {
-				let handler = await import(`./events/${nodeData.tableName}`);
-				eventsHandlers_new.set(nodeData.id, handler.default);
+			async function importServerSideEvents(folderName) {
+				let moduleFileName = join(__dirname, folderName + nodeData.tableName + '.js');
+				if(existsSync(moduleFileName)) {
+					let handler = await import(`./${folderName}${nodeData.tableName}`);
+					eventsHandlers_new.set(nodeData.id, handler.default);
+				}
+
 			}
+			await importServerSideEvents('events/');
+			await importServerSideEvents('../events/');
 			/// #endif
 		}
 	}
@@ -353,7 +359,7 @@ async function initNodesData() { // load whole nodes data in to memory
 	if(langs.length > 1) {
 		options.langs = langs;
 	}
-	eventsHandlers = eventsHandlers_new;
+	eventsHandlersServerSide = eventsHandlers_new;
 	clientSideNodes.clear();
 	nodesTreeCache.clear();
 	Object.assign(ADMIN_USER_SESSION, await authorizeUserByID(USER_ID.SUPER_ADMIN, false
@@ -402,23 +408,29 @@ enum ServerSideEventHandlersNames {
 	beforeCreate = 'beforeCreate',
 	afterCreate = 'afterCreate',
 	beforeUpdate = 'beforeUpdate',
+	afterUpdate = 'afterUpdate',
 	beforeDelete = 'beforeDelete',
+	afterDelete = 'afterDelete',
 }
 
 interface NodeEventsHandlers {
 	beforeCreate?: (data: RecordDataWrite, userSession: UserSession) => Promise<void>;
 	afterCreate?: (data: RecordDataWrite, userSession: UserSession) => Promise<void>;
 	beforeUpdate?: (currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) => Promise<void>;
+	afterUpdate?: (data: RecordData, userSession: UserSession) => Promise<void>;
 	beforeDelete?: (data: RecordData, userSession: UserSession) => Promise<void>;
+	afterDelete?: (data: RecordData, userSession: UserSession) => Promise<void>;
 }
 
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeUpdate, currentData: RecordData, newData: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterUpdate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames, data1, data2, data3?): Promise<void> {
-	if(eventsHandlers.has(nodeId)) {
-		const serverSideNodeEventHandler = eventsHandlers.get(nodeId)[eventName];
+	if(eventsHandlersServerSide.has(nodeId)) {
+		const serverSideNodeEventHandler = eventsHandlersServerSide.get(nodeId)[eventName];
 		/// #if DEBUG
 		data1 = wrapObjectToDestroy(data1);
 		data2 = wrapObjectToDestroy(data2);

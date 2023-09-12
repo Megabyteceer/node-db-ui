@@ -25,6 +25,8 @@ class User extends Component<any, any> {
 
 	static instance: User;
 	static currentUserData: UserSession;
+	static additionalUserDataRenderer: () => React.ReactElement<any, string | React.JSXElementConstructor<any>>;
+
 
 	componentDidMount() {
 		User.instance = this;
@@ -162,6 +164,7 @@ class User extends Component<any, any> {
 		}
 
 		return R.div({ className: "top-bar-user-container" },
+			(User.additionalUserDataRenderer && User.currentUserData) ? User.additionalUserDataRenderer() : undefined,
 			body
 		)
 	}

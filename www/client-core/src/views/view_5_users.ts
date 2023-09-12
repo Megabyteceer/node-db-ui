@@ -40,7 +40,7 @@ registerListRenderer(NODE_ID.USERS, function (this: List): React.ReactNode {
 		var additionalFields = [];
 		for(let key of Object.keys(item)) {
 			if(key.length > 3 && !RENDERED_FIELDS[key] && item[key]) {
-				additionalFields.push(R.div({ key, className: 'user-item-info' },
+				additionalFields.push(R.div({ key, className: 'user-item-info user-item-info-' + key },
 					node.fieldsByName[key].name, ': ', item[key]
 				));
 			}

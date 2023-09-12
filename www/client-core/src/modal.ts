@@ -29,7 +29,7 @@ class Modal extends Component<any, any> {
 			modalStack.push({ content: content, noDiscardByBackdrop: noDiscardByBackdrop, id: idCounter });
 		}
 		this.forceUpdate();
-		LeftBar.instance.refreshLeftBarActive();
+		LeftBar.refreshLeftBarActive();
 		return idCounter;
 	}
 
@@ -51,7 +51,7 @@ class Modal extends Component<any, any> {
 			});
 		}
 		this.forceUpdate();
-		LeftBar.instance.refreshLeftBarActive();
+		LeftBar.refreshLeftBarActive();
 	}
 
 	render() {

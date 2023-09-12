@@ -27,7 +27,8 @@ class FormEvents extends FormFull {
 	}
 
 	_users_onLoad() {
-		if(!ENV.langs) {
+
+		if(!ENV.langs && this.isUserEdit) {
 			this.hideField('language');
 		}
 		const isHiddenField = (fn) => {
@@ -36,9 +37,11 @@ class FormEvents extends FormFull {
 			}
 		}
 
-		this.addLookupFilters('language', {
-			isUILanguage: 1
-		});
+		if(this.isUserEdit) {
+			this.addLookupFilters('language', {
+				isUILanguage: 1
+			});
+		}
 
 		if($('#org-edit-link').length === 0) {
 			$('.field-container-id-63 input').css('width', '50%');
@@ -51,10 +54,10 @@ class FormEvents extends FormFull {
 			}
 		}
 
-		if(!iAdmin()) {
+		if(!iAdmin() && this.isUserEdit) {
 			this.hideField('_user_roles');
 		}
-		if(this.recId < 4) {
+		if(this.recId < 4 && this.isUserEdit) {
 			this.hideField('_user_roles');
 		}
 
@@ -67,7 +70,7 @@ class FormEvents extends FormFull {
 		var myName = this.fieldValue('name');
 
 
-		if(!isAdmin()) {
+		if(!isAdmin() && this.isUserEdit) {
 			this.disableField('email');
 		}
 
@@ -562,6 +565,7 @@ class FormEvents extends FormFull {
 			this.setFieldValue('value', maxEnumVal + 1);
 		}
 	}
+
 	//_insertNewHandlersHere_
 }
 

@@ -1,4 +1,27 @@
-проверить регистрацию по email
+
+запрсы к бд в отладке завернуть в отдельный скрипт child_process и запросы r tyve выполнять через sync-request:
+ https://www.npmjs.com/package/sync-request
+
+
+
+аюекапить базу и Сканануть https://sqlmap.org/
+
+Добавить фильтр уже выбраных гифтов.
+
+Все возвращаемые хендлеры паренести в афтер апдейт и пвтеркриейт.
+
+Сделать безопасный выход с ожиданием всех запросов и закрытием прослушки сокета сразу. При закрытии сейвить сессии при старте зпгружать сессии.
+
+клик по аватару гостя открывает ошибку. Аватар гостя рендерится в прод билде
+
+
+ключи у langs не выставляются.
+
+Add placement enum field to field. Body, footer (after save button), header. Move social button to footer.
+
+Префиксы локализации добавить CORE_
+
+Убрать  n и юзать id  в адресе ноды. Следующый если цифра то рек ид
 
 Попробовать регистрацию из окна рисунка.
 
@@ -27,6 +50,7 @@ Deploy data for _tables by default
 
 в релизе настроить CDN заголовки кеша. апи на поддомене.
 
+полнотекcтовый поиск:
 Use mysql>Alter table students ADD FULLTEXT (first_name, last_name);
 mysql>Select * from students where match(first_name, last_name) AGAINST (‘Jones’);
 

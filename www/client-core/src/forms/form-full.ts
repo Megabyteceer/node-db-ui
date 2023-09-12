@@ -84,7 +84,7 @@ class FormFull extends FormEventProcessingMixins {
 		window.addEventListener('unload', this.tryBackupData);
 		this.backupInterval = setInterval(this.tryBackupData, 15000);
 		if(this.props.isRootForm) {
-			LeftBar.instance.refreshLeftBarActive();
+			LeftBar.refreshLeftBarActive();
 		}
 	}
 
@@ -155,23 +155,23 @@ class FormFull extends FormEventProcessingMixins {
 		}
 
 		for(let k in this.fieldsRefs) {
-			var fieldRef = this.fieldsRefs[k];
-			if(!(fieldRef instanceof FieldWrap)) {
+			var fieldWrapperRef = this.fieldsRefs[k];
+			if(!(fieldWrapperRef instanceof FieldWrap)) {
 				continue;
 			}
-			var field = fieldRef.props.field;
+			var field = fieldWrapperRef.props.field;
 
 			if(this.props.overrideOrderData >= 0 && field.fieldName === 'order') {
 				this.currentData[field.fieldName] = this.props.overrideOrderData;
 			}
 
-			if(field.requirement && fieldRef.isEmpty()) {
+			if(fieldWrapperRef.fieldRef.isRequired() && fieldWrapperRef.isEmpty()) {
 				this.fieldAlert(field.fieldName, L('REQUIRED_FLD'), false, this.formIsValid);
 				this.formIsValid = false;
 			} else {
 				this.fieldAlert(field.fieldName);
-				let isValid = await this.checkUniqueValue(field, (!fieldRef.isEmpty()) && this.currentData[field.fieldName]);
-				let isValid2 = await fieldRef.checkValidityBeforeSave(this.formIsValid);
+				let isValid = await this.checkUniqueValue(field, (!fieldWrapperRef.isEmpty()) && this.currentData[field.fieldName]);
+				let isValid2 = await fieldWrapperRef.checkValidityBeforeSave(this.formIsValid);
 				if(!isValid || !isValid2) {
 					this.formIsValid = false;
 				}
@@ -205,7 +205,7 @@ class FormFull extends FormEventProcessingMixins {
 			if(this.props.initialData.isP || !this.props.initialData.id) {
 				if(isDraft === true) {
 					if(this.props.initialData.status !== 2) {
-						data.status = 2;
+						data.status = 2; //TODO: add RECORD_STATUS enum
 					}
 				} else {
 					if(this.props.initialData.status !== 1) {
@@ -312,6 +312,7 @@ class FormFull extends FormEventProcessingMixins {
 
 
 		} else {
+			this.isDataModified = false;
 			await callForEachField(this.fieldsRefs, data, 'afterSave');
 		}
 
@@ -452,7 +453,7 @@ class FormFull extends FormEventProcessingMixins {
 		if(!this.props.inlineEditable) {
 			if(data.isD && isMainTab && !this.props.preventDeleteButton) {
 				deleteButton = R.button({
-					className: isRestricted ? 'restricted clickable danger-button' : 'clickable danger-button', onClick: async () => {
+					className: isRestricted ? 'restricted clickable danger-button delete-button' : 'clickable danger-button delete-button', onClick: async () => {
 						if(await deleteRecord(data.name, node.id, data.id)) {
 							if(this.isSubForm()) {
 								this.props.parentForm.valueSelected();
@@ -471,10 +472,10 @@ class FormFull extends FormEventProcessingMixins {
 					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: saveButtonLabel }, this.isSubForm() ? renderIcon('check') : renderIcon(node.storeForms ? 'floppy-o' : node.icon), saveButtonLabel);
 				} else {
 					if(data.status === 1) {
-						draftButton = R.button({ className: isRestricted ? 'clickable default-button restricted' : 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
+						draftButton = R.button({ className: isRestricted ? 'clickable default-button unpublish-button restricted' : 'clickable default-button unpublish-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
 						saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick }, saveButtonLabel);
 					} else {
-						draftButton = R.button({ className: 'clickable default-button', onClick: () => { this.saveClick(true) }, title: L('SAVE_TEMPLATE') }, L('SAVE_TEMPLATE'));
+						draftButton = R.button({ className: 'clickable default-button publish-button', onClick: () => { this.saveClick(true) }, title: L('SAVE_TEMPLATE') }, L('SAVE_TEMPLATE'));
 						saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: L('PUBLISH') }, L('PUBLISH'));
 					}
 				}

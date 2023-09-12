@@ -87,7 +87,7 @@ class Stage extends Component<any, any> {
 				document.body.style.boxSizing = '';
 			}
 			updateHashLocation();
-			LeftBar.instance.refreshLeftBarActive();
+			LeftBar.refreshLeftBarActive();
 			return true;
 		}
 	}
@@ -251,7 +251,7 @@ function addFormEntry(noAnimation = false) {
 		document.body.style.overflowY = 'hidden';
 	}
 	allForms.push(entry);
-	LeftBar.instance.refreshLeftBarActive();
+	LeftBar.refreshLeftBarActive();
 }
 
 export { Stage, FormLoaderCog }

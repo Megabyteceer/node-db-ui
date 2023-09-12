@@ -328,6 +328,10 @@ class LeftBar extends Component<any, any> {
 		this.forceUpdate();
 	}
 
+	static refreshLeftBarActive() {
+		LeftBar.instance && LeftBar.instance.refreshLeftBarActive();
+	}
+
 	refreshLeftBarActive() {
 		this.forceUpdate();
 		setTimeout(() => {

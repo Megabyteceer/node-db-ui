@@ -18,10 +18,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `crud_js_base`
+-- Database: `crud_js_base2`
 --
-CREATE DATABASE IF NOT EXISTS `crud_js_base` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `crud_js_base`;
+CREATE DATABASE IF NOT EXISTS `crud_js_base2` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `crud_js_base2`;
 
 -- --------------------------------------------------------
 

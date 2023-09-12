@@ -41,6 +41,8 @@ export default {
 	beforeUpdate: async function(currentData, newData, userSession) {
 		if(!isAdmin(userSession)) {
 			delete newData.email;
+			delete newData.balance;
+			delete newData.balance_to_spend;
 		}
 
 		if(newData.hasOwnProperty('company')) {

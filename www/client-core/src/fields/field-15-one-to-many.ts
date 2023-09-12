@@ -36,6 +36,11 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 		return ret;
 	}
 
+	isEmpty(): boolean {
+		var subForms = this.inlineListRef.getSubForms();
+		return subForms.length < 1;
+	}
+
 	valueSelected(recordData?: RecordData, isNewCreated?: boolean, noToggleList?: boolean);
 	valueSelected() {
 	}

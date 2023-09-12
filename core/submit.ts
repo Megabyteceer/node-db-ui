@@ -320,6 +320,10 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 				recId = qResult.insertId;
 				data.id = recId;
 				await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterCreate, data, userSession);
+			} else {
+				if(recId !== null) {
+					await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterUpdate, Object.assign(currentData, data), userSession);
+				}
 			}
 			if(needProcess_n2m) {
 				for(let f of node.fields) {

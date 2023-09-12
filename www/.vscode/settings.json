@@ -9,5 +9,6 @@
 	"cSpell.words": [
 		"draggable",
 		"unpublish"
-	]
+	],
+	"task.allowAutomaticTasks": "on"
 }

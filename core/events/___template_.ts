@@ -15,7 +15,16 @@ const handlers: NodeEventsHandlers = {
 
 	},
 
+	afterUpdate: async function(data: RecordData, userSession: UserSession) {
+
+	},
+
 	beforeDelete: async function(data: RecordData, userSession: UserSession) {
+
+	},
+
+
+	afterDelete: async function(data: RecordData, userSession: UserSession) {
 
 	}
 }

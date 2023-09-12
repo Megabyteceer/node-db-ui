@@ -44,9 +44,9 @@ const usersSessionsStartedCount = () => {
 function setMaintenanceMode(val) {
 	/// #if DEBUG
 	console.log('setMaintenanceMode ' + val);
-	console.log((new Error('')).stack.replace('Error', '').trim());
+	//console.log((new Error('')).stack.replace('Error', '').trim());
 	/// #endif
-
+	return; // TODO: Maintenance
 	if(val) {
 		maintenanceMode++;
 	} else {
@@ -61,7 +61,11 @@ async function startSession(sessionToken, browserLanguageId: string) {
 	}
 	let userSession;
 	if(!sessions.has(sessionToken)) {
-		return getGuestUserForBrowserLanguage(browserLanguageId);
+		if(sessionToken !== 'guest-session') {
+			throwError('<auth> session expired');
+		} else {
+			return getGuestUserForBrowserLanguage(browserLanguageId);
+		}
 	} else {
 		userSession = sessions.get(sessionToken);
 	}
@@ -76,7 +80,7 @@ async function startSession(sessionToken, browserLanguageId: string) {
 			if(!userSession._isStarted && !maintenanceMode) {
 				clearInterval(i);
 				if(userSession.id === 0) {
-					rejects(new Error('session expired'));
+					rejects(new Error('<auth> session expired'));
 				}
 				userSession._isStarted = true;
 				startedSessionsCount++;

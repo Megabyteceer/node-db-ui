@@ -26,5 +26,6 @@
 		"unpublish",
 		"VARCHAR",
 		"zoomable"
-	]
+	],
+	"task.allowAutomaticTasks": "on"
 }

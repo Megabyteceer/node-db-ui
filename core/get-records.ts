@@ -21,9 +21,9 @@ const EMPTY_RATING = { all: 0 };
 										['r'] = reverse order;
 										['filterId'] = filter's id to be applied on result;
 */
-async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: RecId, userSession: UserSession): Promise<RecordData>;
-async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecId[], userSession: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
-async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecId | number[], userSession: UserSession = ADMIN_USER_SESSION, filterFields: any = EMPTY_FILTERS, search?: string): Promise<RecordData | RecordsData> {
+async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<RecordData>;
+async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecId[], userSession?: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
+async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecId | RecId[] = null, userSession: UserSession = ADMIN_USER_SESSION, filterFields: any = EMPTY_FILTERS, search?: string): Promise<RecordData | RecordsData> {
 
 	let node = getNodeDesc(nodeId, userSession);
 
@@ -384,6 +384,9 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeDelete, recordData, userSession);
 
 	await mysqlExec("UPDATE " + node.tableName + " SET status=0 WHERE id=" + recId + " LIMIT 1");
+
+	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterDelete, recordData, userSession);
+
 	return 1;
 }
 

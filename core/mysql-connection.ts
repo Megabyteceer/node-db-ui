@@ -81,14 +81,15 @@ function waitPrevTransactionFinish() {
 
 async function mysqlStartTransaction() {
 	if(mysqlTransactStarted) {
-		/// #if DEBUG
-		debugger;
-		/// #endif
 		await waitPrevTransactionFinish();
+		/// #if DEBUG
+		//debugger;
+		/// #endif
 	}
-	const ret = mysqlExec("START TRANSACTION;");
+	//const ret = mysqlExec("START TRANSACTION;");
 	mysqlTransactStarted = true;
-	return ret;
+	//return ret;
+	return Promise.resolve();
 }
 
 function nextTransaction() {
@@ -99,14 +100,14 @@ function nextTransaction() {
 
 async function mysqlCommit() {
 	assert(mysqlTransactStarted, "transaction is not started");
-	await mysqlExec("COMMIT;");
+	//await mysqlExec("COMMIT;");
 	mysqlTransactStarted = false;
 	nextTransaction();
 }
 
 async function mysqlRollback() {
 	if(mysqlTransactStarted) {
-		await mysqlExec("ROLLBACK;");
+		//await mysqlExec("ROLLBACK;");
 		mysqlTransactStarted = false;
 		nextTransaction();
 	}
@@ -151,7 +152,6 @@ const mysql_real_escape_string = (str) => {
             case "\"":
             case "'":
             case "\\":
-            case "%":
                 return "\\" + char; // prepends a backslash to backslash, percent,
             // and double/single quotes
             default:

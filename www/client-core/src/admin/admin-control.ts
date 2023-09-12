@@ -259,11 +259,12 @@ class NodeAdmin extends Component<any, any> {
 							getNodeData(4, undefined, {
 								_nodesID: item.parent
 							}).then((data) => {
-								for(var k in data.items) {
-									if(data.items[k].id === item.id) {
-										admin.exchangeNodes(data.items[parseInt(k)], data.items[parseInt(k) + 1]);
-									}
-								}
+								data.items.sort((a, b) => {
+									return a.prior - b.prior;
+								});
+								let index = data.items.findIndex(i => i.id === item.id);
+								admin.exchangeNodes(data.items[index], data.items[index + 1]);
+
 							});
 						},
 						title: "Move node down"
@@ -276,11 +277,11 @@ class NodeAdmin extends Component<any, any> {
 							getNodeData(4, undefined, {
 								_nodesID: item.parent
 							}).then((data) => {
-								for(var k in data.items) {
-									if(data.items[k].id === item.id) {
-										admin.exchangeNodes(data.items[parseInt(k)], data.items[parseInt(k) - 1]);
-									}
-								}
+								data.items.sort((a, b) => {
+									return a.prior - b.prior;
+								});
+								let index = data.items.findIndex(i => i.id === item.id);
+								admin.exchangeNodes(data.items[index], data.items[index - 1]);
 							});
 						},
 						title: "Move node up"
@@ -360,9 +361,10 @@ class NodeAdmin extends Component<any, any> {
 }
 
 function createNodeForMenuItem(item) {
-	getNodeData(4, ((item.nodeType === NODE_TYPE.DOCUMENT) ? item.parent : item.id) as number).then((data) => {
+	let isBasedOnDocument = item.nodeType === NODE_TYPE.DOCUMENT;
+	getNodeData(NODE_ID.NODES, (isBasedOnDocument ? item.parent : item.id) as number).then((data) => {
 		window.crudJs.Stage.showForm(NODE_ID.NODES, 'new', {
-			prior: data.prior,
+			prior: 100000,
 			_nodesID: {
 				id: data.id,
 				name: data.name

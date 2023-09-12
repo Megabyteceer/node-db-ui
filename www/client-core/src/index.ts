@@ -85,13 +85,13 @@ window.onerror = (msg, url, line, col, error) => {
 //*/
 
 
-window.addEventListener('load', () => {
-	setTimeout(() => {
-		window.crudJs.registerEventHandler(FormEvents);
-		window.crudJs.registerEventHandler(FieldsEvents);
-		ReactDOM.render(
-			React.createElement(MainFrame),
-			document.getElementById('container')
-		);
-	}, 10);
-});
+
+setTimeout(() => {
+	window.crudJs.registerEventHandler(FormEvents);
+	window.crudJs.registerEventHandler(FieldsEvents);
+	ReactDOM.render(
+		React.createElement(MainFrame),
+		document.getElementById('container')
+	);
+}, 10);
+

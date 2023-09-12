@@ -30,8 +30,12 @@ enum CLIENT_SIDE_FORM_EVENTS {
 	ON_FORM_LOAD = 'onLoad',
 	ON_FIELD_CHANGE = 'onChange',
 }
-
+/// #if DEBUG
+const __corePath = 'http://127.0.0.1:1443/core/';
+/*
+/// #endif
 const __corePath = '/core/';
+//*/
 
 const headersJSON = new Headers();
 headersJSON.append("Content-Type", "application/json");
@@ -863,7 +867,7 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 			}).then((data) => {
 				handleAdditionalData(data, url);
 				if(isAuthNeed(data)) {
-					window.crudJs.Stage.showForm(NODE_ID.LOGIN, 'new', undefined, true);
+
 				} else if(data.hasOwnProperty('result')) {
 					isOrderNeedDispose = false;
 					requestRecord.result = data.result;
@@ -913,7 +917,17 @@ async function draftRecord(nodeId, recId): Promise<RecordSubmitResult> {
 }
 
 function isAuthNeed(data) {
-	return (data.isGuest && isUserHaveRole(3)) || (data.error && data.error.message && (data.error.message.startsWith('<access>')));
+	let token = getSessionToken();
+	if((token && (token !== "guest-session")) && (data.error && (data.error.startsWith('Error: <auth>') || data.error.startsWith('<auth>')))) {
+		clearSessionToken();
+		window.crudJs.Stage.showForm(NODE_ID.LOGIN, 'new', undefined, true);
+		return true;
+	} else if(data.error && (data.error.startsWith('Error: <access>') || data.error.startsWith('<access>'))) {
+		if(window.crudJs.Stage?.currentForm?.props?.node?.id !== NODE_ID.LOGIN) {
+			goToHome();
+		}
+		return true;
+	}
 }
 
 function serializeForm(form): FormData {
@@ -976,8 +990,7 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 		.then((data) => {
 			handleAdditionalData(data, url);
 			if(isAuthNeed(data)) {
-				alert('authHerePopup');
-				//authHerePopup
+
 			} else if(data.hasOwnProperty('result')) {
 				return data.result;
 			} else {
@@ -1369,6 +1382,10 @@ function getSessionToken() {
 	return getItem('cud-js-session-token');
 }
 
+function clearSessionToken() {
+	removeItem('cud-js-session-token');
+}
+
 async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
 	if(User.currentUserData && User.currentUserData.id !== USER_ID.GUEST) {
 		return User.currentUserData;
@@ -1421,8 +1438,10 @@ async function attachGoogleLoginAPI(enforces = false) {
 }
 
 export {
+	shakeDomElement,
 	attachGoogleLoginAPI,
 	getSessionToken,
+	clearSessionToken,
 	loginIfNotLoggedIn,
 	onNewUser,
 	registerListRenderer,

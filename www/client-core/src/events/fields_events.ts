@@ -322,6 +322,10 @@ class FieldsEvents extends FormEvents {
 		this.save();
 	}
 
+	_nodes_storeForms_onChange() {
+		this._nodes_nodeType_onChange();
+	}
+
 	//_insertNewHandlersHere_
 }
 

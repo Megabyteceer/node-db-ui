@@ -9,18 +9,24 @@ import { getNodeDesc, getFieldDesc } from "./describe-node";
 import { L } from "./locale";
 
 /// #if DEBUG
-const UPLOADS_IMAGES_PATH = join(__dirname, '../../www/images/uploads');
-const UPLOADS_FILES_PATH = join(__dirname, '../../www/uploads/file');
+let UPLOADS_IMAGES_PATH = join(__dirname, '../../html/images/uploads');
+let UPLOADS_FILES_PATH = join(__dirname, '../../html/uploads/file');
+
+if(!fs.existsSync(UPLOADS_IMAGES_PATH)) {
+	UPLOADS_IMAGES_PATH = join(__dirname, '../../www/images/uploads');
+	UPLOADS_FILES_PATH = join(__dirname, '../../www/uploads/file');
+}
+
 /*
 /// #endif
-const UPLOADS_IMAGES_PATH = join(__dirname, './www/images/uploads');
-const UPLOADS_FILES_PATH = join(__dirname, './www/uploads/file');
+const UPLOADS_IMAGES_PATH = join(__dirname, './html/images/uploads');
+const UPLOADS_FILES_PATH = join(__dirname, './html/uploads/file');
 //*/
 
 
 
-
 const IMAGE_EXTENSION = '.jpg';
+const IMAGE_EXTENSION_TRANSPARENCY = '.png';
 
 const LOOKUP_ICON_HEIGHT = 30;
 
@@ -53,7 +59,7 @@ const getNewFileDir = () => {
 
 
 
-const getNewImageID = () => {
+const getNewImageID = (isTransparency) => {
 	return new Promise((resolve, reject) => {
 		let folder = Math.floor(Math.random() * 256).toString(16);
 
@@ -61,8 +67,7 @@ const getNewImageID = () => {
 			if(err) {
 				reject(err);
 			}
-			let id = folder + '/' + getRadomPattern() + IMAGE_EXTENSION;
-
+			let id = folder + '/' + getRadomPattern() + (isTransparency ? IMAGE_EXTENSION_TRANSPARENCY : IMAGE_EXTENSION);
 			fs.access(join(UPLOADS_IMAGES_PATH, id), fs.constants.F_OK, (err) => {
 				if(err) {
 					resolve(id);
@@ -86,6 +91,7 @@ const getNewImageID = () => {
 let allowedUpload;
 
 async function uploadFile(reqData, userSession) {
+
 	if(reqData.filename.indexOf('..') >= 0) {
 		throwError(L('UPL_ERROR_WFN', userSession));
 	}
@@ -122,7 +128,6 @@ const getFieldForUpload = (reqData, userSession) => {
 }
 
 async function uploadImage(reqData, userSession) {
-
 	const field = getFieldForUpload(reqData, userSession);
 
 	let img = await sharp(reqData.fileContent);
@@ -135,6 +140,16 @@ async function uploadImage(reqData, userSession) {
 	let srcH = meta.height;
 
 	const isPerfectSize = (srcW === targetW) && (srcH === targetH);
+
+	let isTransparency = meta.format === 'png'; 	//TODO: Transparency checkbox for image field. Not via extension.
+
+	let extendOptions = {
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		background: { r: 255, g: 255, b: 255, alpha: isTransparency ? 0 : 1 }
+	}
 
 	if(!isPerfectSize) {
 
@@ -184,30 +199,51 @@ async function uploadImage(reqData, userSession) {
 		targetX = Math.round(targetX);
 
 		await img.extract({ left: Math.round(X), top: Math.round(Y), width: W, height: H })
+		
 		await img.resize(resizeTargetW, resizeTargetH);
 
 		if(resizeTargetW < targetW || resizeTargetH < targetH) {
-			await img.extend({
-				top: targetY,
-				left: targetX,
-				right: targetW - resizeTargetW - targetX,
-				bottom: targetH - resizeTargetH - targetY,
-				background: { r: 255, g: 255, b: 255, alpha: 1 }
-			});
-		}
 
-		if(meta.format === 'png') {
-			await img.flatten({ background: '#FFFFFF' })
+			extendOptions.top = targetY;
+			extendOptions.left = targetX;
+			extendOptions.right = targetW - resizeTargetW - targetX;
+			extendOptions.bottom = targetH - resizeTargetH - targetY;
+
+			await img.extend(extendOptions);
 		}
 	}
 
-	let newFileNameID = await getNewImageID();
+	let newFileNameID = await getNewImageID(isTransparency);
 	let newFileName = idToImgURLServer(newFileNameID);
 
 	await img.toFile(newFileName);
+
+	// ===== THUMB GENERATION =====
+	img = await img.clone();
+
+
+	let thumbSizeQ = 1;
 	if(targetH > LOOKUP_ICON_HEIGHT) {
-		await img.resize(Math.floor(LOOKUP_ICON_HEIGHT / targetH * targetW), LOOKUP_ICON_HEIGHT);
+		thumbSizeQ = (LOOKUP_ICON_HEIGHT / targetH);
+
+		await img.extend({
+			top:0,
+			bottom:0,
+			left:0,
+			right:0,
+			background: { r: 255, g: 255, b: 255, alpha: 1 }
+		})
+
+		await img.resize({
+			width: Math.floor(thumbSizeQ * targetW),
+			height: LOOKUP_ICON_HEIGHT,
+			fit: 'contain',
+			background: { r: 255, g: 255, b: 255, alpha: 1 }
+		  });
 	}
+
+	
+	await img.flatten({ background: "#FFFFFF"});
 	await img.toFile(newFileName + IMAGE_THUMBNAIL_PREFIX);
 
 	if(!userSession.uploaded) {

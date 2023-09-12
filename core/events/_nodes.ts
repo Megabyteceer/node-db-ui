@@ -4,6 +4,8 @@ import { shouldBeAdmin } from "../admin/admin";
 import { NodeEventsHandlers, reloadMetadataSchedule } from "../describe-node";
 import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, NODE_TYPE } from "../../www/client-core/src/bs-utils";
 import { L } from "../locale";
+import { getRecords } from "../get-records";
+import { submitRecord } from "../submit";
 
 const handlers: NodeEventsHandlers = {
 
@@ -56,13 +58,13 @@ const handlers: NodeEventsHandlers = {
 			//create default fields
 			const mainFieldQ = `INSERT INTO \`_fields\`
 				(\`node_fields_linker\`, \`status\`, \`show\`,          \`prior\`, \`fieldType\`,         \`fieldName\`, \`selectFieldName\`, \`name\`,                           \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`, \`sendToServer\`) VALUES
-				(${createdID},             1,          ${VIEW_MASK.ALL},  1,        ${FIELD_TYPE.TEXT}, 'name',        '',                  '${L('FIELD_NAME', userSession)}',   '',              64,             1,               0,         0,             1,              0,              1);`;
+				(${createdID},             1,          ${VIEW_MASK.ALL},  0,        ${FIELD_TYPE.TEXT},   'name',        '',                  '${L('FIELD_NAME', userSession)}',   '',              64,             1,               0,         0,             1,             1,              1);`;
 			await mysqlExec(mainFieldQ);
 
 			if(data.addCreatedOnFiled) {
 				const createdOnQ = `INSERT INTO \`_fields\`
 				(\`node_fields_linker\`,  \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,                \`fieldName\`,    \`selectFieldName\`, \`name\`,                                \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`) VALUES
-				(${createdID},            1,          ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   2,         ${FIELD_TYPE.DATE_TIME},     '_createdON',    '',                  '${L('FIELD_CREATED_ON', userSession)}',  '',             0,              0,               0,           0,            1,             1);`;
+				(${createdID},            1,          ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   10,         ${FIELD_TYPE.DATE_TIME},     '_createdON',    '',                  '${L('FIELD_CREATED_ON', userSession)}',  '',             0,              0,               0,           0,            1,             1);`;
 				const dateFieldId = (await mysqlExec(createdOnQ) as mysqlInsertResult).insertId;
 				await mysqlExec('UPDATE _nodes SET _fieldsID=' + dateFieldId + ', reverse = 1 WHERE id=' + createdID);
 			}
@@ -70,17 +72,30 @@ const handlers: NodeEventsHandlers = {
 			if(data.addCreatedByFiled) {
 				const createdByQ = `INSERT INTO _fields
 				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,            \`fieldName\`,      \`selectFieldName\`, \`name\`,                                \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`, \`nodeRef\`) VALUES
-				(${createdID},            1,          ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   3,         ${FIELD_TYPE.LOOKUP},    '_organizationID',  '_organization',     '${L('FIELD_ORGANIZATION', userSession)}', '',              0,            0,               0,           0,           1,              1,             ${NODE_ID.ORGANIZATIONS});`;
+				(${createdID},            1,          ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   20,         ${FIELD_TYPE.LOOKUP},    '_organizationID',  '_organization',     '${L('FIELD_ORGANIZATION', userSession)}', '',              0,            0,               0,           0,           1,              1,             ${NODE_ID.ORGANIZATIONS});`;
 				await mysqlExec(createdByQ);
 			}
 
 			if(data.addCreatorUserFld) {
 				const createdByQ = `INSERT INTO _fields
 				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`fieldType\`,          \`fieldName\`,  \`selectFieldName\`,  \`name\`,                            \`description\`, \`maxLength\`, \`requirement\`, \`unique\`, \`_usersID\`, \`forSearch\`, \`storeInDB\`, \`nodeRef\`,          \`lookupIcon\`) VALUES
-				(${createdID},           1,           ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   4,        ${FIELD_TYPE.LOOKUP},   '_usersID',     '_users',            '${L('FIELD_OWNER', userSession)}',     '',               0,              0,              0,           0,             1,            1,             ${NODE_ID.USERS},    'avatar');`;
+				(${createdID},           1,           ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   30,        ${FIELD_TYPE.LOOKUP},   '_usersID',     '_users',             '${L('FIELD_OWNER', userSession)}',   '',               0,              0,              0,          0,            1,             1,             ${NODE_ID.USERS},    'avatar');`;
 				await mysqlExec(createdByQ);
 			}
 		}
+
+		let nodes = await getRecords(NODE_ID.NODES, VIEW_MASK.ALL, null, userSession, {_nodesID: data._nodesID});
+		nodes.items.sort((a, b) => {
+			return a.prior - b.prior;
+		});
+		let prior = 0;
+		nodes.items.forEach(async (node) => {
+			prior += 10;
+			if(node.prior !== prior) {
+				await submitRecord(NODE_ID.NODES, {prior}, node.id, userSession);
+			}
+		});
+
 		reloadMetadataSchedule();
 	},
 

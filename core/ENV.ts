@@ -22,6 +22,8 @@ const ENV = {
 
 	HOME_NODE: 20,
 
+	ALLOW_ORIGIN: '*',
+
 	REQUIRE_NAME: true,
 	REQUIRE_COMPANY: true,
 
