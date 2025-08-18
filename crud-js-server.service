@@ -3,7 +3,7 @@ Description=crud-js-server
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/nodejs /var/www/q/index.js
+ExecStart=node /var/www/q/index.js
 Restart=always
 User=root
 Environment=PATH=/usr/bin:/usr/local/bin
