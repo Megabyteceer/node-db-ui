@@ -1,10 +1,11 @@
 
 import { OAuth2Client } from 'google-auth-library';
-import ENV from "./ENV";
+
 import { throwError, UserSession } from "../www/client-core/src/bs-utils";
 import { authorizeUserByID, createUser } from './auth';
+import { ENV } from './ENV';
 import { L } from "./locale";
-import { mysqlExec, mysqlRowsResult, mysql_real_escape_string } from './mysql-connection';
+import { mysql_real_escape_string, mysqlExec } from './mysql-connection';
 
 const client = new OAuth2Client(ENV.clientOptions.googleSigninClientId);
 
@@ -18,7 +19,7 @@ async function loginWithGoogle(token, userSession: UserSession) {
 		throwError(L("WRONG_PASS", userSession));
 	}
 	const email = payload.email;
-	var users = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND email='" + email + "'") as mysqlRowsResult;
+	var users = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND email='" + email + "'");
 	if(users.length > 0) {
 		return authorizeUserByID(users[0].id);
 	} else {

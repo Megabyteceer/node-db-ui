@@ -165,7 +165,7 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	scrollIfNeed() {
-		if(this.isSubForm() && this.props.parentForm.props.field.fieldType === FIELD_TYPE.LOOKUP) {
+		if(this.isSubForm() && this.props.parentForm.props.field.field_type === FIELD_TYPE.LOOKUP) {
 			scrollToVisible(this, true);
 		}
 	}
@@ -348,7 +348,7 @@ class List extends BaseForm<ListProps, ListState> {
 		var createBtn;
 		if(node.privileges & PRIVILEGES_MASK.CREATE) {
 			createBtn = R.div(null,
-				R.button({ title: L('ADD', (node.creationName || node.singleName)), className: 'clickable tool-btn create-btn', onClick: () => { data.items.push({}); this.forceUpdate(); } },
+				R.button({ title: L('ADD', (node.creation_name || node.single_name)), className: 'clickable tool-btn create-btn', onClick: () => { data.items.push({}); this.forceUpdate(); } },
 					renderIcon('plus')
 				)
 			);
@@ -397,7 +397,7 @@ class List extends BaseForm<ListProps, ListState> {
 							this.props.parentForm.toggleCreateDialogue('new');
 						}
 					},
-						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
+						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creation_name || node.single_name)
 					);
 				} else {
 					createButton = R.button({
@@ -405,7 +405,7 @@ class List extends BaseForm<ListProps, ListState> {
 							window.crudJs.Stage.showForm(node.id, 'new', filters, true);
 						}
 					},
-						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
+						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creation_name || node.single_name)
 					);
 				}
 			}
@@ -433,7 +433,7 @@ class List extends BaseForm<ListProps, ListState> {
 					className: 'filter-select'
 				}, React.createElement(Select, {
 					options,
-					defaultValue: node.defaultFilterId ? node.filters[this.filters.filterId || node.defaultFilterId].name : undefined,
+					defaultValue: node.default_filter_id ? node.filters[this.filters.filterId || node.default_filter_id].name : undefined,
 					onChange: (val) => {
 						this.changeFilter('filterId', parseInt(val), true);
 					}
@@ -467,19 +467,19 @@ class List extends BaseForm<ListProps, ListState> {
 					/// #endif
 
 					var rowHeader;
-					if(field.forSearch === 1) {
+					if(field.for_search === 1) {
 						rowHeader = R.span({
-							className: (filters.o === field.fieldName) ? 'clickable list-row-header-sorting' : 'clickable', onClick: () => {
-								if(filters.o === field.fieldName) {
+							className: (filters.o === field.field_name) ? 'clickable list-row-header-sorting' : 'clickable', onClick: () => {
+								if(filters.o === field.field_name) {
 									this.changeFilter('r', filters.r ? undefined : 1, true);
 								} else {
-									this.changeFilter('o', field.fieldName, true);
+									this.changeFilter('o', field.field_name, true);
 								}
 							}
 						},
 							renderIcon(field.icon),
 							field.name,
-							renderIcon((!filters.r && (filters.o === field.fieldName)) ? 'caret-up' : 'caret-down')
+							renderIcon((!filters.r && (filters.o === field.field_name)) ? 'caret-up' : 'caret-down')
 						);
 					} else {
 						rowHeader = R.span(null, renderIcon(field.icon), field.name);
@@ -487,7 +487,7 @@ class List extends BaseForm<ListProps, ListState> {
 
 
 					if(this.isFieldVisibleByFormViewMask(field)) {
-						tableHeader.push(R.td({ key: field.id, className: (field.fieldType === FIELD_TYPE.NUMBER) ? 'list-row-header list-row-header-num' : 'list-row-header' },
+						tableHeader.push(R.td({ key: field.id, className: (field.field_type === FIELD_TYPE.NUMBER) ? 'list-row-header list-row-header-num' : 'list-row-header' },
 							rowHeader
 							/// #if DEBUG
 							,
@@ -519,7 +519,7 @@ class List extends BaseForm<ListProps, ListState> {
 				t1 = L('NO_RESULTS', filters.s);
 				t2 = '';
 			} else if(createButton) {
-				t1 = L('PUSH_CREATE', (node.creationName || node.singleName));
+				t1 = L('PUSH_CREATE', (node.creation_name || node.single_name));
 				t2 = L(this.isSubForm() ? 'TO_CONTINUE' : 'TO_START');
 			} else {
 				t1 = L('LIST_EMPTY');
@@ -543,7 +543,7 @@ class List extends BaseForm<ListProps, ListState> {
 			recPerPage = this.filters.n;
 		}
 
-		var totalPages = Math.ceil(data.total / (recPerPage || node.recPerPage));
+		var totalPages = Math.ceil(data.total / (recPerPage || node.rec_per_page));
 		var curPage = parseInt(filters.p as string) || 0;
 
 		var pageNumbers = { 0: 1, 1: 1, 2: 1 };

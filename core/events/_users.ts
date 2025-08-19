@@ -6,7 +6,7 @@ import { NODE_ID } from "../../www/client-core/src/bs-utils";
 
 async function clearUserParams(data, currentData, userSession) {
 	if(!isAdmin(userSession)) {
-		delete data._organizationID;
+		delete data._organization_id;
 		delete data._user_roles;
 	}
 
@@ -31,7 +31,7 @@ async function clearUserParams(data, currentData, userSession) {
 	}
 
 	data.public_email = currentData.show_email ? currentData.email : 'hidden_91d2g7';
-	data.public_phone = currentData.show_phone ? currentData.PHONE : 'hidden_91d2g7';
+	data.public_phone = currentData.show_phone ? currentData.phone : 'hidden_91d2g7';
 	data.public_vk = currentData.show_vk ? currentData.soc_vk : 'hidden_91d2g7';
 	data.public_fb = currentData.show_facebook ? currentData.soc_fb : 'hidden_91d2g7';
 	data.public_google = currentData.show_google ? currentData.soc_google : 'hidden_91d2g7';
@@ -46,8 +46,8 @@ export default {
 		}
 
 		if(newData.hasOwnProperty('company')) {
-			if(currentData._organizationID.id) {
-				await submitRecord(NODE_ID.ORGANIZATIONS, { name: newData.company }, currentData._organizationID.id);
+			if(currentData._organization_id.id) {
+				await submitRecord(NODE_ID.ORGANIZATIONS, { name: newData.company }, currentData._organization_id.id);
 			}
 		}
 		return clearUserParams(newData, currentData, userSession);

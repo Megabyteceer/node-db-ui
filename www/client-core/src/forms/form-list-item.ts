@@ -132,15 +132,15 @@ class FormListItem extends BaseForm {
 			var field = nodeFields[k];
 			if(this.isFieldVisibleByFormViewMask(field)) {
 				let className = 'form-item-row';
-				if(field.fieldType === FIELD_TYPE.NUMBER) {
+				if(field.field_type === FIELD_TYPE.NUMBER) {
 					className += ' form-item-row-num';
-				} else if(field.fieldType !== FIELD_TYPE.TEXT && field.fieldType !== FIELD_TYPE.RICH_EDITOR && field.fieldType !== FIELD_TYPE.LOOKUP) {
+				} else if(field.field_type !== FIELD_TYPE.TEXT && field.field_type !== FIELD_TYPE.RICH_EDITOR && field.field_type !== FIELD_TYPE.LOOKUP) {
 					className += ' form-item-row-misc'
 				}
 
 				fields.push(
 					R.td({ key: field.id, className },
-						React.createElement(FieldWrap, { key: k, field, initialValue: data[field.fieldName], form: this, isCompact: true, isTable: true })
+						React.createElement(FieldWrap, { key: k, field, initialValue: data[field.field_name], form: this, isCompact: true, isTable: true })
 					)
 				);
 			}

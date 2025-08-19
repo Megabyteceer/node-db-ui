@@ -74,11 +74,11 @@ class FieldAdmin extends Component<any, any> {
 
 		if(bodyVisible) {
 			var extendedInfo;
-			if(form.fieldsRefs && form.fieldsRefs[field.fieldName] && form.fieldsRefs[field.fieldName].fieldRef && form.getField(field.fieldName).fieldRef.state.filters) {
+			if(form.fieldsRefs && form.fieldsRefs[field.field_name] && form.fieldsRefs[field.field_name].fieldRef && form.getField(field.field_name).fieldRef.state.filters) {
 				extendedInfo = R.div(null,
 					'filters:',
 					R.input({
-						defaultValue: JSON.stringify(form.getField(field.fieldName).fieldRef.state.filters)
+						defaultValue: JSON.stringify(form.getField(field.field_name).fieldRef.state.filters)
 					})
 				);
 			}
@@ -98,10 +98,10 @@ class FieldAdmin extends Component<any, any> {
 			},
 				L('FLD_SETTINGS'),
 				R.b({ className: "admin-form-header" },
-					field.fieldName
+					field.field_name
 				),
 				R.div(null,
-					'type: ' + field.fieldType + '; id: ' + field.id + '; len:' + field.maxLength
+					'type: ' + field.field_type + '; id: ' + field.id + '; len:' + field.max_length
 				),
 				R.div({
 					className: "admin-form-content"
@@ -150,7 +150,7 @@ class FieldAdmin extends Component<any, any> {
 									prior: data.prior,
 									node_fields_linker: {
 										id: node.id,
-										name: node.singleName
+										name: node.single_name
 									}
 								}, true, true, reloadLocation);
 							});

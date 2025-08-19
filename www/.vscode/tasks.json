@@ -10,7 +10,21 @@
 			  "runOn": "folderOpen"
 			}
 		},
-		
+		{
+			"type": "process",
+			"windows": {
+				"options": {
+					"cwd": "C:/Dropbox/node-mysql-distrib/nginx-1.20.1"
+				},
+				"command": "C:/Dropbox/node-mysql-distrib/nginx-1.20.1/nginx.exe"
+			},
+			"command": "windows only implemented",
+			"label": "nginx",
+			"isBackground": true,
+			"runOptions": {
+			  "runOn": "folderOpen"
+			}
+		},
 		{
 			"type": "npm",
 			"script": "build",

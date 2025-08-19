@@ -74,8 +74,8 @@ interface UserSession {
 	uploaded?: { [key: number]: string };
 	__temporaryServerSideSession?: boolean;
 	notifications?: string[];
-	/** not empty if user have multilingualEnabled */
-	multilingualEnabled?: BoolNum;
+	/** not empty if user have multilingual_enabled */
+	multilingual_enabled?: BoolNum;
 	sessionToken?: string;
 	isGuest?: boolean;
 }
@@ -95,9 +95,9 @@ interface FieldDesc {
 	id: RecId;
 
 	/** field's name in database table */
-	fieldName: string;
+	field_name: string;
 	/** maximal data length in database */
-	maxLength: number;
+	max_length: number;
 
 	show: VIEW_MASK;
 
@@ -108,30 +108,30 @@ interface FieldDesc {
 	unique: BoolNum;
 
 	/** if true - field data do not go to the server on form save. */
-	sendToServer: BoolNum;
+	send_to_server: BoolNum;
 
 	/** fields data go to the server, but has no store in database table. */
-	storeInDB: BoolNum;
+	store_in_db: BoolNum;
 
 	/** fields will have index in database, and search will be processed in this field */
-	forSearch: BoolNum;
+	for_search: BoolNum;
 
-	fieldType: FieldType;
+	field_type: FIELD_TYPE;
 
 	icon: string;
 
 	/** name of picture field in relative table. Thin picture will be used as icon in Lookup fields. */
-	lookupIcon: string;
+	lookup_icon: string;
 
-	cssClass?: string;
+	css_class?: string;
 
 	display: FIELD_DISPLAY_TYPE;
 
 	/** owner node id */
-	nodeRef: RecId;
+	node_ref: RecId;
 
-	/** SERVER SIDE FIELD ONLY. If it not empty - content of this field goes in to fieldName in SQL query to retrieve data not from direct table's field */
-	selectFieldName?: string;
+	/** SERVER SIDE FIELD ONLY. If it not empty - content of this field goes in to field_name in SQL query to retrieve data not from direct table's field */
+	select_field_name?: string;
 
 	/** order of the field in the form */
 	prior: number;
@@ -165,30 +165,30 @@ interface FieldDesc {
 interface FilterDesc {
 	order?: number;
 	name: string;
-	hiPriority?: BoolNum;
+	hi_priority?: BoolNum;
 	view?: string;
 	fields?: string;
 }
 
 interface NodeDesc {
 	id: RecId;
-	singleName: string;
+	single_name: string;
 	privileges: PRIVILEGES_MASK;
 	matchName: string;
 	description: string;
-	nodeType: NODE_TYPE;
-	storeForms?: BoolNum;
+	node_type: NODE_TYPE;
+	store_forms?: BoolNum;
 	reverse?: BoolNum;
-	creationName?: string;
-	staticLink?: string;
+	creation_name?: string;
+	static_link?: string;
 	captcha?: BoolNum;
-	tableName?: string;
+	table_name?: string;
 	draftable?: BoolNum;
 	icon?: string;
-	recPerPage?: number;
-	defaultFilterId?: number;
+	rec_per_page?: number;
+	default_filter_id?: number;
 	fields?: FieldDesc[];
-	cssClass?: string;
+	css_class?: string;
 	filters?: { [key: string]: FilterDesc };
 	filtersList?: { name: string, value: any }[];
 	sortFieldName?: string;
@@ -202,7 +202,7 @@ interface UserLangEntry {
 	name: string;
 	code: string;
 	prefix: string;
-	isUILanguage: boolean;
+	is_ui_language: boolean;
 }
 
 interface RecordDataWrite {
@@ -243,7 +243,6 @@ interface GetRecordsParams {
 }
 
 type BoolNum = 0 | 1;
-type FieldType = number;
 
 enum ROLE_ID {
 	ADMIN = 1,

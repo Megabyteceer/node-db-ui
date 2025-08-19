@@ -49,7 +49,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 		const filters = {
 			[this.getLinkerFieldName()]: { id: this.props.form.recId }
 		};
-		window.crudJs.Stage.showForm(this.props.field.nodeRef, recIdToEdit, filters, true, true, () => {
+		window.crudJs.Stage.showForm(this.props.field.node_ref, recIdToEdit, filters, true, true, () => {
 			this.inlineListRef.refreshData();
 		});
 	}
@@ -79,7 +79,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 			for(let item of listData.items) {
 				if(item.hasOwnProperty('__deleted_901d123f')) {
 					if(item.hasOwnProperty('id')) {
-						await deleteRecord('', field.nodeRef, item.id, true);
+						await deleteRecord('', field.node_ref, item.id, true);
 					}
 				}
 			}
@@ -135,7 +135,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 				preventCreateButton: this.state.preventCreateButton,
 				askToSaveParentBeforeCreation,
 				editable: this.state.inlineEditing,
-				nodeId: field.nodeRef,
+				nodeId: field.node_ref,
 				parentForm: this,
 				filters: this.state.filters
 			})

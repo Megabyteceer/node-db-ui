@@ -1,12 +1,14 @@
 
 import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../describe-node";
-import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
 
 import { USER_ID, throwError } from "../../www/client-core/src/bs-utils";
 import { join } from "path";
 import * as fs from "fs";
 import { readFileSync, writeFileSync } from "fs";
 import { isAdmin } from "../auth.js";
+import { mysqlExec } from '../mysql-connection';
+
+
 const { exec } = require('child_process');
 
 async function nodePrivileges(reqData, userSession) {
@@ -18,8 +20,8 @@ async function nodePrivileges(reqData, userSession) {
 		reloadMetadataSchedule();
 		return 1;
 	} else { //get node privileges
-		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _role_privileges WHERE (nodeID=' + nodeId + ') AND (_roles.id=roleID) LIMIT 1) AS privileges FROM _roles WHERE id <> ' + USER_ID.SUPER_ADMIN + ' AND id <> ' + USER_ID.VIEW_ALL + ' AND status = 1');
-		return { privileges, nodeType: getNodeDesc(nodeId).nodeType }
+		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _role_privileges WHERE (node_id=' + nodeId + ') AND (_roles.id=role_id) LIMIT 1) AS privileges FROM _roles WHERE id <> ' + USER_ID.SUPER_ADMIN + ' AND id <> ' + USER_ID.VIEW_ALL + ' AND status = 1');
+		return { privileges, node_type: getNodeDesc(nodeId).node_type }
 	}
 }
 
@@ -37,18 +39,19 @@ const shouldBeAdmin = (userSession = ADMIN_USER_SESSION) => {
 	}
 }
 
-async function setRolePrivilegesForNode(nodeID, rolePrivileges, toChild, userSession) {
+async function setRolePrivilegesForNode(node_id, rolePrivileges, toChild, userSession) {
 	shouldBeAdmin(userSession);
-	await mysqlExec('DELETE FROM `_role_privileges` WHERE `nodeID`=' + nodeID + ';');
+	await mysqlExec('DELETE FROM \"_role_privileges\" WHERE \"node_id\"=' + node_id + ';');
 
 	for(let p of rolePrivileges) {
 		if(p.privileges) {
-			await mysqlExec('INSERT INTO _role_privileges SET nodeID=' + nodeID + ', roleID=' + p.id + ', privileges=' + p.privileges + ';');
+			await mysqlExec('INSERT INTO _role_privileges SET node_id=' + node_id + ', role_id=' + p.id + ', privileges=' + p.privileges + ';');
 		}
 	}
 	if(toChild) {
 		//apply to sub sections
-		const pgs = await mysqlExec("SELECT id FROM _nodes WHERE _nodesID =" + nodeID) as mysqlRowsResult;
+		const pgs = await mysqlExec("SELECT id FROM _nodes WHERE _nodes_id =" + node_id);
+
 		for(let pg of pgs) {
 			await setRolePrivilegesForNode(pg.id, rolePrivileges, toChild, userSession);
 		}
@@ -104,10 +107,10 @@ async function getClientEventHandler({
 	if(fieldId) {
 		let field = getFieldDesc(fieldId);
 		let customPath = '../../../www/src/events/fields_events_custom.ts';
-		return editFunction(fs.existsSync(join(__dirname, customPath)) ? customPath : '../../../www/client-core/src/events/fields_events.ts', node.tableName + '_' + field.fieldName + '_' + handler, args);
+		return editFunction(fs.existsSync(join(__dirname, customPath)) ? customPath : '../../../www/client-core/src/events/fields_events.ts', node.table_name + '_' + field.field_name + '_' + handler, args);
 	} else {
 		let customPath = '../../../www/src/events/forms_events_custom.ts';
-		return editFunction(fs.existsSync(join(__dirname, customPath)) ? customPath : '../../../www/client-core/src/events/forms_events.ts', node.tableName + '_' + handler, args);
+		return editFunction(fs.existsSync(join(__dirname, customPath)) ? customPath : '../../../www/client-core/src/events/forms_events.ts', node.table_name + '_' + handler, args);
 	}
 }
 

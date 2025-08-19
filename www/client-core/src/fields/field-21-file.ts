@@ -20,7 +20,7 @@ registerFieldClass(FIELD_TYPE.FILE, class FileField extends BaseField {
 			//@ts-ignore
 			this.state.value = val;
 		} else {
-			this.props.form.currentData[this.props.field.fieldName] = undefined;
+			this.props.form.currentData[this.props.field.field_name] = undefined;
 		}
 	}
 
@@ -80,7 +80,7 @@ class FileFormBody extends Component<any, any> {
 			let n = ReactDOM.findDOMNode(this.formRef);
 			let fileId = await submitData('api/uploadFile', serializeForm(n), true);
 			if(!fileId) {
-				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.fieldName, L('UPLOAD_ERROR'));
+				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.field_name, L('UPLOAD_ERROR'));
 			}
 			return fileId;
 		}

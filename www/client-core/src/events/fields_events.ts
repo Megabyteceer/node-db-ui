@@ -39,13 +39,13 @@ class FieldsEvents extends FormEvents {
 		const nodeType = this.fieldValue("nodeType");
 
 		if(nodeType === NODE_TYPE.DOCUMENT) {
-			this.showField('creationName', 'singleName', 'captcha',
+			this.showField('creation_name', 'single_name', 'captcha',
 				'reverse', 'draftable', 'addCreatedOnFiled', 'addCreatorUserFld', 'addCreatedByFiled',
-				'storeForms', 'recPerPage',
-				'dataStorageGroup', 'appearanceGroup', 'createFields');
-			this.makeFieldRequired('singleName');
+				'store_forms', 'rec_per_page',
+				'data_storage_group', 'appearance_group', 'create_fields');
+			this.makeFieldRequired('single_name');
 		} else {
-			this.hideField('creationName', 'singleName', 'captcha',
+			this.hideField('creation_name', 'singleName', 'captcha',
 				'reverse', 'draftable', 'addCreatedOnFiled', 'addCreatorUserFld', 'addCreatedByFiled',
 				'storeForms', 'recPerPage',
 				'dataStorageGroup', 'appearanceGroup', 'createFields');
@@ -195,7 +195,7 @@ class FieldsEvents extends FormEvents {
 		const fieldType = this.fieldValue("fieldType");
 
 		this.showField('maxLength', 'requirement', 'storeInDB', 'sendToServer', 'unique', 'forSearch');
-		this.hideField('multilingual', 'nodeRef', 'width', 'height', "selectFieldName", "lookupIcon", "enum");
+		this.hideField('multilingual', 'nodeRef', 'width', 'height', "selectFieldName", "lookup_icon", "enum");
 		this.setFieldLabel("description");
 
 		this.enableField("visibility_list");

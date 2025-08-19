@@ -1,7 +1,8 @@
 
-import ENV from "./ENV";
 import type { LANG_KEYS_SERVER_SIDE } from "../www/client-core/src/locales/en/lang-server";
 import { UserSession } from "./auth";
+import { ENV } from './ENV';
+
 
 const dictionaries: Map<string, {}> = new Map();
 
@@ -22,4 +23,4 @@ function L(key: LANG_KEYS_SERVER_SIDE, userSession: UserSession, param?: any) {
 	/// #endif
 	return ('#' + key);
 }
-export { L, initDictionaryServerSide };
+export { initDictionaryServerSide, L };

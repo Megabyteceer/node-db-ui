@@ -20,11 +20,11 @@ registerFieldClass(FIELD_TYPE.PASSWORD, class PasswordField extends BaseField {
 
 			var inputsProps = {
 				type: 'password',
-				name: field.fieldName,
+				name: field.field_name,
 				autoFocus: this.isAutoFocus(),
 				defaultValue: value,
 				title: field.name,
-				maxLength: field.maxLength,
+				maxLength: field.max_length,
 				placeholder: field.name,
 				readOnly: this.props.fieldDisabled,
 				ref: this.refGetter,

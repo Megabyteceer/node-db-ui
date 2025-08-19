@@ -56,14 +56,14 @@ class admin {
 			var f;
 			var i;
 
-			if(field.fieldType === FIELD_TYPE.TAB) { //two tabs exchanging
+			if(field.field_type === FIELD_TYPE.TAB) { //two tabs exchanging
 				i = fieldIndex;
 				group1.push(fields[i]);
 				i++;
 				while(i < fields.length && i >= 0) {
 					f = fields[i];
 
-					if(f.fieldType === FIELD_TYPE.TAB && f.maxLength === 0) {
+					if(f.field_type === FIELD_TYPE.TAB && f.max_length === 0) {
 						break;
 					}
 					group1.push(f);
@@ -75,7 +75,7 @@ class admin {
 						i = fieldIndex - 1;
 						while(i > 0) {
 							var f = fields[i];
-							if(f.fieldType === FIELD_TYPE.TAB && f.maxLength === 0) {
+							if(f.field_type === FIELD_TYPE.TAB && f.max_length === 0) {
 								break;
 							}
 							i--;
@@ -91,7 +91,7 @@ class admin {
 						i++;
 						while(i < fields.length) {
 							var f = fields[i];
-							if(f.fieldType === FIELD_TYPE.TAB && f.maxLength === 0) {
+							if(f.field_type === FIELD_TYPE.TAB && f.max_length === 0) {
 								break;
 							}
 							group2.push(f);

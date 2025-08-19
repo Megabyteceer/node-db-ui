@@ -119,7 +119,7 @@ class Stage extends Component<any, any> {
 
 		let data;
 		let node = getNodeIfPresentOnClient(nodeId);
-		if(!node || node.nodeType === NODE_TYPE.DOCUMENT) {
+		if(!node || node.node_type === NODE_TYPE.DOCUMENT) {
 			if(recId !== 'new') {
 				if(typeof recId === 'number') {
 					data = await getNodeData(nodeId, recId, undefined, editable, false, isPresentListRenderer(nodeId));
@@ -142,7 +142,7 @@ class Stage extends Component<any, any> {
 			}
 		};
 
-		if(!node.storeForms) { // cant render forms without storage as a list. Submit form only
+		if(!node.store_forms) { // cant render forms without storage as a list. Submit form only
 			if(!recId) {
 				recId = 'new';
 			}
@@ -150,7 +150,7 @@ class Stage extends Component<any, any> {
 		}
 
 		let formType;
-		switch(node.nodeType) {
+		switch(node.node_type) {
 			case NODE_TYPE.DOCUMENT:
 			case NODE_TYPE.SECTION:
 				if(recId || (recId === 0) || recId === 'new') {
@@ -161,24 +161,24 @@ class Stage extends Component<any, any> {
 				}
 				break;
 			case NODE_TYPE.REACT_CLASS:
-				if(typeof window.crudJs.customClasses[node.tableName] === 'undefined') {
-					myAlert('Unknown react class: ' + node.tableName);
+				if(typeof window.crudJs.customClasses[node.table_name] === 'undefined') {
+					myAlert('Unknown react class: ' + node.table_name);
 					formType = 'div';
 				} else {
-					formType = window.crudJs.customClasses[node.tableName];
+					formType = window.crudJs.customClasses[node.table_name];
 				}
 				break;
 			case NODE_TYPE.STATIC_LINK:
-				location.href = node.staticLink;
+				location.href = node.static_link;
 				break;
 			default:
-				throwError('Unknown nodeType ' + node.nodeType);
+				throwError('Unknown nodeType ' + node.node_type);
 		}
 
 		let className = 'form-container-node-' + nodeId +
 			(isRootForm ? ' form-root-container' : ' form-modal-container');
-		if(node.cssClass) {
-			className += ' ' + node.cssClass;
+		if(node.css_class) {
+			className += ' ' + node.css_class;
 		}
 
 		ReactDOM.render(

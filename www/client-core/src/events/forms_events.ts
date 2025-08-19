@@ -103,7 +103,7 @@ class FormEvents extends FormFull {
 
 		if(this.isNewRecord) {
 			this.hideField('mailing');
-			this.hideField('PHONE');
+			this.hideField('phone');
 			//this.hideField('description');
 			this.hideField('_organizationID');
 			this.setFieldValue('password', 'nc_l4DFn76ds5yhg');
@@ -249,7 +249,7 @@ class FormEvents extends FormFull {
 		let parentNode: NodeDesc;
 		if(parentNodeVal) {
 			parentNode = await getNode(parentNodeVal.id);
-			if(!parentNode.storeForms) {
+			if(!parentNode.store_forms) {
 				this.setFieldValue('storeInDB', 0);
 				this.disableField('storeInDB');
 			}

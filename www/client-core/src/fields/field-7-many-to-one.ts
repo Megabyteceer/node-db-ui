@@ -75,13 +75,13 @@ registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLo
 
 				this.toggleList();
 			}
-			if(!this.state.value || (this.state.value.id !== recordData.id) || (this.state.value.name !== recordData.name) || (this.state.value.icon !== recordData[this.props.field.lookupIcon])) {
+			if(!this.state.value || (this.state.value.id !== recordData.id) || (this.state.value.name !== recordData.name) || (this.state.value.icon !== recordData[this.props.field.lookup_icon])) {
 				var newVal: any = {
 					id: recordData.id,
 					name: recordData.name
 				};
-				if(this.props.field.lookupIcon) {
-					newVal.icon = recordData[this.props.field.lookupIcon];
+				if(this.props.field.lookup_icon) {
+					newVal.icon = recordData[this.props.field.lookup_icon];
 				}
 				this.setValue(newVal);
 				this.props.wrapper.valueListener(newVal, false, this);
@@ -100,7 +100,7 @@ registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLo
 		const filters = this.props.form ? {
 			[this.getLinkerFieldName()]: { id: this.props.form.recId }
 		} : undefined;
-		window.crudJs.Stage.showForm(this.props.field.nodeRef, recIdToEdit, filters, true, true, (newData: RecordData) => {
+		window.crudJs.Stage.showForm(this.props.field.node_ref, recIdToEdit, filters, true, true, (newData: RecordData) => {
 			const value = this.state.value;
 			if(recIdToEdit === value.id) {
 				if(!newData) {
@@ -147,10 +147,10 @@ registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLo
 		var value = this.state.value;
 		var iconPic;
 		if(value) {
-			if(field.lookupIcon && (!this.props.hideIcon) && value.icon) {
+			if(field.lookup_icon && (!this.props.hideIcon) && value.icon) {
 				iconPic = R.img({
 					className: 'field-lookup-icon-pic',
-					src: idToImgURL(value.icon, field.lookupIcon) + IMAGE_THUMBNAIL_PREFIX
+					src: idToImgURL(value.icon, field.lookup_icon) + IMAGE_THUMBNAIL_PREFIX
 				});
 			} else {
 				iconPic = R.div({
@@ -165,7 +165,7 @@ registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLo
 
 				list = React.createElement(List, {
 					preventCreateButton: this.state.preventCreateButton || this.props.preventCreateButton,
-					nodeId: field.nodeRef,
+					nodeId: field.node_ref,
 					isLookup: true,
 					parentForm: this,
 					filters: this.state.filters

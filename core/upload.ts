@@ -1,11 +1,11 @@
 
 import { assert, IMAGE_THUMBNAIL_PREFIX, throwError } from "../www/client-core/src/bs-utils";
 
-import { join } from "path";
 import * as fs from "fs";
+import { join } from "path";
 const sharp = require("sharp");
-import ENV from "./ENV";
-import { getNodeDesc, getFieldDesc } from "./describe-node";
+
+import { ENV, getFieldDesc, getNodeDesc } from "./describe-node";
 import { L } from "./locale";
 
 /// #if DEBUG
@@ -133,8 +133,8 @@ async function uploadImage(reqData, userSession) {
 	let img = await sharp(reqData.fileContent);
 	let meta = await img.metadata();
 
-	let targetW = Math.floor(field.maxLength / 10000);
-	let targetH = field.maxLength % 10000;
+	let targetW = Math.floor(field.max_length / 10000);
+	let targetH = field.max_length % 10000;
 
 	let srcW = meta.width;
 	let srcH = meta.height;
@@ -199,7 +199,7 @@ async function uploadImage(reqData, userSession) {
 		targetX = Math.round(targetX);
 
 		await img.extract({ left: Math.round(X), top: Math.round(Y), width: W, height: H })
-		
+
 		await img.resize(resizeTargetW, resizeTargetH);
 
 		if(resizeTargetW < targetW || resizeTargetH < targetH) {
@@ -227,10 +227,10 @@ async function uploadImage(reqData, userSession) {
 		thumbSizeQ = (LOOKUP_ICON_HEIGHT / targetH);
 
 		await img.extend({
-			top:0,
-			bottom:0,
-			left:0,
-			right:0,
+			top: 0,
+			bottom: 0,
+			left: 0,
+			right: 0,
 			background: { r: 255, g: 255, b: 255, alpha: 1 }
 		})
 
@@ -239,11 +239,11 @@ async function uploadImage(reqData, userSession) {
 			height: LOOKUP_ICON_HEIGHT,
 			fit: 'contain',
 			background: { r: 255, g: 255, b: 255, alpha: 1 }
-		  });
+		});
 	}
 
-	
-	await img.flatten({ background: "#FFFFFF"});
+
+	await img.flatten({ background: "#FFFFFF" });
 	await img.toFile(newFileName + IMAGE_THUMBNAIL_PREFIX);
 
 	if(!userSession.uploaded) {
@@ -259,4 +259,5 @@ const idToImgURLServer = (imgId) => {
 	return join(UPLOADS_IMAGES_PATH, imgId);
 }
 
-export { uploadImage, uploadFile, UPLOADS_FILES_PATH, idToImgURLServer };
+export { idToImgURLServer, uploadFile, uploadImage, UPLOADS_FILES_PATH };
+

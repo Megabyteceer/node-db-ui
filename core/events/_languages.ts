@@ -12,7 +12,7 @@ export default {
 		const fields = fieldsData.items;
 		for(let f of fields) {
 			f.node_fields_linker = f.node_fields_linker.id;
-			f.fieldName = f.fieldName + '$' + data.code;
+			f.field_name = f.field_name + '$' + data.code;
 			f.unique = 0;
 			await createFieldInTable(f);
 		}

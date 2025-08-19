@@ -73,7 +73,7 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 	}
 
 	isEmpty(): boolean {
-		var val = this.props.wrapper.props.form.currentData[this.props.field.fieldName];
+		var val = this.props.wrapper.props.form.currentData[this.props.field.field_name];
 		return !val;
 	}
 
@@ -104,7 +104,7 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 	extendEditor?(): void;
 
 	renderTextValue(txt) {
-		if(this.props.field.forSearch) {
+		if(this.props.field.for_search) {
 			const list = this.props.form.props.list;
 			if(list && list.filters && list.filters.s) {
 				return React.createElement(Highlighter, {

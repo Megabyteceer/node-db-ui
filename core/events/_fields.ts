@@ -14,14 +14,14 @@ const handlers: NodeEventsHandlers = {
 
 		if(data.multilingual) {
 			const langs = getLangs();
-			const fn = data.fieldName;
+			const fn = data.field_name;
 			for(let l of langs) {
 				if(l.prefix) {
-					data.fieldName = fn + l.prefix;
+					data.field_name = fn + l.prefix;
 					await createFieldInTable(data);
 				}
 			}
-			data.fieldName = fn;
+			data.field_name = fn;
 		}
 
 		await createFieldInTable(data);
@@ -30,27 +30,27 @@ const handlers: NodeEventsHandlers = {
 	afterCreate: async function(data: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
-		const fieldType = data.fieldType;
-		const fieldName = data.fieldName;
-		if(fieldType === FIELD_TYPE.LOOKUP_1toN) {
+		const field_type = data.field_type;
+		const field_name = data.field_name;
+		if(field_type === FIELD_TYPE.LOOKUP_1toN) {
 
 			const parentNode = await getRecords(NODE_ID.NODES, 1, data.node_fields_linker, userSession);
 
 			const linkerFieldData = {
 				status: 1,
-				fieldName: fieldName + '_linker',
-				node_fields_linker: data.nodeRef,
-				nodeRef: data.node_fields_linker,
-				name: parentNode.singleName,
+				field_name: field_name + '_linker',
+				node_fields_linker: data.node_ref,
+				node_ref: data.node_fields_linker,
+				name: parentNode.single_name,
 				show: VIEW_MASK.EDITABLE,
 				prior: 1000,
-				sendToServer: 1,
-				storeInDB: 1,
-				fieldType: FIELD_TYPE.LOOKUP,
-				forSearch: 1,
-				selectFieldName: parentNode.tableName,
-				_usersID: userSession.id,
-				_organizationID: userSession.orgId
+				send_to_server: 1,
+				store_in_db: 1,
+				field_type: FIELD_TYPE.LOOKUP,
+				for_search: 1,
+				select_field_name: parentNode.table_name,
+				_users_id: userSession.id,
+				_organization_id: userSession.orgId
 			};
 			await submitRecord(NODE_ID.FIELDS, linkerFieldData);
 		}
@@ -75,36 +75,36 @@ const handlers: NodeEventsHandlers = {
 
 		shouldBeAdmin(userSession);
 
-		if((currentData.id === FIELD_ID.MAX_LENGTH) && newData.hasOwnProperty('maxLength')) {
+		if((currentData.id === FIELD_ID.MAX_LENGTH) && newData.hasOwnProperty('max_length')) {
 			throwError(L('SIZE_FLD_BLOCKED', userSession));
 		}
 
-		mustBeUnset(newData, 'fieldName');
-		mustBeUnset(newData, 'storeInDB');
+		mustBeUnset(newData, 'field_name');
+		mustBeUnset(newData, 'store_in_db');
 		mustBeUnset(newData, 'node_fields_linker');
 
-		if(currentData.storeInDB) {
+		if(currentData.store_in_db) {
 
-			if(newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxLength') || newData.hasOwnProperty('multilingual') || newData.hasOwnProperty('forSearch')) {
+			if(newData.hasOwnProperty('field_name') || newData.hasOwnProperty('max_length') || newData.hasOwnProperty('multilingual') || newData.hasOwnProperty('for_search')) {
 
 				const multilingualChanged = newData.hasOwnProperty('multilingual') && currentData.multilingual !== newData.multilingual;
 
 				const node = getNodeDesc(currentData.node_fields_linker.id);
-				const realFieldName = currentData.fieldName;
-				const fieldType = currentData.fieldType;
+				const realFieldName = currentData.field_name;
+				const field_type = currentData.field_type;
 
-				if(currentData.forSearch !== newData.forSearch) {
-					if(newData.forSearch) {
-						await mysqlExec('ALTER TABLE `' + node.tableName + '` ADD INDEX (`' + realFieldName + '`);');
+				if(currentData.for_search !== newData.for_search) {
+					if(newData.for_search) {
+						await mysqlExec('ALTER TABLE \"' + node.table_name + '\" ADD INDEX (\"' + realFieldName + '\");');
 					} else {
-						await mysqlExec('ALTER TABLE `' + node.tableName + '` DROP INDEX `' + realFieldName + '`;');
+						await mysqlExec('ALTER TABLE \"' + node.table_name + '\" DROP INDEX \"' + realFieldName + '\";');
 					}
 				}
 
 				currentData = Object.assign(currentData, newData);
 
-				if((realFieldName !== '_organizationID') && (realFieldName !== '_usersID') && (realFieldName !== '_createdON') && (realFieldName !== 'id')) {
-					if(currentData.storeInDB && (fieldType !== FIELD_TYPE.STATIC_TEXT) && (fieldType !== FIELD_TYPE.LOOKUP_NtoM) && (fieldType !== FIELD_TYPE.LOOKUP_1toN)) {
+				if((realFieldName !== '_organization_id') && (realFieldName !== '_users_id') && (realFieldName !== '_created_on') && (realFieldName !== 'id')) {
+					if(currentData.store_in_db && (field_type !== FIELD_TYPE.STATIC_TEXT) && (field_type !== FIELD_TYPE.LOOKUP_NtoM) && (field_type !== FIELD_TYPE.LOOKUP_1toN)) {
 						const typeQ = getFieldTypeSQL(currentData);
 						if(typeQ) {
 							const langs = getLangs();
@@ -113,26 +113,26 @@ const handlers: NodeEventsHandlers = {
 								if(currentData.multilingual) {
 									for(let l of langs) {
 										if(l.prefix) {
-											currentData.fieldName = realFieldName + l.prefix;
+											currentData.field_name = realFieldName + l.prefix;
 											await createFieldInTable(currentData);
 										}
 									}
-									currentData.fieldName = realFieldName;
+									currentData.field_name = realFieldName;
 								} else {
 									for(let l of langs) {
 										if(l.prefix) {
-											await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realFieldName + l.prefix);
+											await mysqlExec('ALTER TABLE ' + node.table_name + ' DROP COLUMN ' + realFieldName + l.prefix);
 										}
 									}
 								}
 							} else if(currentData.multilingual) {
 								for(let l of langs) {
 									if(l.prefix) {
-										await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + l.prefix + ' ' + typeQ);
+										await mysqlExec('ALTER TABLE ' + node.table_name + ' MODIFY COLUMN ' + realFieldName + l.prefix + ' ' + typeQ);
 									}
 								}
 							}
-							await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + ' ' + typeQ);
+							await mysqlExec('ALTER TABLE ' + node.table_name + ' MODIFY COLUMN ' + realFieldName + ' ' + typeQ);
 						}
 					}
 				}
@@ -150,12 +150,12 @@ export default handlers;
 export { createFieldInTable };
 
 function getFieldTypeSQL(data) {
-	switch(data.fieldType) {
+	switch(data.field_type) {
 		case FIELD_TYPE.PASSWORD:
 		case FIELD_TYPE.TEXT:
-			if(data.maxLength <= 255) {
-				return 'VARCHAR(' + data.maxLength + ") NOT NULL DEFAULT ''";
-			} else if(data.maxLength <= 65535) {
+			if(data.max_length <= 255) {
+				return 'VARCHAR(' + data.max_length + ") NOT NULL DEFAULT ''";
+			} else if(data.max_length <= 65535) {
 				return "TEXT NOT NULL DEFAULT ''";
 			} else {
 				return "MEDIUMTEXT NOT NULL DEFAULT ''";
@@ -163,10 +163,10 @@ function getFieldTypeSQL(data) {
 		case FIELD_TYPE.COLOR:
 			return "BIGINT (11) UNSIGNED NOT NULL DEFAULT 4294967295";
 		case FIELD_TYPE.NUMBER:
-			if(data.maxLength <= 9) {
-				return 'INT(' + data.maxLength + ') NOT NULL DEFAULT 0';
+			if(data.max_length <= 9) {
+				return 'INT(' + data.max_length + ') NOT NULL DEFAULT 0';
 			} else {
-				return 'BIGINT(' + data.maxLength + ') NOT NULL DEFAULT 0';
+				return 'BIGINT(' + data.max_length + ') NOT NULL DEFAULT 0';
 			}
 		case FIELD_TYPE.DATE_TIME:
 		case FIELD_TYPE.DATE:
@@ -199,67 +199,67 @@ async function createFieldInTable(data: RecordDataWrite) {
 	// prepare space for field
 	await mysqlExec("UPDATE _fields SET prior=prior+20 WHERE (node_fields_linker =" + nodeId + ") AND (prior >" + data.prior + ")");
 
-	const fieldType = data.fieldType;
-	const fieldName = data.fieldName;
+	const field_type = data.field_type;
+	const field_name = data.field_name;
 
 	const node = getNodeDesc(nodeId);
-	const nodeName = node.tableName;
+	const nodeName = node.table_name;
 	let linkedNodeName;
 
-	if(fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_NtoM || fieldType === FIELD_TYPE.LOOKUP_1toN) {
-		const linkedNodeId = data.nodeRef;
-		linkedNodeName = getNodeDesc(linkedNodeId).tableName;
+	if(field_type === FIELD_TYPE.LOOKUP || field_type === FIELD_TYPE.LOOKUP_NtoM || field_type === FIELD_TYPE.LOOKUP_1toN) {
+		const linkedNodeId = data.node_ref;
+		linkedNodeName = getNodeDesc(linkedNodeId).table_name;
 
-		if(fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_NtoM) {
+		if(field_type === FIELD_TYPE.LOOKUP || field_type === FIELD_TYPE.LOOKUP_NtoM) {
 
 			const filters = {
 				status: 1,
 				node_fields_linker: linkedNodeId,
-				fieldType: FIELD_TYPE.PICTURE
+				field_type: FIELD_TYPE.PICTURE
 			};
 			const records = await getRecords(6, VIEW_MASK.LIST, undefined, undefined, filters);
 			if(records.total) {
-				data.lookupIcon = records.items[0].fieldName;
+				data.lookup_icon = records.items[0].field_name;
 			}
 		}
 	}
 
-	if(fieldType === FIELD_TYPE.LOOKUP_1toN) {
-		data.storeInDB = 0;
-	} else if(fieldType === FIELD_TYPE.LOOKUP_NtoM) {
+	if(field_type === FIELD_TYPE.LOOKUP_1toN) {
+		data.store_in_db = 0;
+	} else if(field_type === FIELD_TYPE.LOOKUP_NtoM) {
 
-		data.selectFieldName = linkedNodeName;
-		data.forSearch = 1;
+		data.select_field_name = linkedNodeName;
+		data.for_search = 1;
 
 		const fld1 = nodeName + 'Id';
 		const fld2 = linkedNodeName + 'Id';
 
-		await mysqlExec(`CREATE TABLE \`${fieldName}\` (
+		await mysqlExec(`CREATE TABLE \\"${field_name}\\" (
 			id bigint(15) unsigned NOT NULL AUTO_INCREMENT,
-			\`${fld1}\` bigint(15) unsigned NOT NULL DEFAULT 0,
-			\`${fld2}\` bigint(15) unsigned NOT NULL DEFAULT 0,
+			\\"${fld1}\\" bigint(15) unsigned NOT NULL DEFAULT 0,
+			\\"${fld2}\\" bigint(15) unsigned NOT NULL DEFAULT 0,
 			primary key(id),
-			INDEX(\`${fld1}\`),
-			INDEX(\`${fld2}\`)
+			INDEX(\\"${fld1}\\"),
+			INDEX(\\"${fld2}\\")
 		) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4; `);
-	} else if(data.storeInDB) {
-		if(fieldType === FIELD_TYPE.LOOKUP) {
-			data.forSearch = 1;
-			data.selectFieldName = linkedNodeName;
+	} else if(data.store_in_db) {
+		if(field_type === FIELD_TYPE.LOOKUP) {
+			data.for_search = 1;
+			data.select_field_name = linkedNodeName;
 		}
 
 		const typeQ = getFieldTypeSQL(data);
 		if(typeQ) {
-			const altQ = ['ALTER TABLE \`', nodeName, '\` ADD COLUMN \`', fieldName, '\` ', typeQ];
+			const altQ = ['ALTER TABLE \\"', nodeName, '\\" ADD COLUMN \\"', field_name, '\\" ', typeQ];
 
-			if(data.forSearch || data.unique) {
-				altQ.push(', ADD', (data.unique ? ' UNIQUE' : ''), ' INDEX ', nodeName, '_', fieldName, ' (\`', fieldName, '\` ASC) ;');
+			if(data.for_search || data.unique) {
+				altQ.push(', ADD', (data.unique ? ' UNIQUE' : ''), ' INDEX ', nodeName, '_', field_name, ' (\\"', field_name, '\\" ASC) ;');
 			}
 
 			await mysqlExec(altQ.join(''));
 
-			if(fieldType === FIELD_TYPE.LOOKUP) {
-				await mysqlExec('ALTER TABLE \`' + nodeName + '\` ADD INDEX(\`' + fieldName + '\`);')
+			if(field_type === FIELD_TYPE.LOOKUP) {
+				await mysqlExec('ALTER TABLE \\"' + nodeName + '\\" ADD INDEX(\\"' + field_name + '\\");')
 			}
 		}
 	}

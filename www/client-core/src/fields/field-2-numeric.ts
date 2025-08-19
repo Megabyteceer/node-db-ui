@@ -33,12 +33,12 @@ registerFieldClass(FIELD_TYPE.NUMBER, class NumericField extends BaseField {
 				value: value,
 				title: field.name,
 				autoFocus: this.isAutoFocus(),
-				maxLength: field.maxLength,
+				maxLength: field.max_length,
 				placeholder: field.name,
 				readOnly: this.props.fieldDisabled,
 				ref: this.refGetter,
 				onChange: () => {
-					let value = parseInt(this.refToInput.value.substr(0, field.maxLength));
+					let value = parseInt(this.refToInput.value.substr(0, field.max_length));
 					this.setState({ value });
 					this.props.wrapper.valueListener(value, true, this);
 				}

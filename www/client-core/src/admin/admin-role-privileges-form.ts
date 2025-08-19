@@ -132,7 +132,7 @@ class AdminRolePrivilegesForm extends BaseForm {
 				});
 			};
 
-			if(this.state.data.nodeType === NODE_TYPE.DOCUMENT) {
+			if(this.state.data.node_type === NODE_TYPE.DOCUMENT) {
 				submit();
 			} else {
 				submit(!await showPrompt(L('APPLY_CHILD'), L('TO_THIS'), L('TO_ALL'), 'check', 'check'));

@@ -10,11 +10,11 @@ const RENDERED_FIELDS = {
 	name: true,
 	company: true,
 	email: true,
-	PHONE: true,
+	phone: true,
 	public_email: true,
 	public_phone: true,
-	creatorORG: true,
-	creatorUSER: true,
+	creator_org: true,
+	creator_user: true,
 };
 
 registerListRenderer(NODE_ID.USERS, function (this: List): React.ReactNode {
@@ -38,7 +38,8 @@ registerListRenderer(NODE_ID.USERS, function (this: List): React.ReactNode {
 			)
 		}
 		var additionalFields = [];
-		for(let key of Object.keys(item)) {
+		const keys = Object.keys(item);
+		for(let key of keys) {
 			if(key.length > 3 && !RENDERED_FIELDS[key] && item[key]) {
 				additionalFields.push(R.div({ key, className: 'user-item-info user-item-info-' + key },
 					node.fieldsByName[key].name, ': ', item[key]

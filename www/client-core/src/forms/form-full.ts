@@ -35,7 +35,7 @@ async function callForEachField(fieldRefs, data, functionName) {
 			continue;
 		}
 		if(f.fieldRef[functionName]) {
-			var fieldName = f.props.field.fieldName;
+			var fieldName = f.props.field.field_name;
 			let newValue = await f.fieldRef[functionName]();
 			if((typeof newValue !== 'undefined') && (f.props.initialValue !== newValue)) {
 				data[fieldName] = newValue;
@@ -102,8 +102,8 @@ class FormFull extends FormEventProcessingMixins {
 		var fields = this.props.node.fields;
 		for(var k in fields) {
 			var f = fields[k];
-			if((f.fieldType === FIELD_TYPE.LOOKUP_1toN) && this.isFieldVisibleByFormViewMask(f)) {
-				this.currentData[f.fieldName] = this.getField(f.fieldName).getBackupData();
+			if((f.field_type === FIELD_TYPE.LOOKUP_1toN) && this.isFieldVisibleByFormViewMask(f)) {
+				this.currentData[f.field_name] = this.getField(f.field_name).getBackupData();
 			}
 		}
 	}
@@ -161,16 +161,16 @@ class FormFull extends FormEventProcessingMixins {
 			}
 			var field = fieldWrapperRef.props.field;
 
-			if(this.props.overrideOrderData >= 0 && field.fieldName === 'order') {
-				this.currentData[field.fieldName] = this.props.overrideOrderData;
+			if(this.props.overrideOrderData >= 0 && field.field_name === 'order') {
+				this.currentData[field.field_name] = this.props.overrideOrderData;
 			}
 
 			if(fieldWrapperRef.fieldRef.isRequired() && fieldWrapperRef.isEmpty()) {
-				this.fieldAlert(field.fieldName, L('REQUIRED_FLD'), false, this.formIsValid);
+				this.fieldAlert(field.field_name, L('REQUIRED_FLD'), false, this.formIsValid);
 				this.formIsValid = false;
 			} else {
-				this.fieldAlert(field.fieldName);
-				let isValid = await this.checkUniqueValue(field, (!fieldWrapperRef.isEmpty()) && this.currentData[field.fieldName]);
+				this.fieldAlert(field.field_name);
+				let isValid = await this.checkUniqueValue(field, (!fieldWrapperRef.isEmpty()) && this.currentData[field.field_name]);
 				let isValid2 = await fieldWrapperRef.checkValidityBeforeSave(this.formIsValid);
 				if(!isValid || !isValid2) {
 					this.formIsValid = false;
@@ -226,17 +226,17 @@ class FormFull extends FormEventProcessingMixins {
 			}
 			var field = fieldRef.props.field;
 
-			var val = this.currentData[field.fieldName];
+			var val = this.currentData[field.field_name];
 
-			if(field.sendToServer) {
-				if((field.fieldType === FIELD_TYPE.LOOKUP_NtoM)) {
-					if(!n2mValuesEqual(this.props.initialData[field.fieldName], val)) {
-						data[field.fieldName] = val.map(v => v.id);
+			if(field.send_to_server) {
+				if((field.field_type === FIELD_TYPE.LOOKUP_NtoM)) {
+					if(!n2mValuesEqual(this.props.initialData[field.field_name], val)) {
+						data[field.field_name] = val.map(v => v.id);
 					}
-				} else if((field.fieldType === FIELD_TYPE.LOOKUP)) {
+				} else if((field.field_type === FIELD_TYPE.LOOKUP)) {
 
 					var cVal = val;
-					var iVal = this.props.initialData[field.fieldName];
+					var iVal = this.props.initialData[field.field_name];
 
 					if(cVal && cVal.id) {
 						cVal = cVal.id;
@@ -247,16 +247,16 @@ class FormFull extends FormEventProcessingMixins {
 					}
 
 					if(cVal !== iVal) {
-						data[field.fieldName] = val;
+						data[field.field_name] = val;
 					}
 
 				} else if(val && val._isAMomentObject) {
-					if(!val.isSame(this.props.initialData[field.fieldName])) {
-						data[field.fieldName] = val;
+					if(!val.isSame(this.props.initialData[field.field_name])) {
+						data[field.field_name] = val;
 					}
 				} else {
-					if(this.props.initialData[field.fieldName] != val) {
-						data[field.fieldName] = val;
+					if(this.props.initialData[field.field_name] != val) {
+						data[field.field_name] = val;
 					}
 				}
 			}
@@ -361,13 +361,13 @@ class FormFull extends FormEventProcessingMixins {
 
 				const ref = (ref) => {
 					if(ref) {
-						this.fieldsRefs[field.fieldName] = ref;
+						this.fieldsRefs[field.field_name] = ref;
 					} else {
-						delete this.fieldsRefs[field.fieldName];
+						delete this.fieldsRefs[field.field_name];
 					}
 				}
 
-				if((field.fieldType === FIELD_TYPE.TAB) && (field.maxLength === 0) && !this.isSubForm()) {//tab
+				if((field.field_type === FIELD_TYPE.TAB) && (field.max_length === 0) && !this.isSubForm()) {//tab
 					var isDefaultTab;
 					if(!tabs) {
 						tabs = [];
@@ -379,12 +379,12 @@ class FormFull extends FormEventProcessingMixins {
 
 					var tabVisible;
 					if(this.filters.hasOwnProperty('tab')) {
-						tabVisible = (this.filters.tab === field.fieldName);
+						tabVisible = (this.filters.tab === field.field_name);
 					} else {
 						tabVisible = isDefaultTab;
 					}
 
-					currentTabName = field.fieldName;
+					currentTabName = field.field_name;
 					currentTab = React.createElement(FormTab, {
 						key: field.id,
 						ref,
@@ -395,12 +395,12 @@ class FormFull extends FormEventProcessingMixins {
 						fields
 					});
 					tabs.push(currentTab);
-				} else if(this.props.editable || data[field.fieldName] || !field.storeInDB || (field.fieldType === FIELD_TYPE.LOOKUP_1toN) || field.fieldType >= 100) {
+				} else if(this.props.editable || data[field.field_name] || !field.store_in_db || (field.field_type === FIELD_TYPE.LOOKUP_1toN) || field.field_type >= 100) {
 					var tf = React.createElement(FieldWrap, {
 						ref,
 						key: field.id,
 						field,
-						initialValue: data[field.fieldName],
+						initialValue: data[field.field_name],
 						form: this, parentTabName: currentTabName,
 						isEdit: this.props.editable,
 						isCompact: this.props.isCompact,
@@ -413,13 +413,13 @@ class FormFull extends FormEventProcessingMixins {
 			}
 		}
 
-		var isMainTab = (!this.filters.tab || (tabs[0].props.field.fieldName === this.filters.tab));
+		var isMainTab = (!this.filters.tab || (tabs[0].props.field.field_name === this.filters.tab));
 
 		if(this.props.isCompact) {
 			fields.sort((a, b) => {
 
-				var alow = (a.props.field.fieldType === FIELD_TYPE.LOOKUP_1toN || a.props.field.fieldType === FIELD_TYPE.LOOKUP_NtoM || a.props.field.fieldType === FIELD_TYPE.BOOL);
-				var blow = (b.props.field.fieldType === FIELD_TYPE.LOOKUP_1toN || b.props.field.fieldType === FIELD_TYPE.LOOKUP_NtoM || b.props.field.fieldType === FIELD_TYPE.BOOL);
+				var alow = (a.props.field.field_type === FIELD_TYPE.LOOKUP_1toN || a.props.field.field_type === FIELD_TYPE.LOOKUP_NtoM || a.props.field.field_type === FIELD_TYPE.BOOL);
+				var blow = (b.props.field.field_type === FIELD_TYPE.LOOKUP_1toN || b.props.field.field_type === FIELD_TYPE.LOOKUP_NtoM || b.props.field.field_type === FIELD_TYPE.BOOL);
 				if(alow !== blow) {
 					if(alow) {
 						return 1;
@@ -465,11 +465,11 @@ class FormFull extends FormEventProcessingMixins {
 				}, renderIcon('trash'), this.isSubForm() ? '' : L('DELETE'));
 			}
 
-			const saveButtonLabel = node.storeForms ? (this.isSubForm() ? '' : (this.saveButtonTitle || L('SAVE'))) : node.matchName;
+			const saveButtonLabel = node.store_forms ? (this.isSubForm() ? '' : (this.saveButtonTitle || L('SAVE'))) : node.matchName;
 
 			if(this.props.editable) {
 				if(!node.draftable || !isMainTab || this.disableDrafting || (data.id && !data.isP) || !(node.privileges & PRIVILEGES_MASK.PUBLISH)) {
-					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: saveButtonLabel }, this.isSubForm() ? renderIcon('check') : renderIcon(node.storeForms ? 'floppy-o' : node.icon), saveButtonLabel);
+					saveButton = R.button({ className: 'clickable success-button save-btn', onClick: this.saveClick, title: saveButtonLabel }, this.isSubForm() ? renderIcon('check') : renderIcon(node.store_forms ? 'floppy-o' : node.icon), saveButtonLabel);
 				} else {
 					if(data.status === 1) {
 						draftButton = R.button({ className: isRestricted ? 'clickable default-button unpublish-button restricted' : 'clickable default-button unpublish-button', onClick: () => { this.saveClick(true) }, title: L('UNPUBLISH') }, L('UNPUBLISH'));
@@ -487,7 +487,7 @@ class FormFull extends FormEventProcessingMixins {
 			/// #endif
 			if(!this.props.isCompact) {
 				let headerContent = this.header || this.state.header || R.span(null, node.icon ? renderIcon(node.icon) : undefined, (this.recId === 'new') ?
-					((node.storeForms ? (L('CREATE') + ' ') : undefined), (node.creationName || node.singleName)) :
+					((node.store_forms ? (L('CREATE') + ' ') : undefined), (node.creation_name || node.single_name)) :
 					(this.state.data ? this.state.data.name : this.props.initialData.name));
 				header = R.h4({ className: "form-header" }, headerContent);
 			}
@@ -505,10 +505,10 @@ class FormFull extends FormEventProcessingMixins {
 		if(tabs && tabs.length > 1) {
 			tabsHeader = R.div({ className: 'header-tabs' }, tabs.map((tab) => {
 				let tabField: FieldDesc = tab.props.field;
-				return this.isFieldVisible(tabField.fieldName) ? R.span({ key: tabField.fieldName, }, R.span({
+				return this.isFieldVisible(tabField.field_name) ? R.span({ key: tabField.field_name, }, R.span({
 					className: tab.props.visible ? 'tab-header-button tab-header-button-active not-clickable' : 'tab-header-button tab-header-button-inactive clickable',
 					onClick: tab.props.visible ? undefined : () => {
-						this.setFormFilter('tab', tabField.fieldName);
+						this.setFormFilter('tab', tabField.field_name);
 					}
 				}, renderIcon(tabField.icon), tabField.name)
 					/// #if DEBUG

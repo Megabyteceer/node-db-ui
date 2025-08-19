@@ -36,7 +36,7 @@ registerFieldClass(FIELD_TYPE.PICTURE, class PictureField extends BaseField {
 	render() {
 		var field = this.props.field;
 
-		var imgUrl = idToImgURL(this.props.initialValue, this.props.field.fieldName);
+		var imgUrl = idToImgURL(this.props.initialValue, this.props.field.field_name);
 
 		if(this.props.isEdit) {
 			return React.createElement(CropperFieldBody, { field, ref: (r) => { this.cropperBody = r; }, parent: this, form: this.props.form, currentPicUrl: imgUrl, isCompact: this.props.isCompact });
@@ -127,7 +127,7 @@ class CropperFieldBody extends Component<any, any> {
 			let imageId = await submitData('api/uploadImage', serializeForm(form), true).catch((er) => {
 			});
 			if(!imageId) {
-				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.fieldName, L('IMAGE_UPLOAD_ERROR'));
+				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.field_name, L('IMAGE_UPLOAD_ERROR'));
 			}
 			return imageId;
 		} else if(this.state.cleared) {
@@ -162,8 +162,8 @@ class CropperFieldBody extends Component<any, any> {
 					cropperLoader.then((module) => {
 						const ReactCropper = module.Cropper;
 						var field = this.props.field;
-						var w = Math.floor(field.maxLength / 10000);
-						var h = field.maxLength % 10000;
+						var w = Math.floor(field.max_length / 10000);
+						var h = field.max_length % 10000;
 
 						if((w === selectedImage.width) && (h === selectedImage.height)) {
 							this._cropImage(true, reader.result);
@@ -222,8 +222,8 @@ class CropperFieldBody extends Component<any, any> {
 	render() {
 
 		var field = this.props.field;
-		var w = Math.floor(field.maxLength / 10000);
-		var h = field.maxLength % 10000;
+		var w = Math.floor(field.max_length / 10000);
+		var h = field.max_length % 10000;
 		var recW = w;
 		var recH = h;
 
@@ -236,7 +236,7 @@ class CropperFieldBody extends Component<any, any> {
 		var preview;
 
 		var clrBtn;
-		if(this.state.cropResult || this.state.src || this.props.currentPicUrl && this.props.currentPicUrl !== 'images/placeholder_' + field.fieldName + '.png') {
+		if(this.state.cropResult || this.state.src || this.props.currentPicUrl && this.props.currentPicUrl !== 'images/placeholder_' + field.field_name + '.png') {
 			clrBtn = R.button({ className: 'clickable tool-btn clear-btn', onClick: this.clear },
 				renderIcon('times')
 			)
@@ -252,7 +252,7 @@ class CropperFieldBody extends Component<any, any> {
 
 				var imgSrc = this.state.cropResult || this.props.currentPicUrl;
 				if(this.state.cleared) {
-					imgSrc = idToImgURL(0, field.fieldName);
+					imgSrc = idToImgURL(0, field.field_name);
 				}
 
 				preview = R.img({

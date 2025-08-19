@@ -18,7 +18,7 @@
 			"type": "node"
 		},
 		{
-			"type": "pwa-chrome",
+			"type": "chrome",
 			"request": "launch",
 			"name": "Client",
 			"webRoot": "${workspaceRoot}",
@@ -34,7 +34,7 @@
 			"enableContentValidation": false,
 			"pauseForSourceMap": true,
 			"cleanUp": false,
-			"url": "http://node-db-ui.com:3000/#n/9/r/8/e",
+			"url": "http://node-db-ui.com:8080/#",
 			"userDataDir": "C:\\tmp\\userdir"
 		},
 		{

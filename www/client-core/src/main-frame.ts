@@ -12,9 +12,16 @@ import { Stage } from "./stage";
 import { TopBar } from "./top-bar";
 import { getData, goToPageByHash, onNewUser } from "./utils";
 import { User } from "./user";
+import type { ENV_TYPE } from '../../../core/ENV';
 
-const ENV: any = {};
+
+const ROOT_NODE_ID = 2;
+const ENV = {} as ENV_TYPE;
 var isFirstCall = true;
+
+type NodeTreRec = any;
+let nodesTree: NodeTreRec[];
+let rootItem: NodeTreRec;
 
 class MainFrame extends Component<any, any> {
 	static instance: MainFrame;
@@ -33,15 +40,14 @@ class MainFrame extends Component<any, any> {
 
 		let data = await getData('api/getOptions');
 
-		const nodesTree = data.nodesTree;
+		nodesTree = data.nodesTree;
 		var items = {};
 		Object.assign(ENV, data.options);
-		ENV.nodesTree = nodesTree;
 
 		nodesTree.some((i) => {
 			items[i.id] = i;
-			if(i.id === 2) {
-				ENV.rootItem = i;
+			if(i.id === ROOT_NODE_ID) {
+				rootItem = i;
 			}
 		});
 
@@ -66,7 +72,7 @@ class MainFrame extends Component<any, any> {
 		return R.div(null,
 			React.createElement(TopBar),
 			R.div({ className: "main-frame" },
-				ENV.nodesTree ? React.createElement(LeftBar, { menuItems: ENV.rootItem.children }) : undefined,
+				nodesTree ? React.createElement(LeftBar, { menuItems: rootItem.children }) : undefined,
 				R.div({ className: "stage-container" },
 					React.createElement(Stage)
 				)

@@ -33,8 +33,8 @@ registerFieldClass(FIELD_TYPE.RICH_EDITOR, class RichEditorField extends BaseFie
 	componentDidMount() {
 		if(this.props.isEdit) {
 			var field = this.props.field;
-			var w = Math.floor(field.maxLength / 10000);
-			var h = field.maxLength % 10000;
+			var w = Math.floor(field.max_length / 10000);
+			var h = field.max_length % 10000;
 			var options = {
 				width: w,
 				height: h,
@@ -105,8 +105,8 @@ registerFieldClass(FIELD_TYPE.RICH_EDITOR, class RichEditorField extends BaseFie
 		if(this.props.isEdit) {
 			var field = this.props.field;
 
-			var w = Math.floor(field.maxLength / 10000) + 230;
-			var h = (field.maxLength % 10000) + 30;
+			var w = Math.floor(field.max_length / 10000) + 230;
+			var h = (field.max_length % 10000) + 30;
 
 			var style = { width: w, height: h + 100 };
 			var cog;

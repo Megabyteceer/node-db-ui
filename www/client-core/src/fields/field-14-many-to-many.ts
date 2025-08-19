@@ -145,7 +145,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 								[this.getLinkerFieldName()]: { id: recId }
 							};
 							window.crudJs.Stage.showForm(
-								this.props.field.nodeRef,
+								this.props.field.node_ref,
 								recId,
 								filters,
 								true,

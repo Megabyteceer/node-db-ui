@@ -1,12 +1,11 @@
-const ENV = {
+
+const SERVER_ENV = {
 	PORT: 1443,
 	SERVER_NAME: 'http://node-db-ui.com:1443/',
 	ADMIN_ENABLED_DEFAULT: true,
 	ERROR_NOTIFY_EMAIL: '',
 
 	EMAIL_FROM: 'test@test.com',
-
-	APP_TITLE: 'CRUD-js',
 
 	DB_HOST: '127.0.0.1',
 	DB_USER: 'root',
@@ -19,8 +18,18 @@ const ENV = {
 	DEPLOYMENT_KEY_REMOTE: '',
 
 	DEPLOYMENT_KEEP_DEBUG: true,
+	CAPTCHA_CLIENT_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
+	CAPTCHA_SERVER_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
 
-	HOME_NODE: 20,
+}
+
+const ENV = {
+
+
+	APP_TITLE: 'CRUD-js',
+
+	HOME_NODE_GUEST: 20,
+	HOME_NODE: 5,
 
 	ALLOW_ORIGIN: '*',
 
@@ -38,9 +47,6 @@ const ENV = {
 
 	BLOCK_RICH_EDITOR_TAGS: ['script'],
 
-	CAPTCHA_CLIENT_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
-	CAPTCHA_SERVER_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
-
 	clientOptions: {
 		"googleSigninClientId": ""
 	}
@@ -57,4 +63,8 @@ if(fs.existsSync(envPath)) {
 	Object.assign(ENV, env);
 }
 
-export default ENV;
+export { ENV, SERVER_ENV };
+
+type ENV_TYPE = typeof ENV;
+
+export type { ENV_TYPE };

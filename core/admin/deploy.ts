@@ -1,9 +1,10 @@
-import { throwError } from "../../www/client-core/src/bs-utils";
-import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
+import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import * as fs from "fs";
-import ENV from "../ENV";
+import { throwError } from "../../www/client-core/src/bs-utils";
+import { mysqlExec } from "../mysql-connection";
+
+import { SERVER_ENV } from '../../core/ENV';
 import type { UserSession } from '../../www/client-core/src/bs-utils';
 import { isAdmin } from "../auth";
 var crypto = require('crypto');
@@ -14,18 +15,18 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 	const tablesSettings = reqData.tablesSettings || {};
 	const isFull = reqData.isFull || true;
 
-	const source_db = ENV.DB_NAME;
+	const source_db = SERVER_ENV.DB_NAME;
 
-	let exist = await mysqlExec("SHOW DATABASES LIKE '" + source_db + "'") as mysqlRowsResult;
+	let exist = await mysqlExec("SHOW DATABASES LIKE '" + source_db + "'");
 	if(exist.length !== 1) {
-		throwError("source database `" + source_db + "` is not exists.");
+		throwError("source database \"" + source_db + "\" is not exists.");
 	}
 
 	var tmpName = path.join(os.tmpdir(), 'deploy_' + Date.now().toString());
 
 	var dbTables = {};
 
-	var sourceTables = await mysqlExec("SHOW FULL TABLES IN `" + source_db + "`") as mysqlRowsResult;
+	var sourceTables = await mysqlExec("SHOW FULL TABLES IN \"" + source_db + "\"");
 	if(!tablesSettings.tables) {
 		tablesSettings.tables = {};
 	}
@@ -33,12 +34,12 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 	var filesToZip = [];
 
 	for(var t of sourceTables) {
-		var tableName = t['Tables_in_' + source_db];
+		var table_name = t['Tables_in_' + source_db];
 
-		if(!tablesSettings.tables[tableName]) {
-			tablesSettings.tables[tableName] = 'n';
+		if(!tablesSettings.tables[table_name]) {
+			tablesSettings.tables[table_name] = 'n';
 		}
-		var tableOptions = tablesSettings['tables'][tableName];
+		var tableOptions = tablesSettings['tables'][table_name];
 
 		if(isFull) {
 			tableOptions = 'd';
@@ -51,17 +52,17 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 		var tableData;
 		var SQL;
 		if(t.Table_type === 'VIEW') {
-			SQL = await mySqlGetCreateViewSql(source_db, tableName);
+			SQL = await mySqlGetCreateViewSql(source_db, table_name);
 			if(!SQL) {
-				throwError("can't get CREATE script for view `" + source_db + "`.`" + tableName + "`");
+				throwError("can't get CREATE script for view \"" + source_db + "\".\"" + table_name + "\"");
 			}
 			tableData = { type: 'VIEW', SQL };
 		} else {//copy table
 
-			SQL = await mySqlGetCreateTableSql(source_db, tableName);
+			SQL = await mySqlGetCreateTableSql(source_db, table_name);
 
 			if(!SQL) {
-				throwError("can't get CREATE script for table `" + source_db + "`.`" + tableName + "`");
+				throwError("can't get CREATE script for table \"" + source_db + "\".\"" + table_name + "\"");
 			}
 
 			tableData = { type: 'TABLE', SQL };
@@ -69,7 +70,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 			if(tableOptions === 'd') {//include table [d]ata
 
 				tableData['isData'] = 1;
-				var ts = await mysqlExec("SHOW TABLE STATUS FROM `" + source_db + "` LIKE '" + tableName + "'");
+				var ts = await mysqlExec("SHOW TABLE STATUS FROM \"" + source_db + "\" LIKE '" + table_name + "'");
 				if(!ts[0]['Auto_increment']) {
 					tableData.autoIncrement = 0;
 				} else {
@@ -83,24 +84,24 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 					fs.chmodSync(tmpFilesDirName, '777');
 				}
 
-				var tmpFileNameSQL = tmpFilesDirName + '/sql' + tableName + Math.random() + '.sql';
+				var tmpFileNameSQL = tmpFilesDirName + '/sql' + table_name + Math.random() + '.sql';
 
-				if(!await mysqlExec("SELECT * FROM `" + source_db + "`.`" + tableName + "` INTO OUTFILE '" + tmpFileNameSQL + "'")) {
-					var rows = await mysqlExec("SELECT * FROM `" + source_db + "`.`" + tableName + "`") as mysqlRowsResult;
+				if(!await mysqlExec("SELECT * FROM \"" + source_db + "\".\"" + table_name + "\" INTO OUTFILE '" + tmpFileNameSQL + "'")) {
+					var rows = await mysqlExec("SELECT * FROM \"" + source_db + "\".\"" + table_name + "\"");
 					if(rows.length > 0) {
-						throwError("have no privileges to dump table `" + source_db + "`.`" + tableName + "` in to file '" + tmpFileNameSQL + "'");
+						throwError("have no privileges to dump table \"" + source_db + "\".\"" + table_name + "\" in to file '" + tmpFileNameSQL + "'");
 					}
 				}
 
-				filesToZip.push({ fileName: tmpFileNameSQL, tableName });
+				filesToZip.push({ fileName: tmpFileNameSQL, table_name });
 			}
 		}
-		dbTables[tableName] = tableData;
+		dbTables[table_name] = tableData;
 	}
 
 	//get stored functions
 	var dbFunctions = {};
-	var dbFunctionsSrc = await mysqlExec("SHOW FUNCTION STATUS WHERE Db='" + source_db + "'") as mysqlRowsResult;
+	var dbFunctionsSrc = await mysqlExec("SHOW FUNCTION STATUS WHERE Db='" + source_db + "'");
 	if(!tablesSettings.functions) {
 		tablesSettings.functions = [];
 	}
@@ -115,14 +116,14 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 		}
 		SQL = mySqlGetCreateFunctionSql(source_db, procName);
 		if(!SQL) {
-			throwError("can't get CREATE script for function `" + source_db + "`.`" + procName + "`");
+			throwError("can't get CREATE script for function \"" + source_db + "\".\"" + procName + "\"");
 		}
 		dbFunctions[procName] = { SQL };
 	}
 
 	//get stored procedures
 	var dbProcedures = {};
-	var storedProcedures = await mysqlExec("SHOW PROCEDURE STATUS WHERE Db='" + source_db + "'") as mysqlRowsResult;
+	var storedProcedures = await mysqlExec("SHOW PROCEDURE STATUS WHERE Db='" + source_db + "'");
 	if(!tablesSettings.procedures) {
 		tablesSettings.procedures = [];
 	}
@@ -140,14 +141,14 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 
 		SQL = mySqlGetCreateProcedureSql(source_db, procName);
 		if(!SQL) {
-			throwError("can't get CREATE script for procedure `" + source_db + "`.`" + procName + "`");
+			throwError("can't get CREATE script for procedure \"" + source_db + "\".\"" + procName + "\"");
 		}
 		dbProcedures[procName] = { SQL };
 	}
 
 	//get events
 	var dbEvents = {};
-	var storedEvents = await mysqlExec("SHOW EVENTS IN `" + source_db + "`") as mysqlRowsResult;
+	var storedEvents = await mysqlExec("SHOW EVENTS IN \"" + source_db + "\"");
 	if(!tablesSettings.events) {
 		tablesSettings.events = {};
 	}
@@ -165,14 +166,14 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 
 		SQL = mySqlGetCreateEventSql(source_db, eventName);
 		if(!SQL) {
-			throwError("can't get CREATE script for event `" + source_db + "`.`" + eventName + "`");
+			throwError("can't get CREATE script for event \"" + source_db + "\".\"" + eventName + "\"");
 		}
 		dbEvents[eventName] = { SQL };
 	}
 
 	//get triggers
 	var dbTriggers = {};
-	var storedEvents = await mysqlExec("show triggers IN `" + source_db + "`") as mysqlRowsResult;
+	var storedEvents = await mysqlExec("show triggers IN \"" + source_db + "\"");
 	if(tablesSettings.triggers) {
 		tablesSettings.triggers = {};
 	}
@@ -190,7 +191,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 
 		SQL = mySqlGetCreateTriggerSql(source_db, triggerName);
 		if(!SQL) {
-			throwError("can't get CREATE script for trigger `" + source_db + "`.`" + triggerName + "`");
+			throwError("can't get CREATE script for trigger \"" + source_db + "\".\"" + triggerName + "\"");
 		}
 		dbTriggers[triggerName] = { SQL };
 	}
@@ -221,13 +222,13 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 
 	for(var f of filesToZip) {
 		archive.append(JSON.stringify(deployData), { name: f.fileName });
-		archive.file(f.fileName, { name: f.tableName + '.data' });
+		archive.file(f.fileName, { name: f.table_name + '.data' });
 	}
 
 	var prevFiles;
 
 	var files = walkSync(path.join(__dirname, '../..'));
-	var hash = crypto.createHash('md5').update(ENV.DEPLOY_TO).digest('hex');
+	var hash = crypto.createHash('md5').update(SERVER_ENV.DEPLOY_TO).digest('hex');
 
 	var prevFilesFileName = path.join(__dirname, "/settings_store/", hash + "_files_tree.json");
 
@@ -323,94 +324,94 @@ function packFiles(archive, files, prevFiles, isFull) {
 }
 
 async function mySqlGetCreateViewSql(dbName, viewName) {
-	var SQL = await mysqlExec("SHOW CREATE VIEW `" + dbName + "`.`" + viewName);
+	var SQL = await mysqlExec("SHOW CREATE VIEW \"" + dbName + "\".\"" + viewName);
 	var SQLstring = SQL[0]['Create View'];
 	if(!SQLstring) {
 		return false;
 	}
 	//remove target db name.
-	SQLstring = SQLstring.replaceAll("`" + dbName + "`.", '');
+	SQLstring = SQLstring.replaceAll("\"" + dbName + "\".", '');
 	//remove definer.
-	var a = SQLstring.split("VIEW `" + viewName + "` AS");
+	var a = SQLstring.split("VIEW \"" + viewName + "\" AS");
 	if(a[1]) {
 		return false;
 	}
-	return "CREATE VIEW `" + viewName + "` AS" + a[1];
+	return "CREATE VIEW \"" + viewName + "\" AS" + a[1];
 }
 
-async function mySqlGetCreateTableSql(dbName, tableName) {
-	var SQL = await mysqlExec("SHOW CREATE TABLE `" + dbName + "`.`" + tableName + "`");
+async function mySqlGetCreateTableSql(dbName, table_name) {
+	var SQL = await mysqlExec("SHOW CREATE TABLE \"" + dbName + "\".\"" + table_name + "\"");
 	var SQLstring = SQL[0]['Create Table'];
 	if(!SQLstring) {
 		return false;
 	}
 	SQLstring = SQLstring.replace(/ AUTO_INCREMENT=\d+/, '');
-	SQLstring = SQLstring.replaceAll("`" + dbName + ".", '');
+	SQLstring = SQLstring.replaceAll("\"" + dbName + ".", '');
 	return SQLstring;
 }
 
 async function mySqlGetCreateFunctionSql(dbName, functionName) {
-	var SQL = await mysqlExec("SHOW CREATE FUNCTION `" + dbName + "`.`" + functionName + "`");
+	var SQL = await mysqlExec("SHOW CREATE FUNCTION \"" + dbName + "\".\"" + functionName + "\"");
 	var SQLstring = SQL[0]['Create Function'];
 
 	if(!SQLstring) {
 		return false;
 	}
-	SQLstring = SQLstring.replaceAll("`" + dbName + ".", '');
+	SQLstring = SQLstring.replaceAll("\"" + dbName + ".", '');
 
 
-	var a = SQLstring.split("FUNCTION `" + functionName + "`");
+	var a = SQLstring.split("FUNCTION \"" + functionName + "\"");
 	if(!a[1]) {
 		return false;
 	}
-	return "CREATE FUNCTION `" + functionName + "`" + a[1];
+	return "CREATE FUNCTION \"" + functionName + "\"" + a[1];
 }
 
 async function mySqlGetCreateProcedureSql(dbName, procedureName) {
-	var SQL = await mysqlExec("SHOW CREATE PROCEDURE `" + dbName + "`.`" + procedureName + "`");
+	var SQL = await mysqlExec("SHOW CREATE PROCEDURE \"" + dbName + "\".\"" + procedureName + "\"");
 	var SQLstring = SQL[0]['Create Procedure'];
 	if(!SQLstring) {
 		return false;
 	}
-	SQLstring = SQLstring.replaceAll("`" + dbName + ".", '');
+	SQLstring = SQLstring.replaceAll("\"" + dbName + ".", '');
 
-	var a = SQLstring.split("PROCEDURE `" + procedureName + "`");
+	var a = SQLstring.split("PROCEDURE \"" + procedureName + "\"");
 	if(!a[1]) {
 		return false;
 	}
-	return "CREATE PROCEDURE `" + procedureName + "`" + a[1];
+	return "CREATE PROCEDURE \"" + procedureName + "\"" + a[1];
 }
 
 async function mySqlGetCreateEventSql(dbName, eventName) {
-	var SQL = await mysqlExec("SHOW CREATE EVENT `" + dbName + "`.`" + eventName + "`");
+	var SQL = await mysqlExec("SHOW CREATE EVENT \"" + dbName + "\".\"" + eventName + "\"");
 	var SQLstring = SQL[0]['Create Event'];
 	if(!SQLstring) {
 		return false;
 	}
 	//remove target db name.
-	SQLstring = SQLstring.replaceAll("`" + dbName + "`.", '');
+	SQLstring = SQLstring.replaceAll("\"" + dbName + "\".", '');
 	//remove definer.
-	var a = SQLstring.split("EVENT `" + eventName + "`");
+	var a = SQLstring.split("EVENT \"" + eventName + "\"");
 	if(!a[1]) {
 		return false;
 	}
-	return "CREATE EVENT `" + eventName + "`" + a[1];
+	return "CREATE EVENT \"" + eventName + "\"" + a[1];
 }
 
 async function mySqlGetCreateTriggerSql(dbName, triggerName) {
-	var SQL = await mysqlExec("SHOW CREATE TRIGGER `" + dbName + "`.`" + triggerName + "`") as mysqlRowsResult;
+	var SQL = await mysqlExec("SHOW CREATE TRIGGER \"" + dbName + "\".\"" + triggerName + "\"");
 	var SQLstring = SQL[0]['SQL Original Statement'];
 	if(!SQLstring) {
 		return false;
 	}
 	//remove target db name.
-	SQLstring = SQLstring.replaceAll("`" + dbName + "`.", '');
+	SQLstring = SQLstring.replaceAll("\"" + dbName + "\".", '');
 	//remove definer.
-	var a = SQLstring.split("TRIGGER `" + triggerName + "`");
+	var a = SQLstring.split("TRIGGER \"" + triggerName + "\"");
 	if(!a[1]) {
 		return false;
 	}
-	return "CREATE TRIGGER `" + triggerName + "`" + a[1];
+	return "CREATE TRIGGER \"" + triggerName + "\"" + a[1];
 }
 
 async function mySqlGetHeaderInfo() {

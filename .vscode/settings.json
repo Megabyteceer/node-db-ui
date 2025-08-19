@@ -1,6 +1,13 @@
 {
 	"typescript.suggest.paths": true,
 	"editor.formatOnSave": true,
+	"typescript.format.enable": true,
+	"editor.formatOnSaveMode": "file",
+	"[typescript]": {
+		"editor.codeActionsOnSave": {
+			"source.organizeImports": "explicit"
+		}
+	},
 	"typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
 	"typescript.format.insertSpaceBeforeFunctionParenthesis": false,
 	"typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": false,
@@ -27,5 +34,7 @@
 		"VARCHAR",
 		"zoomable"
 	],
-	"task.allowAutomaticTasks": "on"
+	"task.allowAutomaticTasks": "on",
+	"typescript.preferences.quoteStyle": "single",
+	"javascript.preferences.quoteStyle": "single"
 }

@@ -1,10 +1,11 @@
-import ENV from "./ENV";
-import { mysqlExec, mysqlInsertResult, mysqlRowsResult } from "./mysql-connection";
+
+import { mysqlExec } from "./mysql-connection";
 import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from "./describe-node";
 import { throwError, NODE_ID, assert, UserLangEntry, UserRoles, UserSession, ROLE_ID, RecId } from "../www/client-core/src/bs-utils";
 import { pbkdf2, randomBytes } from "crypto";
 import { L } from "./locale";
 import { submitRecord } from "./submit";
+import { ENV, SERVER_ENV } from './ENV';
 
 const sessions = new Map();
 const sessionsByUserId = new Map();
@@ -106,7 +107,7 @@ function killSession(userSession) {
 }
 
 function getServerHref() {
-	return ENV.SERVER_NAME;
+	return SERVER_ENV.SERVER_NAME;
 }
 
 function generateSalt() {
@@ -115,17 +116,17 @@ function generateSalt() {
 
 async function activateUser(key, userSession: UserSession) {
 	if(key) {
-		const registrations = await mysqlExec("SELECT * FROM _registration WHERE status = 1 AND activationKey='" + key + "' AND _createdON > DATE_ADD(CURDATE(), INTERVAL -1 DAY) LIMIT 1") as mysqlRowsResult;
+		const registrations = await mysqlExec("SELECT * FROM _registration WHERE status = 1 AND activation_key='" + key + "' AND _created_on > DATE_ADD(CURDATE(), INTERVAL -1 DAY) LIMIT 1");
 		const registration = registrations[0];
 		if(registration) {
 			let registrationID = registration.id;
 			delete registration.id;
-			delete registration.activationKey;
-			delete registration._createdON;
-			delete registration._organizationID;
-			delete registration._usersID;
+			delete registration.activation_key;
+			delete registration._created_on;
+			delete registration._organization_id;
+			delete registration._users_id;
 			let ret = await authorizeUserByID(await createUser(registration as any, userSession));
-			await mysqlExec("UPDATE _registration SET activationKey = '', status = 0 WHERE id = " + registrationID);
+			await mysqlExec("UPDATE _registration SET activation_key = '', status = 0 WHERE id = " + registrationID);
 			return ret;
 		}
 	}
@@ -137,7 +138,7 @@ async function createUser(userData: {
 	name?: string,
 	salt?: string
 }, userSession: UserSession) {
-	let existingUser = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND email='" + userData.email + "' LIMIT 1") as mysqlRowsResult;
+	let existingUser = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND email='" + userData.email + "' LIMIT 1");
 	if(existingUser.length > 0) {
 		throwError(L('EMAIL_ALREADY', userSession));
 	}
@@ -147,17 +148,17 @@ async function createUser(userData: {
 	var salt = userData.salt || '';
 	delete userData.salt;
 	const userID: RecId = (await submitRecord(NODE_ID.USERS, userData, undefined, userSession)).recId;
-	let organizationID = (await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_usersID`) VALUES ('', '1', " + userID + ")") as mysqlInsertResult).insertId;
-	await mysqlExec("UPDATE _organization SET _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + organizationID);
-	await mysqlExec("UPDATE _users SET `salt`= '" + salt + "', _usersID = " + userID + ", _organizationID = " + organizationID + " WHERE id = " + userID);
+	let organizationID = (await mysqlExec("INSERT INTO \"_organization\" (\"name\", \"status\", \"_users_id\") VALUES ('', '1', " + userID + ")"))[0].id;
+	await mysqlExec("UPDATE _organization SET _users_id = " + userID + ", _organization_id = " + organizationID + " WHERE id = " + organizationID);
+	await mysqlExec("UPDATE _users SET \"salt\"= '" + salt + "', _users_id = " + userID + ", _organization_id = " + organizationID + " WHERE id = " + userID);
 	return userID;
 }
 
 async function resetPassword(key, userId, userSession) {
 	if(key && userId) {
-		const users = await mysqlExec("SELECT id FROM _users WHERE id= " + userId + " AND status = 1 AND resetCode='" + key + "' AND reset_time > DATE_ADD(CURDATE(), INTERVAL -1 DAY) LIMIT 1") as mysqlRowsResult;
+		const users = await mysqlExec("SELECT id FROM _users WHERE id= " + userId + " AND status = 1 AND reset_code='" + key + "' AND reset_time > DATE_ADD(CURDATE(), INTERVAL -1 DAY) LIMIT 1");
 		if(users.length === 1) {
-			await mysqlExec("UPDATE _users SET resetCode = '' WHERE id ='" + userId + "'");
+			await mysqlExec("UPDATE _users SET reset_code = '' WHERE id ='" + userId + "'");
 			return authorizeUserByID(userId);
 		}
 	}
@@ -166,11 +167,11 @@ async function resetPassword(key, userId, userSession) {
 
 function getPasswordHash(password, salt) {
 	return new Promise((resolve, rejects) => {
-		pbkdf2(password, salt, 1000, 64, `sha512`, (err, key) => {
+		pbkdf2(password, salt, 1000, 64, 'sha512', (err, key) => {
 			if(err) {
 				rejects(err);
 			} else {
-				resolve(key.toString(`hex`));
+				resolve(key.toString('hex'));
 			}
 		});
 	});
@@ -182,27 +183,27 @@ async function authorizeUserByID(userID, isItServerSideSession: boolean = false,
 		return sessionsByUserId.get(userID);
 	}
 
-	const query = "SELECT _users.name as userName, multilingualEnabled, avatar, _users._organizationID AS user_organizationID, company, defaultOrg, _organization.name AS organName, email, language FROM _users LEFT JOIN _organization ON (_users._organizationID = _organization.id) WHERE (_users.id = " + userID + ") AND _users.status=1 LIMIT 1";
-	const users = await mysqlExec(query) as mysqlRowsResult;
+	const query = "SELECT _users.name AS user_name, multilingual_enabled, avatar, _users._organization_id AS user_organization_id, company, default_org, _organization.name AS organ_name, email, language FROM _users LEFT JOIN _organization ON (_users._organization_id = _organization.id) WHERE (_users.id = " + userID + ") AND _users.status=1 LIMIT 1";
+	const users = await mysqlExec(query);
 	const user = users[0];
 	if(!user) {
 		throwError("user activation error " + userID);
 	}
 
-	let organID: number = user.user_organizationID;
+	let organID: number = user.user_organization_id;
 
 	// fix user's org if undefined
 	if(organID === 0) {
-		const orgId = await mysqlExec("INSERT INTO `_organization` (`name`, `status`, `_usersID`) VALUES ('" + user.company + "', '1', " + userID + ")");
-		await mysqlExec("UPDATE _users SET _organizationID=" + orgId + ", _usersID = " + userID + " WHERE id=" + userID);
-		await mysqlExec("UPDATE _organization SET _organizationID=" + orgId + " WHERE id=" + orgId);
+		const orgId = await mysqlExec("INSERT INTO \"_organization\" (\"name\", \"status\", \"_users_id\") VALUES ('" + user.company + "', '1', " + userID + ")");
+		await mysqlExec("UPDATE _users SET _organization_id=" + orgId + ", _users_id = " + userID + " WHERE id=" + userID);
+		await mysqlExec("UPDATE _organization SET _organization_id=" + orgId + " WHERE id=" + orgId);
 		return authorizeUserByID(userID);
 	}
 
-	let organID_def = user.defaultOrg || organID;
-	let organName = user.organName;
+	let organID_def = user.default_org || organID;
+	let organName = user.organ_name;
 
-	const roles = await mysqlExec("SELECT _rolesID FROM _user_roles WHERE _user_roles._usersID=" + userID + " ORDER BY _rolesID") as mysqlRowsResult;
+	const roles = await mysqlExec("SELECT _roles_id FROM _user_roles WHERE _user_roles._users_id=" + userID + " ORDER BY _roles_id");
 
 	let cacheKeyGenerator: string[];
 	let userRoles: UserRoles = {};
@@ -214,15 +215,15 @@ async function authorizeUserByID(userID, isItServerSideSession: boolean = false,
 		cacheKeyGenerator = [ROLE_ID.USER as unknown as string]
 	}
 	for(let role of roles) {
-		cacheKeyGenerator.push(role._rolesID);
-		userRoles[role._rolesID] = 1;
+		cacheKeyGenerator.push(role._roles_id);
+		userRoles[role._roles_id] = 1;
 	}
 
 
 	let organizations = {
 		[organID]: organName
 	}
-	const pgs = await mysqlExec("SELECT _organization.id, _organization.name FROM `_organization_users` LEFT JOIN _organization ON (_organization.id = _organization_users._organizationID) WHERE _organization_users._usersID=" + userID + " ORDER BY _organization.id") as mysqlRowsResult;
+	const pgs = await mysqlExec("SELECT _organization.id, _organization.name FROM _organization_users LEFT JOIN _organization ON (_organization.id = _organization_users._organization_id) WHERE _organization_users._users_id=" + userID + " ORDER BY _organization.id");
 	for(let org of pgs) {
 		organizations[org.id] = org.name;
 	}
@@ -230,12 +231,12 @@ async function authorizeUserByID(userID, isItServerSideSession: boolean = false,
 	const lang = getLang(user.language);
 
 	cacheKeyGenerator.push('l', lang.prefix);
-	cacheKeyGenerator.push('m', user.multilingualEnabled);
+	cacheKeyGenerator.push('m', user.multilingual_enabled);
 
 	const userSession: UserSession = {
 		id: userID,
 		orgId: 0,
-		name: user.userName,
+		name: user.user_name,
 		avatar: user.avatar,
 		email: user.email,
 		userRoles,
@@ -244,8 +245,8 @@ async function authorizeUserByID(userID, isItServerSideSession: boolean = false,
 		cacheKey: cacheKeyGenerator.join()
 	};
 
-	if(user.multilingualEnabled) {
-		userSession.multilingualEnabled = 1;
+	if(user.multilingual_enabled) {
+		userSession.multilingual_enabled = 1;
 	}
 
 	if(!await setCurrentOrg(organID_def, userSession)) {
@@ -262,7 +263,7 @@ async function authorizeUserByID(userID, isItServerSideSession: boolean = false,
 			Object.seal(userSession);
 		//*/
 	} else {
-		await setMultilingual(user.multilingualEnabled, userSession);
+		await setMultilingual(user.multilingual_enabled, userSession);
 	}
 	return userSession;
 }
@@ -282,7 +283,7 @@ async function setCurrentOrg(organID: number, userSession: UserSession, updateIn
 		userSession.orgId = organID;
 		if(updateInBd) {
 			shouldBeAuthorized(userSession);
-			await mysqlExec("UPDATE _users SET defaultOrg=organID WHERE id=" + userSession.id);
+			await mysqlExec("UPDATE _users SET default_org=_organization_id WHERE id=" + userSession.id);
 		}
 		return 1;
 	}
@@ -292,9 +293,9 @@ async function setCurrentOrg(organID: number, userSession: UserSession, updateIn
 async function setMultilingual(enable, userSession) {
 	shouldBeAuthorized(userSession);
 	if(ENV.ENABLE_MULTILINGUAL) {
-		userSession.multilingualEnabled = enable;
+		userSession.multilingual_enabled = enable;
 	}
-	await mysqlExec('UPDATE _users SET multilingualEnabled=' + (enable ? '1' : '0') + " WHERE id=" + userSession.id + " LIMIT 1");
+	await mysqlExec('UPDATE _users SET multilingual_enabled=' + (enable ? '1' : '0') + " WHERE id=" + userSession.id);
 	return 1;
 }
 
@@ -315,7 +316,7 @@ async function mail_utf8(email, subject, text): Promise<void> {
 			})
 		}
 		transporter.sendMail({
-			from: ENV.EMAIL_FROM,
+			from: SERVER_ENV.EMAIL_FROM,
 			to: email,
 			subject,
 			text
@@ -329,9 +330,9 @@ async function mail_utf8(email, subject, text): Promise<void> {
 	});
 }
 
-function mustBeUnset(obj, fieldName) {
-	if(obj.hasOwnProperty(fieldName)) {
-		throwError('Forbidden field "' + fieldName + '" detected.');
+function mustBeUnset(obj, field_name) {
+	if(obj.hasOwnProperty(field_name)) {
+		throwError('Forbidden field "' + field_name + '" detected.');
 	}
 }
 

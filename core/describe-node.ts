@@ -6,10 +6,11 @@ import handlers from '../___index';
 
 import { existsSync } from "fs";
 import { join } from "path";
-import { mysqlExec, mysqlRowsResult } from "./mysql-connection";
-import ENV from "./ENV";
-import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession/*, usersSessionsStartedCount*/  } from "./auth";
+import { mysqlExec } from "./mysql-connection";
+
+import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession/*, usersSessionsStartedCount*/ } from "./auth";
 import { throwError, assert, FIELD_TYPE, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK, ROLE_ID, NODE_ID, NODE_TYPE, USER_ID } from "../www/client-core/src/bs-utils";
+import { ENV } from './ENV';
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
@@ -45,31 +46,31 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 
 			const ret: NodeDesc = {
 				id: srcNode.id,
-				singleName: srcNode["singleName" + landQ],
+				single_name: srcNode["single_name" + landQ],
 				privileges,
 				matchName: srcNode["name" + landQ],
 				description: srcNode["description" + landQ],
-				nodeType: srcNode.nodeType
+				node_type: srcNode.node_type
 			}
 
-			if(srcNode.cssClass) {
-				ret.cssClass = srcNode.cssClass;
+			if(srcNode.css_class) {
+				ret.css_class = srcNode.css_class;
 			}
 
-			if(srcNode.nodeType === NODE_TYPE.REACT_CLASS) {
-				ret.tableName = srcNode.tableName;
-			} else if(srcNode.nodeType === NODE_TYPE.DOCUMENT) {
+			if(srcNode.node_type === NODE_TYPE.REACT_CLASS) {
+				ret.table_name = srcNode.table_name;
+			} else if(srcNode.node_type === NODE_TYPE.DOCUMENT) {
 
 				ret.captcha = srcNode.captcha;
 				ret.reverse = srcNode.reverse;
-				ret.creationName = srcNode["creationName" + landQ];
-				ret.storeForms = srcNode.storeForms;
-				ret.staticLink = srcNode.staticLink;
-				ret.tableName = srcNode.tableName;
+				ret.creation_name = srcNode["creation_name" + landQ];
+				ret.store_forms = srcNode.store_forms;
+				ret.static_link = srcNode.static_link;
+				ret.table_name = srcNode.table_name;
 				ret.draftable = srcNode.draftable;
 				ret.icon = srcNode.icon;
-				ret.recPerPage = srcNode.recPerPage;
-				ret.defaultFilterId = srcNode.defaultFilterId;
+				ret.rec_per_page = srcNode.rec_per_page;
+				ret.default_filter_id = srcNode.default_filter_id;
 
 				for(let id in srcNode.filters) {
 					const filter = srcNode.filters[id];
@@ -97,19 +98,19 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 						description: srcField['description' + landQ] || srcField.description,
 						show: srcField.show,
 						prior: srcField.prior,
-						fieldType: srcField.fieldType,
-						fieldName: srcField.fieldName,
-						selectFieldName: srcField.selectFieldName,
-						maxLength: srcField.maxLength,
+						field_type: srcField.field_type,
+						field_name: srcField.field_name,
+						select_field_name: srcField.select_field_name,
+						max_length: srcField.max_length,
 						requirement: srcField.requirement,
 						unique: srcField.unique,
 						enum: srcField.enum,
-						forSearch: srcField.forSearch,
-						storeInDB: srcField.storeInDB,
-						nodeRef: srcField.nodeRef,
-						sendToServer: srcField.sendToServer,
+						for_search: srcField.for_search,
+						store_in_db: srcField.store_in_db,
+						node_ref: srcField.node_ref,
+						send_to_server: srcField.send_to_server,
 						icon: srcField.icon,
-						lookupIcon: srcField.lookupIcon,
+						lookup_icon: srcField.lookup_icon,
 						display: srcField.display
 					};
 
@@ -122,26 +123,26 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 						});
 						field.enumId = srcField.enumId;
 					}
-					if(srcField.cssClass) {
-						field.cssClass = srcField.cssClass;
+					if(srcField.css_class) {
+						field.css_class = srcField.css_class;
 					}
 
 					fields.push(field);
-					if(srcField.multilingual && userSession.multilingualEnabled) {
+					if(srcField.multilingual && userSession.multilingual_enabled) {
 
-						const fieldName = field.fieldName;
+						const field_name = field.field_name;
 						const fieldId = field.id;
 						const langs = getLangs();
 						for(const l of langs) {
 							if(l.prefix) {
 								if(nodeId === NODE_ID.NODES || nodeId === NODE_ID.FIELDS || nodeId === NODE_ID.FILTERS) { // for nodes, fields, and filters, add only languages which used in system UI
-									if(!l.isUILanguage) {
+									if(!l.is_ui_language) {
 										continue;
 									}
 								}
 								const langFiled = Object.assign({}, field);
 								langFiled.show = field.show & (VIEW_MASK.ALL - VIEW_MASK.LIST - VIEW_MASK.DROPDOWN_LIST);
-								langFiled.fieldName = fieldName + l.prefix;
+								langFiled.field_name = field_name + l.prefix;
 								langFiled.id = (fieldId + l.prefix) as unknown as number;
 								langFiled.lang = l.name;
 								fields.push(langFiled);
@@ -162,7 +163,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 function getUserAccessToNode(node, userSession) {
 	let ret = 0;
 	for(let role of node.rolesToAccess) {
-		if(isUserHaveRole(role.roleId, userSession)) {
+		if(isUserHaveRole(role.role_id, userSession)) {
 			ret |= role.privileges;
 		}
 	}
@@ -201,10 +202,10 @@ function getNodesTree(userSession) { // get nodes tree visible to user
 					icon: nodeSrc.icon,
 					id: nodeSrc.id,
 					name: nodeSrc['name' + langId],
-					nodeType: nodeSrc.nodeType,
-					parent: nodeSrc._nodesID,
+					node_type: nodeSrc.node_type,
+					parent: nodeSrc._nodes_id,
 					privileges,
-					staticLink: nodeSrc.staticLink
+					static_link: nodeSrc.static_link
 				});
 			}
 		}
@@ -223,14 +224,14 @@ function reloadMetadataSchedule() {
 
 function attemptToReloadMetadataSchedule() {
 	//if(usersSessionsStartedCount() === 0) { //TODO: disabled because of freezes
-		if(metadataReloadingInterval) {
-			clearInterval(metadataReloadingInterval);
-			metadataReloadingInterval = null;
-		}
-		initNodesData().then(() => {
-			setMaintenanceMode(false);
-		});
-//	}
+	if(metadataReloadingInterval) {
+		clearInterval(metadataReloadingInterval);
+		metadataReloadingInterval = null;
+	}
+	initNodesData().then(() => {
+		setMaintenanceMode(false);
+	});
+	//	}
 }
 
 async function initNodesData() { // load whole nodes data in to memory
@@ -240,21 +241,7 @@ async function initNodesData() { // load whole nodes data in to memory
 	let langs_new: UserLangEntry[];
 	let eventsHandlers_new = new Map();
 
-	options = {
-		ADMIN_ENABLED_DEFAULT: ENV.ADMIN_ENABLED_DEFAULT,
-		APP_TITLE: ENV.APP_TITLE,
-		HOME_NODE: ENV.HOME_NODE,
-		REQUIRE_COMPANY: ENV.REQUIRE_COMPANY,
-		REQUIRE_NAME: ENV.REQUIRE_NAME,
-		DEFAULT_LANG_CODE: ENV.DEFAULT_LANG_CODE,
-		MAX_FILE_SIZE_TO_UPLOAD: ENV.MAX_FILE_SIZE_TO_UPLOAD,
-		ENABLE_MULTILINGUAL: ENV.ENABLE_MULTILINGUAL,
-		GOOGLE_PLUS: ENV.GOOGLE_PLUS,
-		TERMS_URL: ENV.TERMS_URL,
-		CAPTCHA_CLIENT_SECRET: ENV.CAPTCHA_CLIENT_SECRET,
-		ALLOWED_UPLOADS: ENV.ALLOWED_UPLOADS,
-		clientOptions: ENV.clientOptions,
-	};
+	options = Object.assign({}, ENV);
 
 	nodesById_new = new Map();
 	nodesByTableName = new Map();
@@ -263,7 +250,7 @@ async function initNodesData() { // load whole nodes data in to memory
 	await mysqlExec('-- ======== NODES RELOADING STARTED ===================================================================================================================== --');
 	/// #endif
 
-	langs_new = await mysqlExec("SELECT id, name, code, isUILanguage FROM _languages WHERE id <> 0") as UserLangEntry[];
+	langs_new = await mysqlExec("SELECT id, name, code, is_ui_language FROM _languages WHERE id <> 0") as UserLangEntry[];
 	for(let l of langs_new) {
 		l.prefix = l.code ? ('$' + l.code) : '';
 		ALL_LANGUAGES_BY_CODES.set(l.code || ENV.DEFAULT_LANG_CODE, l);
@@ -276,12 +263,12 @@ async function initNodesData() { // load whole nodes data in to memory
 	nodes_new = await mysqlExec(query);
 	for(let nodeData of nodes_new) {
 		nodesById_new.set(nodeData.id, nodeData);
-		if(nodeData.tableName) {
-			nodesByTableName.set(nodeData.tableName, nodeData);
+		if(nodeData.table_name) {
+			nodesByTableName.set(nodeData.table_name, nodeData);
 		}
-		nodeData.sortFieldName = '_createdON';
+		nodeData.sortFieldName = '_created_on';
 
-		let rolesToAccess = await mysqlExec("SELECT roleId, privileges FROM _role_privileges WHERE nodeID = 0 OR nodeID = " + nodeData.id);
+		let rolesToAccess = await mysqlExec("SELECT role_id, privileges FROM _role_privileges WHERE node_id = 0 OR node_id = " + nodeData.id);
 
 		/// #if DEBUG
 		nodeData.__preventToStringify = nodeData; // circular structure to fail when try to stringify
@@ -289,32 +276,32 @@ async function initNodesData() { // load whole nodes data in to memory
 
 		nodeData.rolesToAccess = rolesToAccess;
 		nodeData.privileges = 65535;
-		let sortField = nodeData._fieldsID;
+		let sortField = nodeData._fields_id;
 
-		if(nodeData.nodeType === NODE_TYPE.DOCUMENT) {
+		if(nodeData.node_type === NODE_TYPE.DOCUMENT) {
 			let query = "SELECT * FROM _fields WHERE node_fields_linker=" + nodeData.id + " AND status = 1 ORDER BY prior";
-			let fields = await mysqlExec(query) as mysqlRowsResult;
+			let fields = await mysqlExec(query);
 			for(let field of fields) {
 
 				if(field.id === sortField) {
-					nodeData.sortFieldName = field.fieldName;
+					nodeData.sortFieldName = field.field_name;
 				}
 
-				if(field.fieldType === FIELD_TYPE.ENUM && field.show) {
+				if(field.field_type === FIELD_TYPE.ENUM && field.show) {
 					let enums = await mysqlExec("SELECT value," + langs_new.map((l) => {
 						return 'name' + l.prefix;
-					}).join() + " FROM _enum_values WHERE status = 1 AND values_linker=" + field.enum + " ORDER BY `order`");
+					}).join() + " FROM _enum_values WHERE status = 1 AND values_linker=" + field.enum + " ORDER BY _enum_values.order");
 					field.enumId = field.enum;
 					field.enum = enums;
 				}
 				fields_new.set(field.id, field);
 			}
 			nodeData.fields = fields;
-			const filtersRes = await mysqlExec("SELECT * FROM _filters WHERE status = 1 AND node_filters_linker=" + nodeData.id + " ORDER BY `order`") as mysqlRowsResult;
+			const filtersRes = await mysqlExec("SELECT * FROM _filters WHERE status = 1 AND node_filters_linker=" + nodeData.id + " ORDER BY _filters.order");
 
 			const filters = {};
 			for(let f of filtersRes) {
-				let filterRoles = await mysqlExec("SELECT _rolesId FROM _filter_access_roles WHERE _filtersId=" + f.id) as mysqlRowsResult;
+				let filterRoles = await mysqlExec("SELECT _rolesId FROM _filter_access_roles WHERE _filtersId=" + f.id);
 				if(filterRoles.length > 0) {
 					f.roles = filterRoles.map(i => i._rolesId);
 				}
@@ -326,9 +313,9 @@ async function initNodesData() { // load whole nodes data in to memory
 			//events handlers
 			/// #if DEBUG
 			async function importServerSideEvents(folderName) {
-				let moduleFileName = join(__dirname, folderName + nodeData.tableName + '.js');
+				let moduleFileName = join(__dirname, folderName + nodeData.table_name + '.js');
 				if(existsSync(moduleFileName)) {
-					let handler = await import(`./${folderName}${nodeData.tableName}`);
+					let handler = await import(`./${folderName}${nodeData.table_name}.js`);
 					eventsHandlers_new.set(nodeData.id, handler.default);
 				}
 
@@ -342,16 +329,16 @@ async function initNodesData() { // load whole nodes data in to memory
 	/// #if DEBUG
 	/*
 	/// #endif
-	for(let tableName in handlers) {
-		if(!nodesByTableName.has(tableName)) {
-			throwError('Event handler ./events/' + tableName + '.ts has no related node in database.');
+	for(let table_name in handlers) {
+		if(!nodesByTableName.has(table_name)) {
+			throwError('Event handler ./events/' + table_name + '.ts has no related node in database.');
 		}
-		let nodeId = nodesByTableName.get(tableName).id;
-		eventsHandlers_new.set(nodeId, handlers[tableName]);
+		let nodeId = nodesByTableName.get(table_name).id;
+		eventsHandlers_new.set(nodeId, handlers[table_name]);
 	}
 	//*/
 
-	
+
 	fields = fields_new;
 	nodes = nodes_new;
 	nodesById = nodesById_new;

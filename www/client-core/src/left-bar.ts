@@ -39,7 +39,7 @@ function isCurrentlyShowedLeftBarItem(item): boolean | typeof SELECTED_LIST {
 		return;
 	}
 
-	if(item.nodeType !== NODE_TYPE.STATIC_LINK) {
+	if(item.node_type !== NODE_TYPE.STATIC_LINK) {
 		if(currentFormParameters.nodeId === item.id) {
 			if(!currentFormParameters.recId) {
 				return SELECTED_LIST;
@@ -56,8 +56,8 @@ function isStrictlySelected(item) {
 		if(item.hasOwnProperty('children')) {
 			return item.children.some(isStrictlySelected);
 		} else {
-			if(item.nodeType === NODE_TYPE.STATIC_LINK) {
-				return location.hash === item.staticLink;
+			if(item.node_type === NODE_TYPE.STATIC_LINK) {
+				return location.hash === item.static_link;
 			}
 		}
 	}
@@ -73,13 +73,13 @@ class BarItem extends Component<any, any> {
 	}
 
 	componentDidMount() {
-		if(this.props.item.nodeType !== NODE_TYPE.DOCUMENT) {
+		if(this.props.item.node_type !== NODE_TYPE.DOCUMENT) {
 			allGroups.push(this);
 		}
 	}
 
 	componentWillUnmount() {
-		if(this.props.item.nodeType !== NODE_TYPE.DOCUMENT) {
+		if(this.props.item.node_type !== NODE_TYPE.DOCUMENT) {
 			let i = allGroups.indexOf(this);
 			assert(i >= 0, 'BarItem registration is corrupted.');
 			allGroups.splice(i, 1);
@@ -177,7 +177,7 @@ class BarItem extends Component<any, any> {
 		}
 		/// #endif
 
-		if((item.nodeType !== NODE_TYPE.DOCUMENT) && (!item.children || (item.children.length === 0))
+		if((item.node_type !== NODE_TYPE.DOCUMENT) && (!item.children || (item.children.length === 0))
 			/// #if DEBUG
 			&& false// in debug build always show empty nodes
 			/// #endif
@@ -190,10 +190,10 @@ class BarItem extends Component<any, any> {
 		}*/
 
 		var itemsIcon = R.div({ className: "left-bar-item-icon" },
-			renderIcon(item.icon + ((item.nodeType === NODE_TYPE.DOCUMENT) ? ' brand-color' : ' no-icon'))
+			renderIcon(item.icon + ((item.node_type === NODE_TYPE.DOCUMENT) ? ' brand-color' : ' no-icon'))
 		)
 
-		let className = 'left-bar-item ' + ((item.nodeType === NODE_TYPE.DOCUMENT) ? 'left-bar-item-doc' : 'left-bar-group');
+		let className = 'left-bar-item ' + ((item.node_type === NODE_TYPE.DOCUMENT) ? 'left-bar-item-doc' : 'left-bar-group');
 
 		const isActive = isCurrentlyShowedLeftBarItem(item);
 
@@ -213,7 +213,7 @@ class BarItem extends Component<any, any> {
 			this.state.expanded = isExpanded;
 		}
 
-		if(item.nodeType === NODE_TYPE.SECTION) {
+		if(item.node_type === NODE_TYPE.SECTION) {
 			if(!_isMustBeExpanded) {
 				caret = R.span({ className: "left-bar-group-caret" },
 					renderIcon('caret-' + (isExpanded ? 'up' : 'down'))
@@ -238,7 +238,7 @@ class BarItem extends Component<any, any> {
 		const itemBody = R.div({
 			onClick: (ev) => {
 				if(!_isMustBeExpanded) {
-					if(item.nodeType === NODE_TYPE.SECTION) {
+					if(item.node_type === NODE_TYPE.SECTION) {
 						this.toggle(ev);
 						return;
 					}
@@ -253,14 +253,14 @@ class BarItem extends Component<any, any> {
 			caret
 		);
 
-		if((item.nodeType === NODE_TYPE.DOCUMENT) && (item.id !== false)) {
+		if((item.node_type === NODE_TYPE.DOCUMENT) && (item.id !== false)) {
 			const props = {
 				className: 'left-bar-item-container',
 				onClick: this.collapseOtherGroups,
 				href: undefined
 			}
-			if(item.nodeType === NODE_TYPE.STATIC_LINK) {
-				props.href = item.staticLink;
+			if(item.node_type === NODE_TYPE.STATIC_LINK) {
+				props.href = item.static_link;
 			} else {
 				props.onClick = (isActive === SELECTED_LIST) ? undefined : () => {
 					window.crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
@@ -344,7 +344,7 @@ class LeftBar extends Component<any, any> {
 					break;
 				}
 				item = itemElement.props.item;
-				if(item.nodeType === NODE_TYPE.SECTION) {
+				if(item.node_type === NODE_TYPE.SECTION) {
 					const e = ReactDOM.findDOMNode(itemElement) as HTMLDivElement;
 					let group = e.querySelector('.left-bar-children') as HTMLDivElement;
 					if(group.style.maxHeight) {

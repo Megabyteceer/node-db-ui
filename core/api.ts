@@ -36,7 +36,7 @@ const api: Object = {
 		return setCurrentOrg(reqData.orgId, userSession, true);
 	},
 	"api/toggleMultilingual": (reqData, userSession: UserSession) => {
-		return setMultilingual(!userSession.multilingualEnabled, userSession);
+		return setMultilingual(!userSession.multilingual_enabled, userSession);
 	},
 	"api/descNode": (reqData, userSession: UserSession) => {
 		return Promise.resolve(getNodeDesc(reqData.nodeId, userSession));
@@ -54,10 +54,10 @@ const api: Object = {
 		return uniqueCheck(reqData.fieldId, reqData.nodeId, reqData.val, reqData.recId, userSession);
 	},
 	"api/reset": (reqData, userSession: UserSession) => {
-		return resetPassword(reqData.resetCode, reqData.userId, userSession);
+		return resetPassword(reqData.reset_code, reqData.userId, userSession);
 	},
 	"api/activate": (reqData, userSession: UserSession) => {
-		return activateUser(reqData.activationKey, userSession);
+		return activateUser(reqData.activation_key, userSession);
 	}
 	/// #if DEBUG
 	,

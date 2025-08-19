@@ -41,18 +41,18 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 	}
 
 	getLinkerFieldName() {
-		return this.props.field.fieldName + '_linker';
+		return this.props.field.field_name + '_linker';
 	}
 
 	generateDefaultFiltersByProps(props) {
 		var ret = Object.assign({}, props.filters);
 
-		var parentId = props.wrapper.props.form.props.initialData.id || props.wrapper.props.form.filters[props.field.fieldName] || 'new';
+		var parentId = props.wrapper.props.form.props.initialData.id || props.wrapper.props.form.filters[props.field.field_name] || 'new';
 
-		if(props.field.fieldType === FIELD_TYPE.LOOKUP_1toN) {
-			ret[props.field.fieldName + '_linker'] = parentId;
+		if(props.field.field_type === FIELD_TYPE.LOOKUP_1toN) {
+			ret[props.field.field_name + '_linker'] = parentId;
 		}/* else {
-			ret[props.field.fieldName] = parentId;
+			ret[props.field.field_name] = parentId;
 		}*/
 
 		return ret;

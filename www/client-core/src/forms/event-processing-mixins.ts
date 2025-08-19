@@ -93,8 +93,8 @@ class FormEventProcessingMixins extends BaseForm {
 			for(var k in nodeFields) {
 				var f = nodeFields[k];
 				if(this.isFieldVisibleByFormViewMask(f)) {
-					if((f.fieldType === FIELD_TYPE.TAB) && (f.maxLength === 0)) {//tab
-						if((tabNameToShow === f.fieldName) || !tabNameToShow) {
+					if((f.field_type === FIELD_TYPE.TAB) && (f.max_length === 0)) {//tab
+						if((tabNameToShow === f.field_name) || !tabNameToShow) {
 							field = f;
 							break;
 						}
@@ -127,7 +127,7 @@ class FormEventProcessingMixins extends BaseForm {
 	_fieldsFromArgs(a: IArguments): string[] {
 		let fields = Array.from(a);
 		if(!fields.length) {
-			fields = this.props.node.fields.map(i => i.fieldName);
+			fields = this.props.node.fields.map(i => i.field_name);
 		}
 		return fields;
 	}
@@ -141,7 +141,7 @@ class FormEventProcessingMixins extends BaseForm {
 				if(f) {
 					f.hide();
 				}
-				if(f.props.field.fieldType === FIELD_TYPE.TAB) {
+				if(f.props.field.field_type === FIELD_TYPE.TAB) {
 					this.forceUpdate();
 				}
 			}
@@ -221,7 +221,7 @@ class FormEventProcessingMixins extends BaseForm {
 
 		for(var k in this.fieldsRefs) {
 			var f = this.fieldsRefs[k];
-			if(f.props.field.fieldType !== FIELD_TYPE.BUTTON && f.props.field.fieldType !== FIELD_TYPE.TAB) {
+			if(f.props.field.field_type !== FIELD_TYPE.BUTTON && f.props.field.field_type !== FIELD_TYPE.TAB) {
 				await this.processFieldEvent(f.props.field, false);
 			}
 		}
@@ -297,10 +297,10 @@ class FormEventProcessingMixins extends BaseForm {
 				val
 			}, undefined, true);
 			if(!data) {
-				this.fieldAlert(field.fieldName, L('VALUE_EXISTS'), false, true);
+				this.fieldAlert(field.field_name, L('VALUE_EXISTS'), false, true);
 				return false;
 			} else {
-				this.fieldAlert(field.fieldName, undefined, true);
+				this.fieldAlert(field.field_name, undefined, true);
 			}
 		}
 		return true;
@@ -323,12 +323,12 @@ class FormEventProcessingMixins extends BaseForm {
 
 	async onSave() {
 		/// #if DEBUG
-		consoleLog('onSave ' + this.props.node.tableName + ': ' + this.props.initialData.id);
+		consoleLog('onSave ' + this.props.node.table_name + ': ' + this.props.initialData.id);
 		/// #endif
 
 		for(var k in this.props.node.fields) {
 			if(this.hasField(k)) {//hide all alerts
-				this.fieldAlert(this.props.node.fields[k].fieldName);
+				this.fieldAlert(this.props.node.fields[k].field_name);
 			}
 		}
 
@@ -352,12 +352,12 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	_getFormEventHandler(eventName: CLIENT_SIDE_FORM_EVENTS) {
-		let name = this.props.node.tableName + '_' + eventName;
+		let name = this.props.node.table_name + '_' + eventName;
 		return this._getEventHandler(name);
 	}
 
 	_getFieldEventHandler(field: FieldDesc) {
-		let name = this.props.node.tableName + '_' + field.fieldName + '_' + CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE;
+		let name = this.props.node.table_name + '_' + field.field_name + '_' + CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE;
 		return this._getEventHandler(name);
 	}
 

@@ -38,6 +38,10 @@ headersJSON.append("Content-Type", "application/json");
 
 const restrictedRecords = new Map();
 
+const getHomeNode = () => {
+	return isUserHaveRole(ROLE_ID.GUEST) ? ENV.HOME_NODE_GUEST : ENV.HOME_NODE;
+}
+
 interface RestrictDeletionData {
 	[nodeId: number]: RecId[];
 }
@@ -340,7 +344,7 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, 
 
 	let retHash = newHash.join('/');
 
-	if(retHash === 'n/' + ENV.HOME_NODE) {
+	if(retHash === 'n/' + getHomeNode()) {
 		retHash = '';
 	}
 	return retHash;
@@ -361,7 +365,7 @@ function isCurrentlyShowedLeftBarItem(item) {
 
 function hashToFormParams(hashTxt: string): IFormParameters {
 	if(!hashTxt) {
-		return { nodeId: ENV.HOME_NODE, filters: {} };
+		return { nodeId: getHomeNode(), filters: {} };
 	}
 	let nodeId;
 	let recId;
@@ -479,7 +483,7 @@ async function goBack(isAfterDelete?: boolean) {
 			window.history.back();
 			isHistoryChanging = false;
 		} else {
-			window.crudJs.Stage.showForm(ENV.HOME_NODE);
+			window.crudJs.Stage.showForm(getHomeNode());
 		}
 
 	} else if(currentFormParameters && currentFormParameters.recId) {
@@ -610,7 +614,7 @@ function normalizeNode(node: NodeDesc) {
 			f.index = i;
 			f.node = node;
 			node.fieldsById[f.id] = f;
-			node.fieldsByName[f.fieldName] = f;
+			node.fieldsByName[f.field_name] = f;
 			if(f.enum) {
 				f.enumNamesById = {};
 				for(let e of f.enum) {
@@ -624,9 +628,9 @@ function normalizeNode(node: NodeDesc) {
 					parentField.childrenFields = [];
 				}
 				parentField.childrenFields.push(f);
-				f.fieldNamePure = parentField.fieldName;
+				f.fieldNamePure = parentField.field_name;
 			} else {
-				f.fieldNamePure = f.fieldName;
+				f.fieldNamePure = f.field_name;
 			}
 		});
 	}
@@ -636,10 +640,10 @@ function normalizeNode(node: NodeDesc) {
 		}).map((k) => {
 			return { value: k, name: node.filters[k].name };
 		});
-		if(node.defaultFilterId && !node.filters[node.defaultFilterId]) {
-			node.defaultFilterId = node.filtersList.length ? node.filtersList[0].value : 0;
+		if(node.default_filter_id && !node.filters[node.default_filter_id]) {
+			node.default_filter_id = node.filtersList.length ? node.filtersList[0].value : 0;
 		}
-		if(!node.defaultFilterId) {
+		if(!node.default_filter_id) {
 			node.filtersList.unshift({ value: undefined, name: '-' });
 		}
 	}
@@ -751,9 +755,9 @@ function registerFieldClass(type, class_) {
 function decodeData(data, node) {
 	for(var k in node.fields) {
 		var f = node.fields[k];
-		if(data.hasOwnProperty(f.fieldName)) {
-			if(fieldsDecoders.hasOwnProperty(f.fieldType)) {
-				data[f.fieldName] = fieldsDecoders[f.fieldType](data[f.fieldName]);
+		if(data.hasOwnProperty(f.field_name)) {
+			if(fieldsDecoders.hasOwnProperty(f.field_type)) {
+				data[f.field_name] = fieldsDecoders[f.field_type](data[f.field_name]);
 			}
 		}
 	}
@@ -762,9 +766,9 @@ function encodeData(data, node): RecordData {
 	var ret = Object.assign({}, data);
 	for(var k in node.fields) {
 		var f = node.fields[k];
-		if(ret.hasOwnProperty(f.fieldName)) {
-			if(fieldsEncoders.hasOwnProperty(f.fieldType)) {
-				ret[f.fieldName] = fieldsEncoders[f.fieldType](ret[f.fieldName]);
+		if(ret.hasOwnProperty(f.field_name)) {
+			if(fieldsEncoders.hasOwnProperty(f.field_type)) {
+				ret[f.field_name] = fieldsEncoders[f.field_type](ret[f.field_name]);
 			}
 		}
 	}
@@ -1055,7 +1059,7 @@ async function deleteRecord(name, nodeId: RecId, recId: RecId, noPrompt?: boolea
 		}
 	} else {
 		let node = await getNode(nodeId);
-		if(await showPrompt(L('SURE_DELETE', (node.creationName || node.singleName)) + ' "' + name + '"?',
+		if(await showPrompt(L('SURE_DELETE', (node.creation_name || node.single_name)) + ' "' + name + '"?',
 			L('DELETE'), L('CANCEL'), 'times', 'caret-left', true)) {
 			return deleteRecord(null, nodeId, recId, true, onYes);
 		}

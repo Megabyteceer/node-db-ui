@@ -148,14 +148,14 @@ class NodeAdmin extends Component<any, any> {
 							},
 								R.div({
 									className: "admin-form-all-fields-name"
-								}, f.fieldName + '; (' + f.id + ')'),
+								}, f.field_name + '; (' + f.id + ')'),
 								renderIcon((f.show & 1) ? 'eye' : 'eye-slash half-visible'),
 								renderIcon((f.show & 2) ? 'eye' : 'eye-slash half-visible'),
 								renderIcon((f.show & 16) ? 'eye' : 'eye-slash half-visible'),
 								renderIcon((f.show & 4) ? 'eye' : 'eye-slash half-visible'),
 								renderIcon((f.show & 8) ? 'eye' : 'eye-slash half-visible'),
 
-								renderIcon((f.forSearch) ? 'search-plus' : 'search half-visible'),
+								renderIcon((f.for_search) ? 'search-plus' : 'search half-visible'),
 								React.createElement(FieldAdmin, {
 									field: f,
 									form: form,
@@ -210,7 +210,7 @@ class NodeAdmin extends Component<any, any> {
 							window.crudJs.Stage.showForm(NODE_ID.FIELDS, 'new', {
 								node_fields_linker: {
 									id: node.id,
-									name: node.singleName
+									name: node.single_name
 								}
 							}, true, true, reloadLocation);
 						}
@@ -306,7 +306,7 @@ class NodeAdmin extends Component<any, any> {
 			},
 				L('NODE_SETTINGS'),
 				R.b({ className: "admin-form-header" },
-					node.tableName
+					node.table_name
 				),
 				R.span(null,
 					'; (' + (node.matchName || item.name) + '); id: ' + nodeId
@@ -361,7 +361,7 @@ class NodeAdmin extends Component<any, any> {
 }
 
 function createNodeForMenuItem(item) {
-	let isBasedOnDocument = item.nodeType === NODE_TYPE.DOCUMENT;
+	let isBasedOnDocument = item.node_type === NODE_TYPE.DOCUMENT;
 	getNodeData(NODE_ID.NODES, (isBasedOnDocument ? item.parent : item.id) as number).then((data) => {
 		window.crudJs.Stage.showForm(NODE_ID.NODES, 'new', {
 			prior: 100000,

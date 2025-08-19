@@ -1,16 +1,16 @@
 
 import api from './api';
-import { startSession, finishSession, isUserHaveRole } from './auth';
+import { finishSession, isUserHaveRole, startSession } from './auth';
 import { initNodesData } from './describe-node';
 
+import { ROLE_ID } from "../www/client-core/src/bs-utils";
 import './locale';
 import { mysqlDebug, mysql_real_escape_object } from "./mysql-connection";
-import { ROLE_ID } from "../www/client-core/src/bs-utils";
 
 import "../www/client-core/src/locales/en/lang-server";
 import "../www/client-core/src/locales/ru/lang-server";
 
-import ENV from './ENV';
+import { ENV, SERVER_ENV } from './ENV';
 
 /// #if DEBUG
 import { performance } from 'perf_hooks';
@@ -69,7 +69,7 @@ const handleRequest = (req, res) => {
 			var ret;
 			/// #if DEBUG
 			ret = { error: error.stack };
-			addDebugDataToResponse(resHeaders, ret, startTime );
+			addDebugDataToResponse(resHeaders, ret, startTime);
 			console.error(error.stack);
 			/*
 			/// #endif
@@ -83,7 +83,7 @@ const handleRequest = (req, res) => {
 			userSession = session;
 			handler(body, session).then((result) => {
 
-				
+
 				let ret: any = {
 					result, isGuest: false,
 					/// #if DEBUG
@@ -91,7 +91,7 @@ const handleRequest = (req, res) => {
 					/// #endif
 				};
 				/// #if DEBUG
-				addDebugDataToResponse(resHeaders, ret, startTime );
+				addDebugDataToResponse(resHeaders, ret, startTime);
 				/// #endif
 
 				if(isUserHaveRole(ROLE_ID.GUEST, userSession)) {
@@ -147,8 +147,8 @@ app.use('/', express.static(path.join(__dirname, '../../www')));
 
 function crudJSServer() {
 	initNodesData().then(async function() {
-		app.listen(ENV.PORT)
-		console.log('HTTP listen ' + ENV.PORT + '...');
+		app.listen(SERVER_ENV.PORT)
+		console.log('HTTP listen ' + SERVER_ENV.PORT + '...');
 	});
 }
 

@@ -7,9 +7,10 @@ export default defineConfig({
 	build: {
 		minify: false,
 		sourcemap: 'inline',
-		watch: true,
+		watch: true
 	},
 	server: {
+		host: true,
 		proxy: {
 			'/core': 'http://127.0.0.1:1443'
 		},
@@ -17,5 +18,8 @@ export default defineConfig({
 		fs: {
 			strict: false
 		}
+	},
+	esbuild: {
+		keepNames: true
 	}
 })
