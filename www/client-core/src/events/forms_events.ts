@@ -43,10 +43,10 @@ class FormEvents extends FormFull {
 			});
 		}
 
-		if($('#org-edit-link').length === 0) {
-			$('.field-container-id-63 input').css('width', '50%');
+		if(window.document.querySelector('#org-edit-link')!) {
+			(window.document.querySelector('.field-container-id-63 input') as HTMLDivElement).style.width = '50%';
 			if(this.fieldValue('_organizationID')) {
-				$('.field-container-id-63 input').after(
+				(window.document.querySelector('.field-container-id-63 input') as HTMLDivElement).insertAdjacentHTML('beforeend',
 					'<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organization settings" href="#n/7/r/' +
 					this.fieldValue('_organizationID').id +
 					'/e">additional organization settings <p class="fa fa-wrench"></p></a>'
@@ -57,7 +57,7 @@ class FormEvents extends FormFull {
 		if(!iAdmin() && this.isUserEdit) {
 			this.hideField('_user_roles');
 		}
-		if(this.recId < 4 && this.isUserEdit) {
+		if((this.recId as number) < 4 && this.isUserEdit) {
 			this.hideField('_user_roles');
 		}
 

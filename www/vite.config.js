@@ -1,5 +1,7 @@
 import {defineConfig} from 'vite';
 
+debugger;
+
 export default defineConfig({
 	mode: "development",
 	build: {

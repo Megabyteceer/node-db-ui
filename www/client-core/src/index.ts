@@ -35,7 +35,7 @@ import { Stage } from "./stage";
 import ReactDOM from 'react-dom';
 import React from 'react';
 
-import jQuery from 'jquery';
+
 import { registerEventHandler } from './forms/event-processing-mixins';
 
 /// #if DEBUG
@@ -49,7 +49,6 @@ import { FieldsEvents } from "./events/fields_events";
 
 declare global {
 	interface Window {
-		$: typeof jQuery;
 		onCurdJSLogin: (userSession: UserSession) => void;
 		crudJs: { // helps to avoid circular imports
 			customClasses: {

@@ -5,6 +5,19 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Vite",
+			"request": "launch",
+			"runtimeArgs": [
+				"run-script",
+				"build"
+			],
+			"runtimeExecutable": "npm",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"type": "node"
+		},
+		{
 			"type": "pwa-chrome",
 			"request": "launch",
 			"name": "Client",

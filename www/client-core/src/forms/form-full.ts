@@ -293,7 +293,7 @@ class FormFull extends FormEventProcessingMixins {
 			for(var k in data) {
 				var val = data[k];
 				if(typeof val === 'object') {
-					if($.isEmptyObject(val)) {
+					if(!Object.keys(val).length) {
 						this.props.initialData[k] = undefined;
 					} else if(val._isAMomentObject) {
 						this.props.initialData[k] = val.clone();

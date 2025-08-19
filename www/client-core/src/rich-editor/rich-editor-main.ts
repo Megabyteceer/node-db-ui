@@ -1,8 +1,5 @@
-import jQuery from 'jquery';
-//@ts-ignore
-window.jQuery = jQuery;
-window.$ = jQuery;
-$(async function () {
+
+(async function () {
 	await Promise.all([
 		//@ts-ignore
 		import("bootstrap/dist/css/bootstrap.min.css"),
@@ -45,4 +42,4 @@ $(async function () {
 	}
 	window.parent.postMessage({ id: iframeId }, '*');
 
-});
+})();

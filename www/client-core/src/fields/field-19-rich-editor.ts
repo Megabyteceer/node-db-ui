@@ -78,7 +78,9 @@ registerFieldClass(FIELD_TYPE.RICH_EDITOR, class RichEditorField extends BaseFie
 	}
 
 	setValue(val, sendToEditor?: boolean) {
-		if($('<div>' + val + '</div>').text() === '') {
+		const element = window.document.createElement('div');
+		element.innerHTML = val;
+		if(!element.innerText) {
 			val = '';
 		}
 		if(this.state.value !== val) {

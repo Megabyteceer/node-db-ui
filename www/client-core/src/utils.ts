@@ -1,7 +1,3 @@
-import jQuery from 'jquery';
-//@ts-ignore
-window.jQuery = jQuery;
-window.$ = jQuery;
 
 import type { LANG_KEYS } from "./locales/en/lang";
 import type { LANG_KEYS_CUSTOM } from "../../src/locales/en/lang";
@@ -531,7 +527,7 @@ function updateHashLocation(replaceState = false) {
 	}
 }
 
-$(window).on('hashchange', () => {
+window.addEventListener('hashchange', () => {
 	if(goBackUntilValidNode && SKIP_HISTORY_NODES[getTopHashNodeId()]) {
 		goBack();
 		return;
@@ -931,8 +927,9 @@ function isAuthNeed(data) {
 }
 
 function serializeForm(form): FormData {
+	alert('todo');
+	/*
 	var obj = $(form);
-	/* ADD FILE TO PARAM AJAX */
 	var formData = new FormData();
 	$.each($(obj).find("input[type='file']"), (i, tag) => {
 		// @ts-ignore
@@ -945,7 +942,7 @@ function serializeForm(form): FormData {
 	var params = $(obj).serializeArray();
 	$.each(params, (i, val) => {
 		formData.append(val.name, val.value);
-	});
+	});*/
 	return formData;
 }
 
@@ -1114,36 +1111,23 @@ if(isLitePage()) {
 
 function scrollToVisible(elem, doNotShake = false) {
 	if(elem) {
-		var $elem = $(ReactDOM.findDOMNode(elem));
-		if(!$elem.is(":visible")) {
-			return;
-		}
-		var $window = $(window);
-
-		var docViewTop = $window.scrollTop();
-		var docViewBottom = docViewTop + $window.height();
-
-		var elemTop = $elem.offset().top - 40;
-		var elemBottom = elemTop + $elem.height() + 40;
-
-		if(elemTop < docViewTop) {
-			$('html,body').animate({ scrollTop: elemTop }, 300, undefined, () => { !doNotShake && shakeDomElement($elem); });
-		} else if(elemBottom > docViewBottom) {
-			$('html,body').animate({ scrollTop: Math.min(elemBottom - $window.height(), elemTop) }, 300, undefined, () => { !doNotShake && shakeDomElement($elem) });
-		} else {
-			!doNotShake && shakeDomElement($elem);
+		var element = ReactDOM.findDOMNode(elem) as HTMLDivElement;
+		element.scrollIntoView();
+		if(!doNotShake) {
+			shakeDomElement(element);
 		}
 	}
 }
 
 function shakeDomElement(e) {
-	e[0].classList.remove('shake');
-	setTimeout(() => {
-		e[0].classList.add('shake');
-	}, 10);
-	setTimeout(() => {
-		e[0].classList.remove('shake');
-	}, 1000);
+	if(e) {
+		e.classList.remove('shake');
+		e.offsetWidth;
+		e.classList.add('shake');
+		window.setTimeout(() => {
+			e.classList.remove('shake');
+		}, 600);
+	}
 };
 
 function getItem(name: string, def?: any) {

@@ -26,8 +26,8 @@ var adminOn;
 
 setTimeout(() => {
 	adminOn = !isLitePage();
-	$('body').append('<span class="admin-tools-enable-btn"><span>Admin tools </span><input type="checkbox" checked="' + adminOn + '" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>');
-	$('#admin-disable').on('click', admin.toggleAdminUI);
+	window.document.body.insertAdjacentHTML('beforeend', '<span class="admin-tools-enable-btn"><span>Admin tools </span><input type="checkbox" checked="' + adminOn + '" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>');
+	window.document.querySelector('#admin-disable').addEventListener('click', admin.toggleAdminUI);
 	if(getItem('__admin-ui-enables', true)) {
 		admin.toggleAdminUI();
 	}
@@ -161,7 +161,7 @@ class admin {
 			}
 		}
 		setItem('__admin-ui-enables', adminOn);
-		$('#admin-disable').prop('checked', !adminOn);
+		(window.document.querySelector('#admin-disable') as HTMLInputElement).checked = !adminOn;
 		adminOn = !adminOn;
 	}
 }

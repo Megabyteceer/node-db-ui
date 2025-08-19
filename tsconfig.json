@@ -12,18 +12,18 @@
 		"moduleResolution": "node",
 		"diagnostics": false,
 		"skipLibCheck": true,
-		"watch": true,
 		"assumeChangesOnlyAffectDirectDependencies": true,
 	},
 	"typeAcquisition": {
         "include": ["node"]
     },
-	"include": ["index.ts", "core/events/*"],
+	"include": ["core/index.ts", "core/events/*"],
 	"exclude": [
 		"**/www/**",
 		"**/build-prod/**",
 		"**/build-debug/**",
 		"node_modules",
+		"node_modules/**/*",
 		"**/node_modules/*",
 		"**/uploads/**",
 	]

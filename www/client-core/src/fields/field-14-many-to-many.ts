@@ -53,14 +53,14 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 
 	dragStart(item) {
 		if(!dragListenersInitialized) {
-			$(document).on('mouseup', () => {
+			window.document.addEventListener('mouseup', () => {
 				if(dragItem) {
 					dragItem = undefined;
 					dragList.forceUpdate();
 					dragList = undefined;
 				}
 			});
-			$(document).on('mousemove', (event) => {
+			window.document.addEventListener('mousemove', (event) => {
 				if(dragList) {
 					dragItem;
 					var y = event.clientY;
