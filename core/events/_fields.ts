@@ -56,7 +56,7 @@ const handlers: NodeEventsHandlers = {
 		}
 
 		// update priority
-		let fields = await getRecords(NODE_ID.FIELDS, VIEW_MASK.ALL, null, userSession, {node_fields_linker: data.node_fields_linker});
+		let fields = await getRecords(NODE_ID.FIELDS, VIEW_MASK.ALL, null, userSession, { node_fields_linker: data.node_fields_linker });
 		fields.items.sort((a, b) => {
 			return a.prior - b.prior;
 		});
@@ -64,7 +64,7 @@ const handlers: NodeEventsHandlers = {
 		await Promise.all(fields.items.map((i) => {
 			prior += 10;
 			if(i.prior !== prior) {
-				return submitRecord(NODE_ID.FIELDS, {prior}, i.id, userSession);
+				return submitRecord(NODE_ID.FIELDS, { prior }, i.id, userSession);
 			}
 		}));
 
@@ -240,9 +240,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 			\`${fld2}\` bigint(15) unsigned NOT NULL DEFAULT 0,
 			primary key(id),
 			INDEX(\`${fld1}\`),
-			INDEX(\`${fld2}\`),
-			FOREIGN KEY (\`${fld1}\`) REFERENCES \`${nodeName}\`(Id) ON DELETE CASCADE ON UPDATE CASCADE,
-			FOREIGN KEY (\`${fld2}\`) REFERENCES \`${linkedNodeName}\`(Id) ON DELETE CASCADE ON UPDATE CASCADE
+			INDEX(\`${fld2}\`)
 		) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4; `);
 	} else if(data.storeInDB) {
 		if(fieldType === FIELD_TYPE.LOOKUP) {
@@ -261,8 +259,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 			await mysqlExec(altQ.join(''));
 
 			if(fieldType === FIELD_TYPE.LOOKUP) {
-				await mysqlExec('ALTER TABLE \`' + nodeName + '\` ADD INDEX(\`' + fieldName + '\`);');
-				await mysqlExec('ALTER TABLE \`' + nodeName + '\` ADD FOREIGN KEY (\`' + fieldName + '\`) REFERENCES \`' + linkedNodeName + '\`(id) ON DELETE RESTRICT ON UPDATE RESTRICT;');
+				await mysqlExec('ALTER TABLE \`' + nodeName + '\` ADD INDEX(\`' + fieldName + '\`);')
 			}
 		}
 	}

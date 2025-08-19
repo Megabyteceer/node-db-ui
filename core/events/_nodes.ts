@@ -45,9 +45,7 @@ const handlers: NodeEventsHandlers = {
 			PRIMARY KEY (id),
 			KEY _usersID (_usersID),
 			KEY _createdON (_createdON),
-			KEY _organizationID (_organizationID),
-			CONSTRAINT creator_id_${data.tableName} FOREIGN KEY (_usersID) REFERENCES _users (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-			CONSTRAINT _organizationID_${data.tableName} FOREIGN KEY (_organizationID) REFERENCES _organization (id) ON DELETE RESTRICT ON UPDATE RESTRICT
+			KEY _organizationID (_organizationID)
 			) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;`;
 
 			await mysqlExec(tblCrtQ);
@@ -84,7 +82,7 @@ const handlers: NodeEventsHandlers = {
 			}
 		}
 
-		let nodes = await getRecords(NODE_ID.NODES, VIEW_MASK.ALL, null, userSession, {_nodesID: data._nodesID});
+		let nodes = await getRecords(NODE_ID.NODES, VIEW_MASK.ALL, null, userSession, { _nodesID: data._nodesID });
 		nodes.items.sort((a, b) => {
 			return a.prior - b.prior;
 		});
@@ -92,7 +90,7 @@ const handlers: NodeEventsHandlers = {
 		nodes.items.forEach(async (node) => {
 			prior += 10;
 			if(node.prior !== prior) {
-				await submitRecord(NODE_ID.NODES, {prior}, node.id, userSession);
+				await submitRecord(NODE_ID.NODES, { prior }, node.id, userSession);
 			}
 		});
 
