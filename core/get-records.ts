@@ -55,9 +55,9 @@ async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecI
 			} else if(field_type === FIELD_TYPE.LOOKUP_NtoM) {//n2m
 				let tblTmpName = 't' + f.id;
 				if(f.lookup_icon) {
-					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name,'␞',", f.lookup_icon, ") SEPARATOR '␞') AS v FROM ", select_field_name, " AS ", tblTmpName, ", ", field_name, " WHERE ", field_name, ".", select_field_name, "Id=", tblTmpName, ".id AND ", field_name, ".", table_name, "Id=", table_name, ".id ORDER BY ", field_name, ".id) AS \"", field_name, "\"");
+					selQ.push("ARRAY(SELECT ", tblTmpName, ".id || '␞' || ", tblTmpName, ".name || '␞' || ", tblTmpName, ".", f.lookup_icon, " AS v FROM ", select_field_name, " AS ", tblTmpName, ", ", field_name, " WHERE ", field_name, ".", select_field_name, "_id=", tblTmpName, ".id AND ", field_name, ".", table_name, "_id=", table_name, ".id ORDER BY ", field_name, ".id) AS \"", field_name, "\"");
 				} else {
-					selQ.push("(SELECT GROUP_CONCAT(CONCAT(", tblTmpName, ".id,'␞', ", tblTmpName, ".name) SEPARATOR '␞') AS v FROM ", select_field_name, " AS ", tblTmpName, ", ", field_name, " WHERE ", field_name, ".", select_field_name, "Id=", tblTmpName, ".id AND ", field_name, ".", table_name, "Id=", table_name, ".id ORDER BY ", field_name, ".id) AS \"", field_name, "\"");
+					selQ.push("ARRAY(SELECT ", tblTmpName, ".id || '␞' ||  ", tblTmpName, ".name AS v FROM ", select_field_name, " AS ", tblTmpName, ", ", field_name, " WHERE ", field_name, ".", select_field_name, "_id=", tblTmpName, ".id AND ", field_name, ".", table_name, "_id=", table_name, ".id ORDER BY ", field_name, ".id) AS \"", field_name, "\"");
 				}
 			} else if(field_type === FIELD_TYPE.LOOKUP) {//n21
 				if(f.lookup_icon) {
@@ -300,20 +300,10 @@ async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecI
 					const field_name = f.field_name;
 					if(field_type === FIELD_TYPE.LOOKUP_NtoM || field_type === FIELD_TYPE.LOOKUP_1toN) { //n2m,12n
 						if(pag[field_name]) {
-							let a = pag[field_name].split('␞');
-							let val = [];
-							let i = 1;
-							let l = a.length;
-							while(i < l) {
-								if(f.lookup_icon) {
-									val.push({ id: parseInt(a[i - 1]), name: a[i], icon: a[i + 1] });
-									i += 3;
-								} else {
-									val.push({ id: parseInt(a[i - 1]), name: a[i] });
-									i += 2;
-								}
-							}
-							pag[field_name] = val;
+							pag[field_name] = pag[field_name].map((src: string) => {
+								const a = src.split('␞');
+								return { id: parseInt(a[0]), name: a[1], icon: a[2] };
+							});
 						}
 					} else if(field_type === FIELD_TYPE.LOOKUP) { //n21
 						if(pag[field_name]) {

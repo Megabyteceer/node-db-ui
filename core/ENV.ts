@@ -18,13 +18,13 @@ const SERVER_ENV = {
 	DEPLOYMENT_KEY_REMOTE: '',
 
 	DEPLOYMENT_KEEP_DEBUG: true,
-	CAPTCHA_CLIENT_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
 	CAPTCHA_SERVER_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
-
 }
 
 const ENV = {
+	CAPTCHA_CLIENT_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
 
+	langs: undefined as string[] | undefined,
 
 	APP_TITLE: 'CRUD-js',
 

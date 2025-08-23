@@ -8,8 +8,8 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { mysqlExec } from "./mysql-connection";
 
-import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession/*, usersSessionsStartedCount*/ } from "./auth";
-import { throwError, assert, FIELD_TYPE, NodeDesc, UserLangEntry, RecId, RecordDataWrite, RecordData, FieldDesc, VIEW_MASK, ROLE_ID, NODE_ID, NODE_TYPE, USER_ID } from "../www/client-core/src/bs-utils";
+import { assert, FIELD_TYPE, FieldDesc, NODE_ID, NODE_TYPE, NodeDesc, RecId, RecordData, RecordDataWrite, ROLE_ID, throwError, USER_ID, UserLangEntry, VIEW_MASK } from "../www/client-core/src/bs-utils";
+import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession /*, usersSessionsStartedCount*/ } from "./auth";
 import { ENV } from './ENV';
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
@@ -250,7 +250,7 @@ async function initNodesData() { // load whole nodes data in to memory
 	await mysqlExec('-- ======== NODES RELOADING STARTED ===================================================================================================================== --');
 	/// #endif
 
-	langs_new = await mysqlExec("SELECT id, name, code, is_ui_language FROM _languages WHERE id <> 0") as UserLangEntry[];
+	langs_new = await mysqlExec("SELECT id, name, code, is_ui_language FROM _languages WHERE id != 0") as UserLangEntry[];
 	for(let l of langs_new) {
 		l.prefix = l.code ? ('$' + l.code) : '';
 		ALL_LANGUAGES_BY_CODES.set(l.code || ENV.DEFAULT_LANG_CODE, l);
@@ -316,7 +316,7 @@ async function initNodesData() { // load whole nodes data in to memory
 				let moduleFileName = join(__dirname, folderName + nodeData.table_name + '.js');
 				if(existsSync(moduleFileName)) {
 					let handler = await import(`./${folderName}${nodeData.table_name}.js`);
-					eventsHandlers_new.set(nodeData.id, handler.default);
+					eventsHandlers_new.set(nodeData.id, handler.default.default || handler.default);
 				}
 
 			}
@@ -467,7 +467,7 @@ const destroyObject = (o) => {
 /// #endif
 
 export {
-	NodeEventsHandlers, filtersById, getGuestUserForBrowserLanguage, DEFAULT_LANGUAGE,
-	ENV, getNodeDesc, getFieldDesc, initNodesData, getNodesTree, getNodeEventHandler, getLangs,
-	ADMIN_USER_SESSION, reloadMetadataSchedule, ServerSideEventHandlersNames
+	ADMIN_USER_SESSION, DEFAULT_LANGUAGE,
+	ENV, filtersById, getFieldDesc, getGuestUserForBrowserLanguage, getLangs, getNodeDesc, getNodeEventHandler, getNodesTree, initNodesData, NodeEventsHandlers, reloadMetadataSchedule, ServerSideEventHandlersNames
 };
+

@@ -137,7 +137,7 @@ class List extends BaseForm<ListProps, ListState> {
 				this.filters.p = '*';
 			}
 
-			//TODO: Погять почему рефреш листа дает другой вьюмаск. this.state.viewMask отличается от того что в кастом вью
+			//TODO: Понять почему рефреш листа дает другой вьюмаск. this.state.viewMask отличается от того что в кастом вью
 			let data = await getNodeData(nodeIdToFetch, undefined, this.filters, this.props.editable, this.state.viewMask, this.isCustomListRendering());
 
 			if(this.unmounted) {

@@ -34,7 +34,7 @@
 			"enableContentValidation": false,
 			"pauseForSourceMap": true,
 			"cleanUp": false,
-			"url": "http://node-db-ui.com:8080/#",
+			"url": "http://node-db-ui.com:5173/#",
 			"userDataDir": "C:\\tmp\\userdir"
 		},
 		{

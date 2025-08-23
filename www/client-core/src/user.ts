@@ -1,6 +1,6 @@
 ﻿import React from "react";
 
-import { getData, LITE_UI_PREFIX, idToImgURL, isAdmin, L, renderIcon, setItem, attachGoogleLoginAPI, getItem, removeItem } from "./utils";
+import { getData, idToImgURL, isAdmin, L, renderIcon, setItem, attachGoogleLoginAPI, getItem, removeItem } from "./utils";
 import { Select } from "./components/select";
 import { ENV, MainFrame } from "./main-frame";
 import moment from "moment";
@@ -8,6 +8,7 @@ import { Component } from "react";
 import { R } from "./r";
 import { NODE_ID, UserSession, USER_ID } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
+import { LITE_UI_PREFIX } from './consts';
 
 function setUserOrg(orgId) {
 	if(User.currentUserData.orgId !== orgId) {

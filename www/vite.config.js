@@ -10,6 +10,7 @@ export default defineConfig({
 		watch: true
 	},
 	server: {
+		allowedHosts: ['node-db-ui.com'],
 		host: true,
 		proxy: {
 			'/core': 'http://127.0.0.1:1443'

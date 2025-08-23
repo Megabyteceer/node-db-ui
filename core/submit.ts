@@ -386,8 +386,8 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 async function uniqueCheckInner(table_name, field_name, val, recId) {
 	let query = ["SELECT id FROM ", table_name, " WHERE ", field_name, " ='", val, "'"];
-	if(recId !== null) {
-		query.push(" AND id<>", recId);
+	if(typeof recId === 'number') {
+		query.push(" AND id != ", recId);
 	}
 	query.push(" LIMIT 1");
 

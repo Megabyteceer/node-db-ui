@@ -1,14 +1,14 @@
 import { RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
 /// #if DEBUG
-import { nodePrivileges, getClientEventHandler, clearCache } from './admin/admin';
+import { clearCache, getClientEventHandler, nodePrivileges } from './admin/admin';
 import { getDeployPackage } from './admin/deploy';
 /// #endif
 
-import { setCurrentOrg, setMultilingual, resetPassword, activateUser, killSession, getGuestUserForBrowserLanguage } from './auth';
+import { activateUser, getGuestUserForBrowserLanguage, killSession, resetPassword, setCurrentOrg, setMultilingual } from './auth';
 import { getNodeDesc, getNodesTree } from './describe-node';
-import { getRecords, deleteRecord } from './get-records';
+import { deleteRecord, getRecords } from './get-records';
 import { submitRecord, uniqueCheck } from './submit';
-import { uploadImage, uploadFile } from './upload';
+import { uploadFile, uploadImage } from './upload';
 
 const api: Object = {
 	"api/": async (reqData, userSession: UserSession) => {

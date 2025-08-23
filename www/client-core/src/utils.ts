@@ -1,4 +1,4 @@
-
+import { LITE_UI_PREFIX } from './consts';
 import type { LANG_KEYS } from "./locales/en/lang";
 import type { LANG_KEYS_CUSTOM } from "../../src/locales/en/lang";
 
@@ -10,15 +10,14 @@ import type { Filters, IFormParameters, NodeDesc, RecId, RecordData, RecordsData
 import { LoadingIndicator } from "./loading-indicator";
 import { User } from "./user";
 import { Modal } from "./modal";
-import { ENV } from "./main-frame";
+
 /// #if DEBUG
 import { DebugPanel } from "./debug-panel";
 /// #endif
 import React, { Component } from "react";
 import { HotkeyButton } from "./components/hotkey-button";
 import { List } from "./forms/list";
-
-const LITE_UI_PREFIX = '?liteUI';
+import { ENV } from './main-frame';
 
 enum CLIENT_SIDE_FORM_EVENTS {
 	ON_FORM_SAVE = 'onSave',
@@ -931,7 +930,8 @@ function isAuthNeed(data) {
 }
 
 function serializeForm(form): FormData {
-	alert('todo');
+
+	debugger;
 	/*
 	var obj = $(form);
 	var formData = new FormData();
@@ -1106,7 +1106,7 @@ function renderIcon(name) {
 }
 
 function isLitePage() {
-	return window.location.href.indexOf(LITE_UI_PREFIX) >= 0;
+	return window.location.href.includes(LITE_UI_PREFIX);
 }
 
 if(isLitePage()) {
@@ -1495,6 +1495,5 @@ export {
 	loadIndexedDB,
 	isDBWriteInProgress,
 	goToHome,
-	deleteIndexedDB,
-	LITE_UI_PREFIX
+	deleteIndexedDB
 }

@@ -1,10 +1,10 @@
 
-import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../describe-node";
+import { ADMIN_USER_SESSION, getFieldDesc, getNodeDesc, reloadMetadataSchedule } from "../describe-node";
 
-import { USER_ID, throwError } from "../../www/client-core/src/bs-utils";
-import { join } from "path";
 import * as fs from "fs";
 import { readFileSync, writeFileSync } from "fs";
+import { join } from "path";
+import { USER_ID, throwError } from "../../www/client-core/src/bs-utils";
 import { isAdmin } from "../auth.js";
 import { mysqlExec } from '../mysql-connection';
 
@@ -20,7 +20,7 @@ async function nodePrivileges(reqData, userSession) {
 		reloadMetadataSchedule();
 		return 1;
 	} else { //get node privileges
-		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _role_privileges WHERE (node_id=' + nodeId + ') AND (_roles.id=role_id) LIMIT 1) AS privileges FROM _roles WHERE id <> ' + USER_ID.SUPER_ADMIN + ' AND id <> ' + USER_ID.VIEW_ALL + ' AND status = 1');
+		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _role_privileges WHERE (node_id=' + nodeId + ') AND (_roles.id=role_id) LIMIT 1) AS privileges FROM _roles WHERE id != ' + USER_ID.SUPER_ADMIN + ' AND id != ' + USER_ID.VIEW_ALL + ' AND status = 1');
 		return { privileges, node_type: getNodeDesc(nodeId).node_type }
 	}
 }
@@ -114,4 +114,4 @@ async function getClientEventHandler({
 	}
 }
 
-export { nodePrivileges, getClientEventHandler, shouldBeAdmin, clearCache };
+export { clearCache, getClientEventHandler, nodePrivileges, shouldBeAdmin };

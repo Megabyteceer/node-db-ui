@@ -1,9 +1,9 @@
-import { authorizeUserByID, getPasswordHash } from "../auth";
-import { L } from "../locale";
-import { mysqlExec } from "../mysql-connection";
-import { NodeEventsHandlers } from "../describe-node"
 import { RecordDataWrite, throwError, UserSession } from "../../www/client-core/src/bs-utils";
+import { authorizeUserByID, getPasswordHash } from "../auth";
+import { NodeEventsHandlers } from "../describe-node";
+import { L } from "../locale";
 import { loginWithGoogle } from "../login-social";
+import { mysqlExec } from "../mysql-connection";
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession): Promise<any> {
@@ -13,7 +13,7 @@ const handlers: NodeEventsHandlers = {
 			return await loginWithGoogle(password, userSession);
 		}
 
-		const users = await mysqlExec("SELECT id, salt, TIMESTAMPDIFF(SECOND, NOW(), blocked_to) AS blocked, password, mistakes FROM _users WHERE email='" + username + "' AND _users.status=1 LIMIT 1");
+		const users = await mysqlExec("SELECT id, salt, EXTRACT(SECOND FROM (blocked_to - NOW())) AS blocked, password, mistakes FROM _users WHERE email='" + username + "' AND _users.status=1 LIMIT 1");
 		const user = users[0];
 		if(user) {
 
