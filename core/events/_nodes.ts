@@ -1,21 +1,22 @@
 
-import { mysqlExec } from "../mysql-connection";
+import { throwError } from '../../www/client-core/src/assert';
+import { FIELD_TYPE, NODE_ID, NODE_TYPE, RecordData, RecordDataWrite, UserSession, VIEW_MASK } from "../../www/client-core/src/bs-utils";
 import { shouldBeAdmin } from "../admin/admin";
 import { NodeEventsHandlers, reloadMetadataSchedule } from "../describe-node";
-import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, NODE_TYPE } from "../../www/client-core/src/bs-utils";
-import { L } from "../locale";
 import { getRecords } from "../get-records";
+import { L } from "../locale";
+import { mysqlExec } from "../mysql-connection";
 import { submitRecord } from "../submit";
 
 const handlers: NodeEventsHandlers = {
 
-	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
+	beforeCreate: async function (data: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 		// shift all nodes in the same parent node
 		await mysqlExec("UPDATE _nodes SET prior=prior+10 WHERE (_nodes_id =" + data._nodes_id + ") AND (prior >=" + data.prior + ")");
 	},
 
-	afterCreate: async function(data: RecordDataWrite, userSession: UserSession) {
+	afterCreate: async function (data: RecordDataWrite, userSession: UserSession) {
 
 		shouldBeAdmin(userSession);
 
@@ -50,7 +51,7 @@ const handlers: NodeEventsHandlers = {
 
 			await mysqlExec(tblCrtQ);
 
-			const insertedId = (await mysqlExec("INSERT INTO \`" + data.table_name + "\` SET status=0, _users_id=0"))[0].id;
+			const insertedId = (await mysqlExec("INSERT INTO \`" + data.table_name + "\` SET status=0, _users_id=0 RETURNING id"))[0].id;
 			await mysqlExec("UPDATE \`" + data.table_name + "\` SET id=0 WHERE id=" + insertedId);
 
 			//create default fields
@@ -59,10 +60,10 @@ const handlers: NodeEventsHandlers = {
 				(${createdID},             1,          ${VIEW_MASK.ALL},  0,        ${FIELD_TYPE.TEXT},   'name',        '',                  '${L('FIELD_NAME', userSession)}',   '',              64,             1,               0,         0,             1,             1,              1);`;
 			await mysqlExec(mainFieldQ);
 
-			if(data.addCreatedOnFiled) {
+			if(data.add_created_on_filed) {
 				const createdOnQ = `INSERT INTO \`_fields\`
 				(\`node_fields_linker\`,  \`status\`, \`show\`,                                 \`prior\`, \`field_type\`,                \`field_name\`,    \`select_field_name\`, \`name\`,                                \`description\`, \`max_length\`, \`requirement\`, \`unique\`, \`_users_id\`, \`for_search\`, \`store_in_db\`) VALUES
-				(${createdID},            1,          ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   10,         ${FIELD_TYPE.DATE_TIME},     '_created_on',    '',                  '${L('FIELD_CREATED_ON', userSession)}',  '',             0,              0,               0,           0,            1,             1);`;
+				(${createdID},            1,          ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   10,         ${FIELD_TYPE.DATE_TIME},     '_created_on',    '',                  '${L('FIELD_CREATED_ON', userSession)}',  '',             0,              0,               0,           0,            1,             1) RETURNING id;`;
 				const dateFieldId = (await mysqlExec(createdOnQ))[0].id;
 				await mysqlExec('UPDATE _nodes SET _fields_id=' + dateFieldId + ', reverse = 1 WHERE id=' + createdID);
 			}
@@ -74,7 +75,7 @@ const handlers: NodeEventsHandlers = {
 				await mysqlExec(createdByQ);
 			}
 
-			if(data.addCreatorUserFld) {
+			if(data.add_creator_user_fld) {
 				const createdByQ = `INSERT INTO _fields
 				(\`node_fields_linker\`, \`status\`, \`show\`,                                 \`prior\`, \`field_type\`,          \`field_name\`,  \`select_field_name\`,  \`name\`,                            \`description\`, \`max_length\`, \`requirement\`, \`unique\`, \`_users_id\`, \`for_search\`, \`store_in_db\`, \`node_ref\`,          \`lookup_icon\`) VALUES
 				(${createdID},           1,           ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   30,        ${FIELD_TYPE.LOOKUP},   '_users_id',     '_users',             '${L('FIELD_OWNER', userSession)}',   '',               0,              0,              0,          0,            1,             1,             ${NODE_ID.USERS},    'avatar');`;
@@ -97,12 +98,12 @@ const handlers: NodeEventsHandlers = {
 		reloadMetadataSchedule();
 	},
 
-	beforeUpdate: async function(currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
+	beforeUpdate: async function (currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 		reloadMetadataSchedule();
 	},
 
-	beforeDelete: async function(data: RecordData, userSession: UserSession) {
+	beforeDelete: async function (data: RecordData, userSession: UserSession) {
 		throwError('_nodes beforeCreate deletion event is not implemented');
 	}
 }

@@ -1,7 +1,8 @@
 
 import { OAuth2Client } from 'google-auth-library';
 
-import { throwError, UserSession } from "../www/client-core/src/bs-utils";
+import { throwError } from '../www/client-core/src/assert';
+import { UserSession } from "../www/client-core/src/bs-utils";
 import { authorizeUserByID, createUser } from './auth';
 import { ENV } from './ENV';
 import { L } from "./locale";

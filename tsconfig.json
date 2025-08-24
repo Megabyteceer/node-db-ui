@@ -2,7 +2,9 @@
 	"compilerOptions": {
 		"noUnusedLocals": true,
 		"moduleResolution": "nodenext",
-		"lib": ["ESNext"],
+		"lib": [
+			"ESNext"
+		],
 		"target": "esnext",
 		"rootDir": ".",
 		"baseUrl": ".",
@@ -11,10 +13,14 @@
 		"incremental": true,
 		"module": "nodenext",
 		"diagnostics": false,
+		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"assumeChangesOnlyAffectDirectDependencies": true,
 	},
-	"include": ["core/index.ts", "core/events/*"],
+	"include": [
+		"core/index.ts",
+		"core/events/*"
+	],
 	"exclude": [
 		"**/www/**",
 		"**/build-prod/**",

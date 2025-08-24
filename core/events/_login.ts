@@ -1,4 +1,5 @@
-import { RecordDataWrite, throwError, UserSession } from "../../www/client-core/src/bs-utils";
+import { throwError } from '../../www/client-core/src/assert';
+import { RecordDataWrite, UserSession } from "../../www/client-core/src/bs-utils";
 import { authorizeUserByID, getPasswordHash } from "../auth";
 import { NodeEventsHandlers } from "../describe-node";
 import { L } from "../locale";
@@ -6,7 +7,7 @@ import { loginWithGoogle } from "../login-social";
 import { mysqlExec } from "../mysql-connection";
 
 const handlers: NodeEventsHandlers = {
-	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession): Promise<any> {
+	beforeCreate: async function (data: RecordDataWrite, userSession: UserSession): Promise<any> {
 		const username = data.username;
 		const password = data.password;
 		if(username === 'google-auth-sign-in') {

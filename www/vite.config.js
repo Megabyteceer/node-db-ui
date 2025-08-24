@@ -4,6 +4,8 @@ debugger;
 
 export default defineConfig({
 	mode: "development",
+	base: '/',
+	root: './.',
 	build: {
 		minify: false,
 		sourcemap: 'inline',

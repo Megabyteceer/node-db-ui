@@ -1,10 +1,11 @@
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { throwError } from "../../www/client-core/src/bs-utils";
+
 import { mysqlExec } from "../mysql-connection";
 
 import { SERVER_ENV } from '../../core/ENV';
+import { throwError } from '../../www/client-core/src/assert';
 import type { UserSession } from '../../www/client-core/src/bs-utils';
 import { isAdmin } from "../auth";
 var crypto = require('crypto');
@@ -204,7 +205,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 	var archive = archiver('zip');
 
 
-	archive.on('error', function(err) {
+	archive.on('error', function (err) {
 		throw err;
 	});
 	archive.pipe(output);
@@ -245,7 +246,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 	}
 
 	return new Promise((resolve) => {
-		output.on('close', function() {
+		output.on('close', function () {
 			deployToRemoteServer(zipName).then(() => {
 				fs.unlinkSync(zipName);
 				fs.writeFileSync(prevFilesFileName, JSON.stringify(prevFiles));

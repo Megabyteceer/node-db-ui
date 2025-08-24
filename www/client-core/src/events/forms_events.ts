@@ -1,16 +1,15 @@
-import { Filters, getNodeData, isAdmin, L, showPrompt, getNode, myAlert, getData, attachGoogleLoginAPI, goToHome } from "../utils";
+import { attachGoogleLoginAPI, Filters, getData, getNode, getNodeData, goToHome, isAdmin, L, myAlert, showPrompt } from "../utils";
 /// #if DEBUG
 import { makeIconSelectionField } from "../admin/admin-utils";
 /// #endif
 
-import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NodeDesc, NODE_ID, NODE_TYPE, RecordSubmitResult, VIEW_MASK } from "../bs-utils";
-import { FormFull } from "../forms/form-full";
-import { iAdmin } from "../user";
-import { User } from "../user";
-import { EnumField } from "../fields/field-6-enum";
-import { R } from "../r";
-import { ENV } from "../main-frame";
+import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NODE_ID, NODE_TYPE, NodeDesc, RecordSubmitResult, VIEW_MASK } from "../bs-utils";
 import type { LookupOneToManyFiled } from "../fields/field-15-one-to-many";
+import { EnumField } from "../fields/field-6-enum";
+import { FormFull } from "../forms/form-full";
+import { ENV } from "../main-frame";
+import { R } from "../r";
+import { iAdmin, User } from "../user";
 
 let uiLanguageIsChanged;
 
@@ -18,11 +17,11 @@ class FormEvents extends FormFull {
 
 	checkPasswordConfirmation() {
 		var p = this.fieldValue('password');
-		var p2 = this.fieldValue('passwordConfirm');
+		var p2 = this.fieldValue('password_confirm');
 		if(p && (p !== p2)) {
-			this.fieldAlert('passwordConfirm', L('PASS_NOT_MACH'));
+			this.fieldAlert('password_confirm', L('PASS_NOT_MACH'));
 		} else {
-			this.fieldAlert('passwordConfirm');
+			this.fieldAlert('password_confirm');
 		}
 	}
 
@@ -30,11 +29,6 @@ class FormEvents extends FormFull {
 
 		if(!ENV.langs && this.isUserEdit) {
 			this.hideField('language');
-		}
-		const isHiddenField = (fn) => {
-			if(this.fieldValue(fn) === 'hidden_91d2g7') {
-				this.hideField(fn);
-			}
 		}
 
 		if(this.isUserEdit) {
@@ -45,10 +39,10 @@ class FormEvents extends FormFull {
 
 		if(window.document.querySelector('#org-edit-link')!) {
 			(window.document.querySelector('.field-container-id-63 input') as HTMLDivElement).style.width = '50%';
-			if(this.fieldValue('_organizationID')) {
+			if(this.fieldValue('_organization_id')) {
 				(window.document.querySelector('.field-container-id-63 input') as HTMLDivElement).insertAdjacentHTML('beforeend',
 					'<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organization settings" href="#n/7/r/' +
-					this.fieldValue('_organizationID').id +
+					this.fieldValue('_organization_id').id +
 					'/e">additional organization settings <p class="fa fa-wrench"></p></a>'
 				);
 			}
@@ -61,10 +55,10 @@ class FormEvents extends FormFull {
 			this.hideField('_user_roles');
 		}
 
-		this.disableField('_organizationID');
+		this.disableField('_organization_id');
 
 		if(!iAdmin()) {
-			this.hideField('_organizationID');
+			this.hideField('_organization_id');
 		}
 
 		var myName = this.fieldValue('name');
@@ -78,36 +72,21 @@ class FormEvents extends FormFull {
 			this.addLookupFilters('_user_roles', {
 				excludeIDs: [2, 3]
 			});
-			this.hideField('public_phone');
-			this.hideField('public_vk');
-			this.hideField('public_fb');
-			this.hideField('public_google');
-			this.hideField('public_email');
-
-		} else {
-			isHiddenField('public_phone');
-			isHiddenField('public_vk');
-			isHiddenField('public_fb');
-			isHiddenField('public_google');
-			isHiddenField('public_email');
 
 		}
-
 
 		if(this.isUpdateRecord) {
 			this.header = L('EDIT_USER_PROFILE', myName);
 			this.setFieldValue('password', 'nc_l4DFn76ds5yhg');
-			this.setFieldValue('passwordConfirm', 'nc_l4DFn76ds5yhg');
+			this.setFieldValue('password_confirm', 'nc_l4DFn76ds5yhg');
 			this.props.initialData.password = 'nc_l4DFn76ds5yhg';
 		}
 
 		if(this.isNewRecord) {
 			this.hideField('mailing');
-			this.hideField('phone');
-			//this.hideField('description');
-			this.hideField('_organizationID');
+			this.hideField('_organization_id');
 			this.setFieldValue('password', 'nc_l4DFn76ds5yhg');
-			this.setFieldValue('passwordConfirm', 'nc_l4DFn76ds5yhg');
+			this.setFieldValue('password_confirm', 'nc_l4DFn76ds5yhg');
 			this.props.initialData.password = 'nc_l4DFn76ds5yhg';
 		}
 	}
@@ -159,83 +138,83 @@ class FormEvents extends FormFull {
 	}
 
 	_nodes_recalculateFieldsVisibility() {
-		if(!this.isNewRecord && (this.fieldValue("nodeType") === NODE_TYPE.DOCUMENT)) {
-			this.showField("_fieldsID");
+		if(!this.isNewRecord && (this.fieldValue("node_type") === NODE_TYPE.DOCUMENT)) {
+			this.showField("_fields_id");
 			this.showField("reverse");
-			this.showField("defaultFilterId");
+			this.showField("default_filter_id");
 		} else {
-			this.hideField("_fieldsID");
+			this.hideField("_fields_id");
 			this.hideField("reverse");
-			this.hideField("defaultFilterId");
+			this.hideField("default_filter_id");
 		}
 
-		if(this.fieldValue('nodeType') === NODE_TYPE.STATIC_LINK) {
-			this.showField('staticLink');
+		if(this.fieldValue('node_type') === NODE_TYPE.STATIC_LINK) {
+			this.showField('static_link');
 		} else {
-			this.hideField('staticLink');
+			this.hideField('static_link');
 		}
 	}
 
 	/// #if DEBUG
 	_nodes_onLoad() {
-		if(this.isNewRecord || (this.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT)) {
+		if(this.isNewRecord || (this.fieldValue('node_type') !== NODE_TYPE.DOCUMENT)) {
 			this.hideField('t_fields');
 			this.hideField('t_filters');
 		}
 
 		makeIconSelectionField(this, 'icon');
 
-		if(this.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
-			this.hideField('defaultFilterId');
+		if(this.fieldValue('node_type') !== NODE_TYPE.DOCUMENT) {
+			this.hideField('default_filter_id');
 		} else if(this.isUpdateRecord) {
-			this.addLookupFilters('defaultFilterId', {
+			this.addLookupFilters('default_filter_id', {
 				node_filters_linker: this.recId
 			});
 		} else {
-			this.setFieldValue('storeForms', 1);
+			this.setFieldValue('store_forms', 1);
 		}
 
 		this._nodes_recalculateFieldsVisibility();
 
 		if(this.isUpdateRecord) {
-			this.disableField('nodeType');
-			this.disableField('storeForms');
-			this.disableField('tableName');
-			this.disableField('addCreatedByFiled');
-			this.disableField('addCreatedOnFiled');
-			this.disableField('addCreatorUserFld');
+			this.disableField('node_type');
+			this.disableField('store_forms');
+			this.disableField('table_name');
+			this.disableField('add_created_by_filed');
+			this.disableField('add_created_on_filed');
+			this.disableField('add_creator_user_fld');
 		}
 
 		if(this.isNewRecord) {
-			if(!this.fieldValue('recPerPage')) {
-				this.setFieldValue('recPerPage', 25);
+			if(!this.fieldValue('rec_per_page')) {
+				this.setFieldValue('rec_per_page', 25);
 			}
-			this.hideField('_fieldsID');
+			this.hideField('_fields_id');
 		} else {
-			this.addLookupFilters('_nodesID', 'excludeIDs', [this.recId]);
+			this.addLookupFilters('_nodes_id', 'excludeIDs', [this.recId]);
 			this.addLookupFilters('node_fields', 'n', 200);
 		}
-		this.addLookupFilters('_nodesID', 'nodeType', NODE_TYPE.SECTION);
-		this.addLookupFilters('_fieldsID', {
+		this.addLookupFilters('_nodes_id', 'node_type', NODE_TYPE.SECTION);
+		this.addLookupFilters('_fields_id', {
 			node_fields_linker: this.recId,
-			forSearch: 1
+			for_search: 1
 		});
 	}
 
 	_nodes_onSave() {
 
-		if(this.fieldValue("nodeType") !== NODE_TYPE.DOCUMENT) {
+		if(this.fieldValue("node_type") !== NODE_TYPE.DOCUMENT) {
 			var name = this.fieldValue("name");
 			this.setFieldValue("singleName", name);
-			this.setFieldValue("storeForms", 0);
+			this.setFieldValue("store_forms", 0);
 		}
 		else {
-			if(/[^a-zA-Z_0-9]/.test(this.fieldValue('tableName'))) {
-				this.fieldAlert('tableName', L('LATIN_ONLY'));
+			if(/[^a-zA-Z_0-9]/.test(this.fieldValue('table_name'))) {
+				this.fieldAlert('table_name', L('LATIN_ONLY'));
 			}
 
-			if(this.fieldValue('tableName') == parseInt(this.fieldValue('tableName'))) {
-				this.fieldAlert('tableName', L('NO_NUMERIC_NAME'));
+			if(this.fieldValue('table_name') == parseInt(this.fieldValue('table_name'))) {
+				this.fieldAlert('table_name', L('NO_NUMERIC_NAME'));
 			}
 		}
 	}
@@ -250,8 +229,8 @@ class FormEvents extends FormFull {
 		if(parentNodeVal) {
 			parentNode = await getNode(parentNodeVal.id);
 			if(!parentNode.store_forms) {
-				this.setFieldValue('storeInDB', 0);
-				this.disableField('storeInDB');
+				this.setFieldValue('store_in_db', 0);
+				this.disableField('store_in_db');
 			}
 		}
 
@@ -266,8 +245,8 @@ class FormEvents extends FormFull {
 				this.setFieldValue("visibility_dropdownList", 0);
 				this.setFieldValue("visibility_subFormList", 1);
 
-				this.setFieldValue("sendToServer", 1);
-				this.setFieldValue("storeInDB", 1);
+				this.setFieldValue("send_to_server", 1);
+				this.setFieldValue("store_in_db", 1);
 			}
 
 			if(!this.fieldValue("prior")) {
@@ -312,11 +291,11 @@ class FormEvents extends FormFull {
 		}
 
 		this.addLookupFilters('node_fields_linker', {
-			nodeType: 2
+			node_type: 2
 		});
-		this.addLookupFilters('nodeRef', {
-			nodeType: 2,
-			storeForms: 1
+		this.addLookupFilters('node_ref', {
+			node_type: 2,
+			store_forms: 1
 		});
 		this.hideField("show");
 	}
@@ -352,14 +331,14 @@ class FormEvents extends FormFull {
 			if(nodeId && nodeId.id) {
 				nodeId = nodeId.id;
 			}
-			var nodeRef = this.fieldValue('nodeRef');
-			if(nodeRef && nodeRef.id) {
-				nodeRef = nodeRef.id;
+			var node_ref = this.fieldValue('node_ref');
+			if(node_ref && node_ref.id) {
+				node_ref = node_ref.id;
 			}
 
 			if(nodeId && fn && fn.length >= 3) {
-				if((this.fieldValue("fieldType") === FIELD_TYPE.LOOKUP_1toN) && nodeRef) {
-					checkFieldExists(fn + '_linker', nodeRef);
+				if((this.fieldValue("fieldType") === FIELD_TYPE.LOOKUP_1toN) && node_ref) {
+					checkFieldExists(fn + '_linker', node_ref);
 				} else {
 					checkFieldExists(fn, nodeId);
 				}
@@ -371,8 +350,8 @@ class FormEvents extends FormFull {
 		var fieldType = this.fieldValue("fieldType");
 
 		if(fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_NtoM || fieldType === FIELD_TYPE.LOOKUP_1toN) {
-			if(this.isFieldEmpty('nodeRef')) {
-				this.fieldAlert('nodeRef', L('REQUIRED_FLD'));
+			if(this.isFieldEmpty('node_ref')) {
+				this.fieldAlert('node_ref', L('REQUIRED_FLD'));
 			}
 		}
 
@@ -412,7 +391,7 @@ class FormEvents extends FormFull {
 			}
 
 		} else {
-			this.hideField('selectFieldName');
+			this.hideField('select_field_name');
 		}
 
 		if((fieldType === FIELD_TYPE.STATIC_TEXT) ||
@@ -420,7 +399,7 @@ class FormEvents extends FormFull {
 			(fieldType === FIELD_TYPE.BUTTON) ||
 			(fieldType === FIELD_TYPE.SPLITTER)
 		) {
-			this.setFieldValue('storeInDB', 0);
+			this.setFieldValue('store_in_db', 0);
 		}
 		if(this._fieldsNameIsBad) {
 			this.fieldAlert('fieldName', L('FLD_EXISTS'));

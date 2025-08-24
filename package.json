@@ -8,9 +8,11 @@
     "database UI"
   ],
   "scripts": {
+    "build-client-dev": "npx vite --config vite.config.js",
+    "build-client-prod": "npx vite build --config vite.config-prod.js",
     "test": "jest --detectOpenHandles --verbose=true",
-    "build": "tsc",
-    "build-prod": "rmdir /s /q build-prod & npx rollup --config"
+    "build-server-dev": "tsc",
+    "build-server-prod": "rmdir /s /q build-prod & npx rollup --config"
   },
   "author": "",
   "license": "MIT",
@@ -28,7 +30,7 @@
     "jquery": "^3.7.1",
     "moment": "^2.29.1",
     "multer": "^2.0.2",
-    "mysql2": "^2.2.5",
+    "mysql2": "^3.14.3",
     "nodemailer": "^6.6.2",
     "parse-multipart-data": "^1.2.0",
     "pg": "^8.16.3",
@@ -37,7 +39,7 @@
     "react-cropper": "^2.1.8",
     "react-datetime": "^3.0.4",
     "react-dom": "^17.0.2",
-    "react-highlight-words": "^0.17.0",
+    "react-highlight-words": "^0.21.0",
     "reset-css": "^5.0.1",
     "sharp": "^0.34.3",
     "summernote": "^0.9.1"
@@ -54,7 +56,7 @@
     "babel-loader": "^8.2.2",
     "rollup": "^2.60.0",
     "selenium-webdriver": "^4.0.0-beta.4",
-    "typescript": "^4.2.2",
+    "typescript": "^5.9.2",
     "vite": "^7.1.3"
   },
   "jest": {

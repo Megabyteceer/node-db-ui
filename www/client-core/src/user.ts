@@ -1,14 +1,14 @@
 ﻿import React from "react";
 
-import { getData, idToImgURL, isAdmin, L, renderIcon, setItem, attachGoogleLoginAPI, getItem, removeItem } from "./utils";
-import { Select } from "./components/select";
-import { ENV, MainFrame } from "./main-frame";
 import moment from "moment";
 import { Component } from "react";
-import { R } from "./r";
-import { NODE_ID, UserSession, USER_ID } from "./bs-utils";
-import { LoadingIndicator } from "./loading-indicator";
+import { NODE_ID, USER_ID, UserSession } from "./bs-utils";
+import { Select } from "./components/select";
 import { LITE_UI_PREFIX } from './consts';
+import { LoadingIndicator } from "./loading-indicator";
+import { ENV, MainFrame } from "./main-frame";
+import { R } from "./r";
+import { attachGoogleLoginAPI, getData, getItem, idToImgURL, isAdmin, L, removeItem, renderIcon, setItem } from "./utils";
 
 function setUserOrg(orgId) {
 	if(User.currentUserData.orgId !== orgId) {
@@ -100,7 +100,7 @@ class User extends Component<any, any> {
 
 			var multilingualBtn;
 			if(ENV.ENABLE_MULTILINGUAL) {
-				multilingualBtn = R.div({ className, onClick: this.toggleMultilingual },
+				multilingualBtn = R.span({ key: '1', className, onClick: this.toggleMultilingual },
 					renderIcon(iconName + 'square-o'), L('MULTILINGUAL')
 				);
 			}
@@ -114,7 +114,7 @@ class User extends Component<any, any> {
 					options.push({ value: k, name });
 				};
 
-				org = React.createElement(Select, { options, className: "top-bar-user-org-select", isCompact: true, defaultValue: userData.orgId, onChange: this.changeOrg });
+				org = React.createElement(Select, { key: '2', options, className: "top-bar-user-org-select", isCompact: true, defaultValue: userData.orgId, onChange: this.changeOrg });
 			}
 
 			var btn1, btn2;
@@ -122,12 +122,13 @@ class User extends Component<any, any> {
 			const loginURL = User.getLoginURL();
 
 			if(userData.id === USER_ID.GUEST) {
-				btn2 = R.a({ href: loginURL, title: L('LOGIN'), className: 'clickable top-bar-user-btn' },
+				btn2 = R.a({ key: 'b2', href: loginURL, title: L('LOGIN'), className: 'clickable top-bar-user-btn' },
 					renderIcon('sign-in fa-2x')
 				)
 			} else {
 				let imgUrl = idToImgURL(userData.avatar, 'avatar');
 				btn1 = R.a({
+					key: 'b1',
 					onClick: () => {
 						window.crudJs.Stage.showForm(NODE_ID.USERS, userData.id, undefined, true, true);
 					}, title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn'
@@ -135,6 +136,7 @@ class User extends Component<any, any> {
 					R.img({ className: 'user-avatar', src: imgUrl })
 				);
 				btn2 = R.a({
+					key: 'b2',
 					title: L('LOGOUT'), className: 'clickable top-bar-user-btn', onClick: async () => {
 						LoadingIndicator.instance.show();
 						removeItem('go-to-after-login');
@@ -155,11 +157,11 @@ class User extends Component<any, any> {
 				);
 			}
 
-			body = R.span(null,
+			body = [
 				multilingualBtn,
 				org,
 				btn1, btn2
-			)
+			];
 		} else {
 			body = renderIcon('cog fa-spin');
 		}
@@ -175,3 +177,4 @@ User.instance = null;
 User.currentUserData = null;
 
 export { iAdmin, User };
+

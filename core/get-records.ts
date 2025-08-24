@@ -1,4 +1,5 @@
-import { assert, FIELD_TYPE, FilterDesc, PRIVILEGES_MASK, RecId, RecordData, RecordsData, throwError, VIEW_MASK } from "../www/client-core/src/bs-utils";
+import { assert, throwError } from '../www/client-core/src/assert';
+import { FIELD_TYPE, FilterDesc, PRIVILEGES_MASK, RecId, RecordData, RecordsData, VIEW_MASK } from "../www/client-core/src/bs-utils";
 import { UserSession } from './auth';
 import { ADMIN_USER_SESSION, filtersById, getNodeDesc, getNodeEventHandler, ServerSideEventHandlersNames } from './describe-node';
 import { mysqlExec } from "./mysql-connection";
@@ -373,7 +374,7 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 
 	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeDelete, recordData, userSession);
 
-	await mysqlExec("UPDATE " + node.table_name + " SET status=0 WHERE id=" + recId + " LIMIT 1");
+	await mysqlExec("UPDATE " + node.table_name + " SET status=0 WHERE id=" + recId);
 
 	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterDelete, recordData, userSession);
 

@@ -1,12 +1,13 @@
-import ReactDOM from "react-dom";
 import React from "react";
+import ReactDOM from "react-dom";
 
-import { assert, FieldDesc, RecordData } from "../bs-utils";
 import { Component } from "react";
 import Highlighter from "react-highlight-words";
+import { assert } from '../assert';
+import { FieldDesc } from "../bs-utils";
+import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import { FormFull } from "../forms/form-full";
 import type { FieldWrap } from "./field-wrap";
-import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 
 let autoFocusNow = true;
 const resetAutofocus = () => {
@@ -129,4 +130,5 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 		this.refToInput = refToInput;
 	}
 }
-export { BaseField, RefToInput, FieldState, FieldProps };
+export { BaseField, FieldProps, FieldState, RefToInput };
+

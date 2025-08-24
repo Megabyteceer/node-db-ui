@@ -1,18 +1,15 @@
-import "./view_5_users.css";
-import { R } from "../r";
-import { renderItemsButtons } from "../forms/form-list-item";
-import { idToImgURL, registerListRenderer, renderIcon } from "../utils";
-import { List } from "../forms/list";
 import { NODE_ID } from "../bs-utils";
+import { renderItemsButtons } from "../forms/form-list-item";
+import { List } from "../forms/list";
+import { R } from "../r";
+import { idToImgURL, registerListRenderer, renderIcon } from "../utils";
+import "./view_5_users.css";
 
 const RENDERED_FIELDS = {
 	avatar: true,
 	name: true,
 	company: true,
 	email: true,
-	phone: true,
-	public_email: true,
-	public_phone: true,
 	creator_org: true,
 	creator_user: true,
 };
@@ -32,7 +29,7 @@ registerListRenderer(NODE_ID.USERS, function (this: List): React.ReactNode {
 		var email;
 		if(item.email) {
 			email = R.div({ className: 'user-item-info' }, renderIcon('envelope'), ' ',
-				R.a({ href: 'mailto:' + item.public_email },
+				R.a({ href: 'mailto:' + item.email },
 					item.email
 				)
 			)

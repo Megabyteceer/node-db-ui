@@ -8,7 +8,8 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { mysqlExec } from "./mysql-connection";
 
-import { assert, FIELD_TYPE, FieldDesc, NODE_ID, NODE_TYPE, NodeDesc, RecId, RecordData, RecordDataWrite, ROLE_ID, throwError, USER_ID, UserLangEntry, VIEW_MASK } from "../www/client-core/src/bs-utils";
+import { assert, throwError } from '../www/client-core/src/assert';
+import { FIELD_TYPE, FieldDesc, NODE_ID, NODE_TYPE, NodeDesc, RecId, RecordData, RecordDataWrite, ROLE_ID, USER_ID, UserLangEntry, VIEW_MASK } from "../www/client-core/src/bs-utils";
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession /*, usersSessionsStartedCount*/ } from "./auth";
 import { ENV } from './ENV';
 
@@ -301,7 +302,7 @@ async function initNodesData() { // load whole nodes data in to memory
 
 			const filters = {};
 			for(let f of filtersRes) {
-				let filterRoles = await mysqlExec("SELECT _rolesId FROM _filter_access_roles WHERE _filtersId=" + f.id);
+				let filterRoles = await mysqlExec("SELECT _roles_id FROM _filter_access_roles WHERE _filters_id=" + f.id);
 				if(filterRoles.length > 0) {
 					f.roles = filterRoles.map(i => i._rolesId);
 				}
@@ -443,7 +444,7 @@ const wrapObjectToDestroy = (o) => {
 	let destroyed = false;
 	if(o) {
 		return new Proxy(o, {
-			set: function(obj, prop, value, a) {
+			set: function (obj, prop, value, a) {
 				if(destroyed) {
 					throwError('Attempt to assign data after exit on eventHandler. Has eventHandler not "await" for something?');
 				}

@@ -1,11 +1,12 @@
 
-import { mysqlExec } from "./mysql-connection";
-import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from "./describe-node";
-import { throwError, NODE_ID, assert, UserLangEntry, UserRoles, UserSession, ROLE_ID, RecId } from "../www/client-core/src/bs-utils";
 import { pbkdf2, randomBytes } from "crypto";
-import { L } from "./locale";
-import { submitRecord } from "./submit";
+import { assert, throwError } from '../www/client-core/src/assert';
+import { NODE_ID, ROLE_ID, RecId, UserLangEntry, UserRoles, UserSession } from "../www/client-core/src/bs-utils";
+import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from "./describe-node";
 import { ENV, SERVER_ENV } from './ENV';
+import { L } from "./locale";
+import { mysqlExec } from "./mysql-connection";
+import { submitRecord } from "./submit";
 
 const sessions = new Map();
 const sessionsByUserId = new Map();
@@ -148,7 +149,7 @@ async function createUser(userData: {
 	var salt = userData.salt || '';
 	delete userData.salt;
 	const userID: RecId = (await submitRecord(NODE_ID.USERS, userData, undefined, userSession)).recId;
-	let organizationID = (await mysqlExec("INSERT INTO \"_organization\" (\"name\", \"status\", \"_users_id\") VALUES ('', '1', " + userID + ")"))[0].id;
+	let organizationID = (await mysqlExec("INSERT INTO \"_organization\" (\"name\", \"status\", \"_users_id\") VALUES ('', '1', " + userID + ") RETURNING id"))[0].id;
 	await mysqlExec("UPDATE _organization SET _users_id = " + userID + ", _organization_id = " + organizationID + " WHERE id = " + organizationID);
 	await mysqlExec("UPDATE _users SET \"salt\"= '" + salt + "', _users_id = " + userID + ", _organization_id = " + organizationID + " WHERE id = " + userID);
 	return userID;
@@ -362,4 +363,4 @@ const isUserHaveRole = (roleId: ROLE_ID, userSession: UserSession) => {
 	return userSession && userSession.userRoles[roleId];
 }
 
-export { createUser, UserSession, getGuestUserForBrowserLanguage, generateSalt, notificationOut, shouldBeAuthorized, isAdmin, isUserHaveRole, UserLangEntry, usersSessionsStartedCount, mustBeUnset, setCurrentOrg, setMultilingual, authorizeUserByID, resetPassword, activateUser, startSession, finishSession, killSession, getPasswordHash, createSession, getServerHref, mail_utf8, setMaintenanceMode };
+export { UserLangEntry, UserSession, activateUser, authorizeUserByID, createSession, createUser, finishSession, generateSalt, getGuestUserForBrowserLanguage, getPasswordHash, getServerHref, isAdmin, isUserHaveRole, killSession, mail_utf8, mustBeUnset, notificationOut, resetPassword, setCurrentOrg, setMaintenanceMode, setMultilingual, shouldBeAuthorized, startSession, usersSessionsStartedCount };

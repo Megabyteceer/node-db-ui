@@ -1,21 +1,21 @@
-import { R } from "../r";
 import { FIELD_TYPE, PRIVILEGES_MASK, RecordsData, VIEW_MASK } from "../bs-utils";
+import { R } from "../r";
 
 /// #if DEBUG
-import { FieldAdmin } from "../admin/field-admin";
 import { NodeAdmin } from "../admin/admin-control";
+import { FieldAdmin } from "../admin/field-admin";
 /// #endif
 
-import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
-import { FormFull } from "./form-full";
-import { FormListItem } from "./form-list-item";
-import { BaseForm, FormProps, FormState } from "./base-form";
 import React from "react";
-import { iAdmin } from "../user";
+import { Select } from "../components/select";
 import { RefToInput } from "../fields/base-field";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import { LeftBar } from "../left-bar";
-import { Select } from "../components/select";
+import { iAdmin } from "../user";
+import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
+import { BaseForm, FormProps, FormState } from "./base-form";
+import { FormFull } from "./form-full";
+import { FormListItem } from "./form-list-item";
 
 const sortByOrder = (a, b) => {
 	return a.order - b.order;
@@ -160,7 +160,6 @@ class List extends BaseForm<ListProps, ListState> {
 				node = await getNode(this.props.nodeId);
 			}
 			this.setState({ data, node });
-			this.scrollIfNeed();
 		}
 	}
 

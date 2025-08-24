@@ -1,15 +1,16 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 /// #if DEBUG
+import { createNodeForMenuItem, NodeAdmin } from "./admin/admin-control";
 import { FieldAdmin } from "./admin/field-admin";
-import { NodeAdmin, createNodeForMenuItem } from "./admin/admin-control";
 /// #endif	
-import { assert, NODE_TYPE } from "./bs-utils";
+import { assert } from './assert';
+import { NODE_TYPE } from "./bs-utils";
+import { Modal } from "./modal";
 import { R } from "./r";
 import { Stage } from "./stage";
 import { iAdmin, User } from "./user";
 import { isLitePage, L, renderIcon } from "./utils";
-import { Modal } from "./modal";
 
 let collapsed;
 

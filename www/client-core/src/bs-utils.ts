@@ -26,20 +26,6 @@ interface RecordSubmitResult {
 	handlerResult: any;
 }
 
-const throwError = (message: string): never => {
-	/// #if DEBUG
-	debugger;
-	/// #endif
-	throw new Error(message);
-}
-
-/// #if DEBUG
-const assert = (condition: any, errorTxt: string) => {
-	if(!condition) {
-		throwError(errorTxt);
-	}
-}
-
 const getCurrentStack = () => {
 	let a = new Error().stack?.split('\n');
 	if(a) {
@@ -317,7 +303,6 @@ enum NODE_ID {
 	ORGANIZATIONS = 7,
 	ROLES = 8,
 	FILTERS = 9,
-	MESSAGES = 11,
 	LANGUAGES = 12,
 	LOGIN = 20,
 	REGISTER = 21,
@@ -325,7 +310,6 @@ enum NODE_ID {
 	PAGES = 49,
 	ENUMERATIONS = 52,
 	ENUMERATION_VALUES = 53,
-	ERROR_REPORTS = 81,
 	FILES = 83
 }
 
@@ -352,27 +336,6 @@ interface IFormParameters {
 }
 
 export {
-	throwError,
-	assert,
-	getCurrentStack,
-
-	IFormParameters,
-
-	HASH_DIVIDER,
-
-	LANGUAGE_ID_DEFAULT,
-
-	IMAGE_THUMBNAIL_PREFIX,
-
-	FIELD_ID,
-	USER_ID,
-	NODE_ID,
-	ROLE_ID,
-	PRIVILEGES_MASK,
-	FIELD_TYPE,
-	NODE_TYPE, FIELD_DISPLAY_TYPE,
-	VIEW_MASK,
-
-	RecordSubmitResult, RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList, FilterDesc,
-	UserLangEntry, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
+	BoolNum, EnumList, FIELD_DISPLAY_TYPE, FIELD_ID, FIELD_TYPE, FieldDesc, FilterDesc, Filters, getCurrentStack, GetRecordsParams, HASH_DIVIDER, IFormParameters, IMAGE_THUMBNAIL_PREFIX, LANGUAGE_ID_DEFAULT, NODE_ID, NODE_TYPE, NodeDesc, PRIVILEGES_MASK, RecId, RecordData, RecordDataWrite, RecordsData, RecordsDataResponse, RecordSubmitResult, ROLE_ID, USER_ID, UserLangEntry, UserRoles, UserSession, VIEW_MASK
 };
+

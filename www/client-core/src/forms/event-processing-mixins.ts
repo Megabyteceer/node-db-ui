@@ -1,9 +1,10 @@
+import React from "react";
+import ReactDOM from "react-dom";
+import { assert, throwError, validateFieldName } from '../assert';
+import { FIELD_TYPE, FieldDesc, RecordData } from "../bs-utils";
+import type { FieldWrap } from "../fields/field-wrap";
 import { CLIENT_SIDE_FORM_EVENTS, consoleLog, Filters, getData, L } from "../utils";
 import { BaseForm } from "./base-form";
-import { assert, FieldDesc, FIELD_TYPE, RecordData } from "../bs-utils";
-import type { FieldWrap } from "../fields/field-wrap";
-import ReactDOM from "react-dom";
-import React from "react";
 
 let eventsHandlers = [];
 
@@ -20,6 +21,8 @@ function registerEventHandler(classInstance) {
 		}
 	}
 }
+
+
 
 class FormEventProcessingMixins extends BaseForm {
 	/** true if form opened for new record creation */
@@ -109,32 +112,27 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	hasField(fieldName) {
+		validateFieldName(fieldName);
 		return this.fieldsRefs.hasOwnProperty(fieldName)
 	}
 
 	getField(fieldName): FieldWrap {
+		validateFieldName(fieldName);
 		if(this.hasField(fieldName)) {
 			return this.fieldsRefs[fieldName];
 		} else {
-			consoleLog('Unknown field: ' + fieldName);
+			throwError('Unknown field: ' + fieldName);
 		}
 	}
 
-	setFieldLabel(fieldName, label?) {
+	setFieldLabel(fieldName: string, label?) {
+		validateFieldName(fieldName);
 		this.getField(fieldName).setLabel(label);
 	}
 
-	_fieldsFromArgs(a: IArguments): string[] {
-		let fields = Array.from(a);
-		if(!fields.length) {
-			fields = this.props.node.fields.map(i => i.field_name);
-		}
-		return fields;
-	}
-
 	hideField(...fieldsNames: string[]) {
-		let fields = this._fieldsFromArgs(arguments);
-		for(let fieldName of fields) {
+		for(let fieldName of fieldsNames) {
+			validateFieldName(fieldName);
 			if(this.hiddenFields[fieldName] !== 1) {
 				this.hiddenFields[fieldName] = 1;
 				var f = this.getField(fieldName);
@@ -150,8 +148,8 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	showField(...fieldsNames: string[]) {
-		let fields = this._fieldsFromArgs(arguments);
-		for(let fieldName of fields) {
+		for(let fieldName of fieldsNames) {
+			validateFieldName(fieldName);
 			if(this.hiddenFields[fieldName] === 1) {
 				delete (this.hiddenFields[fieldName]);
 				var f = this.getField(fieldName);
@@ -164,6 +162,7 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	isFieldVisible(fieldName: string) {
+		validateFieldName(fieldName);
 		return this.hiddenFields[fieldName] !== 1;
 	}
 
@@ -176,6 +175,7 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	disableField(fieldName) {
+		validateFieldName(fieldName);
 		if(this.disabledFields[fieldName] !== 1) {
 			this.disabledFields[fieldName] = 1;
 			var f = this.getField(fieldName);
@@ -187,6 +187,7 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	enableField(fieldName) {
+		validateFieldName(fieldName);
 		if(this.disabledFields[fieldName] === 1) {
 			delete (this.disabledFields[fieldName]);
 			this.getField(fieldName).enable();
@@ -194,10 +195,12 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	makeFieldRequired(fieldName, required = true) {
+		validateFieldName(fieldName);
 		this.getField(fieldName).makeFieldRequired(required);
 	}
 
 	isFieldDisabled(fieldName) {
+		validateFieldName(fieldName);
 		return (this.disabledFields[fieldName] === 1);
 	}
 
@@ -326,10 +329,8 @@ class FormEventProcessingMixins extends BaseForm {
 		consoleLog('onSave ' + this.props.node.table_name + ': ' + this.props.initialData.id);
 		/// #endif
 
-		for(var k in this.props.node.fields) {
-			if(this.hasField(k)) {//hide all alerts
-				this.fieldAlert(this.props.node.fields[k].field_name);
-			}
+		for(var field of this.props.node.fields) {
+			this.fieldAlert(field.field_name); //hide all alerts
 		}
 
 		this.invalidAlertInOnSaveHandler = false;
@@ -344,7 +345,9 @@ class FormEventProcessingMixins extends BaseForm {
 			if(typeof isSuccess === 'undefined') {
 				isSuccess = !Boolean(text);
 			}
-			f.fieldAlert(text, isSuccess, focus);
+			if(f.fieldAlert) {
+				f.fieldAlert(text, isSuccess, focus);
+			}
 			if(!isSuccess) {
 				this.invalidAlertInOnSaveHandler = true;
 			}

@@ -1,12 +1,13 @@
 ﻿import React, { Component } from "react";
-import { R } from "./r";
+import ReactDOM from 'react-dom';
+import { assert, throwError } from './assert';
+import { NODE_TYPE, RecId, RecordData } from "./bs-utils";
+import { BaseForm } from "./forms/base-form";
 import { FormFull } from "./forms/form-full";
 import { List } from "./forms/list";
-import { Filters, getNode, getNodeData, getNodeIfPresentOnClient, isLitePage, isPresentListRenderer, L, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from "./utils";
-import { assert, NODE_TYPE, RecId, RecordData, throwError } from "./bs-utils";
-import { BaseForm } from "./forms/base-form";
-import ReactDOM from 'react-dom';
 import { LeftBar } from "./left-bar";
+import { R } from "./r";
+import { Filters, getNode, getNodeData, getNodeIfPresentOnClient, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from "./utils";
 
 let mouseX: number;
 let mouseY: number;
@@ -172,7 +173,7 @@ class Stage extends Component<any, any> {
 				location.href = node.static_link;
 				break;
 			default:
-				throwError('Unknown nodeType ' + node.node_type);
+				throwError('Unknown node_type ' + node.node_type);
 		}
 
 		let className = 'form-container-node-' + nodeId +
@@ -254,4 +255,5 @@ function addFormEntry(noAnimation = false) {
 	LeftBar.refreshLeftBarActive();
 }
 
-export { Stage, FormLoaderCog }
+export { FormLoaderCog, Stage };
+

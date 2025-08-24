@@ -1,15 +1,16 @@
 
-import { mysqlExec } from "../mysql-connection";
+import { throwError } from '../../www/client-core/src/assert';
+import { FIELD_ID, FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, UserSession, VIEW_MASK } from "../../www/client-core/src/bs-utils";
 import { shouldBeAdmin } from "../admin/admin";
 import { mustBeUnset } from "../auth";
-import { getLangs, reloadMetadataSchedule, getNodeDesc, NodeEventsHandlers } from "../describe-node";
+import { getLangs, getNodeDesc, NodeEventsHandlers, reloadMetadataSchedule } from "../describe-node";
 import { getRecords } from "../get-records";
-import { submitRecord } from "../submit";
 import { L } from "../locale";
-import { FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, throwError, UserSession, VIEW_MASK, FIELD_ID } from "../../www/client-core/src/bs-utils";
+import { mysqlExec } from "../mysql-connection";
+import { submitRecord } from "../submit";
 
 const handlers: NodeEventsHandlers = {
-	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
+	beforeCreate: async function (data: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
 		if(data.multilingual) {
@@ -27,7 +28,7 @@ const handlers: NodeEventsHandlers = {
 		await createFieldInTable(data);
 	},
 
-	afterCreate: async function(data: RecordDataWrite, userSession: UserSession) {
+	afterCreate: async function (data: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
 		const field_type = data.field_type;
@@ -71,7 +72,7 @@ const handlers: NodeEventsHandlers = {
 		reloadMetadataSchedule();
 	},
 
-	beforeUpdate: async function(currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
+	beforeUpdate: async function (currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
 
 		shouldBeAdmin(userSession);
 
@@ -141,7 +142,7 @@ const handlers: NodeEventsHandlers = {
 		reloadMetadataSchedule();
 	},
 
-	beforeDelete: async function(data: RecordData, userSession: UserSession) {
+	beforeDelete: async function (data: RecordData, userSession: UserSession) {
 		throwError('_fields beforeCreate deletion event is not implemented');
 	}
 }
@@ -231,17 +232,17 @@ async function createFieldInTable(data: RecordDataWrite) {
 		data.select_field_name = linkedNodeName;
 		data.for_search = 1;
 
-		const fld1 = nodeName + 'Id';
-		const fld2 = linkedNodeName + 'Id';
+		const fld1 = nodeName + '_id';
+		const fld2 = linkedNodeName + '_id';
 
 		await mysqlExec(`CREATE TABLE \\"${field_name}\\" (
-			id bigint(15) unsigned NOT NULL AUTO_INCREMENT,
-			\\"${fld1}\\" bigint(15) unsigned NOT NULL DEFAULT 0,
-			\\"${fld2}\\" bigint(15) unsigned NOT NULL DEFAULT 0,
+			id serial4 NOT NULL,
+			\\"${fld1}\\" serial4 NOT NULL DEFAULT 0,
+			\\"${fld2}\\" serial4 NOT NULL DEFAULT 0,
 			primary key(id),
 			INDEX(\\"${fld1}\\"),
 			INDEX(\\"${fld2}\\")
-		) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4; `);
+		); `);
 	} else if(data.store_in_db) {
 		if(field_type === FIELD_TYPE.LOOKUP) {
 			data.for_search = 1;

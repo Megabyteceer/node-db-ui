@@ -1,10 +1,9 @@
-import { FIELD_TYPE, IMAGE_THUMBNAIL_PREFIX, RecId, RecordData } from "../bs-utils";
-import { R } from "../r";
 import React from "react";
 import ReactDOM from "react-dom";
+import { FIELD_TYPE, IMAGE_THUMBNAIL_PREFIX, RecId, RecordData } from "../bs-utils";
 import { List } from "../forms/list";
-import { idToImgURL, L, renderIcon, scrollToVisible, sp } from "../utils";
-import { registerFieldClass } from "../utils";
+import { R } from "../r";
+import { idToImgURL, L, registerFieldClass, renderIcon, scrollToVisible, sp } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
 
 registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLookupMixins {
@@ -60,9 +59,6 @@ registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLo
 
 	toggleList() {
 		if(!this.props.fieldDisabled || this.state.expanded) {
-			if(this.state.expanded) {
-				scrollToVisible(this, true);
-			}
 			this.setState({
 				expanded: !this.state.expanded
 			});
@@ -175,10 +171,7 @@ registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLo
 
 			if(list) {
 				list = R.div({
-					className: 'field-lookup-drop-list',
-					ref: (ref) => {
-						scrollToVisible(ref, true);
-					}
+					className: 'field-lookup-drop-list'
 				},
 					list
 				);

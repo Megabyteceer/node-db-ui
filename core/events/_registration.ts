@@ -1,13 +1,15 @@
 import { randomBytes } from "crypto";
-import { NODE_ID, RecordDataWrite, throwError } from "../../www/client-core/src/bs-utils";
+import { NODE_ID, RecordDataWrite } from "../../www/client-core/src/bs-utils";
 import { generateSalt, getPasswordHash, getServerHref, mail_utf8, UserSession } from "../auth";
 
 import { ENV } from '../../core/ENV';
+
+import { throwError } from '../../www/client-core/src/assert';
 import { L } from "../locale";
 import { mysqlExec } from "../mysql-connection";
 
 export default {
-	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
+	beforeCreate: async function (data: RecordDataWrite, userSession: UserSession) {
 
 		data.salt = generateSalt();
 		data.activation_key = randomBytes(24).toString('base64');

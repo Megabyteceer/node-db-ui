@@ -1,0 +1,181 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.formatOnSave": true,
+		"editor.codeActionsOnSave": {
+			"source.organizeImports": "always",
+			"source.fixAll.eslint": "always",
+			"source.fixAll.tslint": "always"
+		},
+		"javascript.preferences.importModuleSpecifier": "relative",
+		"typescript.preferences.importModuleSpecifier": "relative",
+		"typescript.tsserver.experimental.enableProjectDiagnostics": true,
+		"cSpell.diagnosticLevel": "Hint",
+		"editor.formatOnType": false,
+		"editor.formatOnPaste": false,
+		"blockshighlighter.blocks": [
+			{
+				"fileType": "\\.(js|ts)$",
+				"begin": "^\\s*///\\s*#if DEBUG\\s*$",
+				"end": "^\\s*///\\s*#endif\\s*$",
+				"decorationRenderOptions": {
+					"isWholeLine": true,
+					"backgroundColor": "rgba(100,255,100,0.03)"
+				}
+			},
+			{
+				"fileType": "\\.(js|ts)$",
+				"begin": "^\\s*@editable\\(",
+				"end": "^\\s*@editable\\(",
+				"decorationRenderOptions": {
+					"isWholeLine": true,
+					"opacity": "0.5"
+				}
+			}
+		],
+		"bookmarks.keepBookmarksOnLineDelete": false,
+		"javascript.preferences.importModuleSpecifierEnding": "index",
+		"typescript.preferences.importModuleSpecifierEnding": "index",
+		"eslint.format.enable": false,
+		"eslint.enable": true,
+		"typescript.preferences.quoteStyle": "single",
+		"javascript.preferences.quoteStyle": "single",
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint",
+		"[json]": {
+			"editor.formatOnSave": true
+		},
+		"[mjs]": {
+			"editor.formatOnSave": true
+		},
+		"[js]": {
+			"editor.formatOnSave": true
+		},
+		"[jsonc]": {
+			"editor.formatOnSave": true,
+			"editor.defaultFormatter": "vscode.json-language-features"
+		},
+		"json.format.enable": true,
+		"[html]": {
+			"editor.defaultFormatter": "vscode.html-language-features"
+		},
+		"js/ts.implicitProjectConfig.checkJs": true
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"type": "npm",
+				"script": "build-sever-prod"
+			},
+			{
+				"type": "npm",
+				"script": "build-client-prod"
+			},
+			{
+				"type": "typescript",
+				"tsconfig": "tsconfig.json",
+				"option": "watch",
+				"isBackground": true,
+				"problemMatcher": [
+					"$tsc-watch"
+				],
+				"label": "tsc: watch - tsconfig.json",
+				"runOptions": {
+					"runOn": "folderOpen"
+				}
+			},
+			{
+				"label": "Run vite",
+				"isBackground": true,
+				"command": "node",
+				"args": [
+					"${workspaceFolder}/node_modules/vite/bin/vite.js"
+				],
+				"runOptions": {
+					"runOn": "folderOpen"
+				},
+				"options": {
+					"cwd": "${workspaceFolder}/www"
+				},
+				"presentation": {
+					"echo": true,
+					"reveal": "never",
+					"focus": false,
+					"panel": "shared",
+					"showReuseMessage": true,
+					"clear": true
+				}
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"type": "node",
+				"request": "launch",
+				"name": "Server",
+				"sourceMaps": true,
+				"skipFiles": [
+					"**/assert.ts",
+					"<node_internals>/**",
+					"**/node_modules/**",
+					"**/debug-promise.ts"
+				],
+				"args": [
+					"--report-uncaught-exception=true",
+					"--trace-uncaught=true",
+					"--unhandled-rejections=throw"
+				],
+				"presentation": {
+					"hidden": true
+				},
+				"program": "${workspaceFolder}/build-debug/core/index.js"
+			},
+			{
+				"type": "chrome",
+				"request": "launch",
+				"name": "Client",
+				"webRoot": "${workspaceRoot}/www",
+				"outFiles": [],
+				"disableNetworkCache": true,
+				"sourceMaps": true,
+				"skipFiles": [
+					"**/assert.ts",
+					"<node_internals>/**",
+					"**/node_modules/**",
+					"**/debug-promise.ts"
+				],
+				"resolveSourceMapLocations": [
+					"${workspaceFolder}/**",
+					"!**/node_modules/**"
+				],
+				"presentation": {
+					"hidden": true
+				},
+				"vueComponentPaths": [],
+				"enableContentValidation": false,
+				"pauseForSourceMap": true,
+				"url": "http://node-db-ui.com:5173/#n/7/r/new/e/f/tab/t_members",
+				"userDataDir": "C:/tmp/userdir"
+			}
+		],
+		"compounds": [
+			{
+				"name": "front & be",
+				"configurations": [
+					"Client",
+					"Server"
+				],
+				"stopAll": true,
+				"presentation": {
+					//"hidden": true
+				}
+			}
+		]
+	}
+}

@@ -1,20 +1,21 @@
+import type { LANG_KEYS_CUSTOM } from "../../src/locales/en/lang";
 import { LITE_UI_PREFIX } from './consts';
 import type { LANG_KEYS } from "./locales/en/lang";
-import type { LANG_KEYS_CUSTOM } from "../../src/locales/en/lang";
 
-import { Notify } from "./notify";
 import ReactDOM from "react-dom";
-import { R } from "./r";
-import { assert, FieldDesc, FIELD_TYPE, GetRecordsParams, HASH_DIVIDER, NODE_ID, RecordSubmitResult, ROLE_ID, UserSession, USER_ID, VIEW_MASK } from "./bs-utils";
 import type { Filters, IFormParameters, NodeDesc, RecId, RecordData, RecordsData } from "./bs-utils";
+import { FIELD_TYPE, FieldDesc, GetRecordsParams, HASH_DIVIDER, NODE_ID, RecordSubmitResult, ROLE_ID, USER_ID, UserSession, VIEW_MASK } from "./bs-utils";
 import { LoadingIndicator } from "./loading-indicator";
-import { User } from "./user";
 import { Modal } from "./modal";
+import { Notify } from "./notify";
+import { R } from "./r";
+import { User } from "./user";
 
 /// #if DEBUG
 import { DebugPanel } from "./debug-panel";
 /// #endif
 import React, { Component } from "react";
+import { assert } from './assert';
 import { HotkeyButton } from "./components/hotkey-button";
 import { List } from "./forms/list";
 import { ENV } from './main-frame';
@@ -1304,23 +1305,6 @@ function submitErrorReport(name, stack) {
 	return;
 
 	/// #endif
-
-	if(typeof (name) !== 'string') {
-		name = JSON.stringify(name);
-	}
-
-
-	name += '; ' + navigator.appVersion + '; ';
-
-	var k = stack;
-	if(!__errorsSent.hasOwnProperty(k)) {
-		__errorsSent[k] = 1;
-		submitRecord(NODE_ID.ERROR_REPORTS, {
-			name: name + ' (' + window.location.href + ')',
-			stack: stack.substring(0, 3999)
-		});
-	}
-
 }
 
 function reloadLocation() {
@@ -1426,74 +1410,6 @@ async function attachGoogleLoginAPI(enforces = false) {
 }
 
 export {
-	shakeDomElement,
-	attachGoogleLoginAPI,
-	getSessionToken,
-	clearSessionToken,
-	loginIfNotLoggedIn,
-	onNewUser,
-	registerListRenderer,
-	isPresentListRenderer,
-	getListRenderer,
-	Filters,
-	isLitePage,
-	renderIcon,
-	getClassForField,
-	registerFieldClass,
-	getData,
-	L,
-	initDictionary,
-	submitErrorReport,
-	getReadableUploadSize,
-	checkFileSize,
-	strip_tags,
-	keepInWindow,
-	getItem,
-	setItem,
-	removeItem,
-	scrollToVisible,
-	n2mValuesEqual,
-	deleteRecord,
-	submitData,
-	submitRecord,
-	draftRecord,
-	publishRecord,
-	idToImgURL,
-	idToFileUrl,
-	isCurrentlyShowedLeftBarItem,
-	addMixins,
-	goToPageByHash,
-	consoleLog,
-	consoleDir,
-	sp,
-	innerDateTimeFormat,
-	toReadableDate,
-	toReadableTime,
-	toReadableDateTime,
-	updateHashLocation,
-	goBack,
-	getNodeData,
-	getNode,
-	getNodeIfPresentOnClient,
-	showPrompt,
-	UID,
-	myAlert,
-	serializeForm,
-	readableTimeFormat,
-	readableDateFormat,
-	debugError,
-	isUserHaveRole,
-	isAdmin,
-	CLIENT_SIDE_FORM_EVENTS,
-	onOneFormShowed,
-	isRecordRestrictedForDeletion,
-	reloadLocation,
-	assignFilters,
-	getCaptchaToken,
-	__corePath,
-	saveIndexedDB,
-	loadIndexedDB,
-	isDBWriteInProgress,
-	goToHome,
-	deleteIndexedDB
-}
+	__corePath, addMixins, assignFilters, attachGoogleLoginAPI, checkFileSize, clearSessionToken, CLIENT_SIDE_FORM_EVENTS, consoleDir, consoleLog, debugError, deleteIndexedDB, deleteRecord, draftRecord, Filters, getCaptchaToken, getClassForField, getData, getItem, getListRenderer, getNode, getNodeData, getNodeIfPresentOnClient, getReadableUploadSize, getSessionToken, goBack, goToHome, goToPageByHash, idToFileUrl, idToImgURL, initDictionary, innerDateTimeFormat, isAdmin, isCurrentlyShowedLeftBarItem, isDBWriteInProgress, isLitePage, isPresentListRenderer, isRecordRestrictedForDeletion, isUserHaveRole, keepInWindow, L, loadIndexedDB, loginIfNotLoggedIn, myAlert, n2mValuesEqual, onNewUser, onOneFormShowed, publishRecord, readableDateFormat, readableTimeFormat, registerFieldClass, registerListRenderer, reloadLocation, removeItem, renderIcon, saveIndexedDB, scrollToVisible, serializeForm, setItem, shakeDomElement, showPrompt, sp, strip_tags, submitData, submitErrorReport, submitRecord, toReadableDate, toReadableDateTime, toReadableTime, UID, updateHashLocation
+};
+

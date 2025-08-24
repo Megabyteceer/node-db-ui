@@ -1,8 +1,8 @@
 
-import { mysqlExec } from "../mysql-connection";
-import { generateSalt, getPasswordHash, isAdmin } from "../auth";
-import { submitRecord } from "../submit";
 import { NODE_ID } from "../../www/client-core/src/bs-utils";
+import { generateSalt, getPasswordHash, isAdmin } from "../auth";
+import { mysqlExec } from "../mysql-connection";
+import { submitRecord } from "../submit";
 
 async function clearUserParams(data, currentData, userSession) {
 	if(!isAdmin(userSession)) {
@@ -29,20 +29,12 @@ async function clearUserParams(data, currentData, userSession) {
 	} else {
 		currentData = data;
 	}
-
-	data.public_email = currentData.show_email ? currentData.email : 'hidden_91d2g7';
-	data.public_phone = currentData.show_phone ? currentData.phone : 'hidden_91d2g7';
-	data.public_vk = currentData.show_vk ? currentData.soc_vk : 'hidden_91d2g7';
-	data.public_fb = currentData.show_facebook ? currentData.soc_fb : 'hidden_91d2g7';
-	data.public_google = currentData.show_google ? currentData.soc_google : 'hidden_91d2g7';
 }
 
 export default {
-	beforeUpdate: async function(currentData, newData, userSession) {
+	beforeUpdate: async function (currentData, newData, userSession) {
 		if(!isAdmin(userSession)) {
 			delete newData.email;
-			delete newData.balance;
-			delete newData.balance_to_spend;
 		}
 
 		if(newData.hasOwnProperty('company')) {

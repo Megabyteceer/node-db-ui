@@ -1,9 +1,8 @@
+import { assert, throwError } from '../www/client-core/src/assert';
 import {
-	assert,
 	FIELD_TYPE, PRIVILEGES_MASK,
 	RecId, RecordDataWrite,
 	RecordSubmitResult,
-	throwError,
 	VIEW_MASK
 } from "../www/client-core/src/bs-utils";
 
@@ -49,7 +48,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 	}
 
 	let currentData;
-	if(recId !== null) {
+	if(recId) {
 		currentData = await getRecords(nodeId, VIEW_MASK.ALL, recId, userSession);
 	}
 
@@ -59,7 +58,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 	if(node.draftable) {
 		if((privileges & PRIVILEGES_MASK.PUBLISH) === 0) {
-			if(recId !== null) {
+			if(recId) {
 				if(currentData.status !== 1) {
 					data.status = 2;
 				}
@@ -68,7 +67,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			}
 		}
 		if(!data.status) {
-			if(recId === null) {
+			if(!recId) {
 				data.status = 1;
 			}
 		}
@@ -76,7 +75,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		data.status = 1;
 	}
 
-	if(recId !== null) {
+	if(recId) {
 		if(!currentData.isE) {
 			throwError('Update access denied.');
 		}
@@ -90,7 +89,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 	for(let f of node.fields) {
 		let field_name = f.field_name;
 
-		if((f.show & 1) === 0) {
+		if(!(f.show & 1)) {
 			if(data.hasOwnProperty(field_name) && !isAdmin(userSession)) {
 				throwError('Field ' + f['field_name'] + ' hidden for update, but present in request.');
 			}
@@ -123,28 +122,29 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 	let handlerResult;
 	try {
 
-		let insQ;
+		let insQ: any[];
+		let fieldsNames: string[] = [];
+		let values: (string | number)[] = [];
 
-		if(recId !== null) {
-			insQ = ["UPDATE "];
+		if(recId) {
+			insQ = ["UPDATE ", table_name, " SET "];
 		} else {
-			insQ = ["INSERT "];
+			insQ = ["INSERT INTO ", table_name, " (", fieldsNames, ') VALUES (', values, ')'];
 		}
-
-		insQ.push(table_name, " SET ");
-		let noNeedComma = true;
 
 		let leastOneTablesFieldUpdated = false;
 
-		if(recId === null) {
+		if(!recId) {
 			if(data.hasOwnProperty('_users_id')) {
 				if(userSession && !isAdmin(userSession) && (userSession.id !== data._users_id)) {
 					throwError("wrong _users_id detected");
 				};
 			} else {
 				assert(userSession, "submitRecord without userSession requires _users_id to be defined.");
-				noNeedComma = false;
-				insQ.push('_users_id=', userSession.id);
+
+				fieldsNames.push('_users_id');
+				values.push(userSession.id);
+
 				leastOneTablesFieldUpdated = true;
 			}
 
@@ -155,11 +155,9 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			} else {
 				assert(userSession, "submitRecord without userSession requires _organization_id to be defined.");
 
-				if(!noNeedComma) {
-					insQ.push(",");
-				}
-				noNeedComma = false;
-				insQ.push('_organization_id=', userSession.orgId);
+				fieldsNames.push('_organization_id');
+				values.push(userSession.orgId);
+
 				leastOneTablesFieldUpdated = true;
 			}
 		}
@@ -186,7 +184,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			}
 		}
 
-		if(recId !== null) {
+		if(recId) {
 			handlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeUpdate, currentData, data, userSession);
 		} else {
 			handlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeCreate, data, userSession);
@@ -214,16 +212,13 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 						throwError('children records addition/deletion is independent.');
 					} else {
 						leastOneTablesFieldUpdated = true;
-						if(!noNeedComma) {
-							insQ.push(",");
-						}
-						noNeedComma = false;
-						insQ.push("\"", field_name, "\"=");
+
+						fieldsNames.push(field_name);
 
 						switch(field_type) {
 
 							case FIELD_TYPE.BOOL:
-								insQ.push(fieldVal);
+								values.push(fieldVal);
 								break;
 
 							case FIELD_TYPE.FILE:
@@ -256,14 +251,14 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 								if(f.max_length && (fieldVal.length > f.max_length)) {
 									throwError("Value length for field '" + field_name + "' (" + table_name + ") is " + fieldVal.length + " longer that " + f.max_length);
 								}
-								insQ.push("'", fieldVal, "'");
+								values.push("'" + fieldVal + "'");
 								break;
 
 							case FIELD_TYPE.RICH_EDITOR:
 								if(fieldVal.length > 16000000) {
 									throwError("Value length for field '" + field_name + "' (" + table_name + ") is longer that 16000000");
 								}
-								insQ.push("'", fieldVal, "'");
+								values.push("'", fieldVal, "'");
 								break;
 							case FIELD_TYPE.TAB:
 								break;
@@ -272,11 +267,11 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 								if(!isAdmin(userSession) && fieldVal) {
 									await getRecords(f.node_ref, VIEW_MASK.DROPDOWN_LIST, fieldVal, userSession); //check if you have read access to referenced item
 								}
-								insQ.push(fieldVal);
+								values.push(fieldVal);
 								break;
 							case FIELD_TYPE.DATE_TIME:
 							case FIELD_TYPE.DATE:
-								insQ.push("'", fieldVal, "'");
+								values.push("'" + fieldVal + "'");
 								break;
 							default:
 
@@ -286,7 +281,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 								if(f.max_length && fieldVal.toString().length > f.max_length) {
 									throwError("Value -length for field '" + field_name + "' (" + table_name + ") is longer that " + f.max_length);
 								}
-								insQ.push(fieldVal as unknown as string);
+								values.push(fieldVal as unknown as string);
 								break;
 						}
 					}
@@ -295,15 +290,17 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 
 			if(data.hasOwnProperty('status')) {
-				if(!noNeedComma) {
-					insQ.push(",");
-				}
 				leastOneTablesFieldUpdated = true;
-				insQ.push(' status=', data.status);
+				fieldsNames.push('status');
+				values.push(data.status);
 			}
 
-			if(recId !== null) {
-				insQ.push(" WHERE id=", recId as unknown as string, " LIMIT 1");
+			if(recId) {
+				insQ.push(fieldsNames.map((name, i) => name + '=' + values[i]));
+				insQ.push(" WHERE id=", recId);
+			} else {
+
+				insQ.push(' RETURNING id');
 			}
 			let qResult;
 			if(leastOneTablesFieldUpdated) {
@@ -322,14 +319,12 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			}
 			/// #endif
 
-			if(recId === null) {
-				recId = qResult.insertId;
+			if(!recId) {
+				recId = qResult[0].id;
 				data.id = recId;
 				await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterCreate, data, userSession);
 			} else {
-				if(recId !== null) {
-					await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterUpdate, Object.assign(currentData, data), userSession);
-				}
+				await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterUpdate, Object.assign(currentData, data), userSession);
 			}
 			if(needProcess_n2m) {
 				for(let f of node.fields) {
@@ -339,12 +334,12 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 						if(data.hasOwnProperty(field_name)) {
 
 							//clear all n2m links
-							await mysqlExec("DELETE FROM \"" + field_name + "\" WHERE \"" + table_name + "Id\" = " + recId);
+							await mysqlExec("DELETE FROM \"" + field_name + "\" WHERE \"" + table_name + "_id\" = " + recId);
 							let fieldVal = data[field_name];
 
 							if(fieldVal.length) {
 								//add new n2m links
-								const n2miQ = ['INSERT INTO \"', field_name, '\" (\"', table_name, 'Id\", \"', f.select_field_name, "Id\") VALUES"];
+								const n2miQ = ['INSERT INTO \"', field_name, '\" (\"', table_name, '_id\", \"', f.select_field_name, "_id\") VALUES"];
 
 								let isNotFirst = false;
 								for(let id of fieldVal) {

@@ -4,7 +4,8 @@ import { ADMIN_USER_SESSION, getFieldDesc, getNodeDesc, reloadMetadataSchedule }
 import * as fs from "fs";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
-import { USER_ID, throwError } from "../../www/client-core/src/bs-utils";
+import { throwError } from '../../www/client-core/src/assert';
+import { USER_ID, } from "../../www/client-core/src/bs-utils";
 import { isAdmin } from "../auth.js";
 import { mysqlExec } from '../mysql-connection';
 

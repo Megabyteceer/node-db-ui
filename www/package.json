@@ -1,6 +1,0 @@
-{
-	"scripts": {
-		"build": "npx vite --config vite.config.js",
-		"build-release": "npx vite build --config vite.config-prod.js"
-	}
-}

@@ -1,5 +1,5 @@
-import { FIELD_TYPE, NODE_ID, NODE_TYPE, VIEW_MASK } from "../bs-utils";
 import ReactDOM from "react-dom";
+import { FIELD_TYPE, NODE_ID, NODE_TYPE, VIEW_MASK } from "../bs-utils";
 
 import { L } from "../utils";
 import { FormEvents } from "./forms_events";
@@ -36,36 +36,36 @@ class FieldsEvents extends FormEvents {
 	/// #if DEBUG
 	_nodes_nodeType_onChange() {
 
-		const nodeType = this.fieldValue("nodeType");
+		const node_type = this.fieldValue("node_type");
 
-		if(nodeType === NODE_TYPE.DOCUMENT) {
+		if(node_type === NODE_TYPE.DOCUMENT) {
 			this.showField('creation_name', 'single_name', 'captcha',
-				'reverse', 'draftable', 'addCreatedOnFiled', 'addCreatorUserFld', 'addCreatedByFiled',
+				'reverse', 'draftable', 'add_created_on_filed', 'add_creator_user_fld', 'addCreatedByFiled',
 				'store_forms', 'rec_per_page',
 				'data_storage_group', 'appearance_group', 'create_fields');
 			this.makeFieldRequired('single_name');
 		} else {
 			this.hideField('creation_name', 'singleName', 'captcha',
-				'reverse', 'draftable', 'addCreatedOnFiled', 'addCreatorUserFld', 'addCreatedByFiled',
-				'storeForms', 'recPerPage',
+				'reverse', 'draftable', 'add_created_on_filed', 'add_creator_user_fld', 'addCreatedByFiled',
+				'store_forms', 'recPerPage',
 				'dataStorageGroup', 'appearanceGroup', 'createFields');
 			this.makeFieldRequired('singleName', false);
 		}
 
-		if(nodeType === NODE_TYPE.DOCUMENT || nodeType === NODE_TYPE.REACT_CLASS) {
-			this.makeFieldRequired('tableName');
-			this.showField('tableName');
+		if(node_type === NODE_TYPE.DOCUMENT || node_type === NODE_TYPE.REACT_CLASS) {
+			this.makeFieldRequired('table_name');
+			this.showField('table_name');
 		} else {
-			this.hideField('tableName');
-			this.makeFieldRequired('tableName', false);
+			this.hideField('table_name');
+			this.makeFieldRequired('table_name', false);
 		}
 
-		if(nodeType === NODE_TYPE.REACT_CLASS) {
-			this.setFieldLabel('tableName', L("REACT_CLASS_NAME"));
-			makeReactClassSelectionField(this, 'tableName');
+		if(node_type === NODE_TYPE.REACT_CLASS) {
+			this.setFieldLabel('table_name', L("REACT_CLASS_NAME"));
+			makeReactClassSelectionField(this, 'table_name');
 		} else {
-			this.setFieldLabel('tableName');
-			removeReactClassSelectionField(this, 'tableName');
+			this.setFieldLabel('table_name');
+			removeReactClassSelectionField(this, 'table_name');
 		}
 
 		this._nodes_recalculateFieldsVisibility();
@@ -81,11 +81,11 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_noStore_onChange() {
-		if(this.isFieldVisible('storeInDB')) {
-			if(!this.fieldValue('storeInDB') || this.fieldValue('sendToServer')) {
-				this.hideField('forSearch', 'unique');
+		if(this.isFieldVisible('store_in_db')) {
+			if(!this.fieldValue('store_in_db') || this.fieldValue('send_to_server')) {
+				this.hideField('for_search', 'unique');
 			} else {
-				this.showField('forSearch', 'unique');
+				this.showField('for_search', 'unique');
 			}
 		}
 	}
@@ -165,7 +165,7 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_nodes_tableName_onChange() {
-		this.removeWrongCharactersInField('tableName');
+		this.removeWrongCharactersInField('table_name');
 	}
 	/// #endif
 
@@ -194,23 +194,23 @@ class FieldsEvents extends FormEvents {
 
 		const fieldType = this.fieldValue("fieldType");
 
-		this.showField('maxLength', 'requirement', 'storeInDB', 'sendToServer', 'unique', 'forSearch');
-		this.hideField('multilingual', 'nodeRef', 'width', 'height', "selectFieldName", "lookup_icon", "enum");
+		this.showField('max_length', 'requirement', 'store_in_db', 'send_to_server', 'unique', 'for_search');
+		this.hideField('multilingual', 'node_ref', 'width', 'height', "select_field_name", "lookup_icon", "enum");
 		this.setFieldLabel("description");
 
 		this.enableField("visibility_list");
 		this.enableField("visibility_customList");
 		this.enableField("visibility_dropdownList");
 		this.enableField("visibility_subFormList");
-		this.enableField("storeInDB");
-		this.enableField("sendToServer");
+		this.enableField("store_in_db");
+		this.enableField("send_to_server");
 		this.enableField('unique');
-		this.enableField('forSearch');
+		this.enableField('for_search');
 
 		if(fieldType === FIELD_TYPE.LOOKUP_NtoM) {
-			this.getField('nodeRef').setLookupFilter('excludeIDs', [this.fieldValue("node_fields_linker").id]);
+			this.getField('node_ref').setLookupFilter('excludeIDs', [this.fieldValue("node_fields_linker").id]);
 		} else {
-			this.getField('nodeRef').setLookupFilter('excludeIDs', undefined);
+			this.getField('node_ref').setLookupFilter('excludeIDs', undefined);
 		}
 		switch(fieldType) {
 			case FIELD_TYPE.STATIC_TEXT:
@@ -218,11 +218,11 @@ class FieldsEvents extends FormEvents {
 			case FIELD_TYPE.BUTTON:
 			case FIELD_TYPE.TAB:
 			case FIELD_TYPE.SPLITTER:
-				this.hideField("storageSettingSplitter", "maxLength", "sendToServer", "storeInDB", "requirement", "unique", "forSearch");
-				this.setFieldValue("sendToServer", 0);
-				this.disableField("sendToServer");
-				this.setFieldValue("storeInDB", 0);
-				this.disableField("storeInDB");
+				this.hideField("storage_setting_splitter", "max_length", "send_to_server", "store_in_db", "requirement", "unique", "for_search");
+				this.setFieldValue("send_to_server", 0);
+				this.disableField("send_to_server");
+				this.setFieldValue("store_in_db", 0);
+				this.disableField("store_in_db");
 				this.disableField("requirement");
 				break;
 			case FIELD_TYPE.LOOKUP_NtoM:
@@ -236,32 +236,32 @@ class FieldsEvents extends FormEvents {
 				this.disableField("visibility_subFormList");
 				this.setFieldValue("visibility_subFormList", 0);
 
-				this.disableField("sendToServer");
-				this.setFieldValue('sendToServer', 1);
-				this.disableField("storeInDB");
-				this.setFieldValue('storeInDB', 1);
-				this.hideField('forSearch', 'requirement', 'unique');
+				this.disableField("send_to_server");
+				this.setFieldValue('send_to_server', 1);
+				this.disableField("store_in_db");
+				this.setFieldValue('store_in_db', 1);
+				this.hideField('for_search', 'requirement', 'unique');
 			case FIELD_TYPE.LOOKUP:
-				this.hideField("maxLength", "unique");
+				this.hideField("max_length", "unique");
 				this.setFieldValue("unique", false);
-				this.showField("nodeRef");
+				this.showField("node_ref");
 				break;
 
 			case FIELD_TYPE.ENUM:
 				this.showField('enum');
-				this.hideField('maxLength');
+				this.hideField('max_length');
 				break;
 			case FIELD_TYPE.RICH_EDITOR:
 			case FIELD_TYPE.PICTURE:
 				this.showField("width", "height");
-				this.hideField("maxLength");
+				this.hideField("max_length");
 				break;
 			case FIELD_TYPE.BOOL:
 			case FIELD_TYPE.DATE_TIME:
 			case FIELD_TYPE.DATE:
 			case FIELD_TYPE.COLOR:
 			case FIELD_TYPE.FILE:
-				this.hideField("maxLength");
+				this.hideField("max_length");
 				break;
 
 		}
@@ -269,15 +269,15 @@ class FieldsEvents extends FormEvents {
 		if(this.isUpdateRecord) {
 			this.disableField("fieldName");
 			this.disableField("fieldType");
-			this.disableField("nodeRef");
+			this.disableField("node_ref");
 			this.disableField("node_fields_linker");
-			this.disableField("storeInDB");
-			this.disableField("sendToServer");
+			this.disableField("store_in_db");
+			this.disableField("send_to_server");
 		}
 
 		if(this.fieldValue('fieldType') === FIELD_TYPE.LOOKUP) {
-			this.disableField('forSearch');
-			this.setFieldValue('forSearch', 1);
+			this.disableField('for_search');
+			this.setFieldValue('for_search', 1);
 		}
 
 		if(fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.RICH_EDITOR) {
@@ -288,22 +288,22 @@ class FieldsEvents extends FormEvents {
 		}
 		this.check12nFieldName();
 
-		if(!this.fieldValue('sendToServer')) {
-			this.disableField('storeInDB');
-			this.setFieldValue('storeInDB', 0);
+		if(!this.fieldValue('send_to_server')) {
+			this.disableField('store_in_db');
+			this.setFieldValue('store_in_db', 0);
 		}
 
-		if(!this.fieldValue('storeInDB')) {
-			this.disableField('forSearch');
-			this.setFieldValue('forSearch', 0);
+		if(!this.fieldValue('store_in_db')) {
+			this.disableField('for_search');
+			this.setFieldValue('for_search', 0);
 		}
 
-		if(!this.fieldValue('forSearch')) {
+		if(!this.fieldValue('for_search')) {
 			this.disableField('unique');
 			this.setFieldValue('unique', 0);
 		}
 
-		this.makeFieldRequired('maxLength', this.isFieldVisible('maxLength'));
+		this.makeFieldRequired('max_length', this.isFieldVisible('max_length'));
 	}
 
 	_fields_storeInDB_onChange() {

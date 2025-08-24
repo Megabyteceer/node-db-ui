@@ -46,4 +46,5 @@ for(let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'l
 	};
 }
 
-export { R, ComponentProps };
+export { ComponentProps, R };
+

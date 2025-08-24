@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { R } from "./r";
 import { User } from "./user";
 
@@ -19,3 +19,4 @@ class TopBar extends Component<any, any> {
 }
 
 export { TopBar };
+

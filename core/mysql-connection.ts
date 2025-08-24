@@ -1,7 +1,8 @@
 
 /// #if DEBUG
-import { assert, getCurrentStack } from "../www/client-core/src/bs-utils";
 import { performance } from 'perf_hooks';
+import { assert } from '../www/client-core/src/assert';
+import { getCurrentStack } from "../www/client-core/src/bs-utils";
 /// #endif
 
 import { Pool, QueryResultRow } from 'pg';
@@ -29,8 +30,10 @@ const mysqlExec = (query: string, params?: string[]): Promise<QueryResultRow[]> 
 			resolve(res.rows);
 		}).catch((er) => {
 			console.error(query);
+			console.error(er);
 			/// #if DEBUG
-			throw er;
+			debugger;
+			//throw er;
 			/// #endif
 		}) as any;
 	});
@@ -38,7 +41,7 @@ const mysqlExec = (query: string, params?: string[]): Promise<QueryResultRow[]> 
 
 if(!String.prototype.replaceAll) {
 	const expCache = new Map();
-	String.prototype.replaceAll = function(str, newStr) {
+	String.prototype.replaceAll = function (str, newStr) {
 		/// #if DEBUG
 		assert(typeof str === 'string', "string expected")
 		/// #endif
@@ -110,7 +113,7 @@ const mysql_real_escape_object = (o) => {
 	}
 };
 const mysql_real_escape_string = (str) => {
-	return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function(char) {
+	return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
 		switch(char) {
 			case "\0":
 				return "\\0";
@@ -135,4 +138,5 @@ const mysql_real_escape_string = (str) => {
 	});
 };
 
-export { mysql_real_escape_object, mysql_real_escape_string, mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback, mysqlDebug };
+export { mysql_real_escape_object, mysql_real_escape_string, mysqlCommit, mysqlDebug, mysqlExec, mysqlRollback, mysqlStartTransaction };
+
