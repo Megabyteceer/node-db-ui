@@ -162,11 +162,11 @@ class Stage extends Component<any, any> {
 				}
 				break;
 			case NODE_TYPE.REACT_CLASS:
-				if(typeof window.crudJs.customClasses[node.table_name] === 'undefined') {
+				if(typeof crudJs.customClasses[node.table_name] === 'undefined') {
 					myAlert('Unknown react class: ' + node.table_name);
 					formType = 'div';
 				} else {
-					formType = window.crudJs.customClasses[node.table_name];
+					formType = crudJs.customClasses[node.table_name];
 				}
 				break;
 			case NODE_TYPE.STATIC_LINK:

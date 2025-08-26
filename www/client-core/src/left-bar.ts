@@ -88,11 +88,11 @@ class BarItem extends Component<any, any> {
 	}
 
 	collapseOtherGroups() {
-		for(let g of allGroups) {
+		/*for(let g of allGroups) {
 			if(g.props.item.children && g.props.item.children.indexOf(this.props.item) < 0) {
 				g.collapse();
 			}
-		}
+		}*/
 	}
 
 	expand() {
@@ -264,7 +264,7 @@ class BarItem extends Component<any, any> {
 				props.href = item.static_link;
 			} else {
 				props.onClick = (isActive === SELECTED_LIST) ? undefined : () => {
-					window.crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
+					crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
 				}
 			}
 			return R.a(props,
@@ -404,3 +404,4 @@ window.addEventListener('resize', renewIsCollapsable);
 renewIsCollapsable();
 
 export { LeftBar };
+

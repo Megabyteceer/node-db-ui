@@ -171,7 +171,9 @@ class FormEvents extends FormFull {
 				node_filters_linker: this.recId
 			});
 		} else {
-			this.setFieldValue('store_forms', 1);
+			if(!this.currentData.hasOwnProperty('store_forms')) {
+				this.setFieldValue('store_forms', 1);
+			}
 		}
 
 		this._nodes_recalculateFieldsVisibility();
@@ -180,9 +182,6 @@ class FormEvents extends FormFull {
 			this.disableField('node_type');
 			this.disableField('store_forms');
 			this.disableField('table_name');
-			this.disableField('add_created_by_filed');
-			this.disableField('add_created_on_filed');
-			this.disableField('add_creator_user_fld');
 		}
 
 		if(this.isNewRecord) {
@@ -205,7 +204,7 @@ class FormEvents extends FormFull {
 
 		if(this.fieldValue("node_type") !== NODE_TYPE.DOCUMENT) {
 			var name = this.fieldValue("name");
-			this.setFieldValue("singleName", name);
+			this.setFieldValue("single_name", name);
 			this.setFieldValue("store_forms", 0);
 		}
 		else {
@@ -234,7 +233,7 @@ class FormEvents extends FormFull {
 			}
 		}
 
-		(this.getField('fieldType').fieldRef as EnumField).setFilterValues([FIELD_TYPE.RATING]); //TODO ratings is not implemented
+		(this.getField('field_type').fieldRef as EnumField).setFilterValues([FIELD_TYPE.RATING]); //TODO ratings is not implemented
 
 		if(this.isNewRecord) {
 			if(isNaN(this.fieldValue("show"))) {
@@ -242,8 +241,8 @@ class FormEvents extends FormFull {
 				this.setFieldValue("visibility_create", 1);
 				this.setFieldValue("visibility_view", 1);
 				this.setFieldValue("visibility_list", 1);
-				this.setFieldValue("visibility_dropdownList", 0);
-				this.setFieldValue("visibility_subFormList", 1);
+				this.setFieldValue("visibility_dropdown_list", 0);
+				this.setFieldValue("visibility_sub_form_list", 1);
 
 				this.setFieldValue("send_to_server", 1);
 				this.setFieldValue("store_in_db", 1);
@@ -270,23 +269,23 @@ class FormEvents extends FormFull {
 				this.setFieldValue("visibility_list", 0);
 
 			if(this.fieldValue("show") & VIEW_MASK.DROPDOWN_LIST)
-				this.setFieldValue("visibility_dropdownList", 1)
+				this.setFieldValue("visibility_dropdown_list", 1)
 			else
-				this.setFieldValue("visibility_dropdownList", 0);
+				this.setFieldValue("visibility_dropdown_list", 0);
 
 			if(this.fieldValue("show") & VIEW_MASK.SUB_FORM)
-				this.setFieldValue("visibility_subFormList", 1)
+				this.setFieldValue("visibility_sub_form_list", 1)
 			else
-				this.setFieldValue("visibility_subFormList", 0);
+				this.setFieldValue("visibility_sub_form_list", 0);
 
 			if(this.fieldValue("show") & VIEW_MASK.CUSTOM_LIST)
-				this.setFieldValue("visibility_customList", 1)
+				this.setFieldValue("visibility_custom_list", 1)
 			else
-				this.setFieldValue("visibility_customList", 0);
+				this.setFieldValue("visibility_custom_list", 0);
 
-			if(this.fieldValue("fieldType") === FIELD_TYPE.PICTURE || this.fieldValue("fieldType") === FIELD_TYPE.RICH_EDITOR) {
-				this.setFieldValue("height", this.fieldValue("maxLength") % 10000);
-				this.setFieldValue("width", Math.floor(this.fieldValue("maxLength") / 10000));
+			if(this.fieldValue("field_type") === FIELD_TYPE.PICTURE || this.fieldValue('field_type') === FIELD_TYPE.RICH_EDITOR) {
+				this.setFieldValue("height", this.fieldValue("max_length") % 10000);
+				this.setFieldValue("width", Math.floor(this.fieldValue("max_length") / 10000));
 			}
 		}
 
@@ -306,27 +305,27 @@ class FormEvents extends FormFull {
 
 			var checkFieldExists = (fName, nodeId) => {
 				let fieldsFilter: Filters = {
-					fieldName: fName
+					field_name: fName
 				}
-				if(this.fieldValue('fieldType') !== FIELD_TYPE.LOOKUP_NtoM) {
+				if(this.fieldValue('field_type') !== FIELD_TYPE.LOOKUP_NtoM) {
 					fieldsFilter.node_fields_linker = nodeId;
 				}
 				getNodeData(6, undefined, fieldsFilter).then((data) => {
 					if(this._fieldsNameIsBad) return;
 					if(data.items.length > 0) {
-						if(this.fieldValue('fieldType') === FIELD_TYPE.LOOKUP_NtoM) {
-							this.fieldAlert('fieldName', L('LOOKUP_NAME_NOT_UNIQUE'));
+						if(this.fieldValue('field_type') === FIELD_TYPE.LOOKUP_NtoM) {
+							this.fieldAlert('field_name', L('LOOKUP_NAME_NOT_UNIQUE'));
 						} else {
-							this.fieldAlert('fieldName', L('FLD_EXISTS'));
+							this.fieldAlert('field_name', L('FLD_EXISTS'));
 						}
 						this._fieldsNameIsBad = true;
 					} else {
-						this.fieldAlert('fieldName', undefined, true);
+						this.fieldAlert('field_name', undefined, true);
 					}
 				});
 			};
 
-			var fn = this.fieldValue('fieldName');
+			var fn = this.fieldValue('field_name');
 			var nodeId = this.fieldValue('node_fields_linker');
 			if(nodeId && nodeId.id) {
 				nodeId = nodeId.id;
@@ -337,7 +336,7 @@ class FormEvents extends FormFull {
 			}
 
 			if(nodeId && fn && fn.length >= 3) {
-				if((this.fieldValue("fieldType") === FIELD_TYPE.LOOKUP_1toN) && node_ref) {
+				if((this.fieldValue("field_type") === FIELD_TYPE.LOOKUP_1toN) && node_ref) {
 					checkFieldExists(fn + '_linker', node_ref);
 				} else {
 					checkFieldExists(fn, nodeId);
@@ -347,7 +346,7 @@ class FormEvents extends FormFull {
 	}
 
 	_fields_onSave() {
-		var fieldType = this.fieldValue("fieldType");
+		var fieldType = this.fieldValue("field_type");
 
 		if(fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_NtoM || fieldType === FIELD_TYPE.LOOKUP_1toN) {
 			if(this.isFieldEmpty('node_ref')) {
@@ -355,12 +354,12 @@ class FormEvents extends FormFull {
 			}
 		}
 
-		if(/[^a-zA-Z_0-9]/.test(this.fieldValue('fieldName'))) {
-			this.fieldAlert('fieldName', L('LATIN_ONLY'));
+		if(/[^a-zA-Z_0-9]/.test(this.fieldValue('field_name'))) {
+			this.fieldAlert('field_name', L('LATIN_ONLY'));
 		}
 
-		if(this.fieldValue('fieldName') == parseInt(this.fieldValue('fieldName'))) {
-			this.fieldAlert('fieldName', L('NO_NUMERIC_NAME'));
+		if(this.fieldValue('field_name') == parseInt(this.fieldValue('field_name'))) {
+			this.fieldAlert('field_name', L('NO_NUMERIC_NAME'));
 		}
 
 		if(fieldType === FIELD_TYPE.PICTURE || fieldType === FIELD_TYPE.RICH_EDITOR) {
@@ -372,22 +371,22 @@ class FormEvents extends FormFull {
 			}
 			let maxLength = Math.min(9999, this.fieldValue("height") || undefined) + (this.fieldValue("width") || undefined) * 10000;
 			if(!isNaN(maxLength)) {
-				this.setFieldValue("maxLength", maxLength);
+				this.setFieldValue("max_length", maxLength);
 			}
 
 		}
 
-		if(!this.fieldValue('maxLength')) {
-			this.setFieldValue('maxLength', 0);
+		if(!this.fieldValue('max_length')) {
+			this.setFieldValue('max_length', 0);
 			if((fieldType === FIELD_TYPE.TEXT) || (fieldType === FIELD_TYPE.NUMBER) || (fieldType === FIELD_TYPE.PASSWORD)) {
-				this.fieldAlert('maxLength', L('REQUIRED_FLD'));
+				this.fieldAlert('max_length', L('REQUIRED_FLD'));
 			}
 		}
 
 		if(this.isNewRecord) {
 
-			if(this.isNewRecord && (!this.fieldValue('fieldName') || (this.fieldValue('fieldName').length < 3))) {
-				this.fieldAlert('fieldName', L('MIN_NAMES_LEN', 3));
+			if(this.isNewRecord && (!this.fieldValue('field_name') || (this.fieldValue('field_name').length < 3))) {
+				this.fieldAlert('field_name', L('MIN_NAMES_LEN', 3));
 			}
 
 		} else {
@@ -402,7 +401,7 @@ class FormEvents extends FormFull {
 			this.setFieldValue('store_in_db', 0);
 		}
 		if(this._fieldsNameIsBad) {
-			this.fieldAlert('fieldName', L('FLD_EXISTS'));
+			this.fieldAlert('field_name', L('FLD_EXISTS'));
 		}
 	}
 	/// #endif
@@ -448,8 +447,8 @@ class FormEvents extends FormFull {
 
 	_login_onAfterSave(saveResult: RecordSubmitResult) {
 		User.setUserData(saveResult.handlerResult);
-		if(window.onCurdJSLogin) {
-			window.onCurdJSLogin(saveResult.handlerResult);
+		if(onCurdJSLogin) {
+			onCurdJSLogin(saveResult.handlerResult);
 		}
 	}
 
@@ -469,7 +468,7 @@ class FormEvents extends FormFull {
 				this.fieldValue("email")
 			)), true, false, true,
 			() => {
-				window.crudJs.Stage.showForm(NODE_ID.LOGIN);
+				crudJs.Stage.showForm(NODE_ID.LOGIN);
 			},
 			L('GO_TO_LOGIN')
 		);
@@ -524,7 +523,7 @@ class FormEvents extends FormFull {
 			} else {
 				getData('api/reset', this.filters).then((userSession) => {
 					User.setUserData(userSession);
-					window.crudJs.Stage.showForm(NODE_ID.USERS, userSession.id, { tab: 't_pass' }, true);
+					crudJs.Stage.showForm(NODE_ID.USERS, userSession.id, { tab: 't_pass' }, true);
 				}).catch((er) => {
 
 				});
@@ -549,3 +548,4 @@ class FormEvents extends FormFull {
 }
 
 export { FormEvents };
+

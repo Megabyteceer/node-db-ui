@@ -94,7 +94,7 @@
 }
 
 .field-wrap .admin-form-wrap {
-	right: -26px;
+	left: -26px;
 	font-size: 85%;
 }
 
@@ -108,7 +108,7 @@
 }
 
 .admin-form-wrap-visible {
-	z-index: 3;
+	z-index: 4;
 }
 
 .admin-form-body {
@@ -135,17 +135,26 @@
 	display: inline-block;
 	position: absolute;
 	z-index: 2;
+	top: 8px;
+	left: -20px;
 	vertical-align: top;
 	border-radius: 5px;
 	color: #00000040;
 }
 
-.admin-control-field .admin-form-open-btn {
-	right: 0;
+.admin-field-open-btn {
+	display: inline-block;
+	position: absolute;
+	z-index: 2;
+	top: 8px;
+	left: -0;
+	vertical-align: top;
+	border-radius: 5px;
+	color: #00000040;
 }
 
 .admin-button-highlighted {
-	border: 2px solid #00440090;
+	color: #007e00;
 }
 
 .admin-form-content {

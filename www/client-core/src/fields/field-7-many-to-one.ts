@@ -96,7 +96,7 @@ registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLo
 		const filters = this.props.form ? {
 			[this.getLinkerFieldName()]: { id: this.props.form.recId }
 		} : undefined;
-		window.crudJs.Stage.showForm(this.props.field.node_ref, recIdToEdit, filters, true, true, (newData: RecordData) => {
+		crudJs.Stage.showForm(this.props.field.node_ref, recIdToEdit, filters, true, true, (newData: RecordData) => {
 			const value = this.state.value;
 			if(recIdToEdit === value.id) {
 				if(!newData) {

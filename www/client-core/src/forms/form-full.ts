@@ -1,19 +1,19 @@
 
 import { FieldWrap } from "../fields/field-wrap";
 import { CLIENT_SIDE_FORM_EVENTS, deleteRecord, getCaptchaToken, getItem, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, submitRecord } from "../utils";
-import { FormTab } from "./form-tab";
 import { FormEventProcessingMixins } from "./event-processing-mixins";
+import { FormTab } from "./form-tab";
 /// #if DEBUG
 import { NodeAdmin } from "../admin/admin-control";
 import { FieldAdmin } from "../admin/field-admin";
 /// #endif
 
+import React from "react";
+import { FIELD_TYPE, FieldDesc, PRIVILEGES_MASK, RecordData, RecordSubmitResult } from "../bs-utils";
+import { HotkeyButton } from "../components/hotkey-button";
 import { LoadingIndicator } from "../loading-indicator";
 import { R } from "../r";
-import { FIELD_TYPE, PRIVILEGES_MASK, RecordData, FieldDesc, RecordSubmitResult } from "../bs-utils";
-import React from "react";
 import { iAdmin, User } from "../user";
-import { HotkeyButton } from "../components/hotkey-button";
 
 import { LeftBar } from "../left-bar";
 
@@ -288,7 +288,7 @@ class FormFull extends FormEventProcessingMixins {
 			//renew current data
 			this.currentData = Object.assign(this.currentData, data);
 			//renew initial data;
-			window.crudJs.Stage.dataDidModified(this.currentData);
+			crudJs.Stage.dataDidModified(this.currentData);
 
 			for(var k in data) {
 				var val = data[k];

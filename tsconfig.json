@@ -3,6 +3,7 @@
 		"noUnusedLocals": true,
 		"moduleResolution": "nodenext",
 		"lib": [
+			"DOM",
 			"ESNext"
 		],
 		"target": "esnext",
@@ -13,18 +14,21 @@
 		"incremental": true,
 		"module": "nodenext",
 		"diagnostics": false,
+		"typeRoots": [
+			"types"
+		],
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"assumeChangesOnlyAffectDirectDependencies": true,
 	},
 	"include": [
-		"core/index.ts",
-		"core/events/*"
+		"www",
+		"types"
 	],
 	"exclude": [
-		"**/www/**",
+		"node_modules",
 		"**/build-prod/**",
 		"**/build-debug/**",
-		"**/uploads/**",
+		"**/uploads/**"
 	]
 }

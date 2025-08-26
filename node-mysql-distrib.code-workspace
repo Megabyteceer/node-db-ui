@@ -76,16 +76,15 @@
 				"script": "build-client-prod"
 			},
 			{
-				"type": "typescript",
-				"tsconfig": "tsconfig.json",
-				"option": "watch",
+				"label": "ts watch",
+				"type": "npm",
 				"isBackground": true,
-				"problemMatcher": [
-					"$tsc-watch"
-				],
-				"label": "tsc: watch - tsconfig.json",
+				"script": "watch",
 				"runOptions": {
 					"runOn": "folderOpen"
+				},
+				"options": {
+					"cwd": "${workspaceFolder}"
 				}
 			},
 			{
@@ -160,7 +159,7 @@
 				"vueComponentPaths": [],
 				"enableContentValidation": false,
 				"pauseForSourceMap": true,
-				"url": "http://node-db-ui.com:5173/#n/7/r/new/e/f/tab/t_members",
+				"url": "http://node-db-ui.com:5173/#n/4/r/new/e",
 				"userDataDir": "C:/tmp/userdir"
 			}
 		],

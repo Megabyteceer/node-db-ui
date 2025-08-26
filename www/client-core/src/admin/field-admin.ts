@@ -1,10 +1,10 @@
-import { R } from "../r";
 import { Component } from "react";
+import { FieldDesc, NODE_ID, NodeDesc } from "../bs-utils";
+import { List } from "../forms/list";
+import { R } from "../r";
 import { CLIENT_SIDE_FORM_EVENTS, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from "../utils";
 import { admin_editSource } from "./admin-event-editor";
 import { admin } from "./admin-utils";
-import { FieldDesc, NodeDesc, NODE_ID } from "../bs-utils";
-import { List } from "../forms/list";
 
 var showedFieldId;
 
@@ -146,7 +146,7 @@ class FieldAdmin extends Component<any, any> {
 						onClick: () => {
 
 							getNodeData(6, field.id).then((data) => {
-								window.crudJs.Stage.showForm(NODE_ID.FIELDS, 'new', {
+								crudJs.Stage.showForm(NODE_ID.FIELDS, 'new', {
 									prior: data.prior,
 									node_fields_linker: {
 										id: node.id,
@@ -161,7 +161,7 @@ class FieldAdmin extends Component<any, any> {
 					),
 					R.button({
 						onClick: () => {
-							window.crudJs.Stage.showForm(NODE_ID.FIELDS, field.id, undefined, true, true, reloadLocation);
+							crudJs.Stage.showForm(NODE_ID.FIELDS, field.id, undefined, true, true, reloadLocation);
 						},
 						className: 'clickable tool-btn admin-form-btn',
 						title: "Edit field properties"
@@ -181,11 +181,11 @@ class FieldAdmin extends Component<any, any> {
 		}
 
 		return R.span({
-			className: 'admin-control admin-control-field admin-form-wrap ' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
+			className: 'admin-control admin-control-field admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
 			onClick: sp
 		},
 			R.span({
-				className: 'half-visible admin-form-open-btn clickable' + border,
+				className: 'half-visible admin-field-open-btn clickable' + border,
 				onClick: this.onShow
 			},
 				renderIcon('wrench')
@@ -196,3 +196,4 @@ class FieldAdmin extends Component<any, any> {
 }
 
 export { FieldAdmin };
+

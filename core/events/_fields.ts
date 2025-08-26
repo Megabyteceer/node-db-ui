@@ -96,9 +96,9 @@ const handlers: NodeEventsHandlers = {
 
 				if(currentData.for_search !== newData.for_search) {
 					if(newData.for_search) {
-						await mysqlExec('ALTER TABLE \"' + node.table_name + '\" ADD INDEX (\"' + realFieldName + '\");');
+						await mysqlExec(`CREATE INDEX "${node.table_name}${realFieldName}" ON ${node.table_name} USING btree (${realFieldName});`);
 					} else {
-						await mysqlExec('ALTER TABLE \"' + node.table_name + '\" DROP INDEX \"' + realFieldName + '\";');
+						await mysqlExec(`DROP INDEX IF EXISTS "${node.table_name}${realFieldName};`);
 					}
 				}
 
@@ -156,33 +156,35 @@ function getFieldTypeSQL(data) {
 		case FIELD_TYPE.TEXT:
 			if(data.max_length <= 255) {
 				return 'VARCHAR(' + data.max_length + ") NOT NULL DEFAULT ''";
-			} else if(data.max_length <= 65535) {
-				return "TEXT NOT NULL DEFAULT ''";
 			} else {
-				return "MEDIUMTEXT NOT NULL DEFAULT ''";
+				return "text NOT NULL DEFAULT ''";
 			}
 		case FIELD_TYPE.COLOR:
-			return "BIGINT (11) UNSIGNED NOT NULL DEFAULT 4294967295";
+			return "int8 NOT NULL DEFAULT 4294967295";
 		case FIELD_TYPE.NUMBER:
-			if(data.max_length <= 9) {
-				return 'INT(' + data.max_length + ') NOT NULL DEFAULT 0';
+			if(data.max_length <= 5) {
+				return 'int2 NOT NULL DEFAULT 0';
+			} else if(data.max_length <= 9) {
+				return 'int4 NOT NULL DEFAULT 0';
+			} else if(data.max_length <= 19) {
+				return 'int8 NOT NULL DEFAULT 0';
 			} else {
-				return 'BIGINT(' + data.max_length + ') NOT NULL DEFAULT 0';
+				return 'NUMERIC(' + data.max_length + ', 0) NOT NULL DEFAULT 0';
 			}
 		case FIELD_TYPE.DATE_TIME:
 		case FIELD_TYPE.DATE:
 			return 'timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\'';
 		case FIELD_TYPE.BOOL:
-			return "TINYINT(1) NOT NULL DEFAULT b'0'";
+			return "int2 NOT NULL DEFAULT 0";
 		case FIELD_TYPE.ENUM:
 		case FIELD_TYPE.LOOKUP:
-			return 'BIGINT(15) UNSIGNED NOT NULL DEFAULT 0';
+			return 'int4 UNSIGNED NOT NULL DEFAULT 0';
 		case FIELD_TYPE.PICTURE:
 			return "VARCHAR(32) NOT NULL DEFAULT ''";
 		case FIELD_TYPE.RATING:
 			throwError('Field type ' + FIELD_TYPE.RATING + ' is not editable');
 		case FIELD_TYPE.RICH_EDITOR:
-			return "MEDIUMTEXT NOT NULL DEFAULT ''";
+			return "text NOT NULL DEFAULT ''";
 		case FIELD_TYPE.FILE:
 			return "VARCHAR(127) NOT NULL DEFAULT ''";
 		default:
@@ -235,14 +237,19 @@ async function createFieldInTable(data: RecordDataWrite) {
 		const fld1 = nodeName + '_id';
 		const fld2 = linkedNodeName + '_id';
 
-		await mysqlExec(`CREATE TABLE \\"${field_name}\\" (
-			id serial4 NOT NULL,
-			\\"${fld1}\\" serial4 NOT NULL DEFAULT 0,
-			\\"${fld2}\\" serial4 NOT NULL DEFAULT 0,
-			primary key(id),
-			INDEX(\\"${fld1}\\"),
-			INDEX(\\"${fld2}\\")
-		); `);
+		await mysqlExec(`
+			CREATE TABLE ${field_name} (
+				id serial8,
+				${fld1} int4,
+				${fld2} int4
+			);
+
+			ALTER TABLE ${field_name} ADD CONSTRAINT ${field_name}_key PRIMARY KEY (${fld1}, ${fld2});
+			CREATE INDEX ON "_user_roles" USING hash (${fld1});
+			CREATE INDEX ON "_user_roles" USING hash (${fld2});
+			`);
+
+
 	} else if(data.store_in_db) {
 		if(field_type === FIELD_TYPE.LOOKUP) {
 			data.for_search = 1;
@@ -251,16 +258,16 @@ async function createFieldInTable(data: RecordDataWrite) {
 
 		const typeQ = getFieldTypeSQL(data);
 		if(typeQ) {
-			const altQ = ['ALTER TABLE \\"', nodeName, '\\" ADD COLUMN \\"', field_name, '\\" ', typeQ];
+			const altQ = ['ALTER TABLE ', nodeName, ' ADD COLUMN ', field_name, ' ', typeQ];
 
 			if(data.for_search || data.unique) {
-				altQ.push(', ADD', (data.unique ? ' UNIQUE' : ''), ' INDEX ', nodeName, '_', field_name, ' (\\"', field_name, '\\" ASC) ;');
+				altQ.push(', ADD', (data.unique ? ' UNIQUE' : ''), 'ALTER TABLE \"', nodeName, '\" ADD INDEX (\"', field_name, '\");');
 			}
 
 			await mysqlExec(altQ.join(''));
 
 			if(field_type === FIELD_TYPE.LOOKUP) {
-				await mysqlExec('ALTER TABLE \\"' + nodeName + '\\" ADD INDEX(\\"' + field_name + '\\");')
+				await mysqlExec('ALTER TABLE ' + nodeName + ' ADD INDEX(' + field_name + ');')
 			}
 		}
 	}

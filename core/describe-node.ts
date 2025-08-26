@@ -4,21 +4,24 @@
 import handlers from '../___index';
 //*/
 
-import { existsSync } from "fs";
+import { existsSync, writeFileSync } from "fs";
 import { join } from "path";
 import { mysqlExec } from "./mysql-connection";
 
 import { assert, throwError } from '../www/client-core/src/assert';
-import { FIELD_TYPE, FieldDesc, NODE_ID, NODE_TYPE, NodeDesc, RecId, RecordData, RecordDataWrite, ROLE_ID, USER_ID, UserLangEntry, VIEW_MASK } from "../www/client-core/src/bs-utils";
+import { EnumList, EnumListItem, FIELD_TYPE, FieldDesc, NODE_ID, NODE_TYPE, NodeDesc, RecId, RecordData, RecordDataWrite, ROLE_ID, USER_ID, UserLangEntry, VIEW_MASK } from "../www/client-core/src/bs-utils";
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession /*, usersSessionsStartedCount*/ } from "./auth";
 import { ENV } from './ENV';
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
-let fields;
-let nodes;
-let nodesById;
-let nodesByTableName;
+const FIELD_TYPE_ENUM_ID = 1;
+
+let fieldsById: Map<number, FieldDesc>;
+let nodes: NodeDesc[];
+let nodesById: Map<number, NodeDesc>;
+let enumsById: Map<number, EnumList>;
+let nodesByTableName: Map<string, NodeDesc>;
 let langs: UserLangEntry[];
 let eventsHandlersServerSide;
 
@@ -30,9 +33,37 @@ const nodesTreeCache = new Map();
 
 const filtersById = new Map();
 
-function getFieldDesc(fieldId): FieldDesc {
-	assert(fields.has(fieldId), "Unknown field id " + fieldId);
-	return fields.get(fieldId);
+const snakeToCamel = (str: string) => {
+	str = str.toLowerCase().replace(/([_][a-z])/g, group =>
+		group
+			.toUpperCase()
+			.replace('_', '')
+	);
+	return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function getFieldDesc(fieldId: number): FieldDesc {
+	assert(fieldsById.has(fieldId), "Unknown field id " + fieldId);
+	return fieldsById.get(fieldId);
+}
+
+async function getEnumDesc(enumId: RecId) {
+	if(!enumsById.has(enumId)) {
+		const name = (await mysqlExec("SELECT name FROM _enums WHERE id = " + enumId))[0].name;
+		const items = await mysqlExec("SELECT value," + langs.map((l) => {
+			return 'name' + l.prefix;
+		}).join() + " FROM _enum_values WHERE status = 1 AND values_linker=" + enumId + " ORDER BY _enum_values.order") as any as EnumListItem[];
+		const namesByValue = {} as { [key: number]: string };
+		for(const item of items) {
+			namesByValue[item.value] = item.name;
+		}
+		enumsById.set(enumId, {
+			name,
+			items,
+			namesByValue
+		});
+	}
+	return enumsById.get(enumId);
 }
 
 function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
@@ -52,7 +83,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				matchName: srcNode["name" + landQ],
 				description: srcNode["description" + landQ],
 				node_type: srcNode.node_type
-			}
+			} as any;
 
 			if(srcNode.css_class) {
 				ret.css_class = srcNode.css_class;
@@ -75,7 +106,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 
 				for(let id in srcNode.filters) {
 					const filter = srcNode.filters[id];
-					if(filter.roles && !isUserHaveRole(ROLE_ID.ADMIN, userSession)) {
+					if(filter.roles && !isUserHaveRole(ROLE_ID.ADMIN, userSession)) { // TODO roles
 						if(!filter.roles.find(roleId => isUserHaveRole(roleId, userSession))) {
 							continue;
 						}
@@ -100,6 +131,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 						show: srcField.show,
 						prior: srcField.prior,
 						field_type: srcField.field_type,
+						multilingual: srcField.multilingual,
 						field_name: srcField.field_name,
 						select_field_name: srcField.select_field_name,
 						max_length: srcField.max_length,
@@ -116,12 +148,6 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 					};
 
 					if(field.enum) {
-						field.enum = field.enum.map((item) => {
-							return {
-								name: item['name' + userSession.lang.prefix],
-								value: item.value
-							};
-						});
 						field.enumId = srcField.enumId;
 					}
 					if(srcField.css_class) {
@@ -137,7 +163,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 						for(const l of langs) {
 							if(l.prefix) {
 								if(nodeId === NODE_ID.NODES || nodeId === NODE_ID.FIELDS || nodeId === NODE_ID.FILTERS) { // for nodes, fields, and filters, add only languages which used in system UI
-									if(!l.is_ui_language) {
+									if(!l.isUiLanguage) {
 										continue;
 									}
 								}
@@ -161,10 +187,10 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 	return clientSideNodes.get(userNodesCacheKey);
 }
 
-function getUserAccessToNode(node, userSession) {
+function getUserAccessToNode(node: NodeDesc, userSession: UserSession) {
 	let ret = 0;
 	for(let role of node.rolesToAccess) {
-		if(isUserHaveRole(role.role_id, userSession)) {
+		if(isUserHaveRole(role.roleId, userSession)) {
 			ret |= role.privileges;
 		}
 	}
@@ -235,24 +261,24 @@ function attemptToReloadMetadataSchedule() {
 	//	}
 }
 
+
 async function initNodesData() { // load whole nodes data in to memory
-	let fields_new = new Map();
-	let nodes_new;
-	let nodesById_new;
-	let langs_new: UserLangEntry[];
+
 	let eventsHandlers_new = new Map();
 
 	options = Object.assign({}, ENV);
 
-	nodesById_new = new Map();
+	fieldsById = new Map();
+	nodesById = new Map();
+	enumsById = new Map();
 	nodesByTableName = new Map();
 
 	/// #if DEBUG
 	await mysqlExec('-- ======== NODES RELOADING STARTED ===================================================================================================================== --');
 	/// #endif
 
-	langs_new = await mysqlExec("SELECT id, name, code, is_ui_language FROM _languages WHERE id != 0") as UserLangEntry[];
-	for(let l of langs_new) {
+	langs = await mysqlExec("SELECT id, name, code, isUiLanguage FROM _languages WHERE id != 0") as UserLangEntry[];
+	for(let l of langs) {
 		l.prefix = l.code ? ('$' + l.code) : '';
 		ALL_LANGUAGES_BY_CODES.set(l.code || ENV.DEFAULT_LANG_CODE, l);
 		if(!DEFAULT_LANGUAGE || (l.code === ENV.DEFAULT_LANG_CODE)) {
@@ -261,27 +287,27 @@ async function initNodesData() { // load whole nodes data in to memory
 	}
 
 	let query = "SELECT * FROM _nodes WHERE status = 1 ORDER BY prior";
-	nodes_new = await mysqlExec(query);
-	for(let nodeData of nodes_new) {
-		nodesById_new.set(nodeData.id, nodeData);
+	nodes = await mysqlExec(query) as any;
+	for(let nodeData of nodes) {
+		nodesById.set(nodeData.id, nodeData);
 		if(nodeData.table_name) {
 			nodesByTableName.set(nodeData.table_name, nodeData);
 		}
 		nodeData.sortFieldName = '_created_on';
 
-		let rolesToAccess = await mysqlExec("SELECT role_id, privileges FROM _role_privileges WHERE node_id = 0 OR node_id = " + nodeData.id);
+		let rolesToAccess = await mysqlExec("SELECT roleId, privileges FROM rolePrivileges WHERE node_id = 0 OR node_id = " + nodeData.id);
 
 		/// #if DEBUG
-		nodeData.__preventToStringify = nodeData; // circular structure to fail when try to stringify
+		(nodeData as any).____preventToStringify = nodeData; // circular structure to fail when try to stringify
 		/// #endif
 
-		nodeData.rolesToAccess = rolesToAccess;
+		nodeData.rolesToAccess = rolesToAccess as any;
 		nodeData.privileges = 65535;
 		let sortField = nodeData._fields_id;
 
 		if(nodeData.node_type === NODE_TYPE.DOCUMENT) {
 			let query = "SELECT * FROM _fields WHERE node_fields_linker=" + nodeData.id + " AND status = 1 ORDER BY prior";
-			let fields = await mysqlExec(query);
+			let fields = await mysqlExec(query) as any;
 			for(let field of fields) {
 
 				if(field.id === sortField) {
@@ -289,13 +315,11 @@ async function initNodesData() { // load whole nodes data in to memory
 				}
 
 				if(field.field_type === FIELD_TYPE.ENUM && field.show) {
-					let enums = await mysqlExec("SELECT value," + langs_new.map((l) => {
-						return 'name' + l.prefix;
-					}).join() + " FROM _enum_values WHERE status = 1 AND values_linker=" + field.enum + " ORDER BY _enum_values.order");
+					let enums = await getEnumDesc(field.enum);
 					field.enumId = field.enum;
 					field.enum = enums;
 				}
-				fields_new.set(field.id, field);
+				fieldsById.set(field.id, field);
 			}
 			nodeData.fields = fields;
 			const filtersRes = await mysqlExec("SELECT * FROM _filters WHERE status = 1 AND node_filters_linker=" + nodeData.id + " ORDER BY _filters.order");
@@ -339,11 +363,6 @@ async function initNodesData() { // load whole nodes data in to memory
 	}
 	//*/
 
-
-	fields = fields_new;
-	nodes = nodes_new;
-	nodesById = nodesById_new;
-	langs = langs_new;
 	if(langs.length > 1) {
 		options.langs = langs;
 	}
@@ -360,10 +379,50 @@ async function initNodesData() { // load whole nodes data in to memory
 	GUEST_USER_SESSION.isGuest = true;
 	assert(isUserHaveRole(ROLE_ID.GUEST, GUEST_USER_SESSION), "User with id 2 expected to be guest.");
 	/// #if DEBUG
+	generateTypings();
 	await authorizeUserByID(3, undefined, "dev-user-session-token");
 	/// #endif
 }
 
+const generateTypings = async () => {
+	const src = [] as string[];
+	for(const node of nodes) {
+		if(node.fields) {
+			src.push('interface I' + snakeToCamel(node.table_name) + 'Record {');
+			for(const field of node.fields) {
+				let type = 'any';
+				switch(field.field_type) {
+					case FIELD_TYPE.BOOL:
+					case FIELD_TYPE.COLOR:
+					case FIELD_TYPE.NUMBER:
+						type = 'number';
+						break;
+					case FIELD_TYPE.DATE:
+					case FIELD_TYPE.DATE_TIME:
+						type = 'import(\'moment\').Moment';
+						break;
+
+					case FIELD_TYPE.ENUM: // TODO
+						type = 'number';
+						break;
+
+					case FIELD_TYPE.TEXT:
+					case FIELD_TYPE.PASSWORD:
+					case FIELD_TYPE.FILE:
+					case FIELD_TYPE.PICTURE:
+					case FIELD_TYPE.RICH_EDITOR:
+						type = 'string';
+						break;
+				}
+				src.push('	/** ' + (await getEnumDesc(FIELD_TYPE_ENUM_ID)).namesByValue[field.field_type] + ' */');
+				src.push('	' + field.field_name + (field.requirement ? '' : '?') + ': ' + type + ';');
+
+			}
+			src.push('}', '');
+		}
+	}
+	writeFileSync('types/generated.d.ts', src.join('\n'));
+}
 
 const GUEST_USER_SESSIONS = new Map();
 

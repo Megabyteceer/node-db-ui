@@ -10,10 +10,10 @@ import { makeReactClassSelectionField, removeReactClassSelectionField } from "..
 class FieldsEvents extends FormEvents {
 
 	removeWrongCharactersInField(fieldName: string) {
-		let pv = this.fieldValue(fieldName);
-		if(pv) {
-			var newValue = pv.replace(/ /g, '_').replace(/[^0-9a-zA-Z_]/g, '');
-			if(pv != newValue) {
+		let oldValue = this.fieldValue(fieldName);
+		if(oldValue) {
+			var newValue = oldValue.toLowerCase().replace(/[^a-z0-9]/gm, '_');
+			if(oldValue != newValue) {
 				this.setFieldValue(fieldName, newValue);
 			}
 		}
@@ -29,27 +29,27 @@ class FieldsEvents extends FormEvents {
 		(e.querySelector('.clickable-link-text') as HTMLAnchorElement).innerText = href;
 	}
 
-	_users_passwordConfirm_onChange() {
+	_users_password_confirm_onChange() {
 		this.checkPasswordConfirmation();
 	}
 
 	/// #if DEBUG
-	_nodes_nodeType_onChange() {
+	_nodes_node_type_onChange() {
 
 		const node_type = this.fieldValue("node_type");
 
 		if(node_type === NODE_TYPE.DOCUMENT) {
 			this.showField('creation_name', 'single_name', 'captcha',
-				'reverse', 'draftable', 'add_created_on_filed', 'add_creator_user_fld', 'addCreatedByFiled',
+				'reverse', 'draftable',
 				'store_forms', 'rec_per_page',
-				'data_storage_group', 'appearance_group', 'create_fields');
+				'data_storage_group', 'appearance_group');
 			this.makeFieldRequired('single_name');
 		} else {
-			this.hideField('creation_name', 'singleName', 'captcha',
-				'reverse', 'draftable', 'add_created_on_filed', 'add_creator_user_fld', 'addCreatedByFiled',
-				'store_forms', 'recPerPage',
-				'dataStorageGroup', 'appearanceGroup', 'createFields');
-			this.makeFieldRequired('singleName', false);
+			this.hideField('creation_name', 'single_name', 'captcha',
+				'reverse', 'draftable',
+				'store_forms', 'rec_per_page',
+				'data_storage_group', 'appearance_group');
+			this.makeFieldRequired('single_name', false);
 		}
 
 		if(node_type === NODE_TYPE.DOCUMENT || node_type === NODE_TYPE.REACT_CLASS) {
@@ -71,16 +71,16 @@ class FieldsEvents extends FormEvents {
 		this._nodes_recalculateFieldsVisibility();
 	}
 
-	_fields_fieldName_onChange() {
-		this.removeWrongCharactersInField('fieldName');
+	_fields_field_name_onChange() {
+		this.removeWrongCharactersInField('field_name');
 		this.check12nFieldName();
 	}
 
-	_fields_fieldType_onChange() {
+	_fields_field_type_onChange() {
 		this._fields_recalculateFieldsVisibility();
 	}
 
-	_fields_noStore_onChange() {
+	_fields_no_store_onChange() {
 		if(this.isFieldVisible('store_in_db')) {
 			if(!this.fieldValue('store_in_db') || this.fieldValue('send_to_server')) {
 				this.hideField('for_search', 'unique');
@@ -91,7 +91,7 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_clientOnly_onChange() {
-		this._fields_noStore_onChange();
+		this._fields_no_store_onChange();
 	}
 
 	_fields_visibility_create_onChange() {
@@ -116,10 +116,10 @@ class FieldsEvents extends FormEvents {
 		this.setFieldValue("show", shv);
 	}
 
-	_fields_visibility_customList_onChange() {
+	_fields_visibility_custom_list_onChange() {
 		var shv = this.fieldValue("show");
 
-		if(this.fieldValue("visibility_customList"))
+		if(this.fieldValue("visibility_custom_list"))
 			shv |= VIEW_MASK.CUSTOM_LIST;
 		else
 			shv &= (VIEW_MASK.ALL - VIEW_MASK.CUSTOM_LIST);
@@ -138,9 +138,9 @@ class FieldsEvents extends FormEvents {
 		this.setFieldValue("show", shv);
 	}
 
-	_fields_visibility_dropdownList_onChange() {
+	_fields_visibility_dropdown_list_onChange() {
 		var shv = this.fieldValue("show");
-		if(this.fieldValue("visibility_dropdownList")) {
+		if(this.fieldValue("visibility_dropdown_list")) {
 			shv |= VIEW_MASK.DROPDOWN_LIST;
 		} else {
 			shv &= (VIEW_MASK.ALL - VIEW_MASK.DROPDOWN_LIST);
@@ -149,9 +149,9 @@ class FieldsEvents extends FormEvents {
 		this.setFieldValue("show", shv);
 	}
 
-	_fields_visibility_subFormList_onChange() {
+	_fields_visibility_sub_form_list_onChange() {
 		var shv = this.fieldValue("show");
-		if(this.fieldValue("visibility_subFormList")) {
+		if(this.fieldValue("visibility_sub_form_list")) {
 			shv |= VIEW_MASK.SUB_FORM;
 		} else {
 			shv &= (VIEW_MASK.ALL - VIEW_MASK.SUB_FORM);
@@ -160,48 +160,48 @@ class FieldsEvents extends FormEvents {
 		this.setFieldValue("show", shv);
 	}
 
-	_fields_nodeRef_onChange() {
+	_fields_node_ref_onChange() {
 		this.check12nFieldName();
 	}
 
-	_nodes_tableName_onChange() {
+	_nodes_table_name_onChange() {
 		this.removeWrongCharactersInField('table_name');
 	}
 	/// #endif
 
-	_registration_passwordConfirm_onChange() {
+	_registration_password_confirm_onChange() {
 		this.checkPasswordConfirmation();
 	}
 
-	_registration_alreadyHaveAccountBtn_onChange() {
-		window.crudJs.Stage.showForm(NODE_ID.LOGIN);
+	_registration_already_have_account_btn_onChange() {
+		crudJs.Stage.showForm(NODE_ID.LOGIN);
 	}
 
-	_login_signUpLinkBtn_onChange() {
-		window.crudJs.Stage.showForm(NODE_ID.REGISTER, 'new', undefined, true);
+	_login_sign_up_link_btn_onChange() {
+		crudJs.Stage.showForm(NODE_ID.REGISTER, 'new', undefined, true);
 	}
 
-	_login_forgotPasswordButton_onChange() {
-		window.crudJs.Stage.showForm(NODE_ID.RESET, 'new', undefined, true);
+	_login_forgot_password_button_onChange() {
+		crudJs.Stage.showForm(NODE_ID.RESET, 'new', undefined, true);
 	}
 
-	_resetPassword_backToLogin_onChange() {
-		this._registration_alreadyHaveAccountBtn_onChange();
+	_reset_password_back_to_login_onChange() {
+		this._registration_already_have_account_btn_onChange();
 	}
 
 	_fields_recalculateFieldsVisibility() {
 
 
-		const fieldType = this.fieldValue("fieldType");
+		const fieldType = this.fieldValue("field_type");
 
 		this.showField('max_length', 'requirement', 'store_in_db', 'send_to_server', 'unique', 'for_search');
 		this.hideField('multilingual', 'node_ref', 'width', 'height', "select_field_name", "lookup_icon", "enum");
 		this.setFieldLabel("description");
 
 		this.enableField("visibility_list");
-		this.enableField("visibility_customList");
-		this.enableField("visibility_dropdownList");
-		this.enableField("visibility_subFormList");
+		this.enableField("visibility_custom_list");
+		this.enableField("visibility_dropdown_list");
+		this.enableField("visibility_sub_form_list");
 		this.enableField("store_in_db");
 		this.enableField("send_to_server");
 		this.enableField('unique');
@@ -229,12 +229,12 @@ class FieldsEvents extends FormEvents {
 			case FIELD_TYPE.LOOKUP_1toN:
 				this.disableField("visibility_list");
 				this.setFieldValue("visibility_list", 0);
-				this.disableField("visibility_customList");
-				this.setFieldValue("visibility_customList", 0);
-				this.disableField("visibility_dropdownList");
-				this.setFieldValue("visibility_dropdownList", 0);
-				this.disableField("visibility_subFormList");
-				this.setFieldValue("visibility_subFormList", 0);
+				this.disableField("visibility_custom_list");
+				this.setFieldValue("visibility_custom_list", 0);
+				this.disableField("visibility_dropdown_list");
+				this.setFieldValue("visibility_dropdown_list", 0);
+				this.disableField("visibility_sub_form_list");
+				this.setFieldValue("visibility_sub_form_list", 0);
 
 				this.disableField("send_to_server");
 				this.setFieldValue('send_to_server', 1);
@@ -267,15 +267,15 @@ class FieldsEvents extends FormEvents {
 		}
 
 		if(this.isUpdateRecord) {
-			this.disableField("fieldName");
-			this.disableField("fieldType");
+			this.disableField("field_name");
+			this.disableField("field_type");
 			this.disableField("node_ref");
 			this.disableField("node_fields_linker");
 			this.disableField("store_in_db");
 			this.disableField("send_to_server");
 		}
 
-		if(this.fieldValue('fieldType') === FIELD_TYPE.LOOKUP) {
+		if(fieldType === FIELD_TYPE.LOOKUP) {
 			this.disableField('for_search');
 			this.setFieldValue('for_search', 1);
 		}
@@ -306,15 +306,15 @@ class FieldsEvents extends FormEvents {
 		this.makeFieldRequired('max_length', this.isFieldVisible('max_length'));
 	}
 
-	_fields_storeInDB_onChange() {
+	_fields_store_in_db_onChange() {
 		this._fields_recalculateFieldsVisibility();
 	}
 
-	_fields_sendToServer_onChange() {
+	_fields_send_to_server_onChange() {
 		this._fields_recalculateFieldsVisibility();
 	}
 
-	_fields_forSearch_onChange() {
+	_fields_for_search_onChange() {
 		this._fields_recalculateFieldsVisibility();
 	}
 
@@ -322,11 +322,12 @@ class FieldsEvents extends FormEvents {
 		this.save();
 	}
 
-	_nodes_storeForms_onChange() {
-		this._nodes_nodeType_onChange();
+	_nodes_store_forms_onChange() {
+		this._nodes_node_type_onChange();
 	}
 
 	//_insertNewHandlersHere_
 }
 
 export { FieldsEvents };
+

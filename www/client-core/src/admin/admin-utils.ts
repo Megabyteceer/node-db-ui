@@ -1,10 +1,10 @@
 import React from "react";
-import { FieldDesc, FIELD_TYPE } from "../bs-utils";
-import { R } from "../r";
+import { FIELD_TYPE, FieldDesc } from "../bs-utils";
 import { Select } from "../components/select";
-import { consoleDir, getItem, getNode, getNodeData, isLitePage, renderIcon, setItem, submitRecord } from "../utils";
-import { MainFrame } from "../main-frame";
 import type { FormFull } from "../forms/form-full";
+import { MainFrame } from "../main-frame";
+import { R } from "../r";
+import { consoleDir, getItem, getNode, getNodeData, isLitePage, renderIcon, setItem, submitRecord } from "../utils";
 
 /// #if DEBUG
 /*
@@ -209,7 +209,7 @@ function makeIconSelectionField(form: FormFull, fieldName) {
 }
 
 function makeReactClassSelectionField(form: FormFull, fieldName) {
-	const options = Object.keys(window.crudJs.customClasses).map((k) => {
+	const options = Object.keys(crudJs.customClasses).map((k) => {
 		return { name: k, value: k };
 	});
 	const input = form.getFieldDomElement(fieldName).querySelector('input') as HTMLInputElement;
@@ -233,4 +233,4 @@ function removeReactClassSelectionField(form: FormFull, fieldName) {
 	form.renderToField(fieldName, 'classes-selector', null);
 }
 
-export { makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField, admin };
+export { admin, makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField };

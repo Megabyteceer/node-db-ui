@@ -1,13 +1,12 @@
-import ReactDOM from "react-dom";
 import React from "react";
+import ReactDOM from "react-dom";
 
-import { checkFileSize, idToImgURL, L, myAlert, renderIcon, serializeForm, submitData } from "../utils";
-import { registerFieldClass } from "../utils";
-import { BaseField, RefToInput } from "./base-field";
-import { Modal } from "../modal";
 import { Component } from "react";
-import { R } from "../r";
 import { FIELD_TYPE, IMAGE_THUMBNAIL_PREFIX } from "../bs-utils";
+import { Modal } from "../modal";
+import { R } from "../r";
+import { checkFileSize, idToImgURL, L, myAlert, registerFieldClass, renderIcon, serializeForm, submitData } from "../utils";
+import { BaseField, RefToInput } from "./base-field";
 import { FieldWrap } from "./field-wrap";
 
 registerFieldClass(FIELD_TYPE.PICTURE, class PictureField extends BaseField {
@@ -123,7 +122,7 @@ class CropperFieldBody extends Component<any, any> {
 
 	async save(fieldWrap: FieldWrap) {
 		if(this.waitingForUpload) {
-			let form = ReactDOM.findDOMNode(this.references.form);
+			let form = ReactDOM.findDOMNode(this.references.form) as HTMLFormElement;
 			let imageId = await submitData('api/uploadImage', serializeForm(form), true).catch((er) => {
 			});
 			if(!imageId) {

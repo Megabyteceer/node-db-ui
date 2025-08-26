@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { R } from "./r";
 import { iAdmin } from "./user";
-import { getData, isLitePage, L, myAlert, showPrompt, reloadLocation, renderIcon, sp, strip_tags } from "./utils";
+import { getData, isLitePage, L, reloadLocation, renderIcon, sp, strip_tags } from "./utils";
 
 var currentId = 10;
 var debugInfo = [];
@@ -62,10 +62,12 @@ class DebugPanel extends Component<any, any> {
 
 	async deployClick(ev) {
 		sp(ev);
-
-		let ret = await getData('admin/getDeployPackage');
+		alert('TODO');
 
 		/*
+		let ret = await getData('admin/getDeployPackage');
+
+		
 		if(await showPrompt(L('DEPLOY_TO', ENV.DEPLOY_TO))) {
 			let testResult = await getData('/test');
 			if(testResult === 'ok') {
@@ -199,3 +201,4 @@ class DebugPanel extends Component<any, any> {
 DebugPanel.instance = null;
 
 export { DebugPanel };
+

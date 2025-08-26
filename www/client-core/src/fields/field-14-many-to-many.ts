@@ -1,10 +1,9 @@
-import ReactDOM from "react-dom";
 import React from "react";
+import ReactDOM from "react-dom";
 
 import { FIELD_TYPE, RecId } from "../bs-utils";
 import { R } from "../r";
-import { getClassForField, L, n2mValuesEqual, renderIcon, sp, UID } from "../utils";
-import { registerFieldClass } from "../utils";
+import { getClassForField, L, n2mValuesEqual, registerFieldClass, renderIcon, sp, UID } from "../utils";
 import { fieldLookupMixins } from "./field-lookup-mixins";
 
 var keyCounter = 0;
@@ -144,7 +143,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 							const filters = {
 								[this.getLinkerFieldName()]: { id: recId }
 							};
-							window.crudJs.Stage.showForm(
+							crudJs.Stage.showForm(
 								this.props.field.node_ref,
 								recId,
 								filters,

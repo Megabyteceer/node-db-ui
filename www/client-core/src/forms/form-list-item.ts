@@ -1,9 +1,9 @@
-import { ComponentProps, R } from "../r";
 import React from "react";
 import { FIELD_TYPE, Filters, NodeDesc, RecordData } from "../bs-utils";
-import { FieldWrap } from "../fields/field-wrap";
-import { deleteRecord, draftRecord, isRecordRestrictedForDeletion, L, publishRecord, renderIcon, sp } from "../utils";
 import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
+import { FieldWrap } from "../fields/field-wrap";
+import { ComponentProps, R } from "../r";
+import { deleteRecord, draftRecord, isRecordRestrictedForDeletion, L, publishRecord, renderIcon, sp } from "../utils";
 import { BaseForm } from "./base-form";
 
 const publishClick = (draft, node, data) => {
@@ -70,7 +70,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 							if(formItem && formItem.props.parentForm) {
 								formItem.props.parentForm.toggleCreateDialogue(data.id)
 							} else {
-								window.crudJs.Stage.showForm(node.id, data.id, undefined, true);
+								crudJs.Stage.showForm(node.id, data.id, undefined, true);
 							}
 						}
 					},
@@ -82,7 +82,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (node: NodeDesc, data: Rec
 			buttons.push(
 				R.button({
 					className: 'clickable tool-btn view-btn', title: L('DETAILS') + itemName, key: 2, onClick: (e) => {
-						window.crudJs.Stage.showForm(node.id, data.id);
+						crudJs.Stage.showForm(node.id, data.id);
 					}
 				},
 					renderIcon('search')
@@ -178,4 +178,4 @@ class FormListItem extends BaseForm {
 	}
 }
 
-export { renderItemsButtons, FormListItem };
+export { FormListItem, renderItemsButtons };

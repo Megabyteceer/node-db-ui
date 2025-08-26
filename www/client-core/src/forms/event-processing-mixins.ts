@@ -310,6 +310,7 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	fieldValue(fieldName) {
+		validateFieldName(fieldName);
 		return this.currentData[fieldName];
 	}
 
@@ -329,8 +330,8 @@ class FormEventProcessingMixins extends BaseForm {
 		consoleLog('onSave ' + this.props.node.table_name + ': ' + this.props.initialData.id);
 		/// #endif
 
-		for(var field of this.props.node.fields) {
-			this.fieldAlert(field.field_name); //hide all alerts
+		for(var fieldName in this.fieldsRefs) {
+			this.fieldAlert(fieldName); //hide all alerts
 		}
 
 		this.invalidAlertInOnSaveHandler = false;

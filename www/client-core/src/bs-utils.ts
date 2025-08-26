@@ -71,7 +71,11 @@ interface EnumListItem {
 	name: string
 }
 
-type EnumList = EnumListItem[];
+type EnumList = {
+	name: string;
+	items: EnumListItem[];
+	namesByValue: { [key: number]: string };
+}
 
 interface FieldDesc {
 	/** readable name */
@@ -95,6 +99,9 @@ interface FieldDesc {
 
 	/** if true - field data do not go to the server on form save. */
 	send_to_server: BoolNum;
+
+	/** has multilingual input */
+	multilingual: BoolNum;
 
 	/** fields data go to the server, but has no store in database table. */
 	store_in_db: BoolNum;
@@ -135,9 +142,6 @@ interface FieldDesc {
 	enum?: EnumList;
 	enumId?: RecId;
 
-	/** client side only field */
-	enumNamesById?: { [key: number]: string };
-
 	/** contains language id, if field is multilingual and refers to non default language */
 	lang?: string;
 
@@ -154,11 +158,16 @@ interface FilterDesc {
 	hi_priority?: BoolNum;
 	view?: string;
 	fields?: string;
+	roles?: number[];
 }
 
-interface NodeDesc {
+interface NodeDesc extends INodesRecord {
 	id: RecId;
+	/** parent node id */
+	_nodes_id: RecId;
 	single_name: string;
+	sortFieldName: string;
+	rolesToAccess: { roleId: RecId, privileges: number }[];
 	privileges: PRIVILEGES_MASK;
 	matchName: string;
 	description: string;
@@ -177,7 +186,7 @@ interface NodeDesc {
 	css_class?: string;
 	filters?: { [key: string]: FilterDesc };
 	filtersList?: { name: string, value: any }[];
-	sortFieldName?: string;
+	sort_field_name?: string;
 	/** CLIENT SIDE ONLY */
 	fieldsById?: { [key: number]: FieldDesc };
 	fieldsByName?: { [key: string]: FieldDesc };
@@ -188,7 +197,7 @@ interface UserLangEntry {
 	name: string;
 	code: string;
 	prefix: string;
-	is_ui_language: boolean;
+	isUiLanguage: boolean;
 }
 
 interface RecordDataWrite {
@@ -336,6 +345,6 @@ interface IFormParameters {
 }
 
 export {
-	BoolNum, EnumList, FIELD_DISPLAY_TYPE, FIELD_ID, FIELD_TYPE, FieldDesc, FilterDesc, Filters, getCurrentStack, GetRecordsParams, HASH_DIVIDER, IFormParameters, IMAGE_THUMBNAIL_PREFIX, LANGUAGE_ID_DEFAULT, NODE_ID, NODE_TYPE, NodeDesc, PRIVILEGES_MASK, RecId, RecordData, RecordDataWrite, RecordsData, RecordsDataResponse, RecordSubmitResult, ROLE_ID, USER_ID, UserLangEntry, UserRoles, UserSession, VIEW_MASK
+	BoolNum, EnumList, EnumListItem, FIELD_DISPLAY_TYPE, FIELD_ID, FIELD_TYPE, FieldDesc, FilterDesc, Filters, getCurrentStack, GetRecordsParams, HASH_DIVIDER, IFormParameters, IMAGE_THUMBNAIL_PREFIX, LANGUAGE_ID_DEFAULT, NODE_ID, NODE_TYPE, NodeDesc, PRIVILEGES_MASK, RecId, RecordData, RecordDataWrite, RecordsData, RecordsDataResponse, RecordSubmitResult, ROLE_ID, USER_ID, UserLangEntry, UserRoles, UserSession, VIEW_MASK
 };
 

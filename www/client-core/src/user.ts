@@ -130,7 +130,7 @@ class User extends Component<any, any> {
 				btn1 = R.a({
 					key: 'b1',
 					onClick: () => {
-						window.crudJs.Stage.showForm(NODE_ID.USERS, userData.id, undefined, true, true);
+						crudJs.Stage.showForm(NODE_ID.USERS, userData.id, undefined, true, true);
 					}, title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn'
 				},
 					R.img({ className: 'user-avatar', src: imgUrl })

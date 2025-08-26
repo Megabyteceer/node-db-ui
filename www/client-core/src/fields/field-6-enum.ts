@@ -16,7 +16,9 @@ class EnumField extends BaseField {
 
 	setFilterValues(filter) {
 		if(filter) {
-			this.enum = this.props.field.enum.filter(v => filter.indexOf(v) < 0);
+			const en = Object.assign({}, this.props.field.enum);
+			en.items = en.items.filter(v => filter.indexOf(v) < 0);
+			this.enum = en;
 		} else {
 			delete this.enum;
 		}
@@ -41,13 +43,13 @@ class EnumField extends BaseField {
 				onChange: (val) => {
 					this.props.wrapper.valueListener(parseInt(val), false, this);
 				},
-				options: this.enum || field.enum
+				options: this.enum ? this.enum.items : field.enum.items
 			};
 			return React.createElement(Select, inputsProps);
 		} else {
 			return R.span({
 				className: 'enum-type-' + field.enumId + ' enum-val-' + value,
-			}, field.enumNamesById[value]);
+			}, field.enum.namesByValue[value])
 		}
 	}
 }
@@ -55,3 +57,4 @@ class EnumField extends BaseField {
 registerFieldClass(FIELD_TYPE.ENUM, EnumField);
 
 export { EnumField };
+

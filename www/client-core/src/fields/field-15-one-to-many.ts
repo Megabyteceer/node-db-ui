@@ -1,10 +1,9 @@
-import { R } from "../r";
 import React from "react";
-import { List } from "../forms/list";
-import { assignFilters, deleteRecord, L } from "../utils";
-import { registerFieldClass } from "../utils";
-import { fieldLookupMixins } from "./field-lookup-mixins";
 import { FIELD_TYPE, Filters, RecId, RecordData, RecordsData, VIEW_MASK } from "../bs-utils";
+import { List } from "../forms/list";
+import { R } from "../r";
+import { assignFilters, deleteRecord, L, registerFieldClass } from "../utils";
+import { fieldLookupMixins } from "./field-lookup-mixins";
 
 class LookupOneToManyFiled extends fieldLookupMixins {
 
@@ -49,7 +48,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 		const filters = {
 			[this.getLinkerFieldName()]: { id: this.props.form.recId }
 		};
-		window.crudJs.Stage.showForm(this.props.field.node_ref, recIdToEdit, filters, true, true, () => {
+		crudJs.Stage.showForm(this.props.field.node_ref, recIdToEdit, filters, true, true, () => {
 			this.inlineListRef.refreshData();
 		});
 	}
@@ -146,3 +145,4 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 registerFieldClass(FIELD_TYPE.LOOKUP_1toN, LookupOneToManyFiled);
 
 export { LookupOneToManyFiled };
+

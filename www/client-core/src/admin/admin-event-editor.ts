@@ -1,4 +1,4 @@
-import { getData, L } from "../utils";
+import { getData } from "../utils";
 /// #if DEBUG
 /*
 /// #endif

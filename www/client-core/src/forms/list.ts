@@ -401,7 +401,7 @@ class List extends BaseForm<ListProps, ListState> {
 				} else {
 					createButton = R.button({
 						className: 'clickable create-button', onClick: () => {
-							window.crudJs.Stage.showForm(node.id, 'new', filters, true);
+							crudJs.Stage.showForm(node.id, 'new', filters, true);
 						}
 					},
 						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creation_name || node.single_name)
@@ -619,3 +619,4 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 }
 export { List };
+

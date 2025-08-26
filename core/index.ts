@@ -14,9 +14,6 @@ import { ENV, SERVER_ENV } from './ENV';
 
 /// #if DEBUG
 import { performance } from 'perf_hooks';
-import { DPromise } from "../www/client-core/src/debug-promise";
-//@ts-ignore
-global.Promise = DPromise;
 /// #endif
 
 const express = require('express');
@@ -146,7 +143,7 @@ app.use('/', express.static(path.join(__dirname, '../../www')));
 
 
 function crudJSServer() {
-	initNodesData().then(async function() {
+	initNodesData().then(async function () {
 		app.listen(SERVER_ENV.PORT)
 		console.log('HTTP listen ' + SERVER_ENV.PORT + '...');
 	});

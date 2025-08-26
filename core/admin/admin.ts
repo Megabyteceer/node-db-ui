@@ -21,7 +21,7 @@ async function nodePrivileges(reqData, userSession) {
 		reloadMetadataSchedule();
 		return 1;
 	} else { //get node privileges
-		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _role_privileges WHERE (node_id=' + nodeId + ') AND (_roles.id=role_id) LIMIT 1) AS privileges FROM _roles WHERE id != ' + USER_ID.SUPER_ADMIN + ' AND id != ' + USER_ID.VIEW_ALL + ' AND status = 1');
+		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM rolePrivileges WHERE (node_id=' + nodeId + ') AND (_roles.id=roleId) LIMIT 1) AS privileges FROM _roles WHERE id != ' + USER_ID.SUPER_ADMIN + ' AND id != ' + USER_ID.VIEW_ALL + ' AND status = 1');
 		return { privileges, node_type: getNodeDesc(nodeId).node_type }
 	}
 }
@@ -42,11 +42,11 @@ const shouldBeAdmin = (userSession = ADMIN_USER_SESSION) => {
 
 async function setRolePrivilegesForNode(node_id, rolePrivileges, toChild, userSession) {
 	shouldBeAdmin(userSession);
-	await mysqlExec('DELETE FROM \"_role_privileges\" WHERE \"node_id\"=' + node_id + ';');
+	await mysqlExec('DELETE FROM \"rolePrivileges\" WHERE \"node_id\"=' + node_id + ';');
 
 	for(let p of rolePrivileges) {
 		if(p.privileges) {
-			await mysqlExec('INSERT INTO _role_privileges SET node_id=' + node_id + ', role_id=' + p.id + ', privileges=' + p.privileges + ';');
+			await mysqlExec('INSERT INTO rolePrivileges SET node_id=' + node_id + ', roleId=' + p.id + ', privileges=' + p.privileges + ';');
 		}
 	}
 	if(toChild) {
@@ -116,3 +116,4 @@ async function getClientEventHandler({
 }
 
 export { clearCache, getClientEventHandler, nodePrivileges, shouldBeAdmin };
+

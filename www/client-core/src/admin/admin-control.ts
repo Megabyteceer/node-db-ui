@@ -1,10 +1,10 @@
-import { R } from "../r";
 import React, { Component } from "react";
+import { NODE_ID, NODE_TYPE, NodeDesc } from "../bs-utils";
+import { R } from "../r";
 import { CLIENT_SIDE_FORM_EVENTS, getNode, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from "../utils";
 import { admin_editSource } from "./admin-event-editor";
 import { admin } from "./admin-utils";
 import { FieldAdmin } from "./field-admin";
-import { NodeDesc, NODE_ID, NODE_TYPE } from "../bs-utils";
 
 var showedNodeId;
 
@@ -207,7 +207,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable tool-btn admin-form-btn',
 						title: L('FLD_ADD'),
 						onClick: () => {
-							window.crudJs.Stage.showForm(NODE_ID.FIELDS, 'new', {
+							crudJs.Stage.showForm(NODE_ID.FIELDS, 'new', {
 								node_fields_linker: {
 									id: node.id,
 									name: node.single_name
@@ -319,7 +319,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable tool-btn admin-form-btn',
 						title: L('EDIT_NODE'),
 						onClick: () => {
-							window.crudJs.Stage.showForm(NODE_ID.NODES, nodeId, undefined, true, true, reloadLocation);
+							crudJs.Stage.showForm(NODE_ID.NODES, nodeId, undefined, true, true, reloadLocation);
 
 						}
 					},
@@ -329,7 +329,7 @@ class NodeAdmin extends Component<any, any> {
 						className: 'clickable tool-btn admin-form-btn',
 						title: L('EDIT_ACCESS'),
 						onClick: () => {
-							window.crudJs.Stage.showForm(NODE_ID.PRIVILEGES, nodeId, undefined, true, true, reloadLocation);
+							crudJs.Stage.showForm(NODE_ID.PRIVILEGES, nodeId, undefined, true, true, reloadLocation);
 						}
 					},
 						renderIcon('user')
@@ -350,8 +350,8 @@ class NodeAdmin extends Component<any, any> {
 			onClick: sp
 		},
 			R.span({
-				className: 'half-visible admin-form-open-btn' + (borderOnLoad || borderOnSave),
-				onMouseEnter: this.show
+				className: 'half-visible admin-form-open-btn clickable' + (borderOnLoad || borderOnSave),
+				onClick: this.show
 			},
 				renderIcon('wrench')
 			),
@@ -363,7 +363,7 @@ class NodeAdmin extends Component<any, any> {
 function createNodeForMenuItem(item) {
 	let isBasedOnDocument = item.node_type === NODE_TYPE.DOCUMENT;
 	getNodeData(NODE_ID.NODES, (isBasedOnDocument ? item.parent : item.id) as number).then((data) => {
-		window.crudJs.Stage.showForm(NODE_ID.NODES, 'new', {
+		crudJs.Stage.showForm(NODE_ID.NODES, 'new', {
 			prior: 100000,
 			_nodesID: {
 				id: data.id,
@@ -374,3 +374,4 @@ function createNodeForMenuItem(item) {
 }
 
 export { createNodeForMenuItem, NodeAdmin };
+

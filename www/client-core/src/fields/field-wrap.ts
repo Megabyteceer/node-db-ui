@@ -1,11 +1,11 @@
-import { FIELD_TYPE, FieldDesc, FIELD_DISPLAY_TYPE } from "../bs-utils";
-import { R } from "../r";
 import React, { Component } from "react";
+import { FIELD_DISPLAY_TYPE, FIELD_TYPE, FieldDesc } from "../bs-utils";
+import { R } from "../r";
 /// #if DEBUG
 import { FieldAdmin } from "../admin/field-admin";
 /// #endif
-import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible } from "../utils";
 import { iAdmin } from "../user";
+import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible } from "../utils";
 import { BaseField, FieldProps } from "./base-field";
 
 class FieldWrap extends Component<FieldProps, any> {
@@ -60,7 +60,7 @@ class FieldWrap extends Component<FieldProps, any> {
 	}
 
 	makeFieldRequired(requirement) {
-		this.fieldRef.state.requirement = requirement;
+		this.fieldRef.setState({ requirement });
 		this.forceUpdate();
 	}
 
@@ -228,7 +228,7 @@ class FieldWrap extends Component<FieldProps, any> {
 			this.onChangeTimeout = setTimeout(() => {
 				delete (this.onChangeTimeout);
 				this.sendCurrentValueToForm();
-			}, 600);
+			}, 200);
 		} else {
 			this.sendCurrentValueToForm();
 		}
@@ -410,3 +410,4 @@ class FieldLabel extends Component<any, any> {
 }
 
 export { FieldHelp, FieldLabel, FieldWrap };
+

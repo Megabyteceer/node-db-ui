@@ -169,8 +169,6 @@ function debugError(txt) {
 	console.error(txt);
 }
 
-var triesGotoHome = 0;
-
 var _oneFormShowed;
 const onOneFormShowed = () => {
 	_oneFormShowed = true;
@@ -351,7 +349,7 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, 
 }
 
 function isCurrentlyShowedLeftBarItem(item) {
-	const currentFormParameters = window.crudJs.Stage.currentForm;
+	const currentFormParameters = crudJs.Stage.currentForm;
 	if(item.id === false) {
 		if(!currentFormParameters.filters || (Object.keys(currentFormParameters.filters).length === 0)) {
 			return item.isDefault;
@@ -424,7 +422,7 @@ async function goToPageByHash() {
 	let hash = window.location.hash.substr(1);
 	var formParamsByLevels = hash.split(HASH_DIVIDER).map(hashToFormParams);
 
-	const Stage = window.crudJs.Stage;
+	const Stage = crudJs.Stage;
 	let level;
 
 	for(level = 0; (level < formParamsByLevels.length) && (level < Stage.allForms.length); level++) {
@@ -471,7 +469,7 @@ SKIP_HISTORY_NODES[NODE_ID.REGISTER] = true;
 SKIP_HISTORY_NODES[NODE_ID.RESET] = true;
 
 async function goBack(isAfterDelete?: boolean) {
-	const currentFormParameters = window.crudJs.Stage.currentForm;
+	const currentFormParameters = crudJs.Stage.currentForm;
 
 	if(isLitePage() && window.history.length < 2) {
 		window.close();
@@ -483,13 +481,13 @@ async function goBack(isAfterDelete?: boolean) {
 			window.history.back();
 			isHistoryChanging = false;
 		} else {
-			window.crudJs.Stage.showForm(getHomeNode());
+			crudJs.Stage.showForm(getHomeNode());
 		}
 
 	} else if(currentFormParameters && currentFormParameters.recId) {
-		window.crudJs.Stage.showForm(currentFormParameters.nodeId, undefined, currentFormParameters.filters);
+		crudJs.Stage.showForm(currentFormParameters.nodeId, undefined, currentFormParameters.filters);
 	} else if(isAfterDelete) {
-		window.crudJs.Stage.refreshForm();
+		crudJs.Stage.refreshForm();
 	}
 }
 
@@ -516,7 +514,7 @@ function updateHashLocation(replaceState = false) {
 	if(isHistoryChanging) {
 		return;
 	}
-	var newHash = '#' + window.crudJs.Stage.allForms.map((formEntry) => {
+	var newHash = '#' + crudJs.Stage.allForms.map((formEntry) => {
 		const formParameters = formEntry.form;
 		const filters = formParameters.filters;
 		return locationToHash(formParameters.nodeId, formParameters.recId, filters, formParameters.editable);
@@ -615,12 +613,6 @@ function normalizeNode(node: NodeDesc) {
 			f.node = node;
 			node.fieldsById[f.id] = f;
 			node.fieldsByName[f.field_name] = f;
-			if(f.enum) {
-				f.enumNamesById = {};
-				for(let e of f.enum) {
-					f.enumNamesById[e.value] = e.name;
-				}
-			}
 			if(f.lang) {
 				const fieldId = f.id as unknown as string; // language data fields have string ids of format: "77$ru"
 				const parentField: FieldDesc = node.fieldsById[fieldId.substr(0, fieldId.indexOf('$'))];
@@ -920,35 +912,18 @@ function isAuthNeed(data) {
 	let token = getSessionToken();
 	if((token && (token !== "guest-session")) && (data.error && (data.error.startsWith('Error: <auth>') || data.error.startsWith('<auth>')))) {
 		clearSessionToken();
-		window.crudJs.Stage.showForm(NODE_ID.LOGIN, 'new', undefined, true);
+		crudJs.Stage.showForm(NODE_ID.LOGIN, 'new', undefined, true);
 		return true;
 	} else if(data.error && (data.error.startsWith('Error: <access>') || data.error.startsWith('<access>'))) {
-		if(window.crudJs.Stage?.currentForm?.props?.node?.id !== NODE_ID.LOGIN) {
+		if(crudJs.Stage?.currentForm?.props?.node?.id !== NODE_ID.LOGIN) {
 			goToHome();
 		}
 		return true;
 	}
 }
 
-function serializeForm(form): FormData {
-
-	debugger;
-	/*
-	var obj = $(form);
-	var formData = new FormData();
-	$.each($(obj).find("input[type='file']"), (i, tag) => {
-		// @ts-ignore
-		$.each($(tag)[0].files, (i, file) => {
-			// @ts-ignore
-			formData.append(tag.name, file);
-		});
-	});
-	formData.append('sessionToken', getSessionToken());
-	var params = $(obj).serializeArray();
-	$.each(params, (i, val) => {
-		formData.append(val.name, val.value);
-	});*/
-	return formData;
+function serializeForm(form: HTMLFormElement): FormData {
+	return new FormData(form);
 }
 
 var requestsInProgress = 0;
@@ -1055,7 +1030,7 @@ async function deleteRecord(name, nodeId: RecId, recId: RecId, noPrompt?: boolea
 			onYes();
 		} else {
 			await submitData('api/delete', { nodeId, recId });
-			window.crudJs.Stage.dataDidModified(null);
+			crudJs.Stage.dataDidModified(null);
 			return true;
 		}
 	} else {
@@ -1117,7 +1092,7 @@ if(isLitePage()) {
 function scrollToVisible(elem, doNotShake = false) {
 	if(elem) {
 		var element = ReactDOM.findDOMNode(elem) as HTMLDivElement;
-		element.scrollIntoView();
+		((element as any).scrollIntoViewIfNeeded) ? (element as any).scrollIntoViewIfNeeded(false) : element.scrollIntoView();
 		if(!doNotShake) {
 			shakeDomElement(element);
 		}
@@ -1298,15 +1273,6 @@ function getReadableUploadSize() {
 	return (ENV.MAX_FILE_SIZE_TO_UPLOAD / 1000000.0).toFixed(0) + L('MB');
 }
 
-var __errorsSent = {};
-function submitErrorReport(name, stack) {
-
-	/// #if DEBUG
-	return;
-
-	/// #endif
-}
-
 function reloadLocation() {
 	setTimeout(() => {
 		location.reload();
@@ -1374,6 +1340,7 @@ async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
 			backdrop.remove();
 		});
 		return new Promise((resolve) => {
+			//@ts-ignore
 			iframe.contentWindow.onCurdJSLogin = (userData) => {
 				User.currentUserData = userData;
 				resolve(userData);
@@ -1410,6 +1377,6 @@ async function attachGoogleLoginAPI(enforces = false) {
 }
 
 export {
-	__corePath, addMixins, assignFilters, attachGoogleLoginAPI, checkFileSize, clearSessionToken, CLIENT_SIDE_FORM_EVENTS, consoleDir, consoleLog, debugError, deleteIndexedDB, deleteRecord, draftRecord, Filters, getCaptchaToken, getClassForField, getData, getItem, getListRenderer, getNode, getNodeData, getNodeIfPresentOnClient, getReadableUploadSize, getSessionToken, goBack, goToHome, goToPageByHash, idToFileUrl, idToImgURL, initDictionary, innerDateTimeFormat, isAdmin, isCurrentlyShowedLeftBarItem, isDBWriteInProgress, isLitePage, isPresentListRenderer, isRecordRestrictedForDeletion, isUserHaveRole, keepInWindow, L, loadIndexedDB, loginIfNotLoggedIn, myAlert, n2mValuesEqual, onNewUser, onOneFormShowed, publishRecord, readableDateFormat, readableTimeFormat, registerFieldClass, registerListRenderer, reloadLocation, removeItem, renderIcon, saveIndexedDB, scrollToVisible, serializeForm, setItem, shakeDomElement, showPrompt, sp, strip_tags, submitData, submitErrorReport, submitRecord, toReadableDate, toReadableDateTime, toReadableTime, UID, updateHashLocation
+	__corePath, addMixins, assignFilters, attachGoogleLoginAPI, checkFileSize, clearSessionToken, CLIENT_SIDE_FORM_EVENTS, consoleDir, consoleLog, debugError, deleteIndexedDB, deleteRecord, draftRecord, Filters, getCaptchaToken, getClassForField, getData, getItem, getListRenderer, getNode, getNodeData, getNodeIfPresentOnClient, getReadableUploadSize, getSessionToken, goBack, goToHome, goToPageByHash, idToFileUrl, idToImgURL, initDictionary, innerDateTimeFormat, isAdmin, isCurrentlyShowedLeftBarItem, isDBWriteInProgress, isLitePage, isPresentListRenderer, isRecordRestrictedForDeletion, isUserHaveRole, keepInWindow, L, loadIndexedDB, loginIfNotLoggedIn, myAlert, n2mValuesEqual, onNewUser, onOneFormShowed, publishRecord, readableDateFormat, readableTimeFormat, registerFieldClass, registerListRenderer, reloadLocation, removeItem, renderIcon, saveIndexedDB, scrollToVisible, serializeForm, setItem, shakeDomElement, showPrompt, sp, strip_tags, submitData, submitRecord, toReadableDate, toReadableDateTime, toReadableTime, UID, updateHashLocation
 };
 

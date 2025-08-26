@@ -8,6 +8,7 @@
     "database UI"
   ],
   "scripts": {
+    "watch": "tsc -w -p tsconfig.server.json",
     "build-client-dev": "npx vite --config vite.config.js",
     "build-client-prod": "npx vite build --config vite.config-prod.js",
     "test": "jest --detectOpenHandles --verbose=true",

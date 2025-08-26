@@ -39,19 +39,6 @@ const mysqlExec = (query: string, params?: string[]): Promise<QueryResultRow[]> 
 	});
 };
 
-if(!String.prototype.replaceAll) {
-	const expCache = new Map();
-	String.prototype.replaceAll = function (str, newStr) {
-		/// #if DEBUG
-		assert(typeof str === 'string', "string expected")
-		/// #endif
-		if(!expCache.has(str)) {
-			expCache.set(str, new RegExp(str, 'g'))
-		}
-		return this.replace(expCache.get(str), newStr);
-	};
-}
-
 let mysqlTransactStarted = false;
 const transactionsQue = [];
 
@@ -112,7 +99,7 @@ const mysql_real_escape_object = (o) => {
 		}
 	}
 };
-const mysql_real_escape_string = (str) => {
+const mysql_real_escape_string = (str) => { //TODO remove
 	return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
 		switch(char) {
 			case "\0":

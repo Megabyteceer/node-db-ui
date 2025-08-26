@@ -59,7 +59,7 @@ const LANGS = {
 	'PUBLISH': 'Publish',
 	'DETAILS': 'Details',
 	'SELECT': 'Select',
-	'REQUIRED_FLD': 'Required field.',
+	'REQUIRED_FLD': 'Required.',
 	'SAVE': 'Save',
 	'SAVE_TEMPLATE': 'Save as template',
 	'BACK': 'Back',
@@ -112,4 +112,5 @@ const LANGS = {
 initDictionary(LANGS);
 
 type LANG_KEYS = keyof typeof LANGS;
-export { LANG_KEYS }
+export { LANG_KEYS };
+

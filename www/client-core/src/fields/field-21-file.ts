@@ -1,13 +1,12 @@
-import ReactDOM from "react-dom";
 import React from "react";
+import ReactDOM from "react-dom";
 
-import { R } from "../r";
 import { Component } from "react";
 import { FIELD_TYPE } from "../bs-utils";
 import { ENV } from "../main-frame";
 import { Modal } from "../modal";
-import { checkFileSize, getReadableUploadSize, idToFileUrl, L, renderIcon, serializeForm, submitData } from "../utils";
-import { registerFieldClass } from "../utils";
+import { R } from "../r";
+import { checkFileSize, getReadableUploadSize, idToFileUrl, L, registerFieldClass, renderIcon, serializeForm, submitData } from "../utils";
 import { BaseField, RefToInput } from "./base-field";
 import { FieldWrap } from "./field-wrap";
 
@@ -77,7 +76,7 @@ class FileFormBody extends Component<any, any> {
 
 	async save(fieldWrap: FieldWrap) {
 		if(this.waitingForUpload) {
-			let n = ReactDOM.findDOMNode(this.formRef);
+			let n = ReactDOM.findDOMNode(this.formRef) as HTMLFormElement;
 			let fileId = await submitData('api/uploadFile', serializeForm(n), true);
 			if(!fileId) {
 				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.field_name, L('UPLOAD_ERROR'));
