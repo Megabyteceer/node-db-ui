@@ -1,8 +1,10 @@
 import { throwError } from '../../www/client-core/src/assert';
-import { FIELD_ID, FIELD_TYPE, NODE_ID, RecordData, RecordDataWrite, UserSession, VIEW_MASK } from '../../www/client-core/src/bs-utils';
+import type { RecordData, RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import { FIELD_ID, FIELD_TYPE, NODE_ID, VIEW_MASK } from '../../www/client-core/src/bs-utils';
 import { shouldBeAdmin } from '../admin/admin';
 import { mustBeUnset } from '../auth';
-import { getLangs, getNodeDesc, NodeEventsHandlers, reloadMetadataSchedule } from '../describe-node';
+import type { NodeEventsHandlers } from '../describe-node';
+import { getLangs, getNodeDesc, reloadMetadataSchedule } from '../describe-node';
 import { getRecords } from '../get-records';
 import { L } from '../locale';
 import { mysqlExec } from '../mysql-connection';
@@ -15,7 +17,7 @@ const handlers: NodeEventsHandlers = {
 		if (data.multilingual) {
 			const langs = getLangs();
 			const fn = data.fieldName;
-			for (let l of langs) {
+			for (const l of langs) {
 				if (l.prefix) {
 					data.fieldName = fn + l.prefix;
 					await createFieldInTable(data);
@@ -55,7 +57,7 @@ const handlers: NodeEventsHandlers = {
 		}
 
 		// update priority
-		let fields = await getRecords(NODE_ID.FIELDS, VIEW_MASK.ALL, null, userSession, {
+		const fields = await getRecords(NODE_ID.FIELDS, VIEW_MASK.ALL, null, userSession, {
 			nodeFieldsLinker: data.nodeFieldsLinker
 		});
 		fields.items.sort((a, b) => {
@@ -111,7 +113,7 @@ const handlers: NodeEventsHandlers = {
 
 							if (multilingualChanged) {
 								if (currentData.multilingual) {
-									for (let l of langs) {
+									for (const l of langs) {
 										if (l.prefix) {
 											currentData.fieldName = realFieldName + l.prefix;
 											await createFieldInTable(currentData);
@@ -119,14 +121,14 @@ const handlers: NodeEventsHandlers = {
 									}
 									currentData.fieldName = realFieldName;
 								} else {
-									for (let l of langs) {
+									for (const l of langs) {
 										if (l.prefix) {
 											await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realFieldName + l.prefix);
 										}
 									}
 								}
 							} else if (currentData.multilingual) {
-								for (let l of langs) {
+								for (const l of langs) {
 									if (l.prefix) {
 										await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + l.prefix + ' ' + typeQ);
 									}

@@ -4,7 +4,8 @@ import { assert, ESCAPE_BEGIN, ESCAPE_END, SQLInjectionsCheck, throwError } from
 import { getCurrentStack } from '../www/client-core/src/bs-utils';
 /// #endif
 
-import { escapeLiteral, Pool, QueryResultRow } from 'pg';
+import type { QueryResultRow } from 'pg';
+import { escapeLiteral, Pool } from 'pg';
 
 /** escape number */
 const D = (val: number): string => {
@@ -22,7 +23,9 @@ const D = (val: number): string => {
 	);
 };
 
+/** escaped 0 for SQL */
 const NUM_0 = D(0);
+/** escaped 1 for SQL */
 const NUM_1 = D(1);
 
 const pool = new Pool();
@@ -35,8 +38,9 @@ const mysqlExec = (query: string): Promise<QueryResultRow[]> => {
 	/// #if DEBUG
 
 	SQLInjectionsCheck(query);
+	query = query.split(ESCAPE_BEGIN).join('').split(ESCAPE_END).join('')
 
-	let SQL = {
+	const SQL = {
 		timeElapsed_ms: performance.now(),
 		SQL: query,
 		stack: getCurrentStack()
@@ -49,21 +53,6 @@ const mysqlExec = (query: string): Promise<QueryResultRow[]> => {
 	}
 	/// #endif
 	return new Promise((resolve) => {
-		/// #if DEBUG
-		//check for ' symbols added without escapeString method
-		const a = query.split(ESCAPE_BEGIN + "'");
-		for (const part of a) {
-			const partA = part.split(ESCAPE_END);
-			const str = partA.pop().replace(/[_a-zA-Z]\d+/gm, '');
-			if (str.includes("'")) {
-				throwError("query has text '' literal added with not escapeString() method. SQL injection detected: " + str.substring(str.indexOf("'")));
-			}
-			if (/\d/.test(str)) {
-				throwError('query has number literal added with not D() or A() method. SQL injection detected: ' + str.substring(/\d/.exec(str).index));
-			}
-		}
-
-		/// #endif
 		return pool
 			.query(query)
 			.then((res) => {

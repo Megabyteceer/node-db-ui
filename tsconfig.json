@@ -4,7 +4,8 @@
 		"moduleResolution": "nodenext",
 		"lib": [
 			"DOM",
-			"ESNext"
+			"ESNext",
+			"ES2024.String"
 		],
 		"target": "esnext",
 		"rootDir": ".",

@@ -1,21 +1,13 @@
 import React, { Component } from 'react';
-import { NODE_ID, NODE_TYPE, NodeDesc } from '../bs-utils';
+import type { NodeDesc } from '../bs-utils';
+import { NODE_ID, NODE_TYPE } from '../bs-utils';
 import { R } from '../r';
-import {
-	CLIENT_SIDE_FORM_EVENTS,
-	getNode,
-	getNodeData,
-	keepInWindow,
-	L,
-	reloadLocation,
-	renderIcon,
-	sp,
-} from '../utils';
+import { CLIENT_SIDE_FORM_EVENTS, getNode, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
 import { admin } from './admin-utils';
 import { FieldAdmin } from './field-admin';
 
-var showedNodeId;
+let showedNodeId;
 
 /// #if DEBUG
 /*
@@ -29,7 +21,7 @@ class NodeAdmin extends Component<any, any> {
 	constructor(props) {
 		super(props);
 
-		if (this.props.form) {
+		if(this.props.form) {
 			this.state = {
 				show: this.props.form.props.node && showedNodeId === this.props.form.props.node.id,
 			};
@@ -47,7 +39,7 @@ class NodeAdmin extends Component<any, any> {
 	}
 
 	componentDidMount() {
-		if (this.props.form && !this.props.form.props.node) {
+		if(this.props.form && !this.props.form.props.node) {
 			getNode(this.props.form.props.nodeId).then((node) => {
 				this.node = node;
 				this.forceUpdate();
@@ -60,11 +52,11 @@ class NodeAdmin extends Component<any, any> {
 	}
 
 	show() {
-		if (this.timeout) {
+		if(this.timeout) {
 			clearTimeout(this.timeout);
 			delete this.timeout;
 		}
-		if (!this.state.show) {
+		if(!this.state.show) {
 			this.setState({
 				show: true,
 			});
@@ -72,7 +64,7 @@ class NodeAdmin extends Component<any, any> {
 	}
 
 	hide() {
-		if (this.state.show) {
+		if(this.state.show) {
 			this.setState({
 				show: false,
 			});
@@ -92,14 +84,14 @@ class NodeAdmin extends Component<any, any> {
 	}
 
 	render() {
-		var node;
-		var form;
-		var item;
+		let node;
+		let form;
+		let item;
 
-		if (this.props.form) {
+		if(this.props.form) {
 			node = this.props.form.props.node || this.node;
 			form = this.props.form;
-			if (!node) {
+			if(!node) {
 				return R.div();
 			}
 		} else {
@@ -107,13 +99,13 @@ class NodeAdmin extends Component<any, any> {
 			item = this.props.menuItem; //left-bar-item
 		}
 
-		var nodeId = node && (node.id || item.id);
+		const nodeId = node && (node.id || item.id);
 
-		var borderOnSave;
-		var borderOnAfterSave;
-		var borderOnLoad;
+		let borderOnSave;
+		let borderOnAfterSave;
+		let borderOnLoad;
 
-		if (
+		if(
 			form &&
 			form._getFormEventHandler &&
 			form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE)
@@ -123,7 +115,7 @@ class NodeAdmin extends Component<any, any> {
 			borderOnSave = '';
 		}
 
-		if (
+		if(
 			form &&
 			form._getFormEventHandler &&
 			form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE)
@@ -133,7 +125,7 @@ class NodeAdmin extends Component<any, any> {
 			borderOnAfterSave = '';
 		}
 
-		if (
+		if(
 			form &&
 			form._getFormEventHandler &&
 			form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD)
@@ -143,52 +135,52 @@ class NodeAdmin extends Component<any, any> {
 			borderOnLoad = '';
 		}
 
-		var body;
+		let body;
 
-		var bodyVisible = this.state.show || this.state.locked;
+		const bodyVisible = this.state.show || this.state.locked;
 
-		if (bodyVisible) {
-			var buttons;
-			var allFields;
-			if (!item) {
-				if (this.state.allFieldsVisible) {
+		if(bodyVisible) {
+			let buttons;
+			let allFields;
+			if(!item) {
+				if(this.state.allFieldsVisible) {
 					allFields = [];
-					for (let f of node.fields) {
-						if (f.lang) continue;
+					for(const f of node.fields) {
+						if(f.lang) continue;
 
 						allFields.push(
 							R.span({
 								key: f.id + 'a',
 								className: 'admin-form-header',
 							})
-						),
-							allFields.push(
+						);
+						allFields.push(
+							R.div(
+								{
+									key: f.id,
+									className: 'admin-form-all-fields',
+								},
 								R.div(
 									{
-										key: f.id,
-										className: 'admin-form-all-fields',
+										className: 'admin-form-all-fields-name',
 									},
-									R.div(
-										{
-											className: 'admin-form-all-fields-name',
-										},
-										f.fieldName + '; (' + f.id + ')'
-									),
-									renderIcon(f.show & 1 ? 'eye' : 'eye-slash half-visible'),
-									renderIcon(f.show & 2 ? 'eye' : 'eye-slash half-visible'),
-									renderIcon(f.show & 16 ? 'eye' : 'eye-slash half-visible'),
-									renderIcon(f.show & 4 ? 'eye' : 'eye-slash half-visible'),
-									renderIcon(f.show & 8 ? 'eye' : 'eye-slash half-visible'),
+									f.fieldName + '; (' + f.id + ')'
+								),
+								renderIcon(f.show & 1 ? 'eye' : 'eye-slash half-visible'),
+								renderIcon(f.show & 2 ? 'eye' : 'eye-slash half-visible'),
+								renderIcon(f.show & 16 ? 'eye' : 'eye-slash half-visible'),
+								renderIcon(f.show & 4 ? 'eye' : 'eye-slash half-visible'),
+								renderIcon(f.show & 8 ? 'eye' : 'eye-slash half-visible'),
 
-									renderIcon(f.forSearch ? 'search-plus' : 'search half-visible'),
-									React.createElement(FieldAdmin, {
-										field: f,
-										form: form,
-										x: 370,
-										zIndex: 10,
-									})
-								)
-							);
+								renderIcon(f.forSearch ? 'search-plus' : 'search half-visible'),
+								React.createElement(FieldAdmin, {
+									field: f,
+									form: form,
+									x: 370,
+									zIndex: 10,
+								})
+							)
+						);
 					}
 				}
 
@@ -267,7 +259,7 @@ class NodeAdmin extends Component<any, any> {
 							className: 'clickable tool-btn admin-form-btn',
 							title: L('FLD_SHOW_ALL'),
 							onClick: () => {
-								if (form) {
+								if(form) {
 									form.showAllDebug = !form.showAllDebug;
 									form.forceUpdate();
 								}
@@ -310,7 +302,7 @@ class NodeAdmin extends Component<any, any> {
 									data.items.sort((a, b) => {
 										return a.prior - b.prior;
 									});
-									let index = data.items.findIndex((i) => i.id === item.id);
+									const index = data.items.findIndex((i) => i.id === item.id);
 									admin.exchangeNodes(data.items[index], data.items[index + 1]);
 								});
 							},
@@ -328,7 +320,7 @@ class NodeAdmin extends Component<any, any> {
 									data.items.sort((a, b) => {
 										return a.prior - b.prior;
 									});
-									let index = data.items.findIndex((i) => i.id === item.id);
+									const index = data.items.findIndex((i) => i.id === item.id);
 									admin.exchangeNodes(data.items[index], data.items[index - 1]);
 								});
 							},
@@ -418,7 +410,7 @@ class NodeAdmin extends Component<any, any> {
 }
 
 function createNodeForMenuItem(item) {
-	let isBasedOnDocument = item.nodeType === NODE_TYPE.DOCUMENT;
+	const isBasedOnDocument = item.nodeType === NODE_TYPE.DOCUMENT;
 	getNodeData(NODE_ID.NODES, (isBasedOnDocument ? item.parent : item.id) as number).then((data) => {
 		crudJs.Stage.showForm(
 			NODE_ID.NODES,
@@ -438,3 +430,4 @@ function createNodeForMenuItem(item) {
 }
 
 export { createNodeForMenuItem, NodeAdmin };
+

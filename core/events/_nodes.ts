@@ -1,7 +1,9 @@
 import { throwError } from '../../www/client-core/src/assert';
-import { FIELD_TYPE, NODE_ID, NODE_TYPE, RecordData, RecordDataWrite, UserSession, VIEW_MASK } from '../../www/client-core/src/bs-utils';
+import type { RecordData, RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import { FIELD_TYPE, NODE_ID, NODE_TYPE, VIEW_MASK } from '../../www/client-core/src/bs-utils';
 import { shouldBeAdmin } from '../admin/admin';
-import { NodeEventsHandlers, reloadMetadataSchedule } from '../describe-node';
+import type { NodeEventsHandlers } from '../describe-node';
+import { reloadMetadataSchedule } from '../describe-node';
 import { getRecords } from '../get-records';
 import { mysqlExec } from '../mysql-connection';
 import { submitRecord } from '../submit';
@@ -83,7 +85,7 @@ const handlers: NodeEventsHandlers = {
 			await mysqlExec(createdByOrganozation);
 		}
 
-		let nodes = await getRecords(NODE_ID.NODES, VIEW_MASK.ALL, null, userSession, {
+		const nodes = await getRecords(NODE_ID.NODES, VIEW_MASK.ALL, null, userSession, {
 			_nodesId: data._nodesId
 		});
 		nodes.items.sort((a, b) => {

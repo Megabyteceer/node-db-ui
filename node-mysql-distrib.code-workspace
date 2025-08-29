@@ -5,6 +5,19 @@
 		}
 	],
 	"settings": {
+		"files.exclude": {
+			"www/images/**": true,
+			"www/uploads/**": true,
+			"core/admin/settings_store/**": true,
+			"build-debug/**": true,
+			"cert/**": true,
+			"vite-plugin-ifdef/**": true,
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/.DS_Store": true,
+			"**/Thumbs.db": true
+		},
 		"editor.formatOnSave": true,
 		"javascript.preferences.importModuleSpecifier": "relative",
 		"typescript.preferences.importModuleSpecifier": "relative",
@@ -32,22 +45,19 @@
 				}
 			}
 		],
+		"eslint.format.enable": true,
+		"eslint.enable": true,
 		"editor.codeActionsOnSave": {
 			"source.organizeImports": "always",
-			"source.fixAll.eslint": "always",
-			"source.fixAll.tslint": "always"
+			"source.fixAll.eslint": "always"
 		},
-		"prettier.useTabs": true,
-		"prettier.tabWidth": 4,
-		"prettier.printWidth": 200,
-		"prettier.singleQuote": true,
-		"prettier.trailingComma": "none",
+		"typescript.preferences.preferTypeOnlyAutoImports": true,
 		"javascript.preferences.importModuleSpecifierEnding": "index",
 		"typescript.preferences.importModuleSpecifierEnding": "index",
 		"typescript.preferences.quoteStyle": "single",
 		"javascript.preferences.quoteStyle": "single",
 		"typescript.format.enable": true,
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint",
 		"[json]": {
 			"editor.formatOnSave": true
 		},
@@ -69,9 +79,7 @@
 			"editor.defaultFormatter": "vscode.html-language-features"
 		},
 		"js/ts.implicitProjectConfig.checkJs": true,
-		"[typescript]": {
-			"editor.defaultFormatter": "esbenp.prettier-vscode"
-		}
+		"eslint.debug": false
 	},
 	"tasks": {
 		"version": "2.0.0",
@@ -168,7 +176,7 @@
 				"vueComponentPaths": [],
 				"enableContentValidation": false,
 				"pauseForSourceMap": true,
-				"url": "http://node-db-ui.com:5173/#n/4/r/new/e",
+				"url": "http://node-db-ui.com:5173/#n/4/r/121/e",
 				"userDataDir": "C:/tmp/userdir"
 			}
 		],

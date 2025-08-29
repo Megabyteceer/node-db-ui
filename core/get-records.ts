@@ -1,8 +1,9 @@
 /// <reference types="../types/generated" />
 
 import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
-import { FIELD_TYPE, FilterDesc, PRIVILEGES_MASK, RecId, RecordData, RecordsData, VIEW_MASK } from '../www/client-core/src/bs-utils';
-import { UserSession } from './auth';
+import type { FilterDesc, RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
+import { FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import type { UserSession } from './auth';
 import { ADMIN_USER_SESSION, filtersById, getNodeDesc, getNodeEventHandler, ServerSideEventHandlersNames } from './describe-node';
 import { A, D, escapeString, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 
@@ -42,23 +43,23 @@ async function getRecords(
 	filterFields: any = EMPTY_FILTERS,
 	search?: string
 ): Promise<RecordData | RecordsData> {
-	let node = getNodeDesc(nodeId, userSession);
+	const node = getNodeDesc(nodeId, userSession);
 
 	if (!node.storeForms) {
 		return null;
 	}
 
-	let singleSelectionById = typeof recId === 'number';
+	const singleSelectionById = typeof recId === 'number';
 
-	let selQ = ['SELECT '];
+	const selQ = ['SELECT '];
 
-	let tableName = node.tableName;
+	const tableName = node.tableName;
 	let tables = tableName;
 
 	//=========================================================
 	//===== fields list =======================================
 	//=========================================================
-	for (let f of node.fields) {
+	for (const f of node.fields) {
 		if (f.storeInDb && f.show & viewMask) {
 			const fieldType = f.fieldType;
 			const fieldName = f.fieldName;
@@ -66,7 +67,7 @@ async function getRecords(
 
 			if (fieldType === FIELD_TYPE.LOOKUP_NtoM) {
 				//n2m
-				let tblTmpName = '"t' + f.id + '"';
+				const tblTmpName = '"t' + f.id + '"';
 				if (f.lookupIcon) {
 					selQ.push(
 						'ARRAY(SELECT ',
@@ -181,6 +182,7 @@ async function getRecords(
 					);
 				}
 			} else if (selectFieldName) {
+				//@ts-ignore
 				selQ.push('(', ESCAPE_BEGIN, selectFieldName.replaceAll('@userId', userSession.id.toString()), ESCAPE_END, ')AS "', fieldName, '"');
 			} else if ((viewMask === VIEW_MASK.LIST || viewMask === VIEW_MASK.CUSTOM_LIST) && (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.RICH_EDITOR) && f.maxLength > 500) {
 				selQ.push('SUBSTRING("', tableName, '"."', fieldName, FILTERS_LIMIT_SQL_PART, fieldName, '"');
@@ -243,7 +245,7 @@ async function getRecords(
 
 		const isAsciiSearch = search && isASCII(search);
 
-		for (let f of node.fields) {
+		for (const f of node.fields) {
 			fieldName = f.fieldName;
 
 			if (f.id === filterFields.o) {
@@ -283,7 +285,7 @@ async function getRecords(
 
 		if (searchWHERE) {
 			wheres.push(' AND (');
-			wheres.push.apply(wheres, searchWHERE);
+			wheres.push(...searchWHERE);
 			wheres.push(') ');
 		}
 
@@ -302,12 +304,12 @@ async function getRecords(
 					fw = fw.replaceAll('@userId', userSession.id);
 					fw = fw.replaceAll('@orgId', userSession.orgId);
 					if (fw.indexOf('@') >= 0) {
-						for (let k in filterFields) {
+						for (const k in filterFields) {
 							fw.replaceAll('@' + k, D(filterFields[k]));
 						}
 					}
 				}
-				if (filter.hi_priority) {
+				if (filter.hiPriority) {
 					hiPriorityFilter = ['(', fw, ')AND '];
 				} else {
 					wheres.push(' AND (', ESCAPE_BEGIN, fw, ESCAPE_END, ')');
@@ -346,10 +348,10 @@ async function getRecords(
 
 	const wheresBegin = [' FROM "', tables, '" WHERE '];
 	if (hiPriorityFilter) {
-		wheresBegin.push.apply(wheresBegin, hiPriorityFilter);
+		wheresBegin.push(...hiPriorityFilter);
 	}
 
-	let privileges = node.privileges;
+	const privileges = node.privileges;
 	if (userSession) {
 		if ((privileges & (PRIVILEGES_MASK.EDIT_OWN | PRIVILEGES_MASK.EDIT_ORG | PRIVILEGES_MASK.EDIT_ALL | PRIVILEGES_MASK.PUBLISH)) !== 0) {
 			wheresBegin.push('("', tableName, STATUS_FILTER_SQL_PART_ANY);
@@ -357,7 +359,8 @@ async function getRecords(
 			wheresBegin.push('("', tableName, STATUS_FILTER_SQL_PART_PUBLISHED);
 		}
 
-		if (privileges & PRIVILEGES_MASK.VIEW_ALL || (filter && filter.hi_priority)) {
+		if (privileges & PRIVILEGES_MASK.VIEW_ALL || (filter && filter.hiPriority)) {
+			/* empty */
 		} else if (privileges & PRIVILEGES_MASK.VIEW_ORG && userSession.orgId !== 0) {
 			wheresBegin.push(' AND ("', tableName, '"."_organizationId"=', D(userSession.orgId), ')');
 		} else if (privileges & PRIVILEGES_MASK.VIEW_OWN) {
@@ -369,13 +372,13 @@ async function getRecords(
 		wheresBegin.push(NUM_1);
 	}
 
-	selQ.push.apply(selQ, wheresBegin);
-	selQ.push.apply(selQ, wheres);
-	selQ.push.apply(selQ, ordering);
+	selQ.push(...wheresBegin);
+	selQ.push(...wheres);
+	selQ.push(...ordering);
 
-	let items: RecordData[] = (await mysqlExec(selQ.join(''))) as RecordData[];
+	const items: RecordData[] = (await mysqlExec(selQ.join(''))) as RecordData[];
 
-	for (let pag of items) {
+	for (const pag of items) {
 		if (viewMask) {
 			if (privileges & PRIVILEGES_MASK.EDIT_ALL) {
 				pag.isE = 1;
@@ -398,7 +401,7 @@ async function getRecords(
 				}
 			}
 
-			for (let f of node.fields) {
+			for (const f of node.fields) {
 				if (f.storeInDb && f.show & viewMask) {
 					const fieldType = f.fieldType;
 					const fieldName = f.fieldName;
@@ -417,7 +420,7 @@ async function getRecords(
 					} else if (fieldType === FIELD_TYPE.LOOKUP) {
 						//n21
 						if (pag[fieldName]) {
-							let a = pag[fieldName].split(GROUP_SPLITTER);
+							const a = pag[fieldName].split(GROUP_SPLITTER);
 							if (f.lookupIcon) {
 								pag[fieldName] = {
 									id: parseInt(a[0]),
@@ -441,9 +444,9 @@ async function getRecords(
 
 	if (!singleSelectionById) {
 		const countQ = ['SELECT COUNT(*)'];
-		countQ.push.apply(countQ, wheresBegin);
-		countQ.push.apply(countQ, wheres);
-		let total = await mysqlExec(countQ.join(''));
+		countQ.push(...wheresBegin);
+		countQ.push(...wheres);
+		const total = await mysqlExec(countQ.join(''));
 		return { items, total: parseInt(total[0].count) };
 	} else {
 		if (items.length) {
@@ -457,7 +460,7 @@ async function getRecords(
 	}
 }
 
-const DELETE_RECORD_SQL_PART = ' SET status=' + NUM_0 + ' WHERE id=';
+const DELETE_RECORD_SQL_PART = '" SET status=' + NUM_0 + ' WHERE id=';
 async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 	const node = getNodeDesc(nodeId, userSession);
 
@@ -468,7 +471,7 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 
 	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeDelete, recordData, userSession);
 
-	await mysqlExec('UPDATE ' + node.tableName + DELETE_RECORD_SQL_PART + D(recId));
+	await mysqlExec('UPDATE "' + node.tableName + DELETE_RECORD_SQL_PART + D(recId));
 
 	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterDelete, recordData, userSession);
 

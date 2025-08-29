@@ -1,10 +1,6 @@
 import { throwError } from '../../www/client-core/src/assert';
-import {
-	NODE_ID,
-	RecordData,
-	RecordDataWrite,
-	UserSession,
-} from '../../www/client-core/src/bs-utils';
+import type { RecordData, RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import { NODE_ID } from '../../www/client-core/src/bs-utils';
 import { shouldBeAdmin } from '../admin/admin';
 import { reloadMetadataSchedule } from '../describe-node';
 import { getRecords } from '../get-records';
@@ -18,7 +14,7 @@ export default {
 			p: '*',
 		});
 		const fields = fieldsData.items;
-		for (let f of fields) {
+		for (const f of fields) {
 			f.nodeFieldsLinker = f.nodeFieldsLinker.id;
 			f.fieldName = f.fieldName + '$' + data.code;
 			f.unique = 0;

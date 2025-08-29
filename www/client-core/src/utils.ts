@@ -3,26 +3,8 @@ import { LITE_UI_PREFIX } from './consts';
 import type { LANG_KEYS } from './locales/en/lang';
 
 import ReactDOM from 'react-dom';
-import type {
-	Filters,
-	IFormParameters,
-	NodeDesc,
-	RecId,
-	RecordData,
-	RecordsData,
-} from './bs-utils';
-import {
-	FIELD_TYPE,
-	FieldDesc,
-	GetRecordsParams,
-	HASH_DIVIDER,
-	NODE_ID,
-	RecordSubmitResult,
-	ROLE_ID,
-	USER_ID,
-	UserSession,
-	VIEW_MASK,
-} from './bs-utils';
+import type { FieldDesc, Filters, GetRecordsParams, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, RecordSubmitResult, UserSession } from './bs-utils';
+import { FIELD_TYPE, HASH_DIVIDER, NODE_ID, ROLE_ID, USER_ID, VIEW_MASK } from './bs-utils';
 import { LoadingIndicator } from './loading-indicator';
 import { Modal } from './modal';
 import { Notify } from './notify';
@@ -32,17 +14,18 @@ import { User } from './user';
 /// #if DEBUG
 import { DebugPanel } from './debug-panel';
 /// #endif
-import React, { Component } from 'react';
+import type { Component } from 'react';
+import React from 'react';
 import { assert } from './assert';
 import { HotkeyButton } from './components/hotkey-button';
-import { List } from './forms/list';
+import type { List } from './forms/list';
 import { ENV } from './main-frame';
 
 enum CLIENT_SIDE_FORM_EVENTS {
 	ON_FORM_SAVE = 'onSave',
 	ON_FORM_AFTER_SAVE = 'onAfterSave',
 	ON_FORM_LOAD = 'onLoad',
-	ON_FIELD_CHANGE = 'onChange',
+	ON_FIELD_CHANGE = 'onChange'
 }
 /// #if DEBUG
 const __corePath = 'http://127.0.0.1:1443/core/';
@@ -73,8 +56,8 @@ function restrictRecordsDeletion(nodes: RestrictDeletionData) {
 			if (!restrictedRecords.has(nodeId)) {
 				restrictedRecords.set(nodeId, new Map());
 			}
-			let nodeMap = restrictedRecords.get(nodeId);
-			for (var recordId of recordsIds) {
+			const nodeMap = restrictedRecords.get(nodeId);
+			for (const recordId of recordsIds) {
 				nodeMap.set(recordId, 1);
 			}
 		}
@@ -82,17 +65,13 @@ function restrictRecordsDeletion(nodes: RestrictDeletionData) {
 }
 
 restrictRecordsDeletion({
-	4: [
-		1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 20, 22, 50, 52, 53,
-	] /* disable critical sections  deletion/hiding*/,
+	4: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 20, 22, 50, 52, 53] /* disable critical sections  deletion/hiding*/,
 	5: [1, 2, 3] /* disable admin,user,guest deletion*/,
 	7: [1, 2, 3] /* disable critical organizations deletion*/,
 	8: [1, 2, 3] /* disable critical roles deletion*/,
 	12: [1] /* disable default language deletion*/,
 	52: [1] /* disable field type enum deletion*/,
-	53: [
-		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 30, 43,
-	] /* disable field type enum deletion*/,
+	53: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 30, 43] /* disable field type enum deletion*/
 });
 
 function isRecordRestrictedForDeletion(nodeId, recordId) {
@@ -101,25 +80,18 @@ function isRecordRestrictedForDeletion(nodeId, recordId) {
 	}
 }
 
-function myAlert(
-	txt: string | React.ReactElement,
-	isSuccess?: boolean,
-	autoHide?: boolean,
-	noDiscardByBackdrop?: boolean,
-	onOk?: () => void,
-	okButtonText?: string
-) {
+function myAlert(txt: string | React.ReactElement, isSuccess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean, onOk?: () => void, okButtonText?: string) {
 	if (!Modal.instance) {
 		alert(txt);
 	} else {
-		var className;
+		let className;
 		if (isSuccess) {
 			className = 'alert-bg alert-bg-success';
 		} else {
 			className = 'alert-bg alert-bg-danger';
 		}
 
-		var button;
+		let button;
 		if (onOk) {
 			button = R.div(
 				{ className: 'alert-button-container' },
@@ -130,14 +102,14 @@ function myAlert(
 						onClick: () => {
 							Modal.instance.hide(modalId);
 							onOk();
-						},
+						}
 					},
 					okButtonText || L('OK')
 				)
 			);
 		}
 
-		var modalId = Modal.instance.show(R.div({ className }, txt, button), noDiscardByBackdrop);
+		const modalId = Modal.instance.show(R.div({ className }, txt, button), noDiscardByBackdrop);
 
 		if (autoHide) {
 			setTimeout(() => {
@@ -147,14 +119,7 @@ function myAlert(
 	}
 }
 
-async function showPrompt(
-	txt: string | Component,
-	yesLabel?: string,
-	noLabel?: string,
-	yesIcon?: string,
-	noIcon?: string,
-	discardByOutsideClick?: boolean
-) {
+async function showPrompt(txt: string | Component, yesLabel?: string, noLabel?: string, yesIcon?: string, noIcon?: string, discardByOutsideClick?: boolean) {
 	return new Promise((resolve) => {
 		if (!yesLabel) {
 			yesLabel = L('OK');
@@ -162,8 +127,6 @@ async function showPrompt(
 		if (!yesIcon) {
 			yesIcon = 'check';
 		}
-
-		var noButton;
 
 		if (!noLabel) {
 			noLabel = L('CANCEL');
@@ -173,17 +136,17 @@ async function showPrompt(
 			noIcon = 'times';
 		}
 
-		noButton = React.createElement(HotkeyButton, {
+		const noButton = React.createElement(HotkeyButton, {
 			hotkey: 27,
 			onClick: () => {
 				Modal.instance.hide();
 				resolve(false);
 			},
 			className: 'clickable prompt-no-button',
-			label: R.span(null, renderIcon(noIcon), ' ', noLabel),
+			label: R.span(null, renderIcon(noIcon), ' ', noLabel)
 		});
 
-		var body = R.span(
+		const body = R.span(
 			{ className: 'prompt-body' },
 			txt,
 			R.div(
@@ -196,7 +159,7 @@ async function showPrompt(
 						resolve(true);
 					},
 					className: 'clickable prompt-yes-button',
-					label: R.span(null, renderIcon(yesIcon), ' ', yesLabel),
+					label: R.span(null, renderIcon(yesIcon), ' ', yesLabel)
 				})
 			)
 		);
@@ -212,7 +175,7 @@ function debugError(txt) {
 	console.error(txt);
 }
 
-var _oneFormShowed;
+let _oneFormShowed;
 const onOneFormShowed = () => {
 	_oneFormShowed = true;
 };
@@ -230,8 +193,7 @@ function handleError(error, url, callStack) {
 		error.debug.request = url;
 	}
 
-	if (DebugPanel.instance) {
-	} else {
+	if (!DebugPanel.instance) {
 		throw error;
 	}
 	/*
@@ -279,6 +241,7 @@ function sp(event) {
 	}
 }
 
+/** SQL debug and server events notifications (notificationOut) */
 function handleAdditionalData(data, url) {
 	if (data.hasOwnProperty('debug') && data.debug) {
 		/// #if DEBUG
@@ -296,9 +259,9 @@ function handleAdditionalData(data, url) {
 	}
 }
 
-var innerDateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
-var readableDateFormat = 'D MMMM YYYY';
-var readableTimeFormat = 'H:mm';
+const innerDateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+const readableDateFormat = 'D MMMM YYYY';
+const readableTimeFormat = 'H:mm';
 
 function toReadableDate(d) {
 	if (d) {
@@ -335,13 +298,8 @@ function goToHome() {
 	}
 }
 
-function locationToHash(
-	nodeId: RecId,
-	recId: RecId | 'new',
-	filters?: Filters,
-	editable?: boolean
-) {
-	var newHash = ['n', encodeURIComponent(nodeId)];
+function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, editable?: boolean) {
+	let newHash = ['n', encodeURIComponent(nodeId)];
 
 	if (recId || recId === 0) {
 		newHash.push('r');
@@ -352,9 +310,9 @@ function locationToHash(
 	}
 
 	if (filters && Object.keys(filters).length > 0) {
-		var complicatedFilters = false;
-		for (var k in filters) {
-			var v = filters[k];
+		let complicatedFilters = false;
+		for (const k in filters) {
+			const v = filters[k];
 			if (typeof v === 'object') {
 				complicatedFilters = true;
 				break;
@@ -365,12 +323,10 @@ function locationToHash(
 			newHash.push('j');
 			newHash.push(encodeURIComponent(JSON.stringify(filters)));
 		} else {
-			var filtersHash;
-			filtersHash = [];
-			for (var k in filters) {
+			const filtersHash = [];
+			for (const k in filters) {
 				if (filters.hasOwnProperty(k) && (filters[k] || filters[k] === 0)) {
 					if (k !== 'p' || filters[k] !== 0) {
-						var v = filters[k];
 						filtersHash.push(k);
 						filtersHash.push(encodeURIComponent(filters[k] as string));
 					}
@@ -399,11 +355,7 @@ function isCurrentlyShowedLeftBarItem(item) {
 		}
 		return item.tab === currentFormParameters.filters.tab;
 	}
-	return (
-		currentFormParameters.nodeId === item.id &&
-		currentFormParameters.recId === item.recId &&
-		currentFormParameters.editable === item.editable
-	);
+	return currentFormParameters.nodeId === item.id && currentFormParameters.recId === item.recId && currentFormParameters.editable === item.editable;
 }
 
 function hashToFormParams(hashTxt: string): IFormParameters {
@@ -414,38 +366,38 @@ function hashToFormParams(hashTxt: string): IFormParameters {
 	let recId;
 	let editable;
 	let filters = {};
-	let hash = hashTxt.split('/');
-	var i;
+	const hash = hashTxt.split('/');
+	let i;
 	while (hash.length) {
 		i = hash.shift();
 		switch (i) {
-			case 'n':
-				nodeId = parseInt(hash.shift());
-				break;
-			case 'r':
-				recId = hash.shift();
-				break;
-			case 'e':
-				editable = true;
-				break;
-			case 'j':
-				filters = JSON.parse(decodeURIComponent(hash.shift()));
-				break;
-			case 'f':
-				while (hash.length) {
-					let key = hash.shift();
-					let val = decodeURIComponent(hash.shift());
-					let numVal = parseInt(val); // return numeric values to filter
-					if (val == numVal.toString()) {
-						// @ts-ignore
-						val = numVal;
-					}
-					filters[key] = val;
+		case 'n':
+			nodeId = parseInt(hash.shift());
+			break;
+		case 'r':
+			recId = hash.shift();
+			break;
+		case 'e':
+			editable = true;
+			break;
+		case 'j':
+			filters = JSON.parse(decodeURIComponent(hash.shift()));
+			break;
+		case 'f':
+			while (hash.length) {
+				const key = hash.shift();
+				let val = decodeURIComponent(hash.shift());
+				const numVal = parseInt(val); // return numeric values to filter
+				if (val == numVal.toString()) {
+					// @ts-ignore
+					val = numVal;
 				}
-				break;
-			default:
-				debugError('Unknown hash entry: ' + i);
-				break;
+				filters[key] = val;
+			}
+			break;
+		default:
+			debugError('Unknown hash entry: ' + i);
+			break;
 		}
 	}
 	if (recId !== 'new') {
@@ -457,15 +409,15 @@ function hashToFormParams(hashTxt: string): IFormParameters {
 }
 
 function getTopHashNodeId() {
-	let hash = window.location.hash.substr(1);
+	const hash = window.location.hash.substr(1);
 	return hashToFormParams(hash.split(HASH_DIVIDER).pop()).nodeId;
 }
 
 async function goToPageByHash() {
 	const isPageLoading = !_oneFormShowed;
 
-	let hash = window.location.hash.substr(1);
-	var formParamsByLevels = hash.split(HASH_DIVIDER).map(hashToFormParams);
+	const hash = window.location.hash.substr(1);
+	const formParamsByLevels = hash.split(HASH_DIVIDER).map(hashToFormParams);
 
 	const Stage = crudJs.Stage;
 	let level;
@@ -474,11 +426,7 @@ async function goToPageByHash() {
 		const formParams = formParamsByLevels[level];
 		const form = Stage.allForms[level].form;
 
-		let isTheSame =
-			form &&
-			formParams.nodeId === form.nodeId &&
-			formParams.recId === form.recId &&
-			Boolean(formParams.editable) === Boolean(form.editable);
+		let isTheSame = form && formParams.nodeId === form.nodeId && formParams.recId === form.recId && Boolean(formParams.editable) === Boolean(form.editable);
 		if (isTheSame) {
 			if (JSON.stringify(form.filters) !== JSON.stringify(formParams.filters)) {
 				isTheSame = false;
@@ -503,16 +451,8 @@ async function goToPageByHash() {
 		}
 	} else {
 		while (level < formParamsByLevels.length) {
-			let paramsToShow = formParamsByLevels[level];
-			await Stage.showForm(
-				paramsToShow.nodeId,
-				paramsToShow.recId,
-				paramsToShow.filters,
-				paramsToShow.editable,
-				level > 0,
-				undefined,
-				isPageLoading
-			);
+			const paramsToShow = formParamsByLevels[level];
+			await Stage.showForm(paramsToShow.nodeId, paramsToShow.recId, paramsToShow.filters, paramsToShow.editable, level > 0, undefined, isPageLoading);
 			level++;
 		}
 	}
@@ -545,12 +485,12 @@ async function goBack(isAfterDelete?: boolean) {
 }
 
 function assignFilters(src, desc): boolean {
-	var leastOneUpdated;
-	var keys = Object.keys(src);
-	for (var i = keys.length; i > 0; ) {
+	let leastOneUpdated;
+	const keys = Object.keys(src);
+	for (let i = keys.length; i > 0; ) {
 		i--;
-		var name = keys[i];
-		var value = src[name];
+		const name = keys[i];
+		const value = src[name];
 		if (desc[name] !== value) {
 			desc[name] = value;
 			leastOneUpdated = true;
@@ -566,18 +506,13 @@ function updateHashLocation(replaceState = false) {
 	if (isHistoryChanging) {
 		return;
 	}
-	var newHash =
+	const newHash =
 		'#' +
 		crudJs.Stage.allForms
 			.map((formEntry) => {
 				const formParameters = formEntry.form;
 				const filters = formParameters.filters;
-				return locationToHash(
-					formParameters.nodeId,
-					formParameters.recId,
-					filters,
-					formParameters.editable
-				);
+				return locationToHash(formParameters.nodeId, formParameters.recId, filters, formParameters.editable);
 			})
 			.join(HASH_DIVIDER);
 
@@ -602,8 +537,8 @@ window.addEventListener('hashchange', () => {
 	isHistoryChanging = false;
 });
 
-var nodes;
-var nodesRequested;
+let nodes;
+let nodesRequested;
 
 function onNewUser() {
 	nodes = {};
@@ -653,7 +588,7 @@ async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string):
 		} else {
 			try {
 				nodesRequested[nodeId] = true;
-				let data = await getData('api/descNode', { nodeId });
+				const data = await getData('api/descNode', { nodeId });
 				normalizeNode(data);
 				nodes[nodeId] = data;
 				return data;
@@ -739,9 +674,9 @@ async function getNodeData(
 	}
 	/// #endif
 
-	var callStack = new Error('getNodeData called from: ').stack;
+	const callStack = new Error('getNodeData called from: ').stack;
 
-	let params: GetRecordsParams = { nodeId };
+	const params: GetRecordsParams = { nodeId };
 
 	if (typeof recId !== 'undefined') {
 		params.recId = recId;
@@ -784,12 +719,12 @@ async function getNodeData(
 			delete data.node;
 		}
 
-		let node = await waitForNode(nodeId);
+		const node = await waitForNode(nodeId);
 
 		data = data.data;
 		if (data) {
 			if (data.hasOwnProperty('items')) {
-				for (var k in data.items) {
+				for (const k in data.items) {
 					decodeData(data.items[k], node);
 				}
 			} else {
@@ -802,9 +737,9 @@ async function getNodeData(
 	}
 }
 
-var _fieldClasses = {};
-var fieldsEncoders = [];
-var fieldsDecoders = [];
+const _fieldClasses = {};
+const fieldsEncoders = [];
+const fieldsDecoders = [];
 
 function getClassForField(type) {
 	if (_fieldClasses.hasOwnProperty(type)) {
@@ -831,8 +766,8 @@ function registerFieldClass(type, class_) {
 }
 
 function decodeData(data, node) {
-	for (var k in node.fields) {
-		var f = node.fields[k];
+	for (const k in node.fields) {
+		const f = node.fields[k];
 		if (data.hasOwnProperty(f.fieldName)) {
 			if (fieldsDecoders.hasOwnProperty(f.fieldType)) {
 				data[f.fieldName] = fieldsDecoders[f.fieldType](data[f.fieldName]);
@@ -841,9 +776,9 @@ function decodeData(data, node) {
 	}
 }
 function encodeData(data, node): RecordData {
-	var ret = Object.assign({}, data);
-	for (var k in node.fields) {
-		var f = node.fields[k];
+	const ret = Object.assign({}, data);
+	for (const k in node.fields) {
+		const f = node.fields[k];
 		if (ret.hasOwnProperty(f.fieldName)) {
 			if (fieldsEncoders.hasOwnProperty(f.fieldType)) {
 				ret[f.fieldName] = fieldsEncoders[f.fieldType](ret[f.fieldName]);
@@ -857,19 +792,15 @@ function addMixins(Class, mixins) {
 	Object.assign(Class.prototype, mixins);
 }
 
-async function submitRecord(
-	nodeId: RecId,
-	data: RecordData,
-	recId?: RecId
-): Promise<RecordSubmitResult> {
+async function submitRecord(nodeId: RecId, data: RecordData, recId?: RecId): Promise<RecordSubmitResult> {
 	if (Object.keys(data).length === 0) {
 		throw 'Tried to submit empty object';
 	}
-	let node = await getNode(nodeId);
+	const node = await getNode(nodeId);
 	return submitData('api/submit', { nodeId, recId, data: encodeData(data, node) });
 }
 
-var UID_counter = 1;
+let UID_counter = 1;
 function UID(obj): number {
 	if (!obj.hasOwnProperty('__uid109Hd')) {
 		obj.__uid109Hd = UID_counter++;
@@ -891,9 +822,9 @@ function idToFileUrl(fileId) {
 	return 'uploads/file/' + fileId;
 }
 
-let __requestsOrder = [];
+const __requestsOrder = [];
 function releaseQuiresOrder(requestRecord) {
-	var roi = __requestsOrder.indexOf(requestRecord);
+	const roi = __requestsOrder.indexOf(requestRecord);
 	/// #if DEBUG
 	if (roi < 0) {
 		throw new Error('requests order is corrupted');
@@ -903,16 +834,11 @@ function releaseQuiresOrder(requestRecord) {
 	__requestsOrder.splice(roi, 1);
 }
 
-async function getData(
-	url: string,
-	params?: { [key: string]: any },
-	callStack?: string,
-	noLoadingIndicator?: boolean
-): Promise<any> {
+async function getData(url: string, params?: { [key: string]: any }, callStack?: string, noLoadingIndicator?: boolean): Promise<any> {
 	return new Promise((resolve, reject) => {
 		assert(url.indexOf('?') < 0, 'More parameters to data');
 
-		var requestRecord: {
+		const requestRecord: {
 			url: string;
 			resolve: (value: unknown) => void;
 			reject: (value: unknown) => void;
@@ -922,7 +848,7 @@ async function getData(
 			url: url,
 			/// #endif
 			resolve,
-			reject,
+			reject
 		};
 
 		if (!params) {
@@ -946,7 +872,7 @@ async function getData(
 		fetch(__corePath + url, {
 			method: 'POST',
 			headers: headersJSON,
-			body: JSON.stringify(params),
+			body: JSON.stringify(params)
 		})
 			.then((res) => {
 				return res.json();
@@ -954,6 +880,7 @@ async function getData(
 			.then((data) => {
 				handleAdditionalData(data, url);
 				if (isAuthNeed(data)) {
+					/** wait for user login */
 				} else if (data.hasOwnProperty('result')) {
 					isOrderNeedDispose = false;
 					requestRecord.result = data.result;
@@ -976,7 +903,7 @@ async function getData(
 					releaseQuiresOrder(requestRecord);
 				}
 				while (__requestsOrder.length > 0 && __requestsOrder[0].hasOwnProperty('result')) {
-					var rr = __requestsOrder.shift();
+					const rr = __requestsOrder.shift();
 					rr.resolve(rr.result);
 				}
 				if (!noLoadingIndicator) {
@@ -1003,20 +930,12 @@ async function draftRecord(nodeId, recId): Promise<RecordSubmitResult> {
 }
 
 function isAuthNeed(data) {
-	let token = getSessionToken();
-	if (
-		token &&
-		token !== 'guest-session' &&
-		data.error &&
-		(data.error.startsWith('Error: <auth>') || data.error.startsWith('<auth>'))
-	) {
+	const token = getSessionToken();
+	if (token && token !== 'guest-session' && data.error && (data.error.startsWith('Error: <auth>') || data.error.startsWith('<auth>'))) {
 		clearSessionToken();
 		crudJs.Stage.showForm(NODE_ID.LOGIN, 'new', undefined, true);
 		return true;
-	} else if (
-		data.error &&
-		(data.error.startsWith('Error: <access>') || data.error.startsWith('<access>'))
-	) {
+	} else if (data.error && (data.error.startsWith('Error: <access>') || data.error.startsWith('<access>'))) {
 		if (crudJs.Stage?.currentForm?.props?.node?.id !== NODE_ID.LOGIN) {
 			goToHome();
 		}
@@ -1025,14 +944,16 @@ function isAuthNeed(data) {
 }
 
 function serializeForm(form: HTMLFormElement): FormData {
-	return new FormData(form);
+	const ret = new FormData(form);
+	ret.set('sessionToken', User.currentUserData.sessionToken);
+	return ret;
 }
 
-var requestsInProgress = 0;
+let requestsInProgress = 0;
 
 window.addEventListener('beforeunload', function (e) {
 	if (requestsInProgress) {
-		var confirmationMessage = L('DATA_NOT_SAVED');
+		const confirmationMessage = L('DATA_NOT_SAVED');
 		(e || window.event).returnValue = confirmationMessage;
 		return confirmationMessage;
 	}
@@ -1053,10 +974,10 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 		body = dataToSend;
 	}
 
-	var callStack = new Error('submitData called from: ').stack;
-	let options: RequestInit = {
+	const callStack = new Error('submitData called from: ').stack;
+	const options: RequestInit = {
 		method: 'POST',
-		body,
+		body
 	};
 	if (!noProcessData) {
 		options.headers = headersJSON;
@@ -1070,6 +991,7 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 			.then((data) => {
 				handleAdditionalData(data, url);
 				if (isAuthNeed(data)) {
+					/** wait for user login */
 				} else if (data.hasOwnProperty('result')) {
 					return data.result;
 				} else {
@@ -1111,9 +1033,8 @@ async function getCaptchaToken(): Promise<string | undefined> {
 
 	if (!isCaptchaInitialized) {
 		isCaptchaInitialized = true;
-		var scriptElement = document.createElement('script');
-		scriptElement.src =
-			'https://www.google.com/recaptcha/api.js?render=' + ENV.CAPTCHA_CLIENT_SECRET;
+		const scriptElement = document.createElement('script');
+		scriptElement.src = 'https://www.google.com/recaptcha/api.js?render=' + ENV.CAPTCHA_CLIENT_SECRET;
 		scriptElement.addEventListener('load', requireCaptcha);
 		document.head.appendChild(scriptElement);
 	} else {
@@ -1126,13 +1047,7 @@ async function getCaptchaToken(): Promise<string | undefined> {
 	});
 }
 
-async function deleteRecord(
-	name,
-	nodeId: RecId,
-	recId: RecId,
-	noPrompt?: boolean,
-	onYes?: () => void
-) {
+async function deleteRecord(name, nodeId: RecId, recId: RecId, noPrompt?: boolean, onYes?: () => void) {
 	if (noPrompt) {
 		if (onYes) {
 			onYes();
@@ -1142,17 +1057,8 @@ async function deleteRecord(
 			return true;
 		}
 	} else {
-		let node = await getNode(nodeId);
-		if (
-			await showPrompt(
-				L('SURE_DELETE', node.creationName || node.singleName) + ' "' + name + '"?',
-				L('DELETE'),
-				L('CANCEL'),
-				'times',
-				'caret-left',
-				true
-			)
-		) {
+		const node = await getNode(nodeId);
+		if (await showPrompt(L('SURE_DELETE', node.creationName || node.singleName) + ' "' + name + '"?', L('DELETE'), L('CANCEL'), 'times', 'caret-left', true)) {
 			return deleteRecord(null, nodeId, recId, true, onYes);
 		}
 	}
@@ -1170,9 +1076,9 @@ function n2mValuesEqual(v1, v2) {
 	if (v1.length != v2.length) {
 		return false;
 	} else {
-		for (var i in v1) {
-			var i1 = v1[i];
-			var i2 = v2[i];
+		for (const i in v1) {
+			const i1 = v1[i];
+			const i2 = v2[i];
 
 			if (Boolean(i1) !== Boolean(i2)) {
 				return false;
@@ -1205,10 +1111,12 @@ if (isLitePage()) {
 
 function scrollToVisible(elem, doNotShake = false) {
 	if (elem) {
-		var element = ReactDOM.findDOMNode(elem) as HTMLDivElement;
-		(element as any).scrollIntoViewIfNeeded
-			? (element as any).scrollIntoViewIfNeeded(false)
-			: element.scrollIntoView();
+		const element = ReactDOM.findDOMNode(elem) as HTMLDivElement;
+		if((element as any).scrollIntoViewIfNeeded) {
+			(element as any).scrollIntoViewIfNeeded(false);
+		 } else {
+			element.scrollIntoView();
+			 }
 		if (!doNotShake) {
 			shakeDomElement(element);
 		}
@@ -1218,7 +1126,8 @@ function scrollToVisible(elem, doNotShake = false) {
 function shakeDomElement(e) {
 	if (e) {
 		e.classList.remove('shake');
-		e.offsetWidth;
+		// access to property to apply class animation hack
+		e.offsetWidth; // eslint-disable-line @typescript-eslint/no-unused-expressions
 		e.classList.add('shake');
 		window.setTimeout(() => {
 			e.classList.remove('shake');
@@ -1249,10 +1158,10 @@ function removeItem(name) {
 }
 
 function openIndexedDB() {
-	var indexedDB = window.indexedDB;
-	var openDB = indexedDB.open('MyDatabase', 1);
+	const indexedDB = window.indexedDB;
+	const openDB = indexedDB.open('MyDatabase', 1);
 	openDB.onupgradeneeded = function () {
-		var db: any = {};
+		const db: any = {};
 		db.result = openDB.result;
 		db.store = db.result.createObjectStore('MyObjectStore', { keyPath: 'id' });
 	};
@@ -1260,22 +1169,22 @@ function openIndexedDB() {
 }
 
 function getStoreIndexedDB(openDB: IDBOpenDBRequest) {
-	var db: any = {};
+	const db: any = {};
 	db.result = openDB.result;
 	db.tx = db.result.transaction('MyObjectStore', 'readwrite');
 	db.store = db.tx.objectStore('MyObjectStore');
 	return db;
 }
 
-var dbWriteInProgress;
+let dbWriteInProgress;
 
 function saveIndexedDB(filename: string, fileData: any) {
 	return new Promise((resolve) => {
 		dbWriteInProgress = true;
-		var openDB = openIndexedDB();
+		const openDB = openIndexedDB();
 		openDB.onsuccess = function () {
 			dbWriteInProgress = false;
-			var db = getStoreIndexedDB(openDB);
+			const db = getStoreIndexedDB(openDB);
 			db.store.put({ id: filename, data: fileData });
 			resolve(true);
 		};
@@ -1288,11 +1197,11 @@ function isDBWriteInProgress() {
 
 async function loadIndexedDB(filename: string): Promise<any> {
 	return new Promise((resolve) => {
-		var openDB = openIndexedDB();
+		const openDB = openIndexedDB();
 		openDB.onsuccess = function () {
-			var db = getStoreIndexedDB(openDB);
+			const db = getStoreIndexedDB(openDB);
 
-			var getData;
+			let getData;
 			if (filename) {
 				getData = db.store.get(filename);
 				getData.onsuccess = function () {
@@ -1307,9 +1216,9 @@ async function loadIndexedDB(filename: string): Promise<any> {
 }
 
 async function deleteIndexedDB(filename: string): Promise<any> {
-	var openDB = openIndexedDB();
+	const openDB = openIndexedDB();
 	openDB.onsuccess = function () {
-		var db = getStoreIndexedDB(openDB);
+		const db = getStoreIndexedDB(openDB);
 		db.store.delete(filename);
 	};
 	return true;
@@ -1319,9 +1228,9 @@ function keepInWindow(body) {
 	if (body) {
 		body = ReactDOM.findDOMNode(body);
 
-		let modalContainer = body.closest('.form-modal-container');
-		var screenR = window.innerWidth - 10;
-		var screenL = 0;
+		const modalContainer = body.closest('.form-modal-container');
+		let screenR = window.innerWidth - 10;
+		let screenL = 0;
 		if (modalContainer) {
 			const cRect = modalContainer.getBoundingClientRect();
 			screenR = cRect.right - 13;
@@ -1329,13 +1238,13 @@ function keepInWindow(body) {
 		}
 
 		const bodyRect = body.getBoundingClientRect();
-		var l = bodyRect.left;
-		var r = bodyRect.right;
+		const l = bodyRect.left;
+		const r = bodyRect.right;
 
 		if (l < screenL) {
 			addTranslateX(body, -l);
 		} else {
-			var out = r - screenR;
+			const out = r - screenR;
 			if (out > 0) {
 				addTranslateX(body, -out);
 			}
@@ -1345,7 +1254,7 @@ function keepInWindow(body) {
 
 function addTranslateX(element, x) {
 	x = Math.round(x);
-	var curMatrix = element.style.transform;
+	let curMatrix = element.style.transform;
 	if (curMatrix && curMatrix !== 'none') {
 		curMatrix = curMatrix.split(',');
 		curMatrix[4] = parseInt(curMatrix[4]) + x;
@@ -1357,11 +1266,11 @@ function addTranslateX(element, x) {
 }
 
 function strip_tags(input) {
-	if (typeof (input !== 'string')) return input;
-	var allowed = '<p><a><img><b><i><div><span>';
+	if (typeof input !== 'string') return input;
+	let allowed = '<p><a><img><b><i><div><span>';
 	allowed = (((allowed || '') + '').toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join('');
-	var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
-	var commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
+	const tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
+	const commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
 
 	return input.replace(commentsAndPhpTags, '').replace(tags, ($0, $1) => {
 		return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
@@ -1369,7 +1278,7 @@ function strip_tags(input) {
 }
 
 function checkFileSize(file) {
-	var regex = new RegExp('.(' + ENV.ALLOWED_UPLOADS.join('|') + ')$', 'gi');
+	const regex = new RegExp('.(' + ENV.ALLOWED_UPLOADS.join('|') + ')$', 'gi');
 
 	if (!regex.exec(file.name)) {
 		myAlert(L('TYPES_ALLOWED', ENV.ALLOWED_UPLOADS));
@@ -1392,7 +1301,7 @@ function reloadLocation() {
 	}, 10);
 }
 
-var dictionary = {};
+let dictionary = {};
 
 function initDictionary(o) {
 	dictionary = Object.assign(dictionary, o);
@@ -1412,7 +1321,7 @@ function L(key: LANG_KEYS | LANG_KEYS_CUSTOM, param?: any) {
 	return '#' + key;
 }
 
-var listRenderers = [];
+const listRenderers = [];
 
 function registerListRenderer(nodeId: RecId, renderFunction: (this: List) => React.ReactNode) {
 	if (listRenderers.hasOwnProperty(nodeId)) {
@@ -1442,9 +1351,9 @@ async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
 		return User.currentUserData;
 	} else {
 		setItem('go-to-after-login', location.href);
-		let backdrop = document.createElement('div');
+		const backdrop = document.createElement('div');
 		backdrop.className = 'modal-back' + (enforced ? '' : ' clickable');
-		let iframe = document.createElement('iframe');
+		const iframe = document.createElement('iframe');
 		iframe.className = 'login-iframe';
 		iframe.src = location.origin + User.getLoginURL(true);
 		backdrop.appendChild(iframe);
@@ -1463,16 +1372,16 @@ async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
 	}
 }
 
-var googleLoginAPIattached;
+let googleLoginAPIattached;
 async function attachGoogleLoginAPI(enforces = false) {
 	if (ENV.clientOptions.googleSigninClientId && !googleLoginAPIattached) {
-		var meta = document.createElement('meta');
+		const meta = document.createElement('meta');
 		meta.name = 'google-signin-client_id';
 		meta.content = ENV.clientOptions.googleSigninClientId;
 		document.getElementsByTagName('head')[0].appendChild(meta);
 	}
 	if (ENV.clientOptions.googleSigninClientId && (!googleLoginAPIattached || enforces)) {
-		let s = document.createElement('script');
+		const s = document.createElement('script');
 		s.src = 'https://apis.google.com/js/platform.js';
 		s.async = true;
 		s.defer = true;
@@ -1558,5 +1467,6 @@ export {
 	toReadableDateTime,
 	toReadableTime,
 	UID,
-	updateHashLocation,
+	updateHashLocation
 };
+

@@ -1,6 +1,8 @@
 import { randomBytes } from 'crypto';
-import { NODE_ID, RecordDataWrite } from '../../www/client-core/src/bs-utils';
-import { generateSalt, getPasswordHash, getServerHref, mail_utf8, UserSession } from '../auth';
+import type { RecordDataWrite } from '../../www/client-core/src/bs-utils';
+import { NODE_ID } from '../../www/client-core/src/bs-utils';
+import type { UserSession } from '../auth';
+import { generateSalt, getPasswordHash, getServerHref, mail_utf8 } from '../auth';
 
 import { ENV } from '../../core/ENV';
 
@@ -14,13 +16,13 @@ export default {
 		data.activationKey = randomBytes(24).toString('base64');
 		data.password = await getPasswordHash(data.password, data.salt);
 
-		let pgs = await mysqlExec(
+		const pgs = await mysqlExec(
 			"SELECT id FROM _users WHERE _users.status=1 AND email='" + data.email + "' LIMIT 1"
 		);
 		if (pgs.length > 0) {
 			throwError(L('EMAIL_ALREADY', userSession));
 		} else {
-			let href =
+			const href =
 				getServerHref() +
 				'#n/' +
 				NODE_ID.RESET +

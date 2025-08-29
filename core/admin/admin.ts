@@ -1,9 +1,4 @@
-import {
-	ADMIN_USER_SESSION,
-	getFieldDesc,
-	getNodeDesc,
-	reloadMetadataSchedule
-} from '../describe-node';
+import { ADMIN_USER_SESSION, getFieldDesc, getNodeDesc, reloadMetadataSchedule } from '../describe-node';
 
 import * as fs from 'fs';
 import { readFileSync, writeFileSync } from 'fs';
@@ -13,7 +8,7 @@ import { USER_ID } from '../../www/client-core/src/bs-utils';
 import { isAdmin } from '../auth.js';
 import { mysqlExec } from '../mysql-connection';
 
-const { exec } = require('child_process');
+const { exec } = require('child_process'); // eslint-disable-line @typescript-eslint/no-require-imports
 
 async function nodePrivileges(reqData, userSession) {
 	shouldBeAdmin(userSession);
@@ -69,7 +64,7 @@ async function setRolePrivilegesForNode(
 		'DELETE FROM "rolePrivileges" WHERE "nodeId"=' + nodeId + ';'
 	);
 
-	for (let p of rolePrivileges) {
+	for (const p of rolePrivileges) {
 		if (p.privileges) {
 			await mysqlExec(
 				'INSERT INTO rolePrivileges SET nodeId=' +
@@ -88,7 +83,7 @@ async function setRolePrivilegesForNode(
 			'SELECT id FROM _nodes WHERE _nodesId =' + nodeId
 		);
 
-		for (let pg of pgs) {
+		for (const pg of pgs) {
 			await setRolePrivilegesForNode(
 				pg.id,
 				rolePrivileges,
@@ -119,7 +114,7 @@ function editFunction(fileName, functionName, args = '') {
 		);
 	} else if (!c1) {
 		// TODO: add function and got to source
-		let i = text.indexOf(NEW_FUNCTION_MARKER);
+		const i = text.indexOf(NEW_FUNCTION_MARKER);
 		if (i < 0) {
 			throwError(
 				'marker (' +
@@ -142,11 +137,11 @@ function editFunction(fileName, functionName, args = '') {
 		writeFileSync(fileName, text);
 	}
 
-	let a = text.split('\n');
+	const a = text.split('\n');
 	let line = a.findIndex((s) => s.match(functionSearchPattern));
 	line += 2;
 	try {
-		let arg = fileName + ':' + line + ':2';
+		const arg = fileName + ':' + line + ':2';
 		exec('code -r -g "' + arg + '"');
 	} catch (err) {
 		return 'Can not open file to edit: ' + fileName;
@@ -160,10 +155,10 @@ async function getClientEventHandler(
 ) {
 	shouldBeAdmin(userSession);
 
-	let node = getNodeDesc(nodeId);
+	const node = getNodeDesc(nodeId);
 	if (fieldId) {
-		let field = getFieldDesc(fieldId);
-		let customPath = '../../../www/src/events/fields_events_custom.ts';
+		const field = getFieldDesc(fieldId);
+		const customPath = '../../../www/src/events/fields_events_custom.ts';
 		return editFunction(
 			fs.existsSync(join(__dirname, customPath))
 				? customPath
@@ -172,7 +167,7 @@ async function getClientEventHandler(
 			args
 		);
 	} else {
-		let customPath = '../../../www/src/events/forms_events_custom.ts';
+		const customPath = '../../../www/src/events/forms_events_custom.ts';
 		return editFunction(
 			fs.existsSync(join(__dirname, customPath))
 				? customPath

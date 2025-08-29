@@ -1,23 +1,31 @@
 import { assert, throwError } from '../www/client-core/src/assert';
-import { FIELD_TYPE, PRIVILEGES_MASK, RecId, RecordDataWrite, RecordSubmitResult, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import type { RecId, RecordDataWrite, RecordSubmitResult } from '../www/client-core/src/bs-utils';
+import { FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 
-const axios = require('axios');
+
 const captchaRequestConfig = {
 	headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
 };
 
 import { unlink } from 'fs';
 import { join } from 'path';
-import { isAdmin, notificationOut, UserSession } from './auth';
+import type { UserSession } from './auth';
+import { isAdmin, notificationOut } from './auth';
 import { getFieldDesc, getNodeDesc, getNodeEventHandler, ServerSideEventHandlersNames } from './describe-node';
 import { ENV, SERVER_ENV } from './ENV';
 import { getRecords } from './get-records';
 import { L } from './locale';
-import { D, escapeString, mysqlCommit, mysqlExec, mysqlRollback, mysqlStartTransaction } from './mysql-connection';
+/// #if DEBUG
+/*
+/// #endif
+import {mysqlRollback} } from './mysql-connection';
+//*/
+import axios from 'axios';
+import { D, escapeString, mysqlCommit, mysqlExec, mysqlStartTransaction, NUM_1 } from './mysql-connection';
 import { idToImgURLServer, UPLOADS_FILES_PATH } from './upload';
 
 const blockTags = [];
-for (let tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
+for (const tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 	blockTags.push(
 		{
 			exp: new RegExp('<' + tag + '(\\s|>)', 'img'),
@@ -31,10 +39,10 @@ for (let tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 }
 
 async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult> {
-	let node = getNodeDesc(nodeId);
+	const node = getNodeDesc(nodeId);
 
 	if (node.captcha && SERVER_ENV.CAPTCHA_SERVER_SECRET) {
-		let captchaRes = await axios.post(
+		const captchaRes = await axios.post(
 			'https://www.google.com/recaptcha/api/siteverify',
 			'secret=' + encodeURIComponent(SERVER_ENV.CAPTCHA_SERVER_SECRET) + '&response=' + data.c,
 			captchaRequestConfig
@@ -83,8 +91,8 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 	}
 
 	//check if required fields is filled, and hidden fields is unfilled
-	for (let f of node.fields) {
-		let fieldName = f.fieldName;
+	for (const f of node.fields) {
+		const fieldName = f.fieldName;
 
 		if (!(f.show & 1)) {
 			if (data.hasOwnProperty(fieldName) && !isAdmin(userSession)) {
@@ -98,7 +106,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			}
 			if (data.hasOwnProperty(fieldName)) {
 				if (f.fieldType === FIELD_TYPE.RICH_EDITOR) {
-					for (let replacer of blockTags) {
+					for (const replacer of blockTags) {
 						data[fieldName] = data[fieldName].replace(replacer.exp, replacer.val);
 					}
 				}
@@ -116,266 +124,275 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		await mysqlStartTransaction();
 	}
 	let handlerResult;
+	/// #if DEBUG
+	/*
+	/// #endif
 	try {
-		let insQ: any[];
-		let fieldsNames: string[] = [];
-		let values: (string | number)[] = [];
+	//*/
+	let insQ: any[];
+	const fieldsNames: string[] = [];
+	const values: (string | number)[] = [];
 
-		if (recId) {
-			insQ = ['UPDATE "', tableName, '" SET '];
+	if (recId) {
+		insQ = ['UPDATE "', tableName, '" SET '];
+	} else {
+		insQ = ['INSERT INTO "', tableName, '" (', fieldsNames, ') VALUES (', values, ')'];
+	}
+
+	let leastOneTablesFieldUpdated = false;
+
+	if (!recId) {
+		if (data.hasOwnProperty('_usersId')) {
+			if (userSession && !isAdmin(userSession) && userSession.id !== data._usersId) {
+				throwError('wrong _usersId detected');
+			}
 		} else {
-			insQ = ['INSERT INTO "', tableName, '" (', fieldsNames, ') VALUES (', values, ')'];
+			assert(userSession, 'submitRecord without userSession requires _usersId to be defined.');
+
+			fieldsNames.push('"_usersId"');
+			values.push(userSession.id);
+
+			leastOneTablesFieldUpdated = true;
 		}
 
-		let leastOneTablesFieldUpdated = false;
-
-		if (!recId) {
-			if (data.hasOwnProperty('_usersId')) {
-				if (userSession && !isAdmin(userSession) && userSession.id !== data._usersId) {
-					throwError('wrong _usersId detected');
-				}
-			} else {
-				assert(userSession, 'submitRecord without userSession requires _usersId to be defined.');
-
-				fieldsNames.push('"_usersId"');
-				values.push(userSession.id);
-
-				leastOneTablesFieldUpdated = true;
+		if (data.hasOwnProperty('_organizationId')) {
+			if (userSession && !isAdmin(userSession) && userSession.id !== data._organizationId) {
+				throwError('wrong _organizationId detected');
 			}
-
-			if (data.hasOwnProperty('_organizationId')) {
-				if (userSession && !isAdmin(userSession) && userSession.id !== data._organizationId) {
-					throwError('wrong _organizationId detected');
-				}
-			} else {
-				assert(userSession, 'submitRecord without userSession requires _organizationId to be defined.');
-
-				fieldsNames.push('"_organizationId"');
-				values.push(userSession.orgId);
-
-				leastOneTablesFieldUpdated = true;
-			}
-		}
-
-		let realDataBefore;
-		if (currentData) {
-			for (let f of node.fields) {
-				// save filenames to delete updated files later
-				let fieldName = f.fieldName;
-				if (f.storeInDb && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
-					let fieldType = f.fieldType;
-					if (fieldType === FIELD_TYPE.PICTURE || fieldType === FIELD_TYPE.FILE) {
-						if (!realDataBefore) {
-							realDataBefore = {};
-						}
-						realDataBefore[fieldName] = currentData[fieldName];
-					}
-				}
-
-				/// #if DEBUG
-				if (!f.sendToServer && data.hasOwnProperty('fieldName')) {
-					notificationOut(userSession, L('CLIENT_ONLY_ON_SERVER', userSession, fieldName));
-				}
-				/// #endif
-			}
-		}
-
-		if (recId) {
-			handlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeUpdate, currentData, data, userSession);
 		} else {
-			handlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeCreate, data, userSession);
-			if (!node.storeForms) {
-				recId = 1;
-			}
+			assert(userSession, 'submitRecord without userSession requires _organizationId to be defined.');
+
+			fieldsNames.push('"_organizationId"');
+			values.push(userSession.orgId);
+
+			leastOneTablesFieldUpdated = true;
 		}
-		if (node.storeForms) {
-			let needProcess_n2m;
-			for (let f of node.fields) {
-				let fieldName = f.fieldName;
+	}
 
-				if (f.storeInDb && data.hasOwnProperty(fieldName)) {
-					let fieldType = f.fieldType;
-
-					let fieldVal = data[fieldName];
-
-					if (fieldType === FIELD_TYPE.LOOKUP_NtoM) {
-						//will process later
-						needProcess_n2m = 1;
-					} else if (fieldType === FIELD_TYPE.LOOKUP_1toN) {
-						throwError('children records addition/deletion is independent.');
-					} else {
-						leastOneTablesFieldUpdated = true;
-
-						fieldsNames.push('"' + fieldName + '"');
-
-						switch (fieldType) {
-							case FIELD_TYPE.BOOL:
-								values.push(fieldVal);
-								break;
-
-							case FIELD_TYPE.FILE:
-
-							//continue to process as uploaded image
-							case FIELD_TYPE.PICTURE:
-								if (fieldVal) {
-									if (userSession.uploaded && userSession.uploaded[f.id] === fieldVal) {
-										delete userSession.uploaded[fieldVal];
-									} else {
-										throwError("Error. Couldn't link uploaded file to the record.");
-									}
-								}
-								if (realDataBefore && realDataBefore[fieldName]) {
-									if (realDataBefore[fieldName] !== fieldVal) {
-										if (!filesToDelete) {
-											filesToDelete = [];
-										}
-										if (fieldType === FIELD_TYPE.PICTURE) {
-											filesToDelete.push(idToImgURLServer(realDataBefore[fieldName]));
-										} else {
-											filesToDelete.push(join(UPLOADS_FILES_PATH, realDataBefore[fieldName]));
-										}
-									}
-								}
-
-							//continue to process as text
-							case FIELD_TYPE.TEXT:
-							case FIELD_TYPE.PASSWORD:
-								if (f.maxLength && fieldVal.length > f.maxLength) {
-									throwError("Value length for field '" + fieldName + "' (" + tableName + ') is ' + fieldVal.length + ' longer that ' + f.maxLength);
-								}
-								values.push(escapeString(fieldVal));
-								break;
-
-							case FIELD_TYPE.RICH_EDITOR:
-								if (fieldVal.length > 16000000) {
-									throwError("Value length for field '" + fieldName + "' (" + tableName + ') is longer that 16000000');
-								}
-								values.push("'", fieldVal, "'");
-								break;
-							case FIELD_TYPE.TAB:
-								break;
-
-							case FIELD_TYPE.LOOKUP:
-								if (!isAdmin(userSession) && fieldVal) {
-									await getRecords(f.nodeRef, VIEW_MASK.DROPDOWN_LIST, fieldVal, userSession); //check if you have read access to referenced item
-								}
-								values.push(fieldVal);
-								break;
-							case FIELD_TYPE.DATE_TIME:
-							case FIELD_TYPE.DATE:
-								values.push("'" + fieldVal + "'");
-								break;
-							default:
-								if (typeof fieldVal !== 'number' || isNaN(fieldVal)) {
-									throwError('Value for field ' + fieldName + ' (' + tableName + ') expected as numeric.');
-								}
-								if (f.maxLength && fieldVal.toString().length > f.maxLength) {
-									throwError("Value -length for field '" + fieldName + "' (" + tableName + ') is longer that ' + f.maxLength);
-								}
-								values.push(fieldVal as unknown as string);
-								break;
-						}
+	let realDataBefore;
+	if (currentData) {
+		for (const f of node.fields) {
+			// save filenames to delete updated files later
+			const fieldName = f.fieldName;
+			if (f.storeInDb && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
+				const fieldType = f.fieldType;
+				if (fieldType === FIELD_TYPE.PICTURE || fieldType === FIELD_TYPE.FILE) {
+					if (!realDataBefore) {
+						realDataBefore = {};
 					}
+					realDataBefore[fieldName] = currentData[fieldName];
 				}
 			}
 
-			if (data.hasOwnProperty('status')) {
-				leastOneTablesFieldUpdated = true;
-				fieldsNames.push('status');
-				values.push(data.status);
-			}
-
-			if (recId) {
-				insQ.push(fieldsNames.map((name, i) => name + '=' + values[i]));
-				insQ.push(' WHERE id=', D(recId));
-			} else {
-				insQ.push(' RETURNING id');
-			}
-			let qResult;
-			if (leastOneTablesFieldUpdated) {
-				/// #if DEBUG
-				for (let key in data) {
-					if (key !== 'status' && key !== '_organizationId' && key !== '_usersId') {
-						assert(
-							node.fields.find((f) => f.fieldName === key && f.sendToServer),
-							"Unknown field '" + key + "' in data set detected."
-						);
-					}
-				}
-				/// #endif
-				qResult = await mysqlExec(insQ.join(''));
-			}
 			/// #if DEBUG
-			else if (!needProcess_n2m) {
-				throwError('No fields updated in submitRecord.');
+			if (!f.sendToServer && data.hasOwnProperty('fieldName')) {
+				notificationOut(userSession, L('CLIENT_ONLY_ON_SERVER', userSession, fieldName));
 			}
 			/// #endif
+		}
+	}
 
-			if (!recId) {
-				recId = qResult[0].id;
-				data.id = recId;
-				await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterCreate, data, userSession);
-			} else {
-				await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterUpdate, Object.assign(currentData, data), userSession);
-			}
-			if (needProcess_n2m) {
-				for (let f of node.fields) {
-					if (f.fieldType === FIELD_TYPE.LOOKUP_NtoM) {
-						let fieldName = f.fieldName;
-						if (data.hasOwnProperty(fieldName)) {
-							//clear all n2m links
-							await mysqlExec('DELETE FROM "' + fieldName + '" WHERE "' + tableName + 'Id" = ' + recId);
-							let fieldVal = data[fieldName];
+	if (recId) {
+		handlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeUpdate, currentData, data, userSession);
+	} else {
+		handlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeCreate, data, userSession);
+		if (!node.storeForms) {
+			recId = 1;
+		}
+	}
+	if (node.storeForms) {
+		let needProcess_n2m;
+		for (const f of node.fields) {
+			const fieldName = f.fieldName;
 
-							if (fieldVal.length) {
-								//add new n2m links
-								const n2miQ = ['INSERT INTO "', fieldName, '" ("', tableName, 'Id", "', f.selectFieldName, 'Id") VALUES'];
+			if (f.storeInDb && data.hasOwnProperty(fieldName)) {
+				const fieldType = f.fieldType;
 
-								let isNotFirst = false;
-								for (let id of fieldVal) {
-									if (isNotFirst) {
-										n2miQ.push(',');
-									}
+				const fieldVal = data[fieldName];
 
-									if (!isAdmin(userSession) && id) {
-										await getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to referenced item
-									}
+				if (fieldType === FIELD_TYPE.LOOKUP_NtoM) {
+					//will process later
+					needProcess_n2m = 1;
+				} else if (fieldType === FIELD_TYPE.LOOKUP_1toN) {
+					throwError('children records addition/deletion is independent.');
+				} else {
+					leastOneTablesFieldUpdated = true;
 
-									n2miQ.push('(', recId as unknown as string, ',', id, ')');
-									isNotFirst = true;
-								}
-								await mysqlExec(n2miQ.join(''));
+					fieldsNames.push('"' + fieldName + '"');
+
+					switch (fieldType) {
+					case FIELD_TYPE.BOOL:
+						values.push(fieldVal);
+						break;
+
+					case FIELD_TYPE.FILE:
+
+						//continue to process as uploaded image
+					case FIELD_TYPE.PICTURE:
+						if (fieldVal) {
+							if (userSession.uploaded && userSession.uploaded[f.id] === fieldVal) {
+								delete userSession.uploaded[fieldVal];
+							} else {
+								throwError("Error. Couldn't link uploaded file to the record.");
 							}
+						}
+						if (realDataBefore && realDataBefore[fieldName]) {
+							if (realDataBefore[fieldName] !== fieldVal) {
+								if (!filesToDelete) {
+									filesToDelete = [];
+								}
+								if (fieldType === FIELD_TYPE.PICTURE) {
+									filesToDelete.push(idToImgURLServer(realDataBefore[fieldName]));
+								} else {
+									filesToDelete.push(join(UPLOADS_FILES_PATH, realDataBefore[fieldName]));
+								}
+							}
+						}
+
+						//continue to process as text
+					case FIELD_TYPE.TEXT:
+					case FIELD_TYPE.PASSWORD:
+						if (f.maxLength && fieldVal.length > f.maxLength) {
+							throwError("Value length for field '" + fieldName + "' (" + tableName + ') is ' + fieldVal.length + ' longer that ' + f.maxLength);
+						}
+						values.push(escapeString(fieldVal));
+						break;
+
+					case FIELD_TYPE.RICH_EDITOR:
+						if (fieldVal.length > 16000000) {
+							throwError("Value length for field '" + fieldName + "' (" + tableName + ') is longer that 16000000');
+						}
+						values.push("'", fieldVal, "'");
+						break;
+					case FIELD_TYPE.TAB:
+						break;
+
+					case FIELD_TYPE.LOOKUP:
+						if (!isAdmin(userSession) && fieldVal) {
+							await getRecords(f.nodeRef, VIEW_MASK.DROPDOWN_LIST, fieldVal, userSession); //check if you have read access to referenced item
+						}
+						values.push(fieldVal);
+						break;
+					case FIELD_TYPE.DATE_TIME:
+					case FIELD_TYPE.DATE:
+						values.push("'" + fieldVal + "'");
+						break;
+					default:
+						if (typeof fieldVal !== 'number' || isNaN(fieldVal)) {
+							throwError('Value for field ' + fieldName + ' (' + tableName + ') expected as numeric.');
+						}
+						if (f.maxLength && fieldVal.toString().length > f.maxLength) {
+							throwError("Value -length for field '" + fieldName + "' (" + tableName + ') is longer that ' + f.maxLength);
+						}
+						values.push(fieldVal as unknown as string);
+						break;
+					}
+				}
+			}
+		}
+
+		if (data.hasOwnProperty('status')) {
+			leastOneTablesFieldUpdated = true;
+			fieldsNames.push('status');
+			values.push(data.status);
+		}
+
+		if (recId) {
+			insQ.push(fieldsNames.map((name, i) => name + '=' + values[i]));
+			insQ.push(' WHERE id=', D(recId));
+		} else {
+			insQ.push(' RETURNING id');
+		}
+		let qResult;
+		if (leastOneTablesFieldUpdated) {
+			/// #if DEBUG
+			for (const key in data) {
+				if (key !== 'status' && key !== '_organizationId' && key !== '_usersId') {
+					assert(
+						node.fields.find((f) => f.fieldName === key && f.sendToServer),
+						"Unknown field '" + key + "' in data set detected."
+					);
+				}
+			}
+			/// #endif
+			qResult = await mysqlExec(insQ.join(''));
+		}
+		/// #if DEBUG
+		else if (!needProcess_n2m) {
+			throwError('No fields updated in submitRecord.');
+		}
+		/// #endif
+
+		if (!recId) {
+			recId = qResult[0].id;
+			data.id = recId;
+			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterCreate, data, userSession);
+		} else {
+			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterUpdate, Object.assign(currentData, data), userSession);
+		}
+		if (needProcess_n2m) {
+			for (const f of node.fields) {
+				if (f.fieldType === FIELD_TYPE.LOOKUP_NtoM) {
+					const fieldName = f.fieldName;
+					if (data.hasOwnProperty(fieldName)) {
+						//clear all n2m links
+						await mysqlExec('DELETE FROM "' + fieldName + '" WHERE "' + tableName + 'Id" = ' + recId);
+						const fieldVal = data[fieldName];
+
+						if (fieldVal.length) {
+							//add new n2m links
+							const n2miQ = ['INSERT INTO "', fieldName, '" ("', tableName, 'Id", "', f.selectFieldName, 'Id") VALUES'];
+
+							let isNotFirst = false;
+							for (const id of fieldVal) {
+								if (isNotFirst) {
+									n2miQ.push(',');
+								}
+
+								if (!isAdmin(userSession) && id) {
+									await getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to referenced item
+								}
+
+								n2miQ.push('(', recId as unknown as string, ',', id, ')');
+								isNotFirst = true;
+							}
+							await mysqlExec(n2miQ.join(''));
 						}
 					}
 				}
 			}
 		}
-		if (userSession && node.storeForms) {
-			await mysqlCommit();
+	}
+	if (userSession && node.storeForms) {
+		await mysqlCommit();
+	}
+	if (filesToDelete) {
+		for (const f of filesToDelete) {
+			unlink(f, () => {});
 		}
-		if (filesToDelete) {
-			for (let f of filesToDelete) {
-				unlink(f, () => {});
-			}
-		}
-		return { recId, handlerResult };
+	}
+	return { recId, handlerResult };
+	/// #if DEBUG
+	/*
+	/// #endif
 	} catch (er) {
 		if (userSession && node.storeForms) {
 			mysqlRollback();
 		}
 		throw er;
 	}
+	//*/
 }
 
+const LIMIT_SQL_PART = ' LIMIT ' + NUM_1;
 async function uniqueCheckInner(tableName, fieldName, val, recId) {
-	let query = ['SELECT id FROM "', tableName, '" WHERE "', fieldName, '" =', escapeString(val)];
+	const query = ['SELECT id FROM "', tableName, '" WHERE "', fieldName, '" =', escapeString(val)];
 	if (typeof recId === 'number') {
-		query.push(' AND id != ', recId);
+		query.push(' AND id != ', D(recId));
 	}
-	query.push(' LIMIT 1');
+	query.push(LIMIT_SQL_PART);
 
-	let exists = await mysqlExec(query.join(''));
+	const exists = await mysqlExec(query.join(''));
 	return !exists.length;
 }
 

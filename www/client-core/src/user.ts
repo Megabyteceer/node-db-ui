@@ -2,7 +2,8 @@
 
 import moment from "moment";
 import { Component } from "react";
-import { NODE_ID, USER_ID, UserSession } from "./bs-utils";
+import type { UserSession } from "./bs-utils";
+import { NODE_ID, USER_ID } from "./bs-utils";
 import { Select } from "./components/select";
 import { LITE_UI_PREFIX } from './consts';
 import { LoadingIndicator } from "./loading-indicator";
@@ -34,7 +35,7 @@ class User extends Component<any, any> {
 	}
 
 	static async refreshUser() {
-		var data = await getData('api/getMe');
+		const data = await getData('api/getMe');
 		data.lang.code = data.lang.code || 'en';
 		moment.locale(data.lang.code);
 		await Promise.all([
@@ -54,7 +55,7 @@ class User extends Component<any, any> {
 		setItem('cud-js-session-token', data.sessionToken);
 
 		if(data.id !== USER_ID.GUEST) {
-			let gotoAfterLogin = getItem('go-to-after-login');
+			const gotoAfterLogin = getItem('go-to-after-login');
 			removeItem('go-to-after-login');
 			if(gotoAfterLogin && (gotoAfterLogin !== location.href)) {
 				location.href = gotoAfterLogin;
@@ -85,39 +86,39 @@ class User extends Component<any, any> {
 
 	render() {
 
-		var body;
+		let body;
 
 		const userData = User.currentUserData;
 
 		if(userData) {
 
-			var iconName = '';
+			let iconName = '';
 			let className = 'clickable top-bar-user-multilingual'
 			if(userData.hasOwnProperty('langs')) {
 				className += ' top-bar-user-multilingual-active';
 				iconName = 'check-';
 			};
 
-			var multilingualBtn;
+			let multilingualBtn;
 			if(ENV.ENABLE_MULTILINGUAL) {
 				multilingualBtn = R.span({ key: '1', className, onClick: this.toggleMultilingual },
 					renderIcon(iconName + 'square-o'), L('MULTILINGUAL')
 				);
 			}
 
-			var org;
+			let org;
 			if(userData.organizations && Object.keys(userData.organizations).length > 1 && userData.organizations[userData.orgId]) {
-				var options = [];
+				const options = [];
 
-				for(var k in userData.organizations) {
-					var name = userData.organizations[k];
+				for(const k in userData.organizations) {
+					const name = userData.organizations[k];
 					options.push({ value: k, name });
 				};
 
 				org = React.createElement(Select, { key: '2', options, className: "top-bar-user-org-select", isCompact: true, defaultValue: userData.orgId, onChange: this.changeOrg });
 			}
 
-			var btn1, btn2;
+			let btn1, btn2;
 
 			const loginURL = User.getLoginURL();
 
@@ -126,14 +127,14 @@ class User extends Component<any, any> {
 					renderIcon('sign-in fa-2x')
 				)
 			} else {
-				let imgUrl = idToImgURL(userData.avatar, 'avatar');
+				const imgUrl = idToImgURL(userData.avatar, 'avatar');
 				btn1 = R.a({
 					key: 'b1',
 					onClick: () => {
 						crudJs.Stage.showForm(NODE_ID.USERS, userData.id, undefined, true, true);
 					}, title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn'
 				},
-					R.img({ className: 'user-avatar', src: imgUrl })
+				R.img({ className: 'user-avatar', src: imgUrl })
 				);
 				btn2 = R.a({
 					key: 'b2',
@@ -144,16 +145,16 @@ class User extends Component<any, any> {
 						//@ts-ignore
 						if(window.gapi && window.gapi.auth2) {
 							//@ts-ignore
-							var auth2 = window.gapi.auth2.getAuthInstance();
+							const auth2 = window.gapi.auth2.getAuthInstance();
 							await auth2.signOut();
 						}
 						LoadingIndicator.instance.hide();
-						let guestUserSession = await getData('api/logout');
+						const guestUserSession = await getData('api/logout');
 						User.setUserData(guestUserSession);
 						document.location.href = loginURL;
 					}
 				},
-					renderIcon('sign-out fa-2x')
+				renderIcon('sign-out fa-2x')
 				);
 			}
 

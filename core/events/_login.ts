@@ -1,7 +1,7 @@
 import { throwError } from '../../www/client-core/src/assert';
-import { RecordDataWrite, UserSession } from "../../www/client-core/src/bs-utils";
+import type { RecordDataWrite, UserSession } from "../../www/client-core/src/bs-utils";
 import { authorizeUserByID, getPasswordHash } from "../auth";
-import { NodeEventsHandlers } from "../describe-node";
+import type { NodeEventsHandlers } from "../describe-node";
 import { L } from "../locale";
 import { loginWithGoogle } from "../login-social";
 import { mysqlExec } from "../mysql-connection";
@@ -18,16 +18,16 @@ const handlers: NodeEventsHandlers = {
 		const user = users[0];
 		if(user) {
 
-			let userID = user.id;
+			const userID = user.id;
 
-			let blocked = user.blocked;
+			const blocked = user.blocked;
 
 			if(blocked > 0) {
 				throwError(L('USER_BLOCKED', userSession, blocked));
 			} else {
-				let mistakes = user.mistakes;
+				const mistakes = user.mistakes;
 
-				let key = await getPasswordHash(password, user.salt);
+				const key = await getPasswordHash(password, user.salt);
 				if(key !== user.password) {
 					if(mistakes <= 1) {
 						await mysqlExec("UPDATE _users SET blocked_to=DATE_ADD( NOW(),INTERVAL 1 MINUTE), mistakes=3 WHERE id='" + userID + "'");

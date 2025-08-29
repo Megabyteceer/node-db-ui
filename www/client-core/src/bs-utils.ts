@@ -1,5 +1,5 @@
 interface Filters {
-	[key: string]: string | number | {};
+	[key: string]: string | number | {}; // eslint-disable-line @typescript-eslint/no-empty-object-type
 
 	excludeIDs?: RecId[];
 
@@ -27,7 +27,7 @@ interface RecordSubmitResult {
 }
 
 const getCurrentStack = () => {
-	let a = new Error().stack?.split('\n');
+	const a = new Error().stack?.split('\n');
 	if (a) {
 		a.splice(0, 3);
 	}
@@ -155,7 +155,7 @@ interface FieldDesc {
 interface FilterDesc {
 	order?: number;
 	name: string;
-	hi_priority?: BoolNum;
+	hiPriority?: BoolNum;
 	view?: string;
 	fields?: string;
 	roles?: number[];
@@ -237,13 +237,13 @@ interface GetRecordsParams {
 
 type BoolNum = 0 | 1;
 
-enum ROLE_ID {
+const enum ROLE_ID {
 	ADMIN = 1,
 	GUEST = 2,
-	USER = 3
+	USER = 3,
 }
 
-enum FIELD_TYPE {
+const enum FIELD_TYPE {
 	TEXT = 1,
 	NUMBER = 2,
 	DATE_TIME = 4,
@@ -264,19 +264,19 @@ enum FIELD_TYPE {
 	SPLITTER = 22
 }
 
-enum FIELD_DISPLAY_TYPE {
+const enum FIELD_DISPLAY_TYPE {
 	BLOCK = 0,
 	INLINE = 1
 }
 
-enum NODE_TYPE {
+const enum NODE_TYPE {
 	SECTION = 1,
 	DOCUMENT = 2,
 	STATIC_LINK = 3,
 	REACT_CLASS = 4
 }
 
-enum VIEW_MASK {
+const enum VIEW_MASK {
 	EDITABLE = 1,
 	LIST = 2,
 	READONLY = 4,
@@ -286,7 +286,7 @@ enum VIEW_MASK {
 	ALL = 65535
 }
 
-enum PRIVILEGES_MASK {
+const enum PRIVILEGES_MASK {
 	VIEW_OWN = 1,
 	VIEW_ORG = 2,
 	VIEW_ALL = 4,
@@ -301,7 +301,7 @@ enum PRIVILEGES_MASK {
 
 const HASH_DIVIDER = '.';
 
-enum NODE_ID {
+const enum NODE_ID {
 	PRIVILEGES = 1,
 	NODES = 4,
 	USERS = 5,
@@ -319,14 +319,14 @@ enum NODE_ID {
 	FILES = 83
 }
 
-enum USER_ID {
+const enum USER_ID {
 	SUPER_ADMIN = 1,
 	GUEST = 2,
 	USER = 3,
 	VIEW_ALL = 7
 }
 
-enum FIELD_ID {
+const enum FIELD_ID {
 	MAX_LENGTH = 9
 }
 

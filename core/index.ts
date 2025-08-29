@@ -16,7 +16,7 @@ import { performance } from 'perf_hooks';
 /// #endif
 
 const express = require('express');
-var bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -37,7 +37,7 @@ function addDebugDataToResponse(resHeaders, ret, startTime) {
 
 const handleRequest = (req, res) => {
 	/// #if DEBUG
-	let startTime = performance.now();
+	const startTime = performance.now();
 	/// #endif
 
 	let handler = req.url.substr(6);
@@ -57,11 +57,12 @@ const handleRequest = (req, res) => {
 		const resHeaders = {
 			'content-type': 'application/json',
 			'Access-Control-Allow-Origin': ENV.ALLOW_ORIGIN,
-			'Access-Control-Allow-Methods': 'POST',
+			'Access-Control-Allow-Methods': 'POST'
 		};
 
+		//@ts-ignore
 		const onError = (error) => {
-			var ret;
+			let ret;
 			/// #if DEBUG
 			ret = { error: error.stack };
 			addDebugDataToResponse(resHeaders, ret, startTime);
@@ -77,34 +78,41 @@ const handleRequest = (req, res) => {
 		startSession(body.sessionToken, req.headers['accept-language'])
 			.then((session) => {
 				userSession = session;
-				handler(body, session)
-					.then((result) => {
-						let ret: any = {
-							result,
-							isGuest: false,
-							/// #if DEBUG
-							debug: null,
-							/// #endif
-						};
+				handler(body, session).then((result) => {
+					const ret: any = {
+						result,
+						isGuest: false,
 						/// #if DEBUG
-						addDebugDataToResponse(resHeaders, ret, startTime);
+						debug: null
 						/// #endif
+					};
+					/// #if DEBUG
+					addDebugDataToResponse(resHeaders, ret, startTime);
+					/// #endif
 
-						if (isUserHaveRole(ROLE_ID.GUEST, userSession)) {
-							ret.isGuest = true;
-						}
+					if (isUserHaveRole(ROLE_ID.GUEST, userSession)) {
+						ret.isGuest = true;
+					}
 
-						res.set(resHeaders);
+					res.set(resHeaders);
 
-						if (userSession.hasOwnProperty('notifications')) {
-							ret.notifications = userSession.notifications;
-							delete userSession.notifications;
-						}
-						res.end(JSON.stringify(ret));
-					})
+					if (userSession.hasOwnProperty('notifications')) {
+						ret.notifications = userSession.notifications;
+						delete userSession.notifications;
+					}
+					res.end(JSON.stringify(ret));
+				});
+				/// #if DEBUG
+				/*
+					/// #endif
 					.catch(onError);
+					//*/
 			})
-			.catch(onError)
+			/// #if DEBUG
+			/*
+					/// #endif
+					.catch(onError);
+					//*/
 			.finally(() => {
 				finishSession(body.sessionToken);
 			});
@@ -127,7 +135,7 @@ app.options('/core/*', (req, res) => {
 		'Access-Control-Allow-Origin': ENV.ALLOW_ORIGIN,
 		'Access-Control-Allow-Credentials': true,
 		'Access-Control-Allow-Methods': 'POST',
-		'Access-Control-Allow-Headers': 'Content-Type',
+		'Access-Control-Allow-Headers': 'Content-Type'
 	});
 	res.end();
 });
