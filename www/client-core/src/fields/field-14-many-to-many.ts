@@ -94,7 +94,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 			});
 			dragListenersInitialized = true;
 		}
-		dragList = this; // eslint-disable-line @typescript-eslint/no-this-alias
+		dragList = this;
 		dragItem = item;
 		this.forceUpdate();
 	}
@@ -280,7 +280,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 	}
 }
 
-registerFieldClass(FIELD_TYPE.LOOKUP_NtoM, LookupManyToManyFiled);
+registerFieldClass(FIELD_TYPE.LOOKUP_N_TO_M, LookupManyToManyFiled);
 
 export { LookupManyToManyFiled };
 

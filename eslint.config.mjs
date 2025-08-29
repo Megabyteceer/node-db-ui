@@ -10,11 +10,47 @@ export default tseslint.config(
     "@typescript-eslint/ban-ts-comment": 0,
     "no-prototype-builtins": 0,
     "@typescript-eslint/consistent-type-imports": "warn",
-    "@typescript-eslint/no-unused-vars": "off",
     "no-debugger": "off",
     "no-fallthrough": "off",
     "no-control-regex": "off",
-    "indent": ["error", "tab"]
+    "no-multi-spaces": "warn",
+    "no-multiple-empty-lines": "warn",
+    "key-spacing": "warn",
+    "block-spacing": "warn",
+    "space-before-blocks": "warn",
+    "keyword-spacing": "warn",
+    "space-infix-ops": "warn",
+    "space-in-parens": "warn",
+    "comma-spacing": "warn",
+    "@/key-spacing": "warn",
+    "eol-last": "warn",
+    "no-trailing-spaces": "warn",
+    "prefer-const": 0,
+    "indent": ["warn", "tab"],
+    "semi": "warn",
+    "quotes": [
+      "warn",
+      "single"
+    ],
+    "no-constant-condition": 0,
+    "@typescript-eslint/no-this-alias": 0,
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "@typescript-eslint/no-var-requires": 0,
+    "@typescript-eslint/no-namespace": 0,
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "all",
+        "argsIgnorePattern": "^_",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "no-useless-catch-useless-catch": 0,
+    "no-useless-escape": 0
   }
 }
 );

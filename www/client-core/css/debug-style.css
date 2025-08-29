@@ -288,8 +288,8 @@
 
 .left-bar-admin-button {
 	position: absolute;
-	left: 0;
-	top: 12px;
+	right: 14px;
+	top: 7px;
 }
 
 .left-bar-empty-section {

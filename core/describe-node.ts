@@ -37,8 +37,8 @@ const nodesTreeCache = new Map();
 const filtersById = new Map();
 
 const normalizeName = (txt:string) => {
-	return snakeToCamel(txt).replace(/[^\w]/gm, '_');
-}
+	return snakeToCamel(txt).replace(/[`']/g, '').replace(/[^\w]/gm, '_');
+};
 
 const snakeToCamel = (str: string) => {
 	str = str.toLowerCase().replace(/([_][a-z])/g, (group) => group.toUpperCase().replace('_', ''));
@@ -399,10 +399,14 @@ async function initNodesData() {
 }
 
 const generateTypings = async () => {
-	const src = ['/* eslint-disable @typescript-eslint/consistent-type-imports */'] as string[];
+	const src = [`
+import type { Moment } from 'moment';
+import type { RecordData } from '../www/client-core/src/bs-utils';
+`] as string[];
+
 	for (const node of nodes) {
 		if (node.fields?.length) {
-			src.push('interface I' + snakeToCamel(node.tableName) + 'Record {');
+			src.push('export interface I' + snakeToCamel(node.tableName) + 'Record extends RecordData {');
 			for (const field of node.fields) {
 				let type = 'any';
 				switch (field.fieldType) {
@@ -412,8 +416,8 @@ const generateTypings = async () => {
 					type = 'number';
 					break;
 				case FIELD_TYPE.DATE:
-				case FIELD_TYPE.DATE_TIME:
-					type = "import('moment').Moment";
+				case FIELD_TYPE.DATETIME:
+					type = 'Moment';
 					break;
 
 				case FIELD_TYPE.ENUM: // TODO
@@ -423,8 +427,8 @@ const generateTypings = async () => {
 				case FIELD_TYPE.TEXT:
 				case FIELD_TYPE.PASSWORD:
 				case FIELD_TYPE.FILE:
-				case FIELD_TYPE.PICTURE:
-				case FIELD_TYPE.RICH_EDITOR:
+				case FIELD_TYPE.IMAGE:
+				case FIELD_TYPE.HTML_EDITOR:
 					type = 'string';
 					break;
 				}
@@ -435,14 +439,10 @@ const generateTypings = async () => {
 		}
 	}
 
-	writeFileSync('types/generated.d.ts', src.join('\n'));
-
-	src.length = 0;
-
 	enumsById.forEach((enumData) => {
-		src.push('export const enum ENUM_' +normalizeName(enumData.name) + ' {');
-		for(const val of enumData.items) {
-			src.push('\t' + normalizeName(val.name) + ' = ' + val.value + ',');
+		src.push('export const enum ENUM_' + normalizeName(enumData.name).toUpperCase() + ' {');
+		for (const val of enumData.items) {
+			src.push('\t' + normalizeName(val.name).toUpperCase() + ' = ' + val.value + ',');
 		}
 		src.push('}');
 	});

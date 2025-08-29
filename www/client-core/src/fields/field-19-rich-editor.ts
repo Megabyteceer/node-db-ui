@@ -15,7 +15,7 @@ window.addEventListener('message', (e) => {
 });
 
 registerFieldClass(
-	FIELD_TYPE.RICH_EDITOR,
+	FIELD_TYPE.HTML_EDITOR,
 	class RichEditorField extends BaseField {
 		constructor(props) {
 			super(props);

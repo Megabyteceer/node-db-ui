@@ -1,5 +1,3 @@
-/// <reference types="../types/generated" />
-
 import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
 import type { FilterDesc, RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
 import { FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
@@ -65,7 +63,7 @@ async function getRecords(
 			const fieldName = f.fieldName;
 			const selectFieldName = f.selectFieldName;
 
-			if (fieldType === FIELD_TYPE.LOOKUP_NtoM) {
+			if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 				//n2m
 				const tblTmpName = '"t' + f.id + '"';
 				if (f.lookupIcon) {
@@ -94,9 +92,9 @@ async function getRecords(
 						selectFieldName,
 						'Id"=',
 						tblTmpName,
-						'.id AND ',
+						'.id AND "',
 						fieldName,
-						'."',
+						'"."',
 						tableName,
 						'Id"="',
 						tableName,
@@ -184,7 +182,7 @@ async function getRecords(
 			} else if (selectFieldName) {
 				//@ts-ignore
 				selQ.push('(', ESCAPE_BEGIN, selectFieldName.replaceAll('@userId', userSession.id.toString()), ESCAPE_END, ')AS "', fieldName, '"');
-			} else if ((viewMask === VIEW_MASK.LIST || viewMask === VIEW_MASK.CUSTOM_LIST) && (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.RICH_EDITOR) && f.maxLength > 500) {
+			} else if ((viewMask === VIEW_MASK.LIST || viewMask === VIEW_MASK.CUSTOM_LIST) && (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.HTML_EDITOR) && f.maxLength > 500) {
 				selQ.push('SUBSTRING("', tableName, '"."', fieldName, FILTERS_LIMIT_SQL_PART, fieldName, '"');
 			} else {
 				selQ.push('"', tableName, '"."', fieldName, '"');
@@ -290,7 +288,7 @@ async function getRecords(
 		}
 
 		if (filterFields.excludeIDs) {
-			assert(filterFields.excludeIDs.length > 0, "Empty array for 'excludeIDs' received.");
+			assert(filterFields.excludeIDs.length > 0, 'Empty array for \'excludeIDs\' received.');
 			wheres.push('AND("', tableName, '".id NOT IN (', A(filterFields.excludeIDs), '))');
 		}
 		if (filterFields.onlyIDs) {
@@ -339,7 +337,7 @@ async function getRecords(
 		if (filterFields.p) {
 			if (filterFields.p !== '*') {
 				assert(typeof filterFields.p === 'number', 'filterFields.p expected as a number');
-				ordering.push('OFFSET ', D(filterFields.p * recPerPage), ' LIMIT ', D(recPerPage));
+				ordering.push(' OFFSET ', D(filterFields.p * recPerPage), ' LIMIT ', D(recPerPage));
 			}
 		} else {
 			ordering.push(' LIMIT ', D(recPerPage));
@@ -405,7 +403,7 @@ async function getRecords(
 				if (f.storeInDb && f.show & viewMask) {
 					const fieldType = f.fieldType;
 					const fieldName = f.fieldName;
-					if (fieldType === FIELD_TYPE.LOOKUP_NtoM || fieldType === FIELD_TYPE.LOOKUP_1toN) {
+					if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M || fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 						//n2m,12n
 						if (pag[fieldName]) {
 							pag[fieldName] = pag[fieldName].map((src: string) => {

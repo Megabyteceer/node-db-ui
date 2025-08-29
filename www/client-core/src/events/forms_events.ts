@@ -1,10 +1,10 @@
-import type { Filters} from '../utils';
+import type { Filters } from '../utils';
 import { attachGoogleLoginAPI, getData, getNode, getNodeData, goToHome, isAdmin, L, myAlert, showPrompt } from '../utils';
 /// #if DEBUG
 import { makeIconSelectionField } from '../admin/admin-utils';
 /// #endif
 
-import type { NodeDesc, RecordSubmitResult} from '../bs-utils';
+import type { NodeDesc, RecordSubmitResult } from '../bs-utils';
 import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NODE_ID, NODE_TYPE, VIEW_MASK } from '../bs-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
 import { FormFull } from '../forms/form-full';
@@ -263,7 +263,7 @@ class FormEvents extends FormFull {
 			if (this.fieldValue('show') & VIEW_MASK.CUSTOM_LIST) this.setFieldValue('visibilityCustomList', 1);
 			else this.setFieldValue('visibilityCustomList', 0);
 
-			if (this.fieldValue('fieldType') === FIELD_TYPE.PICTURE || this.fieldValue('fieldType') === FIELD_TYPE.RICH_EDITOR) {
+			if (this.fieldValue('fieldType') === FIELD_TYPE.IMAGE || this.fieldValue('fieldType') === FIELD_TYPE.HTML_EDITOR) {
 				this.setFieldValue('height', this.fieldValue('maxLength') % 10000);
 				this.setFieldValue('width', Math.floor(this.fieldValue('maxLength') / 10000));
 			}
@@ -287,13 +287,13 @@ class FormEvents extends FormFull {
 				const fieldsFilter: Filters = {
 					fieldName: fName
 				};
-				if (this.fieldValue('fieldType') !== FIELD_TYPE.LOOKUP_NtoM) {
+				if (this.fieldValue('fieldType') !== FIELD_TYPE.LOOKUP_N_TO_M) {
 					fieldsFilter.nodeFieldsLinker = nodeId;
 				}
 				getNodeData(6, undefined, fieldsFilter).then((data) => {
 					if (this._fieldsNameIsBad) return;
 					if (data.items.length > 0) {
-						if (this.fieldValue('fieldType') === FIELD_TYPE.LOOKUP_NtoM) {
+						if (this.fieldValue('fieldType') === FIELD_TYPE.LOOKUP_N_TO_M) {
 							this.fieldAlert('fieldName', L('LOOKUP_NAME_NOT_UNIQUE'));
 						} else {
 							this.fieldAlert('fieldName', L('FLD_EXISTS'));
@@ -316,7 +316,7 @@ class FormEvents extends FormFull {
 			}
 
 			if (nodeId && fn && fn.length >= 3) {
-				if (this.fieldValue('fieldType') === FIELD_TYPE.LOOKUP_1toN && nodeRef) {
+				if (this.fieldValue('fieldType') === FIELD_TYPE.LOOKUP_1_TO_N && nodeRef) {
 					checkFieldExists(fn + 'Linker', nodeRef);
 				} else {
 					checkFieldExists(fn, nodeId);
@@ -328,7 +328,7 @@ class FormEvents extends FormFull {
 	_fields_onSave() {
 		const fieldType = this.fieldValue('fieldType');
 
-		if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_NtoM || fieldType === FIELD_TYPE.LOOKUP_1toN) {
+		if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_N_TO_M || fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 			if (this.isFieldEmpty('nodeRef')) {
 				this.fieldAlert('nodeRef', L('REQUIRED_FLD'));
 			}
@@ -342,7 +342,7 @@ class FormEvents extends FormFull {
 			this.fieldAlert('fieldName', L('NO_NUMERIC_NAME'));
 		}
 
-		if (fieldType === FIELD_TYPE.PICTURE || fieldType === FIELD_TYPE.RICH_EDITOR) {
+		if (fieldType === FIELD_TYPE.IMAGE || fieldType === FIELD_TYPE.HTML_EDITOR) {
 			if (!this.fieldValue('height')) {
 				this.fieldAlert('height', L('REQUIRED_FLD'));
 			}
@@ -370,7 +370,7 @@ class FormEvents extends FormFull {
 			this.hideField('selectFieldName');
 		}
 
-		if (fieldType === FIELD_TYPE.STATIC_TEXT || fieldType === FIELD_TYPE.TAB || fieldType === FIELD_TYPE.BUTTON || fieldType === FIELD_TYPE.SPLITTER) {
+		if (fieldType === FIELD_TYPE.STATIC_HTML_BLOCK || fieldType === FIELD_TYPE.TAB || fieldType === FIELD_TYPE.BUTTON || fieldType === FIELD_TYPE.SPLITTER) {
 			this.setFieldValue('storeInDb', 0);
 		}
 		if (this._fieldsNameIsBad) {
@@ -516,3 +516,4 @@ class FormEvents extends FormFull {
 }
 
 export { FormEvents };
+

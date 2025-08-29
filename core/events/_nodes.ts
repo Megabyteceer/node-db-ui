@@ -70,7 +70,7 @@ const handlers: NodeEventsHandlers = {
 
 			const createdOnQ = `INSERT INTO _fields
 			(nodeFieldsLinker,  status, show,                                    prior, fieldType,                fieldName,       selectFieldName,   name,          description,    maxLength,     requirement,     "unique",    _usersId,    forSearch,    storeInDb,  _organizationId) VALUES
-			(${createdID},        1,      ${VIEW_MASK.LIST | VIEW_MASK.READONLY},  10,    ${FIELD_TYPE.DATE_TIME},   '_createdOn',    '',                  'Created on',  '',             0,              0,               0,           0,            1,             1,            1) RETURNING id;`;
+			(${createdID},        1,      ${VIEW_MASK.LIST | VIEW_MASK.READONLY},  10,    ${FIELD_TYPE.DATETIME},   '_createdOn',    '',                  'Created on',  '',             0,              0,               0,           0,            1,             1,            1) RETURNING id;`;
 			const dateFieldId = (await mysqlExec(createdOnQ))[0].id;
 			await mysqlExec('UPDATE _nodes SET _fieldsId=' + dateFieldId + ', reverse = 1 WHERE id=' + createdID);
 

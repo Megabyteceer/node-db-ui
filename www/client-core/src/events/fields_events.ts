@@ -225,7 +225,7 @@ class FieldsEvents extends FormEvents {
 		this.enableField('unique');
 		this.enableField('forSearch');
 
-		if (fieldType === FIELD_TYPE.LOOKUP_NtoM) {
+		if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 			this.getField('nodeRef').setLookupFilter('excludeIDs', [
 				this.fieldValue('nodeFieldsLinker').id,
 			]);
@@ -233,64 +233,64 @@ class FieldsEvents extends FormEvents {
 			this.getField('nodeRef').setLookupFilter('excludeIDs', undefined);
 		}
 		switch (fieldType) {
-			case FIELD_TYPE.STATIC_TEXT:
-				this.setFieldLabel('description', L('CONTENT'));
-			case FIELD_TYPE.BUTTON:
-			case FIELD_TYPE.TAB:
-			case FIELD_TYPE.SPLITTER:
-				this.hideField(
-					'storage_setting_splitter',
-					'maxLength',
-					'sendToServer',
-					'storeInDb',
-					'requirement',
-					'unique',
-					'forSearch'
-				);
-				this.setFieldValue('sendToServer', 0);
-				this.disableField('sendToServer');
-				this.setFieldValue('storeInDb', 0);
-				this.disableField('storeInDb');
-				this.disableField('requirement');
-				break;
-			case FIELD_TYPE.LOOKUP_NtoM:
-			case FIELD_TYPE.LOOKUP_1toN:
-				this.disableField('visibilityList');
-				this.setFieldValue('visibilityList', 0);
-				this.disableField('visibilityCustomList');
-				this.setFieldValue('visibilityCustomList', 0);
-				this.disableField('visibilityDropdownList');
-				this.setFieldValue('visibilityDropdownList', 0);
-				this.disableField('visibilitySubFormList');
-				this.setFieldValue('visibilitySubFormList', 0);
+		case FIELD_TYPE.STATIC_HTML_BLOCK:
+			this.setFieldLabel('description', L('CONTENT'));
+		case FIELD_TYPE.BUTTON:
+		case FIELD_TYPE.TAB:
+		case FIELD_TYPE.SPLITTER:
+			this.hideField(
+				'storage_setting_splitter',
+				'maxLength',
+				'sendToServer',
+				'storeInDb',
+				'requirement',
+				'unique',
+				'forSearch'
+			);
+			this.setFieldValue('sendToServer', 0);
+			this.disableField('sendToServer');
+			this.setFieldValue('storeInDb', 0);
+			this.disableField('storeInDb');
+			this.disableField('requirement');
+			break;
+		case FIELD_TYPE.LOOKUP_N_TO_M:
+		case FIELD_TYPE.LOOKUP_1_TO_N:
+			this.disableField('visibilityList');
+			this.setFieldValue('visibilityList', 0);
+			this.disableField('visibilityCustomList');
+			this.setFieldValue('visibilityCustomList', 0);
+			this.disableField('visibilityDropdownList');
+			this.setFieldValue('visibilityDropdownList', 0);
+			this.disableField('visibilitySubFormList');
+			this.setFieldValue('visibilitySubFormList', 0);
 
-				this.disableField('sendToServer');
-				this.setFieldValue('sendToServer', 1);
-				this.disableField('storeInDb');
-				this.setFieldValue('storeInDb', 1);
-				this.hideField('forSearch', 'requirement', 'unique');
-			case FIELD_TYPE.LOOKUP:
-				this.hideField('maxLength', 'unique');
-				this.setFieldValue('unique', false);
-				this.showField('nodeRef');
-				break;
+			this.disableField('sendToServer');
+			this.setFieldValue('sendToServer', 1);
+			this.disableField('storeInDb');
+			this.setFieldValue('storeInDb', 1);
+			this.hideField('forSearch', 'requirement', 'unique');
+		case FIELD_TYPE.LOOKUP:
+			this.hideField('maxLength', 'unique');
+			this.setFieldValue('unique', false);
+			this.showField('nodeRef');
+			break;
 
-			case FIELD_TYPE.ENUM:
-				this.showField('enum');
-				this.hideField('maxLength');
-				break;
-			case FIELD_TYPE.RICH_EDITOR:
-			case FIELD_TYPE.PICTURE:
-				this.showField('width', 'height');
-				this.hideField('maxLength');
-				break;
-			case FIELD_TYPE.BOOL:
-			case FIELD_TYPE.DATE_TIME:
-			case FIELD_TYPE.DATE:
-			case FIELD_TYPE.COLOR:
-			case FIELD_TYPE.FILE:
-				this.hideField('maxLength');
-				break;
+		case FIELD_TYPE.ENUM:
+			this.showField('enum');
+			this.hideField('maxLength');
+			break;
+		case FIELD_TYPE.HTML_EDITOR:
+		case FIELD_TYPE.IMAGE:
+			this.showField('width', 'height');
+			this.hideField('maxLength');
+			break;
+		case FIELD_TYPE.BOOL:
+		case FIELD_TYPE.DATETIME:
+		case FIELD_TYPE.DATE:
+		case FIELD_TYPE.COLOR:
+		case FIELD_TYPE.FILE:
+			this.hideField('maxLength');
+			break;
 		}
 
 		if (this.isUpdateRecord) {
@@ -307,7 +307,7 @@ class FieldsEvents extends FormEvents {
 			this.setFieldValue('forSearch', 1);
 		}
 
-		if (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.RICH_EDITOR) {
+		if (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.HTML_EDITOR) {
 			this.showField('multilingual');
 		} else {
 			this.hideField('multilingual');
@@ -357,3 +357,4 @@ class FieldsEvents extends FormEvents {
 }
 
 export { FieldsEvents };
+

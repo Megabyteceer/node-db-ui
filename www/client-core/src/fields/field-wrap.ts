@@ -79,8 +79,8 @@ class FieldWrap extends Component<FieldProps, any> {
 		/// #if DEBUG
 		if (
 			this.props.field.fieldType !== FIELD_TYPE.LOOKUP &&
-			this.props.field.fieldType !== FIELD_TYPE.LOOKUP_NtoM &&
-			this.props.field.fieldType !== FIELD_TYPE.LOOKUP_1toN
+			this.props.field.fieldType !== FIELD_TYPE.LOOKUP_N_TO_M &&
+			this.props.field.fieldType !== FIELD_TYPE.LOOKUP_1_TO_N
 		) {
 			debugError('setLookupFilter applied to not lookUp field: ' + this.props.field.fieldName);
 		}
@@ -253,10 +253,10 @@ class FieldWrap extends Component<FieldProps, any> {
 		const fieldTypedBody = React.createElement(getClassForField(field.fieldType), fieldProps);
 		let fieldCustomBody;
 
-		const noLabel = !field.name; // (field.fieldType===FIELD_TYPE.LOOKUP_NtoM)||(field.fieldType===FIELD_TYPE.LOOKUP_1toN);
+		const noLabel = !field.name; // (field.fieldType===FIELD_TYPE.LOOKUP_N_TO_M)||(field.fieldType===FIELD_TYPE.LOOKUP_1_TO_N);
 
 		let help;
-		if (field.description && field.fieldType !== FIELD_TYPE.STATIC_TEXT) {
+		if (field.description && field.fieldType !== FIELD_TYPE.STATIC_HTML_BLOCK) {
 			help = React.createElement(FieldHelp, {
 				text: R.div(null, R.h4(null, field.name), field.description),
 			});

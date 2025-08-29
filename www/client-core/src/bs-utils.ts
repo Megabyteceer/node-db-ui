@@ -1,3 +1,5 @@
+import { ENUM_FIELD_DISPLAY as FIELD_DISPLAY_TYPE, ENUM_FIELD_TYPE as FIELD_TYPE, ENUM_NODE_TYPE as NODE_TYPE, type INodesRecord } from '../../../types/generated';
+
 interface Filters {
 	[key: string]: string | number | {}; // eslint-disable-line @typescript-eslint/no-empty-object-type
 
@@ -129,7 +131,7 @@ interface FieldDesc {
 	/** order of the field in the form */
 	prior: number;
 
-	/** field tip. or html content for FIELD_TYPE.STATIC_TEXT fields */
+	/** field tip. or html content for FIELD_TYPE.STATIC_HTML_BLOCK fields */
 	description: string;
 
 	/** client side only field */
@@ -243,38 +245,6 @@ const enum ROLE_ID {
 	USER = 3,
 }
 
-const enum FIELD_TYPE {
-	TEXT = 1,
-	NUMBER = 2,
-	DATE_TIME = 4,
-	BOOL = 5,
-	ENUM = 6,
-	LOOKUP = 7,
-	STATIC_TEXT = 8,
-	PASSWORD = 10,
-	DATE = 11,
-	PICTURE = 12,
-	LOOKUP_NtoM = 14,
-	LOOKUP_1toN = 15,
-	TAB = 17,
-	BUTTON = 18,
-	RICH_EDITOR = 19,
-	COLOR = 20,
-	FILE = 21,
-	SPLITTER = 22
-}
-
-const enum FIELD_DISPLAY_TYPE {
-	BLOCK = 0,
-	INLINE = 1
-}
-
-const enum NODE_TYPE {
-	SECTION = 1,
-	DOCUMENT = 2,
-	STATIC_LINK = 3,
-	REACT_CLASS = 4
-}
 
 const enum VIEW_MASK {
 	EDITABLE = 1,

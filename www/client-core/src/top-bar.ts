@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { R } from "./r";
-import { User } from "./user";
+import { R } from './r';
+import { User } from './user';
 
 class TopBar extends Component<any, any> {
 	render() {
@@ -11,7 +11,7 @@ class TopBar extends Component<any, any> {
 			},
 			R.img({ src: 'images/logo.png' })),
 			//search,
-			R.div({ className: "top-bar-right-area" },
+			R.div({ className: 'top-bar-right-area' },
 				React.createElement(User)
 			)
 		);

@@ -170,7 +170,7 @@ class FormListItem extends BaseForm {
 					className += ' form-item-row-num';
 				} else if (
 					field.fieldType !== FIELD_TYPE.TEXT &&
-					field.fieldType !== FIELD_TYPE.RICH_EDITOR &&
+					field.fieldType !== FIELD_TYPE.HTML_EDITOR &&
 					field.fieldType !== FIELD_TYPE.LOOKUP
 				) {
 					className += ' form-item-row-misc';

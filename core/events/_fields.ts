@@ -34,7 +34,7 @@ const handlers: NodeEventsHandlers = {
 
 		const fieldType = data.fieldType;
 		const fieldName = data.fieldName;
-		if (fieldType === FIELD_TYPE.LOOKUP_1toN) {
+		if (fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 			const parentNode = await getRecords(NODE_ID.NODES, 1, data.nodeFieldsLinker, userSession);
 
 			const linkerFieldData = {
@@ -106,7 +106,7 @@ const handlers: NodeEventsHandlers = {
 				currentData = Object.assign(currentData, newData);
 
 				if (realFieldName !== '_organizationId' && realFieldName !== '_usersId' && realFieldName !== '_createdOn' && realFieldName !== 'id') {
-					if (currentData.storeInDb && fieldType !== FIELD_TYPE.STATIC_TEXT && fieldType !== FIELD_TYPE.LOOKUP_NtoM && fieldType !== FIELD_TYPE.LOOKUP_1toN) {
+					if (currentData.storeInDb && fieldType !== FIELD_TYPE.STATIC_HTML_BLOCK && fieldType !== FIELD_TYPE.LOOKUP_N_TO_M && fieldType !== FIELD_TYPE.LOOKUP_1_TO_N) {
 						const typeQ = getFieldTypeSQL(currentData);
 						if (typeQ) {
 							const langs = getLangs();
@@ -153,41 +153,41 @@ export { createFieldInTable };
 
 function getFieldTypeSQL(data) {
 	switch (data.fieldType) {
-		case FIELD_TYPE.PASSWORD:
-		case FIELD_TYPE.TEXT:
-			if (data.maxLength <= 255) {
-				return 'VARCHAR(' + data.maxLength + ") NOT NULL DEFAULT ''";
-			} else {
-				return "text NOT NULL DEFAULT ''";
-			}
-		case FIELD_TYPE.COLOR:
-			return 'int8 NOT NULL DEFAULT 4294967295';
-		case FIELD_TYPE.NUMBER:
-			if (data.maxLength <= 5) {
-				return 'int2 NOT NULL DEFAULT 0';
-			} else if (data.maxLength <= 9) {
-				return 'int4 NOT NULL DEFAULT 0';
-			} else if (data.maxLength <= 19) {
-				return 'int8 NOT NULL DEFAULT 0';
-			} else {
-				return 'NUMERIC(' + data.maxLength + ', 0) NOT NULL DEFAULT 0';
-			}
-		case FIELD_TYPE.DATE_TIME:
-		case FIELD_TYPE.DATE:
-			return "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'";
-		case FIELD_TYPE.BOOL:
+	case FIELD_TYPE.PASSWORD:
+	case FIELD_TYPE.TEXT:
+		if (data.maxLength <= 255) {
+			return 'VARCHAR(' + data.maxLength + ') NOT NULL DEFAULT \'\'';
+		} else {
+			return 'text NOT NULL DEFAULT \'\'';
+		}
+	case FIELD_TYPE.COLOR:
+		return 'int8 NOT NULL DEFAULT 4294967295';
+	case FIELD_TYPE.NUMBER:
+		if (data.maxLength <= 5) {
 			return 'int2 NOT NULL DEFAULT 0';
-		case FIELD_TYPE.ENUM:
-		case FIELD_TYPE.LOOKUP:
-			return 'int4 UNSIGNED NOT NULL DEFAULT 0';
-		case FIELD_TYPE.PICTURE:
-			return "VARCHAR(32) NOT NULL DEFAULT ''";
-		case FIELD_TYPE.RICH_EDITOR:
-			return "text NOT NULL DEFAULT ''";
-		case FIELD_TYPE.FILE:
-			return "VARCHAR(127) NOT NULL DEFAULT ''";
-		default:
-			return false;
+		} else if (data.maxLength <= 9) {
+			return 'int4 NOT NULL DEFAULT 0';
+		} else if (data.maxLength <= 19) {
+			return 'int8 NOT NULL DEFAULT 0';
+		} else {
+			return 'NUMERIC(' + data.maxLength + ', 0) NOT NULL DEFAULT 0';
+		}
+	case FIELD_TYPE.DATETIME:
+	case FIELD_TYPE.DATE:
+		return 'timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\'';
+	case FIELD_TYPE.BOOL:
+		return 'int2 NOT NULL DEFAULT 0';
+	case FIELD_TYPE.ENUM:
+	case FIELD_TYPE.LOOKUP:
+		return 'int4 UNSIGNED NOT NULL DEFAULT 0';
+	case FIELD_TYPE.IMAGE:
+		return 'VARCHAR(32) NOT NULL DEFAULT \'\'';
+	case FIELD_TYPE.HTML_EDITOR:
+		return 'text NOT NULL DEFAULT \'\'';
+	case FIELD_TYPE.FILE:
+		return 'VARCHAR(127) NOT NULL DEFAULT \'\'';
+	default:
+		return false;
 	}
 }
 
@@ -207,15 +207,15 @@ async function createFieldInTable(data: RecordDataWrite) {
 	const nodeName = node.tableName;
 	let linkedNodeName;
 
-	if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_NtoM || fieldType === FIELD_TYPE.LOOKUP_1toN) {
+	if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_N_TO_M || fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 		const linkedNodeId = data.nodeRef;
 		linkedNodeName = getNodeDesc(linkedNodeId).tableName;
 
-		if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_NtoM) {
+		if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 			const filters = {
 				status: 1,
 				nodeFieldsLinker: linkedNodeId,
-				fieldType: FIELD_TYPE.PICTURE
+				fieldType: FIELD_TYPE.IMAGE
 			};
 			const records = await getRecords(6, VIEW_MASK.LIST, undefined, undefined, filters);
 			if (records.total) {
@@ -224,9 +224,9 @@ async function createFieldInTable(data: RecordDataWrite) {
 		}
 	}
 
-	if (fieldType === FIELD_TYPE.LOOKUP_1toN) {
+	if (fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 		data.storeInDb = 0;
-	} else if (fieldType === FIELD_TYPE.LOOKUP_NtoM) {
+	} else if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 		data.selectFieldName = linkedNodeName;
 		data.forSearch = 1;
 

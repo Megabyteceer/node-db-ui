@@ -147,7 +147,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 	}
 }
 
-registerFieldClass(FIELD_TYPE.LOOKUP_1toN, LookupOneToManyFiled);
+registerFieldClass(FIELD_TYPE.LOOKUP_1_TO_N, LookupOneToManyFiled);
 
 export { LookupOneToManyFiled };
 

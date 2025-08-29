@@ -101,11 +101,11 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		} else if (f.storeInDb) {
 			if (f.requirement) {
 				if ((!data.hasOwnProperty(fieldName) || !data[fieldName]) && (!currentData || !currentData[fieldName])) {
-					throwError("Required field '" + fieldName + "' is empty.");
+					throwError('Required field \'' + fieldName + '\' is empty.');
 				}
 			}
 			if (data.hasOwnProperty(fieldName)) {
-				if (f.fieldType === FIELD_TYPE.RICH_EDITOR) {
+				if (f.fieldType === FIELD_TYPE.HTML_EDITOR) {
 					for (const replacer of blockTags) {
 						data[fieldName] = data[fieldName].replace(replacer.exp, replacer.val);
 					}
@@ -176,7 +176,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 			const fieldName = f.fieldName;
 			if (f.storeInDb && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
 				const fieldType = f.fieldType;
-				if (fieldType === FIELD_TYPE.PICTURE || fieldType === FIELD_TYPE.FILE) {
+				if (fieldType === FIELD_TYPE.IMAGE || fieldType === FIELD_TYPE.FILE) {
 					if (!realDataBefore) {
 						realDataBefore = {};
 					}
@@ -210,10 +210,10 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 
 				const fieldVal = data[fieldName];
 
-				if (fieldType === FIELD_TYPE.LOOKUP_NtoM) {
+				if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 					//will process later
 					needProcess_n2m = 1;
-				} else if (fieldType === FIELD_TYPE.LOOKUP_1toN) {
+				} else if (fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 					throwError('children records addition/deletion is independent.');
 				} else {
 					leastOneTablesFieldUpdated = true;
@@ -228,12 +228,12 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 					case FIELD_TYPE.FILE:
 
 						//continue to process as uploaded image
-					case FIELD_TYPE.PICTURE:
+					case FIELD_TYPE.IMAGE:
 						if (fieldVal) {
 							if (userSession.uploaded && userSession.uploaded[f.id] === fieldVal) {
 								delete userSession.uploaded[fieldVal];
 							} else {
-								throwError("Error. Couldn't link uploaded file to the record.");
+								throwError('Error. Couldn\'t link uploaded file to the record.');
 							}
 						}
 						if (realDataBefore && realDataBefore[fieldName]) {
@@ -241,7 +241,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 								if (!filesToDelete) {
 									filesToDelete = [];
 								}
-								if (fieldType === FIELD_TYPE.PICTURE) {
+								if (fieldType === FIELD_TYPE.IMAGE) {
 									filesToDelete.push(idToImgURLServer(realDataBefore[fieldName]));
 								} else {
 									filesToDelete.push(join(UPLOADS_FILES_PATH, realDataBefore[fieldName]));
@@ -253,16 +253,16 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 					case FIELD_TYPE.TEXT:
 					case FIELD_TYPE.PASSWORD:
 						if (f.maxLength && fieldVal.length > f.maxLength) {
-							throwError("Value length for field '" + fieldName + "' (" + tableName + ') is ' + fieldVal.length + ' longer that ' + f.maxLength);
+							throwError('Value length for field \'' + fieldName + '\' (' + tableName + ') is ' + fieldVal.length + ' longer that ' + f.maxLength);
 						}
 						values.push(escapeString(fieldVal));
 						break;
 
-					case FIELD_TYPE.RICH_EDITOR:
+					case FIELD_TYPE.HTML_EDITOR:
 						if (fieldVal.length > 16000000) {
-							throwError("Value length for field '" + fieldName + "' (" + tableName + ') is longer that 16000000');
+							throwError('Value length for field \'' + fieldName + '\' (' + tableName + ') is longer that 16000000');
 						}
-						values.push("'", fieldVal, "'");
+						values.push('\'', fieldVal, '\'');
 						break;
 					case FIELD_TYPE.TAB:
 						break;
@@ -273,16 +273,16 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 						}
 						values.push(fieldVal);
 						break;
-					case FIELD_TYPE.DATE_TIME:
+					case FIELD_TYPE.DATETIME:
 					case FIELD_TYPE.DATE:
-						values.push("'" + fieldVal + "'");
+						values.push('\'' + fieldVal + '\'');
 						break;
 					default:
 						if (typeof fieldVal !== 'number' || isNaN(fieldVal)) {
 							throwError('Value for field ' + fieldName + ' (' + tableName + ') expected as numeric.');
 						}
 						if (f.maxLength && fieldVal.toString().length > f.maxLength) {
-							throwError("Value -length for field '" + fieldName + "' (" + tableName + ') is longer that ' + f.maxLength);
+							throwError('Value -length for field \'' + fieldName + '\' (' + tableName + ') is longer that ' + f.maxLength);
 						}
 						values.push(fieldVal as unknown as string);
 						break;
@@ -310,7 +310,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 				if (key !== 'status' && key !== '_organizationId' && key !== '_usersId') {
 					assert(
 						node.fields.find((f) => f.fieldName === key && f.sendToServer),
-						"Unknown field '" + key + "' in data set detected."
+						'Unknown field \'' + key + '\' in data set detected.'
 					);
 				}
 			}
@@ -332,7 +332,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		}
 		if (needProcess_n2m) {
 			for (const f of node.fields) {
-				if (f.fieldType === FIELD_TYPE.LOOKUP_NtoM) {
+				if (f.fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 					const fieldName = f.fieldName;
 					if (data.hasOwnProperty(fieldName)) {
 						//clear all n2m links

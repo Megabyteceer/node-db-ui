@@ -101,7 +101,7 @@ class FormFull extends FormEventProcessingMixins {
 		const fields = this.props.node.fields;
 		for (const k in fields) {
 			const f = fields[k];
-			if (f.fieldType === FIELD_TYPE.LOOKUP_1toN && this.isFieldVisibleByFormViewMask(f)) {
+			if (f.fieldType === FIELD_TYPE.LOOKUP_1_TO_N && this.isFieldVisibleByFormViewMask(f)) {
 				this.currentData[f.fieldName] = this.getField(f.fieldName).getBackupData();
 			}
 		}
@@ -228,7 +228,7 @@ class FormFull extends FormEventProcessingMixins {
 			const val = this.currentData[field.fieldName];
 
 			if (field.sendToServer) {
-				if (field.fieldType === FIELD_TYPE.LOOKUP_NtoM) {
+				if (field.fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 					if (!n2mValuesEqual(this.props.initialData[field.fieldName], val)) {
 						data[field.fieldName] = val.map((v) => v.id);
 					}
@@ -388,7 +388,7 @@ class FormFull extends FormEventProcessingMixins {
 						fields
 					});
 					tabs.push(currentTab);
-				} else if (this.props.editable || data[field.fieldName] || !field.storeInDb || field.fieldType === FIELD_TYPE.LOOKUP_1toN || field.fieldType >= 100) {
+				} else if (this.props.editable || data[field.fieldName] || !field.storeInDb || field.fieldType === FIELD_TYPE.LOOKUP_1_TO_N || field.fieldType >= 100) {
 					const tf = React.createElement(FieldWrap, {
 						ref,
 						key: field.id,
@@ -411,8 +411,8 @@ class FormFull extends FormEventProcessingMixins {
 
 		if (this.props.isCompact) {
 			fields.sort((a, b) => {
-				const alow = a.props.field.fieldType === FIELD_TYPE.LOOKUP_1toN || a.props.field.fieldType === FIELD_TYPE.LOOKUP_NtoM || a.props.field.fieldType === FIELD_TYPE.BOOL;
-				const blow = b.props.field.fieldType === FIELD_TYPE.LOOKUP_1toN || b.props.field.fieldType === FIELD_TYPE.LOOKUP_NtoM || b.props.field.fieldType === FIELD_TYPE.BOOL;
+				const alow = a.props.field.fieldType === FIELD_TYPE.LOOKUP_1_TO_N || a.props.field.fieldType === FIELD_TYPE.LOOKUP_N_TO_M || a.props.field.fieldType === FIELD_TYPE.BOOL;
+				const blow = b.props.field.fieldType === FIELD_TYPE.LOOKUP_1_TO_N || b.props.field.fieldType === FIELD_TYPE.LOOKUP_N_TO_M || b.props.field.fieldType === FIELD_TYPE.BOOL;
 				if (alow !== blow) {
 					if (alow) {
 						return 1;

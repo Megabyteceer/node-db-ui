@@ -59,7 +59,7 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 			props.wrapper.props.form.filters[props.field.fieldName] ||
 			'new';
 
-		if (props.field.fieldType === FIELD_TYPE.LOOKUP_1toN) {
+		if (props.field.fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 			ret[props.field.fieldName + 'Linker'] = parentId;
 		} /* else {
 			ret[props.field.fieldName] = parentId;

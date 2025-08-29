@@ -11,7 +11,7 @@ import { BaseField } from './base-field';
 import type { FieldWrap } from './field-wrap';
 
 registerFieldClass(
-	FIELD_TYPE.PICTURE,
+	FIELD_TYPE.IMAGE,
 	class PictureField extends BaseField {
 		cropperBody: CropperFieldBody;
 
