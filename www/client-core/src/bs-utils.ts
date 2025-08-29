@@ -14,8 +14,8 @@ interface Filters {
 	/** items per page */
 	n?: number;
 
-	/** field name to order by */
-	o?: string;
+	/** field id to order by */
+	o?: number;
 
 	/** reverse order */
 	r?: boolean;
@@ -28,11 +28,11 @@ interface RecordSubmitResult {
 
 const getCurrentStack = () => {
 	let a = new Error().stack?.split('\n');
-	if(a) {
+	if (a) {
 		a.splice(0, 3);
 	}
 	return a;
-}
+};
 
 /*
 /// #endif
@@ -60,22 +60,22 @@ interface UserSession {
 	uploaded?: { [key: number]: string };
 	__temporaryServerSideSession?: boolean;
 	notifications?: string[];
-	/** not empty if user have multilingual_enabled */
-	multilingual_enabled?: BoolNum;
+	/** not empty if user have multilingualEnabled */
+	multilingualEnabled?: BoolNum;
 	sessionToken?: string;
 	isGuest?: boolean;
 }
 
 interface EnumListItem {
 	value: number;
-	name: string
+	name: string;
 }
 
 type EnumList = {
 	name: string;
 	items: EnumListItem[];
 	namesByValue: { [key: number]: string };
-}
+};
 
 interface FieldDesc {
 	/** readable name */
@@ -85,9 +85,9 @@ interface FieldDesc {
 	id: RecId;
 
 	/** field's name in database table */
-	field_name: string;
+	fieldName: string;
 	/** maximal data length in database */
-	max_length: number;
+	maxLength: number;
 
 	show: VIEW_MASK;
 
@@ -98,33 +98,33 @@ interface FieldDesc {
 	unique: BoolNum;
 
 	/** if true - field data do not go to the server on form save. */
-	send_to_server: BoolNum;
+	sendToServer: BoolNum;
 
 	/** has multilingual input */
 	multilingual: BoolNum;
 
 	/** fields data go to the server, but has no store in database table. */
-	store_in_db: BoolNum;
+	storeInDb: BoolNum;
 
 	/** fields will have index in database, and search will be processed in this field */
-	for_search: BoolNum;
+	forSearch: BoolNum;
 
-	field_type: FIELD_TYPE;
+	fieldType: FIELD_TYPE;
 
 	icon: string;
 
 	/** name of picture field in relative table. Thin picture will be used as icon in Lookup fields. */
-	lookup_icon: string;
+	lookupIcon: string;
 
-	css_class?: string;
+	cssClass?: string;
 
 	display: FIELD_DISPLAY_TYPE;
 
 	/** owner node id */
-	node_ref: RecId;
+	nodeRef: RecId;
 
-	/** SERVER SIDE FIELD ONLY. If it not empty - content of this field goes in to field_name in SQL query to retrieve data not from direct table's field */
-	select_field_name?: string;
+	/** SERVER SIDE FIELD ONLY. If it not empty - content of this field goes in to fieldName in SQL query to retrieve data not from direct table's field */
+	selectFieldName?: string;
 
 	/** order of the field in the form */
 	prior: number;
@@ -146,7 +146,7 @@ interface FieldDesc {
 	lang?: string;
 
 	/** field name without language prefix */
-	fieldNamePure?: string;/** field name without language prefix */
+	fieldNamePure?: string /** field name without language prefix */;
 
 	/** fields which contains other languages data for that field */
 	childrenFields?: FieldDesc[];
@@ -164,29 +164,28 @@ interface FilterDesc {
 interface NodeDesc extends INodesRecord {
 	id: RecId;
 	/** parent node id */
-	_nodes_id: RecId;
-	single_name: string;
-	sortFieldName: string;
-	rolesToAccess: { roleId: RecId, privileges: number }[];
+	_nodesId: RecId;
+	singleName: string;
+	rolesToAccess: { roleId: RecId; privileges: number }[];
 	privileges: PRIVILEGES_MASK;
 	matchName: string;
 	description: string;
-	node_type: NODE_TYPE;
-	store_forms?: BoolNum;
+	nodeType: NODE_TYPE;
+	storeForms?: BoolNum;
 	reverse?: BoolNum;
-	creation_name?: string;
-	static_link?: string;
+	creationName?: string;
+	staticLink?: string;
 	captcha?: BoolNum;
-	table_name?: string;
+	tableName?: string;
 	draftable?: BoolNum;
 	icon?: string;
-	rec_per_page?: number;
-	default_filter_id?: number;
+	recPerPage?: number;
+	defaultFilterId?: number;
 	fields?: FieldDesc[];
-	css_class?: string;
+	cssClass?: string;
 	filters?: { [key: string]: FilterDesc };
-	filtersList?: { name: string, value: any }[];
-	sort_field_name?: string;
+	filtersList?: { name: string; value: any }[];
+	sortFieldName?: string;
 	/** CLIENT SIDE ONLY */
 	fieldsById?: { [key: number]: FieldDesc };
 	fieldsByName?: { [key: string]: FieldDesc };
@@ -197,7 +196,7 @@ interface UserLangEntry {
 	name: string;
 	code: string;
 	prefix: string;
-	isUiLanguage: boolean;
+	isUILanguage: boolean;
 }
 
 interface RecordDataWrite {
@@ -207,7 +206,6 @@ interface RecordDataWrite {
 }
 
 interface RecordData extends RecordDataWrite {
-
 	/** **edit** access to the record */
 	isE?: BoolNum;
 	/** **publish** access to the record */
@@ -258,7 +256,6 @@ enum FIELD_TYPE {
 	PICTURE = 12,
 	LOOKUP_NtoM = 14,
 	LOOKUP_1toN = 15,
-	RATING = 16,
 	TAB = 17,
 	BUTTON = 18,
 	RICH_EDITOR = 19,
@@ -345,6 +342,35 @@ interface IFormParameters {
 }
 
 export {
-	BoolNum, EnumList, EnumListItem, FIELD_DISPLAY_TYPE, FIELD_ID, FIELD_TYPE, FieldDesc, FilterDesc, Filters, getCurrentStack, GetRecordsParams, HASH_DIVIDER, IFormParameters, IMAGE_THUMBNAIL_PREFIX, LANGUAGE_ID_DEFAULT, NODE_ID, NODE_TYPE, NodeDesc, PRIVILEGES_MASK, RecId, RecordData, RecordDataWrite, RecordsData, RecordsDataResponse, RecordSubmitResult, ROLE_ID, USER_ID, UserLangEntry, UserRoles, UserSession, VIEW_MASK
+	BoolNum,
+	EnumList,
+	EnumListItem,
+	FIELD_DISPLAY_TYPE,
+	FIELD_ID,
+	FIELD_TYPE,
+	FieldDesc,
+	FilterDesc,
+	Filters,
+	getCurrentStack,
+	GetRecordsParams,
+	HASH_DIVIDER,
+	IFormParameters,
+	IMAGE_THUMBNAIL_PREFIX,
+	LANGUAGE_ID_DEFAULT,
+	NODE_ID,
+	NODE_TYPE,
+	NodeDesc,
+	PRIVILEGES_MASK,
+	RecId,
+	RecordData,
+	RecordDataWrite,
+	RecordsData,
+	RecordsDataResponse,
+	RecordSubmitResult,
+	ROLE_ID,
+	USER_ID,
+	UserLangEntry,
+	UserRoles,
+	UserSession,
+	VIEW_MASK
 };
-

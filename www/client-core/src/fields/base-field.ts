@@ -1,18 +1,18 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-import { Component } from "react";
-import Highlighter from "react-highlight-words";
+import { Component } from 'react';
+import Highlighter from 'react-highlight-words';
 import { assert } from '../assert';
-import { FieldDesc } from "../bs-utils";
-import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
-import { FormFull } from "../forms/form-full";
-import type { FieldWrap } from "./field-wrap";
+import { FieldDesc } from '../bs-utils';
+import { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
+import { FormFull } from '../forms/form-full';
+import type { FieldWrap } from './field-wrap';
 
 let autoFocusNow = true;
 const resetAutofocus = () => {
 	autoFocusNow = true;
-}
+};
 
 interface FieldProps {
 	field: FieldDesc;
@@ -41,9 +41,10 @@ interface RefToInput extends Component {
 	click();
 }
 
-
-class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = FieldState> extends Component<T, T2> {
-
+class BaseField<
+	T extends FieldProps = FieldProps,
+	T2 extends FieldState = FieldState
+> extends Component<T, T2> {
 	refToInput: RefToInput;
 	forceBouncingTimeout?(): void;
 
@@ -51,7 +52,7 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 		assert(props.field, '"field" property  expected.');
 		super(props);
 		let value = props.initialValue;
-		if(Array.isArray(value)) {
+		if (Array.isArray(value)) {
 			value = value.slice();
 		}
 		//@ts-ignore
@@ -62,7 +63,7 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 	/** returns true only for first call at one render time */
 	isAutoFocus() {
 		let ret = autoFocusNow;
-		if(autoFocusNow) {
+		if (autoFocusNow) {
 			autoFocusNow = undefined;
 			setTimeout(resetAutofocus, 10);
 		}
@@ -70,32 +71,34 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 	}
 
 	isRequired() {
-		return this.state.hasOwnProperty('requirement') ? this.state.requirement : this.props.field.requirement;
+		return this.state.hasOwnProperty('requirement')
+			? this.state.requirement
+			: this.props.field.requirement;
 	}
 
 	isEmpty(): boolean {
-		var val = this.props.wrapper.props.form.currentData[this.props.field.field_name];
+		var val = this.props.wrapper.props.form.currentData[this.props.field.fieldName];
 		return !val;
 	}
 
 	getBackupData(): any {
-		throw "class " + this.constructor.name + " has no getBackupData() method.";
+		throw 'class ' + this.constructor.name + ' has no getBackupData() method.';
 	}
 
 	setMin(val: Number) {
-		throw "class " + this.constructor.name + " has no setMin() method.";
+		throw 'class ' + this.constructor.name + ' has no setMin() method.';
 	}
 
 	setMax(val: Number) {
-		throw "class " + this.constructor.name + " has no setMax() method.";
+		throw 'class ' + this.constructor.name + ' has no setMax() method.';
 	}
 
 	setLookupFilter(name: string, value: any) {
-		throw "class " + this.constructor.name + " has no setLookupFilter() method.";
+		throw 'class ' + this.constructor.name + ' has no setLookupFilter() method.';
 	}
 
 	setValue(value: any) {
-		throw "class " + this.constructor.name + " has no setValue() method.";
+		throw 'class ' + this.constructor.name + ' has no setValue() method.';
 	}
 
 	async getMessageIfInvalid?(): Promise<string | false | true>;
@@ -105,14 +108,16 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 	extendEditor?(): void;
 
 	renderTextValue(txt) {
-		if(this.props.field.for_search) {
+		if (this.props.field.forSearch) {
 			const list = this.props.form.props.list;
-			if(list && list.filters && list.filters.s) {
+			if (list && list.filters && list.filters.s) {
 				return React.createElement(Highlighter, {
 					highlightClassName: 'mark-search',
-					searchWords: [(typeof list.filters.s === 'string') ? list.filters.s : String(list.filters.s)],
+					searchWords: [
+						typeof list.filters.s === 'string' ? list.filters.s : String(list.filters.s),
+					],
 					autoEscape: true,
-					textToHighlight: txt
+					textToHighlight: txt,
 				});
 			}
 		}
@@ -120,7 +125,7 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 	}
 
 	focus() {
-		if(this.refToInput) {
+		if (this.refToInput) {
 			//@ts-ignore
 			ReactDOM.findDOMNode(this.refToInput).focus();
 		}
@@ -131,4 +136,3 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 	}
 }
 export { BaseField, FieldProps, FieldState, RefToInput };
-

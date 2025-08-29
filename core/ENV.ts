@@ -1,4 +1,3 @@
-
 const SERVER_ENV = {
 	PORT: 1443,
 	SERVER_NAME: 'http://node-db-ui.com:1443/',
@@ -18,11 +17,11 @@ const SERVER_ENV = {
 	DEPLOYMENT_KEY_REMOTE: '',
 
 	DEPLOYMENT_KEEP_DEBUG: true,
-	CAPTCHA_SERVER_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
-}
+	CAPTCHA_SERVER_SECRET: '' /** add recaptcha v3 keys to enable captcha forms */
+};
 
 const ENV = {
-	CAPTCHA_CLIENT_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
+	CAPTCHA_CLIENT_SECRET: '' /** add recaptcha v3 keys to enable captcha forms */,
 
 	langs: undefined as string[] | undefined,
 
@@ -48,16 +47,16 @@ const ENV = {
 	BLOCK_RICH_EDITOR_TAGS: ['script'],
 
 	clientOptions: {
-		"googleSigninClientId": ""
+		googleSigninClientId: ''
 	}
 };
 
-import * as fs from "fs";
+import * as fs from 'fs';
 
 const envPath = './ENV.json';
-if(fs.existsSync(envPath)) {
+if (fs.existsSync(envPath)) {
 	let env = JSON.parse(fs.readFileSync(envPath, 'utf8'));
-	if(env.clientOptions) {
+	if (env.clientOptions) {
 		Object.assign(ENV.clientOptions, env.clientOptions);
 	}
 	Object.assign(ENV, env);

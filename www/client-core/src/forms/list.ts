@@ -1,37 +1,51 @@
-import { FIELD_TYPE, PRIVILEGES_MASK, RecordsData, VIEW_MASK } from "../bs-utils";
-import { R } from "../r";
+import { FIELD_TYPE, PRIVILEGES_MASK, RecordsData, VIEW_MASK } from '../bs-utils';
+import { R } from '../r';
 
 /// #if DEBUG
-import { NodeAdmin } from "../admin/admin-control";
-import { FieldAdmin } from "../admin/field-admin";
+import { NodeAdmin } from '../admin/admin-control';
+import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 
-import React from "react";
-import { Select } from "../components/select";
-import { RefToInput } from "../fields/base-field";
-import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
-import { LeftBar } from "../left-bar";
-import { iAdmin } from "../user";
-import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from "../utils";
-import { BaseForm, FormProps, FormState } from "./base-form";
-import { FormFull } from "./form-full";
-import { FormListItem } from "./form-list-item";
+import React from 'react';
+import { Select } from '../components/select';
+import { RefToInput } from '../fields/base-field';
+import { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
+import { LeftBar } from '../left-bar';
+import { iAdmin } from '../user';
+import {
+	deleteRecord,
+	getListRenderer,
+	getNode,
+	getNodeData,
+	isPresentListRenderer,
+	isRecordRestrictedForDeletion,
+	L,
+	renderIcon,
+	scrollToVisible,
+	sp,
+	UID,
+	updateHashLocation,
+} from '../utils';
+import { BaseForm, FormProps, FormState } from './base-form';
+import { FormFull } from './form-full';
+import { FormListItem } from './form-list-item';
 
 const sortByOrder = (a, b) => {
 	return a.order - b.order;
-}
+};
 
 function createPageButton(self, page, isActive) {
-	if(isActive) {
-		return R.button({ key: page, className: 'page-btn page-btn-active' },
-			page + 1
-		);
+	if (isActive) {
+		return R.button({ key: page, className: 'page-btn page-btn-active' }, page + 1);
 	}
-	return R.button({
-		key: page, className: 'clickable page-btn', onClick: () => {
-			self.changeFilter('p', page, true);
-		}
-	},
+	return R.button(
+		{
+			key: page,
+			className: 'clickable page-btn',
+			onClick: () => {
+				self.changeFilter('p', page, true);
+			},
+		},
 		page + 1
 	);
 }
@@ -56,7 +70,6 @@ interface ListState extends Omit<FormState, 'data'> {
 }
 
 class List extends BaseForm<ListProps, ListState> {
-
 	private searchInput: RefToInput;
 	private subFormsRefs: { [key: number]: FormFull };
 	private currentFetchingNodeId: number;
@@ -71,7 +84,8 @@ class List extends BaseForm<ListProps, ListState> {
 		//@ts-ignore
 		this.state.data = props.initialData;
 		//@ts-ignore
-		this.state.viewMask = this.props.viewMask || (this.props.isLookup ? VIEW_MASK.DROPDOWN_LIST : VIEW_MASK.LIST);
+		this.state.viewMask =
+			this.props.viewMask || (this.props.isLookup ? VIEW_MASK.DROPDOWN_LIST : VIEW_MASK.LIST);
 		this.refreshData = this.refreshData.bind(this);
 		this.changeSearch = this.changeSearch.bind(this);
 		this.subFormRef = this.subFormRef.bind(this);
@@ -83,25 +97,25 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	changeFilter(name: string, v?: any, refresh?: boolean) {
-		if(name === 'tab') {
+		if (name === 'tab') {
 			this.callOnTabShowEvent(v);
 		}
 
 		var p = this.filters[name];
 
-		if((p !== 0) && (v !== 0)) {
-			if(!p && !v) return;
+		if (p !== 0 && v !== 0) {
+			if (!p && !v) return;
 		}
 
-		if(p !== v) {
-			if(typeof (v) === 'undefined') {
-				delete (this.filters[name]);
-				delete (this.filters[name]);
+		if (p !== v) {
+			if (typeof v === 'undefined') {
+				delete this.filters[name];
+				delete this.filters[name];
 			} else {
 				this.filters[name] = v;
 				this.filters[name] = v;
 			}
-			if(refresh) {
+			if (refresh) {
 				this.refreshData();
 			}
 			return true;
@@ -110,9 +124,11 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	onShow() {
-		if(!this.state.data) {
-			setTimeout(() => { this.refreshData(); }, 1);
-		} else if(!this.state.node) {
+		if (!this.state.data) {
+			setTimeout(() => {
+				this.refreshData();
+			}, 1);
+		} else if (!this.state.node) {
 			getNode(this.props.nodeId).then((node) => {
 				this.setState({ node });
 			});
@@ -126,37 +142,44 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	async refreshData() {
-		if(!this.isSubForm()) {
+		if (!this.isSubForm()) {
 			updateHashLocation();
 		}
 		var nodeIdToFetch = this.props.nodeId || this.props.node.id;
-		if(nodeIdToFetch !== this.currentFetchingNodeId) {
+		if (nodeIdToFetch !== this.currentFetchingNodeId) {
 			this.currentFetchingNodeId = nodeIdToFetch;
 
-			if(this.props.editable) {
+			if (this.props.editable) {
 				this.filters.p = '*';
 			}
 
 			//TODO: Понять почему рефреш листа дает другой вьюмаск. this.state.viewMask отличается от того что в кастом вью
-			let data = await getNodeData(nodeIdToFetch, undefined, this.filters, this.props.editable, this.state.viewMask, this.isCustomListRendering());
+			let data = await getNodeData(
+				nodeIdToFetch,
+				undefined,
+				this.filters,
+				this.props.editable,
+				this.state.viewMask,
+				this.isCustomListRendering()
+			);
 
-			if(this.unmounted) {
+			if (this.unmounted) {
 				return;
 			}
 
-			if(!data.items) {
+			if (!data.items) {
 				data.items = [];
 				data.total = 0;
 			}
 
 			this.currentFetchingNodeId = -1;
 			var sorting = data.items.length && data.items[0].hasOwnProperty('order');
-			if(sorting) {
+			if (sorting) {
 				data.items.sort(sortByOrder);
 			}
 
 			let node = this.props.node;
-			if(!node) {
+			if (!node) {
 				node = await getNode(this.props.nodeId);
 			}
 			this.setState({ data, node });
@@ -164,7 +187,7 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	scrollIfNeed() {
-		if(this.isSubForm() && this.props.parentForm.props.field.field_type === FIELD_TYPE.LOOKUP) {
+		if (this.isSubForm() && this.props.parentForm.props.field.fieldType === FIELD_TYPE.LOOKUP) {
 			scrollToVisible(this, true);
 		}
 	}
@@ -173,9 +196,9 @@ class List extends BaseForm<ListProps, ListState> {
 		var val = event.target.value;
 		this.clearSearchInterval();
 		this.searchTimeout = setTimeout(() => {
-			delete (this.searchTimeout);
-			if(this.changeFilter('s', val)) {
-				if(this.filters.p !== '*') {
+			delete this.searchTimeout;
+			if (this.changeFilter('s', val)) {
+				if (this.filters.p !== '*') {
 					this.changeFilter('p');
 				}
 				this.refreshData();
@@ -184,10 +207,9 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	clearSearchInterval() {
-		if(this.hasOwnProperty('searchTimeout')) {
+		if (this.hasOwnProperty('searchTimeout')) {
 			clearTimeout(this.searchTimeout);
 		}
-
 	}
 
 	componentWillUnmount() {
@@ -196,8 +218,8 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	setSearchInputValue(v?: string) {
-		if(this.searchInput) {
-			if(!v) {
+		if (this.searchInput) {
+			if (!v) {
 				v = '';
 			}
 			this.searchInput.value = v;
@@ -207,8 +229,8 @@ class List extends BaseForm<ListProps, ListState> {
 
 	clearSearch() {
 		this.setSearchInputValue();
-		if(this.changeFilter('s')) {
-			if(this.filters.p !== '*') {
+		if (this.changeFilter('s')) {
+			if (this.filters.p !== '*') {
 				this.changeFilter('p');
 			}
 			this.refreshData();
@@ -221,10 +243,10 @@ class List extends BaseForm<ListProps, ListState> {
 
 	getSubForms(): FormFull[] {
 		var ret = [];
-		for(var k in this.subFormsRefs) {
-			if(this.subFormsRefs.hasOwnProperty(k)) {
+		for (var k in this.subFormsRefs) {
+			if (this.subFormsRefs.hasOwnProperty(k)) {
 				var f = this.subFormsRefs[k];
-				if(f) {
+				if (f) {
 					ret.push(f);
 				}
 			}
@@ -233,7 +255,11 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	isCustomListRendering() {
-		return (!this.props.filters.noCustomList && !this.props.isLookup && isPresentListRenderer(this.props.nodeId || this.props.node.id));
+		return (
+			!this.props.filters.noCustomList &&
+			!this.props.isLookup &&
+			isPresentListRenderer(this.props.nodeId || this.props.node.id)
+		);
 	}
 
 	renderEditableList() {
@@ -241,119 +267,162 @@ class List extends BaseForm<ListProps, ListState> {
 		var data = this.state.data;
 		var filters = this.filters;
 		var lines = [];
-		if(data.items.length > 0) {
+		if (data.items.length > 0) {
 			var sorting = data.items[0].hasOwnProperty('order');
-			for(var i = 0; i < data.items.length; i++) {
+			for (var i = 0; i < data.items.length; i++) {
 				(() => {
 					let itemNum = i;
 					var item = data.items[i];
 					const isRestricted = isRecordRestrictedForDeletion(node.id, item.id);
-					if(!item.__deleted_901d123f) {
-
+					if (!item.__deleted_901d123f) {
 						var buttons = [];
 
-						buttons.push(R.button({
-							className: isRestricted ? 'clickable tool-btn danger-btn restricted' : 'clickable tool-btn danger-btn', title: L('DELETE'), key: 'b' + UID(item), onClick: async () => {
-								await deleteRecord(item.name, node.id, 0, false, () => {
-									item.__deleted_901d123f = true;
-									this.forceUpdate();
-								});
-							}
-						}, renderIcon('times')));
+						buttons.push(
+							R.button(
+								{
+									className: isRestricted
+										? 'clickable tool-btn danger-btn restricted'
+										: 'clickable tool-btn danger-btn',
+									title: L('DELETE'),
+									key: 'b' + UID(item),
+									onClick: async () => {
+										await deleteRecord(item.name, node.id, 0, false, () => {
+											item.__deleted_901d123f = true;
+											this.forceUpdate();
+										});
+									},
+								},
+								renderIcon('times')
+							)
+						);
 
-						if(sorting) {
+						if (sorting) {
 							var uidM1: number;
 							var uidP1: number;
 							var itemNumM1;
 							var itemNumP1;
-							for(var j = itemNum - 1; j >= 0; j--) {
-								if(!data.items[j].__deleted_901d123f) {
+							for (var j = itemNum - 1; j >= 0; j--) {
+								if (!data.items[j].__deleted_901d123f) {
 									itemNumM1 = j;
 									uidM1 = j;
 									break;
 								}
 							}
 
-							for(var j = itemNum + 1; j < (data.items.length); j++) {
-								if(!data.items[j].__deleted_901d123f) {
+							for (var j = itemNum + 1; j < data.items.length; j++) {
+								if (!data.items[j].__deleted_901d123f) {
 									itemNumP1 = j;
 									uidP1 = j;
 									break;
 								}
 							}
 
-							if(typeof uidM1 === 'number') {
+							if (typeof uidM1 === 'number') {
 								(() => {
-									buttons.push(R.button({
-										className: 'clickable tool-btn edit-btn', title: L('MOVE_UP'), key: 'bu' + UID(item), onClick: () => {
-											var t = data.items[itemNum];
-											data.items[itemNum] = data.items[itemNumM1];
-											data.items[itemNumM1] = t;
-											this.subFormsRefs[itemNum].setFieldValue('order', itemNumM1);
-											this.subFormsRefs[itemNum].saveForm();
-											this.subFormsRefs[uidM1].setFieldValue('order', itemNum);
-											this.subFormsRefs[uidM1].saveForm();
-											this.forceUpdate();
-										}
-									}, renderIcon('arrow-up')));
+									buttons.push(
+										R.button(
+											{
+												className: 'clickable tool-btn edit-btn',
+												title: L('MOVE_UP'),
+												key: 'bu' + UID(item),
+												onClick: () => {
+													var t = data.items[itemNum];
+													data.items[itemNum] = data.items[itemNumM1];
+													data.items[itemNumM1] = t;
+													this.subFormsRefs[itemNum].setFieldValue('order', itemNumM1);
+													this.subFormsRefs[itemNum].saveForm();
+													this.subFormsRefs[uidM1].setFieldValue('order', itemNum);
+													this.subFormsRefs[uidM1].saveForm();
+													this.forceUpdate();
+												},
+											},
+											renderIcon('arrow-up')
+										)
+									);
 								})();
 							}
-							if(uidP1) {
-
+							if (uidP1) {
 								(() => {
-									buttons.push(R.button({
-										className: 'clickable tool-btn edit-btn', title: L('MOVE_DOWN'), key: 'bd' + UID(item), onClick: () => {
-											var t = data.items[itemNum];
-											data.items[itemNum] = data.items[itemNumP1];
-											data.items[itemNumP1] = t;
+									buttons.push(
+										R.button(
+											{
+												className: 'clickable tool-btn edit-btn',
+												title: L('MOVE_DOWN'),
+												key: 'bd' + UID(item),
+												onClick: () => {
+													var t = data.items[itemNum];
+													data.items[itemNum] = data.items[itemNumP1];
+													data.items[itemNumP1] = t;
 
-											this.subFormsRefs[itemNum].setFieldValue('order', itemNumP1);
-											this.subFormsRefs[itemNum].saveForm();
-											this.subFormsRefs[uidP1].setFieldValue('order', itemNum);
-											this.subFormsRefs[uidP1].saveForm();
-											this.forceUpdate();
-
-										}
-									}, renderIcon('arrow-down')));
+													this.subFormsRefs[itemNum].setFieldValue('order', itemNumP1);
+													this.subFormsRefs[itemNum].saveForm();
+													this.subFormsRefs[uidP1].setFieldValue('order', itemNum);
+													this.subFormsRefs[uidP1].saveForm();
+													this.forceUpdate();
+												},
+											},
+											renderIcon('arrow-down')
+										)
+									);
 								})();
 							}
 						}
 
 						lines.push(
-							R.div({ key: UID(item), className: 'inline-editable-item inline-editable-item-rec-id-' + item.id },
+							R.div(
+								{
+									key: UID(item),
+									className: 'inline-editable-item inline-editable-item-rec-id-' + item.id,
+								},
 								React.createElement(FormFull, {
 									ref: (ref) => {
 										this.subFormRef(ref, itemNum);
-									}, inlineEditable: true, editable: true, isCompact: true, filters: filters, parentForm: this.props.parentForm, isLookup: this.props.isLookup, list: this, node, initialData: item, overrideOrderData: sorting ? itemNum : -1
+									},
+									inlineEditable: true,
+									editable: true,
+									isCompact: true,
+									filters: filters,
+									parentForm: this.props.parentForm,
+									isLookup: this.props.isLookup,
+									list: this,
+									node,
+									initialData: item,
+									overrideOrderData: sorting ? itemNum : -1,
 								}),
-								R.span({ key: UID(item) + 'buttons', className: 'buttons' },
-									buttons
-								)
+								R.span({ key: UID(item) + 'buttons', className: 'buttons' }, buttons)
 							)
-
 						);
 					}
-				})()
-
+				})();
 			}
 		}
 		/// #if DEBUG
 		var nodeAdmin;
-		if(iAdmin()) {
+		if (iAdmin()) {
 			nodeAdmin = React.createElement(NodeAdmin, { form: this });
 		}
 		/// #endif
 
 		var createBtn;
-		if(node.privileges & PRIVILEGES_MASK.CREATE) {
-			createBtn = R.div(null,
-				R.button({ title: L('ADD', (node.creation_name || node.single_name)), className: 'clickable tool-btn create-btn', onClick: () => { data.items.push({}); this.forceUpdate(); } },
+		if (node.privileges & PRIVILEGES_MASK.CREATE) {
+			createBtn = R.div(
+				null,
+				R.button(
+					{
+						title: L('ADD', node.creationName || node.singleName),
+						className: 'clickable tool-btn create-btn',
+						onClick: () => {
+							data.items.push({});
+							this.forceUpdate();
+						},
+					},
 					renderIcon('plus')
 				)
 			);
 		}
 
-		return R.div({ className: 'editable-list editable-list-node-' + node.id },
+		return R.div(
+			{ className: 'editable-list editable-list-node-' + node.id },
 			/// #if DEBUG
 			nodeAdmin,
 			/// #endif
@@ -365,13 +434,14 @@ class List extends BaseForm<ListProps, ListState> {
 	render() {
 		var node = this.state.node;
 		var data = this.state.data;
-		if(!node || !data) {
-			return R.div({ className: 'field-lookup-loading-icon-container' },
+		if (!node || !data) {
+			return R.div(
+				{ className: 'field-lookup-loading-icon-container' },
 				renderIcon('cog fa-spin fa-2x')
 			);
 		}
 
-		if(this.props.editable) {
+		if (this.props.editable) {
 			return this.renderEditableList();
 		} else {
 			return this.renderList();
@@ -384,180 +454,232 @@ class List extends BaseForm<ListProps, ListState> {
 		var filters = this.filters;
 		var header;
 
-		if(!this.props.omitHeader) {
+		if (!this.props.omitHeader) {
 			var createButton;
-			if((node.privileges & PRIVILEGES_MASK.CREATE) && !this.props.preventCreateButton && !this.filters.preventCreateButton && !this.state.preventCreateButton) {
-				if(this.isSubForm()) {
-					createButton = R.button({
-						className: 'clickable create-button', onClick: async () => {
-							if(this.props.askToSaveParentBeforeCreation) {
-								await this.props.parentForm.saveParentFormBeforeCreation();
-							}
-							this.props.parentForm.toggleCreateDialogue('new');
-						}
-					},
-						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creation_name || node.single_name)
+			if (
+				node.privileges & PRIVILEGES_MASK.CREATE &&
+				!this.props.preventCreateButton &&
+				!this.filters.preventCreateButton &&
+				!this.state.preventCreateButton
+			) {
+				if (this.isSubForm()) {
+					createButton = R.button(
+						{
+							className: 'clickable create-button',
+							onClick: async () => {
+								if (this.props.askToSaveParentBeforeCreation) {
+									await this.props.parentForm.saveParentFormBeforeCreation();
+								}
+								this.props.parentForm.toggleCreateDialogue('new');
+							},
+						},
+						renderIcon('plus'),
+						' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				} else {
-					createButton = R.button({
-						className: 'clickable create-button', onClick: () => {
-							crudJs.Stage.showForm(node.id, 'new', filters, true);
-						}
-					},
-						renderIcon('plus'), ' ' + L('CREATE') + ' ' + (node.creation_name || node.single_name)
+					createButton = R.button(
+						{
+							className: 'clickable create-button',
+							onClick: () => {
+								crudJs.Stage.showForm(node.id, 'new', filters, true);
+							},
+						},
+						renderIcon('plus'),
+						' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
 					);
 				}
 			}
 
 			var searchPanel;
 
-			if(!this.props.hideSearch && !this.state.hideSearch && (this.filters.s || data.items.length > 2)) {
-				searchPanel = R.div({ className: 'list-search' },
-					R.input({ ref: (input) => { this.searchInput = input; }, className: 'list-search-input', placeholder: L('SEARCH_LIST'), onChange: this.changeSearch, defaultValue: this.filters.s }),
-					R.a({
-						className: 'clickable tool-btn default-btn', onClick: (e) => {
-							this.clearSearch();
-							sp(e);
-						}
-					},
+			if (
+				!this.props.hideSearch &&
+				!this.state.hideSearch &&
+				(this.filters.s || data.items.length > 2)
+			) {
+				searchPanel = R.div(
+					{ className: 'list-search' },
+					R.input({
+						ref: (input) => {
+							this.searchInput = input;
+						},
+						className: 'list-search-input',
+						placeholder: L('SEARCH_LIST'),
+						onChange: this.changeSearch,
+						defaultValue: this.filters.s,
+					}),
+					R.a(
+						{
+							className: 'clickable tool-btn default-btn',
+							onClick: (e) => {
+								this.clearSearch();
+								sp(e);
+							},
+						},
 						renderIcon('times')
 					)
-				)
+				);
 			}
 
 			var filtersPanel;
-			if(node.filtersList && (node.filtersList.length > 1)) {
+			if (node.filtersList && node.filtersList.length > 1) {
 				var options = node.filtersList;
-				filtersPanel = R.div({
-					className: 'filter-select'
-				}, React.createElement(Select, {
-					options,
-					defaultValue: node.default_filter_id ? node.filters[this.filters.filterId || node.default_filter_id].name : undefined,
-					onChange: (val) => {
-						this.changeFilter('filterId', parseInt(val), true);
-					}
-				}));
+				filtersPanel = R.div(
+					{
+						className: 'filter-select',
+					},
+					React.createElement(Select, {
+						options,
+						defaultValue: node.defaultFilterId
+							? node.filters[this.filters.filterId || node.defaultFilterId].name
+							: undefined,
+						onChange: (val) => {
+							this.changeFilter('filterId', parseInt(val), true);
+						},
+					})
+				);
 			}
 
-			if(createButton || searchPanel || filtersPanel) {
-				header = R.div({ className: 'list-header' },
+			if (createButton || searchPanel || filtersPanel) {
+				header = R.div(
+					{ className: 'list-header' },
 					createButton || R.span(),
-					R.div({ className: 'list-header-right-area' },
-						searchPanel,
-						filtersPanel
-					)
+					R.div({ className: 'list-header-right-area' }, searchPanel, filtersPanel)
 				);
 			}
 		}
 
 		var body;
-		if(data.total > 0 || this.isCustomListRendering()) {
-			if(this.isCustomListRendering()) {
+		if (data.total > 0 || this.isCustomListRendering()) {
+			if (this.isCustomListRendering()) {
 				body = getListRenderer(node.id).call(this);
 			}
-			if(!body) {
+			if (!body) {
 				var tableHeader = [];
 				node.fields.some((field) => {
 					/// #if DEBUG
 					var fieldAdmin;
-					if(iAdmin()) {
+					if (iAdmin()) {
 						fieldAdmin = React.createElement(FieldAdmin, { field, form: this });
 					}
 					/// #endif
 
 					var rowHeader;
-					if(field.for_search === 1) {
-						rowHeader = R.span({
-							className: (filters.o === field.field_name) ? 'clickable list-row-header-sorting' : 'clickable', onClick: () => {
-								if(filters.o === field.field_name) {
-									this.changeFilter('r', filters.r ? undefined : 1, true);
-								} else {
-									this.changeFilter('o', field.field_name, true);
-								}
-							}
-						},
+					if (field.forSearch === 1) {
+						rowHeader = R.span(
+							{
+								className:
+									filters.o === field.id ? 'clickable list-row-header-sorting' : 'clickable',
+								onClick: () => {
+									if (filters.o === field.id) {
+										this.changeFilter('r', filters.r ? undefined : 1, true);
+									} else {
+										this.changeFilter('o', field.id, true);
+									}
+								},
+							},
 							renderIcon(field.icon),
 							field.name,
-							renderIcon((!filters.r && (filters.o === field.field_name)) ? 'caret-up' : 'caret-down')
+							renderIcon(!filters.r && filters.o === field.id ? 'caret-up' : 'caret-down')
 						);
 					} else {
 						rowHeader = R.span(null, renderIcon(field.icon), field.name);
 					}
 
-
-					if(this.isFieldVisibleByFormViewMask(field)) {
-						tableHeader.push(R.td({ key: field.id, className: (field.field_type === FIELD_TYPE.NUMBER) ? 'list-row-header list-row-header-num' : 'list-row-header' },
-							rowHeader
-							/// #if DEBUG
-							,
-							fieldAdmin
-							/// #endif
-						));
+					if (this.isFieldVisibleByFormViewMask(field)) {
+						tableHeader.push(
+							R.td(
+								{
+									key: field.id,
+									className:
+										field.fieldType === FIELD_TYPE.NUMBER
+											? 'list-row-header list-row-header-num'
+											: 'list-row-header',
+								},
+								rowHeader,
+								/// #if DEBUG
+								fieldAdmin
+								/// #endif
+							)
+						);
 					}
 				});
 				tableHeader.push(R.td({ key: 'holder', className: 'list-row-header' }, ' '));
 
-				var additionalButtons = this.state.additionalButtons || this.props.additionalButtons || undefined;
+				var additionalButtons =
+					this.state.additionalButtons || this.props.additionalButtons || undefined;
 
-				var hideControls = this.props.hideControls || this.state.hideControls || (this.props.filters && this.props.filters.hideControls);
+				var hideControls =
+					this.props.hideControls ||
+					this.state.hideControls ||
+					(this.props.filters && this.props.filters.hideControls);
 
 				var lines = data.items.map((item) => {
-					return React.createElement(FormListItem, { key: Math.random() + '_' + item.id, disableDrafting: this.props.disableDrafting, noPreviewButton: this.props.noPreviewButton, viewMask: this.state.viewMask, parentForm: this.props.parentForm, additionalButtons, hideControls: hideControls, isLookup: this.props.isLookup, list: this, node, initialData: item });
+					return React.createElement(FormListItem, {
+						key: Math.random() + '_' + item.id,
+						disableDrafting: this.props.disableDrafting,
+						noPreviewButton: this.props.noPreviewButton,
+						viewMask: this.state.viewMask,
+						parentForm: this.props.parentForm,
+						additionalButtons,
+						hideControls: hideControls,
+						isLookup: this.props.isLookup,
+						list: this,
+						node,
+						initialData: item,
+					});
 				});
 
-				body = R.table({ className: 'list-table' },
+				body = R.table(
+					{ className: 'list-table' },
 					R.thead(null, R.tr(null, tableHeader)),
 					R.tbody({ className: 'list-body' }, lines)
 				);
 			}
-
-		} else if(!this.props.isLookup) {
-
+		} else if (!this.props.isLookup) {
 			var t1, t2;
-			if(filters.s || filters.s === 0) {
+			if (filters.s || filters.s === 0) {
 				t1 = L('NO_RESULTS', filters.s);
 				t2 = '';
-			} else if(createButton) {
-				t1 = L('PUSH_CREATE', (node.creation_name || node.single_name));
+			} else if (createButton) {
+				t1 = L('PUSH_CREATE', node.creationName || node.singleName);
 				t2 = L(this.isSubForm() ? 'TO_CONTINUE' : 'TO_START');
 			} else {
 				t1 = L('LIST_EMPTY');
 			}
 
 			var emptyIcon;
-			if(node.icon) {
-				emptyIcon = renderIcon((node.icon || 'plus') + ((this.isSubForm() ? ' fa-3x' : ' fa-5x') + ' list-empty-icon'))
+			if (node.icon) {
+				emptyIcon = renderIcon(
+					(node.icon || 'plus') + ((this.isSubForm() ? ' fa-3x' : ' fa-5x') + ' list-empty-icon')
+				);
 			}
 
-			body = R.div({ className: 'list-empty' },
-				emptyIcon,
-				R.div(null, t1),
-				R.div(null, t2)
-			)
+			body = R.div({ className: 'list-empty' }, emptyIcon, R.div(null, t1), R.div(null, t2));
 		}
 
 		var pages = [];
 		var recPerPage;
-		if(this.filters && this.filters.n) {
+		if (this.filters && this.filters.n) {
 			recPerPage = this.filters.n;
 		}
 
-		var totalPages = Math.ceil(data.total / (recPerPage || node.rec_per_page));
+		var totalPages = Math.ceil(data.total / (recPerPage || node.recPerPage));
 		var curPage = parseInt(filters.p as string) || 0;
 
 		var pageNumbers = { 0: 1, 1: 1, 2: 1 };
 
 		let p;
-		for(p = 0; p <= 2; p++) {
+		for (p = 0; p <= 2; p++) {
 			pageNumbers[curPage + p] = 1;
 			pageNumbers[curPage - p] = 1;
 			pageNumbers[totalPages - 1 - p] = 1;
 		}
 		var prevP = -1;
-		for(p in pageNumbers) {
+		for (p in pageNumbers) {
 			p = parseInt(p);
-			if(p >= 0 && p < totalPages) {
-				if((p - prevP) !== 1) {
+			if (p >= 0 && p < totalPages) {
+				if (p - prevP !== 1) {
 					pages.push(R.span({ key: 'dots' + p }, ' ... '));
 				}
 				prevP = p;
@@ -566,47 +688,41 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 
 		let paginator;
-		if(pages.length > 1) {
-			paginator = R.span({ className: 'list-paginator-items' },
-				pages
-			)
+		if (pages.length > 1) {
+			paginator = R.span({ className: 'list-paginator-items' }, pages);
 		}
 
 		var footer;
 		var paginatorText = L('SHOWED_LIST', data.items.length).replace('%', data.total);
 
-		if(this.filters.s) {
+		if (this.filters.s) {
 			paginatorText += L('SEARCH_RESULTS', this.filters.s);
 		}
 
-		if(data.items.length > 0) {
-			if(data.items.length < data.total) {
-				footer = R.span({ className: 'list-paginator' },
-					paginatorText,
-					paginator
-				)
+		if (data.items.length > 0) {
+			if (data.items.length < data.total) {
+				footer = R.span({ className: 'list-paginator' }, paginatorText, paginator);
 			} else {
-				footer = R.span({ className: 'list-paginator' },
-					L('TOTAL_IN_LIST', data.items.length)
-				)
+				footer = R.span({ className: 'list-paginator' }, L('TOTAL_IN_LIST', data.items.length));
 			}
 		}
 		/// #if DEBUG
 		var nodeAdmin;
-		if(iAdmin()) {
+		if (iAdmin()) {
 			nodeAdmin = React.createElement(NodeAdmin, { form: this });
 		}
 		/// #endif
 
 		var title;
-		if(!this.props.isCompact) {
+		if (!this.props.isCompact) {
 			var hdr = this.header || this.filters.formTitle;
-			if(hdr) {
+			if (hdr) {
 				title = R.h4({ className: 'form-header' }, hdr);
 			}
 		}
 
-		return R.div({ className: 'form list-container form-node-' + node.id },
+		return R.div(
+			{ className: 'form list-container form-node-' + node.id },
 			/// #if DEBUG
 			nodeAdmin,
 			/// #endif
@@ -614,9 +730,8 @@ class List extends BaseForm<ListProps, ListState> {
 			header,
 			footer,
 			body,
-			(data.items.length > 5) ? footer : undefined
+			data.items.length > 5 ? footer : undefined
 		);
 	}
 }
 export { List };
-

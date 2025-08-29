@@ -1,11 +1,17 @@
-import React from "react";
-import { FIELD_TYPE, NodeDesc, RecordData } from "../bs-utils";
-import { FormListItem } from "../forms/form-list-item";
-import { assignFilters, Filters } from "../utils";
-import { LookupManyToManyFiled } from "./field-14-many-to-many";
-import { BaseField, FieldProps, FieldState } from "./base-field";
+import React from 'react';
+import { FIELD_TYPE, NodeDesc, RecordData } from '../bs-utils';
+import { FormListItem } from '../forms/form-list-item';
+import { assignFilters, Filters } from '../utils';
+import { LookupManyToManyFiled } from './field-14-many-to-many';
+import { BaseField, FieldProps, FieldState } from './base-field';
 
-type AdditionalButtonsRenderer = (node: NodeDesc, data: RecordData, refreshFunction?: () => void, formItem?: FormListItem | LookupManyToManyFiled, editButtonFilters?: Filters) => React.Component[];
+type AdditionalButtonsRenderer = (
+	node: NodeDesc,
+	data: RecordData,
+	refreshFunction?: () => void,
+	formItem?: FormListItem | LookupManyToManyFiled,
+	editButtonFilters?: Filters
+) => React.Component[];
 
 interface LookupFieldState extends FieldState {
 	filters?: Filters;
@@ -33,39 +39,41 @@ interface LookupFieldProps extends FieldProps {
 }
 
 class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
-
 	componentDidUpdate() {
-		if(!this.state.filters) {
+		if (!this.state.filters) {
 			this.setState({ filters: this.generateDefaultFiltersByProps(this.props) });
 		}
 	}
 
 	getLinkerFieldName() {
-		return this.props.field.field_name + '_linker';
+		return this.props.field.fieldName + 'Linker';
 	}
 
 	generateDefaultFiltersByProps(props) {
 		var ret = Object.assign({}, props.filters);
 
-		var parentId = props.wrapper.props.form.props.initialData.id || props.wrapper.props.form.filters[props.field.field_name] || 'new';
+		var parentId =
+			props.wrapper.props.form.props.initialData.id ||
+			props.wrapper.props.form.filters[props.field.fieldName] ||
+			'new';
 
-		if(props.field.field_type === FIELD_TYPE.LOOKUP_1toN) {
-			ret[props.field.field_name + '_linker'] = parentId;
-		}/* else {
-			ret[props.field.field_name] = parentId;
+		if (props.field.fieldType === FIELD_TYPE.LOOKUP_1toN) {
+			ret[props.field.fieldName + 'Linker'] = parentId;
+		} /* else {
+			ret[props.field.fieldName] = parentId;
 		}*/
 
 		return ret;
 	}
 
 	setLookupFilter(filtersObjOrName: string | Filters, val?: any) {
-		if(typeof filtersObjOrName === 'string') {
-			if(this.state.filters[filtersObjOrName] !== val) {
+		if (typeof filtersObjOrName === 'string') {
+			if (this.state.filters[filtersObjOrName] !== val) {
 				this.state.filters[filtersObjOrName] = val;
 				this.forceUpdate();
 			}
 		} else {
-			if(assignFilters(filtersObjOrName, this.state.filters)) {
+			if (assignFilters(filtersObjOrName, this.state.filters)) {
 				this.forceUpdate();
 			}
 		}

@@ -1,24 +1,24 @@
-import React, { Component } from "react";
-import ReactDOM from "react-dom";
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 /// #if DEBUG
-import { createNodeForMenuItem, NodeAdmin } from "./admin/admin-control";
-import { FieldAdmin } from "./admin/field-admin";
-/// #endif	
+import { createNodeForMenuItem, NodeAdmin } from './admin/admin-control';
+import { FieldAdmin } from './admin/field-admin';
+/// #endif
 import { assert } from './assert';
-import { NODE_TYPE } from "./bs-utils";
-import { Modal } from "./modal";
-import { R } from "./r";
-import { Stage } from "./stage";
-import { iAdmin, User } from "./user";
-import { isLitePage, L, renderIcon } from "./utils";
+import { NODE_TYPE } from './bs-utils';
+import { Modal } from './modal';
+import { R } from './r';
+import { Stage } from './stage';
+import { iAdmin, User } from './user';
+import { isLitePage, L, renderIcon } from './utils';
 
 let collapsed;
 
 function isMustBeExpanded(i) {
-	if(i.children) {
-		for(var k in i.children) {
+	if (i.children) {
+		for (var k in i.children) {
 			var j = i.children[k];
-			if(isCurrentlyShowedLeftBarItem(j) || isMustBeExpanded(j)) {
+			if (isCurrentlyShowedLeftBarItem(j) || isMustBeExpanded(j)) {
 				return true;
 			}
 		}
@@ -36,13 +36,13 @@ let activeItem;
 
 function isCurrentlyShowedLeftBarItem(item): boolean | typeof SELECTED_LIST {
 	const currentFormParameters = Stage.currentForm;
-	if(!currentFormParameters) {
+	if (!currentFormParameters) {
 		return;
 	}
 
-	if(item.node_type !== NODE_TYPE.STATIC_LINK) {
-		if(currentFormParameters.nodeId === item.id) {
-			if(!currentFormParameters.recId) {
+	if (item.nodeType !== NODE_TYPE.STATIC_LINK) {
+		if (currentFormParameters.nodeId === item.id) {
+			if (!currentFormParameters.recId) {
 				return SELECTED_LIST;
 			}
 			return true;
@@ -53,19 +53,18 @@ function isCurrentlyShowedLeftBarItem(item): boolean | typeof SELECTED_LIST {
 }
 
 function isStrictlySelected(item) {
-	if(item) {
-		if(item.hasOwnProperty('children')) {
+	if (item) {
+		if (item.hasOwnProperty('children')) {
 			return item.children.some(isStrictlySelected);
 		} else {
-			if(item.node_type === NODE_TYPE.STATIC_LINK) {
-				return location.hash === item.static_link;
+			if (item.nodeType === NODE_TYPE.STATIC_LINK) {
+				return location.hash === item.staticLink;
 			}
 		}
 	}
 }
 
 class BarItem extends Component<any, any> {
-
 	constructor(props) {
 		super(props);
 		itemsById[props.item.id] = this;
@@ -74,13 +73,13 @@ class BarItem extends Component<any, any> {
 	}
 
 	componentDidMount() {
-		if(this.props.item.node_type !== NODE_TYPE.DOCUMENT) {
+		if (this.props.item.nodeType !== NODE_TYPE.DOCUMENT) {
 			allGroups.push(this);
 		}
 	}
 
 	componentWillUnmount() {
-		if(this.props.item.node_type !== NODE_TYPE.DOCUMENT) {
+		if (this.props.item.nodeType !== NODE_TYPE.DOCUMENT) {
 			let i = allGroups.indexOf(this);
 			assert(i >= 0, 'BarItem registration is corrupted.');
 			allGroups.splice(i, 1);
@@ -108,14 +107,14 @@ class BarItem extends Component<any, any> {
 		let height;
 		let timer = setInterval(() => {
 			height = element.clientHeight;
-			if(height > 0) {
+			if (height > 0) {
 				clearInterval(timer);
 				element.style.maxHeight = '0px';
 				element.style.position = 'unset';
 				element.style.opacity = '1';
 				element.style.transition = 'all 0.1s';
 				timer = setInterval(() => {
-					if(element.clientHeight <= 6) {
+					if (element.clientHeight <= 6) {
 						clearInterval(timer);
 						element.style.transform = 'scaleY(1)';
 						element.style.maxHeight = height + 'px';
@@ -150,8 +149,10 @@ class BarItem extends Component<any, any> {
 	}
 
 	toggle(ev) {
-		let group: HTMLDivElement = ev.target.closest('.left-bar-group-container').querySelector('.left-bar-children');
-		if(group.classList.contains('hidden')) {
+		let group: HTMLDivElement = ev.target
+			.closest('.left-bar-group-container')
+			.querySelector('.left-bar-children');
+		if (group.classList.contains('hidden')) {
 			this.expand();
 		} else {
 			this.collapse();
@@ -159,7 +160,7 @@ class BarItem extends Component<any, any> {
 	}
 
 	closeMenuIfNeed() {
-		if(collapsable && !collapsed) {
+		if (collapsable && !collapsed) {
 			LeftBar.instance.toggleCollapse();
 		}
 	}
@@ -169,18 +170,26 @@ class BarItem extends Component<any, any> {
 
 		/// #if DEBUG
 		var adminControl;
-		if(iAdmin()) {
-			if(item.field) {
-				adminControl = R.div({ className: "left-bar-admin-button" }, React.createElement(FieldAdmin, { field: item.field, form: item.form }));
+		if (iAdmin()) {
+			if (item.field) {
+				adminControl = R.div(
+					{ className: 'left-bar-admin-button' },
+					React.createElement(FieldAdmin, { field: item.field, form: item.form })
+				);
 			} else {
-				adminControl = R.div({ className: "left-bar-admin-button" }, React.createElement(NodeAdmin, { menuItem: item }));
+				adminControl = R.div(
+					{ className: 'left-bar-admin-button' },
+					React.createElement(NodeAdmin, { menuItem: item })
+				);
 			}
 		}
 		/// #endif
 
-		if((item.node_type !== NODE_TYPE.DOCUMENT) && (!item.children || (item.children.length === 0))
+		if (
+			item.nodeType !== NODE_TYPE.DOCUMENT &&
+			(!item.children || item.children.length === 0) &&
 			/// #if DEBUG
-			&& false// in debug build always show empty nodes
+			false // in debug build always show empty nodes
 			/// #endif
 		) {
 			return R.div(null);
@@ -190,15 +199,18 @@ class BarItem extends Component<any, any> {
 			return React.createElement(BarItem, {item: item.children[0], key: this.props.key, level: this.props.level});
 		}*/
 
-		var itemsIcon = R.div({ className: "left-bar-item-icon" },
-			renderIcon(item.icon + ((item.node_type === NODE_TYPE.DOCUMENT) ? ' brand-color' : ' no-icon'))
-		)
+		var itemsIcon = R.div(
+			{ className: 'left-bar-item-icon' },
+			renderIcon(item.icon + (item.nodeType === NODE_TYPE.DOCUMENT ? ' brand-color' : ' no-icon'))
+		);
 
-		let className = 'left-bar-item ' + ((item.node_type === NODE_TYPE.DOCUMENT) ? 'left-bar-item-doc' : 'left-bar-group');
+		let className =
+			'left-bar-item ' +
+			(item.nodeType === NODE_TYPE.DOCUMENT ? 'left-bar-item-doc' : 'left-bar-group');
 
 		const isActive = isCurrentlyShowedLeftBarItem(item);
 
-		if(isActive) {
+		if (isActive) {
 			activeItem = this;
 			className += ' left-bar-item-active';
 		}
@@ -209,72 +221,79 @@ class BarItem extends Component<any, any> {
 
 		const _isMustBeExpanded = isMustBeExpanded(this.props.item);
 		const isExpanded = this.state.expanded || _isMustBeExpanded;
-		if(isExpanded) {
+		if (isExpanded) {
 			//@ts-ignore
 			this.state.expanded = isExpanded;
 		}
 
-		if(item.node_type === NODE_TYPE.SECTION) {
-			if(!_isMustBeExpanded) {
-				caret = R.span({ className: "left-bar-group-caret" },
+		if (item.nodeType === NODE_TYPE.SECTION) {
+			if (!_isMustBeExpanded) {
+				caret = R.span(
+					{ className: 'left-bar-group-caret' },
 					renderIcon('caret-' + (isExpanded ? 'up' : 'down'))
-				)
+				);
 				className += ' clickable';
 			} else {
 				className += ' not-clickable';
 			}
-			children = R.div({ className: isExpanded ? 'left-bar-children' : 'left-bar-children hidden' },
+			children = R.div(
+				{ className: isExpanded ? 'left-bar-children' : 'left-bar-children hidden' },
 				renderItemsArray(item.children, this.props.level + 1, item)
-			)
+			);
 		} else {
-			if(isActive === SELECTED_LIST) {
+			if (isActive === SELECTED_LIST) {
 				className += ' not-clickable';
-			} else if(!isActive) {
+			} else if (!isActive) {
 				className += ' clickable';
 			} else {
 				className += ' clickable left-bar-active-group';
 			}
 		}
 
-		const itemBody = R.div({
-			onClick: (ev) => {
-				if(!_isMustBeExpanded) {
-					if(item.node_type === NODE_TYPE.SECTION) {
-						this.toggle(ev);
-						return;
+		const itemBody = R.div(
+			{
+				onClick: (ev) => {
+					if (!_isMustBeExpanded) {
+						if (item.nodeType === NODE_TYPE.SECTION) {
+							this.toggle(ev);
+							return;
+						}
+						this.closeMenuIfNeed();
 					}
-					this.closeMenuIfNeed();
-				}
-			}, className
-		},
+				},
+				className,
+			},
 			itemsIcon,
-			collapsed ? undefined : R.div({ className: 'left-bar-item-body' },
-				item.name
-			),
+			collapsed ? undefined : R.div({ className: 'left-bar-item-body' }, item.name),
 			caret
 		);
 
-		if((item.node_type === NODE_TYPE.DOCUMENT) && (item.id !== false)) {
+		if (item.nodeType === NODE_TYPE.DOCUMENT && item.id !== false) {
 			const props = {
 				className: 'left-bar-item-container',
 				onClick: this.collapseOtherGroups,
-				href: undefined
-			}
-			if(item.node_type === NODE_TYPE.STATIC_LINK) {
-				props.href = item.static_link;
+				href: undefined,
+			};
+			if (item.nodeType === NODE_TYPE.STATIC_LINK) {
+				props.href = item.staticLink;
 			} else {
-				props.onClick = (isActive === SELECTED_LIST) ? undefined : () => {
-					crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
-				}
+				props.onClick =
+					isActive === SELECTED_LIST
+						? undefined
+						: () => {
+								crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
+						  };
 			}
-			return R.a(props,
+			return R.a(
+				props,
 				/// #if DEBUG
 				adminControl,
 				/// #endif
 				itemBody
-			)
+			);
 		} else {
-			return R.div({ className: 'left-bar-group-container left-bar-group-container-node-' + item.id },
+			return R.div(
+				{ className: 'left-bar-group-container left-bar-group-container-node-' + item.id },
 				/// #if DEBUG
 				adminControl,
 				/// #endif
@@ -289,22 +308,28 @@ const itemsById = {};
 
 function renderItemsArray(itemsArray, level, item?) {
 	/// #if DEBUG
-	if((!itemsArray || itemsArray.length === 0) && (level > 0)) {
-		return [R.div({
-			key: 'empty-section',
-			className: 'clickable left-bar-empty-section', onClick: () => {
-				createNodeForMenuItem(item);
-			}
-		}, L("EMPTY_SECTION"))];
+	if ((!itemsArray || itemsArray.length === 0) && level > 0) {
+		return [
+			R.div(
+				{
+					key: 'empty-section',
+					className: 'clickable left-bar-empty-section',
+					onClick: () => {
+						createNodeForMenuItem(item);
+					},
+				},
+				L('EMPTY_SECTION')
+			),
+		];
 	}
 	/// #endif
 
 	var ret = [];
 
-	for(var k in itemsArray) {
+	for (var k in itemsArray) {
 		var item = itemsArray[k];
-		if(typeof item === 'string') {
-			if(!collapsed) {
+		if (typeof item === 'string') {
+			if (!collapsed) {
 				ret.push(R.h5({ key: ret.length, className: 'left-bar-tabs-header' }, item));
 			}
 		} else {
@@ -336,19 +361,19 @@ class LeftBar extends Component<any, any> {
 	refreshLeftBarActive() {
 		this.forceUpdate();
 		setTimeout(() => {
-			if(!activeItem) return;
+			if (!activeItem) return;
 			let item = activeItem.props.item;
 			activeItem.collapseOtherGroups();
-			while(item.parent) {
+			while (item.parent) {
 				const itemElement: BarItem = itemsById[item.parent];
-				if(!itemElement) {
+				if (!itemElement) {
 					break;
 				}
 				item = itemElement.props.item;
-				if(item.node_type === NODE_TYPE.SECTION) {
+				if (item.nodeType === NODE_TYPE.SECTION) {
 					const e = ReactDOM.findDOMNode(itemElement) as HTMLDivElement;
 					let group = e.querySelector('.left-bar-children') as HTMLDivElement;
-					if(group.style.maxHeight) {
+					if (group.style.maxHeight) {
 						group.style.maxHeight = '';
 						group.style.transform = 'scaleY(1)';
 					}
@@ -359,32 +384,37 @@ class LeftBar extends Component<any, any> {
 
 	render() {
 		activeItem = null;
-		if(isLitePage() || !User.currentUserData) {
+		if (isLitePage() || !User.currentUserData) {
 			return R.td(null);
 		}
 
 		var menuItems = collapsed ? [] : renderItemsArray(this.props.menuItems, 0);
 
-		if(collapsable) {
-			menuItems.unshift(R.div({ key: 'toggle-collapsing', className: "left-bar-collapse-button clickable", onClick: this.toggleCollapse }, renderIcon('bars')));
+		if (collapsable) {
+			menuItems.unshift(
+				R.div(
+					{
+						key: 'toggle-collapsing',
+						className: 'left-bar-collapse-button clickable',
+						onClick: this.toggleCollapse,
+					},
+					renderIcon('bars')
+				)
+			);
 		}
 
 		let className = 'left-bar';
-		if(collapsable) {
+		if (collapsable) {
 			className += ' left-bar-collapsable';
-			if(Modal.instance && Modal.instance.isShowed() || Stage.allForms.length > 1) {
+			if ((Modal.instance && Modal.instance.isShowed()) || Stage.allForms.length > 1) {
 				className += ' hidden';
 			}
 		}
-		if(collapsed) {
+		if (collapsed) {
 			className += ' left-bar-collapsed';
 		}
 
-		return R.div({ className },
-			R.div({ className: "left-bar-body" },
-				menuItems
-			)
-		);
+		return R.div({ className }, R.div({ className: 'left-bar-body' }, menuItems));
 	}
 }
 
@@ -395,13 +425,12 @@ let collapsable;
 function renewIsCollapsable() {
 	collapsable = window.innerWidth < 1330;
 	collapsed = collapsable;
-	if(LeftBar.instance) {
+	if (LeftBar.instance) {
 		LeftBar.instance.forceUpdate();
 	}
-};
+}
 
 window.addEventListener('resize', renewIsCollapsable);
 renewIsCollapsable();
 
 export { LeftBar };
-

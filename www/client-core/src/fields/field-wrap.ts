@@ -1,15 +1,14 @@
-import React, { Component } from "react";
-import { FIELD_DISPLAY_TYPE, FIELD_TYPE, FieldDesc } from "../bs-utils";
-import { R } from "../r";
+import React, { Component } from 'react';
+import { FIELD_DISPLAY_TYPE, FIELD_TYPE, FieldDesc } from '../bs-utils';
+import { R } from '../r';
 /// #if DEBUG
-import { FieldAdmin } from "../admin/field-admin";
+import { FieldAdmin } from '../admin/field-admin';
 /// #endif
-import { iAdmin } from "../user";
-import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible } from "../utils";
-import { BaseField, FieldProps } from "./base-field";
+import { iAdmin } from '../user';
+import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible } from '../utils';
+import { BaseField, FieldProps } from './base-field';
 
 class FieldWrap extends Component<FieldProps, any> {
-
 	afterSave: () => Promise<any>;
 	fieldRef: BaseField;
 	hidden: boolean;
@@ -22,20 +21,19 @@ class FieldWrap extends Component<FieldProps, any> {
 		super(props);
 		this.state = {};
 		this.hidden = props.hidden;
-		this.UNSAFE_componentWillReceiveProps(this.props)
+		this.UNSAFE_componentWillReceiveProps(this.props);
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		this.hidden = nextProps.hidden;
 		//this.currentValue = nextProps.initialValue;
-		if(nextProps.fieldDisabled) {
+		if (nextProps.fieldDisabled) {
 			this.fieldDisabled = true;
 		}
 	}
 
 	hideTooltip() {
-		if(this.state.showToolTip)
-			this.setState({ showToolTip: false });
+		if (this.state.showToolTip) this.setState({ showToolTip: false });
 	}
 
 	componentWillUnmount() {
@@ -47,13 +45,13 @@ class FieldWrap extends Component<FieldProps, any> {
 	}
 
 	hide() {
-		if(!this.hidden) {
+		if (!this.hidden) {
 			this.hidden = true;
 			this.forceUpdate();
 			const childrenFields = this.props.field.childrenFields;
-			if(childrenFields) {
-				for(let childField of childrenFields) {
-					this.props.form.getField(childField.field_name).hide();
+			if (childrenFields) {
+				for (let childField of childrenFields) {
+					this.props.form.getField(childField.fieldName).hide();
 				}
 			}
 		}
@@ -78,80 +76,79 @@ class FieldWrap extends Component<FieldProps, any> {
 
 	setLookupFilter(filtersObjOrName, val) {
 		/// #if DEBUG
-		if((this.props.field.field_type !== FIELD_TYPE.LOOKUP) &&
-			(this.props.field.field_type !== FIELD_TYPE.LOOKUP_NtoM) &&
-			(this.props.field.field_type !== FIELD_TYPE.LOOKUP_1toN)) {
-
-			debugError('setLookupFilter applied to not lookUp field: ' + this.props.field.field_name);
+		if (
+			this.props.field.fieldType !== FIELD_TYPE.LOOKUP &&
+			this.props.field.fieldType !== FIELD_TYPE.LOOKUP_NtoM &&
+			this.props.field.fieldType !== FIELD_TYPE.LOOKUP_1toN
+		) {
+			debugError('setLookupFilter applied to not lookUp field: ' + this.props.field.fieldName);
 		}
 		/// #endif
 		this.fieldRef.setLookupFilter(filtersObjOrName, val);
 	}
 
 	show() {
-		if(this.hidden) {
+		if (this.hidden) {
 			this.hidden = false;
 			this.forceUpdate();
 			const childrenFields = this.props.field.childrenFields;
-			if(childrenFields) {
-				for(let childField of childrenFields) {
-					this.props.form.getField(childField.field_name).show();
+			if (childrenFields) {
+				for (let childField of childrenFields) {
+					this.props.form.getField(childField.fieldName).show();
 				}
 			}
 		}
 	}
 
 	disable() {
-		if(!this.fieldDisabled) {
+		if (!this.fieldDisabled) {
 			this.fieldDisabled = true;
 			this.forceUpdate();
 			const childrenFields = this.props.field.childrenFields;
-			if(childrenFields) {
-				for(let childField of childrenFields) {
-					this.props.form.getField(childField.field_name).disable();
+			if (childrenFields) {
+				for (let childField of childrenFields) {
+					this.props.form.getField(childField.fieldName).disable();
 				}
 			}
 		}
 	}
 
 	enable() {
-		if(this.fieldDisabled) {
+		if (this.fieldDisabled) {
 			this.fieldDisabled = false;
 			this.forceUpdate();
 			const childrenFields = this.props.field.childrenFields;
-			if(childrenFields) {
-				for(let childField of childrenFields) {
-					this.props.form.getField(childField.field_name).enable();
+			if (childrenFields) {
+				for (let childField of childrenFields) {
+					this.props.form.getField(childField.fieldName).enable();
 				}
 			}
 		}
 	}
 
 	setLabel(label: string) {
-		if(this.labelOverride !== label) {
+		if (this.labelOverride !== label) {
 			this.labelOverride = label;
 			this.forceUpdate();
 		}
 	}
 
 	sendCurrentValueToForm() {
-		if(this.props.form.setFieldValue) {
-			this.props.form.setFieldValue(this.props.field.field_name, this.currentValue, true);
+		if (this.props.form.setFieldValue) {
+			this.props.form.setFieldValue(this.props.field.fieldName, this.currentValue, true);
 		}
 	}
 
 	async checkValidityBeforeSave(focusIfInvalid) {
-
-		if(!this.fieldRef || !this.fieldRef.getMessageIfInvalid) {
+		if (!this.fieldRef || !this.fieldRef.getMessageIfInvalid) {
 			return true;
 		} else {
-
 			let invalidMessage = await this.fieldRef.getMessageIfInvalid();
-			if(!invalidMessage) {
+			if (!invalidMessage) {
 				this.fieldAlert();
 				return true;
 			} else {
-				if(typeof invalidMessage === 'string') {
+				if (typeof invalidMessage === 'string') {
 					this.fieldAlert(invalidMessage, false, focusIfInvalid);
 				}
 				return false;
@@ -160,9 +157,8 @@ class FieldWrap extends Component<FieldProps, any> {
 	}
 
 	fieldAlert(text?: string, isSuccess?: boolean, focus?: boolean) {
-
-		if(text) {
-			if(this.hidden) {
+		if (text) {
+			if (this.hidden) {
 				/// #if DEBUG
 				throw 'Tried to alert hidden field';
 				/// #endif
@@ -170,16 +166,16 @@ class FieldWrap extends Component<FieldProps, any> {
 		}
 
 		this.setState({ fieldAlert: text, isSuccessAlert: isSuccess });
-		if(focus && text && !isSuccess) {
+		if (focus && text && !isSuccess) {
 			this.focus();
 		}
 	}
 
 	focus() {
 		/// #if DEBUG
-		consoleLog('focus set ' + this.props.field.field_name);
+		consoleLog('focus set ' + this.props.field.fieldName);
 		/// #endif
-		if(this.props.parentTabName) {
+		if (this.props.parentTabName) {
 			this.props.form.setFormFilter('tab', this.props.parentTabName);
 		}
 		setTimeout(() => {
@@ -190,7 +186,7 @@ class FieldWrap extends Component<FieldProps, any> {
 
 	setValue(val) {
 		this.clearChangeTimeout();
-		if(this.fieldRef) {
+		if (this.fieldRef) {
 			this.fieldRef.setValue(val);
 		}
 	}
@@ -204,29 +200,29 @@ class FieldWrap extends Component<FieldProps, any> {
 	}
 
 	clearChangeTimeout() {
-		if(this.onChangeTimeout) {
+		if (this.onChangeTimeout) {
 			clearTimeout(this.onChangeTimeout);
-			delete (this.onChangeTimeout);
+			delete this.onChangeTimeout;
 		}
 	}
 
 	forceBouncingTimeout() {
-		if(this.onChangeTimeout) {
+		if (this.onChangeTimeout) {
 			this.clearChangeTimeout();
 			this.sendCurrentValueToForm();
 		}
-		if(this.fieldRef.forceBouncingTimeout) {
+		if (this.fieldRef.forceBouncingTimeout) {
 			this.fieldRef.forceBouncingTimeout();
 		}
 	}
 
 	valueListener(newVal, withBounceDelay, sender) {
 		this.currentValue = newVal;
-		this.props.form.fieldAlert(this.props.field.field_name);
-		if(withBounceDelay) {
+		this.props.form.fieldAlert(this.props.field.fieldName);
+		if (withBounceDelay) {
 			this.clearChangeTimeout();
 			this.onChangeTimeout = setTimeout(() => {
-				delete (this.onChangeTimeout);
+				delete this.onChangeTimeout;
 				this.sendCurrentValueToForm();
 			}, 200);
 		} else {
@@ -235,7 +231,6 @@ class FieldWrap extends Component<FieldProps, any> {
 	}
 
 	render() {
-
 		var field = this.props.field;
 
 		var domId = 'field-container-id-' + field.id;
@@ -251,68 +246,83 @@ class FieldWrap extends Component<FieldProps, any> {
 			additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
 			ref: (fieldRef) => {
 				this.fieldRef = fieldRef;
-			}
+			},
 		};
 
-		var fieldTypedBody = React.createElement(getClassForField(field.field_type), fieldProps);
+		var fieldTypedBody = React.createElement(getClassForField(field.fieldType), fieldProps);
 		var fieldCustomBody;
 
-		var noLabel = !field.name;// (field.field_type===FIELD_TYPE.LOOKUP_NtoM)||(field.field_type===FIELD_TYPE.LOOKUP_1toN);
+		var noLabel = !field.name; // (field.fieldType===FIELD_TYPE.LOOKUP_NtoM)||(field.fieldType===FIELD_TYPE.LOOKUP_1toN);
 
 		var help;
-		if(field.description && field.field_type !== FIELD_TYPE.STATIC_TEXT) {
-			help = React.createElement(FieldHelp, { text: R.div(null, R.h4(null, field.name), field.description) });
+		if (field.description && field.fieldType !== FIELD_TYPE.STATIC_TEXT) {
+			help = React.createElement(FieldHelp, {
+				text: R.div(null, R.h4(null, field.name), field.description),
+			});
 		}
 		/// #if DEBUG
 		var fieldAdmin;
-		if(iAdmin() && !field.lang && (!this.props.isCompact)) {
+		if (iAdmin() && !field.lang && !this.props.isCompact) {
 			fieldAdmin = React.createElement(FieldAdmin, { field, form: this.props.form });
 		}
 		/// #endif
-		let className = domId + ' field-wrap field-container-type-' + field.field_type + ' field-container-name-' + field.field_name;
-		if(this.hidden
+		let className =
+			domId +
+			' field-wrap field-container-type-' +
+			field.fieldType +
+			' field-container-name-' +
+			field.fieldName;
+		if (
+			this.hidden &&
 			/// #if DEBUG
-			&& !this.props.form.showAllDebug
+			!this.props.form.showAllDebug
 			/// #endif
 		) {
 			className += ' hidden';
 		}
 
-		if(field.css_class) {
-			className += ' ' + field.css_class;
+		if (field.cssClass) {
+			className += ' ' + field.cssClass;
 		}
 
-		if(field.display === FIELD_DISPLAY_TYPE.INLINE) {
+		if (field.display === FIELD_DISPLAY_TYPE.INLINE) {
 			className += ' field-wrap-inline';
 		}
 
-		if(this.fieldDisabled) {
+		if (this.fieldDisabled) {
 			className += ' field-wrap-disabled';
 		}
 
-		if(!this.props.isEdit) {
+		if (!this.props.isEdit) {
 			className += ' field-wrap-readonly';
 		}
 
-		if(this.props.isCompact) {
+		if (this.props.isCompact) {
 			var tooltip;
-			if(this.state.showToolTip) {
-				tooltip = R.span({ className: 'field-wrap-tooltip' },
+			if (this.state.showToolTip) {
+				tooltip = R.span(
+					{ className: 'field-wrap-tooltip' },
 					R.span({ className: 'fa fa-caret-left field-wrap-tooltip-arrow' }),
-					R.span({ className: 'field-wrap-tooltip-body' }, field.name, (field.lang ? (' (' + field.lang + ')') : undefined), (this.state && this.state.fieldAlert) ? (' (' + this.state.fieldAlert + ')') : '')
-				)
+					R.span(
+						{ className: 'field-wrap-tooltip-body' },
+						field.name,
+						field.lang ? ' (' + field.lang + ')' : undefined,
+						this.state && this.state.fieldAlert ? ' (' + this.state.fieldAlert + ')' : ''
+					)
+				);
 			}
-			return R.span({
-				className,
-				onFocus: () => {
-					if(field.field_type !== FIELD_TYPE.BUTTON) {
-						this.setState({ showToolTip: true });
-					}
+			return R.span(
+				{
+					className,
+					onFocus: () => {
+						if (field.fieldType !== FIELD_TYPE.BUTTON) {
+							this.setState({ showToolTip: true });
+						}
+					},
+					onBlur: () => {
+						this.setState({ showToolTip: false });
+					},
 				},
-				onBlur: () => {
-					this.setState({ showToolTip: false });
-				},
-			},
 				fieldTypedBody,
 				fieldCustomBody,
 				/// #if DEBUG
@@ -321,16 +331,26 @@ class FieldWrap extends Component<FieldProps, any> {
 				tooltip
 			);
 		} else {
-			if(field.lang) {
+			if (field.lang) {
 				className += ' field-wrap-lang';
 			}
 			var label;
-			if(!noLabel) {
-				label = React.createElement(FieldLabel, { field, isEdit: this.props.isEdit, labelOverride: this.labelOverride, fieldAlert: this.state ? this.state.fieldAlert : undefined, isSuccessAlert: this.state ? this.state.isSuccessAlert : undefined });
+			if (!noLabel) {
+				label = React.createElement(FieldLabel, {
+					field,
+					isEdit: this.props.isEdit,
+					labelOverride: this.labelOverride,
+					fieldAlert: this.state ? this.state.fieldAlert : undefined,
+					isSuccessAlert: this.state ? this.state.isSuccessAlert : undefined,
+				});
 			}
-			return R.div({ className },
+			return R.div(
+				{ className },
 				label,
-				R.div({ className: noLabel ? 'field-wrap-value field-wrap-value-no-label' : 'field-wrap-value' },
+				R.div(
+					{
+						className: noLabel ? 'field-wrap-value field-wrap-value-no-label' : 'field-wrap-value',
+					},
 					fieldTypedBody,
 					fieldCustomBody,
 					/// #if DEBUG
@@ -344,7 +364,6 @@ class FieldWrap extends Component<FieldProps, any> {
 }
 
 class FieldHelp extends Component<any, any> {
-
 	constructor(props) {
 		super(props);
 		this.mouseOut = this.mouseOut.bind(this);
@@ -361,13 +380,19 @@ class FieldHelp extends Component<any, any> {
 
 	render() {
 		var body;
-		var btn = R.div({ className: 'field-wrap-help' }, renderIcon('question-circle'));;
-		if(this.state && this.state.hovered) {
-			body = R.div({ className: 'field-wrap-help-body' },
-				this.props.text
-			);
+		var btn = R.div({ className: 'field-wrap-help' }, renderIcon('question-circle'));
+		if (this.state && this.state.hovered) {
+			body = R.div({ className: 'field-wrap-help-body' }, this.props.text);
 		}
-		return R.div({ onMouseEnter: this.mouseOver, onMouseLeave: this.mouseOut, className: 'field-wrap-help-container' }, btn, body);
+		return R.div(
+			{
+				onMouseEnter: this.mouseOver,
+				onMouseLeave: this.mouseOut,
+				className: 'field-wrap-help-container',
+			},
+			btn,
+			body
+		);
 	}
 }
 
@@ -375,33 +400,34 @@ class FieldLabel extends Component<any, any> {
 	render() {
 		var field: FieldDesc = this.props.field;
 		var star;
-		if(this.props.isEdit && field.requirement) {
+		if (this.props.isEdit && field.requirement) {
 			star = R.span({ className: 'field-wrap-required-star' }, '*');
 		} else {
 			star = '';
 		}
 
 		var alertBody;
-		if(this.props.fieldAlert) {
-			if(this.props.isSuccessAlert) {
-				alertBody = R.div({ className: 'fade-in field-wrap-alert field-wrap-alert-success' }, this.props.fieldAlert);
+		if (this.props.fieldAlert) {
+			if (this.props.isSuccessAlert) {
+				alertBody = R.div(
+					{ className: 'fade-in field-wrap-alert field-wrap-alert-success' },
+					this.props.fieldAlert
+				);
 			} else {
 				alertBody = R.div({ className: 'fade-in field-wrap-alert' }, this.props.fieldAlert);
 			}
 		}
 
 		var body;
-		if(field.lang) {
-			body = R.span({ className: 'field-wrap-label-lang' },
-				field.lang
-			)
+		if (field.lang) {
+			body = R.span({ className: 'field-wrap-label-lang' }, field.lang);
 		} else {
-			body = (field.field_type !== FIELD_TYPE.BUTTON) ? (this.props.labelOverride || field.name) : '';
-
+			body = field.fieldType !== FIELD_TYPE.BUTTON ? this.props.labelOverride || field.name : '';
 		}
 
-		return R.div({ className: 'field-wrap-label' },
-			(field.field_type !== FIELD_TYPE.BUTTON) ? renderIcon(field.icon) : '',
+		return R.div(
+			{ className: 'field-wrap-label' },
+			field.fieldType !== FIELD_TYPE.BUTTON ? renderIcon(field.icon) : '',
 			body,
 			star,
 			alertBody
@@ -410,4 +436,3 @@ class FieldLabel extends Component<any, any> {
 }
 
 export { FieldHelp, FieldLabel, FieldWrap };
-

@@ -15,8 +15,9 @@
 		"module": "nodenext",
 		"diagnostics": false,
 		"typeRoots": [
-			"types"
+			"./types"
 		],
+		"types": [],
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"assumeChangesOnlyAffectDirectDependencies": true,

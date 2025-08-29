@@ -4,13 +4,13 @@ interface ILoginRecord {
 	/** Password */
 	password: string;
 	/** Button */
-	signIn_btn?: any;
+	signInBtn?: any;
 	/** Static HTML block */
-	social_login_buttons?: any;
+	socialLoginButtons?: any;
 	/** Button */
-	forgot_password_button?: any;
+	forgotPasswordButton?: any;
 	/** Button */
-	sign_up_link_btn?: any;
+	signUpLinkBtn?: any;
 }
 
 interface INodesRecord {
@@ -21,54 +21,54 @@ interface INodesRecord {
 	/** Text */
 	icon?: string;
 	/** Lookup */
-	_nodes_id: any;
+	_nodesId: any;
 	/** Number */
 	prior: number;
 	/** Text */
 	description?: string;
 	/** Enum */
-	node_type: number;
+	nodeType: number;
 	/** Splitter */
-	data_storage_group?: any;
+	dataStorageGroup?: any;
 	/** Bool */
-	store_forms?: number;
+	storeForms?: number;
 	/** Text */
-	table_name?: string;
+	tableName?: string;
 	/** Splitter */
-	appearance_group?: any;
+	appearanceGroup?: any;
 	/** Text */
-	single_name?: string;
+	singleName?: string;
 	/** Text */
-	creation_name?: string;
+	creationName?: string;
 	/** Lookup */
-	_fields_id?: any;
+	_fieldsId?: any;
 	/** Bool */
 	reverse?: number;
 	/** Lookup */
-	default_filter_id?: any;
+	defaultFilterId?: any;
 	/** Number */
-	rec_per_page?: number;
+	recPerPage?: number;
 	/** Bool */
 	captcha?: number;
 	/** Bool */
 	draftable?: number;
 	/** Text */
-	css_class?: string;
+	cssClass?: string;
 	/** Text */
-	static_link?: string;
+	staticLink?: string;
 	/** Tab */
-	t_property?: any;
+	propertyTab?: any;
 	/** Tab */
-	t_fields?: any;
+	fieldsTab?: any;
 	/** Lookup 1 to N */
-	node_fields?: any;
+	nodeFields?: any;
 	/** Tab */
-	t_filters?: any;
+	filtersTab?: any;
 	/** Lookup 1 to N */
-	node_filters?: any;
+	nodeFilters?: any;
 }
 
-interface IMyRecordsNoTableRecord {
+interface IMyrecordsnotableRecord {
 }
 
 interface IFieldsRecord {
@@ -77,7 +77,7 @@ interface IFieldsRecord {
 	/** Text */
 	name?: string;
 	/** Text */
-	field_name: string;
+	fieldName: string;
 	/** Text */
 	icon?: string;
 	/** Number */
@@ -87,27 +87,27 @@ interface IFieldsRecord {
 	/** Enum */
 	display?: number;
 	/** Text */
-	css_class?: string;
+	cssClass?: string;
 	/** Enum */
-	field_type: number;
+	fieldType: number;
 	/** Splitter */
-	storage_setting_splitter?: any;
+	storageSettingSplitter?: any;
 	/** Number */
-	max_length?: number;
+	maxLength?: number;
 	/** Lookup */
-	node_ref?: any;
+	nodeRef?: any;
 	/** Lookup */
 	enum?: any;
 	/** Lookup */
-	node_fields_linker: any;
+	nodeFieldsLinker: any;
 	/** Bool */
 	requirement?: number;
 	/** Bool */
-	send_to_server?: number;
+	sendToServer?: number;
 	/** Bool */
-	store_in_db?: number;
+	storeInDb?: number;
 	/** Bool */
-	for_search?: number;
+	forSearch?: number;
 	/** Bool */
 	unique?: number;
 	/** Bool */
@@ -117,43 +117,43 @@ interface IFieldsRecord {
 	/** Number */
 	height?: number;
 	/** Text */
-	select_field_name?: string;
+	selectFieldName?: string;
 	/** Text */
-	lookup_icon?: string;
+	lookupIcon?: string;
 	/** Splitter */
-	visibility_splitter?: any;
+	visibilitySplitter?: any;
 	/** Number */
 	show?: number;
 	/** Bool */
-	visibility_create?: number;
+	visibilityCreate?: number;
 	/** Bool */
-	visibility_view?: number;
+	visibilityView?: number;
 	/** Bool */
-	visibility_list?: number;
+	visibilityList?: number;
 	/** Bool */
-	visibility_custom_list?: number;
+	visibilityCustomList?: number;
 	/** Bool */
-	visibility_dropdown_list?: number;
+	visibilityDropdownList?: number;
 	/** Bool */
-	visibility_sub_form_list?: number;
+	visibilitySubFormList?: number;
 }
 
 interface IResetpasswordRecord {
 	/** Text */
 	email: string;
 	/** Button */
-	back_to_login?: any;
+	backToLogin?: any;
 }
 
-interface IMyRecordsRecord {
+interface IMyrecordsRecord {
 	/** Text */
 	name: string;
 	/** DateTime */
-	_created_on?: import('moment').Moment;
+	_createdOn?: import('moment').Moment;
 	/** Lookup */
-	_organization_id?: any;
+	_organizationId?: any;
 	/** Lookup */
-	_users_id?: any;
+	_usersId?: any;
 }
 
 interface IRegistrationRecord {
@@ -164,11 +164,11 @@ interface IRegistrationRecord {
 	/** Password */
 	password: string;
 	/** Password */
-	password_confirm: string;
+	passwordConfirm: string;
 	/** Button */
-	already_have_account_btn?: any;
+	alreadyHaveAccountBtn?: any;
 	/** Text */
-	activation_key?: string;
+	activationKey?: string;
 	/** Text */
 	salt?: string;
 }
@@ -177,7 +177,7 @@ interface IUsersRecord {
 	/** Image */
 	avatar?: string;
 	/** Tab */
-	t_main?: any;
+	mainTab?: any;
 	/** Text */
 	name: string;
 	/** Text */
@@ -191,27 +191,27 @@ interface IUsersRecord {
 	/** Text */
 	description?: string;
 	/** Lookup N to M */
-	_user_roles?: any;
+	_userRoles?: any;
 	/** Tab */
-	t_pass?: any;
+	passwordTab?: any;
 	/** Password */
 	password?: string;
 	/** Password */
-	password_confirm?: string;
+	passwordConfirm?: string;
 	/** Tab */
-	t_priv?: any;
+	privilegesTab?: any;
 	/** Lookup */
 	language?: any;
 	/** Static HTML block */
-	desc_spl?: any;
+	descSpl?: any;
 	/** Text */
-	last_name?: string;
+	lastName?: string;
 	/** Text */
-	first_name?: string;
+	firstName?: string;
 	/** Text */
-	mid_name?: string;
+	midName?: string;
 	/** Bool */
-	multilingual_enabled?: number;
+	multilingualEnabled?: number;
 	/** Text */
 	www?: string;
 	/** Bool */
@@ -219,7 +219,7 @@ interface IUsersRecord {
 	/** Text */
 	activation?: string;
 	/** Lookup */
-	_organization_id?: any;
+	_organizationId?: any;
 }
 
 interface IRolesRecord {
@@ -228,18 +228,18 @@ interface IRolesRecord {
 	/** Text */
 	description?: string;
 	/** Lookup N to M */
-	_user_roles?: any;
+	_userRoles?: any;
 }
 
 interface IOrganizationRecord {
 	/** Tab */
-	t_common?: any;
+	commonTab?: any;
 	/** Text */
 	name?: string;
 	/** Tab */
-	t_members?: any;
+	membersTab?: any;
 	/** Lookup N to M */
-	_organization_users?: any;
+	_organizationUsers?: any;
 }
 
 interface IFiltersRecord {
@@ -248,7 +248,7 @@ interface IFiltersRecord {
 	/** Text */
 	name: string;
 	/** Bool */
-	hi_priority?: number;
+	hiPriority?: number;
 	/** Text */
 	filter?: string;
 	/** Text */
@@ -256,24 +256,24 @@ interface IFiltersRecord {
 	/** Text */
 	view?: string;
 	/** Lookup */
-	node_filters_linker: any;
+	nodeFiltersLinker: any;
 	/** Number */
 	order?: number;
 	/** Lookup N to M */
-	_filter_access_roles?: any;
+	_filterAccessRoles?: any;
 }
 
 interface IFilesRecord {
 	/** Text */
 	name: string;
 	/** DateTime */
-	_created_on?: import('moment').Moment;
+	_createdOn?: import('moment').Moment;
 	/** File */
 	file: string;
 	/** Lookup */
-	_organization_id?: any;
+	_organizationId?: any;
 	/** Lookup */
-	_users_id?: any;
+	_usersId?: any;
 }
 
 interface IHtmlRecord {
@@ -298,7 +298,7 @@ interface IEnumsRecord {
 	values?: any;
 }
 
-interface IEnumValuesRecord {
+interface IEnumvaluesRecord {
 	/** Text */
 	name: string;
 	/** Number */
@@ -306,7 +306,7 @@ interface IEnumValuesRecord {
 	/** Number */
 	order?: number;
 	/** Lookup */
-	values_linker?: any;
+	valuesLinker?: any;
 }
 
 interface ILanguagesRecord {
@@ -315,9 +315,9 @@ interface ILanguagesRecord {
 	/** Text */
 	name: string;
 	/** Image */
-	lang_icon?: string;
+	langIcon?: string;
 	/** Text */
 	code?: string;
 	/** Bool */
-	isUiLanguage?: number;
+	isUILanguage?: number;
 }

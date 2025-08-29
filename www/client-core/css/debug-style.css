@@ -93,6 +93,12 @@
 	align-items: center;
 }
 
+.header-tab-wrap .admin-form-wrap {
+	left: 10px;
+	top: -5pxen;
+	font-size: 85%;
+}
+
 .field-wrap .admin-form-wrap {
 	left: -26px;
 	font-size: 85%;

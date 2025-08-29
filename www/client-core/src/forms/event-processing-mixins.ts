@@ -1,10 +1,10 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from 'react';
+import ReactDOM from 'react-dom';
 import { assert, throwError, validateFieldName } from '../assert';
-import { FIELD_TYPE, FieldDesc, RecordData } from "../bs-utils";
-import type { FieldWrap } from "../fields/field-wrap";
-import { CLIENT_SIDE_FORM_EVENTS, consoleLog, Filters, getData, L } from "../utils";
-import { BaseForm } from "./base-form";
+import { FIELD_TYPE, FieldDesc, RecordData } from '../bs-utils';
+import type { FieldWrap } from '../fields/field-wrap';
+import { CLIENT_SIDE_FORM_EVENTS, consoleLog, Filters, getData, L } from '../utils';
+import { BaseForm } from './base-form';
 
 let eventsHandlers = [];
 
@@ -12,17 +12,15 @@ function registerEventHandler(classInstance) {
 	const proto = classInstance.prototype;
 	eventsHandlers.push(proto);
 	const names = Object.getOwnPropertyNames(proto);
-	for(let name of names) {
-		if(name !== 'constructor') {
+	for (let name of names) {
+		if (name !== 'constructor') {
 			const method = proto[name];
-			if(typeof method === 'function') {
+			if (typeof method === 'function') {
 				FormEventProcessingMixins.prototype[name] = method;
 			}
 		}
 	}
 }
-
-
 
 class FormEventProcessingMixins extends BaseForm {
 	/** true if form opened for new record creation */
@@ -89,15 +87,16 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	callOnTabShowEvent(tabNameToShow) {
-		if(this.currentTabName !== tabNameToShow) {
+		if (this.currentTabName !== tabNameToShow) {
 			this.currentTabName = tabNameToShow;
 			var field;
 			var nodeFields = this.props.node.fields;
-			for(var k in nodeFields) {
+			for (var k in nodeFields) {
 				var f = nodeFields[k];
-				if(this.isFieldVisibleByFormViewMask(f)) {
-					if((f.field_type === FIELD_TYPE.TAB) && (f.max_length === 0)) {//tab
-						if((tabNameToShow === f.field_name) || !tabNameToShow) {
+				if (this.isFieldVisibleByFormViewMask(f)) {
+					if (f.fieldType === FIELD_TYPE.TAB && f.maxLength === 0) {
+						//tab
+						if (tabNameToShow === f.fieldName || !tabNameToShow) {
 							field = f;
 							break;
 						}
@@ -105,7 +104,7 @@ class FormEventProcessingMixins extends BaseForm {
 				}
 			}
 
-			if(field) {
+			if (field) {
 				this.processFieldEvent(field.id, false, false);
 			}
 		}
@@ -113,12 +112,12 @@ class FormEventProcessingMixins extends BaseForm {
 
 	hasField(fieldName) {
 		validateFieldName(fieldName);
-		return this.fieldsRefs.hasOwnProperty(fieldName)
+		return this.fieldsRefs.hasOwnProperty(fieldName);
 	}
 
 	getField(fieldName): FieldWrap {
 		validateFieldName(fieldName);
-		if(this.hasField(fieldName)) {
+		if (this.hasField(fieldName)) {
 			return this.fieldsRefs[fieldName];
 		} else {
 			throwError('Unknown field: ' + fieldName);
@@ -131,15 +130,15 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	hideField(...fieldsNames: string[]) {
-		for(let fieldName of fieldsNames) {
+		for (let fieldName of fieldsNames) {
 			validateFieldName(fieldName);
-			if(this.hiddenFields[fieldName] !== 1) {
+			if (this.hiddenFields[fieldName] !== 1) {
 				this.hiddenFields[fieldName] = 1;
 				var f = this.getField(fieldName);
-				if(f) {
+				if (f) {
 					f.hide();
 				}
-				if(f.props.field.field_type === FIELD_TYPE.TAB) {
+				if (f.props.field.fieldType === FIELD_TYPE.TAB) {
 					this.forceUpdate();
 				}
 			}
@@ -148,12 +147,12 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	showField(...fieldsNames: string[]) {
-		for(let fieldName of fieldsNames) {
+		for (let fieldName of fieldsNames) {
 			validateFieldName(fieldName);
-			if(this.hiddenFields[fieldName] === 1) {
-				delete (this.hiddenFields[fieldName]);
+			if (this.hiddenFields[fieldName] === 1) {
+				delete this.hiddenFields[fieldName];
 				var f = this.getField(fieldName);
-				if(f) {
+				if (f) {
 					f.show();
 				}
 			}
@@ -176,10 +175,10 @@ class FormEventProcessingMixins extends BaseForm {
 
 	disableField(fieldName) {
 		validateFieldName(fieldName);
-		if(this.disabledFields[fieldName] !== 1) {
+		if (this.disabledFields[fieldName] !== 1) {
 			this.disabledFields[fieldName] = 1;
 			var f = this.getField(fieldName);
-			if(!f) {
+			if (!f) {
 				throw new Error('unknown field "' + fieldName + '"');
 			}
 			f.disable();
@@ -188,8 +187,8 @@ class FormEventProcessingMixins extends BaseForm {
 
 	enableField(fieldName) {
 		validateFieldName(fieldName);
-		if(this.disabledFields[fieldName] === 1) {
-			delete (this.disabledFields[fieldName]);
+		if (this.disabledFields[fieldName] === 1) {
+			delete this.disabledFields[fieldName];
 			this.getField(fieldName).enable();
 		}
 	}
@@ -201,7 +200,7 @@ class FormEventProcessingMixins extends BaseForm {
 
 	isFieldDisabled(fieldName) {
 		validateFieldName(fieldName);
-		return (this.disabledFields[fieldName] === 1);
+		return this.disabledFields[fieldName] === 1;
 	}
 
 	addLookupFilters(fieldName: string, filtersObjOrName: Filters);
@@ -222,32 +221,37 @@ class FormEventProcessingMixins extends BaseForm {
 		await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD);
 		this.refreshLeftBar();
 
-		for(var k in this.fieldsRefs) {
+		for (var k in this.fieldsRefs) {
 			var f = this.fieldsRefs[k];
-			if(f.props.field.field_type !== FIELD_TYPE.BUTTON && f.props.field.field_type !== FIELD_TYPE.TAB) {
+			if (
+				f.props.field.fieldType !== FIELD_TYPE.BUTTON &&
+				f.props.field.fieldType !== FIELD_TYPE.TAB
+			) {
 				await this.processFieldEvent(f.props.field, false);
 			}
 		}
 
 		var hdr = this.header;
-		if((this.state.header || '') != hdr) {
+		if ((this.state.header || '') != hdr) {
 			this.setState({ header: hdr });
 		}
 
-		if(this.props.filters && this.props.filters.tab) {
+		if (this.props.filters && this.props.filters.tab) {
 			this.callOnTabShowEvent(this.props.filters.tab);
 		}
 	}
 
 	getFieldDomElement(fieldName: string): HTMLDivElement {
 		const formElement = ReactDOM.findDOMNode(this) as HTMLDivElement;
-		return formElement.querySelector('.field-container-id-' + this.getField(fieldName).props.field.id) as HTMLDivElement;
+		return formElement.querySelector(
+			'.field-container-id-' + this.getField(fieldName).props.field.id
+		) as HTMLDivElement;
 	}
 
 	renderToField(fieldName: string, containerClassName: string, reactContent: React.ReactElement) {
 		const el = this.getFieldDomElement(fieldName);
 		let container = el.querySelector('.' + containerClassName);
-		if(!container) {
+		if (!container) {
 			container = document.createElement('SPAN');
 			container.className = containerClassName;
 			el.appendChild(container);
@@ -265,20 +269,19 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	async setFieldValue(fieldName: string, val: any, isUserAction = false) {
-
 		var f = this.getField(fieldName);
-		if(!f) {
+		if (!f) {
 			return; // prevent crash on unmount values debouncing
 		}
 		let field = f.props.field;
 
-		if(this.currentData[fieldName] !== val) {
-			if(!isUserAction) {
+		if (this.currentData[fieldName] !== val) {
+			if (!isUserAction) {
 				f.setValue(val);
 			}
-			if(isUserAction) {
+			if (isUserAction) {
 				this.isDataModified = true;
-				if(this.isSubForm()) {
+				if (this.isSubForm()) {
 					this.props.parentForm.props.form.isDataModified = true;
 				}
 			}
@@ -292,18 +295,23 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	async checkUniqueValue(field, val) {
-		if(field.unique && val) {
-			let data = await getData('api/uniqueCheck', {
-				fieldId: field.id,
-				nodeId: field.node.id,
-				recId: (this.recId !== 'new') && this.recId,
-				val
-			}, undefined, true);
-			if(!data) {
-				this.fieldAlert(field.field_name, L('VALUE_EXISTS'), false, true);
+		if (field.unique && val) {
+			let data = await getData(
+				'api/uniqueCheck',
+				{
+					fieldId: field.id,
+					nodeId: field.node.id,
+					recId: this.recId !== 'new' && this.recId,
+					val,
+				},
+				undefined,
+				true
+			);
+			if (!data) {
+				this.fieldAlert(field.fieldName, L('VALUE_EXISTS'), false, true);
 				return false;
 			} else {
-				this.fieldAlert(field.field_name, undefined, true);
+				this.fieldAlert(field.fieldName, undefined, true);
 			}
 		}
 		return true;
@@ -316,10 +324,10 @@ class FormEventProcessingMixins extends BaseForm {
 
 	isFieldEmpty(fieldName) {
 		var v = this.fieldValue(fieldName);
-		if(Array.isArray(v)) {
+		if (Array.isArray(v)) {
 			return v.length === 0;
 		}
-		if(v) {
+		if (v) {
 			return false;
 		}
 		return this.getField(fieldName).isEmpty();
@@ -327,10 +335,10 @@ class FormEventProcessingMixins extends BaseForm {
 
 	async onSave() {
 		/// #if DEBUG
-		consoleLog('onSave ' + this.props.node.table_name + ': ' + this.props.initialData.id);
+		consoleLog('onSave ' + this.props.node.tableName + ': ' + this.props.initialData.id);
 		/// #endif
 
-		for(var fieldName in this.fieldsRefs) {
+		for (var fieldName in this.fieldsRefs) {
 			this.fieldAlert(fieldName); //hide all alerts
 		}
 
@@ -339,34 +347,44 @@ class FormEventProcessingMixins extends BaseForm {
 		return onSaveRes || this.invalidAlertInOnSaveHandler;
 	}
 
-	fieldAlert(fieldName: string, text: string = '', isSuccess?: boolean, focus: boolean = !isSuccess) {
-		assert(fieldName, "fieldName expected");
+	fieldAlert(
+		fieldName: string,
+		text: string = '',
+		isSuccess?: boolean,
+		focus: boolean = !isSuccess
+	) {
+		assert(fieldName, 'fieldName expected');
 		var f = this.getField(fieldName);
-		if(f) {
-			if(typeof isSuccess === 'undefined') {
+		if (f) {
+			if (typeof isSuccess === 'undefined') {
 				isSuccess = !Boolean(text);
 			}
-			if(f.fieldAlert) {
+			if (f.fieldAlert) {
 				f.fieldAlert(text, isSuccess, focus);
 			}
-			if(!isSuccess) {
+			if (!isSuccess) {
 				this.invalidAlertInOnSaveHandler = true;
 			}
 		}
 	}
 
 	_getFormEventHandler(eventName: CLIENT_SIDE_FORM_EVENTS) {
-		let name = this.props.node.table_name + '_' + eventName;
+		let name = this.props.node.tableName + '_' + eventName;
 		return this._getEventHandler(name);
 	}
 
 	_getFieldEventHandler(field: FieldDesc) {
-		let name = this.props.node.table_name + '_' + field.field_name + '_' + CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE;
+		let name =
+			this.props.node.tableName +
+			'_' +
+			field.fieldName +
+			'_' +
+			CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE;
 		return this._getEventHandler(name);
 	}
 
 	_getEventHandler(name) {
-		let ret = eventsHandlers.filter(i => i.hasOwnProperty(name)).map(i => i[name]);
+		let ret = eventsHandlers.filter((i) => i.hasOwnProperty(name)).map((i) => i[name]);
 		return ret.length > 0 && ret;
 	}
 
@@ -381,14 +399,14 @@ class FormEventProcessingMixins extends BaseForm {
 
 	async processEvent(handlers, isUserAction = false, prev_val = undefined, arg?: any) {
 		var ret;
-		if(handlers) {
-			for(var handler of handlers) {
+		if (handlers) {
+			for (var handler of handlers) {
 				this.prev_value = prev_val;
 				this.recId = this.props.initialData.id || 'new';
 				this.isUpdateRecord = this.props.editable;
-				if(this.isUpdateRecord) {
+				if (this.isUpdateRecord) {
 					this.isNewRecord = !this.props.initialData.hasOwnProperty('id');
-					if(this.isNewRecord) {
+					if (this.isNewRecord) {
 						this.isUpdateRecord = false;
 					}
 				}

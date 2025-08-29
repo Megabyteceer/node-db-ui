@@ -1,6 +1,8 @@
 {
 	"compilerOptions": {
-		"lib": ["ESNext"],
+		"lib": [
+			"ESNext"
+		],
 		"noUnusedLocals": true,
 		"target": "esnext",
 		"rootDir": ".",
@@ -13,12 +15,20 @@
 		"diagnostics": false,
 		"skipLibCheck": true,
 		"watch": false,
+		"typeRoots": [
+			"./types"
+		],
 		"assumeChangesOnlyAffectDirectDependencies": true,
 	},
 	"typeAcquisition": {
-        "include": ["node"]
-    },
-	"include": ["index.ts", "core/events/*"],
+		"include": [
+			"node"
+		]
+	},
+	"include": [
+		"index.ts",
+		"core/events/*"
+	],
 	"exclude": [
 		"**/www/**",
 		"**/build-prod/**",

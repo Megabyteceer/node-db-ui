@@ -1220,6 +1220,10 @@ input[readonly] {
 	border-bottom: 1px solid #ccc;
 }
 
+.header-tab-wrap {
+	position: relative;
+}
+
 .tab-header-button {
 	position: relative;
 	display: inline-block;
@@ -1426,6 +1430,9 @@ input[readonly] {
 	padding: 15px 30px;
 }
 
+.field-container-id-54 textarea {
+	font-family: monospace;
+}
 
 
 

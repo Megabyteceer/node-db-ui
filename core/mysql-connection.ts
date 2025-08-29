@@ -1,11 +1,29 @@
-
 /// #if DEBUG
 import { performance } from 'perf_hooks';
-import { assert } from '../www/client-core/src/assert';
-import { getCurrentStack } from "../www/client-core/src/bs-utils";
+import { assert, ESCAPE_BEGIN, ESCAPE_END, SQLInjectionsCheck, throwError } from '../www/client-core/src/assert';
+import { getCurrentStack } from '../www/client-core/src/bs-utils';
 /// #endif
 
-import { Pool, QueryResultRow } from 'pg';
+import { escapeLiteral, Pool, QueryResultRow } from 'pg';
+
+/** escape number */
+const D = (val: number): string => {
+	if (typeof val !== 'number') {
+		throwError('Number expected');
+	}
+	return (
+		/// #if DEBUG
+		ESCAPE_BEGIN +
+		/// #endif
+		val +
+		/// #if DEBUG
+		ESCAPE_END
+		/// #endif
+	);
+};
+
+const NUM_0 = D(0);
+const NUM_1 = D(1);
 
 const pool = new Pool();
 
@@ -13,29 +31,53 @@ const mysqlDebug = {
 	debug: null
 };
 
-const mysqlExec = (query: string, params?: string[]): Promise<QueryResultRow[]> => {
+const mysqlExec = (query: string): Promise<QueryResultRow[]> => {
 	/// #if DEBUG
 
-	let SQL = { timeElapsed_ms: performance.now(), SQL: query, stack: getCurrentStack() };
-	if(mysqlDebug.debug) {
-		if(!mysqlDebug.debug.SQLs) {
+	SQLInjectionsCheck(query);
+
+	let SQL = {
+		timeElapsed_ms: performance.now(),
+		SQL: query,
+		stack: getCurrentStack()
+	};
+	if (mysqlDebug.debug) {
+		if (!mysqlDebug.debug.SQLs) {
 			mysqlDebug.debug.SQLs = [];
 		}
-		mysqlDebug.debug.SQLs.push(SQL)
+		mysqlDebug.debug.SQLs.push(SQL);
 	}
 	/// #endif
 	return new Promise((resolve) => {
-		return pool.query(query, params).then((res) => {
-			SQL.timeElapsed_ms = performance.now() - SQL.timeElapsed_ms;
-			resolve(res.rows);
-		}).catch((er) => {
-			console.error(query);
-			console.error(er);
-			/// #if DEBUG
-			debugger;
-			//throw er;
-			/// #endif
-		}) as any;
+		/// #if DEBUG
+		//check for ' symbols added without escapeString method
+		const a = query.split(ESCAPE_BEGIN + "'");
+		for (const part of a) {
+			const partA = part.split(ESCAPE_END);
+			const str = partA.pop().replace(/[_a-zA-Z]\d+/gm, '');
+			if (str.includes("'")) {
+				throwError("query has text '' literal added with not escapeString() method. SQL injection detected: " + str.substring(str.indexOf("'")));
+			}
+			if (/\d/.test(str)) {
+				throwError('query has number literal added with not D() or A() method. SQL injection detected: ' + str.substring(/\d/.exec(str).index));
+			}
+		}
+
+		/// #endif
+		return pool
+			.query(query)
+			.then((res) => {
+				SQL.timeElapsed_ms = performance.now() - SQL.timeElapsed_ms;
+				resolve(res.rows);
+			})
+			.catch((er) => {
+				console.error(query);
+				console.error(er.message);
+				/// #if DEBUG
+				debugger;
+				//throw er;
+				/// #endif
+			}) as any;
 	});
 };
 
@@ -49,7 +91,7 @@ function waitPrevTransactionFinish() {
 }
 
 async function mysqlStartTransaction() {
-	if(mysqlTransactStarted) {
+	if (mysqlTransactStarted) {
 		await waitPrevTransactionFinish();
 		/// #if DEBUG
 		//debugger;
@@ -62,68 +104,46 @@ async function mysqlStartTransaction() {
 }
 
 function nextTransaction() {
-	if(transactionsQue.length) {
+	if (transactionsQue.length) {
 		transactionsQue.shift()();
 	}
 }
 
 async function mysqlCommit() {
-	assert(mysqlTransactStarted, "transaction is not started");
+	assert(mysqlTransactStarted, 'transaction is not started');
 	//await mysqlExec("COMMIT;");
 	mysqlTransactStarted = false;
 	nextTransaction();
 }
 
 async function mysqlRollback() {
-	if(mysqlTransactStarted) {
+	if (mysqlTransactStarted) {
 		//await mysqlExec("ROLLBACK;");
 		mysqlTransactStarted = false;
 		nextTransaction();
 	}
 }
 
-
-const mysql_real_escape_object = (o) => {
-	for(let key in o) {
-		if(key !== '__UNSAFE_UNESCAPED') {
-			let val = o[key];
-			switch(typeof val) {
-				case 'string':
-					o[key] = mysql_real_escape_string(val);
-					break;
-				case 'object':
-					if(val) {
-						mysql_real_escape_object(val);
-					}
-			}
-		}
-	}
-};
-const mysql_real_escape_string = (str) => { //TODO remove
-	return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
-		switch(char) {
-			case "\0":
-				return "\\0";
-			case "\x08":
-				return "\\b";
-			case "\x09":
-				return "\\t";
-			case "\x1a":
-				return "\\z";
-			case "\n":
-				return "\\n";
-			case "\r":
-				return "\\r";
-			case "\"":
-			case "'":
-			case "\\":
-				return "\\" + char; // prepends a backslash to backslash, percent,
-			// and double/single quotes
-			default:
-				return char;
-		}
-	});
+/** escape numbers array */
+const A = (val: number[]) => {
+	return val.map(D).join(',');
 };
 
-export { mysql_real_escape_object, mysql_real_escape_string, mysqlCommit, mysqlDebug, mysqlExec, mysqlRollback, mysqlStartTransaction };
+/** deprecated - use D() shortcut instead */
+const escapeNumber = D;
+/** deprecated - use A() shortcut instead */
+const escapeNumbersArray = A;
 
+const escapeString = (str: string): string => {
+	return (
+		/// #if DEBUG
+		ESCAPE_BEGIN +
+		/// #endif
+		escapeLiteral(str) +
+		/// #if DEBUG
+		ESCAPE_END
+		/// #endif
+	);
+};
+
+export { A, D, escapeNumber, escapeNumbersArray, escapeString, mysqlCommit, mysqlDebug, mysqlExec, mysqlRollback, mysqlStartTransaction, NUM_0, NUM_1 };

@@ -1,19 +1,18 @@
-
 import { assert, throwError } from '../www/client-core/src/assert';
-import { IMAGE_THUMBNAIL_PREFIX } from "../www/client-core/src/bs-utils";
+import { IMAGE_THUMBNAIL_PREFIX } from '../www/client-core/src/bs-utils';
 
-import * as fs from "fs";
-import { join } from "path";
-const sharp = require("sharp");
+import * as fs from 'fs';
+import { join } from 'path';
+const sharp = require('sharp');
 
-import { ENV, getFieldDesc, getNodeDesc } from "./describe-node";
-import { L } from "./locale";
+import { ENV, getFieldDesc, getNodeDesc } from './describe-node';
+import { L } from './locale';
 
 /// #if DEBUG
 let UPLOADS_IMAGES_PATH = join(__dirname, '../../html/images/uploads');
 let UPLOADS_FILES_PATH = join(__dirname, '../../html/uploads/file');
 
-if(!fs.existsSync(UPLOADS_IMAGES_PATH)) {
+if (!fs.existsSync(UPLOADS_IMAGES_PATH)) {
 	UPLOADS_IMAGES_PATH = join(__dirname, '../../www/images/uploads');
 	UPLOADS_FILES_PATH = join(__dirname, '../../www/uploads/file');
 }
@@ -24,16 +23,14 @@ const UPLOADS_IMAGES_PATH = join(__dirname, './html/images/uploads');
 const UPLOADS_FILES_PATH = join(__dirname, './html/uploads/file');
 //*/
 
-
-
 const IMAGE_EXTENSION = '.jpg';
 const IMAGE_EXTENSION_TRANSPARENCY = '.png';
 
 const LOOKUP_ICON_HEIGHT = 30;
 
 const getRadomPattern = () => {
-	return Math.floor(Math.random() * 0xEffffffffffff + 0x1000000000000).toString(16);
-}
+	return Math.floor(Math.random() * 0xeffffffffffff + 0x1000000000000).toString(16);
+};
 
 const getNewFileDir = () => {
 	return new Promise((resolve, reject) => {
@@ -41,9 +38,9 @@ const getNewFileDir = () => {
 			let folder = getRadomPattern();
 			const folderName = join(UPLOADS_FILES_PATH, folder);
 			fs.access(folderName, fs.constants.F_OK, (err) => {
-				if(err) {
+				if (err) {
 					fs.mkdir(folderName, (err) => {
-						if(err) {
+						if (err) {
 							reject(err);
 						} else {
 							resolve(folder);
@@ -53,64 +50,64 @@ const getNewFileDir = () => {
 					generateId();
 				}
 			});
-		}
+		};
 		generateId();
 	});
-}
-
-
+};
 
 const getNewImageID = (isTransparency) => {
 	return new Promise((resolve, reject) => {
 		let folder = Math.floor(Math.random() * 256).toString(16);
 
 		const generateId = (err?: NodeJS.ErrnoException) => {
-			if(err) {
+			if (err) {
 				reject(err);
 			}
-			let id = folder + '/' + getRadomPattern() + (isTransparency ? IMAGE_EXTENSION_TRANSPARENCY : IMAGE_EXTENSION);
+			let id =
+				folder +
+				'/' +
+				getRadomPattern() +
+				(isTransparency ? IMAGE_EXTENSION_TRANSPARENCY : IMAGE_EXTENSION);
 			fs.access(join(UPLOADS_IMAGES_PATH, id), fs.constants.F_OK, (err) => {
-				if(err) {
+				if (err) {
 					resolve(id);
 				} else {
 					generateId();
 				}
 			});
-		}
+		};
 		let folderName = join(UPLOADS_IMAGES_PATH, folder);
 		fs.access(folderName, fs.constants.F_OK, (err) => {
-			if(err) {
+			if (err) {
 				fs.mkdir(folderName, generateId);
 			} else {
 				generateId();
 			}
 		});
 	});
-}
-
+};
 
 let allowedUpload;
 
 async function uploadFile(reqData, userSession) {
-
-	if(reqData.filename.indexOf('..') >= 0) {
+	if (reqData.filename.indexOf('..') >= 0) {
 		throwError(L('UPL_ERROR_WFN', userSession));
 	}
 	getFieldForUpload(reqData, userSession); //Check access to the field
-	if(!allowedUpload) {
+	if (!allowedUpload) {
 		allowedUpload = RegExp('\\.(' + ENV.ALLOWED_UPLOADS.join('|') + ')$', 'i');
 	}
-	if(!allowedUpload.test(reqData.filename)) {
+	if (!allowedUpload.test(reqData.filename)) {
 		throwError(L('FILE_TYPE_NA', userSession, reqData.filename));
 	}
 	const newFileName = (await getNewFileDir()) + '/' + reqData.filename;
 
 	return new Promise((resolve, reject) => {
 		fs.writeFile(join(UPLOADS_FILES_PATH, newFileName), reqData.fileContent, (err) => {
-			if(err) {
+			if (err) {
 				reject(err);
 			}
-			if(!userSession.uploaded) {
+			if (!userSession.uploaded) {
 				userSession.uploaded = {};
 			}
 			userSession.uploaded[reqData.fid] = newFileName;
@@ -122,11 +119,11 @@ async function uploadFile(reqData, userSession) {
 const getFieldForUpload = (reqData, userSession) => {
 	getNodeDesc(parseInt(reqData.nid), userSession);
 	const field = getFieldDesc(parseInt(reqData.fid));
-	if(!field) {
-		throwError("field " + reqData.fid + " access denied");
+	if (!field) {
+		throwError('field ' + reqData.fid + ' access denied');
 	}
 	return field;
-}
+};
 
 async function uploadImage(reqData, userSession) {
 	const field = getFieldForUpload(reqData, userSession);
@@ -134,26 +131,25 @@ async function uploadImage(reqData, userSession) {
 	let img = await sharp(reqData.fileContent);
 	let meta = await img.metadata();
 
-	let targetW = Math.floor(field.max_length / 10000);
-	let targetH = field.max_length % 10000;
+	let targetW = Math.floor(field.maxLength / 10000);
+	let targetH = field.maxLength % 10000;
 
 	let srcW = meta.width;
 	let srcH = meta.height;
 
-	const isPerfectSize = (srcW === targetW) && (srcH === targetH);
+	const isPerfectSize = srcW === targetW && srcH === targetH;
 
-	let isTransparency = meta.format === 'png'; 	//TODO: Transparency checkbox for image field. Not via extension.
+	let isTransparency = meta.format === 'png'; //TODO: Transparency checkbox for image field. Not via extension.
 
 	let extendOptions = {
 		top: 0,
 		left: 0,
 		right: 0,
 		bottom: 0,
-		background: { r: 255, g: 255, b: 255, alpha: isTransparency ? 0 : 1 }
-	}
+		background: { r: 255, g: 255, b: 255, alpha: isTransparency ? 0 : 1 },
+	};
 
-	if(!isPerfectSize) {
-
+	if (!isPerfectSize) {
 		let resizeTargetW = targetW;
 		let resizeTargetH = targetH;
 
@@ -167,27 +163,27 @@ async function uploadImage(reqData, userSession) {
 		let targetX = 0;
 		let targetY = 0;
 
-		if(X < 0) {
+		if (X < 0) {
 			resizeTargetW -= -X * Q;
 			targetX = -X * Q;
 			W += X;
 			X = 0;
 		}
-		if(Y < 0) {
+		if (Y < 0) {
 			resizeTargetH -= -Y * Q;
 			targetY = -Y * Q;
 			H += Y;
 			Y = 0;
 		}
 
-		if((X + W) > srcW) {
+		if (X + W > srcW) {
 			resizeTargetW -= (W - srcW) * Q;
-			W -= (X + W) - srcW;
+			W -= X + W - srcW;
 		}
 
-		if((Y + H) > srcH) {
-			resizeTargetH -= ((Y + H) - srcH) * Q;
-			H -= (Y + H) - srcH;
+		if (Y + H > srcH) {
+			resizeTargetH -= (Y + H - srcH) * Q;
+			H -= Y + H - srcH;
 		}
 
 		resizeTargetW = Math.round(resizeTargetW);
@@ -199,12 +195,11 @@ async function uploadImage(reqData, userSession) {
 		targetY = Math.round(targetY);
 		targetX = Math.round(targetX);
 
-		await img.extract({ left: Math.round(X), top: Math.round(Y), width: W, height: H })
+		await img.extract({ left: Math.round(X), top: Math.round(Y), width: W, height: H });
 
 		await img.resize(resizeTargetW, resizeTargetH);
 
-		if(resizeTargetW < targetW || resizeTargetH < targetH) {
-
+		if (resizeTargetW < targetW || resizeTargetH < targetH) {
 			extendOptions.top = targetY;
 			extendOptions.left = targetX;
 			extendOptions.right = targetW - resizeTargetW - targetX;
@@ -222,32 +217,30 @@ async function uploadImage(reqData, userSession) {
 	// ===== THUMB GENERATION =====
 	img = await img.clone();
 
-
 	let thumbSizeQ = 1;
-	if(targetH > LOOKUP_ICON_HEIGHT) {
-		thumbSizeQ = (LOOKUP_ICON_HEIGHT / targetH);
+	if (targetH > LOOKUP_ICON_HEIGHT) {
+		thumbSizeQ = LOOKUP_ICON_HEIGHT / targetH;
 
 		await img.extend({
 			top: 0,
 			bottom: 0,
 			left: 0,
 			right: 0,
-			background: { r: 255, g: 255, b: 255, alpha: 1 }
-		})
+			background: { r: 255, g: 255, b: 255, alpha: 1 },
+		});
 
 		await img.resize({
 			width: Math.floor(thumbSizeQ * targetW),
 			height: LOOKUP_ICON_HEIGHT,
 			fit: 'contain',
-			background: { r: 255, g: 255, b: 255, alpha: 1 }
+			background: { r: 255, g: 255, b: 255, alpha: 1 },
 		});
 	}
 
-
-	await img.flatten({ background: "#FFFFFF" });
+	await img.flatten({ background: '#FFFFFF' });
 	await img.toFile(newFileName + IMAGE_THUMBNAIL_PREFIX);
 
-	if(!userSession.uploaded) {
+	if (!userSession.uploaded) {
 		userSession.uploaded = {};
 	}
 
@@ -256,9 +249,8 @@ async function uploadImage(reqData, userSession) {
 }
 
 const idToImgURLServer = (imgId) => {
-	assert(imgId, "idToImgURLServer called for empty imageId");
+	assert(imgId, 'idToImgURLServer called for empty imageId');
 	return join(UPLOADS_IMAGES_PATH, imgId);
-}
+};
 
 export { idToImgURLServer, uploadFile, uploadImage, UPLOADS_FILES_PATH };
-

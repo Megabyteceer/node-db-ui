@@ -1,27 +1,39 @@
-﻿import React, { Component } from "react";
+﻿import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { assert, throwError } from './assert';
-import { NODE_TYPE, RecId, RecordData } from "./bs-utils";
-import { BaseForm } from "./forms/base-form";
-import { FormFull } from "./forms/form-full";
-import { List } from "./forms/list";
-import { LeftBar } from "./left-bar";
-import { R } from "./r";
-import { Filters, getNode, getNodeData, getNodeIfPresentOnClient, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from "./utils";
+import { NODE_TYPE, RecId, RecordData } from './bs-utils';
+import { BaseForm } from './forms/base-form';
+import { FormFull } from './forms/form-full';
+import { List } from './forms/list';
+import { LeftBar } from './left-bar';
+import { R } from './r';
+import {
+	Filters,
+	getNode,
+	getNodeData,
+	getNodeIfPresentOnClient,
+	isPresentListRenderer,
+	myAlert,
+	onOneFormShowed,
+	renderIcon,
+	updateHashLocation,
+} from './utils';
 
 let mouseX: number;
 let mouseY: number;
 
-window.document.addEventListener('pointerdown', (ev) => {
-	mouseX = ev.clientX;
-	mouseY = ev.clientY;
-}, true);
+window.document.addEventListener(
+	'pointerdown',
+	(ev) => {
+		mouseX = ev.clientX;
+		mouseY = ev.clientY;
+	},
+	true
+);
 
 class FormLoaderCog extends Component<any, any> {
 	render() {
-		return R.div({ className: "fade-in loading-icon" },
-			renderIcon('cog fa-spin fa-5x')
-		);
+		return R.div({ className: 'fade-in loading-icon' }, renderIcon('cog fa-spin fa-5x'));
 	}
 }
 
@@ -35,7 +47,6 @@ interface FormEntry {
 let allForms: FormEntry[] = [];
 
 class Stage extends Component<any, any> {
-
 	static allForms: FormEntry[];
 
 	static get currentForm(): BaseForm | null {
@@ -44,8 +55,8 @@ class Stage extends Component<any, any> {
 	}
 
 	static get currentFormEntry(): FormEntry {
-		return allForms[allForms.length - 1]
-	};
+		return allForms[allForms.length - 1];
+	}
 
 	static get rootForm(): BaseForm {
 		return allForms[0] && allForms[0].form;
@@ -56,7 +67,7 @@ class Stage extends Component<any, any> {
 	}
 
 	static refreshForm() {
-		if(Stage.currentForm) {
+		if (Stage.currentForm) {
 			Stage.showForm(
 				Stage.currentForm.nodeId,
 				Stage.currentForm.recId,
@@ -67,7 +78,7 @@ class Stage extends Component<any, any> {
 	}
 
 	static goBackIfModal() {
-		if(allForms.length > 1) {
+		if (allForms.length > 1) {
 			let e = allForms.pop();
 			allForms[allForms.length - 1].container.classList.remove('blocked-layer');
 			const formContainer = e.formContainer;
@@ -78,11 +89,12 @@ class Stage extends Component<any, any> {
 			setTimeout(() => {
 				ReactDOM.render(React.createElement(React.Fragment), formContainer);
 				formContainer.remove();
-				if(formContainer !== e.container) {
+				if (formContainer !== e.container) {
 					e.container.remove();
 				}
 			}, 300);
-			if(allForms.length === 1) { // enable scrolling
+			if (allForms.length === 1) {
+				// enable scrolling
 				document.body.style.overflowY = '';
 				document.body.style.paddingRight = '';
 				document.body.style.boxSizing = '';
@@ -95,16 +107,24 @@ class Stage extends Component<any, any> {
 
 	/** @param newRecordData null - if record was deleted. */
 	static dataDidModified(newRecordData: RecordData | null) {
-		if(Stage.currentFormEntry.onModified) {
+		if (Stage.currentFormEntry.onModified) {
 			Stage.currentFormEntry.onModified(newRecordData);
 		}
 	}
 
-	static async showForm(nodeId: RecId, recId?: RecId | 'new', filters: Filters = {}, editable?: boolean, modal?: boolean, onModified?: (dataToSend: RecordData) => void, noAnimation = false) {
-		if(!allForms.length || modal) {
+	static async showForm(
+		nodeId: RecId,
+		recId?: RecId | 'new',
+		filters: Filters = {},
+		editable?: boolean,
+		modal?: boolean,
+		onModified?: (dataToSend: RecordData) => void,
+		noAnimation = false
+	) {
+		if (!allForms.length || modal) {
 			addFormEntry(noAnimation);
 		} else {
-			if(Stage.currentForm) {
+			if (Stage.currentForm) {
 				const formParameters = Stage.currentForm;
 				formParameters.nodeId = nodeId;
 				formParameters.recId = recId;
@@ -120,78 +140,109 @@ class Stage extends Component<any, any> {
 
 		let data;
 		let node = getNodeIfPresentOnClient(nodeId);
-		if(!node || node.node_type === NODE_TYPE.DOCUMENT) {
-			if(recId !== 'new') {
-				if(typeof recId === 'number') {
-					data = await getNodeData(nodeId, recId, undefined, editable, false, isPresentListRenderer(nodeId));
+		if (!node || node.nodeType === NODE_TYPE.DOCUMENT) {
+			if (recId !== 'new') {
+				if (typeof recId === 'number') {
+					data = await getNodeData(
+						nodeId,
+						recId,
+						undefined,
+						editable,
+						false,
+						isPresentListRenderer(nodeId)
+					);
 				} else {
-					data = await getNodeData(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
+					data = await getNodeData(
+						nodeId,
+						undefined,
+						filters,
+						editable,
+						false,
+						isPresentListRenderer(nodeId)
+					);
 				}
 			}
 		}
-		if(!node) {
+		if (!node) {
 			node = await getNode(nodeId);
 		}
 
-		if(!formEntry.formContainer || !node) { // popup is hidden already
+		if (!formEntry.formContainer || !node) {
+			// popup is hidden already
 			return;
 		}
 
 		const ref = (form: BaseForm) => {
-			if(form) {
+			if (form) {
 				formEntry.form = form;
 			}
 		};
 
-		if(!node.store_forms) { // cant render forms without storage as a list. Submit form only
-			if(!recId) {
+		if (!node.storeForms) {
+			// cant render forms without storage as a list. Submit form only
+			if (!recId) {
 				recId = 'new';
 			}
 			editable = true;
 		}
 
 		let formType;
-		switch(node.node_type) {
+		switch (node.nodeType) {
 			case NODE_TYPE.DOCUMENT:
 			case NODE_TYPE.SECTION:
-				if(recId || (recId === 0) || recId === 'new') {
+				if (recId || recId === 0 || recId === 'new') {
 					formType = FormFull;
 				} else {
 					formType = List;
-					assert(!modal, "List could not be show at modal level.");
+					assert(!modal, 'List could not be show at modal level.');
 				}
 				break;
 			case NODE_TYPE.REACT_CLASS:
-				if(typeof crudJs.customClasses[node.table_name] === 'undefined') {
-					myAlert('Unknown react class: ' + node.table_name);
+				if (typeof crudJs.customClasses[node.tableName] === 'undefined') {
+					myAlert('Unknown react class: ' + node.tableName);
 					formType = 'div';
 				} else {
-					formType = crudJs.customClasses[node.table_name];
+					formType = crudJs.customClasses[node.tableName];
 				}
 				break;
 			case NODE_TYPE.STATIC_LINK:
-				location.href = node.static_link;
+				location.href = node.staticLink;
 				break;
 			default:
-				throwError('Unknown node_type ' + node.node_type);
+				throwError('Unknown nodeType ' + node.nodeType);
 		}
 
-		let className = 'form-container-node-' + nodeId +
+		let className =
+			'form-container-node-' +
+			nodeId +
 			(isRootForm ? ' form-root-container' : ' form-modal-container');
-		if(node.css_class) {
-			className += ' ' + node.css_class;
+		if (node.cssClass) {
+			className += ' ' + node.cssClass;
 		}
 
 		ReactDOM.render(
-			React.createElement('div', { key: node.id + '_' + recId, className },
-				React.createElement(formType, { ref, node, recId, isRootForm, initialData: data || {}, filters, editable })
+			React.createElement(
+				'div',
+				{ key: node.id + '_' + recId, className },
+				React.createElement(formType, {
+					ref,
+					node,
+					recId,
+					isRootForm,
+					initialData: data || {},
+					filters,
+					editable,
+				})
 			),
 			formEntry.formContainer
 		);
 
-		if(isRootForm && Stage.rootForm) {
+		if (isRootForm && Stage.rootForm) {
 			const formParameters = Stage.rootForm;
-			if(formParameters.nodeId && ((formParameters.nodeId !== nodeId) || (formParameters.recId !== recId))) {
+			if (
+				formParameters.nodeId &&
+				(formParameters.nodeId !== nodeId || formParameters.recId !== recId)
+			) {
 				window.scrollTo(0, 0);
 			}
 		}
@@ -216,25 +267,25 @@ function addFormEntry(noAnimation = false) {
 	container.className = isRoot ? 'form-layer' : 'form-layer form-layer-modal';
 	let formContainer;
 
-	if(!isRoot) {
+	if (!isRoot) {
 		formContainer = document.createElement('div');
 		container.appendChild(formContainer);
 		allForms[allForms.length - 1].container.classList.add('blocked-layer');
-		container.style.backgroundColor = '#00112200'
+		container.style.backgroundColor = '#00112200';
 		formContainer.className = 'form-layer-modal';
 		container.style.transition = 'background-color 0.3s';
 		formContainer.style.transition = 'transform 0.3s';
 		formContainer.style.transitionTimingFunction = 'ease-in-out';
-		if(!noAnimation) {
+		if (!noAnimation) {
 			formContainer.style.transformOrigin = mouseX + 'px ' + mouseY + 'px';
 			formContainer.style.transform = 'scale(0.01)';
 			setTimeout(() => {
 				formContainer.style.transform = 'scale(1)';
-				container.style.backgroundColor = '#00112280'
+				container.style.backgroundColor = '#00112280';
 			}, 10);
 		} else {
 			formContainer.style.transform = 'scale(1)';
-			container.style.backgroundColor = '#00112280'
+			container.style.backgroundColor = '#00112280';
 		}
 	} else {
 		formContainer = container;
@@ -242,10 +293,11 @@ function addFormEntry(noAnimation = false) {
 	document.querySelector('#stage').appendChild(container);
 	let entry: FormEntry = {
 		container,
-		formContainer
-	}
-	if(allForms.length === 1) { // disable scrolling
-		if(document.body.scrollHeight > document.body.clientHeight) {
+		formContainer,
+	};
+	if (allForms.length === 1) {
+		// disable scrolling
+		if (document.body.scrollHeight > document.body.clientHeight) {
 			document.body.style.paddingRight = '10px';
 			document.body.style.boxSizing = 'border-box';
 		}
@@ -256,4 +308,3 @@ function addFormEntry(noAnimation = false) {
 }
 
 export { FormLoaderCog, Stage };
-

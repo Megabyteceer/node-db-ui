@@ -1,10 +1,19 @@
-import React, { Component } from "react";
-import { NODE_ID, NODE_TYPE, NodeDesc } from "../bs-utils";
-import { R } from "../r";
-import { CLIENT_SIDE_FORM_EVENTS, getNode, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from "../utils";
-import { admin_editSource } from "./admin-event-editor";
-import { admin } from "./admin-utils";
-import { FieldAdmin } from "./field-admin";
+import React, { Component } from 'react';
+import { NODE_ID, NODE_TYPE, NodeDesc } from '../bs-utils';
+import { R } from '../r';
+import {
+	CLIENT_SIDE_FORM_EVENTS,
+	getNode,
+	getNodeData,
+	keepInWindow,
+	L,
+	reloadLocation,
+	renderIcon,
+	sp,
+} from '../utils';
+import { admin_editSource } from './admin-event-editor';
+import { admin } from './admin-utils';
+import { FieldAdmin } from './field-admin';
 
 var showedNodeId;
 
@@ -14,20 +23,19 @@ var showedNodeId;
 throw new Error("admin-control imported in release build.");
 //*/
 class NodeAdmin extends Component<any, any> {
-
 	private timeout: NodeJS.Timeout;
 	node: NodeDesc;
 
 	constructor(props) {
 		super(props);
 
-		if(this.props.form) {
+		if (this.props.form) {
 			this.state = {
-				show: this.props.form.props.node && (showedNodeId === this.props.form.props.node.id)
+				show: this.props.form.props.node && showedNodeId === this.props.form.props.node.id,
 			};
 		} else {
 			this.state = {
-				show: showedNodeId === this.props.menuItem.id
+				show: showedNodeId === this.props.menuItem.id,
 			};
 		}
 		this.timeout = null;
@@ -39,7 +47,7 @@ class NodeAdmin extends Component<any, any> {
 	}
 
 	componentDidMount() {
-		if(this.props.form && !this.props.form.props.node) {
+		if (this.props.form && !this.props.form.props.node) {
 			getNode(this.props.form.props.nodeId).then((node) => {
 				this.node = node;
 				this.forceUpdate();
@@ -48,39 +56,38 @@ class NodeAdmin extends Component<any, any> {
 	}
 
 	componentWillUnmount() {
-		showedNodeId = -1
+		showedNodeId = -1;
 	}
 
 	show() {
-		if(this.timeout) {
+		if (this.timeout) {
 			clearTimeout(this.timeout);
-			delete (this.timeout);
+			delete this.timeout;
 		}
-		if(!this.state.show) {
-
+		if (!this.state.show) {
 			this.setState({
-				show: true
+				show: true,
 			});
 		}
 	}
 
 	hide() {
-		if(this.state.show) {
+		if (this.state.show) {
 			this.setState({
-				show: false
+				show: false,
 			});
 		}
 	}
 
 	toggleAllFields() {
 		this.setState({
-			allFieldsVisible: !this.state.allFieldsVisible
+			allFieldsVisible: !this.state.allFieldsVisible,
 		});
 	}
 
 	toggleLock() {
 		this.setState({
-			locked: !this.state.locked
+			locked: !this.state.locked,
 		});
 	}
 
@@ -89,10 +96,10 @@ class NodeAdmin extends Component<any, any> {
 		var form;
 		var item;
 
-		if(this.props.form) {
+		if (this.props.form) {
 			node = this.props.form.props.node || this.node;
 			form = this.props.form;
-			if(!node) {
+			if (!node) {
 				return R.div();
 			}
 		} else {
@@ -106,20 +113,32 @@ class NodeAdmin extends Component<any, any> {
 		var borderOnAfterSave;
 		var borderOnLoad;
 
-		if(form && form._getFormEventHandler && form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE)) {
-			borderOnSave = " admin-button-highlighted";
+		if (
+			form &&
+			form._getFormEventHandler &&
+			form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE)
+		) {
+			borderOnSave = ' admin-button-highlighted';
 		} else {
 			borderOnSave = '';
 		}
 
-		if(form && form._getFormEventHandler && form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE)) {
-			borderOnAfterSave = " admin-button-highlighted";
+		if (
+			form &&
+			form._getFormEventHandler &&
+			form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE)
+		) {
+			borderOnAfterSave = ' admin-button-highlighted';
 		} else {
 			borderOnAfterSave = '';
 		}
 
-		if(form && form._getFormEventHandler && form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD)) {
-			borderOnLoad = " admin-button-highlighted";
+		if (
+			form &&
+			form._getFormEventHandler &&
+			form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD)
+		) {
+			borderOnLoad = ' admin-button-highlighted';
 		} else {
 			borderOnLoad = '';
 		}
@@ -128,216 +147,251 @@ class NodeAdmin extends Component<any, any> {
 
 		var bodyVisible = this.state.show || this.state.locked;
 
-		if(bodyVisible) {
-
+		if (bodyVisible) {
 			var buttons;
 			var allFields;
-			if(!item) {
-				if(this.state.allFieldsVisible) {
+			if (!item) {
+				if (this.state.allFieldsVisible) {
 					allFields = [];
-					for(let f of node.fields) {
-						if(f.lang) continue;
+					for (let f of node.fields) {
+						if (f.lang) continue;
 
-						allFields.push(R.span({
-							key: f.id + 'a',
-							className: 'admin-form-header'
-						})),
-							allFields.push(R.div({
-								key: f.id,
-								className: "admin-form-all-fields"
-							},
-								R.div({
-									className: "admin-form-all-fields-name"
-								}, f.field_name + '; (' + f.id + ')'),
-								renderIcon((f.show & 1) ? 'eye' : 'eye-slash half-visible'),
-								renderIcon((f.show & 2) ? 'eye' : 'eye-slash half-visible'),
-								renderIcon((f.show & 16) ? 'eye' : 'eye-slash half-visible'),
-								renderIcon((f.show & 4) ? 'eye' : 'eye-slash half-visible'),
-								renderIcon((f.show & 8) ? 'eye' : 'eye-slash half-visible'),
+						allFields.push(
+							R.span({
+								key: f.id + 'a',
+								className: 'admin-form-header',
+							})
+						),
+							allFields.push(
+								R.div(
+									{
+										key: f.id,
+										className: 'admin-form-all-fields',
+									},
+									R.div(
+										{
+											className: 'admin-form-all-fields-name',
+										},
+										f.fieldName + '; (' + f.id + ')'
+									),
+									renderIcon(f.show & 1 ? 'eye' : 'eye-slash half-visible'),
+									renderIcon(f.show & 2 ? 'eye' : 'eye-slash half-visible'),
+									renderIcon(f.show & 16 ? 'eye' : 'eye-slash half-visible'),
+									renderIcon(f.show & 4 ? 'eye' : 'eye-slash half-visible'),
+									renderIcon(f.show & 8 ? 'eye' : 'eye-slash half-visible'),
 
-								renderIcon((f.for_search) ? 'search-plus' : 'search half-visible'),
-								React.createElement(FieldAdmin, {
-									field: f,
-									form: form,
-									x: 370,
-									zIndex: 10
-								})
-							))
+									renderIcon(f.forSearch ? 'search-plus' : 'search half-visible'),
+									React.createElement(FieldAdmin, {
+										field: f,
+										form: form,
+										x: 370,
+										zIndex: 10,
+									})
+								)
+							);
 					}
 				}
 
-				buttons = R.span(null,
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						onClick: () => {
-							this.toggleAllFields();
+				buttons = R.span(
+					null,
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							onClick: () => {
+								this.toggleAllFields();
+							},
+							title: 'Show full list of fields document contains.',
 						},
-						title: "Show full list of fields document contains."
-					},
-						'all fields ', renderIcon('caret-down')
+						'all fields ',
+						renderIcon('caret-down')
 					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn' + borderOnLoad,
-						onClick: () => {
-							admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD, node, undefined);
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn' + borderOnLoad,
+							onClick: () => {
+								admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD, node, undefined);
+							},
+							title: 'Edit client side script which execute on form open.',
 						},
-						title: "Edit client side script which execute on form open."
-					},
 						'onLoad...'
 					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn' + borderOnSave,
-						onClick: () => {
-							admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE, node, undefined);
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn' + borderOnSave,
+							onClick: () => {
+								admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE, node, undefined);
+							},
+							title: 'Edit client side script which execute before form save.',
 						},
-						title: "Edit client side script which execute before form save."
-					},
 						'onSave...'
 					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn' + borderOnAfterSave,
-						onClick: () => {
-							admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE, node, undefined, 'saveResult: RecordSubmitResult');
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn' + borderOnAfterSave,
+							onClick: () => {
+								admin_editSource(
+									CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE,
+									node,
+									undefined,
+									'saveResult: RecordSubmitResult'
+								);
+							},
+							title: 'Edit client side script which execute after form save.',
 						},
-						title: "Edit client side script which execute after form save."
-					},
 						'onAfterSave...'
 					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						title: L('FLD_ADD'),
-						onClick: () => {
-							crudJs.Stage.showForm(NODE_ID.FIELDS, 'new', {
-								node_fields_linker: {
-									id: node.id,
-									name: node.single_name
-								}
-							}, true, true, reloadLocation);
-						}
-					},
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							title: L('FLD_ADD'),
+							onClick: () => {
+								crudJs.Stage.showForm(
+									NODE_ID.FIELDS,
+									'new',
+									{
+										nodeFieldsLinker: {
+											id: node.id,
+											name: node.singleName,
+										},
+									},
+									true,
+									true,
+									reloadLocation
+								);
+							},
+						},
 						renderIcon('plus')
 					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						title: L('FLD_SHOW_ALL'),
-						onClick: () => {
-							if(form) {
-								form.showAllDebug = !form.showAllDebug;
-								form.forceUpdate();
-							}
-						}
-					},
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							title: L('FLD_SHOW_ALL'),
+							onClick: () => {
+								if (form) {
+									form.showAllDebug = !form.showAllDebug;
+									form.forceUpdate();
+								}
+							},
+						},
 						renderIcon('eye')
 					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						title: L('ADD_RATING_FLD'),
-						onClick: () => {
-							// TODO: implement ratings creation process
-
-						}
-					},
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							title: L('ADD_RATING_FLD'),
+							onClick: () => {
+								// TODO: implement ratings creation process
+							},
+						},
 						renderIcon('plus'),
 						renderIcon('bar-chart')
 					)
-				)
-
+				);
 			} else {
-				buttons = R.span(null,
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						title: L('ADD_NODE'),
-						onClick: () => {
-							createNodeForMenuItem(item);
-						}
-					},
+				buttons = R.span(
+					null,
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							title: L('ADD_NODE'),
+							onClick: () => {
+								createNodeForMenuItem(item);
+							},
+						},
 						renderIcon('plus')
 					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						onClick: () => {
-							getNodeData(4, undefined, {
-								_nodesID: item.parent
-							}).then((data) => {
-								data.items.sort((a, b) => {
-									return a.prior - b.prior;
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							onClick: () => {
+								getNodeData(4, undefined, {
+									_nodesID: item.parent,
+								}).then((data) => {
+									data.items.sort((a, b) => {
+										return a.prior - b.prior;
+									});
+									let index = data.items.findIndex((i) => i.id === item.id);
+									admin.exchangeNodes(data.items[index], data.items[index + 1]);
 								});
-								let index = data.items.findIndex(i => i.id === item.id);
-								admin.exchangeNodes(data.items[index], data.items[index + 1]);
-
-							});
+							},
+							title: 'Move node down',
 						},
-						title: "Move node down"
-					},
 						renderIcon('arrow-down')
 					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						onClick: () => {
-							getNodeData(4, undefined, {
-								_nodesID: item.parent
-							}).then((data) => {
-								data.items.sort((a, b) => {
-									return a.prior - b.prior;
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							onClick: () => {
+								getNodeData(4, undefined, {
+									_nodesID: item.parent,
+								}).then((data) => {
+									data.items.sort((a, b) => {
+										return a.prior - b.prior;
+									});
+									let index = data.items.findIndex((i) => i.id === item.id);
+									admin.exchangeNodes(data.items[index], data.items[index - 1]);
 								});
-								let index = data.items.findIndex(i => i.id === item.id);
-								admin.exchangeNodes(data.items[index], data.items[index - 1]);
-							});
+							},
+							title: 'Move node up',
 						},
-						title: "Move node up"
-					},
 						renderIcon('arrow-up')
 					)
-				)
+				);
 			}
 
-			body = R.div({
-				ref: keepInWindow,
-				className: "admin-form-body",
-				onClick: () => {
-					clearTimeout(this.timeout);
-					delete (this.timeout);
-					showedNodeId = nodeId;
-
-				},
-				onMouseLeave: () => {
-					this.hide()
-				}
-			},
-				L('NODE_SETTINGS'),
-				R.b({ className: "admin-form-header" },
-					node.table_name
-				),
-				R.span(null,
-					'; (' + (node.matchName || item.name) + '); id: ' + nodeId
-				),
-				R.div({
-					className: "admin-form-content"
-				},
-					buttons,
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						title: L('EDIT_NODE'),
-						onClick: () => {
-							crudJs.Stage.showForm(NODE_ID.NODES, nodeId, undefined, true, true, reloadLocation);
-
-						}
+			body = R.div(
+				{
+					ref: keepInWindow,
+					className: 'admin-form-body',
+					onClick: () => {
+						clearTimeout(this.timeout);
+						delete this.timeout;
+						showedNodeId = nodeId;
 					},
+					onMouseLeave: () => {
+						this.hide();
+					},
+				},
+				L('NODE_SETTINGS'),
+				R.b({ className: 'admin-form-header' }, node.tableName),
+				R.span(null, '; (' + (node.matchName || item.name) + '); id: ' + nodeId),
+				R.div(
+					{
+						className: 'admin-form-content',
+					},
+					buttons,
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							title: L('EDIT_NODE'),
+							onClick: () => {
+								crudJs.Stage.showForm(NODE_ID.NODES, nodeId, undefined, true, true, reloadLocation);
+							},
+						},
 						renderIcon('pencil')
 					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						title: L('EDIT_ACCESS'),
-						onClick: () => {
-							crudJs.Stage.showForm(NODE_ID.PRIVILEGES, nodeId, undefined, true, true, reloadLocation);
-						}
-					},
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							title: L('EDIT_ACCESS'),
+							onClick: () => {
+								crudJs.Stage.showForm(
+									NODE_ID.PRIVILEGES,
+									nodeId,
+									undefined,
+									true,
+									true,
+									reloadLocation
+								);
+							},
+						},
 						renderIcon('user')
 					),
-					R.span({
-						className: 'clickable admin-form-lock-btn',
-						onClick: this.toggleLock
-					},
+					R.span(
+						{
+							className: 'clickable admin-form-lock-btn',
+							onClick: this.toggleLock,
+						},
 						renderIcon(this.state.locked ? 'lock' : 'unlock')
 					)
 				),
@@ -345,33 +399,42 @@ class NodeAdmin extends Component<any, any> {
 			);
 		}
 
-		return R.div({
-			className: 'admin-control admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
-			onClick: sp
-		},
-			R.span({
-				className: 'half-visible admin-form-open-btn clickable' + (borderOnLoad || borderOnSave),
-				onClick: this.show
+		return R.div(
+			{
+				className:
+					'admin-control admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
+				onClick: sp,
 			},
+			R.span(
+				{
+					className: 'half-visible admin-form-open-btn clickable' + (borderOnLoad || borderOnSave),
+					onClick: this.show,
+				},
 				renderIcon('wrench')
 			),
 			body
-		)
+		);
 	}
 }
 
 function createNodeForMenuItem(item) {
-	let isBasedOnDocument = item.node_type === NODE_TYPE.DOCUMENT;
+	let isBasedOnDocument = item.nodeType === NODE_TYPE.DOCUMENT;
 	getNodeData(NODE_ID.NODES, (isBasedOnDocument ? item.parent : item.id) as number).then((data) => {
-		crudJs.Stage.showForm(NODE_ID.NODES, 'new', {
-			prior: 100000,
-			_nodesID: {
-				id: data.id,
-				name: data.name
-			}
-		}, true, true, reloadLocation);
+		crudJs.Stage.showForm(
+			NODE_ID.NODES,
+			'new',
+			{
+				prior: 100000,
+				_nodesID: {
+					id: data.id,
+					name: data.name,
+				},
+			},
+			true,
+			true,
+			reloadLocation
+		);
 	});
 }
 
 export { createNodeForMenuItem, NodeAdmin };
-

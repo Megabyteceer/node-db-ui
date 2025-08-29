@@ -14,7 +14,7 @@
 		"module": "nodenext",
 		"diagnostics": false,
 		"typeRoots": [
-			"types"
+			"./types"
 		],
 		"esModuleInterop": true,
 		"skipLibCheck": true,

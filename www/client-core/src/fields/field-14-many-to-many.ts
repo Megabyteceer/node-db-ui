@@ -1,10 +1,18 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-import { FIELD_TYPE, RecId } from "../bs-utils";
-import { R } from "../r";
-import { getClassForField, L, n2mValuesEqual, registerFieldClass, renderIcon, sp, UID } from "../utils";
-import { fieldLookupMixins } from "./field-lookup-mixins";
+import { FIELD_TYPE, RecId } from '../bs-utils';
+import { R } from '../r';
+import {
+	getClassForField,
+	L,
+	n2mValuesEqual,
+	registerFieldClass,
+	renderIcon,
+	sp,
+	UID,
+} from '../utils';
+import { fieldLookupMixins } from './field-lookup-mixins';
 
 var keyCounter = 0;
 var dragItem;
@@ -14,7 +22,6 @@ var dragListenersInitialized;
 var refs = [];
 
 class LookupManyToManyFiled extends fieldLookupMixins {
-
 	excludeIDs: RecId[];
 
 	constructor(props) {
@@ -24,10 +31,10 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 	}
 
 	setValue(val) {
-		if(!val) {
+		if (!val) {
 			val = [];
 		}
-		if(!n2mValuesEqual(val, this.state.value)) {
+		if (!n2mValuesEqual(val, this.state.value)) {
 			this.setState({ value: val });
 		}
 	}
@@ -37,12 +44,12 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 	}
 
 	valueListener(newVal, withBounceDelay, sender) {
-		if(sender.props.isNew) {
+		if (sender.props.isNew) {
 			this.state.value.splice(sender.props.pos, 0, newVal);
 			this.forceUpdate();
 			this.props.wrapper.valueListener(this.state.value, false, this);
 		} else {
-			if(this.state.value[sender.props.pos].id !== newVal.id) {
+			if (this.state.value[sender.props.pos].id !== newVal.id) {
 				this.state.value[sender.props.pos] = newVal;
 				this.forceUpdate();
 				this.props.wrapper.valueListener(this.state.value, false, this);
@@ -51,22 +58,22 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 	}
 
 	dragStart(item) {
-		if(!dragListenersInitialized) {
+		if (!dragListenersInitialized) {
 			window.document.addEventListener('mouseup', () => {
-				if(dragItem) {
+				if (dragItem) {
 					dragItem = undefined;
 					dragList.forceUpdate();
 					dragList = undefined;
 				}
 			});
 			window.document.addEventListener('mousemove', (event) => {
-				if(dragList) {
+				if (dragList) {
 					dragItem;
 					var y = event.clientY;
-					if(y < 100) {
+					if (y < 100) {
 						document.body.scrollTop -= 10;
 					}
-					if(y > (document.body.offsetHeight - 100)) {
+					if (y > document.body.offsetHeight - 100) {
 						document.body.scrollTop += 10;
 					}
 					var closestD = 1000000;
@@ -79,13 +86,12 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 						let elementY = (bounds.top + bounds.bottom) / 2;
 
 						var d = Math.abs(y - elementY);
-						if(d < closestD) {
+						if (d < closestD) {
 							closestD = d;
 							closestItem = i;
 						}
 					});
-					if(closestItem !== dragItem) {
-
+					if (closestItem !== dragItem) {
 						var toPos = dragList.state.value.indexOf(closestItem);
 						var curPos = dragList.state.value.indexOf(dragItem);
 						dragList.state.value.splice(curPos, 1);
@@ -108,102 +114,136 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 	}
 
 	renderItem(field, value, i, isEdit) {
-
-		var isDrag = (dragItem === value);
+		var isDrag = dragItem === value;
 		var buttons;
 		var isNew = '';
-		if(!value) {
+		if (!value) {
 			isNew = 'n';
 		}
 		var additionalButtonsN2M;
-		var additionalButtonsN2MRenderer = this.state.additionalButtonsN2MRenderer || this.props.additionalButtonsN2MRenderer;
-		if(additionalButtonsN2MRenderer) {
+		var additionalButtonsN2MRenderer =
+			this.state.additionalButtonsN2MRenderer || this.props.additionalButtonsN2MRenderer;
+		if (additionalButtonsN2MRenderer) {
 			additionalButtonsN2M = additionalButtonsN2MRenderer(field, value, i, this);
 		}
 
-		if(isEdit) {
-			if(value) {
+		if (isEdit) {
+			if (value) {
 				let reorderButton;
-				if(this.state.extendedEditor) {
-					reorderButton = R.button({
-						title: L('FRAG_TO_REORDER'),
-						className: isDrag ? 'tool-btn drag draggable default-btn' : 'tool-btn drag default-btn', onMouseDown: (e) => {
-							sp(e);
-							this.dragStart(value);
-						}
-					}, renderIcon('reorder'));
+				if (this.state.extendedEditor) {
+					reorderButton = R.button(
+						{
+							title: L('FRAG_TO_REORDER'),
+							className: isDrag
+								? 'tool-btn drag draggable default-btn'
+								: 'tool-btn drag default-btn',
+							onMouseDown: (e) => {
+								sp(e);
+								this.dragStart(value);
+							},
+						},
+						renderIcon('reorder')
+					);
 				}
 
-				buttons = R.span({ className: 'field-lookup-right-block' },
+				buttons = R.span(
+					{ className: 'field-lookup-right-block' },
 					additionalButtonsN2M,
-					R.button({
-						title: L('EDIT'),
-						className: 'clickable tool-btn edit-btn', onClick: () => {
-							const recId = this.props.form.recId;
-							const filters = {
-								[this.getLinkerFieldName()]: { id: recId }
-							};
-							crudJs.Stage.showForm(
-								this.props.field.node_ref,
-								recId,
-								filters,
-								true,
-								true,
-								(newData: object) => {
-									if(!newData) { //deleted
-										this.deleteItemByIndex(i);
-									} else {
-										for(let fName in value) {
-											if(newData.hasOwnProperty(fName)) {
-												value[fName] = newData[fName];
+					R.button(
+						{
+							title: L('EDIT'),
+							className: 'clickable tool-btn edit-btn',
+							onClick: () => {
+								const recId = this.props.form.recId;
+								const filters = {
+									[this.getLinkerFieldName()]: { id: recId },
+								};
+								crudJs.Stage.showForm(
+									this.props.field.nodeRef,
+									recId,
+									filters,
+									true,
+									true,
+									(newData: object) => {
+										if (!newData) {
+											//deleted
+											this.deleteItemByIndex(i);
+										} else {
+											for (let fName in value) {
+												if (newData.hasOwnProperty(fName)) {
+													value[fName] = newData[fName];
+												}
 											}
 										}
+										this.forceUpdate();
 									}
-									this.forceUpdate();
-								}
-							);
-						}
-					},
+								);
+							},
+						},
 						renderIcon('pencil')
 					),
-					R.button({
-						title: L('LIST_REMOVE'),
-						className: 'clickable tool-btn danger-btn', onClick: () => {
-							this.deleteItemByIndex(i);
-						}
-					},
+					R.button(
+						{
+							title: L('LIST_REMOVE'),
+							className: 'clickable tool-btn danger-btn',
+							onClick: () => {
+								this.deleteItemByIndex(i);
+							},
+						},
 						renderIcon('times')
 					),
 					reorderButton
-				)
+				);
 			}
 
-			if(isEdit || value) {
+			if (isEdit || value) {
 				var key;
-				if(value) {
+				if (value) {
 					key = UID(value);
 				} else {
 					key = 'emp' + keyCounter;
 					keyCounter++;
 				}
 
-				let className = 'lookup-n2m-item'
-				if(value) {
+				let className = 'lookup-n2m-item';
+				if (value) {
 					className += ' lookup-n2m-item-rec-' + value.id;
 				}
-				if(isDrag) {
+				if (isDrag) {
 					className += ' lookup-n2m-item-drag';
 				}
 
-				var body = R.div({ key: key, ref: value ? (ref) => { refs[UID(value)] = ref; } : undefined, className },
+				var body = R.div(
+					{
+						key: key,
+						ref: value
+							? (ref) => {
+									refs[UID(value)] = ref;
+							  }
+							: undefined,
+						className,
+					},
 
 					React.createElement(getClassForField(FIELD_TYPE.LOOKUP), {
-						field, preventCreateButton: this.state.preventCreateButton, pos: i, isEdit, isN2M: true, filters: this.state.filters, ref: (ref) => {
-							if(ref) {
+						field,
+						preventCreateButton: this.state.preventCreateButton,
+						pos: i,
+						isEdit,
+						isN2M: true,
+						filters: this.state.filters,
+						ref: (ref) => {
+							if (ref) {
 								// @ts-ignore
-								ref.setLookupFilter({ 'excludeIDs': this.excludeIDs || this.state.filters.excludeIDs });
+								ref.setLookupFilter({
+									excludeIDs: this.excludeIDs || this.state.filters.excludeIDs,
+								});
 							}
-						}, isNew: isNew, wrapper: this, initialValue: value, isCompact: this.props.isCompact, fieldDisabled: this.props.fieldDisabled
+						},
+						isNew: isNew,
+						wrapper: this,
+						initialValue: value,
+						isCompact: this.props.isCompact,
+						fieldDisabled: this.props.fieldDisabled,
 					}),
 					buttons
 				);
@@ -215,18 +255,20 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 	}
 
 	render() {
-		if(!this.state.value) {
+		if (!this.state.value) {
 			//@ts-ignore
 			this.state.value = [];
 		}
 		var value = this.state.value;
 		var field = this.props.field;
 
-		var excludeIDs = this.state.filters && (this.state.filters.excludeIDs ? this.state.filters.excludeIDs.slice() : undefined);
+		var excludeIDs =
+			this.state.filters &&
+			(this.state.filters.excludeIDs ? this.state.filters.excludeIDs.slice() : undefined);
 
-		for(let v of value) {
-			if(v && v.id) {
-				if(!excludeIDs) {
+		for (let v of value) {
+			if (v && v.id) {
+				if (!excludeIDs) {
 					excludeIDs = [];
 				}
 				excludeIDs.push(v.id);
@@ -242,10 +284,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 
 		lines.push(this.renderItem(field, null, lines.length, this.props.isEdit));
 
-		return R.div(null,
-			lines
-		);
-
+		return R.div(null, lines);
 	}
 }
 

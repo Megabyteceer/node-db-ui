@@ -4,13 +4,29 @@
 import handlers from '../___index';
 //*/
 
-import { existsSync, writeFileSync } from "fs";
-import { join } from "path";
-import { mysqlExec } from "./mysql-connection";
+import { existsSync, writeFileSync } from 'fs';
 
+import { D, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
+
+import { join } from 'path';
 import { assert, throwError } from '../www/client-core/src/assert';
-import { EnumList, EnumListItem, FIELD_TYPE, FieldDesc, NODE_ID, NODE_TYPE, NodeDesc, RecId, RecordData, RecordDataWrite, ROLE_ID, USER_ID, UserLangEntry, VIEW_MASK } from "../www/client-core/src/bs-utils";
-import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession /*, usersSessionsStartedCount*/ } from "./auth";
+import {
+	EnumList,
+	EnumListItem,
+	FIELD_TYPE,
+	FieldDesc,
+	NODE_ID,
+	NODE_TYPE,
+	NodeDesc,
+	RecId,
+	RecordData,
+	RecordDataWrite,
+	ROLE_ID,
+	USER_ID,
+	UserLangEntry,
+	VIEW_MASK
+} from '../www/client-core/src/bs-utils';
+import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession /*, usersSessionsStartedCount*/ } from './auth';
 import { ENV } from './ENV';
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
@@ -34,27 +50,31 @@ const nodesTreeCache = new Map();
 const filtersById = new Map();
 
 const snakeToCamel = (str: string) => {
-	str = str.toLowerCase().replace(/([_][a-z])/g, group =>
-		group
-			.toUpperCase()
-			.replace('_', '')
-	);
+	str = str.toLowerCase().replace(/([_][a-z])/g, (group) => group.toUpperCase().replace('_', ''));
 	return str.charAt(0).toUpperCase() + str.slice(1);
-}
+};
 
 function getFieldDesc(fieldId: number): FieldDesc {
-	assert(fieldsById.has(fieldId), "Unknown field id " + fieldId);
+	assert(fieldsById.has(fieldId), 'Unknown field id ' + fieldId);
 	return fieldsById.get(fieldId);
 }
 
 async function getEnumDesc(enumId: RecId) {
-	if(!enumsById.has(enumId)) {
-		const name = (await mysqlExec("SELECT name FROM _enums WHERE id = " + enumId))[0].name;
-		const items = await mysqlExec("SELECT value," + langs.map((l) => {
-			return 'name' + l.prefix;
-		}).join() + " FROM _enum_values WHERE status = 1 AND values_linker=" + enumId + " ORDER BY _enum_values.order") as any as EnumListItem[];
+	if (!enumsById.has(enumId)) {
+		const name = (await mysqlExec('SELECT name FROM _enums WHERE id = ' + D(enumId)))[0].name;
+		const items = (await mysqlExec(
+			'SELECT value,' +
+				langs
+					.map((l) => {
+						return 'name' + l.prefix;
+					})
+					.join() +
+				' FROM "_enumValues" WHERE status = 1 AND "valuesLinker"=' +
+				D(enumId) +
+				' ORDER BY "_enumValues".order'
+		)) as any as EnumListItem[];
 		const namesByValue = {} as { [key: number]: string };
-		for(const item of items) {
+		for (const item of items) {
 			namesByValue[item.value] = item.name;
 		}
 		enumsById.set(enumId, {
@@ -69,49 +89,49 @@ async function getEnumDesc(enumId: RecId) {
 function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 	assert(!isNaN(nodeId), 'nodeId expected');
 	let userNodesCacheKey = nodeId + 'n_' + userSession.cacheKey;
-	if(!clientSideNodes.has(userNodesCacheKey)) {
+	if (!clientSideNodes.has(userNodesCacheKey)) {
 		const srcNode = nodesById.get(nodeId);
 		let privileges;
 
-		if(srcNode && (privileges = getUserAccessToNode(srcNode, userSession))) {
+		if (srcNode && (privileges = getUserAccessToNode(srcNode, userSession))) {
 			let landQ = userSession.lang.prefix;
 
 			const ret: NodeDesc = {
 				id: srcNode.id,
-				single_name: srcNode["single_name" + landQ],
+				singleName: srcNode['singleName' + landQ],
 				privileges,
-				matchName: srcNode["name" + landQ],
-				description: srcNode["description" + landQ],
-				node_type: srcNode.node_type
+				matchName: srcNode['name' + landQ],
+				description: srcNode['description' + landQ],
+				nodeType: srcNode.nodeType
 			} as any;
 
-			if(srcNode.css_class) {
-				ret.css_class = srcNode.css_class;
+			if (srcNode.cssClass) {
+				ret.cssClass = srcNode.cssClass;
 			}
 
-			if(srcNode.node_type === NODE_TYPE.REACT_CLASS) {
-				ret.table_name = srcNode.table_name;
-			} else if(srcNode.node_type === NODE_TYPE.DOCUMENT) {
-
+			if (srcNode.nodeType === NODE_TYPE.REACT_CLASS) {
+				ret.tableName = srcNode.tableName;
+			} else if (srcNode.nodeType === NODE_TYPE.DOCUMENT) {
 				ret.captcha = srcNode.captcha;
 				ret.reverse = srcNode.reverse;
-				ret.creation_name = srcNode["creation_name" + landQ];
-				ret.store_forms = srcNode.store_forms;
-				ret.static_link = srcNode.static_link;
-				ret.table_name = srcNode.table_name;
+				ret.creationName = srcNode['creationName' + landQ];
+				ret.storeForms = srcNode.storeForms;
+				ret.staticLink = srcNode.staticLink;
+				ret.tableName = srcNode.tableName;
 				ret.draftable = srcNode.draftable;
 				ret.icon = srcNode.icon;
-				ret.rec_per_page = srcNode.rec_per_page;
-				ret.default_filter_id = srcNode.default_filter_id;
+				ret.recPerPage = srcNode.recPerPage;
+				ret.defaultFilterId = srcNode.defaultFilterId;
 
-				for(let id in srcNode.filters) {
+				for (let id in srcNode.filters) {
 					const filter = srcNode.filters[id];
-					if(filter.roles && !isUserHaveRole(ROLE_ID.ADMIN, userSession)) { // TODO roles
-						if(!filter.roles.find(roleId => isUserHaveRole(roleId, userSession))) {
+					if (filter.roles && !isUserHaveRole(ROLE_ID.ADMIN, userSession)) {
+						// TODO roles
+						if (!filter.roles.find((roleId) => isUserHaveRole(roleId, userSession))) {
 							continue;
 						}
 					}
-					if(!ret.filters) {
+					if (!ret.filters) {
 						ret.filters = {};
 					}
 					ret.filters[id] = {
@@ -120,56 +140,56 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 					};
 				}
 
-				ret.sortFieldName = srcNode.sortFieldName
+				ret.sortFieldName = srcNode.sortFieldName;
 
 				let fields = [];
-				for(let srcField of srcNode.fields) {
+				for (let srcField of srcNode.fields) {
 					const field: FieldDesc = {
 						id: srcField.id,
 						name: srcField['name' + landQ] || srcField.name,
 						description: srcField['description' + landQ] || srcField.description,
 						show: srcField.show,
 						prior: srcField.prior,
-						field_type: srcField.field_type,
+						fieldType: srcField.fieldType,
 						multilingual: srcField.multilingual,
-						field_name: srcField.field_name,
-						select_field_name: srcField.select_field_name,
-						max_length: srcField.max_length,
+						fieldName: srcField.fieldName,
+						selectFieldName: srcField.selectFieldName,
+						maxLength: srcField.maxLength,
 						requirement: srcField.requirement,
 						unique: srcField.unique,
 						enum: srcField.enum,
-						for_search: srcField.for_search,
-						store_in_db: srcField.store_in_db,
-						node_ref: srcField.node_ref,
-						send_to_server: srcField.send_to_server,
+						forSearch: srcField.forSearch,
+						storeInDb: srcField.storeInDb,
+						nodeRef: srcField.nodeRef,
+						sendToServer: srcField.sendToServer,
 						icon: srcField.icon,
-						lookup_icon: srcField.lookup_icon,
+						lookupIcon: srcField.lookupIcon,
 						display: srcField.display
 					};
 
-					if(field.enum) {
+					if (field.enum) {
 						field.enumId = srcField.enumId;
 					}
-					if(srcField.css_class) {
-						field.css_class = srcField.css_class;
+					if (srcField.cssClass) {
+						field.cssClass = srcField.cssClass;
 					}
 
 					fields.push(field);
-					if(srcField.multilingual && userSession.multilingual_enabled) {
-
-						const field_name = field.field_name;
+					if (srcField.multilingual && userSession.multilingualEnabled) {
+						const fieldName = field.fieldName;
 						const fieldId = field.id;
 						const langs = getLangs();
-						for(const l of langs) {
-							if(l.prefix) {
-								if(nodeId === NODE_ID.NODES || nodeId === NODE_ID.FIELDS || nodeId === NODE_ID.FILTERS) { // for nodes, fields, and filters, add only languages which used in system UI
-									if(!l.isUiLanguage) {
+						for (const l of langs) {
+							if (l.prefix) {
+								if (nodeId === NODE_ID.NODES || nodeId === NODE_ID.FIELDS || nodeId === NODE_ID.FILTERS) {
+									// for nodes, fields, and filters, add only languages which used in system UI
+									if (!l.isUILanguage) {
 										continue;
 									}
 								}
 								const langFiled = Object.assign({}, field);
 								langFiled.show = field.show & (VIEW_MASK.ALL - VIEW_MASK.LIST - VIEW_MASK.DROPDOWN_LIST);
-								langFiled.field_name = field_name + l.prefix;
+								langFiled.fieldName = fieldName + l.prefix;
 								langFiled.id = (fieldId + l.prefix) as unknown as number;
 								langFiled.lang = l.name;
 								fields.push(langFiled);
@@ -181,7 +201,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 			}
 			clientSideNodes.set(userNodesCacheKey, ret);
 		} else {
-			throwError("<access> Access to node " + nodeId + " is denied");
+			throwError('<access> Access to node ' + nodeId + ' is denied');
 		}
 	}
 	return clientSideNodes.get(userNodesCacheKey);
@@ -189,8 +209,8 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 
 function getUserAccessToNode(node: NodeDesc, userSession: UserSession) {
 	let ret = 0;
-	for(let role of node.rolesToAccess) {
-		if(isUserHaveRole(role.roleId, userSession)) {
+	for (let role of node.rolesToAccess) {
+		if (isUserHaveRole(role.roleId, userSession)) {
 			ret |= role.privileges;
 		}
 	}
@@ -199,15 +219,15 @@ function getUserAccessToNode(node: NodeDesc, userSession: UserSession) {
 
 let options;
 
-function getNodesTree(userSession) { // get nodes tree visible to user
+function getNodesTree(userSession) {
+	// get nodes tree visible to user
 	let langId = userSession.lang.prefix;
 	let cacheKey = userSession.cacheKey;
 
-	if(!nodesTreeCache.has(cacheKey)) {
+	if (!nodesTreeCache.has(cacheKey)) {
 		let nodesTree = [];
 		let ret = { nodesTree, options };
-		for(let nodeSrc of nodes) {
-
+		for (let nodeSrc of nodes) {
 			/// #if DEBUG
 			/*
 			/// #endif
@@ -224,26 +244,26 @@ function getNodesTree(userSession) { // get nodes tree visible to user
 			//*/
 
 			let privileges = getUserAccessToNode(nodeSrc, userSession);
-			if(privileges) {
+			if (privileges) {
 				nodesTree.push({
 					icon: nodeSrc.icon,
 					id: nodeSrc.id,
 					name: nodeSrc['name' + langId],
-					node_type: nodeSrc.node_type,
-					parent: nodeSrc._nodes_id,
+					nodeType: nodeSrc.nodeType,
+					parent: nodeSrc._nodesId,
 					privileges,
-					static_link: nodeSrc.static_link
+					staticLink: nodeSrc.staticLink
 				});
 			}
 		}
-		nodesTreeCache.set(cacheKey, ret)
+		nodesTreeCache.set(cacheKey, ret);
 	}
 	return nodesTreeCache.get(cacheKey);
 }
 
 let metadataReloadingInterval;
 function reloadMetadataSchedule() {
-	if(!metadataReloadingInterval) {
+	if (!metadataReloadingInterval) {
 		setMaintenanceMode(true);
 		metadataReloadingInterval = setInterval(attemptToReloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl);
 	}
@@ -251,7 +271,7 @@ function reloadMetadataSchedule() {
 
 function attemptToReloadMetadataSchedule() {
 	//if(usersSessionsStartedCount() === 0) { //TODO: disabled because of freezes
-	if(metadataReloadingInterval) {
+	if (metadataReloadingInterval) {
 		clearInterval(metadataReloadingInterval);
 		metadataReloadingInterval = null;
 	}
@@ -261,8 +281,8 @@ function attemptToReloadMetadataSchedule() {
 	//	}
 }
 
-
-async function initNodesData() { // load whole nodes data in to memory
+async function initNodesData() {
+	// load whole nodes data in to memory
 
 	let eventsHandlers_new = new Map();
 
@@ -277,25 +297,25 @@ async function initNodesData() { // load whole nodes data in to memory
 	await mysqlExec('-- ======== NODES RELOADING STARTED ===================================================================================================================== --');
 	/// #endif
 
-	langs = await mysqlExec("SELECT id, name, code, isUiLanguage FROM _languages WHERE id != 0") as UserLangEntry[];
-	for(let l of langs) {
-		l.prefix = l.code ? ('$' + l.code) : '';
+	langs = (await mysqlExec('SELECT "id", "name", "code", "isUILanguage" FROM "_languages"')) as UserLangEntry[];
+	for (let l of langs) {
+		l.prefix = l.code ? '$' + l.code : '';
 		ALL_LANGUAGES_BY_CODES.set(l.code || ENV.DEFAULT_LANG_CODE, l);
-		if(!DEFAULT_LANGUAGE || (l.code === ENV.DEFAULT_LANG_CODE)) {
+		if (!DEFAULT_LANGUAGE || l.code === ENV.DEFAULT_LANG_CODE) {
 			DEFAULT_LANGUAGE = l;
 		}
 	}
 
-	let query = "SELECT * FROM _nodes WHERE status = 1 ORDER BY prior";
-	nodes = await mysqlExec(query) as any;
-	for(let nodeData of nodes) {
+	let query = 'SELECT * FROM _nodes WHERE status = ' + NUM_1 + ' ORDER BY prior';
+	nodes = (await mysqlExec(query)) as any;
+	for (let nodeData of nodes) {
 		nodesById.set(nodeData.id, nodeData);
-		if(nodeData.table_name) {
-			nodesByTableName.set(nodeData.table_name, nodeData);
+		if (nodeData.tableName) {
+			nodesByTableName.set(nodeData.tableName, nodeData);
 		}
-		nodeData.sortFieldName = '_created_on';
+		nodeData.sortFieldName = '_createdOn';
 
-		let rolesToAccess = await mysqlExec("SELECT roleId, privileges FROM rolePrivileges WHERE node_id = 0 OR node_id = " + nodeData.id);
+		let rolesToAccess = await mysqlExec('SELECT "roleId", "privileges" FROM "_rolePrivileges" WHERE "nodeId" = ' + NUM_0 + ' OR "nodeId" = ' + D(nodeData.id));
 
 		/// #if DEBUG
 		(nodeData as any).____preventToStringify = nodeData; // circular structure to fail when try to stringify
@@ -303,18 +323,17 @@ async function initNodesData() { // load whole nodes data in to memory
 
 		nodeData.rolesToAccess = rolesToAccess as any;
 		nodeData.privileges = 65535;
-		let sortField = nodeData._fields_id;
+		let sortField = nodeData._fieldsId;
 
-		if(nodeData.node_type === NODE_TYPE.DOCUMENT) {
-			let query = "SELECT * FROM _fields WHERE node_fields_linker=" + nodeData.id + " AND status = 1 ORDER BY prior";
-			let fields = await mysqlExec(query) as any;
-			for(let field of fields) {
-
-				if(field.id === sortField) {
-					nodeData.sortFieldName = field.field_name;
+		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
+			let query = 'SELECT * FROM _fields WHERE "nodeFieldsLinker"=' + D(nodeData.id) + ' AND status = ' + NUM_1 + ' ORDER BY prior';
+			let fields = (await mysqlExec(query)) as any;
+			for (let field of fields) {
+				if (field.id === sortField) {
+					nodeData.sortFieldName = field.fieldName;
 				}
 
-				if(field.field_type === FIELD_TYPE.ENUM && field.show) {
+				if (field.fieldType === FIELD_TYPE.ENUM && field.show) {
 					let enums = await getEnumDesc(field.enum);
 					field.enumId = field.enum;
 					field.enum = enums;
@@ -322,13 +341,13 @@ async function initNodesData() { // load whole nodes data in to memory
 				fieldsById.set(field.id, field);
 			}
 			nodeData.fields = fields;
-			const filtersRes = await mysqlExec("SELECT * FROM _filters WHERE status = 1 AND node_filters_linker=" + nodeData.id + " ORDER BY _filters.order");
+			const filtersRes = await mysqlExec('SELECT * FROM _filters WHERE status = ' + NUM_1 + ' AND "nodeFiltersLinker"=' + D(nodeData.id) + ' ORDER BY _filters.order');
 
 			const filters = {};
-			for(let f of filtersRes) {
-				let filterRoles = await mysqlExec("SELECT _roles_id FROM _filter_access_roles WHERE _filters_id=" + f.id);
-				if(filterRoles.length > 0) {
-					f.roles = filterRoles.map(i => i._rolesId);
+			for (let f of filtersRes) {
+				let filterRoles = await mysqlExec('SELECT "_rolesId" FROM "_filterAccessRoles" WHERE "_filtersId"=' + D(f.id));
+				if (filterRoles.length > 0) {
+					f.roles = filterRoles.map((i) => i._rolesId);
 				}
 				filtersById.set(f.id, f);
 				filters[f.id] = f;
@@ -337,14 +356,13 @@ async function initNodesData() { // load whole nodes data in to memory
 
 			//events handlers
 			/// #if DEBUG
-			async function importServerSideEvents(folderName) {
-				let moduleFileName = join(__dirname, folderName + nodeData.table_name + '.js');
-				if(existsSync(moduleFileName)) {
-					let handler = await import(`./${folderName}${nodeData.table_name}.js`);
+			const importServerSideEvents = async (folderName) => {
+				let moduleFileName = join(__dirname, folderName + nodeData.tableName + '.js');
+				if (existsSync(moduleFileName)) {
+					let handler = await import(`./${folderName}${nodeData.tableName}.js`);
 					eventsHandlers_new.set(nodeData.id, handler.default.default || handler.default);
 				}
-
-			}
+			};
 			await importServerSideEvents('events/');
 			await importServerSideEvents('../events/');
 			/// #endif
@@ -354,44 +372,49 @@ async function initNodesData() { // load whole nodes data in to memory
 	/// #if DEBUG
 	/*
 	/// #endif
-	for(let table_name in handlers) {
-		if(!nodesByTableName.has(table_name)) {
-			throwError('Event handler ./events/' + table_name + '.ts has no related node in database.');
+	for(let tableName in handlers) {
+		if(!nodesByTableName.has(tableName)) {
+			throwError('Event handler ./events/' + tableName + '.ts has no related node in database.');
 		}
-		let nodeId = nodesByTableName.get(table_name).id;
-		eventsHandlers_new.set(nodeId, handlers[table_name]);
+		let nodeId = nodesByTableName.get(tableName).id;
+		eventsHandlers_new.set(nodeId, handlers[tableName]);
 	}
 	//*/
 
-	if(langs.length > 1) {
+	if (langs.length > 1) {
 		options.langs = langs;
 	}
 	eventsHandlersServerSide = eventsHandlers_new;
 	clientSideNodes.clear();
 	nodesTreeCache.clear();
-	Object.assign(ADMIN_USER_SESSION, await authorizeUserByID(USER_ID.SUPER_ADMIN, false
-		/// #if DEBUG
-		, "dev-admin-session-token"
-		/// #endif
-	));
-	assert(isUserHaveRole(ROLE_ID.ADMIN, ADMIN_USER_SESSION), "User with id 1 expected to be admin.");
+	Object.assign(
+		ADMIN_USER_SESSION,
+		await authorizeUserByID(
+			USER_ID.SUPER_ADMIN,
+			false,
+			/// #if DEBUG
+			'dev-admin-session-token'
+			/// #endif
+		)
+	);
+	assert(isUserHaveRole(ROLE_ID.ADMIN, ADMIN_USER_SESSION), 'User with id 1 expected to be admin.');
 	Object.assign(GUEST_USER_SESSION, await authorizeUserByID(USER_ID.GUEST, true, 'guest-session'));
 	GUEST_USER_SESSION.isGuest = true;
-	assert(isUserHaveRole(ROLE_ID.GUEST, GUEST_USER_SESSION), "User with id 2 expected to be guest.");
+	assert(isUserHaveRole(ROLE_ID.GUEST, GUEST_USER_SESSION), 'User with id 2 expected to be guest.');
 	/// #if DEBUG
 	generateTypings();
-	await authorizeUserByID(3, undefined, "dev-user-session-token");
+	await authorizeUserByID(3, undefined, 'dev-user-session-token');
 	/// #endif
 }
 
 const generateTypings = async () => {
 	const src = [] as string[];
-	for(const node of nodes) {
-		if(node.fields) {
-			src.push('interface I' + snakeToCamel(node.table_name) + 'Record {');
-			for(const field of node.fields) {
+	for (const node of nodes) {
+		if (node.fields) {
+			src.push('interface I' + snakeToCamel(node.tableName) + 'Record {');
+			for (const field of node.fields) {
 				let type = 'any';
-				switch(field.field_type) {
+				switch (field.fieldType) {
 					case FIELD_TYPE.BOOL:
 					case FIELD_TYPE.COLOR:
 					case FIELD_TYPE.NUMBER:
@@ -399,7 +422,7 @@ const generateTypings = async () => {
 						break;
 					case FIELD_TYPE.DATE:
 					case FIELD_TYPE.DATE_TIME:
-						type = 'import(\'moment\').Moment';
+						type = "import('moment').Moment";
 						break;
 
 					case FIELD_TYPE.ENUM: // TODO
@@ -414,15 +437,14 @@ const generateTypings = async () => {
 						type = 'string';
 						break;
 				}
-				src.push('	/** ' + (await getEnumDesc(FIELD_TYPE_ENUM_ID)).namesByValue[field.field_type] + ' */');
-				src.push('	' + field.field_name + (field.requirement ? '' : '?') + ': ' + type + ';');
-
+				src.push('	/** ' + (await getEnumDesc(FIELD_TYPE_ENUM_ID)).namesByValue[field.fieldType] + ' */');
+				src.push('	' + field.fieldName + (field.requirement ? '' : '?') + ': ' + type + ';');
 			}
 			src.push('}', '');
 		}
 	}
 	writeFileSync('types/generated.d.ts', src.join('\n'));
-}
+};
 
 const GUEST_USER_SESSIONS = new Map();
 
@@ -430,7 +452,7 @@ let DEFAULT_LANGUAGE;
 const ALL_LANGUAGES_BY_CODES: Map<string, UserLangEntry> = new Map();
 
 function getGuestUserForBrowserLanguage(browserLanguage: string) {
-	if(browserLanguage) {
+	if (browserLanguage) {
 		browserLanguage = browserLanguage.substr(0, 2);
 	} else {
 		browserLanguage = ENV.DEFAULT_LANG_CODE;
@@ -438,7 +460,7 @@ function getGuestUserForBrowserLanguage(browserLanguage: string) {
 
 	const languageCode = ALL_LANGUAGES_BY_CODES.has(browserLanguage) ? browserLanguage : ENV.DEFAULT_LANG_CODE;
 
-	if(!GUEST_USER_SESSIONS.has(languageCode)) {
+	if (!GUEST_USER_SESSIONS.has(languageCode)) {
 		let session: UserSession = Object.assign({}, GUEST_USER_SESSION);
 		session.lang = ALL_LANGUAGES_BY_CODES.get(languageCode);
 		GUEST_USER_SESSIONS.set(languageCode, session);
@@ -450,14 +472,13 @@ function getLangs(): UserLangEntry[] {
 	return langs;
 }
 
-
 enum ServerSideEventHandlersNames {
 	beforeCreate = 'beforeCreate',
 	afterCreate = 'afterCreate',
 	beforeUpdate = 'beforeUpdate',
 	afterUpdate = 'afterUpdate',
 	beforeDelete = 'beforeDelete',
-	afterDelete = 'afterDelete',
+	afterDelete = 'afterDelete'
 }
 
 interface NodeEventsHandlers {
@@ -476,7 +497,7 @@ async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHand
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames, data1, data2, data3?): Promise<void> {
-	if(eventsHandlersServerSide.has(nodeId)) {
+	if (eventsHandlersServerSide.has(nodeId)) {
 		const serverSideNodeEventHandler = eventsHandlersServerSide.get(nodeId)[eventName];
 		/// #if DEBUG
 		data1 = wrapObjectToDestroy(data1);
@@ -484,7 +505,7 @@ async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHand
 		data3 = wrapObjectToDestroy(data3);
 		/// #endif
 		let res;
-		if(serverSideNodeEventHandler) {
+		if (serverSideNodeEventHandler) {
 			// call node server side event handler
 			res = await serverSideNodeEventHandler(data1, data2, data3);
 		}
@@ -501,13 +522,13 @@ async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHand
 /// #if DEBUG
 const wrapObjectToDestroy = (o) => {
 	let destroyed = false;
-	if(o) {
+	if (o) {
 		return new Proxy(o, {
 			set: function (obj, prop, value, a) {
-				if(destroyed) {
+				if (destroyed) {
 					throwError('Attempt to assign data after exit on eventHandler. Has eventHandler not "await" for something?');
 				}
-				if(prop === 'destroyObject_ONKwFSqwSFd123123') {
+				if (prop === 'destroyObject_ONKwFSqwSFd123123') {
 					destroyed = true;
 				} else {
 					obj[prop] = value;
@@ -516,18 +537,29 @@ const wrapObjectToDestroy = (o) => {
 			}
 		});
 	}
-}
+};
 
 const destroyObject = (o) => {
-	if(o) {
+	if (o) {
 		o.destroyObject_ONKwFSqwSFd123123 = true;
 	}
-}
+};
 
 /// #endif
 
 export {
-	ADMIN_USER_SESSION, DEFAULT_LANGUAGE,
-	ENV, filtersById, getFieldDesc, getGuestUserForBrowserLanguage, getLangs, getNodeDesc, getNodeEventHandler, getNodesTree, initNodesData, NodeEventsHandlers, reloadMetadataSchedule, ServerSideEventHandlersNames
+	ADMIN_USER_SESSION,
+	DEFAULT_LANGUAGE,
+	ENV,
+	filtersById,
+	getFieldDesc,
+	getGuestUserForBrowserLanguage,
+	getLangs,
+	getNodeDesc,
+	getNodeEventHandler,
+	getNodesTree,
+	initNodesData,
+	NodeEventsHandlers,
+	reloadMetadataSchedule,
+	ServerSideEventHandlersNames
 };
-

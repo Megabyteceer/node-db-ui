@@ -1,23 +1,41 @@
-import type { LANG_KEYS_CUSTOM } from "../../src/locales/en/lang";
+import type { LANG_KEYS_CUSTOM } from '../../src/locales/en/lang';
 import { LITE_UI_PREFIX } from './consts';
-import type { LANG_KEYS } from "./locales/en/lang";
+import type { LANG_KEYS } from './locales/en/lang';
 
-import ReactDOM from "react-dom";
-import type { Filters, IFormParameters, NodeDesc, RecId, RecordData, RecordsData } from "./bs-utils";
-import { FIELD_TYPE, FieldDesc, GetRecordsParams, HASH_DIVIDER, NODE_ID, RecordSubmitResult, ROLE_ID, USER_ID, UserSession, VIEW_MASK } from "./bs-utils";
-import { LoadingIndicator } from "./loading-indicator";
-import { Modal } from "./modal";
-import { Notify } from "./notify";
-import { R } from "./r";
-import { User } from "./user";
+import ReactDOM from 'react-dom';
+import type {
+	Filters,
+	IFormParameters,
+	NodeDesc,
+	RecId,
+	RecordData,
+	RecordsData,
+} from './bs-utils';
+import {
+	FIELD_TYPE,
+	FieldDesc,
+	GetRecordsParams,
+	HASH_DIVIDER,
+	NODE_ID,
+	RecordSubmitResult,
+	ROLE_ID,
+	USER_ID,
+	UserSession,
+	VIEW_MASK,
+} from './bs-utils';
+import { LoadingIndicator } from './loading-indicator';
+import { Modal } from './modal';
+import { Notify } from './notify';
+import { R } from './r';
+import { User } from './user';
 
 /// #if DEBUG
-import { DebugPanel } from "./debug-panel";
+import { DebugPanel } from './debug-panel';
 /// #endif
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { assert } from './assert';
-import { HotkeyButton } from "./components/hotkey-button";
-import { List } from "./forms/list";
+import { HotkeyButton } from './components/hotkey-button';
+import { List } from './forms/list';
 import { ENV } from './main-frame';
 
 enum CLIENT_SIDE_FORM_EVENTS {
@@ -34,29 +52,29 @@ const __corePath = '/core/';
 //*/
 
 const headersJSON = new Headers();
-headersJSON.append("Content-Type", "application/json");
+headersJSON.append('Content-Type', 'application/json');
 
 const restrictedRecords = new Map();
 
 const getHomeNode = () => {
 	return isUserHaveRole(ROLE_ID.GUEST) ? ENV.HOME_NODE_GUEST : ENV.HOME_NODE;
-}
+};
 
 interface RestrictDeletionData {
 	[nodeId: number]: RecId[];
 }
 
 function restrictRecordsDeletion(nodes: RestrictDeletionData) {
-	for(let nodeId in nodes) {
-		if(nodeId) {
+	for (let nodeId in nodes) {
+		if (nodeId) {
 			const recordsIds = nodes[nodeId];
 			//@ts-ignore
 			nodeId = parseInt(nodeId);
-			if(!restrictedRecords.has(nodeId)) {
-				restrictedRecords.set(nodeId, new Map);
+			if (!restrictedRecords.has(nodeId)) {
+				restrictedRecords.set(nodeId, new Map());
 			}
 			let nodeMap = restrictedRecords.get(nodeId);
-			for(var recordId of recordsIds) {
+			for (var recordId of recordsIds) {
 				nodeMap.set(recordId, 1);
 			}
 		}
@@ -64,49 +82,64 @@ function restrictRecordsDeletion(nodes: RestrictDeletionData) {
 }
 
 restrictRecordsDeletion({
-	4: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 20, 22, 50, 52, 53], /* disable critical sections  deletion/hiding*/
-	5: [1, 2, 3], /* disable admin,user,guest deletion*/
-	7: [1, 2, 3], /* disable critical organizations deletion*/
-	8: [1, 2, 3], /* disable critical roles deletion*/
-	12: [1], /* disable default language deletion*/
-	52: [1], /* disable field type enum deletion*/
-	53: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 30, 43], /* disable field type enum deletion*/
+	4: [
+		1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 20, 22, 50, 52, 53,
+	] /* disable critical sections  deletion/hiding*/,
+	5: [1, 2, 3] /* disable admin,user,guest deletion*/,
+	7: [1, 2, 3] /* disable critical organizations deletion*/,
+	8: [1, 2, 3] /* disable critical roles deletion*/,
+	12: [1] /* disable default language deletion*/,
+	52: [1] /* disable field type enum deletion*/,
+	53: [
+		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 30, 43,
+	] /* disable field type enum deletion*/,
 });
 
 function isRecordRestrictedForDeletion(nodeId, recordId) {
-	if(restrictedRecords.has(nodeId)) {
+	if (restrictedRecords.has(nodeId)) {
 		return restrictedRecords.get(nodeId).has(recordId);
 	}
 }
 
-function myAlert(txt: string | React.ReactElement, isSuccess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean, onOk?: () => void, okButtonText?: string) {
-	if(!Modal.instance) {
+function myAlert(
+	txt: string | React.ReactElement,
+	isSuccess?: boolean,
+	autoHide?: boolean,
+	noDiscardByBackdrop?: boolean,
+	onOk?: () => void,
+	okButtonText?: string
+) {
+	if (!Modal.instance) {
 		alert(txt);
 	} else {
 		var className;
-		if(isSuccess) {
-			className = "alert-bg alert-bg-success";
+		if (isSuccess) {
+			className = 'alert-bg alert-bg-success';
 		} else {
-			className = "alert-bg alert-bg-danger";
+			className = 'alert-bg alert-bg-danger';
 		}
 
 		var button;
-		if(onOk) {
-			button = R.div({ className: 'alert-button-container' },
-				R.button({
-					title: L('GO_TO_LOGIN'),
-					className: 'clickable success-button save-btn', onClick: () => {
-						Modal.instance.hide(modalId);
-						onOk();
-					}
-				}, okButtonText || L('OK')
+		if (onOk) {
+			button = R.div(
+				{ className: 'alert-button-container' },
+				R.button(
+					{
+						title: L('GO_TO_LOGIN'),
+						className: 'clickable success-button save-btn',
+						onClick: () => {
+							Modal.instance.hide(modalId);
+							onOk();
+						},
+					},
+					okButtonText || L('OK')
 				)
 			);
 		}
 
 		var modalId = Modal.instance.show(R.div({ className }, txt, button), noDiscardByBackdrop);
 
-		if(autoHide) {
+		if (autoHide) {
 			setTimeout(() => {
 				Modal.instance.hide(modalId);
 			}, 1100);
@@ -114,22 +147,29 @@ function myAlert(txt: string | React.ReactElement, isSuccess?: boolean, autoHide
 	}
 }
 
-async function showPrompt(txt: string | Component, yesLabel?: string, noLabel?: string, yesIcon?: string, noIcon?: string, discardByOutsideClick?: boolean) {
+async function showPrompt(
+	txt: string | Component,
+	yesLabel?: string,
+	noLabel?: string,
+	yesIcon?: string,
+	noIcon?: string,
+	discardByOutsideClick?: boolean
+) {
 	return new Promise((resolve) => {
-		if(!yesLabel) {
+		if (!yesLabel) {
 			yesLabel = L('OK');
 		}
-		if(!yesIcon) {
+		if (!yesIcon) {
 			yesIcon = 'check';
 		}
 
 		var noButton;
 
-		if(!noLabel) {
+		if (!noLabel) {
 			noLabel = L('CANCEL');
 		}
 
-		if(!noIcon) {
+		if (!noIcon) {
 			noIcon = 'times';
 		}
 
@@ -140,20 +180,23 @@ async function showPrompt(txt: string | Component, yesLabel?: string, noLabel?: 
 				resolve(false);
 			},
 			className: 'clickable prompt-no-button',
-			label: R.span(null, renderIcon(noIcon), ' ', noLabel)
+			label: R.span(null, renderIcon(noIcon), ' ', noLabel),
 		});
 
-		var body = R.span({ className: 'prompt-body' },
+		var body = R.span(
+			{ className: 'prompt-body' },
 			txt,
-			R.div({ className: 'prompt-footer' },
+			R.div(
+				{ className: 'prompt-footer' },
 				noButton,
 				React.createElement(HotkeyButton, {
 					hotkey: 13,
 					onClick: () => {
 						Modal.instance.hide();
 						resolve(true);
-					}, className: 'clickable prompt-yes-button',
-					label: R.span(null, renderIcon(yesIcon), ' ', yesLabel)
+					},
+					className: 'clickable prompt-yes-button',
+					label: R.span(null, renderIcon(yesIcon), ' ', yesLabel),
 				})
 			)
 		);
@@ -172,24 +215,22 @@ function debugError(txt) {
 var _oneFormShowed;
 const onOneFormShowed = () => {
 	_oneFormShowed = true;
-}
+};
 
 function handleError(error, url, callStack) {
-
 	error = error.error || error;
 
-	if(!callStack) {
+	if (!callStack) {
 		callStack = '';
 	}
 
 	/// #if DEBUG
-	if(error.debug) {
+	if (error.debug) {
 		error.debug.message = (error.message || error) + callStack;
 		error.debug.request = url;
-	};
+	}
 
-
-	if(DebugPanel.instance) {
+	if (DebugPanel.instance) {
 	} else {
 		throw error;
 	}
@@ -205,16 +246,16 @@ function handleError(error, url, callStack) {
 	} else 
 	//*/
 	{
-		if(error.message) {
+		if (error.message) {
 			error = error.message;
 		}
-		if(typeof error === 'string') {
+		if (typeof error === 'string') {
 			myAlert(error);
 		} else {
-			myAlert(L("CONNECTION_ERR"), false, true);
+			myAlert(L('CONNECTION_ERR'), false, true);
 		}
 	}
-	if(error.hasOwnProperty('debug')) {
+	if (error.hasOwnProperty('debug')) {
 		consoleLog(error.debug.stack.join('\n'));
 	}
 }
@@ -233,27 +274,26 @@ function consoleDir(o) {
 
 function sp(event) {
 	event.stopPropagation();
-	if(event.cancelable) {
+	if (event.cancelable) {
 		event.preventDefault();
 	}
 }
 
 function handleAdditionalData(data, url) {
-	if(data.hasOwnProperty('debug') && data.debug) {
+	if (data.hasOwnProperty('debug') && data.debug) {
 		/// #if DEBUG
 		data.debug.request = url;
-		if(DebugPanel.instance) {
+		if (DebugPanel.instance) {
 			DebugPanel.instance.addEntry(data.debug);
 		}
 		/// #endif
 		delete data.debug;
 	}
-	if(data.hasOwnProperty('notifications')) {
+	if (data.hasOwnProperty('notifications')) {
 		data.notifications.some((n) => {
 			Notify.add(n);
 		});
 	}
-
 }
 
 var innerDateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
@@ -261,79 +301,82 @@ var readableDateFormat = 'D MMMM YYYY';
 var readableTimeFormat = 'H:mm';
 
 function toReadableDate(d) {
-	if(d) {
+	if (d) {
 		d = d.format(readableDateFormat);
-		if(d === 'Invalid date') return '';
+		if (d === 'Invalid date') return '';
 		return d;
 	}
 	return '';
 }
 
 function toReadableDateTime(d) {
-	if(d) {
+	if (d) {
 		d = d.format(readableDateFormat + ' ' + readableTimeFormat);
-		if(d === 'Invalid date') return '';
+		if (d === 'Invalid date') return '';
 		return d;
 	}
 	return '';
 }
 
 function toReadableTime(d) {
-	if(d) {
+	if (d) {
 		d = d.format(readableTimeFormat);
-		if(d === 'Invalid date') return '';
+		if (d === 'Invalid date') return '';
 		return d;
 	}
 	return '';
 }
 
-
 function goToHome() {
-	if(location.pathname !== '/') {
+	if (location.pathname !== '/') {
 		location.href = '/';
 	} else {
 		location.hash = '#';
 	}
 }
 
-function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, editable?: boolean) {
-	var newHash = [
-		'n', encodeURIComponent(nodeId)];
+function locationToHash(
+	nodeId: RecId,
+	recId: RecId | 'new',
+	filters?: Filters,
+	editable?: boolean
+) {
+	var newHash = ['n', encodeURIComponent(nodeId)];
 
-	if(recId || recId === 0) {
+	if (recId || recId === 0) {
 		newHash.push('r');
 		newHash.push(recId as unknown as string);
 	}
-	if(editable) {
+	if (editable) {
 		newHash.push('e');
 	}
 
-	if(filters && (Object.keys(filters).length > 0)) {
+	if (filters && Object.keys(filters).length > 0) {
 		var complicatedFilters = false;
-		for(var k in filters) {
+		for (var k in filters) {
 			var v = filters[k];
-			if(typeof v === 'object') {
+			if (typeof v === 'object') {
 				complicatedFilters = true;
 				break;
 			}
 		}
 
-		if(complicatedFilters) {
+		if (complicatedFilters) {
 			newHash.push('j');
 			newHash.push(encodeURIComponent(JSON.stringify(filters)));
 		} else {
 			var filtersHash;
 			filtersHash = [];
-			for(var k in filters) {
-				if(filters.hasOwnProperty(k) && (filters[k] || filters[k] === 0)) {
-					if((k !== 'p') || (filters[k] !== 0)) {
+			for (var k in filters) {
+				if (filters.hasOwnProperty(k) && (filters[k] || filters[k] === 0)) {
+					if (k !== 'p' || filters[k] !== 0) {
 						var v = filters[k];
 						filtersHash.push(k);
 						filtersHash.push(encodeURIComponent(filters[k] as string));
 					}
 				}
 			}
-			if(filtersHash && filtersHash.length) {
+			if (filtersHash && filtersHash.length) {
 				newHash.push('f');
 				newHash = newHash.concat(filtersHash);
 			}
@@ -342,7 +385,7 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, 
 
 	let retHash = newHash.join('/');
 
-	if(retHash === 'n/' + getHomeNode()) {
+	if (retHash === 'n/' + getHomeNode()) {
 		retHash = '';
 	}
 	return retHash;
@@ -350,19 +393,21 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, 
 
 function isCurrentlyShowedLeftBarItem(item) {
 	const currentFormParameters = crudJs.Stage.currentForm;
-	if(item.id === false) {
-		if(!currentFormParameters.filters || (Object.keys(currentFormParameters.filters).length === 0)) {
+	if (item.id === false) {
+		if (!currentFormParameters.filters || Object.keys(currentFormParameters.filters).length === 0) {
 			return item.isDefault;
 		}
 		return item.tab === currentFormParameters.filters.tab;
 	}
-	return currentFormParameters.nodeId === item.id &&
+	return (
+		currentFormParameters.nodeId === item.id &&
 		currentFormParameters.recId === item.recId &&
-		currentFormParameters.editable === item.editable;
-};
+		currentFormParameters.editable === item.editable
+	);
+}
 
 function hashToFormParams(hashTxt: string): IFormParameters {
-	if(!hashTxt) {
+	if (!hashTxt) {
 		return { nodeId: getHomeNode(), filters: {} };
 	}
 	let nodeId;
@@ -371,9 +416,9 @@ function hashToFormParams(hashTxt: string): IFormParameters {
 	let filters = {};
 	let hash = hashTxt.split('/');
 	var i;
-	while(hash.length) {
+	while (hash.length) {
 		i = hash.shift();
-		switch(i) {
+		switch (i) {
 			case 'n':
 				nodeId = parseInt(hash.shift());
 				break;
@@ -387,11 +432,11 @@ function hashToFormParams(hashTxt: string): IFormParameters {
 				filters = JSON.parse(decodeURIComponent(hash.shift()));
 				break;
 			case 'f':
-				while(hash.length) {
+				while (hash.length) {
 					let key = hash.shift();
 					let val = decodeURIComponent(hash.shift());
 					let numVal = parseInt(val); // return numeric values to filter
-					if(val == numVal.toString()) {
+					if (val == numVal.toString()) {
 						// @ts-ignore
 						val = numVal;
 					}
@@ -403,8 +448,8 @@ function hashToFormParams(hashTxt: string): IFormParameters {
 				break;
 		}
 	}
-	if(recId !== 'new') {
-		if(recId) {
+	if (recId !== 'new') {
+		if (recId) {
 			recId = parseInt(recId);
 		}
 	}
@@ -425,22 +470,25 @@ async function goToPageByHash() {
 	const Stage = crudJs.Stage;
 	let level;
 
-	for(level = 0; (level < formParamsByLevels.length) && (level < Stage.allForms.length); level++) {
+	for (level = 0; level < formParamsByLevels.length && level < Stage.allForms.length; level++) {
 		const formParams = formParamsByLevels[level];
 		const form = Stage.allForms[level].form;
 
-
-		let isTheSame = form && (formParams.nodeId === form.nodeId && formParams.recId === form.recId && Boolean(formParams.editable) === Boolean(form.editable));
-		if(isTheSame) {
-			if(JSON.stringify(form.filters) !== JSON.stringify(formParams.filters)) {
+		let isTheSame =
+			form &&
+			formParams.nodeId === form.nodeId &&
+			formParams.recId === form.recId &&
+			Boolean(formParams.editable) === Boolean(form.editable);
+		if (isTheSame) {
+			if (JSON.stringify(form.filters) !== JSON.stringify(formParams.filters)) {
 				isTheSame = false;
 			}
 		}
-		if(!isTheSame) {
-			if(level === 0) {
+		if (!isTheSame) {
+			if (level === 0) {
 				Stage.destroyForm();
 			} else {
-				while(Stage.allForms.length > (level + 1)) {
+				while (Stage.allForms.length > level + 1) {
 					Stage.goBackIfModal();
 				}
 			}
@@ -448,20 +496,27 @@ async function goToPageByHash() {
 		}
 	}
 
-	if(formParamsByLevels.length <= level) {
-		while(formParamsByLevels.length <= level) {
+	if (formParamsByLevels.length <= level) {
+		while (formParamsByLevels.length <= level) {
 			Stage.goBackIfModal();
 			level--;
 		}
 	} else {
-		while(level < formParamsByLevels.length) {
+		while (level < formParamsByLevels.length) {
 			let paramsToShow = formParamsByLevels[level];
-			await Stage.showForm(paramsToShow.nodeId, paramsToShow.recId, paramsToShow.filters, paramsToShow.editable, level > 0, undefined, isPageLoading);
+			await Stage.showForm(
+				paramsToShow.nodeId,
+				paramsToShow.recId,
+				paramsToShow.filters,
+				paramsToShow.editable,
+				level > 0,
+				undefined,
+				isPageLoading
+			);
 			level++;
 		}
 	}
-};
-
+}
 
 const SKIP_HISTORY_NODES = {};
 SKIP_HISTORY_NODES[NODE_ID.LOGIN] = true;
@@ -471,11 +526,10 @@ SKIP_HISTORY_NODES[NODE_ID.RESET] = true;
 async function goBack(isAfterDelete?: boolean) {
 	const currentFormParameters = crudJs.Stage.currentForm;
 
-	if(isLitePage() && window.history.length < 2) {
+	if (isLitePage() && window.history.length < 2) {
 		window.close();
-	} else if(!isAfterDelete && window.history.length) {
-
-		if(window.history.length > 0) {
+	} else if (!isAfterDelete && window.history.length) {
+		if (window.history.length > 0) {
 			isHistoryChanging = true;
 			goBackUntilValidNode = true;
 			window.history.back();
@@ -483,10 +537,9 @@ async function goBack(isAfterDelete?: boolean) {
 		} else {
 			crudJs.Stage.showForm(getHomeNode());
 		}
-
-	} else if(currentFormParameters && currentFormParameters.recId) {
+	} else if (currentFormParameters && currentFormParameters.recId) {
 		crudJs.Stage.showForm(currentFormParameters.nodeId, undefined, currentFormParameters.filters);
-	} else if(isAfterDelete) {
+	} else if (isAfterDelete) {
 		crudJs.Stage.refreshForm();
 	}
 }
@@ -494,11 +547,11 @@ async function goBack(isAfterDelete?: boolean) {
 function assignFilters(src, desc): boolean {
 	var leastOneUpdated;
 	var keys = Object.keys(src);
-	for(var i = keys.length; i > 0;) {
+	for (var i = keys.length; i > 0; ) {
 		i--;
 		var name = keys[i];
 		var value = src[name];
-		if(desc[name] !== value) {
+		if (desc[name] !== value) {
 			desc[name] = value;
 			leastOneUpdated = true;
 		}
@@ -506,22 +559,30 @@ function assignFilters(src, desc): boolean {
 	return leastOneUpdated;
 }
 
-
 let isHistoryChanging = false;
 let goBackUntilValidNode = false;
 
 function updateHashLocation(replaceState = false) {
-	if(isHistoryChanging) {
+	if (isHistoryChanging) {
 		return;
 	}
-	var newHash = '#' + crudJs.Stage.allForms.map((formEntry) => {
-		const formParameters = formEntry.form;
-		const filters = formParameters.filters;
-		return locationToHash(formParameters.nodeId, formParameters.recId, filters, formParameters.editable);
-	}).join(HASH_DIVIDER);
+	var newHash =
+		'#' +
+		crudJs.Stage.allForms
+			.map((formEntry) => {
+				const formParameters = formEntry.form;
+				const filters = formParameters.filters;
+				return locationToHash(
+					formParameters.nodeId,
+					formParameters.recId,
+					filters,
+					formParameters.editable
+				);
+			})
+			.join(HASH_DIVIDER);
 
-	if((location.hash != newHash) && (location.hash != newHash.substr(1))) {
-		if(replaceState) {
+	if (location.hash != newHash && location.hash != newHash.substr(1)) {
+		if (replaceState) {
 			history.replaceState(null, null, newHash);
 		} else {
 			history.pushState(null, null, newHash);
@@ -530,7 +591,7 @@ function updateHashLocation(replaceState = false) {
 }
 
 window.addEventListener('hashchange', () => {
-	if(goBackUntilValidNode && SKIP_HISTORY_NODES[getTopHashNodeId()]) {
+	if (goBackUntilValidNode && SKIP_HISTORY_NODES[getTopHashNodeId()]) {
 		goBack();
 		return;
 	} else {
@@ -552,7 +613,7 @@ function onNewUser() {
 onNewUser();
 
 function waitForNodeInner(nodeId, callback) {
-	if(nodes.hasOwnProperty(nodeId)) {
+	if (nodes.hasOwnProperty(nodeId)) {
 		callback(nodes[nodeId]);
 	} else {
 		setTimeout(() => {
@@ -562,7 +623,7 @@ function waitForNodeInner(nodeId, callback) {
 }
 
 async function waitForNode(nodeId) {
-	if(nodes.hasOwnProperty(nodeId)) {
+	if (nodes.hasOwnProperty(nodeId)) {
 		return nodes[nodeId];
 	}
 	return new Promise((resolve) => {
@@ -575,20 +636,19 @@ function getNodeIfPresentOnClient(nodeId: RecId): NodeDesc {
 }
 
 async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string): Promise<NodeDesc> {
-
-	if(!callStack) {
+	if (!callStack) {
 		callStack = new Error('getNode called from: ').stack;
 	}
 
-	if(forceRefresh) {
-		delete (nodes[nodeId]);
-		delete (nodesRequested[nodeId]);
+	if (forceRefresh) {
+		delete nodes[nodeId];
+		delete nodesRequested[nodeId];
 	}
 
-	if(nodes.hasOwnProperty(nodeId)) {
+	if (nodes.hasOwnProperty(nodeId)) {
 		return nodes[nodeId];
 	} else {
-		if(nodesRequested.hasOwnProperty(nodeId)) {
+		if (nodesRequested.hasOwnProperty(nodeId)) {
 			return waitForNode(nodeId);
 		} else {
 			try {
@@ -597,8 +657,8 @@ async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string):
 				normalizeNode(data);
 				nodes[nodeId] = data;
 				return data;
-			} catch(er) {
-				delete (nodesRequested[nodeId]);
+			} catch (er) {
+				delete nodesRequested[nodeId];
 			}
 		}
 	}
@@ -607,47 +667,75 @@ async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string):
 function normalizeNode(node: NodeDesc) {
 	node.fieldsById = {};
 	node.fieldsByName = {};
-	if(node.fields) {
+	if (node.fields) {
 		node.fields.forEach((f: FieldDesc, i) => {
 			f.index = i;
 			f.node = node;
 			node.fieldsById[f.id] = f;
-			node.fieldsByName[f.field_name] = f;
-			if(f.lang) {
+			node.fieldsByName[f.fieldName] = f;
+			if (f.lang) {
 				const fieldId = f.id as unknown as string; // language data fields have string ids of format: "77$ru"
 				const parentField: FieldDesc = node.fieldsById[fieldId.substr(0, fieldId.indexOf('$'))];
-				if(!parentField.childrenFields) {
+				if (!parentField.childrenFields) {
 					parentField.childrenFields = [];
 				}
 				parentField.childrenFields.push(f);
-				f.fieldNamePure = parentField.field_name;
+				f.fieldNamePure = parentField.fieldName;
 			} else {
-				f.fieldNamePure = f.field_name;
+				f.fieldNamePure = f.fieldName;
 			}
 		});
 	}
-	if(node.filters) {
-		node.filtersList = Object.keys(node.filters).sort((a, b) => {
-			return node.filters[a].order - node.filters[b].order;
-		}).map((k) => {
-			return { value: k, name: node.filters[k].name };
-		});
-		if(node.default_filter_id && !node.filters[node.default_filter_id]) {
-			node.default_filter_id = node.filtersList.length ? node.filtersList[0].value : 0;
+	if (node.filters) {
+		node.filtersList = Object.keys(node.filters)
+			.sort((a, b) => {
+				return node.filters[a].order - node.filters[b].order;
+			})
+			.map((k) => {
+				return { value: k, name: node.filters[k].name };
+			});
+		if (node.defaultFilterId && !node.filters[node.defaultFilterId]) {
+			node.defaultFilterId = node.filtersList.length ? node.filtersList[0].value : 0;
 		}
-		if(!node.default_filter_id) {
+		if (!node.defaultFilterId) {
 			node.filtersList.unshift({ value: undefined, name: '-' });
 		}
 	}
 }
 
-async function getNodeData(nodeId: RecId, recId: undefined, filters?: { [key: string]: any }, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordsData>;
-async function getNodeData(nodeId: RecId, recId: RecId, filters?: undefined, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordData>;
-async function getNodeData(nodeId: RecId, recId: RecId | undefined, filters?: undefined, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean, onError?: (er: any) => void): Promise<RecordData | RecordsData> {
-
+async function getNodeData(
+	nodeId: RecId,
+	recId: undefined,
+	filters?: { [key: string]: any },
+	editable?: boolean,
+	viewMask?: VIEW_MASK | boolean,
+	isForCustomList?: boolean,
+	noLoadingIndicator?: boolean,
+	onError?: (er: any) => void
+): Promise<RecordsData>;
+async function getNodeData(
+	nodeId: RecId,
+	recId: RecId,
+	filters?: undefined,
+	editable?: boolean,
+	viewMask?: VIEW_MASK | boolean,
+	isForCustomList?: boolean,
+	noLoadingIndicator?: boolean,
+	onError?: (er: any) => void
+): Promise<RecordData>;
+async function getNodeData(
+	nodeId: RecId,
+	recId: RecId | undefined,
+	filters?: undefined,
+	editable?: boolean,
+	viewMask?: VIEW_MASK | boolean,
+	isForCustomList?: boolean,
+	noLoadingIndicator?: boolean,
+	onError?: (er: any) => void
+): Promise<RecordData | RecordsData> {
 	/// #if DEBUG
-	if(typeof (recId) !== 'undefined' && typeof (filters) !== 'undefined') {
-		throw 'Can\'t use recId and filters in one request';
+	if (typeof recId !== 'undefined' && typeof filters !== 'undefined') {
+		throw "Can't use recId and filters in one request";
 	}
 	/// #endif
 
@@ -655,20 +743,20 @@ async function getNodeData(nodeId: RecId, recId: RecId | undefined, filters?: un
 
 	let params: GetRecordsParams = { nodeId };
 
-	if(typeof (recId) !== 'undefined') {
+	if (typeof recId !== 'undefined') {
 		params.recId = recId;
-		if(editable) {
+		if (editable) {
 			params.viewFields = VIEW_MASK.EDITABLE;
 		} else {
 			params.viewFields = VIEW_MASK.READONLY;
 		}
 	} else {
-		if(editable) {
+		if (editable) {
 			params.viewFields = VIEW_MASK.EDITABLE;
 		} else {
-			if(typeof viewMask === 'number') {
+			if (typeof viewMask === 'number') {
 				params.viewFields = viewMask;
-			} else if(isForCustomList) {
+			} else if (isForCustomList) {
 				params.viewFields = VIEW_MASK.CUSTOM_LIST;
 			} else {
 				params.viewFields = VIEW_MASK.LIST;
@@ -676,32 +764,32 @@ async function getNodeData(nodeId: RecId, recId: RecId | undefined, filters?: un
 		}
 	}
 
-	if(!nodes.hasOwnProperty(nodeId) && !nodesRequested.hasOwnProperty(nodeId)) {
+	if (!nodes.hasOwnProperty(nodeId) && !nodesRequested.hasOwnProperty(nodeId)) {
 		params.descNode = true;
 		nodesRequested[nodeId] = true;
 	}
 	try {
-		if(filters) {
+		if (filters) {
 			Object.assign(params, filters);
 		}
 
 		let data = await getData('api/', params, callStack, noLoadingIndicator);
 
-		if(data.hasOwnProperty('node')) {
-			if(nodes[nodeId]) {
+		if (data.hasOwnProperty('node')) {
+			if (nodes[nodeId]) {
 				debugError('Node description overriding.');
 			}
 			normalizeNode(data.node);
 			nodes[nodeId] = data.node;
-			delete (data.node);
+			delete data.node;
 		}
 
 		let node = await waitForNode(nodeId);
 
 		data = data.data;
-		if(data) {
-			if(data.hasOwnProperty('items')) {
-				for(var k in data.items) {
+		if (data) {
+			if (data.hasOwnProperty('items')) {
+				for (var k in data.items) {
 					decodeData(data.items[k], node);
 				}
 			} else {
@@ -709,8 +797,8 @@ async function getNodeData(nodeId: RecId, recId: RecId | undefined, filters?: un
 			}
 		}
 		return data;
-	} catch(err) {
-		delete (nodesRequested[nodeId]);
+	} catch (err) {
+		delete nodesRequested[nodeId];
 	}
 }
 
@@ -719,48 +807,46 @@ var fieldsEncoders = [];
 var fieldsDecoders = [];
 
 function getClassForField(type) {
-	if(_fieldClasses.hasOwnProperty(type)) {
+	if (_fieldClasses.hasOwnProperty(type)) {
 		return _fieldClasses[type];
 	}
 	return _fieldClasses[FIELD_TYPE.TEXT];
 }
 
 function registerFieldClass(type, class_) {
-
-	if(_fieldClasses.hasOwnProperty(type)) {
+	if (_fieldClasses.hasOwnProperty(type)) {
 		throw new Error('Class for field type ' + type + ' is registered already');
 	}
 
-	if(class_.hasOwnProperty('decodeValue')) {
+	if (class_.hasOwnProperty('decodeValue')) {
 		fieldsDecoders[type] = class_.decodeValue;
-		delete (class_.decodeValue);
+		delete class_.decodeValue;
 	}
-	if(class_.hasOwnProperty('encodeValue')) {
+	if (class_.hasOwnProperty('encodeValue')) {
 		fieldsEncoders[type] = class_.encodeValue;
-		delete (class_.encodeValue);
+		delete class_.encodeValue;
 	}
 
 	_fieldClasses[type] = class_;
-
 }
 
 function decodeData(data, node) {
-	for(var k in node.fields) {
+	for (var k in node.fields) {
 		var f = node.fields[k];
-		if(data.hasOwnProperty(f.field_name)) {
-			if(fieldsDecoders.hasOwnProperty(f.field_type)) {
-				data[f.field_name] = fieldsDecoders[f.field_type](data[f.field_name]);
+		if (data.hasOwnProperty(f.fieldName)) {
+			if (fieldsDecoders.hasOwnProperty(f.fieldType)) {
+				data[f.fieldName] = fieldsDecoders[f.fieldType](data[f.fieldName]);
 			}
 		}
 	}
 }
 function encodeData(data, node): RecordData {
 	var ret = Object.assign({}, data);
-	for(var k in node.fields) {
+	for (var k in node.fields) {
 		var f = node.fields[k];
-		if(ret.hasOwnProperty(f.field_name)) {
-			if(fieldsEncoders.hasOwnProperty(f.field_type)) {
-				ret[f.field_name] = fieldsEncoders[f.field_type](ret[f.field_name]);
+		if (ret.hasOwnProperty(f.fieldName)) {
+			if (fieldsEncoders.hasOwnProperty(f.fieldType)) {
+				ret[f.fieldName] = fieldsEncoders[f.fieldType](ret[f.fieldName]);
 			}
 		}
 	}
@@ -771,8 +857,12 @@ function addMixins(Class, mixins) {
 	Object.assign(Class.prototype, mixins);
 }
 
-async function submitRecord(nodeId: RecId, data: RecordData, recId?: RecId): Promise<RecordSubmitResult> {
-	if(Object.keys(data).length === 0) {
+async function submitRecord(
+	nodeId: RecId,
+	data: RecordData,
+	recId?: RecId
+): Promise<RecordSubmitResult> {
+	if (Object.keys(data).length === 0) {
 		throw 'Tried to submit empty object';
 	}
 	let node = await getNode(nodeId);
@@ -781,15 +871,15 @@ async function submitRecord(nodeId: RecId, data: RecordData, recId?: RecId): Pro
 
 var UID_counter = 1;
 function UID(obj): number {
-	if(!obj.hasOwnProperty('__uid109Hd')) {
+	if (!obj.hasOwnProperty('__uid109Hd')) {
 		obj.__uid109Hd = UID_counter++;
 	}
 	return obj.__uid109Hd;
 }
 
 function idToImgURL(imgId, holder) {
-	if(imgId) {
-		if(imgId.indexOf('//') >= 0) {
+	if (imgId) {
+		if (imgId.indexOf('//') >= 0) {
 			return imgId;
 		}
 		return 'images/uploads/' + imgId;
@@ -805,7 +895,7 @@ let __requestsOrder = [];
 function releaseQuiresOrder(requestRecord) {
 	var roi = __requestsOrder.indexOf(requestRecord);
 	/// #if DEBUG
-	if(roi < 0) {
+	if (roi < 0) {
 		throw new Error('requests order is corrupted');
 	}
 	/// #endif
@@ -813,7 +903,12 @@ function releaseQuiresOrder(requestRecord) {
 	__requestsOrder.splice(roi, 1);
 }
 
-async function getData(url: string, params?: { [key: string]: any }, callStack?: string, noLoadingIndicator?: boolean): Promise<any> {
+async function getData(
+	url: string,
+	params?: { [key: string]: any },
+	callStack?: string,
+	noLoadingIndicator?: boolean
+): Promise<any> {
 	return new Promise((resolve, reject) => {
 		assert(url.indexOf('?') < 0, 'More parameters to data');
 
@@ -821,16 +916,16 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 			url: string;
 			resolve: (value: unknown) => void;
 			reject: (value: unknown) => void;
-			result?: any
+			result?: any;
 		} = {
 			/// #if DEBUG
 			url: url,
 			/// #endif
 			resolve,
-			reject
-		}
+			reject,
+		};
 
-		if(!params) {
+		if (!params) {
 			params = {};
 		}
 
@@ -838,12 +933,11 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 
 		__requestsOrder.push(requestRecord);
 
-
-		if(!callStack) {
+		if (!callStack) {
 			callStack = new Error('GetData called from: ').stack;
 		}
 
-		if(!noLoadingIndicator && LoadingIndicator.instance) {
+		if (!noLoadingIndicator && LoadingIndicator.instance) {
 			LoadingIndicator.instance.show();
 		} else {
 			noLoadingIndicator = true;
@@ -852,15 +946,15 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 		fetch(__corePath + url, {
 			method: 'POST',
 			headers: headersJSON,
-			body: JSON.stringify(params)
+			body: JSON.stringify(params),
 		})
 			.then((res) => {
 				return res.json();
-			}).then((data) => {
+			})
+			.then((data) => {
 				handleAdditionalData(data, url);
-				if(isAuthNeed(data)) {
-
-				} else if(data.hasOwnProperty('result')) {
+				if (isAuthNeed(data)) {
+				} else if (data.hasOwnProperty('result')) {
 					isOrderNeedDispose = false;
 					requestRecord.result = data.result;
 				} else {
@@ -878,27 +972,27 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 			})
 			//*/
 			.finally(() => {
-				if(isOrderNeedDispose) {
+				if (isOrderNeedDispose) {
 					releaseQuiresOrder(requestRecord);
 				}
-				while(__requestsOrder.length > 0 && __requestsOrder[0].hasOwnProperty('result')) {
+				while (__requestsOrder.length > 0 && __requestsOrder[0].hasOwnProperty('result')) {
 					var rr = __requestsOrder.shift();
 					rr.resolve(rr.result);
 				}
-				if(!noLoadingIndicator) {
+				if (!noLoadingIndicator) {
 					LoadingIndicator.instance.hide();
 				}
-			})
+			});
 	});
 }
 
 const isUserHaveRole = (roleId: ROLE_ID) => {
 	return User.currentUserData && User.currentUserData.userRoles[roleId];
-}
+};
 
 const isAdmin = () => {
 	return isUserHaveRole(ROLE_ID.ADMIN);
-}
+};
 
 async function publishRecord(nodeId, recId): Promise<RecordSubmitResult> {
 	return submitRecord(nodeId, { status: 1 }, recId);
@@ -910,12 +1004,20 @@ async function draftRecord(nodeId, recId): Promise<RecordSubmitResult> {
 
 function isAuthNeed(data) {
 	let token = getSessionToken();
-	if((token && (token !== "guest-session")) && (data.error && (data.error.startsWith('Error: <auth>') || data.error.startsWith('<auth>')))) {
+	if (
+		token &&
+		token !== 'guest-session' &&
+		data.error &&
+		(data.error.startsWith('Error: <auth>') || data.error.startsWith('<auth>'))
+	) {
 		clearSessionToken();
 		crudJs.Stage.showForm(NODE_ID.LOGIN, 'new', undefined, true);
 		return true;
-	} else if(data.error && (data.error.startsWith('Error: <access>') || data.error.startsWith('<access>'))) {
-		if(crudJs.Stage?.currentForm?.props?.node?.id !== NODE_ID.LOGIN) {
+	} else if (
+		data.error &&
+		(data.error.startsWith('Error: <access>') || data.error.startsWith('<access>'))
+	) {
+		if (crudJs.Stage?.currentForm?.props?.node?.id !== NODE_ID.LOGIN) {
 			goToHome();
 		}
 		return true;
@@ -928,9 +1030,9 @@ function serializeForm(form: HTMLFormElement): FormData {
 
 var requestsInProgress = 0;
 
-window.addEventListener("beforeunload", function (e) {
-	if(requestsInProgress) {
-		var confirmationMessage = L("DATA_NOT_SAVED");
+window.addEventListener('beforeunload', function (e) {
+	if (requestsInProgress) {
+		var confirmationMessage = L('DATA_NOT_SAVED');
 		(e || window.event).returnValue = confirmationMessage;
 		return confirmationMessage;
 	}
@@ -942,8 +1044,8 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 	LoadingIndicator.instance.show();
 
 	let body: FormData;
-	if(!noProcessData) {
-		if(getSessionToken()) {
+	if (!noProcessData) {
+		if (getSessionToken()) {
 			dataToSend.sessionToken = getSessionToken();
 		}
 		body = JSON.stringify(dataToSend) as unknown as FormData;
@@ -954,44 +1056,45 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 	var callStack = new Error('submitData called from: ').stack;
 	let options: RequestInit = {
 		method: 'POST',
-		body
-	}
-	if(!noProcessData) {
+		body,
+	};
+	if (!noProcessData) {
 		options.headers = headersJSON;
 	}
 	requestsInProgress++;
-	return fetch(__corePath + url, options)
-		.then((res) => {
-			return res.json();
-		})
-		.then((data) => {
-			handleAdditionalData(data, url);
-			if(isAuthNeed(data)) {
-
-			} else if(data.hasOwnProperty('result')) {
-				return data.result;
-			} else {
-				handleError(data, url, JSON.stringify(dataToSend) + ';\n' + callStack);
-			}
-		})
-		/// #if DEBUG
-		/*
+	return (
+		fetch(__corePath + url, options)
+			.then((res) => {
+				return res.json();
+			})
+			.then((data) => {
+				handleAdditionalData(data, url);
+				if (isAuthNeed(data)) {
+				} else if (data.hasOwnProperty('result')) {
+					return data.result;
+				} else {
+					handleError(data, url, JSON.stringify(dataToSend) + ';\n' + callStack);
+				}
+			})
+			/// #if DEBUG
+			/*
 		/// #endif
 		.catch((error) => {
 			myAlert(error.message);
 			consoleDir(error);
 		})
 		//*/
-		.finally(() => {
-			requestsInProgress--;
-			LoadingIndicator.instance.hide();
-		})
+			.finally(() => {
+				requestsInProgress--;
+				LoadingIndicator.instance.hide();
+			})
+	);
 }
 
 let isCaptchaInitialized;
 
 async function getCaptchaToken(): Promise<string | undefined> {
-	if(!ENV.CAPTCHA_CLIENT_SECRET) {
+	if (!ENV.CAPTCHA_CLIENT_SECRET) {
 		return;
 	}
 
@@ -1004,18 +1107,18 @@ async function getCaptchaToken(): Promise<string | undefined> {
 				resolve(token);
 			});
 		});
-	}
+	};
 
-	if(!isCaptchaInitialized) {
+	if (!isCaptchaInitialized) {
 		isCaptchaInitialized = true;
 		var scriptElement = document.createElement('script');
-		scriptElement.src = 'https://www.google.com/recaptcha/api.js?render=' + ENV.CAPTCHA_CLIENT_SECRET;
+		scriptElement.src =
+			'https://www.google.com/recaptcha/api.js?render=' + ENV.CAPTCHA_CLIENT_SECRET;
 		scriptElement.addEventListener('load', requireCaptcha);
 		document.head.appendChild(scriptElement);
 	} else {
 		requireCaptcha();
 	}
-
 
 	return new Promise((resolve_) => {
 		//@ts-ignore
@@ -1023,10 +1126,15 @@ async function getCaptchaToken(): Promise<string | undefined> {
 	});
 }
 
-
-async function deleteRecord(name, nodeId: RecId, recId: RecId, noPrompt?: boolean, onYes?: () => void) {
-	if(noPrompt) {
-		if(onYes) {
+async function deleteRecord(
+	name,
+	nodeId: RecId,
+	recId: RecId,
+	noPrompt?: boolean,
+	onYes?: () => void
+) {
+	if (noPrompt) {
+		if (onYes) {
 			onYes();
 		} else {
 			await submitData('api/delete', { nodeId, recId });
@@ -1035,47 +1143,53 @@ async function deleteRecord(name, nodeId: RecId, recId: RecId, noPrompt?: boolea
 		}
 	} else {
 		let node = await getNode(nodeId);
-		if(await showPrompt(L('SURE_DELETE', (node.creation_name || node.single_name)) + ' "' + name + '"?',
-			L('DELETE'), L('CANCEL'), 'times', 'caret-left', true)) {
+		if (
+			await showPrompt(
+				L('SURE_DELETE', node.creationName || node.singleName) + ' "' + name + '"?',
+				L('DELETE'),
+				L('CANCEL'),
+				'times',
+				'caret-left',
+				true
+			)
+		) {
 			return deleteRecord(null, nodeId, recId, true, onYes);
 		}
 	}
 }
 
 function n2mValuesEqual(v1, v2) {
-
-	if(!v1 && !v2) {
+	if (!v1 && !v2) {
 		return true;
 	}
 
-	if(Boolean(v1) !== Boolean(v2)) {
+	if (Boolean(v1) !== Boolean(v2)) {
 		return false;
 	}
 
-	if(v1.length != v2.length) {
+	if (v1.length != v2.length) {
 		return false;
 	} else {
-		for(var i in v1) {
+		for (var i in v1) {
 			var i1 = v1[i];
 			var i2 = v2[i];
 
-			if(Boolean(i1) !== Boolean(i2)) {
+			if (Boolean(i1) !== Boolean(i2)) {
 				return false;
 			}
 
-			if(i1) {
-				if((i1.id !== i2.id) || (i1.name !== i2.name)) {
+			if (i1) {
+				if (i1.id !== i2.id || i1.name !== i2.name) {
 					return false;
 				}
 			}
 		}
 	}
 	return true;
-
 }
 
 function renderIcon(name) {
-	if(!name) {
+	if (!name) {
 		return undefined;
 	}
 	return R.p({ className: 'fa fa-' + name });
@@ -1085,22 +1199,24 @@ function isLitePage() {
 	return window.location.href.includes(LITE_UI_PREFIX);
 }
 
-if(isLitePage()) {
+if (isLitePage()) {
 	document.body.classList.add('lite-ui');
 }
 
 function scrollToVisible(elem, doNotShake = false) {
-	if(elem) {
+	if (elem) {
 		var element = ReactDOM.findDOMNode(elem) as HTMLDivElement;
-		((element as any).scrollIntoViewIfNeeded) ? (element as any).scrollIntoViewIfNeeded(false) : element.scrollIntoView();
-		if(!doNotShake) {
+		(element as any).scrollIntoViewIfNeeded
+			? (element as any).scrollIntoViewIfNeeded(false)
+			: element.scrollIntoView();
+		if (!doNotShake) {
 			shakeDomElement(element);
 		}
 	}
 }
 
 function shakeDomElement(e) {
-	if(e) {
+	if (e) {
 		e.classList.remove('shake');
 		e.offsetWidth;
 		e.classList.add('shake');
@@ -1108,11 +1224,11 @@ function shakeDomElement(e) {
 			e.classList.remove('shake');
 		}, 600);
 	}
-};
+}
 
 function getItem(name: string, def?: any) {
-	if(typeof (Storage) !== "undefined") {
-		if(localStorage.hasOwnProperty(name)) {
+	if (typeof Storage !== 'undefined') {
+		if (localStorage.hasOwnProperty(name)) {
 			return JSON.parse(localStorage[name]);
 		}
 	}
@@ -1120,26 +1236,25 @@ function getItem(name: string, def?: any) {
 }
 
 function setItem(name, val) {
-	if(typeof (Storage) !== "undefined") {
+	if (typeof Storage !== 'undefined') {
 		assert(typeof val !== 'undefined', 'setItem() got an invalid value.');
 		localStorage.setItem(name, JSON.stringify(val));
 	}
 }
 
 function removeItem(name) {
-	if(typeof (Storage) !== "undefined") {
+	if (typeof Storage !== 'undefined') {
 		localStorage.removeItem(name);
 	}
 }
 
-
 function openIndexedDB() {
 	var indexedDB = window.indexedDB;
-	var openDB = indexedDB.open("MyDatabase", 1);
+	var openDB = indexedDB.open('MyDatabase', 1);
 	openDB.onupgradeneeded = function () {
 		var db: any = {};
 		db.result = openDB.result;
-		db.store = db.result.createObjectStore("MyObjectStore", { keyPath: "id" });
+		db.store = db.result.createObjectStore('MyObjectStore', { keyPath: 'id' });
 	};
 	return openDB;
 }
@@ -1147,8 +1262,8 @@ function openIndexedDB() {
 function getStoreIndexedDB(openDB: IDBOpenDBRequest) {
 	var db: any = {};
 	db.result = openDB.result;
-	db.tx = db.result.transaction("MyObjectStore", "readwrite");
-	db.store = db.tx.objectStore("MyObjectStore");
+	db.tx = db.result.transaction('MyObjectStore', 'readwrite');
+	db.store = db.tx.objectStore('MyObjectStore');
 	return db;
 }
 
@@ -1178,7 +1293,7 @@ async function loadIndexedDB(filename: string): Promise<any> {
 			var db = getStoreIndexedDB(openDB);
 
 			var getData;
-			if(filename) {
+			if (filename) {
 				getData = db.store.get(filename);
 				getData.onsuccess = function () {
 					resolve(getData.result && getData.result.data);
@@ -1201,28 +1316,27 @@ async function deleteIndexedDB(filename: string): Promise<any> {
 }
 
 function keepInWindow(body) {
-	if(body) {
+	if (body) {
 		body = ReactDOM.findDOMNode(body);
 
 		let modalContainer = body.closest('.form-modal-container');
 		var screenR = window.innerWidth - 10;
 		var screenL = 0;
-		if(modalContainer) {
-			const cRect = modalContainer.getBoundingClientRect()
+		if (modalContainer) {
+			const cRect = modalContainer.getBoundingClientRect();
 			screenR = cRect.right - 13;
 			screenL = cRect.left;
 		}
 
-		const bodyRect = body.getBoundingClientRect()
+		const bodyRect = body.getBoundingClientRect();
 		var l = bodyRect.left;
 		var r = bodyRect.right;
 
-
-		if(l < screenL) {
+		if (l < screenL) {
 			addTranslateX(body, -l);
 		} else {
 			var out = r - screenR;
-			if(out > 0) {
+			if (out > 0) {
 				addTranslateX(body, -out);
 			}
 		}
@@ -1232,7 +1346,7 @@ function keepInWindow(body) {
 function addTranslateX(element, x) {
 	x = Math.round(x);
 	var curMatrix = element.style.transform;
-	if(curMatrix && (curMatrix !== 'none')) {
+	if (curMatrix && curMatrix !== 'none') {
 		curMatrix = curMatrix.split(',');
 		curMatrix[4] = parseInt(curMatrix[4]) + x;
 	} else {
@@ -1243,27 +1357,26 @@ function addTranslateX(element, x) {
 }
 
 function strip_tags(input) {
-	if(typeof (input !== 'string')) return input;
+	if (typeof (input !== 'string')) return input;
 	var allowed = '<p><a><img><b><i><div><span>';
-	allowed = (((allowed || '') + '').toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join('')
-	var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi
-	var commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi
+	allowed = (((allowed || '') + '').toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join('');
+	var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
+	var commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
 
 	return input.replace(commentsAndPhpTags, '').replace(tags, ($0, $1) => {
-		return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : ''
-	})
+		return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
+	});
 }
 
 function checkFileSize(file) {
+	var regex = new RegExp('.(' + ENV.ALLOWED_UPLOADS.join('|') + ')$', 'gi');
 
-	var regex = new RegExp('\.(' + ENV.ALLOWED_UPLOADS.join('|') + ')$', 'gi');
-
-	if(!regex.exec(file.name)) {
+	if (!regex.exec(file.name)) {
 		myAlert(L('TYPES_ALLOWED', ENV.ALLOWED_UPLOADS));
 		return true;
 	}
 
-	if(file.size > ENV.MAX_FILE_SIZE_TO_UPLOAD) {
+	if (file.size > ENV.MAX_FILE_SIZE_TO_UPLOAD) {
 		myAlert(L('FILE_BIG', (file.size / 1000000.0).toFixed(0)) + getReadableUploadSize());
 		return true;
 	}
@@ -1286,8 +1399,8 @@ function initDictionary(o) {
 }
 
 function L(key: LANG_KEYS | LANG_KEYS_CUSTOM, param?: any) {
-	if(dictionary.hasOwnProperty(key)) {
-		if(typeof (param) !== 'undefined') {
+	if (dictionary.hasOwnProperty(key)) {
+		if (typeof param !== 'undefined') {
 			return dictionary[key].replace('%', param);
 		}
 		return dictionary[key];
@@ -1296,13 +1409,13 @@ function L(key: LANG_KEYS | LANG_KEYS_CUSTOM, param?: any) {
 	debugger;
 	throw new Error('NO_TRANSLATION FOR KEY: ' + key);
 	/// #endif
-	return ('#' + key);
+	return '#' + key;
 }
 
 var listRenderers = [];
 
 function registerListRenderer(nodeId: RecId, renderFunction: (this: List) => React.ReactNode) {
-	if(listRenderers.hasOwnProperty(nodeId)) {
+	if (listRenderers.hasOwnProperty(nodeId)) {
 		throw 'List renderer for node ' + nodeId + ' is already registered.';
 	}
 	listRenderers[nodeId] = renderFunction;
@@ -1325,7 +1438,7 @@ function clearSessionToken() {
 }
 
 async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
-	if(User.currentUserData && User.currentUserData.id !== USER_ID.GUEST) {
+	if (User.currentUserData && User.currentUserData.id !== USER_ID.GUEST) {
 		return User.currentUserData;
 	} else {
 		setItem('go-to-after-login', location.href);
@@ -1352,31 +1465,98 @@ async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
 
 var googleLoginAPIattached;
 async function attachGoogleLoginAPI(enforces = false) {
-	if(ENV.clientOptions.googleSigninClientId && !googleLoginAPIattached) {
+	if (ENV.clientOptions.googleSigninClientId && !googleLoginAPIattached) {
 		var meta = document.createElement('meta');
-		meta.name = "google-signin-client_id";
+		meta.name = 'google-signin-client_id';
 		meta.content = ENV.clientOptions.googleSigninClientId;
 		document.getElementsByTagName('head')[0].appendChild(meta);
 	}
-	if(ENV.clientOptions.googleSigninClientId && (!googleLoginAPIattached || enforces)) {
+	if (ENV.clientOptions.googleSigninClientId && (!googleLoginAPIattached || enforces)) {
 		let s = document.createElement('script');
-		s.src = "https://apis.google.com/js/platform.js";
+		s.src = 'https://apis.google.com/js/platform.js';
 		s.async = true;
 		s.defer = true;
 		document.head.append(s);
-		await (new Promise((resolve) => {
+		await new Promise((resolve) => {
 			setInterval(() => {
 				//@ts-ignore
-				if(window.gapi) {
+				if (window.gapi) {
 					resolve(true);
 				}
 			}, 10);
-		}));
+		});
 	}
 	googleLoginAPIattached = true;
 }
 
 export {
-	__corePath, addMixins, assignFilters, attachGoogleLoginAPI, checkFileSize, clearSessionToken, CLIENT_SIDE_FORM_EVENTS, consoleDir, consoleLog, debugError, deleteIndexedDB, deleteRecord, draftRecord, Filters, getCaptchaToken, getClassForField, getData, getItem, getListRenderer, getNode, getNodeData, getNodeIfPresentOnClient, getReadableUploadSize, getSessionToken, goBack, goToHome, goToPageByHash, idToFileUrl, idToImgURL, initDictionary, innerDateTimeFormat, isAdmin, isCurrentlyShowedLeftBarItem, isDBWriteInProgress, isLitePage, isPresentListRenderer, isRecordRestrictedForDeletion, isUserHaveRole, keepInWindow, L, loadIndexedDB, loginIfNotLoggedIn, myAlert, n2mValuesEqual, onNewUser, onOneFormShowed, publishRecord, readableDateFormat, readableTimeFormat, registerFieldClass, registerListRenderer, reloadLocation, removeItem, renderIcon, saveIndexedDB, scrollToVisible, serializeForm, setItem, shakeDomElement, showPrompt, sp, strip_tags, submitData, submitRecord, toReadableDate, toReadableDateTime, toReadableTime, UID, updateHashLocation
+	__corePath,
+	addMixins,
+	assignFilters,
+	attachGoogleLoginAPI,
+	checkFileSize,
+	clearSessionToken,
+	CLIENT_SIDE_FORM_EVENTS,
+	consoleDir,
+	consoleLog,
+	debugError,
+	deleteIndexedDB,
+	deleteRecord,
+	draftRecord,
+	Filters,
+	getCaptchaToken,
+	getClassForField,
+	getData,
+	getItem,
+	getListRenderer,
+	getNode,
+	getNodeData,
+	getNodeIfPresentOnClient,
+	getReadableUploadSize,
+	getSessionToken,
+	goBack,
+	goToHome,
+	goToPageByHash,
+	idToFileUrl,
+	idToImgURL,
+	initDictionary,
+	innerDateTimeFormat,
+	isAdmin,
+	isCurrentlyShowedLeftBarItem,
+	isDBWriteInProgress,
+	isLitePage,
+	isPresentListRenderer,
+	isRecordRestrictedForDeletion,
+	isUserHaveRole,
+	keepInWindow,
+	L,
+	loadIndexedDB,
+	loginIfNotLoggedIn,
+	myAlert,
+	n2mValuesEqual,
+	onNewUser,
+	onOneFormShowed,
+	publishRecord,
+	readableDateFormat,
+	readableTimeFormat,
+	registerFieldClass,
+	registerListRenderer,
+	reloadLocation,
+	removeItem,
+	renderIcon,
+	saveIndexedDB,
+	scrollToVisible,
+	serializeForm,
+	setItem,
+	shakeDomElement,
+	showPrompt,
+	sp,
+	strip_tags,
+	submitData,
+	submitRecord,
+	toReadableDate,
+	toReadableDateTime,
+	toReadableTime,
+	UID,
+	updateHashLocation,
 };
-
