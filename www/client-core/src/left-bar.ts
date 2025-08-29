@@ -186,7 +186,7 @@ class BarItem extends Component<any, any> {
 		/// #endif
 
 		if (
-			item.nodeType !== NODE_TYPE.DOCUMENT && // eslint-disable-line no-constant-condition
+			item.nodeType !== NODE_TYPE.DOCUMENT &&
 			(!item.children || item.children.length === 0) &&
 			/// #if DEBUG
 			false // in debug build always show empty nodes
@@ -211,7 +211,7 @@ class BarItem extends Component<any, any> {
 		const isActive = isCurrentlyShowedLeftBarItem(item);
 
 		if (isActive) {
-			activeItem = this; // eslint-disable-line @typescript-eslint/no-this-alias
+			activeItem = this;
 			className += ' left-bar-item-active';
 		}
 

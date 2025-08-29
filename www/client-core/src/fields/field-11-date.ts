@@ -1,23 +1,23 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-import moment from "moment";
-import { FIELD_TYPE } from "../bs-utils";
-import { R } from "../r";
-import { innerDateTimeFormat, readableDateFormat, registerFieldClass, renderIcon, toReadableDate } from "../utils";
-import { dateFieldMixins, ReactDateTimeClassHolder } from "./field-4-date-time";
+import moment from 'moment';
+import { FIELD_TYPE } from '../bs-utils';
+import { R } from '../r';
+import { innerDateTimeFormat, readableDateFormat, registerFieldClass, renderIcon, toReadableDate } from '../utils';
+import { dateFieldMixins, ReactDateTimeClassHolder } from './field-4-date-time';
 
 registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 
 	static decodeValue(val) {
-		if(val === '0000-00-00 00:00:00') {
+		if (val === '0000-00-00 00:00:00') {
 			return null;
 		}
 		return moment(val, innerDateTimeFormat);
 	}
 
 	static encodeValue(val) {
-		if(!val) {
+		if (!val) {
 			return ('0000-00-00 00:00:00');
 		}
 		return val.format(innerDateTimeFormat);
@@ -32,8 +32,8 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 
 		const field = this.props.field;
 		const value = toReadableDate(this.state.value);
-		if(this.props.isEdit) {
-			if(!ReactDateTimeClassHolder.ReactDateTimeClass) {
+		if (this.props.isEdit) {
+			if (!ReactDateTimeClassHolder.ReactDateTimeClass) {
 				ReactDateTimeClassHolder.importReactDateTime();
 				return renderIcon('cog fa-spin');
 			}
@@ -49,7 +49,7 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 				timeFormat: false,
 				ref: this.refGetter,
 				onChange: (val) => {
-					if(!val._isAMomentObject) {
+					if (!val._isAMomentObject) {
 						val = null;
 					}
 					this.props.wrapper.valueListener(val, true, this);

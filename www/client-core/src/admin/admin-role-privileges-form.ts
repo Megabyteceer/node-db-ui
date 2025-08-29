@@ -1,11 +1,11 @@
+import React, { Component } from 'react';
 import type { RecordData } from '../bs-utils';
 import { NODE_TYPE, PRIVILEGES_MASK } from '../bs-utils';
-import { R } from '../r';
-import React, { Component } from 'react';
 import { BaseForm } from '../forms/base-form';
+import { R } from '../r';
 import { FormLoaderCog } from '../stage';
 import { iAdmin } from '../user';
-import { getData, getNode, L, showPrompt, renderIcon, submitData } from '../utils';
+import { getData, getNode, L, renderIcon, showPrompt, submitData } from '../utils';
 import { NodeAdmin } from './admin-control';
 
 /// #if DEBUG
@@ -52,53 +52,53 @@ class PrivilegesEditor extends Component<any, any> {
 			title = L('ADM_A');
 		} else {
 			switch (curVal / this.props.baseBit) {
-				case 1:
-					body = R.span(
+			case 1:
+				body = R.span(
+					{
+						className: 'admin-role-privileges-enabled',
+					},
+					check()
+				);
+				title = L('ADM_A_OWN');
+				break;
+			case 2:
+			case 3:
+				body = R.span(
+					{
+						className: 'admin-role-privileges-enabled',
+					},
+					R.span(
 						{
-							className: 'admin-role-privileges-enabled',
+							className: 'admin-role-privileges-size2',
 						},
+						check(),
 						check()
-					);
-					title = L('ADM_A_OWN');
-					break;
-				case 2:
-				case 3:
-					body = R.span(
+					)
+				);
+				title = L('ADM_A_ORG');
+				break;
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+				body = R.span(
+					{
+						className: 'admin-role-privileges-enabled',
+					},
+					R.span(
 						{
-							className: 'admin-role-privileges-enabled',
+							className: 'admin-role-privileges-size3',
 						},
-						R.span(
-							{
-								className: 'admin-role-privileges-size2',
-							},
-							check(),
-							check()
-						)
-					);
-					title = L('ADM_A_ORG');
-					break;
-				case 4:
-				case 5:
-				case 6:
-				case 7:
-					body = R.span(
-						{
-							className: 'admin-role-privileges-enabled',
-						},
-						R.span(
-							{
-								className: 'admin-role-privileges-size3',
-							},
-							check(),
-							check(),
-							check()
-						)
-					);
-					title = L('ADM_A_FULL');
-					break;
-				default:
-					body = 'props: ' + curVal / this.props.baseBit;
-					break;
+						check(),
+						check(),
+						check()
+					)
+				);
+				title = L('ADM_A_FULL');
+				break;
+			default:
+				body = 'props: ' + curVal / this.props.baseBit;
+				break;
 			}
 		}
 
@@ -208,9 +208,9 @@ class AdminRolePrivilegesForm extends BaseForm {
 					}),
 					node.draftable
 						? React.createElement(PrivilegesEditor, {
-								bitsCount: 1,
-								baseBit: PRIVILEGES_MASK.PUBLISH,
-								item: i,
+							bitsCount: 1,
+							baseBit: PRIVILEGES_MASK.PUBLISH,
+							item: i,
 						  })
 						: undefined
 				);
@@ -300,3 +300,4 @@ class AdminRolePrivilegesForm extends BaseForm {
 }
 
 export { AdminRolePrivilegesForm };
+

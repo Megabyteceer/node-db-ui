@@ -1,13 +1,13 @@
-import type React from "react";
-import { Component } from "react";
-import type { BoolNum, Filters, NodeDesc, RecId, RecordData, VIEW_MASK } from "../bs-utils";
-import type { LookupOneToManyFiled } from "../fields/field-15-one-to-many";
-import type { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
-import type { FieldWrap } from "../fields/field-wrap";
-import { goBack, L, showPrompt, updateHashLocation } from "../utils";
+import type React from 'react';
+import { Component } from 'react';
+import type { BoolNum, Filters, NodeDesc, RecId, RecordData, VIEW_MASK } from '../bs-utils';
+import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
+import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
+import type { FieldWrap } from '../fields/field-wrap';
+import { goBack, L, showPrompt, updateHashLocation } from '../utils';
 
 import { assert } from '../assert';
-import type { List } from "./list";
+import type { List } from './list';
 
 interface FormProps {
 	initialData?: RecordData;
@@ -75,7 +75,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	}
 
 	UNSAFE_componentWillReceiveProps(newProps) {
-		assert(((this.recId || 'new') === ((newProps.initialData ? newProps.initialData.id : newProps.recId) || 'new')) && (this.nodeId === (newProps.nodeId || newProps.node.id)), "Form should be recreated, and not receive new props. Add 'key' to parent element contains nodeId and recId.");
+		assert(((this.recId || 'new') === ((newProps.initialData ? newProps.initialData.id : newProps.recId) || 'new')) && (this.nodeId === (newProps.nodeId || newProps.node.id)), 'Form should be recreated, and not receive new props. Add \'key\' to parent element contains nodeId and recId.');
 	}
 
 	callOnTabShowEvent(tabNameToShow) {
@@ -83,7 +83,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	}
 
 	isSubForm() {
-		if(this.props.parentForm) {
+		if (this.props.parentForm) {
 			return true;
 		}
 		return false;
@@ -94,9 +94,9 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 
 	async cancelClick() {
 		this.forceBouncingTimeout();
-		if(this.isDataModified) {
+		if (this.isDataModified) {
 			const answer = await showPrompt(L('FORM_IS_MODIFIED'), L('LEAVE_WITHOUT_SAVING'));
-			if(!answer) {
+			if (!answer) {
 				return;
 			}
 		}
@@ -104,10 +104,10 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	}
 
 	setFormFilter(name, val) {
-		if(!this.filters) {
+		if (!this.filters) {
 			this.filters = {};
 		}
-		if(this.filters[name] !== val) {
+		if (this.filters[name] !== val) {
 			this.filters[name] = val;
 			this.forceUpdate();
 			updateHashLocation(true);

@@ -18,7 +18,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 
 	const source_db = SERVER_ENV.DB_NAME;
 
-	const exist = await mysqlExec("SHOW DATABASES LIKE '" + source_db + "'");
+	const exist = await mysqlExec('SHOW DATABASES LIKE \'' + source_db + '\'');
 	if (exist.length !== 1) {
 		throwError('source database "' + source_db + '" is not exists.');
 	}
@@ -75,7 +75,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 
 				tableData['isData'] = 1;
 				const ts = await mysqlExec(
-					'SHOW TABLE STATUS FROM "' + source_db + '" LIKE \'' + tableName + "'"
+					'SHOW TABLE STATUS FROM "' + source_db + '" LIKE \'' + tableName + '\''
 				);
 				if (!ts[0]['Auto_increment']) {
 					tableData.autoIncrement = 0;
@@ -100,7 +100,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 							tableName +
 							'" INTO OUTFILE \'' +
 							tmpFileNameSQL +
-							"'"
+							'\''
 					))
 				) {
 					const rows = await mysqlExec('SELECT * FROM "' + source_db + '"."' + tableName + '"');
@@ -112,7 +112,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 								tableName +
 								'" in to file \'' +
 								tmpFileNameSQL +
-								"'"
+								'\''
 						);
 					}
 				}
@@ -125,7 +125,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 
 	//get stored functions
 	const dbFunctions = {};
-	const dbFunctionsSrc = await mysqlExec("SHOW FUNCTION STATUS WHERE Db='" + source_db + "'");
+	const dbFunctionsSrc = await mysqlExec('SHOW FUNCTION STATUS WHERE Db=\'' + source_db + '\'');
 	if (!tablesSettings.functions) {
 		tablesSettings.functions = [];
 	}
@@ -148,7 +148,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 
 	//get stored procedures
 	const dbProcedures = {};
-	const storedProcedures = await mysqlExec("SHOW PROCEDURE STATUS WHERE Db='" + source_db + "'");
+	const storedProcedures = await mysqlExec('SHOW PROCEDURE STATUS WHERE Db=\'' + source_db + '\'');
 	if (!tablesSettings.procedures) {
 		tablesSettings.procedures = [];
 	}

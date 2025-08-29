@@ -19,7 +19,7 @@ async function loginWithGoogle(token, userSession: UserSession) {
 		throwError(L('WRONG_PASS', userSession));
 	}
 	const email = payload.email;
-	const users = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND email='" + email + "'");
+	const users = await mysqlExec('SELECT id FROM _users WHERE status = 1 AND email=\'' + email + '\'');
 	if (users.length > 0) {
 		return authorizeUserByID(users[0].id);
 	} else {

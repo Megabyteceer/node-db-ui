@@ -1,4 +1,4 @@
-import { initDictionary } from "../../../client-core/src/utils";
+import { initDictionary } from '../../../client-core/src/utils';
 
 initDictionary({
 });

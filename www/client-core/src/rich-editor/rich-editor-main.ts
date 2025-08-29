@@ -2,26 +2,26 @@
 (async function () {
 	await Promise.all([
 		//@ts-ignore
-		import("bootstrap/dist/css/bootstrap.min.css"),
+		import('bootstrap/dist/css/bootstrap.min.css'),
 		//@ts-ignore
-		import("summernote/dist/summernote.min.css"),
+		import('summernote/dist/summernote.min.css'),
 		//@ts-ignore
-		import("summernote/dist/summernote.min.js")
+		import('summernote/dist/summernote.min.js')
 	]);
 
 	//@ts-ignore
-	window.Bootstrap = await import("bootstrap");
+	window.Bootstrap = await import('bootstrap');
 	//@ts-ignore
-	window.Popper = await import("popper.js");
+	window.Popper = await import('popper.js');
 
 	//@ts-ignore
 	const s: { summernote: (...params: any[]) => void } = $('#summer-note');
 	const iframeId = location.href.split('iframeId=').pop();
 
-	window.addEventListener("message", (event) => {
+	window.addEventListener('message', (event) => {
 		const data = event.data;
 
-		if(data.hasOwnProperty('options')) {
+		if (data.hasOwnProperty('options')) {
 
 			data.options.callbacks = {
 				onChange: function (contents, $editable) {
@@ -30,9 +30,9 @@
 			};
 			s.summernote(data.options);
 		}
-		if(data.hasOwnProperty('value')) {
+		if (data.hasOwnProperty('value')) {
 			s.summernote('code', data.value);
-		} else if(data.hasOwnProperty('onSaveRichEditor')) {
+		} else if (data.hasOwnProperty('onSaveRichEditor')) {
 			sendValueToParent();
 		}
 	}, false);

@@ -1,8 +1,8 @@
 
 
-import { Component } from "react";
-import { R } from "./r";
-import { isLitePage, renderIcon } from "./utils";
+import { Component } from 'react';
+import { R } from './r';
+import { isLitePage, renderIcon } from './utils';
 
 class LoadingIndicator extends Component<any, any> {
 	static instance: LoadingIndicator;
@@ -18,10 +18,10 @@ class LoadingIndicator extends Component<any, any> {
 	}
 
 	show() {
-		if(isLitePage()) return;
+		if (isLitePage()) return;
 		//@ts-ignore
 		this.state.showCount++;
-		if(this.state.showCount === 1) {
+		if (this.state.showCount === 1) {
 			this.forceUpdate();
 		}
 	}
@@ -30,8 +30,8 @@ class LoadingIndicator extends Component<any, any> {
 		const active = this.state.showCount > 0;
 
 		return R.div({ className: active ? 'loader-back-drop' : null },
-			R.div({ className: active ? "loading-spinner-container" : "loading-spinner-container loading-spinner-container-inactive" },
-				active ? R.div({ className: "loading-spinner" },
+			R.div({ className: active ? 'loading-spinner-container' : 'loading-spinner-container loading-spinner-container-inactive' },
+				active ? R.div({ className: 'loading-spinner' },
 					renderIcon('cog fa-spin')
 				) : undefined
 			)
@@ -42,3 +42,4 @@ class LoadingIndicator extends Component<any, any> {
 LoadingIndicator.instance = null;
 
 export { LoadingIndicator };
+

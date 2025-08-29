@@ -1,5 +1,5 @@
-import type { RecordData, RecordDataWrite, UserSession } from "../../www/client-core/src/bs-utils";
-import { reloadMetadataSchedule } from "../describe-node";
+import type { RecordData, RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import { reloadMetadataSchedule } from '../describe-node';
 
 export default {
 
@@ -14,4 +14,4 @@ export default {
 	beforeDelete: async function(data: RecordData, userSession: UserSession) {
 		reloadMetadataSchedule();
 	}
-}
+};

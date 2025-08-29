@@ -1,4 +1,4 @@
-import { initDictionaryServerSide } from "../../../../core/locale";
+import { initDictionaryServerSide } from '../../../../core/locale';
 
 const LANGS = {
 };

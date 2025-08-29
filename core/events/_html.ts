@@ -1,8 +1,8 @@
 
-import { readFile, unlink, writeFile } from "fs";
-import { join } from "path";
-import type { RecordData, RecordDataWrite, UserSession } from "../../www/client-core/src/bs-utils";
-import type { NodeEventsHandlers } from "../describe-node";
+import { readFile, unlink, writeFile } from 'fs';
+import { join } from 'path';
+import type { RecordData, RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import type { NodeEventsHandlers } from '../describe-node';
 
 const handlers: NodeEventsHandlers = {
 	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
@@ -30,17 +30,17 @@ async function saveDoc(data): Promise<void> {
 	return new Promise((resolve, rejects) => {
 		readFile(join(__dirname, '../../www/custom/html/_template.htmp'), 'utf8', (err, txt) => {
 
-			if(err) {
+			if (err) {
 				rejects(err);
 			} else {
-				for(const name in data) {
+				for (const name in data) {
 					//@ts-ignore
 					txt = txt.replaceAll('\\$\\{' + name + '\\}', data[name]);
 				}
 				//@ts-ignore
 				txt = txt.replaceAll('\\$\\{name\\}', data.name);
 				writeFile(getDocFilename(data), txt, (err) => {
-					if(err) {
+					if (err) {
 						rejects(err);
 					} else {
 						resolve();

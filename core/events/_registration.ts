@@ -17,7 +17,7 @@ export default {
 		data.password = await getPasswordHash(data.password, data.salt);
 
 		const pgs = await mysqlExec(
-			"SELECT id FROM _users WHERE _users.status=1 AND email='" + data.email + "' LIMIT 1"
+			'SELECT id FROM _users WHERE _users.status=1 AND email=\'' + data.email + '\' LIMIT 1'
 		);
 		if (pgs.length > 0) {
 			throwError(L('EMAIL_ALREADY', userSession));

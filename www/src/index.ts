@@ -1,1 +1,1 @@
-import "../client-core/src/index";
+import '../client-core/src/index';

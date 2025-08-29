@@ -1,10 +1,10 @@
-import React from "react";
-import type { EnumList } from "../bs-utils";
-import { FIELD_TYPE } from "../bs-utils";
-import { Select } from "../components/select";
-import { R } from "../r";
-import { registerFieldClass } from "../utils";
-import { BaseField } from "./base-field";
+import React from 'react';
+import type { EnumList } from '../bs-utils';
+import { FIELD_TYPE } from '../bs-utils';
+import { Select } from '../components/select';
+import { R } from '../r';
+import { registerFieldClass } from '../utils';
+import { BaseField } from './base-field';
 
 
 class EnumField extends BaseField {
@@ -16,7 +16,7 @@ class EnumField extends BaseField {
 	}
 
 	setFilterValues(filter) {
-		if(filter) {
+		if (filter) {
 			const en = Object.assign({}, this.props.field.enum);
 			en.items = en.items.filter(v => filter.indexOf(v) < 0);
 			this.enum = en;
@@ -30,11 +30,11 @@ class EnumField extends BaseField {
 		let value = this.state.value;
 		const field = this.props.field;
 
-		if(!value) {
-			value = 0
+		if (!value) {
+			value = 0;
 		}
 
-		if(this.props.isEdit) {
+		if (this.props.isEdit) {
 
 			const inputsProps = {
 				isCompact: this.props.isCompact,
@@ -50,7 +50,7 @@ class EnumField extends BaseField {
 		} else {
 			return R.span({
 				className: 'enum-type-' + field.enumId + ' enum-val-' + value,
-			}, field.enum.namesByValue[value])
+			}, field.enum.namesByValue[value]);
 		}
 	}
 }

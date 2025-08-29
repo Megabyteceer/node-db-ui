@@ -1,9 +1,9 @@
-import { NODE_ID } from "../bs-utils";
-import { renderItemsButtons } from "../forms/form-list-item";
-import type { List } from "../forms/list";
-import { R } from "../r";
-import { idToImgURL, registerListRenderer, renderIcon } from "../utils";
-import "./view_5_users.css";
+import { NODE_ID } from '../bs-utils';
+import { renderItemsButtons } from '../forms/form-list-item';
+import type { List } from '../forms/list';
+import { R } from '../r';
+import { idToImgURL, registerListRenderer, renderIcon } from '../utils';
+import './view_5_users.css';
 
 const RENDERED_FIELDS = {
 	avatar: true,
@@ -23,21 +23,21 @@ registerListRenderer(NODE_ID.USERS, function (this: List): React.ReactNode {
 
 		const imgUrl = idToImgURL(item.avatar, 'avatar');
 		let phone;
-		if(item.phone) {
-			phone = R.div({ className: 'user-item-info' }, renderIcon('phone'), ' ' + item.public_phone)
+		if (item.phone) {
+			phone = R.div({ className: 'user-item-info' }, renderIcon('phone'), ' ' + item.public_phone);
 		}
 		let email;
-		if(item.email) {
+		if (item.email) {
 			email = R.div({ className: 'user-item-info' }, renderIcon('envelope'), ' ',
 				R.a({ href: 'mailto:' + item.email },
 					item.email
 				)
-			)
+			);
 		}
 		const additionalFields = [];
 		const keys = Object.keys(item);
-		for(const key of keys) {
-			if(key.length > 3 && !RENDERED_FIELDS[key] && item[key]) {
+		for (const key of keys) {
+			if (key.length > 3 && !RENDERED_FIELDS[key] && item[key]) {
 				additionalFields.push(R.div({ key, className: 'user-item-info user-item-info-' + key },
 					node.fieldsByName[key].name, ': ', item[key]
 				));

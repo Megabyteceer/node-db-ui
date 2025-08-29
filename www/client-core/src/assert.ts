@@ -8,7 +8,7 @@ const throwError = (message: string): never => {
 
 /// #if DEBUG
 const assert = (condition: any, errorTxt: string) => {
-	if(!condition) {
+	if (!condition) {
 		throwError(errorTxt);
 	}
 };
@@ -22,14 +22,14 @@ const ESCAPE_END = '/*Escape_detector>*/';
 
 /** detects path to pass sql injection. Not sql injections it self. */
 const SQLInjectionsCheck = (query: string) => {
-	const a = query.split(ESCAPE_BEGIN + "'");
-	for(const part of a) {
+	const a = query.split(ESCAPE_BEGIN + '\'');
+	for (const part of a) {
 		const partA = part.split(ESCAPE_END);
 		const str = partA.pop().replace(/[_a-zA-Z]\d+/gm, ''); // remove t122 and t_213 like entries
-		if(str.includes("'")) {
-			throwError("query has text '' literal added with not escapeString() method. SQL injection detected: " + str.substring(str.indexOf("'")));
+		if (str.includes('\'')) {
+			throwError('query has text \'\' literal added with not escapeString() method. SQL injection detected: ' + str.substring(str.indexOf('\'')));
 		}
-		if(/\d/.test(str)) {
+		if (/\d/.test(str)) {
 			throwError('query has text number literal added with not D() or A() method. SQL injection detected: ' + str.substring(/\d/.exec(str).index));
 		}
 	}

@@ -443,9 +443,9 @@ class List extends BaseForm<ListProps, ListState> {
 		const filters = this.filters;
 		let header;
 		let createButton;
-		
+
 		if (!this.props.omitHeader) {
-			
+
 			if (
 				node.privileges & PRIVILEGES_MASK.CREATE &&
 				!this.props.preventCreateButton &&

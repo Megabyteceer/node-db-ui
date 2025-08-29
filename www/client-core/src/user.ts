@@ -1,18 +1,18 @@
-﻿import React from "react";
+﻿import React from 'react';
 
-import moment from "moment";
-import { Component } from "react";
-import type { UserSession } from "./bs-utils";
-import { NODE_ID, USER_ID } from "./bs-utils";
-import { Select } from "./components/select";
+import moment from 'moment';
+import { Component } from 'react';
+import type { UserSession } from './bs-utils';
+import { NODE_ID, USER_ID } from './bs-utils';
+import { Select } from './components/select';
 import { LITE_UI_PREFIX } from './consts';
-import { LoadingIndicator } from "./loading-indicator";
-import { ENV, MainFrame } from "./main-frame";
-import { R } from "./r";
-import { attachGoogleLoginAPI, getData, getItem, idToImgURL, isAdmin, L, removeItem, renderIcon, setItem } from "./utils";
+import { LoadingIndicator } from './loading-indicator';
+import { ENV, MainFrame } from './main-frame';
+import { R } from './r';
+import { attachGoogleLoginAPI, getData, getItem, idToImgURL, isAdmin, L, removeItem, renderIcon, setItem } from './utils';
 
 function setUserOrg(orgId) {
-	if(User.currentUserData.orgId !== orgId) {
+	if (User.currentUserData.orgId !== orgId) {
 		getData('api/setCurrentOrg', { orgId }).then(() => {
 			User.refreshUser();
 		});
@@ -44,7 +44,7 @@ class User extends Component<any, any> {
 			import(`../../src/locales/${data.lang.code}/lang.ts`)
 		]);
 		User.setUserData(data);
-		if(User.instance) {
+		if (User.instance) {
 			User.instance.forceUpdate();
 		}
 		return data;
@@ -54,15 +54,15 @@ class User extends Component<any, any> {
 		User.currentUserData = data;
 		setItem('cud-js-session-token', data.sessionToken);
 
-		if(data.id !== USER_ID.GUEST) {
+		if (data.id !== USER_ID.GUEST) {
 			const gotoAfterLogin = getItem('go-to-after-login');
 			removeItem('go-to-after-login');
-			if(gotoAfterLogin && (gotoAfterLogin !== location.href)) {
+			if (gotoAfterLogin && (gotoAfterLogin !== location.href)) {
 				location.href = gotoAfterLogin;
 				return;
 			}
 		}
-		if(MainFrame.instance) {
+		if (MainFrame.instance) {
 			MainFrame.instance.reloadOptions();
 		}
 	}
@@ -90,42 +90,42 @@ class User extends Component<any, any> {
 
 		const userData = User.currentUserData;
 
-		if(userData) {
+		if (userData) {
 
 			let iconName = '';
-			let className = 'clickable top-bar-user-multilingual'
-			if(userData.hasOwnProperty('langs')) {
+			let className = 'clickable top-bar-user-multilingual';
+			if (userData.hasOwnProperty('langs')) {
 				className += ' top-bar-user-multilingual-active';
 				iconName = 'check-';
 			};
 
 			let multilingualBtn;
-			if(ENV.ENABLE_MULTILINGUAL) {
+			if (ENV.ENABLE_MULTILINGUAL) {
 				multilingualBtn = R.span({ key: '1', className, onClick: this.toggleMultilingual },
 					renderIcon(iconName + 'square-o'), L('MULTILINGUAL')
 				);
 			}
 
 			let org;
-			if(userData.organizations && Object.keys(userData.organizations).length > 1 && userData.organizations[userData.orgId]) {
+			if (userData.organizations && Object.keys(userData.organizations).length > 1 && userData.organizations[userData.orgId]) {
 				const options = [];
 
-				for(const k in userData.organizations) {
+				for (const k in userData.organizations) {
 					const name = userData.organizations[k];
 					options.push({ value: k, name });
 				};
 
-				org = React.createElement(Select, { key: '2', options, className: "top-bar-user-org-select", isCompact: true, defaultValue: userData.orgId, onChange: this.changeOrg });
+				org = React.createElement(Select, { key: '2', options, className: 'top-bar-user-org-select', isCompact: true, defaultValue: userData.orgId, onChange: this.changeOrg });
 			}
 
 			let btn1, btn2;
 
 			const loginURL = User.getLoginURL();
 
-			if(userData.id === USER_ID.GUEST) {
+			if (userData.id === USER_ID.GUEST) {
 				btn2 = R.a({ key: 'b2', href: loginURL, title: L('LOGIN'), className: 'clickable top-bar-user-btn' },
 					renderIcon('sign-in fa-2x')
-				)
+				);
 			} else {
 				const imgUrl = idToImgURL(userData.avatar, 'avatar');
 				btn1 = R.a({
@@ -143,7 +143,7 @@ class User extends Component<any, any> {
 						removeItem('go-to-after-login');
 						await attachGoogleLoginAPI();
 						//@ts-ignore
-						if(window.gapi && window.gapi.auth2) {
+						if (window.gapi && window.gapi.auth2) {
 							//@ts-ignore
 							const auth2 = window.gapi.auth2.getAuthInstance();
 							await auth2.signOut();
@@ -167,10 +167,10 @@ class User extends Component<any, any> {
 			body = renderIcon('cog fa-spin');
 		}
 
-		return R.div({ className: "top-bar-user-container" },
+		return R.div({ className: 'top-bar-user-container' },
 			(User.additionalUserDataRenderer && User.currentUserData) ? User.additionalUserDataRenderer() : undefined,
 			body
-		)
+		);
 	}
 }
 /** @type User */

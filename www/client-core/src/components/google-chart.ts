@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { Component } from "react";
-import { R } from "../r";
-import { renderIcon } from "../utils";
+import { Component } from 'react';
+import { R } from '../r';
+import { renderIcon } from '../utils';
 
 let chartLoaded = false;
 const all = [];
@@ -9,7 +9,7 @@ let idCounter = 0;
 
 const init = () => {
 	// @ts-ignore
-	if(typeof (google) !== 'undefined') {
+	if (typeof (google) !== 'undefined') {
 		// @ts-ignore
 		google.charts.load('current', {
 			packages: ['corechart', 'line'],
@@ -18,14 +18,14 @@ const init = () => {
 		// @ts-ignore
 		google.charts.setOnLoadCallback(() => {
 			chartLoaded = true;
-			for(const c of all) {
+			for (const c of all) {
 				c.forceUpdate();
 			}
 		});
 	} else {
 		setTimeout(init, 500);
 	}
-}
+};
 init();
 
 class GoogleChart extends Component<any, any> {
@@ -43,7 +43,7 @@ class GoogleChart extends Component<any, any> {
 	}
 
 	componentWillUnmount() {
-		if(this.chart) {
+		if (this.chart) {
 			this.chart.clearChart();
 		}
 		all.splice(all.indexOf(this), 1);
@@ -56,25 +56,25 @@ class GoogleChart extends Component<any, any> {
 	}
 
 	render() {
-		if(chartLoaded) {
+		if (chartLoaded) {
 			return R.div({
 				id: this.chartId,
 				className: 'chart-body',
 				ref: (ref) => {
 					// @ts-ignore
 					const d = new google.visualization.DataTable();
-					for(const c of this.props.columns.array) {
+					for (const c of this.props.columns.array) {
 						d.addColumn(c[0], c[1]);
 					}
 
 					d.addRows(this.props.rows);
 
-					if(this.props.formatter) {
+					if (this.props.formatter) {
 						// @ts-ignore
 						const f = new google.visualization.NumberFormat(this.props.formatter);
 						f.format(d, 1);
 					}
-					if(!this.chart) {
+					if (!this.chart) {
 						// @ts-ignore
 						this.chart = new google.visualization.LineChart(document.getElementById(this.chartId));
 					}

@@ -11,13 +11,13 @@ export default {
 		const email = data.email;
 		if (email) {
 			const pgs = await mysqlExec(
-				"SELECT id FROM _users WHERE _users.status=1 AND email='" + email + "' LIMIT 1"
+				'SELECT id FROM _users WHERE _users.status=1 AND email=\'' + email + '\' LIMIT 1'
 			);
 			if (pgs.length > 0) {
 				const user = pgs[0];
 				const resetCode = randomBytes(24).toString('base64');
 				await mysqlExec(
-					"UPDATE _users SET resetTime=NOW(), resetCode = '" + resetCode + "' WHERE id=" + user.id
+					'UPDATE _users SET resetTime=NOW(), resetCode = \'' + resetCode + '\' WHERE id=' + user.id
 				);
 				const href =
 					getServerHref() +

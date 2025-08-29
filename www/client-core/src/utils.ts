@@ -205,7 +205,7 @@ function handleError(error, url, callStack) {
 			triesGotoHome++;
 			goToHome();
 		}
-	} else 
+	} else
 	//*/
 	{
 		if (error.message) {
@@ -487,7 +487,7 @@ async function goBack(isAfterDelete?: boolean) {
 function assignFilters(src, desc): boolean {
 	let leastOneUpdated;
 	const keys = Object.keys(src);
-	for (let i = keys.length; i > 0; ) {
+	for (let i = keys.length; i > 0;) {
 		i--;
 		const name = keys[i];
 		const value = src[name];
@@ -670,7 +670,7 @@ async function getNodeData(
 ): Promise<RecordData | RecordsData> {
 	/// #if DEBUG
 	if (typeof recId !== 'undefined' && typeof filters !== 'undefined') {
-		throw "Can't use recId and filters in one request";
+		throw 'Can\'t use recId and filters in one request';
 	}
 	/// #endif
 
@@ -894,7 +894,7 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 			.catch((error) => {
 				releaseQuiresOrder(requestRecord);
 				handleError(error, url, callStack);
-				
+
 				myAlert(L('CHECK_CONNECTION'), false, true);
 			})
 			//*/
@@ -1112,7 +1112,7 @@ if (isLitePage()) {
 function scrollToVisible(elem, doNotShake = false) {
 	if (elem) {
 		const element = ReactDOM.findDOMNode(elem) as HTMLDivElement;
-		if((element as any).scrollIntoViewIfNeeded) {
+		if ((element as any).scrollIntoViewIfNeeded) {
 			(element as any).scrollIntoViewIfNeeded(false);
 		 } else {
 			element.scrollIntoView();

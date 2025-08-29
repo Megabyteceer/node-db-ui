@@ -29,7 +29,7 @@ export default {
 		userSession: UserSession
 	) {
 		if (newData.hasOwnProperty('code')) {
-			throwError("Cant change 'code' of language.");
+			throwError('Cant change \'code\' of language.');
 		}
 		reloadMetadataSchedule();
 	},

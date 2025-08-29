@@ -145,7 +145,7 @@ async function activateUser(key, userSession: UserSession) {
 				await createUser(registration as any, userSession)
 			);
 			await mysqlExec(
-				"UPDATE _registration SET activationKey = '', status = 0 WHERE id = " +
+				'UPDATE _registration SET activationKey = \'\', status = 0 WHERE id = ' +
 					registrationID
 			);
 			return ret;
@@ -163,9 +163,9 @@ async function createUser(
 	userSession: UserSession
 ) {
 	const existingUser = await mysqlExec(
-		"SELECT id FROM _users WHERE status = 1 AND email='" +
+		'SELECT id FROM _users WHERE status = 1 AND email=\'' +
 			userData.email +
-			"' LIMIT 1"
+			'\' LIMIT 1'
 	);
 	if (existingUser.length > 0) {
 		throwError(L('EMAIL_ALREADY', userSession));
@@ -217,9 +217,9 @@ async function resetPassword(key, userId, userSession) {
 		);
 		if (users.length === 1) {
 			await mysqlExec(
-				"UPDATE _users SET \"resetCode\" = '' WHERE id ='" +
+				'UPDATE _users SET "resetCode" = \'\' WHERE id =\'' +
 					userId +
-					"'"
+					'\''
 			);
 			return authorizeUserByID(userId);
 		}
@@ -268,7 +268,7 @@ async function authorizeUserByID(
 		const orgId = await mysqlExec(
 			'INSERT INTO "_organization" ("name", "status", "_usersId") VALUES (\'' +
 				user.company +
-				"', '1', " +
+				'\', \'1\', ' +
 				userID +
 				')'
 		);

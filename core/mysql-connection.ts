@@ -38,7 +38,7 @@ const mysqlExec = (query: string): Promise<QueryResultRow[]> => {
 	/// #if DEBUG
 
 	SQLInjectionsCheck(query);
-	query = query.split(ESCAPE_BEGIN).join('').split(ESCAPE_END).join('')
+	query = query.split(ESCAPE_BEGIN).join('').split(ESCAPE_END).join('');
 
 	const SQL = {
 		timeElapsed_ms: performance.now(),

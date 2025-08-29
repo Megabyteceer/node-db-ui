@@ -1,7 +1,7 @@
-import { Component } from "react";
-import { LeftBar } from "./left-bar";
-import { R } from "./r";
-import { debugError, sp } from "./utils";
+import { Component } from 'react';
+import { LeftBar } from './left-bar';
+import { R } from './r';
+import { debugError, sp } from './utils';
 
 let modalStack = [];
 let idCounter = 0;
@@ -20,12 +20,12 @@ class Modal extends Component<any, any> {
 	}
 
 	show(content, noDiscardByBackdrop) {
-		if(document.activeElement) {
+		if (document.activeElement) {
 			// @ts-ignore
 			document.activeElement.blur();
 		}
 		idCounter++;
-		if(content) {
+		if (content) {
 			modalStack.push({ content: content, noDiscardByBackdrop: noDiscardByBackdrop, id: idCounter });
 		}
 		this.forceUpdate();
@@ -38,9 +38,9 @@ class Modal extends Component<any, any> {
 	}
 
 	hide(idToHide?) {
-		if(typeof (idToHide) !== 'number') {
+		if (typeof (idToHide) !== 'number') {
 			/// #if DEBUG
-			if(modalStack.length < 1) {
+			if (modalStack.length < 1) {
 				debugError('tried to hide modal while no modal showed');
 			}
 			/// #endif
@@ -55,21 +55,21 @@ class Modal extends Component<any, any> {
 	}
 
 	render() {
-		if(modalStack.length > 0) {
+		if (modalStack.length > 0) {
 			return R.div(null,
 				modalStack.map((m) => {
 					let className = 'fade-in modal-backdrop';
-					if(!m.noDiscardByBackdrop) {
-						className += " pointer";
+					if (!m.noDiscardByBackdrop) {
+						className += ' pointer';
 					}
 					return R.div({
 						key: m.id, className, onClick: () => {
-							if(!m.noDiscardByBackdrop) {
+							if (!m.noDiscardByBackdrop) {
 								this.hide();
 							}
 						}
 					},
-					R.div({ className: "modal", onClick: sp },
+					R.div({ className: 'modal', onClick: sp },
 						m.content
 					)
 					);

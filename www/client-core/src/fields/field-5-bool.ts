@@ -1,9 +1,8 @@
-import { FIELD_TYPE } from "../bs-utils";
-import { R } from "../r";
-import React, { Component } from "react";
-import { L, renderIcon } from "../utils";
-import { registerFieldClass } from "../utils";
-import { BaseField } from "./base-field";
+import React, { Component } from 'react';
+import { FIELD_TYPE } from '../bs-utils';
+import { R } from '../r';
+import { L, registerFieldClass, renderIcon } from '../utils';
+import { BaseField } from './base-field';
 
 class CheckBox extends Component<any, any> {
 	constructor(props) {
@@ -21,9 +20,9 @@ class CheckBox extends Component<any, any> {
 
 	render() {
 		let check;
-		if(this.state && this.state.value) {
+		if (this.state && this.state.value) {
 			check = R.span({
-				className: "field-boolean-check"
+				className: 'field-boolean-check'
 			}, renderIcon('check'));
 		}
 		return R.span({
@@ -33,7 +32,7 @@ class CheckBox extends Component<any, any> {
 				this.props.onClick(!this.state.value);
 			}
 		},
-			check
+		check
 		);
 	}
 }
@@ -42,7 +41,7 @@ registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField {
 
 	setValue(val) {
 		val = (val !== 0) && Boolean(val);
-		if(this.state.value !== val) {
+		if (this.state.value !== val) {
 			this.setState({
 				value: val
 			});
@@ -63,8 +62,7 @@ registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField {
 		const field = this.props.field;
 
 
-
-		if(this.props.isEdit) {
+		if (this.props.isEdit) {
 
 			return React.createElement(CheckBox, {
 				title: this.props.isCompact ? field.name : '',
@@ -77,13 +75,13 @@ registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField {
 
 
 		} else {
-			if(this.props.isCompact) {
-				if(value) {
+			if (this.props.isCompact) {
+				if (value) {
 					return R.span({
 						className: 'field-boolean-read-only-compact'
 					},
-						renderIcon('check')
-					)
+					renderIcon('check')
+					);
 				} else {
 					return R.span({ className: 'field-boolean-read-only-compact' });
 				}
@@ -97,3 +95,4 @@ registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField {
 });
 
 export { CheckBox };
+

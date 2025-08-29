@@ -1,18 +1,18 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 /// #if DEBUG
-import { DebugPanel } from "./debug-panel";
+import { DebugPanel } from './debug-panel';
 /// #endif
 
 import type { ENV_TYPE } from '../../../core/ENV';
-import { LeftBar } from "./left-bar";
-import { LoadingIndicator } from "./loading-indicator";
-import { Modal } from "./modal";
-import { Notify } from "./notify";
-import { R } from "./r";
-import { Stage } from "./stage";
-import { TopBar } from "./top-bar";
-import { User } from "./user";
-import { getData, goToPageByHash, onNewUser } from "./utils";
+import { LeftBar } from './left-bar';
+import { LoadingIndicator } from './loading-indicator';
+import { Modal } from './modal';
+import { Notify } from './notify';
+import { R } from './r';
+import { Stage } from './stage';
+import { TopBar } from './top-bar';
+import { User } from './user';
+import { getData, goToPageByHash, onNewUser } from './utils';
 
 
 const ROOT_NODE_ID = 2;
@@ -46,23 +46,23 @@ class MainFrame extends Component<any, any> {
 
 		nodesTree.some((i) => {
 			items[i.id] = i;
-			if(i.id === ROOT_NODE_ID) {
+			if (i.id === ROOT_NODE_ID) {
 				rootItem = i;
 			}
 		});
 
-		for(const k in nodesTree) {
+		for (const k in nodesTree) {
 			const i = nodesTree[k];
-			if(items.hasOwnProperty(i.parent)) {
+			if (items.hasOwnProperty(i.parent)) {
 				const parent = items[i.parent];
-				if(!parent.hasOwnProperty('children')) {
+				if (!parent.hasOwnProperty('children')) {
 					parent.children = [];
 				}
 				parent.children.push(i);
 			}
 		}
 		this.forceUpdate();
-		if(isFirstCall) {
+		if (isFirstCall) {
 			isFirstCall = false;
 			goToPageByHash();
 		}
@@ -71,13 +71,13 @@ class MainFrame extends Component<any, any> {
 	render() {
 		return R.div(null,
 			React.createElement(TopBar),
-			R.div({ className: "main-frame" },
+			R.div({ className: 'main-frame' },
 				nodesTree ? React.createElement(LeftBar, { menuItems: rootItem.children }) : undefined,
-				R.div({ className: "stage-container" },
+				R.div({ className: 'stage-container' },
 					React.createElement(Stage)
 				)
 			),
-			R.div({ className: "footer" }, ENV.APP_TITLE),
+			R.div({ className: 'footer' }, ENV.APP_TITLE),
 			React.createElement(Modal),
 			React.createElement(Notify),
 			/// #if DEBUG
@@ -92,3 +92,4 @@ class MainFrame extends Component<any, any> {
 MainFrame.instance = null;
 
 export { ENV, MainFrame };
+

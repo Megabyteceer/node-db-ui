@@ -21,7 +21,7 @@ class NodeAdmin extends Component<any, any> {
 	constructor(props) {
 		super(props);
 
-		if(this.props.form) {
+		if (this.props.form) {
 			this.state = {
 				show: this.props.form.props.node && showedNodeId === this.props.form.props.node.id,
 			};
@@ -39,7 +39,7 @@ class NodeAdmin extends Component<any, any> {
 	}
 
 	componentDidMount() {
-		if(this.props.form && !this.props.form.props.node) {
+		if (this.props.form && !this.props.form.props.node) {
 			getNode(this.props.form.props.nodeId).then((node) => {
 				this.node = node;
 				this.forceUpdate();
@@ -52,11 +52,11 @@ class NodeAdmin extends Component<any, any> {
 	}
 
 	show() {
-		if(this.timeout) {
+		if (this.timeout) {
 			clearTimeout(this.timeout);
 			delete this.timeout;
 		}
-		if(!this.state.show) {
+		if (!this.state.show) {
 			this.setState({
 				show: true,
 			});
@@ -64,7 +64,7 @@ class NodeAdmin extends Component<any, any> {
 	}
 
 	hide() {
-		if(this.state.show) {
+		if (this.state.show) {
 			this.setState({
 				show: false,
 			});
@@ -88,10 +88,10 @@ class NodeAdmin extends Component<any, any> {
 		let form;
 		let item;
 
-		if(this.props.form) {
+		if (this.props.form) {
 			node = this.props.form.props.node || this.node;
 			form = this.props.form;
-			if(!node) {
+			if (!node) {
 				return R.div();
 			}
 		} else {
@@ -105,7 +105,7 @@ class NodeAdmin extends Component<any, any> {
 		let borderOnAfterSave;
 		let borderOnLoad;
 
-		if(
+		if (
 			form &&
 			form._getFormEventHandler &&
 			form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE)
@@ -115,7 +115,7 @@ class NodeAdmin extends Component<any, any> {
 			borderOnSave = '';
 		}
 
-		if(
+		if (
 			form &&
 			form._getFormEventHandler &&
 			form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE)
@@ -125,7 +125,7 @@ class NodeAdmin extends Component<any, any> {
 			borderOnAfterSave = '';
 		}
 
-		if(
+		if (
 			form &&
 			form._getFormEventHandler &&
 			form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD)
@@ -139,14 +139,14 @@ class NodeAdmin extends Component<any, any> {
 
 		const bodyVisible = this.state.show || this.state.locked;
 
-		if(bodyVisible) {
+		if (bodyVisible) {
 			let buttons;
 			let allFields;
-			if(!item) {
-				if(this.state.allFieldsVisible) {
+			if (!item) {
+				if (this.state.allFieldsVisible) {
 					allFields = [];
-					for(const f of node.fields) {
-						if(f.lang) continue;
+					for (const f of node.fields) {
+						if (f.lang) continue;
 
 						allFields.push(
 							R.span({
@@ -259,7 +259,7 @@ class NodeAdmin extends Component<any, any> {
 							className: 'clickable tool-btn admin-form-btn',
 							title: L('FLD_SHOW_ALL'),
 							onClick: () => {
-								if(form) {
+								if (form) {
 									form.showAllDebug = !form.showAllDebug;
 									form.forceUpdate();
 								}

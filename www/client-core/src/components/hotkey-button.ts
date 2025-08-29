@@ -1,12 +1,12 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { R } from "../r";
-import { sp } from "../utils";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { R } from '../r';
+import { sp } from '../utils';
 
 const allHotKeyedButtons = [];
-window.addEventListener("keydown", (ev) => {
-	for(const b of allHotKeyedButtons) {
-		if(b.onKeyDown(ev)) { //call only first button with this hotkey
+window.addEventListener('keydown', (ev) => {
+	for (const b of allHotKeyedButtons) {
+		if (b.onKeyDown(ev)) { //call only first button with this hotkey
 			return;
 		}
 	}
@@ -47,17 +47,17 @@ const isEventFocusOnInputElement = (ev) => {
 
 const isUIBlockedByModal = (element) => {
 
-}
+};
 
 class HotkeyButton extends React.Component<HotkeyButtonProps> {
 
 	onKeyDown(e) {
-		if(!this.props.hotkey) {
+		if (!this.props.hotkey) {
 			return;
 		}
 		const needCtrl = this.props.hotkey > 1000;
 
-		if(
+		if (
 			this.props.disabled ||
 			((this.props.hotkey === 1067) && window.getSelection().toString()) ||
 			(isEventFocusOnInputElement(e) && (isHotkeyBlockedOnInput(this))) ||
@@ -66,7 +66,7 @@ class HotkeyButton extends React.Component<HotkeyButtonProps> {
 			return;
 		}
 
-		if((e.keyCode === (this.props.hotkey % 1000)) && (needCtrl === e.ctrlKey)) {
+		if ((e.keyCode === (this.props.hotkey % 1000)) && (needCtrl === e.ctrlKey)) {
 			this.onClick(e);
 			sp(e);
 			return true;
@@ -80,17 +80,17 @@ class HotkeyButton extends React.Component<HotkeyButtonProps> {
 	}
 
 	UNSAFE_componentWillReceiveProps(props) {
-		if(this.props.hotkey !== props.hotkey) {
-			if(!props.hotkey && this.props.hotkey) {
+		if (this.props.hotkey !== props.hotkey) {
+			if (!props.hotkey && this.props.hotkey) {
 				this.unregisterHotkey();
-			} else if(props.hotkey && !this.props.hotkey) {
+			} else if (props.hotkey && !this.props.hotkey) {
 				this.registerHotkey();
 			}
 		}
 	}
 
 	componentDidMount() {
-		if(this.props.hotkey) {
+		if (this.props.hotkey) {
 			this.registerHotkey();
 		}
 	}
@@ -100,9 +100,9 @@ class HotkeyButton extends React.Component<HotkeyButtonProps> {
 	}
 
 	unregisterHotkey() {
-		if(this.props.hotkey) {
+		if (this.props.hotkey) {
 			const i = allHotKeyedButtons.indexOf(this);
-			if(i >= 0) {
+			if (i >= 0) {
 				allHotKeyedButtons.splice(i, 1);
 			}
 		}
@@ -113,8 +113,8 @@ class HotkeyButton extends React.Component<HotkeyButtonProps> {
 	}
 
 	onClick(ev) {
-		if((ev.type === 'keydown') || (ev.button === 0)) {
-			if(this.props.disabled) return;
+		if ((ev.type === 'keydown') || (ev.button === 0)) {
+			if (this.props.disabled) return;
 			this.props.onClick(ev);
 			ev.target.blur();
 		}

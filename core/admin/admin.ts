@@ -126,7 +126,7 @@ function editFunction(fileName, functionName, args = '') {
 		text =
 			text.substr(0, i) +
 			functionName +
-			`(` +
+			'(' +
 			args +
 			`) {
 		

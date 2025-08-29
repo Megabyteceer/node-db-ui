@@ -13,7 +13,7 @@ async function clearUserParams(data, currentData, userSession) {
 		const p = data.password;
 		if (p !== 'nc_l4DFn76ds5yhg') {
 			const salt = generateSalt();
-			await mysqlExec("UPDATE _users SET salt='" + salt + "' WHERE id=" + currentData.id);
+			await mysqlExec('UPDATE _users SET salt=\'' + salt + '\' WHERE id=' + currentData.id);
 			data.password = await getPasswordHash(data.password, salt);
 		} else {
 			delete data.password;

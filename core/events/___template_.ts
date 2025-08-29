@@ -1,5 +1,5 @@
-import type { RecordData, RecordDataWrite, UserSession } from "../../www/client-core/src/bs-utils";
-import type { NodeEventsHandlers } from "../describe-node";
+import type { RecordData, RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import type { NodeEventsHandlers } from '../describe-node';
 
 const handlers: NodeEventsHandlers = {
 
@@ -27,5 +27,5 @@ const handlers: NodeEventsHandlers = {
 	afterDelete: async function(data: RecordData, userSession: UserSession) {
 
 	}
-}
+};
 export default handlers;

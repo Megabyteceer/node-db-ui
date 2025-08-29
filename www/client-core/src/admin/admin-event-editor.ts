@@ -1,4 +1,4 @@
-import { getData } from "../utils";
+import { getData } from '../utils';
 /// #if DEBUG
 /*
 /// #endif
@@ -6,7 +6,7 @@ throw new Error("admin-event-editor imported in release build.");
 //*/
 function admin_editSource(handler, node, field, args = '') {
 	let nodeId, fieldId;
-	if(field) {
+	if (field) {
 		fieldId = field.id;
 	}
 	nodeId = node.id;
@@ -15,10 +15,11 @@ function admin_editSource(handler, node, field, args = '') {
 		nodeId,
 		fieldId,
 		args
-	}
+	};
 	getData('admin/editEventHandler', data);
 }
 
 export {
 	admin_editSource
 };
+
