@@ -1,17 +1,11 @@
 import React from 'react';
-import { FIELD_TYPE, Filters, NodeDesc, RecordData } from '../bs-utils';
-import { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
+import type { NodeDesc, RecordData } from '../bs-utils';
+import { FIELD_TYPE } from '../bs-utils';
+import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import { FieldWrap } from '../fields/field-wrap';
-import { ComponentProps, R } from '../r';
-import {
-	deleteRecord,
-	draftRecord,
-	isRecordRestrictedForDeletion,
-	L,
-	publishRecord,
-	renderIcon,
-	sp,
-} from '../utils';
+import type { ComponentProps } from '../r';
+import { R } from '../r';
+import { deleteRecord, draftRecord, isRecordRestrictedForDeletion, L, publishRecord, renderIcon, sp } from '../utils';
 import { BaseForm } from './base-form';
 
 const publishClick = (draft, node, data) => {
@@ -26,9 +20,9 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 	node: NodeDesc,
 	data: RecordData,
 	refreshFunction?: () => void,
-	formItem?: FormListItem,
-	editButtonFilters?: Filters
+	formItem?: FormListItem
 ): React.Component[] => {
+	let buttons;
 	if (formItem && formItem.props.isLookup) {
 		if (data.hasOwnProperty('isE')) {
 			buttons = [
@@ -47,14 +41,14 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 			];
 		}
 	} else {
-		var itemName;
+		let itemName;
 		if (node.draftable && data.status !== 1) {
 			itemName = ' ' + L('TEMPLATE');
 		} else {
 			itemName = '';
 		}
 		const isRestricted = isRecordRestrictedForDeletion(node.id, data.id);
-		var buttons = [];
+		buttons = [];
 		if (data.hasOwnProperty('isP') && (!formItem || !formItem.props.disableDrafting)) {
 			if (data.status === 1) {
 				buttons.push(
@@ -165,11 +159,11 @@ class FormListItem extends BaseForm {
 	}
 
 	render() {
-		var fields = [];
-		var data = this.props.initialData;
-		var nodeFields = this.props.node.fields;
-		for (var k in nodeFields) {
-			var field = nodeFields[k];
+		const fields = [];
+		const data = this.props.initialData;
+		const nodeFields = this.props.node.fields;
+		for (const k in nodeFields) {
+			const field = nodeFields[k];
 			if (this.isFieldVisibleByFormViewMask(field)) {
 				let className = 'form-item-row';
 				if (field.fieldType === FIELD_TYPE.NUMBER) {
@@ -199,7 +193,7 @@ class FormListItem extends BaseForm {
 		}
 
 		/** @type any */
-		var itemProps: ComponentProps = {};
+		const itemProps: ComponentProps = {};
 		itemProps.className = 'list-item list-item-id-' + data.id;
 		if (this.props.node.draftable && data.status !== 1) {
 			itemProps.className += ' list-item-draft';
@@ -213,12 +207,12 @@ class FormListItem extends BaseForm {
 			};
 		}
 
-		var buttons;
+		let buttons;
 		if (!this.props.hideControls && !this.state.hideControls) {
 			buttons = renderItemsButtons(this.props.node, data, this.props.list.refreshData, this);
 		}
 
-		var additionalButtons;
+		let additionalButtons;
 		if (this.props.additionalButtons) {
 			additionalButtons = this.props.additionalButtons(
 				this.props.node,
@@ -240,3 +234,4 @@ class FormListItem extends BaseForm {
 }
 
 export { FormListItem, renderItemsButtons };
+

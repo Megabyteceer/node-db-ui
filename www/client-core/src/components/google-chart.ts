@@ -3,11 +3,11 @@ import { Component } from "react";
 import { R } from "../r";
 import { renderIcon } from "../utils";
 
-var chartLoaded = false;
-var all = [];
-var idCounter = 0;
+let chartLoaded = false;
+const all = [];
+let idCounter = 0;
 
-var init = () => {
+const init = () => {
 	// @ts-ignore
 	if(typeof (google) !== 'undefined') {
 		// @ts-ignore
@@ -18,7 +18,7 @@ var init = () => {
 		// @ts-ignore
 		google.charts.setOnLoadCallback(() => {
 			chartLoaded = true;
-			for(let c of all) {
+			for(const c of all) {
 				c.forceUpdate();
 			}
 		});
@@ -62,8 +62,8 @@ class GoogleChart extends Component<any, any> {
 				className: 'chart-body',
 				ref: (ref) => {
 					// @ts-ignore
-					var d = new google.visualization.DataTable();
-					for(let c of this.props.columns.array) {
+					const d = new google.visualization.DataTable();
+					for(const c of this.props.columns.array) {
 						d.addColumn(c[0], c[1]);
 					}
 
@@ -71,7 +71,7 @@ class GoogleChart extends Component<any, any> {
 
 					if(this.props.formatter) {
 						// @ts-ignore
-						var f = new google.visualization.NumberFormat(this.props.formatter);
+						const f = new google.visualization.NumberFormat(this.props.formatter);
 						f.format(d, 1);
 					}
 					if(!this.chart) {

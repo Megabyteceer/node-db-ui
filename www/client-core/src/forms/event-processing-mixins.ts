@@ -1,18 +1,20 @@
-import React from 'react';
+import type React from 'react';
 import ReactDOM from 'react-dom';
 import { assert, throwError, validateFieldName } from '../assert';
-import { FIELD_TYPE, FieldDesc, RecordData } from '../bs-utils';
+import type { FieldDesc, RecordData } from '../bs-utils';
+import { FIELD_TYPE } from '../bs-utils';
 import type { FieldWrap } from '../fields/field-wrap';
-import { CLIENT_SIDE_FORM_EVENTS, consoleLog, Filters, getData, L } from '../utils';
+import type { Filters } from '../utils';
+import { CLIENT_SIDE_FORM_EVENTS, consoleLog, getData, L } from '../utils';
 import { BaseForm } from './base-form';
 
-let eventsHandlers = [];
+const eventsHandlers = [];
 
 function registerEventHandler(classInstance) {
 	const proto = classInstance.prototype;
 	eventsHandlers.push(proto);
 	const names = Object.getOwnPropertyNames(proto);
-	for (let name of names) {
+	for (const name of names) {
 		if (name !== 'constructor') {
 			const method = proto[name];
 			if (typeof method === 'function') {
@@ -89,10 +91,10 @@ class FormEventProcessingMixins extends BaseForm {
 	callOnTabShowEvent(tabNameToShow) {
 		if (this.currentTabName !== tabNameToShow) {
 			this.currentTabName = tabNameToShow;
-			var field;
-			var nodeFields = this.props.node.fields;
-			for (var k in nodeFields) {
-				var f = nodeFields[k];
+			let field;
+			const nodeFields = this.props.node.fields;
+			for (const k in nodeFields) {
+				const f = nodeFields[k];
 				if (this.isFieldVisibleByFormViewMask(f)) {
 					if (f.fieldType === FIELD_TYPE.TAB && f.maxLength === 0) {
 						//tab
@@ -130,11 +132,11 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	hideField(...fieldsNames: string[]) {
-		for (let fieldName of fieldsNames) {
+		for (const fieldName of fieldsNames) {
 			validateFieldName(fieldName);
 			if (this.hiddenFields[fieldName] !== 1) {
 				this.hiddenFields[fieldName] = 1;
-				var f = this.getField(fieldName);
+				const f = this.getField(fieldName);
 				if (f) {
 					f.hide();
 				}
@@ -147,11 +149,11 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	showField(...fieldsNames: string[]) {
-		for (let fieldName of fieldsNames) {
+		for (const fieldName of fieldsNames) {
 			validateFieldName(fieldName);
 			if (this.hiddenFields[fieldName] === 1) {
 				delete this.hiddenFields[fieldName];
-				var f = this.getField(fieldName);
+				const f = this.getField(fieldName);
 				if (f) {
 					f.show();
 				}
@@ -177,7 +179,7 @@ class FormEventProcessingMixins extends BaseForm {
 		validateFieldName(fieldName);
 		if (this.disabledFields[fieldName] !== 1) {
 			this.disabledFields[fieldName] = 1;
-			var f = this.getField(fieldName);
+			const f = this.getField(fieldName);
 			if (!f) {
 				throw new Error('unknown field "' + fieldName + '"');
 			}
@@ -221,8 +223,8 @@ class FormEventProcessingMixins extends BaseForm {
 		await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD);
 		this.refreshLeftBar();
 
-		for (var k in this.fieldsRefs) {
-			var f = this.fieldsRefs[k];
+		for (const k in this.fieldsRefs) {
+			const f = this.fieldsRefs[k];
 			if (
 				f.props.field.fieldType !== FIELD_TYPE.BUTTON &&
 				f.props.field.fieldType !== FIELD_TYPE.TAB
@@ -231,7 +233,7 @@ class FormEventProcessingMixins extends BaseForm {
 			}
 		}
 
-		var hdr = this.header;
+		const hdr = this.header;
 		if ((this.state.header || '') != hdr) {
 			this.setState({ header: hdr });
 		}
@@ -269,11 +271,11 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	async setFieldValue(fieldName: string, val: any, isUserAction = false) {
-		var f = this.getField(fieldName);
+		const f = this.getField(fieldName);
 		if (!f) {
 			return; // prevent crash on unmount values debouncing
 		}
-		let field = f.props.field;
+		const field = f.props.field;
 
 		if (this.currentData[fieldName] !== val) {
 			if (!isUserAction) {
@@ -285,7 +287,7 @@ class FormEventProcessingMixins extends BaseForm {
 					this.props.parentForm.props.form.isDataModified = true;
 				}
 			}
-			var prev_value = this.currentData[fieldName];
+			const prev_value = this.currentData[fieldName];
 			this.currentData[fieldName] = val;
 
 			await this.processFieldEvent(field, isUserAction, prev_value);
@@ -296,7 +298,7 @@ class FormEventProcessingMixins extends BaseForm {
 
 	async checkUniqueValue(field, val) {
 		if (field.unique && val) {
-			let data = await getData(
+			const data = await getData(
 				'api/uniqueCheck',
 				{
 					fieldId: field.id,
@@ -323,7 +325,7 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	isFieldEmpty(fieldName) {
-		var v = this.fieldValue(fieldName);
+		const v = this.fieldValue(fieldName);
 		if (Array.isArray(v)) {
 			return v.length === 0;
 		}
@@ -338,12 +340,12 @@ class FormEventProcessingMixins extends BaseForm {
 		consoleLog('onSave ' + this.props.node.tableName + ': ' + this.props.initialData.id);
 		/// #endif
 
-		for (var fieldName in this.fieldsRefs) {
+		for (const fieldName in this.fieldsRefs) {
 			this.fieldAlert(fieldName); //hide all alerts
 		}
 
 		this.invalidAlertInOnSaveHandler = false;
-		var onSaveRes = await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE);
+		const onSaveRes = await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE);
 		return onSaveRes || this.invalidAlertInOnSaveHandler;
 	}
 
@@ -354,10 +356,10 @@ class FormEventProcessingMixins extends BaseForm {
 		focus: boolean = !isSuccess
 	) {
 		assert(fieldName, 'fieldName expected');
-		var f = this.getField(fieldName);
+		const f = this.getField(fieldName);
 		if (f) {
 			if (typeof isSuccess === 'undefined') {
-				isSuccess = !Boolean(text);
+				isSuccess = !text;
 			}
 			if (f.fieldAlert) {
 				f.fieldAlert(text, isSuccess, focus);
@@ -369,12 +371,12 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	_getFormEventHandler(eventName: CLIENT_SIDE_FORM_EVENTS) {
-		let name = this.props.node.tableName + '_' + eventName;
+		const name = this.props.node.tableName + '_' + eventName;
 		return this._getEventHandler(name);
 	}
 
 	_getFieldEventHandler(field: FieldDesc) {
-		let name =
+		const name =
 			this.props.node.tableName +
 			'_' +
 			field.fieldName +
@@ -384,7 +386,7 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	_getEventHandler(name) {
-		let ret = eventsHandlers.filter((i) => i.hasOwnProperty(name)).map((i) => i[name]);
+		const ret = eventsHandlers.filter((i) => i.hasOwnProperty(name)).map((i) => i[name]);
 		return ret.length > 0 && ret;
 	}
 
@@ -398,9 +400,9 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	async processEvent(handlers, isUserAction = false, prev_val = undefined, arg?: any) {
-		var ret;
+		let ret;
 		if (handlers) {
-			for (var handler of handlers) {
+			for (const handler of handlers) {
 				this.prev_value = prev_val;
 				this.recId = this.props.initialData.id || 'new';
 				this.isUpdateRecord = this.props.editable;

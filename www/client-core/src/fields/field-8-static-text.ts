@@ -9,7 +9,7 @@ registerFieldClass(FIELD_TYPE.STATIC_TEXT, class StaticTextField extends BaseFie
 	setValue(val) { }
 
 	render() {
-		var field = this.props.field;
+		const field = this.props.field;
 		if(crudJs.customClasses[field.description]) {
 			//@ts-ignore
 			return React.createElement(crudJs.customClasses[field.description], this.props);

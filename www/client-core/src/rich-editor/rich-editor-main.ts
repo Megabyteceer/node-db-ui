@@ -15,11 +15,11 @@
 	window.Popper = await import("popper.js");
 
 	//@ts-ignore
-	var s: { summernote: (...params: any[]) => void } = $('#summer-note');
-	var iframeId = location.href.split('iframeId=').pop();
+	const s: { summernote: (...params: any[]) => void } = $('#summer-note');
+	const iframeId = location.href.split('iframeId=').pop();
 
 	window.addEventListener("message", (event) => {
-		var data = event.data;
+		const data = event.data;
 
 		if(data.hasOwnProperty('options')) {
 

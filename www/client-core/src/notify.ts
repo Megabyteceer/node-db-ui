@@ -1,15 +1,15 @@
 import { Component } from "react";
 import { R } from "./r";
 
-var instance;
+let instance;
 
-var stack = [];
-var idCounter = 0;
+let stack = [];
+let idCounter = 0;
 
 
 class Notify extends Component<any, any> {
 	componentDidMount() {
-		instance = this;
+		instance = this; // eslint-disable-line @typescript-eslint/no-this-alias
 	}
 
 	static add(content) {
@@ -17,7 +17,7 @@ class Notify extends Component<any, any> {
 	}
 
 	add(content) {
-		var id = idCounter++;
+		const id = idCounter++;
 		if(content) {
 			stack.push({ content: content, id: id });
 		}
@@ -43,9 +43,9 @@ class Notify extends Component<any, any> {
 							this.hideById(m.id);
 						}
 					},
-						m.content.split('\n').map((l, i) => {
-							return R.div({ key: i }, l)
-						})
+					m.content.split('\n').map((l, i) => {
+						return R.div({ key: i }, l)
+					})
 					);
 				})
 			);
@@ -55,3 +55,4 @@ class Notify extends Component<any, any> {
 	}
 }
 export { Notify };
+

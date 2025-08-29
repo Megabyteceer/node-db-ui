@@ -1,23 +1,16 @@
-import { RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
+import type { RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
 /// #if DEBUG
 import { clearCache, getClientEventHandler, nodePrivileges } from './admin/admin';
 import { getDeployPackage } from './admin/deploy';
 /// #endif
 
-import {
-	activateUser,
-	getGuestUserForBrowserLanguage,
-	killSession,
-	resetPassword,
-	setCurrentOrg,
-	setMultilingual,
-} from './auth';
+import { activateUser, getGuestUserForBrowserLanguage, killSession, resetPassword, setCurrentOrg, setMultilingual } from './auth';
 import { getNodeDesc, getNodesTree } from './describe-node';
 import { deleteRecord, getRecords } from './get-records';
 import { submitRecord, uniqueCheck } from './submit';
 import { uploadFile, uploadImage } from './upload';
 
-const api: Object = {
+const api: object = {
 	'api/': async (reqData, userSession: UserSession) => {
 		const data = await getRecords(
 			reqData.nodeId,
@@ -27,7 +20,7 @@ const api: Object = {
 			reqData,
 			reqData.s
 		);
-		let ret: RecordsDataResponse = { data };
+		const ret: RecordsDataResponse = { data };
 		if (reqData.descNode) {
 			ret.node = getNodeDesc(reqData.nodeId, userSession);
 		}

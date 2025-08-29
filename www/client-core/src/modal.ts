@@ -3,8 +3,8 @@ import { LeftBar } from "./left-bar";
 import { R } from "./r";
 import { debugError, sp } from "./utils";
 
-var modalStack = [];
-var idCounter = 0;
+let modalStack = [];
+let idCounter = 0;
 
 class Modal extends Component<any, any> {
 	static instance: Modal;
@@ -69,9 +69,9 @@ class Modal extends Component<any, any> {
 							}
 						}
 					},
-						R.div({ className: "modal", onClick: sp },
-							m.content
-						)
+					R.div({ className: "modal", onClick: sp },
+						m.content
+					)
 					);
 				})
 			);
@@ -88,3 +88,4 @@ class Modal extends Component<any, any> {
 Modal.instance = null;
 
 export { Modal };
+

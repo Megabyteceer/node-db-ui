@@ -1,4 +1,5 @@
-import { NODE_TYPE, PRIVILEGES_MASK, RecordData } from '../bs-utils';
+import type { RecordData } from '../bs-utils';
+import { NODE_TYPE, PRIVILEGES_MASK } from '../bs-utils';
 import { R } from '../r';
 import React, { Component } from 'react';
 import { BaseForm } from '../forms/base-form';
@@ -24,14 +25,14 @@ function check() {
 
 class PrivilegesEditor extends Component<any, any> {
 	render() {
-		var body;
-		var item = this.props.item;
+		let body;
+		const item = this.props.item;
 
-		var mask = (Math.pow(2, this.props.bitsCount) - 1) * this.props.baseBit;
+		const mask = (Math.pow(2, this.props.bitsCount) - 1) * this.props.baseBit;
 
-		var curVal = item.privileges & mask;
+		let curVal = item.privileges & mask;
 
-		var title;
+		let title;
 
 		if (curVal === 0) {
 			body = R.span(
@@ -129,13 +130,13 @@ class AdminRolePrivilegesForm extends BaseForm {
 	}
 
 	async componentDidMount() {
-		let node = await getNode(this.props.recId);
+		const node = await getNode(this.props.recId);
 
-		let data = await getData('admin/nodePrivileges', {
+		const data = await getData('admin/nodePrivileges', {
 			nodeId: this.props.recId,
 		});
 
-		for (let i of data.privileges) {
+		for (const i of data.privileges) {
 			if (!i.privileges) {
 				i.privileges = 0;
 			}
@@ -150,7 +151,7 @@ class AdminRolePrivilegesForm extends BaseForm {
 
 	async saveClick() {
 		if (JSON.stringify(this.initData) !== JSON.stringify(this.state.data.privileges)) {
-			var submit = (toChild?: boolean) => {
+			const submit = (toChild?: boolean) => {
 				this.state.data.nodeId = this.props.recId;
 				this.state.data.toChild = toChild;
 				submitData('admin/nodePrivileges', this.state.data).then(() => {
@@ -170,10 +171,10 @@ class AdminRolePrivilegesForm extends BaseForm {
 
 	render() {
 		if (this.state && this.state.data) {
-			var data = this.state.data;
-			var node = this.state.node;
+			const data = this.state.data;
+			const node = this.state.node;
 
-			var lines = data.privileges.map((i) => {
+			const lines = data.privileges.map((i) => {
 				return R.tr(
 					{
 						key: i.id,
@@ -215,7 +216,7 @@ class AdminRolePrivilegesForm extends BaseForm {
 				);
 			});
 
-			var body = R.div(
+			const body = R.div(
 				{
 					className: 'admin-role-privileges-block',
 				},
@@ -254,7 +255,7 @@ class AdminRolePrivilegesForm extends BaseForm {
 				)
 			);
 
-			var saveButton = R.button(
+			const saveButton = R.button(
 				{
 					className: 'clickable success-button',
 					onClick: this.saveClick,
@@ -264,7 +265,7 @@ class AdminRolePrivilegesForm extends BaseForm {
 			);
 
 			/// #if DEBUG
-			var nodeAdmin;
+			let nodeAdmin;
 			if (iAdmin()) {
 				nodeAdmin = React.createElement(NodeAdmin, {
 					form: this,
@@ -274,7 +275,7 @@ class AdminRolePrivilegesForm extends BaseForm {
 			}
 			/// #endif
 
-			var closeButton = R.button(
+			const closeButton = R.button(
 				{
 					className: 'clickable default-button',
 					onClick: this.cancelClick,

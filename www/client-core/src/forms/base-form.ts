@@ -1,7 +1,8 @@
-import React, { Component } from "react";
-import { BoolNum, Filters, NodeDesc, RecId, RecordData, VIEW_MASK } from "../bs-utils";
-import { LookupOneToManyFiled } from "../fields/field-15-one-to-many";
-import { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
+import type React from "react";
+import { Component } from "react";
+import type { BoolNum, Filters, NodeDesc, RecId, RecordData, VIEW_MASK } from "../bs-utils";
+import type { LookupOneToManyFiled } from "../fields/field-15-one-to-many";
+import type { AdditionalButtonsRenderer } from "../fields/field-lookup-mixins";
 import type { FieldWrap } from "../fields/field-wrap";
 import { goBack, L, showPrompt, updateHashLocation } from "../utils";
 
@@ -94,7 +95,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	async cancelClick() {
 		this.forceBouncingTimeout();
 		if(this.isDataModified) {
-			let answer = await showPrompt(L('FORM_IS_MODIFIED'), L('LEAVE_WITHOUT_SAVING'));
+			const answer = await showPrompt(L('FORM_IS_MODIFIED'), L('LEAVE_WITHOUT_SAVING'));
 			if(!answer) {
 				return;
 			}

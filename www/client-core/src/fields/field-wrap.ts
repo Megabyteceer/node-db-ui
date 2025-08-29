@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import { FIELD_DISPLAY_TYPE, FIELD_TYPE, FieldDesc } from '../bs-utils';
+import type { FieldDesc } from '../bs-utils';
+import { FIELD_DISPLAY_TYPE, FIELD_TYPE } from '../bs-utils';
 import { R } from '../r';
 /// #if DEBUG
 import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 import { iAdmin } from '../user';
 import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible } from '../utils';
-import { BaseField, FieldProps } from './base-field';
+import type { BaseField, FieldProps } from './base-field';
 
 class FieldWrap extends Component<FieldProps, any> {
 	afterSave: () => Promise<any>;
@@ -50,7 +51,7 @@ class FieldWrap extends Component<FieldProps, any> {
 			this.forceUpdate();
 			const childrenFields = this.props.field.childrenFields;
 			if (childrenFields) {
-				for (let childField of childrenFields) {
+				for (const childField of childrenFields) {
 					this.props.form.getField(childField.fieldName).hide();
 				}
 			}
@@ -93,7 +94,7 @@ class FieldWrap extends Component<FieldProps, any> {
 			this.forceUpdate();
 			const childrenFields = this.props.field.childrenFields;
 			if (childrenFields) {
-				for (let childField of childrenFields) {
+				for (const childField of childrenFields) {
 					this.props.form.getField(childField.fieldName).show();
 				}
 			}
@@ -106,7 +107,7 @@ class FieldWrap extends Component<FieldProps, any> {
 			this.forceUpdate();
 			const childrenFields = this.props.field.childrenFields;
 			if (childrenFields) {
-				for (let childField of childrenFields) {
+				for (const childField of childrenFields) {
 					this.props.form.getField(childField.fieldName).disable();
 				}
 			}
@@ -119,7 +120,7 @@ class FieldWrap extends Component<FieldProps, any> {
 			this.forceUpdate();
 			const childrenFields = this.props.field.childrenFields;
 			if (childrenFields) {
-				for (let childField of childrenFields) {
+				for (const childField of childrenFields) {
 					this.props.form.getField(childField.fieldName).enable();
 				}
 			}
@@ -143,7 +144,7 @@ class FieldWrap extends Component<FieldProps, any> {
 		if (!this.fieldRef || !this.fieldRef.getMessageIfInvalid) {
 			return true;
 		} else {
-			let invalidMessage = await this.fieldRef.getMessageIfInvalid();
+			const invalidMessage = await this.fieldRef.getMessageIfInvalid();
 			if (!invalidMessage) {
 				this.fieldAlert();
 				return true;
@@ -231,11 +232,11 @@ class FieldWrap extends Component<FieldProps, any> {
 	}
 
 	render() {
-		var field = this.props.field;
+		const field = this.props.field;
 
-		var domId = 'field-container-id-' + field.id;
+		const domId = 'field-container-id-' + field.id;
 
-		var fieldProps = {
+		const fieldProps = {
 			field,
 			wrapper: this,
 			form: this.props.form,
@@ -249,19 +250,19 @@ class FieldWrap extends Component<FieldProps, any> {
 			},
 		};
 
-		var fieldTypedBody = React.createElement(getClassForField(field.fieldType), fieldProps);
-		var fieldCustomBody;
+		const fieldTypedBody = React.createElement(getClassForField(field.fieldType), fieldProps);
+		let fieldCustomBody;
 
-		var noLabel = !field.name; // (field.fieldType===FIELD_TYPE.LOOKUP_NtoM)||(field.fieldType===FIELD_TYPE.LOOKUP_1toN);
+		const noLabel = !field.name; // (field.fieldType===FIELD_TYPE.LOOKUP_NtoM)||(field.fieldType===FIELD_TYPE.LOOKUP_1toN);
 
-		var help;
+		let help;
 		if (field.description && field.fieldType !== FIELD_TYPE.STATIC_TEXT) {
 			help = React.createElement(FieldHelp, {
 				text: R.div(null, R.h4(null, field.name), field.description),
 			});
 		}
 		/// #if DEBUG
-		var fieldAdmin;
+		let fieldAdmin;
 		if (iAdmin() && !field.lang && !this.props.isCompact) {
 			fieldAdmin = React.createElement(FieldAdmin, { field, form: this.props.form });
 		}
@@ -298,7 +299,7 @@ class FieldWrap extends Component<FieldProps, any> {
 		}
 
 		if (this.props.isCompact) {
-			var tooltip;
+			let tooltip;
 			if (this.state.showToolTip) {
 				tooltip = R.span(
 					{ className: 'field-wrap-tooltip' },
@@ -334,7 +335,7 @@ class FieldWrap extends Component<FieldProps, any> {
 			if (field.lang) {
 				className += ' field-wrap-lang';
 			}
-			var label;
+			let label;
 			if (!noLabel) {
 				label = React.createElement(FieldLabel, {
 					field,
@@ -379,8 +380,8 @@ class FieldHelp extends Component<any, any> {
 	}
 
 	render() {
-		var body;
-		var btn = R.div({ className: 'field-wrap-help' }, renderIcon('question-circle'));
+		let body;
+		const btn = R.div({ className: 'field-wrap-help' }, renderIcon('question-circle'));
 		if (this.state && this.state.hovered) {
 			body = R.div({ className: 'field-wrap-help-body' }, this.props.text);
 		}
@@ -398,15 +399,15 @@ class FieldHelp extends Component<any, any> {
 
 class FieldLabel extends Component<any, any> {
 	render() {
-		var field: FieldDesc = this.props.field;
-		var star;
+		const field: FieldDesc = this.props.field;
+		let star;
 		if (this.props.isEdit && field.requirement) {
 			star = R.span({ className: 'field-wrap-required-star' }, '*');
 		} else {
 			star = '';
 		}
 
-		var alertBody;
+		let alertBody;
 		if (this.props.fieldAlert) {
 			if (this.props.isSuccessAlert) {
 				alertBody = R.div(
@@ -418,7 +419,7 @@ class FieldLabel extends Component<any, any> {
 			}
 		}
 
-		var body;
+		let body;
 		if (field.lang) {
 			body = R.span({ className: 'field-wrap-label-lang' }, field.lang);
 		} else {
@@ -436,3 +437,4 @@ class FieldLabel extends Component<any, any> {
 }
 
 export { FieldHelp, FieldLabel, FieldWrap };
+

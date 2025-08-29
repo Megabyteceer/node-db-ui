@@ -1,7 +1,6 @@
 import { FIELD_TYPE } from "../bs-utils";
 import { R } from "../r";
-import { renderIcon } from "../utils";
-import { registerFieldClass } from "../utils";
+import { registerFieldClass, renderIcon } from "../utils";
 import { BaseField } from "./base-field";
 
 registerFieldClass(FIELD_TYPE.BUTTON, class ButtonField extends BaseField {
@@ -21,9 +20,9 @@ registerFieldClass(FIELD_TYPE.BUTTON, class ButtonField extends BaseField {
 
 	render() {
 
-		var field = this.props.field;
+		const field = this.props.field;
 
-		var bIcon;
+		let bIcon;
 		if(field.icon) {
 			bIcon = renderIcon(field.icon);
 		}

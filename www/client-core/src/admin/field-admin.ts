@@ -1,20 +1,13 @@
 import { Component } from 'react';
-import { FieldDesc, NODE_ID, NodeDesc } from '../bs-utils';
+import type { FieldDesc, NodeDesc } from '../bs-utils';
+import { NODE_ID } from '../bs-utils';
 import { List } from '../forms/list';
 import { R } from '../r';
-import {
-	CLIENT_SIDE_FORM_EVENTS,
-	getNodeData,
-	keepInWindow,
-	L,
-	reloadLocation,
-	renderIcon,
-	sp,
-} from '../utils';
+import { CLIENT_SIDE_FORM_EVENTS, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
 import { admin } from './admin-utils';
 
-var showedFieldId;
+let showedFieldId;
 
 /// #if DEBUG
 /*
@@ -63,11 +56,11 @@ class FieldAdmin extends Component<any, any> {
 	}
 
 	render() {
-		var field: FieldDesc = this.props.field;
-		var node: NodeDesc = field.node;
-		var form = this.props.form;
-		var body;
-		var border;
+		const field: FieldDesc = this.props.field;
+		const node: NodeDesc = field.node;
+		const form = this.props.form;
+		let body;
+		let border;
 
 		if (form._getFieldEventHandler && form._getFieldEventHandler(field)) {
 			border = ' admin-button-highlighted';
@@ -75,10 +68,10 @@ class FieldAdmin extends Component<any, any> {
 			border = '';
 		}
 
-		var bodyVisible = this.state.show || this.state.locked;
+		const bodyVisible = this.state.show || this.state.locked;
 
 		if (bodyVisible) {
-			var extendedInfo;
+			let extendedInfo;
 			if (
 				form.fieldsRefs &&
 				form.fieldsRefs[field.fieldName] &&
@@ -93,7 +86,7 @@ class FieldAdmin extends Component<any, any> {
 					})
 				);
 			}
-			let isList = this.props.form instanceof List;
+			const isList = this.props.form instanceof List;
 
 			body = R.div(
 				{
@@ -129,7 +122,7 @@ class FieldAdmin extends Component<any, any> {
 						{
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
-								var i = field.index;
+								const i = field.index;
 								if (i > 0) {
 									admin.moveField(i, form, node, -1).then(reloadLocation);
 								}
@@ -142,7 +135,7 @@ class FieldAdmin extends Component<any, any> {
 						{
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
-								var i = field.index;
+								const i = field.index;
 								if (i < node.fields.length - 1) {
 									admin.moveField(i, form, node, +1).then(reloadLocation);
 								}
@@ -225,3 +218,4 @@ class FieldAdmin extends Component<any, any> {
 }
 
 export { FieldAdmin };
+

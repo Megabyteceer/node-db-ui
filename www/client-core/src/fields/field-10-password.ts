@@ -13,11 +13,11 @@ registerFieldClass(
 		}
 
 		render() {
-			var value = this.state.value;
-			var field = this.props.field;
+			const value = this.state.value;
+			const field = this.props.field;
 
 			if (this.props.isEdit) {
-				var inputsProps = {
+				const inputsProps = {
 					type: 'password',
 					name: field.fieldName,
 					autoFocus: this.isAutoFocus(),

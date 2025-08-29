@@ -3,7 +3,7 @@ import React from "react";
 
 interface ComponentProps {
 	className?: string;
-	onClick?: Function;
+	onClick?: (ev:MouseEvent) => void;
 	[key: string]: any;
 }
 
@@ -38,7 +38,7 @@ class R {
 	static meta: (props?: ComponentProps, ...children) => React.ReactElement;
 }
 
-for(let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'label',
+for(const factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'label',
 	'b', 'a', 'br', 'hr', 'svg', 'td', 'tr', 'th', 'tbody', 'thead', 'table', 'polyline',
 	'textarea', 'iframe', 'h2', 'h3', 'h4', 'h5', 'script', 'meta']) {
 	R[factoryType] = (...theArgs) => {

@@ -2,7 +2,7 @@
 import { Component } from "react";
 import { getData, L, renderIcon, sp } from "../utils";
 
-var style = {
+const style = {
 	display: 'inline-block',
 	marginTop: 17,
 	width: 400,
@@ -10,7 +10,7 @@ var style = {
 
 };
 
-var inputStyle = {
+const inputStyle = {
 	width: 240,
 	borderRadius: 0,
 	border: '1px solid ' + BRAND_COLOR_LIGHT,
@@ -19,14 +19,14 @@ var inputStyle = {
 	color: '#fff',
 	background: window.constants.BRAND_COLOR_SHADOW,
 }
-var imgStyle = {
+const imgStyle = {
 	width: 40,
 	height: 'auto',
 	float: 'left',
 	marginRight: 10
 }
 
-var clearBtnStyle = {
+const clearBtnStyle = {
 	borderBottomRightRadius: 4,
 	borderTopRightRadius: 4,
 	padding: '2px 10px',
@@ -38,7 +38,7 @@ var clearBtnStyle = {
 	borderLeft: 0
 }
 
-var resultsStyle = {
+const resultsStyle = {
 	display: 'block',
 	width: 400,
 	fontSize: '80%',
@@ -51,7 +51,7 @@ var resultsStyle = {
 	boxShadow: '0px 4px 12px 0px #777'
 }
 
-var itemStyle = {
+const itemStyle = {
 	display: 'block',
 	padding: 10,
 	borderBottom: '1px solid #db9'
@@ -100,7 +100,7 @@ export default class Search extends Component<any, any> {
 
 	render() {
 
-		var inputsProps = {
+		const inputsProps = {
 			style: inputStyle,
 			title: 'Search',
 			placeholder: L('SEARCH'),
@@ -108,12 +108,12 @@ export default class Search extends Component<any, any> {
 			onChange: this.onChange
 		};
 
-		var waitIcon;
+		let waitIcon;
 		if(this.state && this.state.queryInProgress) {
 			waitIcon = renderIcon('cog fa-spin');
 		}
 
-		var results;
+		let results;
 		if(this.state && this.state.data && !this.state.hidden) {
 
 			if(this.state.data.length > 0) {
@@ -124,7 +124,7 @@ export default class Search extends Component<any, any> {
 				},
 					this.state.data.map((i) => {
 
-						var img;
+						let img;
 						if(i.img) {
 
 							img = R.img({

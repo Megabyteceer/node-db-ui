@@ -1,9 +1,11 @@
-import { attachGoogleLoginAPI, Filters, getData, getNode, getNodeData, goToHome, isAdmin, L, myAlert, showPrompt } from '../utils';
+import type { Filters} from '../utils';
+import { attachGoogleLoginAPI, getData, getNode, getNodeData, goToHome, isAdmin, L, myAlert, showPrompt } from '../utils';
 /// #if DEBUG
 import { makeIconSelectionField } from '../admin/admin-utils';
 /// #endif
 
-import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NODE_ID, NODE_TYPE, NodeDesc, RecordSubmitResult, VIEW_MASK } from '../bs-utils';
+import type { NodeDesc, RecordSubmitResult} from '../bs-utils';
+import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NODE_ID, NODE_TYPE, VIEW_MASK } from '../bs-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
 import { FormFull } from '../forms/form-full';
 import { ENV } from '../main-frame';
@@ -14,8 +16,8 @@ let uiLanguageIsChanged;
 
 class FormEvents extends FormFull {
 	checkPasswordConfirmation() {
-		var p = this.fieldValue('password');
-		var p2 = this.fieldValue('passwordConfirm');
+		const p = this.fieldValue('password');
+		const p2 = this.fieldValue('passwordConfirm');
 		if (p && p !== p2) {
 			this.fieldAlert('passwordConfirm', L('PASS_NOT_MACH'));
 		} else {
@@ -59,7 +61,7 @@ class FormEvents extends FormFull {
 			this.hideField('_organizationId');
 		}
 
-		var myName = this.fieldValue('name');
+		const myName = this.fieldValue('name');
 
 		if (!isAdmin() && this.isUserEdit) {
 			this.disableField('email');
@@ -89,14 +91,14 @@ class FormEvents extends FormFull {
 
 	_users_onSave() {
 		this.checkPasswordConfirmation();
-		var pass = this.fieldValue('password');
+		const pass = this.fieldValue('password');
 		if (pass.length < 6) {
 			this.fieldAlert('password', L('PASS_LEN', 6));
 		}
 
 		if (User.currentUserData.id === this.fieldValue('id')) {
-			var pLang = this.props.initialData.language;
-			var nLang = this.currentData.language;
+			let pLang = this.props.initialData.language;
+			let nLang = this.currentData.language;
 			if (pLang && pLang.hasOwnProperty('id')) {
 				pLang = pLang.id;
 			}
@@ -197,7 +199,7 @@ class FormEvents extends FormFull {
 
 	_nodes_onSave() {
 		if (this.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
-			var name = this.fieldValue('name');
+			const name = this.fieldValue('name');
 			this.setFieldValue('singleName', name);
 			this.setFieldValue('storeForms', 0);
 		} else {
@@ -216,7 +218,7 @@ class FormEvents extends FormFull {
 	async _fields_onLoad() {
 		makeIconSelectionField(this, 'icon');
 
-		let parentNodeVal = this.fieldValue('nodeFieldsLinker');
+		const parentNodeVal = this.fieldValue('nodeFieldsLinker');
 		let parentNode: NodeDesc;
 		if (parentNodeVal) {
 			parentNode = await getNode(parentNodeVal.id);
@@ -281,8 +283,8 @@ class FormEvents extends FormFull {
 		if (this.isNewRecord) {
 			this._fieldsNameIsBad = false;
 
-			var checkFieldExists = (fName, nodeId) => {
-				let fieldsFilter: Filters = {
+			const checkFieldExists = (fName, nodeId) => {
+				const fieldsFilter: Filters = {
 					fieldName: fName
 				};
 				if (this.fieldValue('fieldType') !== FIELD_TYPE.LOOKUP_NtoM) {
@@ -303,12 +305,12 @@ class FormEvents extends FormFull {
 				});
 			};
 
-			var fn = this.fieldValue('fieldName');
-			var nodeId = this.fieldValue('nodeFieldsLinker');
+			const fn = this.fieldValue('fieldName');
+			let nodeId = this.fieldValue('nodeFieldsLinker');
 			if (nodeId && nodeId.id) {
 				nodeId = nodeId.id;
 			}
-			var nodeRef = this.fieldValue('nodeRef');
+			let nodeRef = this.fieldValue('nodeRef');
 			if (nodeRef && nodeRef.id) {
 				nodeRef = nodeRef.id;
 			}
@@ -324,7 +326,7 @@ class FormEvents extends FormFull {
 	}
 
 	_fields_onSave() {
-		var fieldType = this.fieldValue('fieldType');
+		const fieldType = this.fieldValue('fieldType');
 
 		if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_NtoM || fieldType === FIELD_TYPE.LOOKUP_1toN) {
 			if (this.isFieldEmpty('nodeRef')) {
@@ -347,7 +349,7 @@ class FormEvents extends FormFull {
 			if (!this.fieldValue('width')) {
 				this.fieldAlert('width', L('REQUIRED_FLD'));
 			}
-			let maxLength = Math.min(9999, this.fieldValue('height') || undefined) + (this.fieldValue('width') || undefined) * 10000;
+			const maxLength = Math.min(9999, this.fieldValue('height') || undefined) + (this.fieldValue('width') || undefined) * 10000;
 			if (!isNaN(maxLength)) {
 				this.setFieldValue('maxLength', maxLength);
 			}
@@ -396,10 +398,10 @@ class FormEvents extends FormFull {
 
 	_enums_onSave() {
 		let ret;
-		let exists = {};
-		let valuesForms = (this.getField('values').fieldRef as LookupOneToManyFiled).inlineListRef.getSubForms();
-		for (let form of valuesForms) {
-			let val = form.fieldValue('value');
+		const exists = {};
+		const valuesForms = (this.getField('values').fieldRef as LookupOneToManyFiled).inlineListRef.getSubForms();
+		for (const form of valuesForms) {
+			const val = form.fieldValue('value');
 			if (exists[val]) {
 				ret = true;
 				form.fieldAlert('value', L('VALUE_EXISTS'));
@@ -463,7 +465,7 @@ class FormEvents extends FormFull {
 			/// #endif
 			//@ts-ignore
 			window.onGoogleSignIn = (googleUser) => {
-				var id_token = googleUser.getAuthResponse().id_token;
+				const id_token = googleUser.getAuthResponse().id_token;
 				this.setFieldValue('username', 'google-auth-sign-in');
 				this.setFieldValue('password', id_token);
 				this.save();
@@ -475,8 +477,8 @@ class FormEvents extends FormFull {
 
 	_resetPassword_onLoad() {
 		this.hideCancelButton();
-		let activationKey = this.filters.activationKey;
-		let resetCode = this.filters.resetCode;
+		const activationKey = this.filters.activationKey;
+		const resetCode = this.filters.resetCode;
 		if (activationKey || resetCode) {
 			this.hideField('email');
 			this.hideFooter();
@@ -501,7 +503,7 @@ class FormEvents extends FormFull {
 	_enum_values_onLoad() {
 		if (this.isNewRecord && this.props.parentForm) {
 			let maxEnumVal = 0;
-			for (var item of this.props.parentForm.getBackupData()) {
+			for (const item of this.props.parentForm.getBackupData()) {
 				if (item.value > maxEnumVal) {
 					maxEnumVal = item.value;
 				}

@@ -4,9 +4,9 @@ import ReactDOM from 'react-dom';
 import { Component } from 'react';
 import Highlighter from 'react-highlight-words';
 import { assert } from '../assert';
-import { FieldDesc } from '../bs-utils';
-import { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
-import { FormFull } from '../forms/form-full';
+import type { FieldDesc } from '../bs-utils';
+import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
+import type { FormFull } from '../forms/form-full';
 import type { FieldWrap } from './field-wrap';
 
 let autoFocusNow = true;
@@ -62,7 +62,7 @@ class BaseField<
 
 	/** returns true only for first call at one render time */
 	isAutoFocus() {
-		let ret = autoFocusNow;
+		const ret = autoFocusNow;
 		if (autoFocusNow) {
 			autoFocusNow = undefined;
 			setTimeout(resetAutofocus, 10);
@@ -77,7 +77,7 @@ class BaseField<
 	}
 
 	isEmpty(): boolean {
-		var val = this.props.wrapper.props.form.currentData[this.props.field.fieldName];
+		const val = this.props.wrapper.props.form.currentData[this.props.field.fieldName];
 		return !val;
 	}
 
@@ -85,11 +85,11 @@ class BaseField<
 		throw 'class ' + this.constructor.name + ' has no getBackupData() method.';
 	}
 
-	setMin(val: Number) {
+	setMin(val: number) {
 		throw 'class ' + this.constructor.name + ' has no setMin() method.';
 	}
 
-	setMax(val: Number) {
+	setMax(val: number) {
 		throw 'class ' + this.constructor.name + ' has no setMax() method.';
 	}
 

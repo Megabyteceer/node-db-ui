@@ -6,18 +6,10 @@ import { FIELD_TYPE } from '../bs-utils';
 import { ENV } from '../main-frame';
 import { Modal } from '../modal';
 import { R } from '../r';
-import {
-	checkFileSize,
-	getReadableUploadSize,
-	idToFileUrl,
-	L,
-	registerFieldClass,
-	renderIcon,
-	serializeForm,
-	submitData,
-} from '../utils';
-import { BaseField, RefToInput } from './base-field';
-import { FieldWrap } from './field-wrap';
+import { checkFileSize, getReadableUploadSize, idToFileUrl, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
+import type { RefToInput } from './base-field';
+import { BaseField } from './base-field';
+import type { FieldWrap } from './field-wrap';
 
 registerFieldClass(
 	FIELD_TYPE.FILE,
@@ -46,16 +38,16 @@ registerFieldClass(
 		}
 
 		render() {
-			var field = this.props.field;
+			const field = this.props.field;
 
-			var fileName = this.props.initialValue;
+			let fileName = this.props.initialValue;
 
 			if (fileName && fileName.name) {
 				fileName = fileName.name;
 			}
 
 			if (this.props.isEdit) {
-				let accept = ENV.ALLOWED_UPLOADS.map((i) => '.' + i).join(', ');
+				const accept = ENV.ALLOWED_UPLOADS.map((i) => '.' + i).join(', ');
 				return React.createElement(FileFormBody, {
 					field,
 					ref: (r) => {
@@ -100,8 +92,8 @@ class FileFormBody extends Component<any, any> {
 
 	async save(fieldWrap: FieldWrap) {
 		if (this.waitingForUpload) {
-			let n = ReactDOM.findDOMNode(this.formRef) as HTMLFormElement;
-			let fileId = await submitData('api/uploadFile', serializeForm(n), true);
+			const n = ReactDOM.findDOMNode(this.formRef) as HTMLFormElement;
+			const fileId = await submitData('api/uploadFile', serializeForm(n), true);
 			if (!fileId) {
 				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.fieldName, L('UPLOAD_ERROR'));
 			}
@@ -115,7 +107,7 @@ class FileFormBody extends Component<any, any> {
 
 	_onChange(e) {
 		e.preventDefault();
-		var files = undefined;
+		let files = undefined;
 		if (e.dataTransfer) {
 			files = e.dataTransfer.files;
 		} else if (e.target) {
@@ -131,11 +123,11 @@ class FileFormBody extends Component<any, any> {
 	}
 
 	render() {
-		var field = this.props.field;
+		const field = this.props.field;
 
-		var curFile;
-		var selFile;
-		var select;
+		let curFile;
+		let selFile;
+
 
 		if (this.props.currentFileName) {
 			curFile = R.a(
@@ -160,7 +152,7 @@ class FileFormBody extends Component<any, any> {
 			);
 		}
 
-		select = R.button(
+		const select = R.button(
 			{
 				className: 'clickable field-button',
 				onClick: () => {
@@ -172,7 +164,7 @@ class FileFormBody extends Component<any, any> {
 			L('FILE_SELECT', getReadableUploadSize())
 		);
 
-		var recIdField, nodeIdField;
+		let recIdField, nodeIdField;
 		if (this.props.form.currentData && this.props.form.currentData.id) {
 			recIdField = R.input({
 				name: 'recId',
@@ -186,7 +178,7 @@ class FileFormBody extends Component<any, any> {
 			});
 		}
 
-		var form = R.form(
+		const form = R.form(
 			{
 				ref: (r) => {
 					this.formRef = r;
@@ -215,3 +207,4 @@ class FileFormBody extends Component<any, any> {
 }
 
 export { FileFormBody };
+

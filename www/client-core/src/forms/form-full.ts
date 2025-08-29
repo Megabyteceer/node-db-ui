@@ -8,7 +8,8 @@ import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 
 import React from 'react';
-import { FIELD_TYPE, FieldDesc, PRIVILEGES_MASK, RecordData, RecordSubmitResult } from '../bs-utils';
+import type { FieldDesc, RecordData, RecordSubmitResult } from '../bs-utils';
+import { FIELD_TYPE, PRIVILEGES_MASK } from '../bs-utils';
 import { HotkeyButton } from '../components/hotkey-button';
 import { LoadingIndicator } from '../loading-indicator';
 import { R } from '../r';
@@ -28,14 +29,14 @@ const entryToKey = (entry) => {
 };
 
 async function callForEachField(fieldRefs, data, functionName) {
-	for (let k of Object.keys(fieldRefs)) {
-		let f = fieldRefs[k];
+	for (const k of Object.keys(fieldRefs)) {
+		const f = fieldRefs[k];
 		if (!(f instanceof FieldWrap)) {
 			continue;
 		}
 		if (f.fieldRef[functionName]) {
-			var fieldName = f.props.field.fieldName;
-			let newValue = await f.fieldRef[functionName]();
+			const fieldName = f.props.field.fieldName;
+			const newValue = await f.fieldRef[functionName]();
 			if (typeof newValue !== 'undefined' && f.props.initialValue !== newValue) {
 				data[fieldName] = newValue;
 			}
@@ -88,7 +89,7 @@ class FormFull extends FormEventProcessingMixins {
 
 	recoveryBackupIfNeed() {
 		if (!this.currentData.id && !this.props.inlineEditable) {
-			var backup = getItem(this._getBackupKey());
+			const backup = getItem(this._getBackupKey());
 			if (backup) {
 				this.currentData = Object.assign(backup, this.filters);
 				this.resendDataToFields();
@@ -97,9 +98,9 @@ class FormFull extends FormEventProcessingMixins {
 	}
 
 	prepareToBackup() {
-		var fields = this.props.node.fields;
-		for (var k in fields) {
-			var f = fields[k];
+		const fields = this.props.node.fields;
+		for (const k in fields) {
+			const f = fields[k];
 			if (f.fieldType === FIELD_TYPE.LOOKUP_1toN && this.isFieldVisibleByFormViewMask(f)) {
 				this.currentData[f.fieldName] = this.getField(f.fieldName).getBackupData();
 			}
@@ -118,8 +119,8 @@ class FormFull extends FormEventProcessingMixins {
 
 	resendDataToFields() {
 		if (this.props.editable) {
-			for (var k in this.fieldsRefs) {
-				var f = this.fieldsRefs[k];
+			for (const k in this.fieldsRefs) {
+				const f = this.fieldsRefs[k];
 				if (this.currentData.hasOwnProperty(k)) {
 					f.setValue(this.currentData[k]);
 				}
@@ -128,8 +129,8 @@ class FormFull extends FormEventProcessingMixins {
 	}
 
 	forceBouncingTimeout() {
-		for (var k in this.fieldsRefs) {
-			var f = this.fieldsRefs[k];
+		for (const k in this.fieldsRefs) {
+			const f = this.fieldsRefs[k];
 			if (!(f instanceof FieldWrap)) {
 				continue;
 			}
@@ -152,12 +153,12 @@ class FormFull extends FormEventProcessingMixins {
 			return false;
 		}
 
-		for (let k in this.fieldsRefs) {
-			var fieldWrapperRef = this.fieldsRefs[k];
+		for (const k in this.fieldsRefs) {
+			const fieldWrapperRef = this.fieldsRefs[k];
 			if (!(fieldWrapperRef instanceof FieldWrap)) {
 				continue;
 			}
-			var field = fieldWrapperRef.props.field;
+			const field = fieldWrapperRef.props.field;
 
 			if (this.props.overrideOrderData >= 0 && field.fieldName === 'order') {
 				this.currentData[field.fieldName] = this.props.overrideOrderData;
@@ -168,8 +169,8 @@ class FormFull extends FormEventProcessingMixins {
 				this.formIsValid = false;
 			} else {
 				this.fieldAlert(field.fieldName);
-				let isValid = await this.checkUniqueValue(field, !fieldWrapperRef.isEmpty() && this.currentData[field.fieldName]);
-				let isValid2 = await fieldWrapperRef.checkValidityBeforeSave(this.formIsValid);
+				const isValid = await this.checkUniqueValue(field, !fieldWrapperRef.isEmpty() && this.currentData[field.fieldName]);
+				const isValid2 = await fieldWrapperRef.checkValidityBeforeSave(this.formIsValid);
 				if (!isValid || !isValid2) {
 					this.formIsValid = false;
 				}
@@ -180,8 +181,8 @@ class FormFull extends FormEventProcessingMixins {
 	async saveClick(isDraft): Promise<boolean> {
 		LoadingIndicator.instance.show();
 
-		let ret = this.saveClickInner(isDraft)
-			/// #if DEBUG
+		const ret = this.saveClickInner(isDraft)
+		/// #if DEBUG
 			/*
 			/// #endif
 			.catch((er) => {
@@ -197,7 +198,7 @@ class FormFull extends FormEventProcessingMixins {
 	async saveClickInner(isDraft): Promise<boolean> {
 		this.isPreventCloseFormAfterSave = false;
 		this.forceBouncingTimeout();
-		var data: RecordData = {};
+		const data: RecordData = {};
 
 		if (isDraft !== 'keepStatus') {
 			if (this.props.initialData.isP || !this.props.initialData.id) {
@@ -217,14 +218,14 @@ class FormFull extends FormEventProcessingMixins {
 			return true;
 		}
 
-		for (var k in this.fieldsRefs) {
-			var fieldRef = this.fieldsRefs[k];
+		for (const k in this.fieldsRefs) {
+			const fieldRef = this.fieldsRefs[k];
 			if (!(fieldRef instanceof FieldWrap)) {
 				continue;
 			}
-			var field = fieldRef.props.field;
+			const field = fieldRef.props.field;
 
-			var val = this.currentData[field.fieldName];
+			const val = this.currentData[field.fieldName];
 
 			if (field.sendToServer) {
 				if (field.fieldType === FIELD_TYPE.LOOKUP_NtoM) {
@@ -232,8 +233,8 @@ class FormFull extends FormEventProcessingMixins {
 						data[field.fieldName] = val.map((v) => v.id);
 					}
 				} else if (field.fieldType === FIELD_TYPE.LOOKUP) {
-					var cVal = val;
-					var iVal = this.props.initialData[field.fieldName];
+					let cVal = val;
+					let iVal = this.props.initialData[field.fieldName];
 
 					if (cVal && cVal.id) {
 						cVal = cVal.id;
@@ -267,8 +268,8 @@ class FormFull extends FormEventProcessingMixins {
 			if (this.props.node.captcha) {
 				data.c = await getCaptchaToken();
 			}
-			let submitResult: RecordSubmitResult = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
-			let recId = submitResult.recId;
+			const submitResult: RecordSubmitResult = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
+			const recId = submitResult.recId;
 			if (!recId) {
 				// save error
 				return;
@@ -285,8 +286,8 @@ class FormFull extends FormEventProcessingMixins {
 			//renew initial data;
 			crudJs.Stage.dataDidModified(this.currentData);
 
-			for (var k in data) {
-				var val = data[k];
+			for (const k in data) {
+				const val = data[k];
 				if (typeof val === 'object') {
 					if (!Object.keys(val).length) {
 						this.props.initialData[k] = undefined;
@@ -323,17 +324,17 @@ class FormFull extends FormEventProcessingMixins {
 	}
 
 	render() {
-		var node = this.props.node;
+		const node = this.props.node;
 		if (!node) {
 			return R.div({ className: 'field-lookup-loading-icon-container' }, renderIcon('cog fa-spin fa-2x'));
 		}
 
-		var tabs;
-		var fields = [];
-		var data = this.currentData;
-		var nodeFields = node.fields;
+		let tabs;
+		let fields = [];
+		const data = this.currentData;
+		const nodeFields = node.fields;
 
-		var className = 'form form-full form-node-' + node.id + ' form-rec-' + this.recId;
+		let className = 'form form-full form-node-' + node.id + ' form-rec-' + this.recId;
 		if (this.props.isCompact) {
 			className += ' form-compact';
 		}
@@ -342,12 +343,12 @@ class FormFull extends FormEventProcessingMixins {
 			className += ' form-edit';
 		}
 
-		var forcedValues = this.props.filters;
-		var currentTab;
-		var currentTabName;
+		const forcedValues = this.props.filters;
+		let currentTab;
+		let currentTabName;
 
-		for (var k in nodeFields) {
-			let field = nodeFields[k];
+		for (const k in nodeFields) {
+			const field = nodeFields[k];
 			if (this.isFieldVisibleByFormViewMask(field)) {
 				const ref = (ref) => {
 					if (ref) {
@@ -359,7 +360,7 @@ class FormFull extends FormEventProcessingMixins {
 
 				if (field.fieldType === FIELD_TYPE.TAB && field.maxLength === 0 && !this.isSubForm()) {
 					//tab
-					var isDefaultTab;
+					let isDefaultTab;
 					if (!tabs) {
 						tabs = [];
 						isDefaultTab = true;
@@ -368,7 +369,7 @@ class FormFull extends FormEventProcessingMixins {
 						fields = [];
 					}
 
-					var tabVisible;
+					let tabVisible;
 					if (this.filters.hasOwnProperty('tab')) {
 						tabVisible = this.filters.tab === field.fieldName;
 					} else {
@@ -388,7 +389,7 @@ class FormFull extends FormEventProcessingMixins {
 					});
 					tabs.push(currentTab);
 				} else if (this.props.editable || data[field.fieldName] || !field.storeInDb || field.fieldType === FIELD_TYPE.LOOKUP_1toN || field.fieldType >= 100) {
-					var tf = React.createElement(FieldWrap, {
+					const tf = React.createElement(FieldWrap, {
 						ref,
 						key: field.id,
 						field,
@@ -406,12 +407,12 @@ class FormFull extends FormEventProcessingMixins {
 			}
 		}
 
-		var isMainTab = !this.filters.tab || tabs[0].props.field.fieldName === this.filters.tab;
+		const isMainTab = !this.filters.tab || tabs[0].props.field.fieldName === this.filters.tab;
 
 		if (this.props.isCompact) {
 			fields.sort((a, b) => {
-				var alow = a.props.field.fieldType === FIELD_TYPE.LOOKUP_1toN || a.props.field.fieldType === FIELD_TYPE.LOOKUP_NtoM || a.props.field.fieldType === FIELD_TYPE.BOOL;
-				var blow = b.props.field.fieldType === FIELD_TYPE.LOOKUP_1toN || b.props.field.fieldType === FIELD_TYPE.LOOKUP_NtoM || b.props.field.fieldType === FIELD_TYPE.BOOL;
+				const alow = a.props.field.fieldType === FIELD_TYPE.LOOKUP_1toN || a.props.field.fieldType === FIELD_TYPE.LOOKUP_NtoM || a.props.field.fieldType === FIELD_TYPE.BOOL;
+				const blow = b.props.field.fieldType === FIELD_TYPE.LOOKUP_1toN || b.props.field.fieldType === FIELD_TYPE.LOOKUP_NtoM || b.props.field.fieldType === FIELD_TYPE.BOOL;
 				if (alow !== blow) {
 					if (alow) {
 						return 1;
@@ -419,8 +420,8 @@ class FormFull extends FormEventProcessingMixins {
 						return -1;
 					}
 				}
-				var pa = a.props.field.lang;
-				var pb = b.props.field.lang;
+				const pa = a.props.field.lang;
+				const pb = b.props.field.lang;
 
 				if (pa !== pb) {
 					if (!pa) return -1;
@@ -432,14 +433,14 @@ class FormFull extends FormEventProcessingMixins {
 			});
 		}
 
-		var closeButton;
-		var header;
+		let closeButton;
+		let header;
 
-		var deleteButton;
-		var saveButton;
-		var draftButton;
+		let deleteButton;
+		let saveButton;
+		let draftButton;
 		/// #if DEBUG
-		var nodeAdmin;
+		let nodeAdmin;
 		/// #endif
 		const isRestricted = isRecordRestrictedForDeletion(node.id, data.id);
 		if (!this.props.inlineEditable) {
@@ -517,7 +518,7 @@ class FormFull extends FormEventProcessingMixins {
 			}
 			/// #endif
 			if (!this.props.isCompact) {
-				let headerContent =
+				const headerContent =
 					this.header ||
 					this.state.header ||
 					R.span(
@@ -526,8 +527,8 @@ class FormFull extends FormEventProcessingMixins {
 						this.recId === 'new'
 							? (node.storeForms ? L('CREATE') + ' ' : undefined, node.creationName || node.singleName)
 							: this.state.data
-							? this.state.data.name
-							: this.props.initialData.name
+								? this.state.data.name
+								: this.props.initialData.name
 					);
 				header = R.h4({ className: 'form-header' }, headerContent);
 			}
@@ -557,25 +558,25 @@ class FormFull extends FormEventProcessingMixins {
 			tabsHeader = R.div(
 				{ className: 'header-tabs' },
 				tabs.map((tab) => {
-					let tabField: FieldDesc = tab.props.field;
+					const tabField: FieldDesc = tab.props.field;
 					return this.isFieldVisible(tabField.fieldName)
 						? R.span(
-								{ key: tabField.fieldName, className: 'header-tab-wrap' },
-								R.span(
-									{
-										className: tab.props.visible ? 'tab-header-button tab-header-button-active not-clickable' : 'tab-header-button tab-header-button-inactive clickable',
-										onClick: tab.props.visible
-											? undefined
-											: () => {
-													this.setFormFilter('tab', tabField.fieldName);
+							{ key: tabField.fieldName, className: 'header-tab-wrap' },
+							R.span(
+								{
+									className: tab.props.visible ? 'tab-header-button tab-header-button-active not-clickable' : 'tab-header-button tab-header-button-inactive clickable',
+									onClick: tab.props.visible
+										? undefined
+										: () => {
+											this.setFormFilter('tab', tabField.fieldName);
 											  }
-									},
-									renderIcon(tabField.icon),
-									tabField.name
-								),
-								/// #if DEBUG
-								React.createElement(FieldAdmin, { field: tabField, form: this })
-								/// #endif
+								},
+								renderIcon(tabField.icon),
+								tabField.name
+							),
+							/// #if DEBUG
+							React.createElement(FieldAdmin, { field: tabField, form: this })
+							/// #endif
 						  )
 						: undefined;
 				})
@@ -604,3 +605,4 @@ class FormFull extends FormEventProcessingMixins {
 }
 
 export { FormFull };
+

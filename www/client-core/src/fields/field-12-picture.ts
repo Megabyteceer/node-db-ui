@@ -5,18 +5,10 @@ import { Component } from 'react';
 import { FIELD_TYPE, IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
 import { Modal } from '../modal';
 import { R } from '../r';
-import {
-	checkFileSize,
-	idToImgURL,
-	L,
-	myAlert,
-	registerFieldClass,
-	renderIcon,
-	serializeForm,
-	submitData,
-} from '../utils';
-import { BaseField, RefToInput } from './base-field';
-import { FieldWrap } from './field-wrap';
+import { checkFileSize, idToImgURL, L, myAlert, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
+import type { RefToInput } from './base-field';
+import { BaseField } from './base-field';
+import type { FieldWrap } from './field-wrap';
 
 registerFieldClass(
 	FIELD_TYPE.PICTURE,
@@ -42,9 +34,9 @@ registerFieldClass(
 		}
 
 		render() {
-			var field = this.props.field;
+			const field = this.props.field;
 
-			var imgUrl = idToImgURL(this.props.initialValue, this.props.field.fieldName);
+			const imgUrl = idToImgURL(this.props.initialValue, this.props.field.fieldName);
 
 			if (this.props.isEdit) {
 				return React.createElement(CropperFieldBody, {
@@ -94,7 +86,7 @@ class CropperFieldBody extends Component<any, any> {
 		this.props.parent.props.wrapper.hideTooltip();
 	}
 
-	_cropImage(exactlySize, imgData) {
+	_cropImage(exactlySize:boolean | MouseEvent, imgData?) {
 		if (exactlySize === true) {
 			//no cropper need
 			this.setState({
@@ -108,7 +100,7 @@ class CropperFieldBody extends Component<any, any> {
 			}
 
 			// @ts-ignore
-			var bounds = this.cropper.cropper.getData();
+			const bounds = this.cropper.cropper.getData();
 			this.references.w.value = bounds.width;
 			this.references.h.value = bounds.height;
 			this.references.x.value = bounds.x;
@@ -139,8 +131,8 @@ class CropperFieldBody extends Component<any, any> {
 
 	async save(fieldWrap: FieldWrap) {
 		if (this.waitingForUpload) {
-			let form = ReactDOM.findDOMNode(this.references.form) as HTMLFormElement;
-			let imageId = await submitData('api/uploadImage', serializeForm(form), true).catch(
+			const form = ReactDOM.findDOMNode(this.references.form) as HTMLFormElement;
+			const imageId = await submitData('api/uploadImage', serializeForm(form), true).catch(
 				(er) => {}
 			);
 			if (!imageId) {
@@ -158,7 +150,7 @@ class CropperFieldBody extends Component<any, any> {
 
 	_onChange(e) {
 		e.preventDefault();
-		var files = undefined;
+		let files = undefined;
 		if (e.dataTransfer) {
 			files = e.dataTransfer.files;
 		} else if (e.target) {
@@ -168,25 +160,25 @@ class CropperFieldBody extends Component<any, any> {
 			if (checkFileSize(files[0])) {
 				return;
 			}
-			var reader = new FileReader();
+			const reader = new FileReader();
 			reader.onload = () => {
 				this.setState({ waiting: 0, src: reader.result, cropResult: false });
 				this.waitingForUpload = false;
-				var selectedImage = new Image();
+				const selectedImage = new Image();
 				const cropperLoader = import('react-cropper');
 
 				selectedImage.onload = () => {
 					cropperLoader.then((module) => {
 						const ReactCropper = module.Cropper;
-						var field = this.props.field;
-						var w = Math.floor(field.maxLength / 10000);
-						var h = field.maxLength % 10000;
+						const field = this.props.field;
+						const w = Math.floor(field.maxLength / 10000);
+						const h = field.maxLength % 10000;
 
 						if (w === selectedImage.width && h === selectedImage.height) {
 							this._cropImage(true, reader.result);
 						} else {
-							var cropperW = 900;
-							var cropperH = (900 / w) * h;
+							let cropperW = 900;
+							let cropperH = (900 / w) * h;
 							if (cropperH > 350) {
 								cropperH = 350;
 								cropperW = (350 / h) * w;
@@ -242,21 +234,21 @@ class CropperFieldBody extends Component<any, any> {
 	}
 
 	render() {
-		var field = this.props.field;
-		var w = Math.floor(field.maxLength / 10000);
-		var h = field.maxLength % 10000;
-		var recW = w;
-		var recH = h;
+		const field = this.props.field;
+		let w = Math.floor(field.maxLength / 10000);
+		let h = field.maxLength % 10000;
+		const recW = w;
+		const recH = h;
 
 		if (this.props.isCompact) {
 			w /= 3;
 			h /= 3;
 		}
-		var body;
-		var select;
-		var preview;
+		let body;
+		let select;
+		let preview;
 
-		var clrBtn;
+		let clrBtn;
 		if (
 			this.state.cropResult ||
 			this.state.src ||
@@ -275,7 +267,7 @@ class CropperFieldBody extends Component<any, any> {
 			if (this.state.waiting) {
 				body = renderIcon('cog fa-spin fa-2x');
 			} else {
-				var imgSrc = this.state.cropResult || this.props.currentPicUrl;
+				let imgSrc = this.state.cropResult || this.props.currentPicUrl;
 				if (this.state.cleared) {
 					imgSrc = idToImgURL(0, field.fieldName);
 				}
@@ -311,7 +303,7 @@ class CropperFieldBody extends Component<any, any> {
 			}
 		}
 
-		var form = R.form(
+		const form = R.form(
 			{
 				ref: (r) => {
 					this.references.form = r;

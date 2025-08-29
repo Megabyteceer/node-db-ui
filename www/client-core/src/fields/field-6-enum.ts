@@ -1,5 +1,6 @@
 import React from "react";
-import { EnumList, FIELD_TYPE } from "../bs-utils";
+import type { EnumList } from "../bs-utils";
+import { FIELD_TYPE } from "../bs-utils";
 import { Select } from "../components/select";
 import { R } from "../r";
 import { registerFieldClass } from "../utils";
@@ -26,8 +27,8 @@ class EnumField extends BaseField {
 
 	render() {
 
-		var value = this.state.value;
-		var field = this.props.field;
+		let value = this.state.value;
+		const field = this.props.field;
 
 		if(!value) {
 			value = 0
@@ -35,7 +36,7 @@ class EnumField extends BaseField {
 
 		if(this.props.isEdit) {
 
-			var inputsProps = {
+			const inputsProps = {
 				isCompact: this.props.isCompact,
 				defaultValue: value,
 				title: field.name,

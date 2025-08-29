@@ -1,15 +1,14 @@
-import { R } from '../r';
 import { FIELD_TYPE } from '../bs-utils';
-import { L, renderIcon } from '../utils';
-import { registerFieldClass } from '../utils';
-import { BaseField } from './base-field';
+import { R } from '../r';
 import { User } from '../user';
+import { L, registerFieldClass, renderIcon } from '../utils';
+import { BaseField } from './base-field';
 
-var idCounter = 0;
+let idCounter = 0;
 
-var listeners = {};
+const listeners = {};
 window.addEventListener('message', (e) => {
-	var data = e.data;
+	const data = e.data;
 	if (listeners.hasOwnProperty(data.id)) {
 		listeners[data.id](data);
 	}
@@ -33,10 +32,10 @@ registerFieldClass(
 
 		componentDidMount() {
 			if (this.props.isEdit) {
-				var field = this.props.field;
-				var w = Math.floor(field.maxLength / 10000);
-				var h = field.maxLength % 10000;
-				var options = {
+				const field = this.props.field;
+				const w = Math.floor(field.maxLength / 10000);
+				const h = field.maxLength % 10000;
+				const options = {
 					width: w,
 					height: h,
 					lang: User.currentUserData.lang.code,
@@ -48,7 +47,7 @@ registerFieldClass(
 						this.forceUpdate();
 					}
 
-					var s = this.getSummerNote();
+					const s = this.getSummerNote();
 					if (data.hasOwnProperty('value')) {
 						this.setValue(data.value, false);
 						this.props.wrapper.valueListener(this.state.value, true, this);
@@ -69,7 +68,7 @@ registerFieldClass(
 
 		async getMessageIfInvalid(): Promise<string | false | true> {
 			if (this.state.value) {
-				var val = this.state.value;
+				const val = this.state.value;
 				if (val.length > 4000000) {
 					return L('RICH_ED_SIZE', this.props.field.name);
 				}
@@ -85,7 +84,7 @@ registerFieldClass(
 			}
 			if (this.state.value !== val) {
 				if (sendToEditor !== false) {
-					var s = this.getSummerNote();
+					const s = this.getSummerNote();
 					s.postMessage({ value: val }, '*');
 				}
 				///@ts-ignore
@@ -95,7 +94,7 @@ registerFieldClass(
 
 		async beforeSave() {
 			return new Promise((resolve) => {
-				var s = this.getSummerNote();
+				const s = this.getSummerNote();
 				this.resolveValueAwaiting = resolve as () => void;
 				s.postMessage({ onSaveRichEditor: true }, '*');
 			});
@@ -103,13 +102,13 @@ registerFieldClass(
 
 		render() {
 			if (this.props.isEdit) {
-				var field = this.props.field;
+				const field = this.props.field;
 
-				var w = Math.floor(field.maxLength / 10000) + 230;
-				var h = (field.maxLength % 10000) + 30;
+				const w = Math.floor(field.maxLength / 10000) + 230;
+				const h = (field.maxLength % 10000) + 30;
 
-				var style = { width: w, height: h + 100 };
-				var cog;
+				const style = { width: w, height: h + 100 };
+				let cog;
 				if (!this.summerNoteIsInitialized) {
 					cog = R.div(null, renderIcon('cog fa-spin'));
 				}

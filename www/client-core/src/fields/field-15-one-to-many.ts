@@ -1,5 +1,6 @@
 import React from 'react';
-import { FIELD_TYPE, Filters, RecId, RecordData, RecordsData, VIEW_MASK } from '../bs-utils';
+import type { Filters, RecId, RecordData, RecordsData } from '../bs-utils';
+import { FIELD_TYPE, VIEW_MASK } from '../bs-utils';
 import { List } from '../forms/list';
 import { R } from '../r';
 import { assignFilters, deleteRecord, L, registerFieldClass } from '../utils';
@@ -10,7 +11,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 
 	constructor(props) {
 		super(props);
-		var filters = this.generateDefaultFiltersByProps(props);
+		const filters = this.generateDefaultFiltersByProps(props);
 		this.state = { filters };
 	}
 
@@ -21,12 +22,12 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 	}
 
 	getBackupData() {
-		var ret = [];
-		var i;
+		const ret = [];
+		let i;
 		if (this.state.inlineEditing) {
-			var subForms = this.inlineListRef.getSubForms();
+			const subForms = this.inlineListRef.getSubForms();
 			for (i = 0; i < subForms.length; i++) {
-				var form = subForms[i];
+				const form = subForms[i];
 				form.prepareToBackup();
 				ret.push(form.currentData);
 			}
@@ -35,7 +36,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 	}
 
 	isEmpty(): boolean {
-		var subForms = this.inlineListRef.getSubForms();
+		const subForms = this.inlineListRef.getSubForms();
 		return subForms.length < 1;
 	}
 
@@ -58,9 +59,9 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 	async getMessageIfInvalid(): Promise<string | false | true> {
 		if (this.state.inlineEditing) {
 			let ret;
-			let forms = this.inlineListRef.getSubForms();
-			for (let subForm of forms) {
-				let res = await subForm.validate();
+			const forms = this.inlineListRef.getSubForms();
+			for (const subForm of forms) {
+				const res = await subForm.validate();
 				if (!res) {
 					ret = L('INVALID_DATA_LIST');
 				}
@@ -71,19 +72,19 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 
 	async afterSave() {
 		if (this.state.inlineEditing) {
-			var listData = this.inlineListRef.state.data;
-			var field = this.props.field;
-			for (let item of listData.items) {
+			const listData = this.inlineListRef.state.data;
+			const field = this.props.field;
+			for (const item of listData.items) {
 				if (item.hasOwnProperty('__deleted_901d123f')) {
 					if (item.hasOwnProperty('id')) {
 						await deleteRecord('', field.nodeRef, item.id, true);
 					}
 				}
 			}
-			var subForms = this.inlineListRef.getSubForms();
-			for (let form of subForms) {
-				var initialData = form.props.initialData;
-				var linkerName = this.getLinkerFieldName();
+			const subForms = this.inlineListRef.getSubForms();
+			for (const form of subForms) {
+				const initialData = form.props.initialData;
+				const linkerName = this.getLinkerFieldName();
 				if (!initialData.hasOwnProperty(linkerName) || initialData[linkerName] === 'new') {
 					form.currentData[linkerName] = { id: this.props.form.currentData.id };
 				}
@@ -107,21 +108,21 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 
 	forceBouncingTimeout() {
 		if (this.inlineEditable) {
-			for (let subForm of this.inlineListRef.getSubForms()) {
+			for (const subForm of this.inlineListRef.getSubForms()) {
 				subForm.forceBouncingTimeout();
 			}
 		}
 	}
 
 	render() {
-		var field = this.props.field;
-		var askToSaveParentBeforeCreation = !this.props.form.props.initialData.hasOwnProperty('id');
-		let initialData: RecordsData =
+		const field = this.props.field;
+		const askToSaveParentBeforeCreation = !this.props.form.props.initialData.hasOwnProperty('id');
+		const initialData: RecordsData =
 			typeof this.props.form.recId === 'number'
 				? undefined
 				: {
-						items: [],
-						total: 0,
+					items: [],
+					total: 0,
 				  };
 		return R.div(
 			null,
@@ -149,3 +150,4 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 registerFieldClass(FIELD_TYPE.LOOKUP_1toN, LookupOneToManyFiled);
 
 export { LookupOneToManyFiled };
+

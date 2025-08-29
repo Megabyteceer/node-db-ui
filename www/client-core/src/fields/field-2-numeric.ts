@@ -20,15 +20,15 @@ registerFieldClass(
 		}
 
 		render() {
-			var value = this.state.value;
-			var field = this.props.field;
+			let value = this.state.value;
+			const field = this.props.field;
 
 			if (!value) {
 				value = 0;
 			}
 
 			if (this.props.isEdit) {
-				var inputsProps = {
+				const inputsProps = {
 					type: 'number',
 					value: value,
 					title: field.name,
@@ -38,7 +38,7 @@ registerFieldClass(
 					readOnly: this.props.fieldDisabled,
 					ref: this.refGetter,
 					onChange: () => {
-						let value = parseInt(this.refToInput.value.substr(0, field.maxLength));
+						const value = parseInt(this.refToInput.value.substr(0, field.maxLength));
 						this.setState({ value });
 						this.props.wrapper.valueListener(value, true, this);
 					},

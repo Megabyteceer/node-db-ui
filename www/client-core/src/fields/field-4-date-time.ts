@@ -6,7 +6,8 @@ import { FIELD_TYPE } from "../bs-utils";
 import type { FormFull } from "../forms/form-full";
 import { R } from "../r";
 import { innerDateTimeFormat, L, readableDateFormat, readableTimeFormat, registerFieldClass, renderIcon, toReadableDate, toReadableDateTime, toReadableTime } from "../utils";
-import { BaseField, FieldProps, FieldState, RefToInput } from "./base-field";
+import type { FieldProps, FieldState, RefToInput } from "./base-field";
+import { BaseField } from "./base-field";
 
 function isSameDay(val, d) {
 	if(!d || !val) return false;
@@ -19,7 +20,7 @@ interface DateTimeFieldState extends FieldState {
 	allowedDays?: moment.Moment[];
 }
 
-let ReactDateTimeClassHolder: { importReactDateTime: () => void, isRequired?: boolean, ReactDateTimeClass?: typeof import('react-datetime') } = {
+const ReactDateTimeClassHolder: { importReactDateTime: () => void, isRequired?: boolean, ReactDateTimeClass?: typeof import('react-datetime') } = {
 	importReactDateTime: () => {
 		if(!ReactDateTimeClassHolder.isRequired) {
 			ReactDateTimeClassHolder.isRequired = true;
@@ -50,7 +51,7 @@ class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 			}
 		}
 
-		var props = {
+		const props = {
 			inputValue: toReadableDate(val),
 			selectedDate: val,
 		}
@@ -102,7 +103,7 @@ class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 
 	setDatePart(moment) {
 		if(this.state.value && !this.validateDate(this.state.value)) {
-			var nv = this.state.value.clone();
+			const nv = this.state.value.clone();
 			nv.year(moment.year());
 			nv.month(moment.month());
 			nv.date(moment.date());
@@ -113,7 +114,7 @@ class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 
 	validateDate(val, doFix?: boolean) {
 		if(this.state.allowedDays) {
-			var isValid = this.state.allowedDays.some((d) => {
+			const isValid = this.state.allowedDays.some((d) => {
 				return isSameDay(val, d);
 			});
 
@@ -197,9 +198,9 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 
 	render() {
 
-		var field = this.props.field;
+		const field = this.props.field;
 
-		var value = this.state.value;
+		let value = this.state.value;
 
 		if(value && isNaN(value.year())) {
 			value = undefined;
@@ -210,7 +211,7 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 				ReactDateTimeClassHolder.importReactDateTime();
 				return renderIcon('cog fa-spin');
 			}
-			var inputsProps1 = {
+			const inputsProps1 = {
 				closeOnSelect: true,
 				initialValue: value,
 				placeholder: L('TIME'),
@@ -227,8 +228,8 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 				},
 				onChange: (val) => {
 					if(val._isAMomentObject) {
-						var mergedValue;
-						var value = this.state.value;
+						let mergedValue;
+						const value = this.state.value;
 						if(value) {
 							mergedValue = value.clone();
 							mergedValue.hour(val.hour());
@@ -246,7 +247,7 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 				}
 			};
 
-			var inputsProps2 = {
+			const inputsProps2 = {
 				closeOnSelect: true,
 				initialValue: value,
 				placeholder: L('DATE'),
@@ -261,8 +262,8 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 				},
 				onChange: (val) => {
 					if(val._isAMomentObject) {
-						var mergedValue;
-						var value = this.state.value;
+						let mergedValue;
+						const value = this.state.value;
 						if(value) {
 							mergedValue = value.clone();
 							mergedValue.year(val.year());

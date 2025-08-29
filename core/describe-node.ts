@@ -10,23 +10,10 @@ import { D, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 
 import { join } from 'path';
 import { assert, throwError } from '../www/client-core/src/assert';
-import {
-	EnumList,
-	EnumListItem,
-	FIELD_TYPE,
-	FieldDesc,
-	NODE_ID,
-	NODE_TYPE,
-	NodeDesc,
-	RecId,
-	RecordData,
-	RecordDataWrite,
-	ROLE_ID,
-	USER_ID,
-	UserLangEntry,
-	VIEW_MASK
-} from '../www/client-core/src/bs-utils';
-import { authorizeUserByID, isUserHaveRole, setMaintenanceMode, UserSession /*, usersSessionsStartedCount*/ } from './auth';
+import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, RecordData, RecordDataWrite, UserLangEntry } from '../www/client-core/src/bs-utils';
+import { FIELD_TYPE, NODE_ID, NODE_TYPE, ROLE_ID, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import type { UserSession /*, usersSessionsStartedCount*/ } from './auth';
+import { authorizeUserByID, isUserHaveRole, setMaintenanceMode /*, usersSessionsStartedCount*/ } from './auth';
 import { ENV } from './ENV';
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
@@ -48,6 +35,10 @@ const clientSideNodes = new Map();
 const nodesTreeCache = new Map();
 
 const filtersById = new Map();
+
+const normalizeName = (txt:string) => {
+	return snakeToCamel(txt).replace(/[^\w]/gm, '_');
+}
 
 const snakeToCamel = (str: string) => {
 	str = str.toLowerCase().replace(/([_][a-z])/g, (group) => group.toUpperCase().replace('_', ''));
@@ -88,13 +79,13 @@ async function getEnumDesc(enumId: RecId) {
 
 function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 	assert(!isNaN(nodeId), 'nodeId expected');
-	let userNodesCacheKey = nodeId + 'n_' + userSession.cacheKey;
+	const userNodesCacheKey = nodeId + 'n_' + userSession.cacheKey;
 	if (!clientSideNodes.has(userNodesCacheKey)) {
 		const srcNode = nodesById.get(nodeId);
 		let privileges;
 
 		if (srcNode && (privileges = getUserAccessToNode(srcNode, userSession))) {
-			let landQ = userSession.lang.prefix;
+			const landQ = userSession.lang.prefix;
 
 			const ret: NodeDesc = {
 				id: srcNode.id,
@@ -123,7 +114,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				ret.recPerPage = srcNode.recPerPage;
 				ret.defaultFilterId = srcNode.defaultFilterId;
 
-				for (let id in srcNode.filters) {
+				for (const id in srcNode.filters) {
 					const filter = srcNode.filters[id];
 					if (filter.roles && !isUserHaveRole(ROLE_ID.ADMIN, userSession)) {
 						// TODO roles
@@ -142,8 +133,8 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 
 				ret.sortFieldName = srcNode.sortFieldName;
 
-				let fields = [];
-				for (let srcField of srcNode.fields) {
+				const fields = [];
+				for (const srcField of srcNode.fields) {
 					const field: FieldDesc = {
 						id: srcField.id,
 						name: srcField['name' + landQ] || srcField.name,
@@ -209,7 +200,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 
 function getUserAccessToNode(node: NodeDesc, userSession: UserSession) {
 	let ret = 0;
-	for (let role of node.rolesToAccess) {
+	for (const role of node.rolesToAccess) {
 		if (isUserHaveRole(role.roleId, userSession)) {
 			ret |= role.privileges;
 		}
@@ -221,13 +212,13 @@ let options;
 
 function getNodesTree(userSession) {
 	// get nodes tree visible to user
-	let langId = userSession.lang.prefix;
-	let cacheKey = userSession.cacheKey;
+	const langId = userSession.lang.prefix;
+	const cacheKey = userSession.cacheKey;
 
 	if (!nodesTreeCache.has(cacheKey)) {
-		let nodesTree = [];
-		let ret = { nodesTree, options };
-		for (let nodeSrc of nodes) {
+		const nodesTree = [];
+		const ret = { nodesTree, options };
+		for (const nodeSrc of nodes) {
 			/// #if DEBUG
 			/*
 			/// #endif
@@ -243,7 +234,7 @@ function getNodesTree(userSession) {
 			}
 			//*/
 
-			let privileges = getUserAccessToNode(nodeSrc, userSession);
+			const privileges = getUserAccessToNode(nodeSrc, userSession);
 			if (privileges) {
 				nodesTree.push({
 					icon: nodeSrc.icon,
@@ -284,7 +275,7 @@ function attemptToReloadMetadataSchedule() {
 async function initNodesData() {
 	// load whole nodes data in to memory
 
-	let eventsHandlers_new = new Map();
+	const eventsHandlers_new = new Map();
 
 	options = Object.assign({}, ENV);
 
@@ -298,7 +289,7 @@ async function initNodesData() {
 	/// #endif
 
 	langs = (await mysqlExec('SELECT "id", "name", "code", "isUILanguage" FROM "_languages"')) as UserLangEntry[];
-	for (let l of langs) {
+	for (const l of langs) {
 		l.prefix = l.code ? '$' + l.code : '';
 		ALL_LANGUAGES_BY_CODES.set(l.code || ENV.DEFAULT_LANG_CODE, l);
 		if (!DEFAULT_LANGUAGE || l.code === ENV.DEFAULT_LANG_CODE) {
@@ -306,16 +297,16 @@ async function initNodesData() {
 		}
 	}
 
-	let query = 'SELECT * FROM _nodes WHERE status = ' + NUM_1 + ' ORDER BY prior';
+	const query = 'SELECT * FROM _nodes WHERE status = ' + NUM_1 + ' ORDER BY prior';
 	nodes = (await mysqlExec(query)) as any;
-	for (let nodeData of nodes) {
+	for (const nodeData of nodes) {
 		nodesById.set(nodeData.id, nodeData);
 		if (nodeData.tableName) {
 			nodesByTableName.set(nodeData.tableName, nodeData);
 		}
 		nodeData.sortFieldName = '_createdOn';
 
-		let rolesToAccess = await mysqlExec('SELECT "roleId", "privileges" FROM "_rolePrivileges" WHERE "nodeId" = ' + NUM_0 + ' OR "nodeId" = ' + D(nodeData.id));
+		const rolesToAccess = await mysqlExec('SELECT "roleId", "privileges" FROM "_rolePrivileges" WHERE "nodeId" = ' + NUM_0 + ' OR "nodeId" = ' + D(nodeData.id));
 
 		/// #if DEBUG
 		(nodeData as any).____preventToStringify = nodeData; // circular structure to fail when try to stringify
@@ -323,18 +314,18 @@ async function initNodesData() {
 
 		nodeData.rolesToAccess = rolesToAccess as any;
 		nodeData.privileges = 65535;
-		let sortField = nodeData._fieldsId;
+		const sortField = nodeData._fieldsId;
 
 		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
-			let query = 'SELECT * FROM _fields WHERE "nodeFieldsLinker"=' + D(nodeData.id) + ' AND status = ' + NUM_1 + ' ORDER BY prior';
-			let fields = (await mysqlExec(query)) as any;
-			for (let field of fields) {
+			const query = 'SELECT * FROM _fields WHERE "nodeFieldsLinker"=' + D(nodeData.id) + ' AND status = ' + NUM_1 + ' ORDER BY prior';
+			const fields = (await mysqlExec(query)) as any;
+			for (const field of fields) {
 				if (field.id === sortField) {
 					nodeData.sortFieldName = field.fieldName;
 				}
 
 				if (field.fieldType === FIELD_TYPE.ENUM && field.show) {
-					let enums = await getEnumDesc(field.enum);
+					const enums = await getEnumDesc(field.enum);
 					field.enumId = field.enum;
 					field.enum = enums;
 				}
@@ -344,8 +335,8 @@ async function initNodesData() {
 			const filtersRes = await mysqlExec('SELECT * FROM _filters WHERE status = ' + NUM_1 + ' AND "nodeFiltersLinker"=' + D(nodeData.id) + ' ORDER BY _filters.order');
 
 			const filters = {};
-			for (let f of filtersRes) {
-				let filterRoles = await mysqlExec('SELECT "_rolesId" FROM "_filterAccessRoles" WHERE "_filtersId"=' + D(f.id));
+			for (const f of filtersRes) {
+				const filterRoles = await mysqlExec('SELECT "_rolesId" FROM "_filterAccessRoles" WHERE "_filtersId"=' + D(f.id));
 				if (filterRoles.length > 0) {
 					f.roles = filterRoles.map((i) => i._rolesId);
 				}
@@ -357,9 +348,9 @@ async function initNodesData() {
 			//events handlers
 			/// #if DEBUG
 			const importServerSideEvents = async (folderName) => {
-				let moduleFileName = join(__dirname, folderName + nodeData.tableName + '.js');
+				const moduleFileName = join(__dirname, folderName + nodeData.tableName + '.js');
 				if (existsSync(moduleFileName)) {
-					let handler = await import(`./${folderName}${nodeData.tableName}.js`);
+					const handler = await import(`./${folderName}${nodeData.tableName}.js`);
 					eventsHandlers_new.set(nodeData.id, handler.default.default || handler.default);
 				}
 			};
@@ -408,34 +399,34 @@ async function initNodesData() {
 }
 
 const generateTypings = async () => {
-	const src = [] as string[];
+	const src = ['/* eslint-disable @typescript-eslint/consistent-type-imports */'] as string[];
 	for (const node of nodes) {
-		if (node.fields) {
+		if (node.fields?.length) {
 			src.push('interface I' + snakeToCamel(node.tableName) + 'Record {');
 			for (const field of node.fields) {
 				let type = 'any';
 				switch (field.fieldType) {
-					case FIELD_TYPE.BOOL:
-					case FIELD_TYPE.COLOR:
-					case FIELD_TYPE.NUMBER:
-						type = 'number';
-						break;
-					case FIELD_TYPE.DATE:
-					case FIELD_TYPE.DATE_TIME:
-						type = "import('moment').Moment";
-						break;
+				case FIELD_TYPE.BOOL:
+				case FIELD_TYPE.COLOR:
+				case FIELD_TYPE.NUMBER:
+					type = 'number';
+					break;
+				case FIELD_TYPE.DATE:
+				case FIELD_TYPE.DATE_TIME:
+					type = "import('moment').Moment";
+					break;
 
-					case FIELD_TYPE.ENUM: // TODO
-						type = 'number';
-						break;
+				case FIELD_TYPE.ENUM: // TODO
+					type = 'number';
+					break;
 
-					case FIELD_TYPE.TEXT:
-					case FIELD_TYPE.PASSWORD:
-					case FIELD_TYPE.FILE:
-					case FIELD_TYPE.PICTURE:
-					case FIELD_TYPE.RICH_EDITOR:
-						type = 'string';
-						break;
+				case FIELD_TYPE.TEXT:
+				case FIELD_TYPE.PASSWORD:
+				case FIELD_TYPE.FILE:
+				case FIELD_TYPE.PICTURE:
+				case FIELD_TYPE.RICH_EDITOR:
+					type = 'string';
+					break;
 				}
 				src.push('	/** ' + (await getEnumDesc(FIELD_TYPE_ENUM_ID)).namesByValue[field.fieldType] + ' */');
 				src.push('	' + field.fieldName + (field.requirement ? '' : '?') + ': ' + type + ';');
@@ -443,7 +434,21 @@ const generateTypings = async () => {
 			src.push('}', '');
 		}
 	}
+
 	writeFileSync('types/generated.d.ts', src.join('\n'));
+
+	src.length = 0;
+
+	enumsById.forEach((enumData) => {
+		src.push('export const enum ENUM_' +normalizeName(enumData.name) + ' {');
+		for(const val of enumData.items) {
+			src.push('\t' + normalizeName(val.name) + ' = ' + val.value + ',');
+		}
+		src.push('}');
+	});
+
+	writeFileSync('types/generated.ts', src.join('\n'));
+
 };
 
 const GUEST_USER_SESSIONS = new Map();
@@ -461,7 +466,7 @@ function getGuestUserForBrowserLanguage(browserLanguage: string) {
 	const languageCode = ALL_LANGUAGES_BY_CODES.has(browserLanguage) ? browserLanguage : ENV.DEFAULT_LANG_CODE;
 
 	if (!GUEST_USER_SESSIONS.has(languageCode)) {
-		let session: UserSession = Object.assign({}, GUEST_USER_SESSION);
+		const session: UserSession = Object.assign({}, GUEST_USER_SESSION);
 		session.lang = ALL_LANGUAGES_BY_CODES.get(languageCode);
 		GUEST_USER_SESSIONS.set(languageCode, session);
 	}
@@ -563,3 +568,4 @@ export {
 	reloadMetadataSchedule,
 	ServerSideEventHandlersNames
 };
+

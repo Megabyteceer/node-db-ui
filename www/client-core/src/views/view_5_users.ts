@@ -1,6 +1,6 @@
 import { NODE_ID } from "../bs-utils";
 import { renderItemsButtons } from "../forms/form-list-item";
-import { List } from "../forms/list";
+import type { List } from "../forms/list";
 import { R } from "../r";
 import { idToImgURL, registerListRenderer, renderIcon } from "../utils";
 import "./view_5_users.css";
@@ -16,17 +16,17 @@ const RENDERED_FIELDS = {
 
 registerListRenderer(NODE_ID.USERS, function (this: List): React.ReactNode {
 
-	var node = this.state.node;
-	var data = this.state.data;
+	const node = this.state.node;
+	const data = this.state.data;
 
 	return data.items.map((item) => {
 
-		var imgUrl = idToImgURL(item.avatar, 'avatar');
-		var phone;
+		const imgUrl = idToImgURL(item.avatar, 'avatar');
+		let phone;
 		if(item.phone) {
 			phone = R.div({ className: 'user-item-info' }, renderIcon('phone'), ' ' + item.public_phone)
 		}
-		var email;
+		let email;
 		if(item.email) {
 			email = R.div({ className: 'user-item-info' }, renderIcon('envelope'), ' ',
 				R.a({ href: 'mailto:' + item.email },
@@ -34,9 +34,9 @@ registerListRenderer(NODE_ID.USERS, function (this: List): React.ReactNode {
 				)
 			)
 		}
-		var additionalFields = [];
+		const additionalFields = [];
 		const keys = Object.keys(item);
-		for(let key of keys) {
+		for(const key of keys) {
 			if(key.length > 3 && !RENDERED_FIELDS[key] && item[key]) {
 				additionalFields.push(R.div({ key, className: 'user-item-info user-item-info-' + key },
 					node.fieldsByName[key].name, ': ', item[key]

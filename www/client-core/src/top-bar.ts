@@ -9,7 +9,7 @@ class TopBar extends Component<any, any> {
 				className: 'clickable top-bar-logo',
 				href: '/'
 			},
-				R.img({ src: 'images/logo.png' })),
+			R.img({ src: 'images/logo.png' })),
 			//search,
 			R.div({ className: "top-bar-right-area" },
 				React.createElement(User)

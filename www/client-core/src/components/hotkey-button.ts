@@ -5,7 +5,7 @@ import { sp } from "../utils";
 
 const allHotKeyedButtons = [];
 window.addEventListener("keydown", (ev) => {
-	for(let b of allHotKeyedButtons) {
+	for(const b of allHotKeyedButtons) {
 		if(b.onKeyDown(ev)) { //call only first button with this hotkey
 			return;
 		}
@@ -41,7 +41,7 @@ interface HotkeyButtonProps {
 }
 
 const isEventFocusOnInputElement = (ev) => {
-	let tag = ev.target.tagName.toLowerCase();
+	const tag = ev.target.tagName.toLowerCase();
 	return (((tag === 'input') && (ev.target.type !== 'checkbox')) || tag === 'textarea' || tag === 'select');
 };
 
@@ -55,7 +55,7 @@ class HotkeyButton extends React.Component<HotkeyButtonProps> {
 		if(!this.props.hotkey) {
 			return;
 		}
-		let needCtrl = this.props.hotkey > 1000;
+		const needCtrl = this.props.hotkey > 1000;
 
 		if(
 			this.props.disabled ||
@@ -101,7 +101,7 @@ class HotkeyButton extends React.Component<HotkeyButtonProps> {
 
 	unregisterHotkey() {
 		if(this.props.hotkey) {
-			let i = allHotKeyedButtons.indexOf(this);
+			const i = allHotKeyedButtons.indexOf(this);
 			if(i >= 0) {
 				allHotKeyedButtons.splice(i, 1);
 			}

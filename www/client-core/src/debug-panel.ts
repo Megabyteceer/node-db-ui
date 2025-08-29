@@ -3,8 +3,8 @@ import { R } from "./r";
 import { iAdmin } from "./user";
 import { getData, isLitePage, L, reloadLocation, renderIcon, sp, strip_tags } from "./utils";
 
-var currentId = 10;
-var debugInfo = [];
+let currentId = 10;
+const debugInfo = [];
 
 /// #if DEBUG
 /*
@@ -89,11 +89,11 @@ class DebugPanel extends Component<any, any> {
 	}
 
 	render() {
-		var body;
+		let body;
 
-		var deployBtn;
-		var cacheClearBtn;
-		let clearBtn = R.a({ className: 'clickable admin-control', onClick: this.clear },
+		let deployBtn;
+		let cacheClearBtn;
+		const clearBtn = R.a({ className: 'clickable admin-control', onClick: this.clear },
 			renderIcon('trash')
 		)
 		if(iAdmin()) {
@@ -106,7 +106,7 @@ class DebugPanel extends Component<any, any> {
 					getData('admin/cache_info', { clear: 1, json: 1 }).then(() => { reloadLocation(); });
 				}
 			},
-				renderIcon('refresh')
+			renderIcon('refresh')
 			)
 		}
 
@@ -115,9 +115,9 @@ class DebugPanel extends Component<any, any> {
 		} else {
 			if(this.state.expanded) {
 
-				var items = debugInfo.map((i, iKey) => {
+				const items = debugInfo.map((i, iKey) => {
 
-					var entryBody;
+					let entryBody;
 
 
 					if(i.hasOwnProperty('SQLs')) {
@@ -137,7 +137,7 @@ class DebugPanel extends Component<any, any> {
 						entryBody = '';
 					}
 
-					var stackBody;
+					let stackBody;
 					if(i.hasOwnProperty('stack')) {
 						stackBody = i.stack.map((i, key) => {
 							return R.p({ key: key, className: 'debug-panel-entry' }, i);

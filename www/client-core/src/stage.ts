@@ -1,23 +1,15 @@
 ﻿import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { assert, throwError } from './assert';
-import { NODE_TYPE, RecId, RecordData } from './bs-utils';
-import { BaseForm } from './forms/base-form';
+import type { RecId, RecordData } from './bs-utils';
+import { NODE_TYPE } from './bs-utils';
+import type { BaseForm } from './forms/base-form';
 import { FormFull } from './forms/form-full';
 import { List } from './forms/list';
 import { LeftBar } from './left-bar';
 import { R } from './r';
-import {
-	Filters,
-	getNode,
-	getNodeData,
-	getNodeIfPresentOnClient,
-	isPresentListRenderer,
-	myAlert,
-	onOneFormShowed,
-	renderIcon,
-	updateHashLocation,
-} from './utils';
+import type { Filters } from './utils';
+import { getNode, getNodeData, getNodeIfPresentOnClient, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from './utils';
 
 let mouseX: number;
 let mouseY: number;
@@ -44,7 +36,7 @@ interface FormEntry {
 	onModified?: (dataToSend: RecordData | null) => void;
 }
 
-let allForms: FormEntry[] = [];
+const allForms: FormEntry[] = [];
 
 class Stage extends Component<any, any> {
 	static allForms: FormEntry[];
@@ -79,7 +71,7 @@ class Stage extends Component<any, any> {
 
 	static goBackIfModal() {
 		if (allForms.length > 1) {
-			let e = allForms.pop();
+			const e = allForms.pop();
 			allForms[allForms.length - 1].container.classList.remove('blocked-layer');
 			const formContainer = e.formContainer;
 			e.formContainer = null;
@@ -188,28 +180,28 @@ class Stage extends Component<any, any> {
 
 		let formType;
 		switch (node.nodeType) {
-			case NODE_TYPE.DOCUMENT:
-			case NODE_TYPE.SECTION:
-				if (recId || recId === 0 || recId === 'new') {
-					formType = FormFull;
-				} else {
-					formType = List;
-					assert(!modal, 'List could not be show at modal level.');
-				}
-				break;
-			case NODE_TYPE.REACT_CLASS:
-				if (typeof crudJs.customClasses[node.tableName] === 'undefined') {
-					myAlert('Unknown react class: ' + node.tableName);
-					formType = 'div';
-				} else {
-					formType = crudJs.customClasses[node.tableName];
-				}
-				break;
-			case NODE_TYPE.STATIC_LINK:
-				location.href = node.staticLink;
-				break;
-			default:
-				throwError('Unknown nodeType ' + node.nodeType);
+		case NODE_TYPE.DOCUMENT:
+		case NODE_TYPE.SECTION:
+			if (recId || recId === 0 || recId === 'new') {
+				formType = FormFull;
+			} else {
+				formType = List;
+				assert(!modal, 'List could not be show at modal level.');
+			}
+			break;
+		case NODE_TYPE.REACT_CLASS:
+			if (typeof crudJs.customClasses[node.tableName] === 'undefined') {
+				myAlert('Unknown react class: ' + node.tableName);
+				formType = 'div';
+			} else {
+				formType = crudJs.customClasses[node.tableName];
+			}
+			break;
+		case NODE_TYPE.STATIC_LINK:
+			location.href = node.staticLink;
+			break;
+		default:
+			throwError('Unknown nodeType ' + node.nodeType);
 		}
 
 		let className =
@@ -263,7 +255,7 @@ Stage.allForms = allForms;
 
 function addFormEntry(noAnimation = false) {
 	const isRoot = allForms.length === 0;
-	let container = document.createElement('div');
+	const container = document.createElement('div');
 	container.className = isRoot ? 'form-layer' : 'form-layer form-layer-modal';
 	let formContainer;
 
@@ -291,7 +283,7 @@ function addFormEntry(noAnimation = false) {
 		formContainer = container;
 	}
 	document.querySelector('#stage').appendChild(container);
-	let entry: FormEntry = {
+	const entry: FormEntry = {
 		container,
 		formContainer,
 	};
@@ -308,3 +300,4 @@ function addFormEntry(noAnimation = false) {
 }
 
 export { FormLoaderCog, Stage };
+

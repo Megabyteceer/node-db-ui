@@ -27,7 +27,7 @@ class LoadingIndicator extends Component<any, any> {
 	}
 
 	render() {
-		let active = this.state.showCount > 0;
+		const active = this.state.showCount > 0;
 
 		return R.div({ className: active ? 'loader-back-drop' : null },
 			R.div({ className: active ? "loading-spinner-container" : "loading-spinner-container loading-spinner-container-inactive" },

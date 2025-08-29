@@ -3,21 +3,21 @@ import React, { Component } from "react";
 import { DebugPanel } from "./debug-panel";
 /// #endif
 
-import { R } from "./r";
+import type { ENV_TYPE } from '../../../core/ENV';
 import { LeftBar } from "./left-bar";
 import { LoadingIndicator } from "./loading-indicator";
 import { Modal } from "./modal";
 import { Notify } from "./notify";
+import { R } from "./r";
 import { Stage } from "./stage";
 import { TopBar } from "./top-bar";
-import { getData, goToPageByHash, onNewUser } from "./utils";
 import { User } from "./user";
-import type { ENV_TYPE } from '../../../core/ENV';
+import { getData, goToPageByHash, onNewUser } from "./utils";
 
 
 const ROOT_NODE_ID = 2;
 const ENV = {} as ENV_TYPE;
-var isFirstCall = true;
+let isFirstCall = true;
 
 type NodeTreRec = any;
 let nodesTree: NodeTreRec[];
@@ -38,10 +38,10 @@ class MainFrame extends Component<any, any> {
 	async reloadOptions() {
 		onNewUser();
 
-		let data = await getData('api/getOptions');
+		const data = await getData('api/getOptions');
 
 		nodesTree = data.nodesTree;
-		var items = {};
+		const items = {};
 		Object.assign(ENV, data.options);
 
 		nodesTree.some((i) => {
@@ -51,10 +51,10 @@ class MainFrame extends Component<any, any> {
 			}
 		});
 
-		for(var k in nodesTree) {
-			var i = nodesTree[k];
+		for(const k in nodesTree) {
+			const i = nodesTree[k];
 			if(items.hasOwnProperty(i.parent)) {
-				var parent = items[i.parent];
+				const parent = items[i.parent];
 				if(!parent.hasOwnProperty('children')) {
 					parent.children = [];
 				}

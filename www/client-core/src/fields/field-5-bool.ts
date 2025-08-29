@@ -20,7 +20,7 @@ class CheckBox extends Component<any, any> {
 	}
 
 	render() {
-		var check;
+		let check;
 		if(this.state && this.state.value) {
 			check = R.span({
 				className: "field-boolean-check"
@@ -59,8 +59,8 @@ registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField {
 
 	render() {
 
-		var value = this.state.value;
-		var field = this.props.field;
+		const value = this.state.value;
+		const field = this.props.field;
 
 
 

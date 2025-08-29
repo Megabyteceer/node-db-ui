@@ -13,8 +13,8 @@ registerFieldClass(
 		}
 
 		render() {
-			var value = this.state.value;
-			var field = this.props.field;
+			let value = this.state.value;
+			const field = this.props.field;
 
 			if (typeof value !== 'string') {
 				if (value === null || value === undefined) {
@@ -50,7 +50,7 @@ registerFieldClass(
 					className += ' not-clickable';
 				}
 
-				var inputsProps = {
+				const inputsProps = {
 					className,
 					autoFocus: this.isAutoFocus(),
 					defaultValue: value,

@@ -1,18 +1,8 @@
 import { pbkdf2, randomBytes } from 'crypto';
 import { assert, throwError } from '../www/client-core/src/assert';
-import {
-	NODE_ID,
-	RecId,
-	ROLE_ID,
-	UserLangEntry,
-	UserRoles,
-	UserSession,
-} from '../www/client-core/src/bs-utils';
-import {
-	DEFAULT_LANGUAGE,
-	getGuestUserForBrowserLanguage,
-	getLangs,
-} from './describe-node';
+import type { RecId, UserRoles } from '../www/client-core/src/bs-utils';
+import { NODE_ID, ROLE_ID, UserLangEntry, UserSession } from '../www/client-core/src/bs-utils';
+import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from './describe-node';
 import { ENV, SERVER_ENV } from './ENV';
 import { L } from './locale';
 import { D, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
@@ -94,7 +84,7 @@ async function startSession(sessionToken, browserLanguageId: string) {
 		return Promise.resolve(userSession);
 	}
 	return new Promise((resolve, rejects) => {
-		let i = setInterval(
+		const i = setInterval(
 			() => {
 				if (!userSession._isStarted && !maintenanceMode) {
 					clearInterval(i);
@@ -145,13 +135,13 @@ async function activateUser(key, userSession: UserSession) {
 		);
 		const registration = registrations[0];
 		if (registration) {
-			let registrationID = registration.id;
+			const registrationID = registration.id;
 			delete registration.id;
 			delete registration.activationKey;
 			delete registration._createdOn;
 			delete registration._organizationId;
 			delete registration._usersId;
-			let ret = await authorizeUserByID(
+			const ret = await authorizeUserByID(
 				await createUser(registration as any, userSession)
 			);
 			await mysqlExec(
@@ -172,7 +162,7 @@ async function createUser(
 	},
 	userSession: UserSession
 ) {
-	let existingUser = await mysqlExec(
+	const existingUser = await mysqlExec(
 		"SELECT id FROM _users WHERE status = 1 AND email='" +
 			userData.email +
 			"' LIMIT 1"
@@ -183,12 +173,12 @@ async function createUser(
 	if (!userData.name) {
 		userData.name = userData.email.split('@')[0];
 	}
-	var salt = userData.salt || '';
+	const salt = userData.salt || '';
 	delete userData.salt;
 	const userID: RecId = (
 		await submitRecord(NODE_ID.USERS, userData, undefined, userSession)
 	).recId;
-	let organizationID = (
+	const organizationID = (
 		await mysqlExec(
 			'INSERT INTO "_organization" ("name", "status", "_usersId") VALUES (\'\', \'1\', ' +
 				userID +
@@ -271,7 +261,7 @@ async function authorizeUserByID(
 		throwError('user activation error ' + userID);
 	}
 
-	let organID: number = user.userOrganizationId;
+	const organID: number = user.userOrganizationId;
 
 	// fix user's org if undefined
 	if (organID === 0) {
@@ -299,8 +289,8 @@ async function authorizeUserByID(
 		return authorizeUserByID(userID);
 	}
 
-	let organID_def = user.defaultOrg || organID;
-	let organName = user.organname;
+	const organID_def = user.defaultOrg || organID;
+	const organName = user.organname;
 
 	const roles = await mysqlExec(
 		'SELECT "_rolesId" FROM "_userRoles" WHERE "_usersId"=' +
@@ -309,7 +299,7 @@ async function authorizeUserByID(
 	);
 
 	let cacheKeyGenerator: string[];
-	let userRoles: UserRoles = {};
+	const userRoles: UserRoles = {};
 	if (userID === 2) {
 		userRoles[ROLE_ID.GUEST] = 1;
 		cacheKeyGenerator = [ROLE_ID.GUEST as unknown as string];
@@ -317,12 +307,12 @@ async function authorizeUserByID(
 		userRoles[ROLE_ID.USER] = 1;
 		cacheKeyGenerator = [ROLE_ID.USER as unknown as string];
 	}
-	for (let role of roles) {
+	for (const role of roles) {
 		cacheKeyGenerator.push(role._rolesId);
 		userRoles[role._rolesId] = 1;
 	}
 
-	let organizations = {
+	const organizations = {
 		[organID]: organName,
 	};
 	const pgs = await mysqlExec(
@@ -330,7 +320,7 @@ async function authorizeUserByID(
 			D(userID) +
 			' ORDER BY _organization.id'
 	);
-	for (let org of pgs) {
+	for (const org of pgs) {
 		organizations[org.id] = org.name;
 	}
 
@@ -374,8 +364,8 @@ async function authorizeUserByID(
 }
 
 function getLang(langId): UserLangEntry {
-	let ls = getLangs();
-	for (let l of ls) {
+	const ls = getLangs();
+	for (const l of ls) {
 		if (l.id === langId) {
 			return l;
 		}
@@ -426,7 +416,7 @@ async function mail_utf8(email, subject, text): Promise<void> {
 		return;
 		/// #endif
 		if (!transporter) {
-			transporter = require('nodemailer').createTransport({
+			transporter = require('nodemailer').createTransport({ // eslint-disable-line @typescript-eslint/no-require-imports
 				sendmail: true,
 				newline: 'unix',
 				path: '/usr/sbin/sendmail',
@@ -510,5 +500,5 @@ export {
 	startSession,
 	UserLangEntry,
 	UserSession,
-	usersSessionsStartedCount,
+	usersSessionsStartedCount
 };

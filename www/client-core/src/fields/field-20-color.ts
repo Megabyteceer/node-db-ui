@@ -1,12 +1,13 @@
 "use strict";
 
-import { R } from "../r";
 import { FIELD_TYPE } from "../bs-utils";
+import { R } from "../r";
 import { registerFieldClass } from "../utils";
-import { BaseField, FieldState, FieldProps } from "./base-field";
+import type { FieldProps, FieldState } from "./base-field";
+import { BaseField } from "./base-field";
 
 const intToColor = (color, alpha) => {
-	var ret = 'rgba(' + ((color >> 16) & 255) + ',' + ((color >> 8) & 255) + ',' + (color & 255) + ',' + (alpha / 255.0).toFixed(2) + ')';
+	const ret = 'rgba(' + ((color >> 16) & 255) + ',' + ((color >> 8) & 255) + ',' + (color & 255) + ',' + (alpha / 255.0).toFixed(2) + ')';
 	return ret;
 };
 
@@ -35,7 +36,7 @@ registerFieldClass(FIELD_TYPE.COLOR, class ColorField extends BaseField<FieldPro
 	}
 
 	_onChange() {
-		let value = Math.floor(Math.floor(this.state.alpha) * 0x1000000) + this.state.color;
+		const value = Math.floor(Math.floor(this.state.alpha) * 0x1000000) + this.state.color;
 		this.setState({ value });
 		this.props.wrapper.valueListener(value, true, this);
 	}
@@ -51,8 +52,8 @@ registerFieldClass(FIELD_TYPE.COLOR, class ColorField extends BaseField<FieldPro
 	}
 
 	render() {
-		let background = intToColor(this.state.color, this.state.alpha);
-		let preview = R.div({ className: "field-color-input field-color-preview-bg" },
+		const background = intToColor(this.state.color, this.state.alpha);
+		const preview = R.div({ className: "field-color-input field-color-preview-bg" },
 			R.div({ className: 'field-color-preview', style: { background } })
 		);
 		if(this.props.isEdit) {

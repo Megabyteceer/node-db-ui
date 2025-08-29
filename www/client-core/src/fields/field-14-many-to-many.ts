@@ -1,25 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { FIELD_TYPE, RecId } from '../bs-utils';
+import type { RecId } from '../bs-utils';
+import { FIELD_TYPE } from '../bs-utils';
 import { R } from '../r';
-import {
-	getClassForField,
-	L,
-	n2mValuesEqual,
-	registerFieldClass,
-	renderIcon,
-	sp,
-	UID,
-} from '../utils';
+import { getClassForField, L, n2mValuesEqual, registerFieldClass, renderIcon, sp, UID } from '../utils';
 import { fieldLookupMixins } from './field-lookup-mixins';
 
-var keyCounter = 0;
-var dragItem;
-var dragList;
-var dragListenersInitialized;
+let keyCounter = 0;
+let dragItem;
+let dragList: LookupManyToManyFiled;
+let dragListenersInitialized;
 
-var refs = [];
+const refs = [];
 
 class LookupManyToManyFiled extends fieldLookupMixins {
 	excludeIDs: RecId[];
@@ -68,32 +61,31 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 			});
 			window.document.addEventListener('mousemove', (event) => {
 				if (dragList) {
-					dragItem;
-					var y = event.clientY;
+					const y = event.clientY;
 					if (y < 100) {
 						document.body.scrollTop -= 10;
 					}
 					if (y > document.body.offsetHeight - 100) {
 						document.body.scrollTop += 10;
 					}
-					var closestD = 1000000;
-					var closestItem = undefined;
+					let closestD = 1000000;
+					let closestItem = undefined;
 
 					dragList.state.value.some((i) => {
-						var el = ReactDOM.findDOMNode(refs[UID(i)]) as HTMLDivElement;
+						const el = ReactDOM.findDOMNode(refs[UID(i)]) as HTMLDivElement;
 
-						var bounds = el.getBoundingClientRect();
-						let elementY = (bounds.top + bounds.bottom) / 2;
+						const bounds = el.getBoundingClientRect();
+						const elementY = (bounds.top + bounds.bottom) / 2;
 
-						var d = Math.abs(y - elementY);
+						const d = Math.abs(y - elementY);
 						if (d < closestD) {
 							closestD = d;
 							closestItem = i;
 						}
 					});
 					if (closestItem !== dragItem) {
-						var toPos = dragList.state.value.indexOf(closestItem);
-						var curPos = dragList.state.value.indexOf(dragItem);
+						const toPos = dragList.state.value.indexOf(closestItem);
+						const curPos = dragList.state.value.indexOf(dragItem);
 						dragList.state.value.splice(curPos, 1);
 						dragList.state.value.splice(toPos, 0, dragItem);
 						dragList.forceUpdate();
@@ -102,7 +94,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 			});
 			dragListenersInitialized = true;
 		}
-		dragList = this;
+		dragList = this; // eslint-disable-line @typescript-eslint/no-this-alias
 		dragItem = item;
 		this.forceUpdate();
 	}
@@ -114,14 +106,14 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 	}
 
 	renderItem(field, value, i, isEdit) {
-		var isDrag = dragItem === value;
-		var buttons;
-		var isNew = '';
+		const isDrag = dragItem === value;
+		let buttons;
+		let isNew = '';
 		if (!value) {
 			isNew = 'n';
 		}
-		var additionalButtonsN2M;
-		var additionalButtonsN2MRenderer =
+		let additionalButtonsN2M;
+		const additionalButtonsN2MRenderer =
 			this.state.additionalButtonsN2MRenderer || this.props.additionalButtonsN2MRenderer;
 		if (additionalButtonsN2MRenderer) {
 			additionalButtonsN2M = additionalButtonsN2MRenderer(field, value, i, this);
@@ -169,7 +161,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 											//deleted
 											this.deleteItemByIndex(i);
 										} else {
-											for (let fName in value) {
+											for (const fName in value) {
 												if (newData.hasOwnProperty(fName)) {
 													value[fName] = newData[fName];
 												}
@@ -197,7 +189,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 			}
 
 			if (isEdit || value) {
-				var key;
+				let key;
 				if (value) {
 					key = UID(value);
 				} else {
@@ -213,12 +205,12 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 					className += ' lookup-n2m-item-drag';
 				}
 
-				var body = R.div(
+				const body = R.div(
 					{
 						key: key,
 						ref: value
 							? (ref) => {
-									refs[UID(value)] = ref;
+								refs[UID(value)] = ref;
 							  }
 							: undefined,
 						className,
@@ -259,14 +251,14 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 			//@ts-ignore
 			this.state.value = [];
 		}
-		var value = this.state.value;
-		var field = this.props.field;
+		const value = this.state.value;
+		const field = this.props.field;
 
-		var excludeIDs =
+		let excludeIDs =
 			this.state.filters &&
 			(this.state.filters.excludeIDs ? this.state.filters.excludeIDs.slice() : undefined);
 
-		for (let v of value) {
+		for (const v of value) {
 			if (v && v.id) {
 				if (!excludeIDs) {
 					excludeIDs = [];
@@ -277,7 +269,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 
 		this.excludeIDs = excludeIDs;
 
-		var lines = [];
+		const lines = [];
 		value.forEach((value, i) => {
 			lines.push(this.renderItem(field, value, i, this.props.isEdit));
 		});
@@ -291,3 +283,4 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 registerFieldClass(FIELD_TYPE.LOOKUP_NtoM, LookupManyToManyFiled);
 
 export { LookupManyToManyFiled };
+

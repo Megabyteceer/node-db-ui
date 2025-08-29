@@ -9,9 +9,9 @@ import { makeReactClassSelectionField, removeReactClassSelectionField } from '..
 
 class FieldsEvents extends FormEvents {
 	removeWrongCharactersInField(fieldName: string) {
-		let oldValue = this.fieldValue(fieldName);
+		const oldValue = this.fieldValue(fieldName);
 		if (oldValue) {
-			var newValue = oldValue.toLowerCase().replace(/[^a-z0-9]/gm, '_');
+			const newValue = oldValue.toLowerCase().replace(/[^a-z0-9]/gm, '_');
 			if (oldValue != newValue) {
 				this.setFieldValue(fieldName, newValue);
 			}
@@ -20,7 +20,7 @@ class FieldsEvents extends FormEvents {
 
 	_html_title_onChange() {
 		this.removeWrongCharactersInField('title');
-		let href =
+		const href =
 			location.protocol +
 			'//' +
 			location.host +
@@ -29,7 +29,7 @@ class FieldsEvents extends FormEvents {
 			'.html';
 		this.setFieldValue('link', href);
 
-		let e: HTMLDivElement = ReactDOM.findDOMNode(this) as HTMLDivElement;
+		const e: HTMLDivElement = ReactDOM.findDOMNode(this) as HTMLDivElement;
 		(e.querySelector('.clickable-link') as HTMLAnchorElement).href = href;
 		(e.querySelector('.clickable-link-text') as HTMLAnchorElement).innerText = href;
 	}
@@ -113,7 +113,7 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_visibilityCreate_onChange() {
-		var shv = this.fieldValue('show');
+		let shv = this.fieldValue('show');
 
 		if (this.fieldValue('visibilityCreate')) shv |= VIEW_MASK.EDITABLE;
 		else shv &= VIEW_MASK.ALL - VIEW_MASK.EDITABLE;
@@ -122,7 +122,7 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_visibilityList_onChange() {
-		var shv = this.fieldValue('show');
+		let shv = this.fieldValue('show');
 
 		if (this.fieldValue('visibilityList')) shv |= VIEW_MASK.LIST;
 		else shv &= VIEW_MASK.ALL - VIEW_MASK.LIST;
@@ -131,7 +131,7 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_visibilityCustomList_onChange() {
-		var shv = this.fieldValue('show');
+		let shv = this.fieldValue('show');
 
 		if (this.fieldValue('visibilityCustomList')) shv |= VIEW_MASK.CUSTOM_LIST;
 		else shv &= VIEW_MASK.ALL - VIEW_MASK.CUSTOM_LIST;
@@ -140,7 +140,7 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_visibilityView_onChange() {
-		var shv = this.fieldValue('show');
+		let shv = this.fieldValue('show');
 		if (this.fieldValue('visibilityView')) {
 			shv |= VIEW_MASK.READONLY;
 		} else {
@@ -151,7 +151,7 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_visibilityDropdownList_onChange() {
-		var shv = this.fieldValue('show');
+		let shv = this.fieldValue('show');
 		if (this.fieldValue('visibilityDropdownList')) {
 			shv |= VIEW_MASK.DROPDOWN_LIST;
 		} else {
@@ -162,7 +162,7 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_fields_visibilitySubFormList_onChange() {
-		var shv = this.fieldValue('show');
+		let shv = this.fieldValue('show');
 		if (this.fieldValue('visibilitySubFormList')) {
 			shv |= VIEW_MASK.SUB_FORM;
 		} else {

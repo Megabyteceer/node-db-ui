@@ -1,9 +1,9 @@
-import ReactDOM from "react-dom";
 import React from "react";
+import ReactDOM from "react-dom";
 
+import moment from "moment";
 import { FIELD_TYPE } from "../bs-utils";
 import { R } from "../r";
-import moment from "moment";
 import { innerDateTimeFormat, readableDateFormat, registerFieldClass, renderIcon, toReadableDate } from "../utils";
 import { dateFieldMixins, ReactDateTimeClassHolder } from "./field-4-date-time";
 
@@ -30,14 +30,14 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 
 	render() {
 
-		var field = this.props.field;
-		var value = toReadableDate(this.state.value);
+		const field = this.props.field;
+		const value = toReadableDate(this.state.value);
 		if(this.props.isEdit) {
 			if(!ReactDateTimeClassHolder.ReactDateTimeClass) {
 				ReactDateTimeClassHolder.importReactDateTime();
 				return renderIcon('cog fa-spin');
 			}
-			var inputsProps = {
+			const inputsProps = {
 				closeOnSelect: true,
 				defaultValue: value,
 				placeholder: field.name,
@@ -58,7 +58,7 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 			return R.div({
 				title: (this.props.isCompact ? field.name : '')
 			},
-				React.createElement(ReactDateTimeClassHolder.ReactDateTimeClass, inputsProps)
+			React.createElement(ReactDateTimeClassHolder.ReactDateTimeClass, inputsProps)
 			);
 
 		} else {

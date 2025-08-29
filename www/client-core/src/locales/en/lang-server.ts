@@ -28,4 +28,4 @@ Link for confirmation: `,
 initDictionaryServerSide(LANGS, 'en');
 
 type LANG_KEYS_SERVER_SIDE = keyof typeof LANGS;
-export { LANG_KEYS_SERVER_SIDE }
+export { LANG_KEYS_SERVER_SIDE };

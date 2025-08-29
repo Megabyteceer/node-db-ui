@@ -50,15 +50,15 @@ class Select extends Component<any, any> {
 
 	render() {
 
-		var curVal = ((this.state.curVal === 0) || this.state.curVal) ? this.state.curVal : this.props.defaultValue;
-		for(let o of this.props.options) {
+		let curVal = ((this.state.curVal === 0) || this.state.curVal) ? this.state.curVal : this.props.defaultValue;
+		for(const o of this.props.options) {
 			if(o.value === curVal) {
 				curVal = o.name;
 				break;
 			}
 		}
 
-		var optionsList;
+		let optionsList;
 		if(this.state.expanded) {
 
 			let options = this.props.options;
@@ -101,7 +101,7 @@ class Select extends Component<any, any> {
 			)
 		}
 
-		var downCaret = R.div({
+		const downCaret = R.div({
 			className: 'select-control-caret'
 		}, renderIcon('caret-down'));
 

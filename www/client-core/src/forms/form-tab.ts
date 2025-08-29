@@ -1,8 +1,8 @@
 /// #if DEBUG
 import { FieldAdmin } from "../admin/field-admin";
 /// #endif
-import { R } from "../r";
 import React, { Component } from "react";
+import { R } from "../r";
 
 class FormTab extends Component<any, any> {
 
@@ -45,3 +45,4 @@ class FormTab extends Component<any, any> {
 }
 
 export { FormTab };
+

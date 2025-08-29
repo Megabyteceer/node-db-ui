@@ -1,19 +1,11 @@
 import React from 'react';
-import { FIELD_TYPE, FieldDesc } from '../bs-utils';
+import type { FieldDesc } from '../bs-utils';
+import { FIELD_TYPE } from '../bs-utils';
 import { Select } from '../components/select';
 import type { FormFull } from '../forms/form-full';
 import { MainFrame } from '../main-frame';
 import { R } from '../r';
-import {
-	consoleDir,
-	getItem,
-	getNode,
-	getNodeData,
-	isLitePage,
-	renderIcon,
-	setItem,
-	submitRecord,
-} from '../utils';
+import { consoleDir, getItem, getNode, getNodeData, isLitePage, renderIcon, setItem, submitRecord } from '../utils';
 
 /// #if DEBUG
 /*
@@ -25,11 +17,10 @@ function debugInfoGetter() {
 	consoleDir(this);
 }
 
-var styleEl = document.createElement('style');
-var styleSheet;
+const styleEl = document.createElement('style');
 document.head.appendChild(styleEl);
-styleSheet = styleEl.sheet;
-var adminOn;
+const styleSheet = styleEl.sheet;
+let adminOn;
 
 /// #if DEBUG
 
@@ -51,9 +42,9 @@ let iconsList;
 
 class admin {
 	static async moveField(fIndex, form, node, direction = 0) {
-		var fieldIndex;
-		var j = 0;
-		var fields = node.fields.filter((f, i) => {
+		let fieldIndex;
+		let j = 0;
+		const fields = node.fields.filter((f, i) => {
 			if (i === fIndex) {
 				fieldIndex = j;
 			}
@@ -64,11 +55,11 @@ class admin {
 			return false;
 		});
 		if (typeof fieldIndex !== 'undefined') {
-			var field = fields[fieldIndex];
-			var group1: FieldDesc[] = [];
-			var group2: FieldDesc[] = [];
-			var f;
-			var i;
+			const field = fields[fieldIndex];
+			let group1: FieldDesc[] = [];
+			const group2: FieldDesc[] = [];
+			let f;
+			let i;
 
 			if (field.fieldType === FIELD_TYPE.TAB) {
 				//two tabs exchanging
@@ -89,7 +80,7 @@ class admin {
 					if (fieldIndex > 0) {
 						i = fieldIndex - 1;
 						while (i > 0) {
-							var f = fields[i];
+							const f = fields[i];
 							if (f.fieldType === FIELD_TYPE.TAB && f.maxLength === 0) {
 								break;
 							}
@@ -105,7 +96,7 @@ class admin {
 						group2.push(fields[i]);
 						i++;
 						while (i < fields.length) {
-							var f = fields[i];
+							const f = fields[i];
 							if (f.fieldType === FIELD_TYPE.TAB && f.maxLength === 0) {
 								break;
 							}
@@ -128,16 +119,16 @@ class admin {
 				return;
 			}
 
-			let field1 = await getNodeData(6, group1[0].id);
-			let field2 = await getNodeData(6, group2[0].id);
+			const field1 = await getNodeData(6, group1[0].id);
+			const field2 = await getNodeData(6, group2[0].id);
 
-			var prior = Math.min(field1.prior, field2.prior);
+			let prior = Math.min(field1.prior, field2.prior);
 			if (direction < 0) {
 				group1 = group1.concat(group2);
 			} else {
 				group1 = group2.concat(group1);
 			}
-			for (let f of group1) {
+			for (const f of group1) {
 				f.prior = prior;
 				prior++;
 			}
@@ -196,18 +187,18 @@ class admin {
 
 function initIconsList() {
 	iconsList = [];
-	let ruleList = Array.from(document.styleSheets);
-	for (let style of ruleList) {
-		let rules = Array.from(style.cssRules);
+	const ruleList = Array.from(document.styleSheets);
+	for (const style of ruleList) {
+		const rules = Array.from(style.cssRules);
 		//@ts-ignore
 		if (rules.find((r) => r.selectorText === '.fa')) {
-			for (let rule of rules) {
-				let s = rule.cssText.split('.fa-');
-				let allNames = s
+			for (const rule of rules) {
+				const s = rule.cssText.split('.fa-');
+				const allNames = s
 					.filter((s) => s.indexOf('::before') > 0)
 					.map((s) => s.substr(0, s.indexOf('::before')));
 				if (allNames.length) {
-					let iconName = allNames[0];
+					const iconName = allNames[0];
 					iconsList.push({
 						search: allNames.join(', '),
 						name: R.span(null, renderIcon(iconName), allNames.join(', ')),
@@ -271,5 +262,6 @@ export {
 	admin,
 	makeIconSelectionField,
 	makeReactClassSelectionField,
-	removeReactClassSelectionField,
+	removeReactClassSelectionField
 };
+

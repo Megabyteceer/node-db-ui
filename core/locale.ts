@@ -1,6 +1,6 @@
 
 import type { LANG_KEYS_SERVER_SIDE } from "../www/client-core/src/locales/en/lang-server";
-import { UserSession } from "./auth";
+import type { UserSession } from "./auth";
 import { ENV } from './ENV';
 
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { FIELD_TYPE, IMAGE_THUMBNAIL_PREFIX, RecId, RecordData } from '../bs-utils';
+import type { RecId, RecordData } from '../bs-utils';
+import { FIELD_TYPE, IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
 import { List } from '../forms/list';
 import { R } from '../r';
 import { idToImgURL, L, registerFieldClass, renderIcon, scrollToVisible, sp } from '../utils';
@@ -14,7 +15,7 @@ registerFieldClass(
 		constructor(props) {
 			super(props);
 
-			var val = props.initialValue;
+			let val = props.initialValue;
 			if (typeof val === 'string') {
 				val = {
 					id: val,
@@ -78,7 +79,7 @@ registerFieldClass(
 					this.state.value.name !== recordData.name ||
 					this.state.value.icon !== recordData[this.props.field.lookupIcon]
 				) {
-					var newVal: any = {
+					const newVal: any = {
 						id: recordData.id,
 						name: recordData.name,
 					};
@@ -101,7 +102,7 @@ registerFieldClass(
 			this.collapseList();
 			const filters = this.props.form
 				? {
-						[this.getLinkerFieldName()]: { id: this.props.form.recId },
+					[this.getLinkerFieldName()]: { id: this.props.form.recId },
 				  }
 				: undefined;
 			crudJs.Stage.showForm(
@@ -154,9 +155,9 @@ registerFieldClass(
 		}
 
 		render() {
-			var field = this.props.field;
-			var value = this.state.value;
-			var iconPic;
+			const field = this.props.field;
+			const value = this.state.value;
+			let iconPic;
 			if (value) {
 				if (field.lookupIcon && !this.props.hideIcon && value.icon) {
 					iconPic = R.img({
@@ -170,8 +171,8 @@ registerFieldClass(
 				}
 			}
 			if (this.props.isEdit) {
-				var list;
-				var clearBtn;
+				let list;
+				let clearBtn;
 				if (this.state.expanded) {
 					list = React.createElement(List, {
 						preventCreateButton: this.state.preventCreateButton || this.props.preventCreateButton,
@@ -203,10 +204,9 @@ registerFieldClass(
 						},
 						renderIcon('times')
 					);
-				} else {
 				}
 
-				var valLabel;
+				let valLabel;
 				if (value && value.name) {
 					valLabel = R.span(null, value.name);
 				} else {

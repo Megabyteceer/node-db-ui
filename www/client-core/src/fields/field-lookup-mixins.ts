@@ -1,16 +1,18 @@
-import React from 'react';
-import { FIELD_TYPE, NodeDesc, RecordData } from '../bs-utils';
-import { FormListItem } from '../forms/form-list-item';
-import { assignFilters, Filters } from '../utils';
-import { LookupManyToManyFiled } from './field-14-many-to-many';
-import { BaseField, FieldProps, FieldState } from './base-field';
+import type React from 'react';
+import type { NodeDesc, RecordData } from '../bs-utils';
+import { FIELD_TYPE } from '../bs-utils';
+import type { FormListItem } from '../forms/form-list-item';
+import type { Filters } from '../utils';
+import { assignFilters } from '../utils';
+import type { FieldProps, FieldState } from './base-field';
+import { BaseField } from './base-field';
+import type { LookupManyToManyFiled } from './field-14-many-to-many';
 
 type AdditionalButtonsRenderer = (
 	node: NodeDesc,
 	data: RecordData,
 	refreshFunction?: () => void,
-	formItem?: FormListItem | LookupManyToManyFiled,
-	editButtonFilters?: Filters
+	formItem?: FormListItem | LookupManyToManyFiled
 ) => React.Component[];
 
 interface LookupFieldState extends FieldState {
@@ -50,9 +52,9 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 	}
 
 	generateDefaultFiltersByProps(props) {
-		var ret = Object.assign({}, props.filters);
+		const ret = Object.assign({}, props.filters);
 
-		var parentId =
+		const parentId =
 			props.wrapper.props.form.props.initialData.id ||
 			props.wrapper.props.form.filters[props.field.fieldName] ||
 			'new';
@@ -80,4 +82,5 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 	}
 }
 
-export { fieldLookupMixins, AdditionalButtonsRenderer };
+export { AdditionalButtonsRenderer, fieldLookupMixins };
+

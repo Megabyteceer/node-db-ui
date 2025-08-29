@@ -1,7 +1,7 @@
 import { OAuth2Client } from 'google-auth-library';
 
 import { throwError } from '../www/client-core/src/assert';
-import { UserSession } from '../www/client-core/src/bs-utils';
+import type { UserSession } from '../www/client-core/src/bs-utils';
 import { authorizeUserByID, createUser } from './auth';
 import { ENV } from './ENV';
 import { L } from './locale';
@@ -19,7 +19,7 @@ async function loginWithGoogle(token, userSession: UserSession) {
 		throwError(L('WRONG_PASS', userSession));
 	}
 	const email = payload.email;
-	var users = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND email='" + email + "'");
+	const users = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND email='" + email + "'");
 	if (users.length > 0) {
 		return authorizeUserByID(users[0].id);
 	} else {
@@ -31,7 +31,7 @@ async function loginWithGoogle(token, userSession: UserSession) {
 			userSession
 		);
 
-		let ret = await authorizeUserByID(userId);
+		const ret = await authorizeUserByID(userId);
 		if (payload.picture) {
 			ret.avatar = payload.picture;
 			await mysqlExec('UPDATE _users SET avatar = ' + escapeString(payload.picture) + ' WHERE id = ' + userId);

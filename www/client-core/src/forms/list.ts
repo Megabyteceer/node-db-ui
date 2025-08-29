@@ -1,4 +1,5 @@
-import { FIELD_TYPE, PRIVILEGES_MASK, RecordsData, VIEW_MASK } from '../bs-utils';
+import type { RecordsData } from '../bs-utils';
+import { FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../bs-utils';
 import { R } from '../r';
 
 /// #if DEBUG
@@ -8,25 +9,13 @@ import { FieldAdmin } from '../admin/field-admin';
 
 import React from 'react';
 import { Select } from '../components/select';
-import { RefToInput } from '../fields/base-field';
-import { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
+import type { RefToInput } from '../fields/base-field';
+import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import { LeftBar } from '../left-bar';
 import { iAdmin } from '../user';
-import {
-	deleteRecord,
-	getListRenderer,
-	getNode,
-	getNodeData,
-	isPresentListRenderer,
-	isRecordRestrictedForDeletion,
-	L,
-	renderIcon,
-	scrollToVisible,
-	sp,
-	UID,
-	updateHashLocation,
-} from '../utils';
-import { BaseForm, FormProps, FormState } from './base-form';
+import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from '../utils';
+import type { FormProps, FormState } from './base-form';
+import { BaseForm } from './base-form';
 import { FormFull } from './form-full';
 import { FormListItem } from './form-list-item';
 
@@ -101,7 +90,7 @@ class List extends BaseForm<ListProps, ListState> {
 			this.callOnTabShowEvent(v);
 		}
 
-		var p = this.filters[name];
+		const p = this.filters[name];
 
 		if (p !== 0 && v !== 0) {
 			if (!p && !v) return;
@@ -145,7 +134,7 @@ class List extends BaseForm<ListProps, ListState> {
 		if (!this.isSubForm()) {
 			updateHashLocation();
 		}
-		var nodeIdToFetch = this.props.nodeId || this.props.node.id;
+		const nodeIdToFetch = this.props.nodeId || this.props.node.id;
 		if (nodeIdToFetch !== this.currentFetchingNodeId) {
 			this.currentFetchingNodeId = nodeIdToFetch;
 
@@ -154,7 +143,7 @@ class List extends BaseForm<ListProps, ListState> {
 			}
 
 			//TODO: Понять почему рефреш листа дает другой вьюмаск. this.state.viewMask отличается от того что в кастом вью
-			let data = await getNodeData(
+			const data = await getNodeData(
 				nodeIdToFetch,
 				undefined,
 				this.filters,
@@ -173,7 +162,7 @@ class List extends BaseForm<ListProps, ListState> {
 			}
 
 			this.currentFetchingNodeId = -1;
-			var sorting = data.items.length && data.items[0].hasOwnProperty('order');
+			const sorting = data.items.length && data.items[0].hasOwnProperty('order');
 			if (sorting) {
 				data.items.sort(sortByOrder);
 			}
@@ -193,7 +182,7 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	changeSearch(event) {
-		var val = event.target.value;
+		const val = event.target.value;
 		this.clearSearchInterval();
 		this.searchTimeout = setTimeout(() => {
 			delete this.searchTimeout;
@@ -242,10 +231,10 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	getSubForms(): FormFull[] {
-		var ret = [];
-		for (var k in this.subFormsRefs) {
+		const ret = [];
+		for (const k in this.subFormsRefs) {
 			if (this.subFormsRefs.hasOwnProperty(k)) {
-				var f = this.subFormsRefs[k];
+				const f = this.subFormsRefs[k];
 				if (f) {
 					ret.push(f);
 				}
@@ -263,19 +252,19 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	renderEditableList() {
-		var node = this.state.node;
-		var data = this.state.data;
-		var filters = this.filters;
-		var lines = [];
+		const node = this.state.node;
+		const data = this.state.data;
+		const filters = this.filters;
+		const lines = [];
 		if (data.items.length > 0) {
-			var sorting = data.items[0].hasOwnProperty('order');
-			for (var i = 0; i < data.items.length; i++) {
+			const sorting = data.items[0].hasOwnProperty('order');
+			for (let i = 0; i < data.items.length; i++) {
 				(() => {
-					let itemNum = i;
-					var item = data.items[i];
+					const itemNum = i;
+					const item = data.items[i];
 					const isRestricted = isRecordRestrictedForDeletion(node.id, item.id);
 					if (!item.__deleted_901d123f) {
-						var buttons = [];
+						const buttons = [];
 
 						buttons.push(
 							R.button(
@@ -297,11 +286,11 @@ class List extends BaseForm<ListProps, ListState> {
 						);
 
 						if (sorting) {
-							var uidM1: number;
-							var uidP1: number;
-							var itemNumM1;
-							var itemNumP1;
-							for (var j = itemNum - 1; j >= 0; j--) {
+							let uidM1: number;
+							let uidP1: number;
+							let itemNumM1;
+							let itemNumP1;
+							for (let j = itemNum - 1; j >= 0; j--) {
 								if (!data.items[j].__deleted_901d123f) {
 									itemNumM1 = j;
 									uidM1 = j;
@@ -309,7 +298,7 @@ class List extends BaseForm<ListProps, ListState> {
 								}
 							}
 
-							for (var j = itemNum + 1; j < data.items.length; j++) {
+							for (let j = itemNum + 1; j < data.items.length; j++) {
 								if (!data.items[j].__deleted_901d123f) {
 									itemNumP1 = j;
 									uidP1 = j;
@@ -326,7 +315,7 @@ class List extends BaseForm<ListProps, ListState> {
 												title: L('MOVE_UP'),
 												key: 'bu' + UID(item),
 												onClick: () => {
-													var t = data.items[itemNum];
+													const t = data.items[itemNum];
 													data.items[itemNum] = data.items[itemNumM1];
 													data.items[itemNumM1] = t;
 													this.subFormsRefs[itemNum].setFieldValue('order', itemNumM1);
@@ -350,7 +339,7 @@ class List extends BaseForm<ListProps, ListState> {
 												title: L('MOVE_DOWN'),
 												key: 'bd' + UID(item),
 												onClick: () => {
-													var t = data.items[itemNum];
+													const t = data.items[itemNum];
 													data.items[itemNum] = data.items[itemNumP1];
 													data.items[itemNumP1] = t;
 
@@ -397,13 +386,13 @@ class List extends BaseForm<ListProps, ListState> {
 			}
 		}
 		/// #if DEBUG
-		var nodeAdmin;
+		let nodeAdmin;
 		if (iAdmin()) {
 			nodeAdmin = React.createElement(NodeAdmin, { form: this });
 		}
 		/// #endif
 
-		var createBtn;
+		let createBtn;
 		if (node.privileges & PRIVILEGES_MASK.CREATE) {
 			createBtn = R.div(
 				null,
@@ -432,8 +421,8 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	render() {
-		var node = this.state.node;
-		var data = this.state.data;
+		const node = this.state.node;
+		const data = this.state.data;
 		if (!node || !data) {
 			return R.div(
 				{ className: 'field-lookup-loading-icon-container' },
@@ -449,13 +438,14 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	renderList() {
-		var node = this.state.node;
-		var data = this.state.data;
-		var filters = this.filters;
-		var header;
-
+		const node = this.state.node;
+		const data = this.state.data;
+		const filters = this.filters;
+		let header;
+		let createButton;
+		
 		if (!this.props.omitHeader) {
-			var createButton;
+			
 			if (
 				node.privileges & PRIVILEGES_MASK.CREATE &&
 				!this.props.preventCreateButton &&
@@ -490,7 +480,7 @@ class List extends BaseForm<ListProps, ListState> {
 				}
 			}
 
-			var searchPanel;
+			let searchPanel;
 
 			if (
 				!this.props.hideSearch &&
@@ -521,9 +511,9 @@ class List extends BaseForm<ListProps, ListState> {
 				);
 			}
 
-			var filtersPanel;
+			let filtersPanel;
 			if (node.filtersList && node.filtersList.length > 1) {
-				var options = node.filtersList;
+				const options = node.filtersList;
 				filtersPanel = R.div(
 					{
 						className: 'filter-select',
@@ -549,22 +539,22 @@ class List extends BaseForm<ListProps, ListState> {
 			}
 		}
 
-		var body;
+		let body;
 		if (data.total > 0 || this.isCustomListRendering()) {
 			if (this.isCustomListRendering()) {
 				body = getListRenderer(node.id).call(this);
 			}
 			if (!body) {
-				var tableHeader = [];
+				const tableHeader = [];
 				node.fields.some((field) => {
 					/// #if DEBUG
-					var fieldAdmin;
+					let fieldAdmin;
 					if (iAdmin()) {
 						fieldAdmin = React.createElement(FieldAdmin, { field, form: this });
 					}
 					/// #endif
 
-					var rowHeader;
+					let rowHeader;
 					if (field.forSearch === 1) {
 						rowHeader = R.span(
 							{
@@ -606,15 +596,15 @@ class List extends BaseForm<ListProps, ListState> {
 				});
 				tableHeader.push(R.td({ key: 'holder', className: 'list-row-header' }, ' '));
 
-				var additionalButtons =
+				const additionalButtons =
 					this.state.additionalButtons || this.props.additionalButtons || undefined;
 
-				var hideControls =
+				const hideControls =
 					this.props.hideControls ||
 					this.state.hideControls ||
 					(this.props.filters && this.props.filters.hideControls);
 
-				var lines = data.items.map((item) => {
+				const lines = data.items.map((item) => {
 					return React.createElement(FormListItem, {
 						key: Math.random() + '_' + item.id,
 						disableDrafting: this.props.disableDrafting,
@@ -637,7 +627,7 @@ class List extends BaseForm<ListProps, ListState> {
 				);
 			}
 		} else if (!this.props.isLookup) {
-			var t1, t2;
+			let t1, t2;
 			if (filters.s || filters.s === 0) {
 				t1 = L('NO_RESULTS', filters.s);
 				t2 = '';
@@ -648,7 +638,7 @@ class List extends BaseForm<ListProps, ListState> {
 				t1 = L('LIST_EMPTY');
 			}
 
-			var emptyIcon;
+			let emptyIcon;
 			if (node.icon) {
 				emptyIcon = renderIcon(
 					(node.icon || 'plus') + ((this.isSubForm() ? ' fa-3x' : ' fa-5x') + ' list-empty-icon')
@@ -658,16 +648,16 @@ class List extends BaseForm<ListProps, ListState> {
 			body = R.div({ className: 'list-empty' }, emptyIcon, R.div(null, t1), R.div(null, t2));
 		}
 
-		var pages = [];
-		var recPerPage;
+		const pages = [];
+		let recPerPage;
 		if (this.filters && this.filters.n) {
 			recPerPage = this.filters.n;
 		}
 
-		var totalPages = Math.ceil(data.total / (recPerPage || node.recPerPage));
-		var curPage = parseInt(filters.p as string) || 0;
+		const totalPages = Math.ceil(data.total / (recPerPage || node.recPerPage));
+		const curPage = parseInt(filters.p as string) || 0;
 
-		var pageNumbers = { 0: 1, 1: 1, 2: 1 };
+		const pageNumbers = { 0: 1, 1: 1, 2: 1 };
 
 		let p;
 		for (p = 0; p <= 2; p++) {
@@ -675,7 +665,7 @@ class List extends BaseForm<ListProps, ListState> {
 			pageNumbers[curPage - p] = 1;
 			pageNumbers[totalPages - 1 - p] = 1;
 		}
-		var prevP = -1;
+		let prevP = -1;
 		for (p in pageNumbers) {
 			p = parseInt(p);
 			if (p >= 0 && p < totalPages) {
@@ -692,8 +682,8 @@ class List extends BaseForm<ListProps, ListState> {
 			paginator = R.span({ className: 'list-paginator-items' }, pages);
 		}
 
-		var footer;
-		var paginatorText = L('SHOWED_LIST', data.items.length).replace('%', data.total);
+		let footer;
+		let paginatorText = L('SHOWED_LIST', data.items.length).replace('%', data.total);
 
 		if (this.filters.s) {
 			paginatorText += L('SEARCH_RESULTS', this.filters.s);
@@ -707,15 +697,15 @@ class List extends BaseForm<ListProps, ListState> {
 			}
 		}
 		/// #if DEBUG
-		var nodeAdmin;
+		let nodeAdmin;
 		if (iAdmin()) {
 			nodeAdmin = React.createElement(NodeAdmin, { form: this });
 		}
 		/// #endif
 
-		var title;
+		let title;
 		if (!this.props.isCompact) {
-			var hdr = this.header || this.filters.formTitle;
+			const hdr = this.header || this.filters.formTitle;
 			if (hdr) {
 				title = R.h4({ className: 'form-header' }, hdr);
 			}
@@ -735,3 +725,4 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 }
 export { List };
+

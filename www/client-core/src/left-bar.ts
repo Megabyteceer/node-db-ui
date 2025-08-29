@@ -16,8 +16,8 @@ let collapsed;
 
 function isMustBeExpanded(i) {
 	if (i.children) {
-		for (var k in i.children) {
-			var j = i.children[k];
+		for (const k in i.children) {
+			const j = i.children[k];
 			if (isCurrentlyShowedLeftBarItem(j) || isMustBeExpanded(j)) {
 				return true;
 			}
@@ -80,7 +80,7 @@ class BarItem extends Component<any, any> {
 
 	componentWillUnmount() {
 		if (this.props.item.nodeType !== NODE_TYPE.DOCUMENT) {
-			let i = allGroups.indexOf(this);
+			const i = allGroups.indexOf(this);
 			assert(i >= 0, 'BarItem registration is corrupted.');
 			allGroups.splice(i, 1);
 		}
@@ -149,7 +149,7 @@ class BarItem extends Component<any, any> {
 	}
 
 	toggle(ev) {
-		let group: HTMLDivElement = ev.target
+		const group: HTMLDivElement = ev.target
 			.closest('.left-bar-group-container')
 			.querySelector('.left-bar-children');
 		if (group.classList.contains('hidden')) {
@@ -166,10 +166,10 @@ class BarItem extends Component<any, any> {
 	}
 
 	render() {
-		var item = this.props.item;
+		const item = this.props.item;
 
 		/// #if DEBUG
-		var adminControl;
+		let adminControl;
 		if (iAdmin()) {
 			if (item.field) {
 				adminControl = R.div(
@@ -186,7 +186,7 @@ class BarItem extends Component<any, any> {
 		/// #endif
 
 		if (
-			item.nodeType !== NODE_TYPE.DOCUMENT &&
+			item.nodeType !== NODE_TYPE.DOCUMENT && // eslint-disable-line no-constant-condition
 			(!item.children || item.children.length === 0) &&
 			/// #if DEBUG
 			false // in debug build always show empty nodes
@@ -199,7 +199,7 @@ class BarItem extends Component<any, any> {
 			return React.createElement(BarItem, {item: item.children[0], key: this.props.key, level: this.props.level});
 		}*/
 
-		var itemsIcon = R.div(
+		const itemsIcon = R.div(
 			{ className: 'left-bar-item-icon' },
 			renderIcon(item.icon + (item.nodeType === NODE_TYPE.DOCUMENT ? ' brand-color' : ' no-icon'))
 		);
@@ -211,13 +211,13 @@ class BarItem extends Component<any, any> {
 		const isActive = isCurrentlyShowedLeftBarItem(item);
 
 		if (isActive) {
-			activeItem = this;
+			activeItem = this; // eslint-disable-line @typescript-eslint/no-this-alias
 			className += ' left-bar-item-active';
 		}
 
-		var caret;
+		let caret;
 
-		var children;
+		let children;
 
 		const _isMustBeExpanded = isMustBeExpanded(this.props.item);
 		const isExpanded = this.state.expanded || _isMustBeExpanded;
@@ -281,7 +281,7 @@ class BarItem extends Component<any, any> {
 					isActive === SELECTED_LIST
 						? undefined
 						: () => {
-								crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
+							crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
 						  };
 			}
 			return R.a(
@@ -324,10 +324,10 @@ function renderItemsArray(itemsArray, level, item?) {
 	}
 	/// #endif
 
-	var ret = [];
+	const ret = [];
 
-	for (var k in itemsArray) {
-		var item = itemsArray[k];
+	for (const k in itemsArray) {
+		const item = itemsArray[k];
 		if (typeof item === 'string') {
 			if (!collapsed) {
 				ret.push(R.h5({ key: ret.length, className: 'left-bar-tabs-header' }, item));
@@ -340,7 +340,7 @@ function renderItemsArray(itemsArray, level, item?) {
 }
 
 class LeftBar extends Component<any, any> {
-	static instance: LeftBar;
+	static instance?: LeftBar;
 
 	constructor(props) {
 		super(props);
@@ -355,7 +355,7 @@ class LeftBar extends Component<any, any> {
 	}
 
 	static refreshLeftBarActive() {
-		LeftBar.instance && LeftBar.instance.refreshLeftBarActive();
+		LeftBar.instance?.refreshLeftBarActive();
 	}
 
 	refreshLeftBarActive() {
@@ -372,7 +372,7 @@ class LeftBar extends Component<any, any> {
 				item = itemElement.props.item;
 				if (item.nodeType === NODE_TYPE.SECTION) {
 					const e = ReactDOM.findDOMNode(itemElement) as HTMLDivElement;
-					let group = e.querySelector('.left-bar-children') as HTMLDivElement;
+					const group = e.querySelector('.left-bar-children') as HTMLDivElement;
 					if (group.style.maxHeight) {
 						group.style.maxHeight = '';
 						group.style.transform = 'scaleY(1)';
@@ -388,7 +388,7 @@ class LeftBar extends Component<any, any> {
 			return R.td(null);
 		}
 
-		var menuItems = collapsed ? [] : renderItemsArray(this.props.menuItems, 0);
+		const menuItems = collapsed ? [] : renderItemsArray(this.props.menuItems, 0);
 
 		if (collapsable) {
 			menuItems.unshift(
@@ -434,3 +434,4 @@ window.addEventListener('resize', renewIsCollapsable);
 renewIsCollapsable();
 
 export { LeftBar };
+
