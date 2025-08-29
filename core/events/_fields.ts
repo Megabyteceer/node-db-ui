@@ -180,8 +180,6 @@ function getFieldTypeSQL(data) {
 			return 'int4 UNSIGNED NOT NULL DEFAULT 0';
 		case FIELD_TYPE.PICTURE:
 			return "VARCHAR(32) NOT NULL DEFAULT ''";
-		case FIELD_TYPE.RATING:
-			throwError('Field type ' + FIELD_TYPE.RATING + ' is not editable');
 		case FIELD_TYPE.RICH_EDITOR:
 			return "text NOT NULL DEFAULT ''";
 		case FIELD_TYPE.FILE:
