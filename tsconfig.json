@@ -25,6 +25,7 @@
 	},
 	"include": [
 		"www",
+		"core",
 		"types"
 	],
 	"exclude": [

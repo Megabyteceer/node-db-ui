@@ -168,7 +168,7 @@ class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 	}
 }
 
-registerFieldClass(FIELD_TYPE.DATETIME, class FieldDateTime extends dateFieldMixins {
+registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMixins {
 	timeRef: RefToInput;
 
 	static decodeValue(val) {

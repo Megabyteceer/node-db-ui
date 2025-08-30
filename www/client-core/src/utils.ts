@@ -460,8 +460,8 @@ async function goToPageByHash() {
 
 const SKIP_HISTORY_NODES = {};
 SKIP_HISTORY_NODES[NODE_ID.LOGIN] = true;
-SKIP_HISTORY_NODES[NODE_ID.REGISTER] = true;
-SKIP_HISTORY_NODES[NODE_ID.RESET] = true;
+SKIP_HISTORY_NODES[NODE_ID.REGISTRATION] = true;
+SKIP_HISTORY_NODES[NODE_ID.RESET_PASSWORD] = true;
 
 async function goBack(isAfterDelete?: boolean) {
 	const currentFormParameters = crudJs.Stage.currentForm;
@@ -592,7 +592,7 @@ async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string):
 				normalizeNode(data);
 				nodes[nodeId] = data;
 				return data;
-			} catch (er) {
+			} catch (_er) {
 				delete nodesRequested[nodeId];
 			}
 		}
@@ -645,8 +645,7 @@ async function getNodeData(
 	editable?: boolean,
 	viewMask?: VIEW_MASK | boolean,
 	isForCustomList?: boolean,
-	noLoadingIndicator?: boolean,
-	onError?: (er: any) => void
+	noLoadingIndicator?: boolean
 ): Promise<RecordsData>;
 async function getNodeData(
 	nodeId: RecId,
@@ -655,8 +654,7 @@ async function getNodeData(
 	editable?: boolean,
 	viewMask?: VIEW_MASK | boolean,
 	isForCustomList?: boolean,
-	noLoadingIndicator?: boolean,
-	onError?: (er: any) => void
+	noLoadingIndicator?: boolean
 ): Promise<RecordData>;
 async function getNodeData(
 	nodeId: RecId,
@@ -665,8 +663,7 @@ async function getNodeData(
 	editable?: boolean,
 	viewMask?: VIEW_MASK | boolean,
 	isForCustomList?: boolean,
-	noLoadingIndicator?: boolean,
-	onError?: (er: any) => void
+	noLoadingIndicator?: boolean
 ): Promise<RecordData | RecordsData> {
 	/// #if DEBUG
 	if (typeof recId !== 'undefined' && typeof filters !== 'undefined') {
@@ -732,7 +729,7 @@ async function getNodeData(
 			}
 		}
 		return data;
-	} catch (err) {
+	} catch (_err) {
 		delete nodesRequested[nodeId];
 	}
 }

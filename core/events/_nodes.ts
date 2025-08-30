@@ -70,19 +70,19 @@ const handlers: NodeEventsHandlers = {
 
 			const createdOnQ = `INSERT INTO _fields
 			(nodeFieldsLinker,  status, show,                                    prior, fieldType,                fieldName,       selectFieldName,   name,          description,    maxLength,     requirement,     "unique",    _usersId,    forSearch,    storeInDb,  _organizationId) VALUES
-			(${createdID},        1,      ${VIEW_MASK.LIST | VIEW_MASK.READONLY},  10,    ${FIELD_TYPE.DATETIME},   '_createdOn',    '',                  'Created on',  '',             0,              0,               0,           0,            1,             1,            1) RETURNING id;`;
+			(${createdID},        1,      ${VIEW_MASK.LIST | VIEW_MASK.READONLY},  10,    ${FIELD_TYPE.DATE_TIME},   '_createdOn',    '',                  'Created on',  '',             0,              0,               0,           0,            1,             1,            1) RETURNING id;`;
 			const dateFieldId = (await mysqlExec(createdOnQ))[0].id;
 			await mysqlExec('UPDATE _nodes SET _fieldsId=' + dateFieldId + ', reverse = 1 WHERE id=' + createdID);
 
 			const createdByQ = `INSERT INTO _fields
 			(nodeFieldsLinker,   status, show,                                    prior, fieldType,            fieldName,          selectFieldName,   name,           description,     maxLength,   requirement,     "unique",    _usersId,   forSearch,     storeInDb,   nodeRef,                  _organizationId) VALUES
-			(${createdID},         1,      ${VIEW_MASK.LIST | VIEW_MASK.READONLY},  20,    ${FIELD_TYPE.LOOKUP},  '_organizationId',  '_organization',     'Organization', '',              0,            0,               0,           0,           1,              1,             ${NODE_ID.ORGANIZATIONS},  1);`;
+			(${createdID},         1,      ${VIEW_MASK.LIST | VIEW_MASK.READONLY},  20,    ${FIELD_TYPE.LOOKUP},  '_organizationId',  '_organization',     'Organization', '',              0,            0,               0,           0,           1,              1,             ${NODE_ID.ORGANIZATION},  1);`;
 			await mysqlExec(createdByQ);
 
-			const createdByOrganozation = `INSERT INTO _fields
+			const createdByOrganization = `INSERT INTO _fields
 			(nodeFieldsLinker,    status,   show,                                     prior,     fieldType,              fieldName,  selectFieldName,    name,      description,   maxLength,  requirement,  "unique",    _usersId,    forSearch,    storeInDb,   nodeRef,            lookupIcon,  _organizationId) VALUES
 			(${createdID},          1,        ${VIEW_MASK.LIST | VIEW_MASK.READONLY},   30,        ${FIELD_TYPE.LOOKUP},   '_usersId',  '_users',             'Owner',   '',            0,           0,             0,          0,            1,             1,             ${NODE_ID.USERS},    'avatar',     1);`;
-			await mysqlExec(createdByOrganozation);
+			await mysqlExec(createdByOrganization);
 		}
 
 		const nodes = await getRecords(NODE_ID.NODES, VIEW_MASK.ALL, null, userSession, {
@@ -102,12 +102,12 @@ const handlers: NodeEventsHandlers = {
 		reloadMetadataSchedule();
 	},
 
-	beforeUpdate: async function (currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
+	beforeUpdate: async function (_currentData: RecordData, _newData: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 		reloadMetadataSchedule();
 	},
 
-	beforeDelete: async function (data: RecordData, userSession: UserSession) {
+	beforeDelete: async function (_data: RecordData, _userSession: UserSession) {
 		throwError('_nodes beforeCreate deletion event is not implemented');
 	}
 };

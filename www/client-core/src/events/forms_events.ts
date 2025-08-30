@@ -488,14 +488,14 @@ class FormEvents extends FormFull {
 						User.setUserData(userSession);
 						goToHome();
 					})
-					.catch((er) => {});
+					.catch((_er) => {});
 			} else {
 				getData('api/reset', this.filters)
 					.then((userSession) => {
 						User.setUserData(userSession);
 						crudJs.Stage.showForm(NODE_ID.USERS, userSession.id, { tab: 'passwordTab' }, true);
 					})
-					.catch((er) => {});
+					.catch((_er) => {});
 			}
 		}
 	}

@@ -368,7 +368,7 @@ class NodeAdmin extends Component<any, any> {
 							title: L('EDIT_ACCESS'),
 							onClick: () => {
 								crudJs.Stage.showForm(
-									NODE_ID.PRIVILEGES,
+									NODE_ID.RIGHT_ACCESS_FORM,
 									nodeId,
 									undefined,
 									true,

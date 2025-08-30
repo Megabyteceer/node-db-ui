@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import type { FieldDesc } from '../bs-utils';
-import { FIELD_DISPLAY_TYPE, FIELD_TYPE } from '../bs-utils';
+import { FIELD_TYPE } from '../bs-utils';
 import { R } from '../r';
 /// #if DEBUG
 import { FieldAdmin } from '../admin/field-admin';
 /// #endif
+import { ENUM_FIELD_DISPLAY } from '../../../../types/generated';
 import { iAdmin } from '../user';
 import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible } from '../utils';
 import type { BaseField, FieldProps } from './base-field';
@@ -217,7 +218,7 @@ class FieldWrap extends Component<FieldProps, any> {
 		}
 	}
 
-	valueListener(newVal, withBounceDelay, sender) {
+	valueListener(newVal, withBounceDelay, _sender) {
 		this.currentValue = newVal;
 		this.props.form.fieldAlert(this.props.field.fieldName);
 		if (withBounceDelay) {
@@ -286,7 +287,7 @@ class FieldWrap extends Component<FieldProps, any> {
 			className += ' ' + field.cssClass;
 		}
 
-		if (field.display === FIELD_DISPLAY_TYPE.INLINE) {
+		if (field.display === ENUM_FIELD_DISPLAY.INLINE) {
 			className += ' field-wrap-inline';
 		}
 

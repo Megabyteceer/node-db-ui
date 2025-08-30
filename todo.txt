@@ -1,7 +1,47 @@
 
+
+
 типизовать ретурт getRecords по id 
 
+
+class TGR {
+	/** _nodes */
+	async getRecords(nodeId: 1, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<RecordData>;
+	/** _docs */
+	async getRecords(nodeId: 2, viewMask: VIEW_MASK, recId: null | RecId[], userSession?: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
+	async getRecords(
+		_nodeId: RecId,
+		_viewMask: VIEW_MASK,
+		_recId: null | RecId | RecId[] = null,
+		_userSession: UserSession = ADMIN_USER_SESSION,
+		_filterFields: any = {},
+		_search?: string
+	): Promise<RecordData | RecordsData> {
+		return '1' as any;
+	}
+}
+
+const a = new TGR();
+const b = a.getRecords;
+
+export { b };
+
+b(
+
+
+
+
+
+Удалить все d.ts файлы
+
+
 разделить обработчики событий формы по файлу на ноду и типизовать.
+server.on('_nodes.create', (data: InodeRecord, userSession):Result=>{
+});
+client.on('_nodes.name.change', (data: InodeRecord, userSession):Result=>{
+});
+Вот так регать неотменяемые хендлеры. Типизовать server и client
+
 
 
 подставить типы записей. типизация гетРекордс

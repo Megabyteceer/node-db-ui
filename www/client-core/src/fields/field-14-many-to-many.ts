@@ -36,7 +36,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 		this.setState({ extendedEditor: true });
 	}
 
-	valueListener(newVal, withBounceDelay, sender) {
+	valueListener(newVal, _withBounceDelay, sender) {
 		if (sender.props.isNew) {
 			this.state.value.splice(sender.props.pos, 0, newVal);
 			this.forceUpdate();

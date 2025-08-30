@@ -1,4 +1,6 @@
-import { ENUM_FIELD_DISPLAY as FIELD_DISPLAY_TYPE, ENUM_FIELD_TYPE as FIELD_TYPE, ENUM_NODE_TYPE as NODE_TYPE, type INodesRecord } from '../../../types/generated';
+import type { ENUM_FIELD_DISPLAY, IFieldsRecord, IFiltersRecord, INodesRecord } from '../../../types/generated';
+import { FIELD_ID, ENUM_FIELD_TYPE as FIELD_TYPE, NODE_ID, ENUM_NODE_TYPE as NODE_TYPE } from '../../../types/generated';
+
 
 interface Filters {
 	[key: string]: string | number | {}; // eslint-disable-line @typescript-eslint/no-empty-object-type
@@ -79,12 +81,15 @@ type EnumList = {
 	namesByValue: { [key: number]: string };
 };
 
-interface FieldDesc {
+interface FieldDesc extends IFieldsRecord {
 	/** readable name */
 	name: string;
 
 	/** could be string for multilingual fields */
 	id: RecId;
+
+	/** owner node */
+	nodeFieldsLinker: RecId;
 
 	/** field's name in database table */
 	fieldName: string;
@@ -120,9 +125,9 @@ interface FieldDesc {
 
 	cssClass?: string;
 
-	display: FIELD_DISPLAY_TYPE;
+	display: ENUM_FIELD_DISPLAY;
 
-	/** owner node id */
+	/** node id lookup field points to*/
 	nodeRef: RecId;
 
 	/** SERVER SIDE FIELD ONLY. If it not empty - content of this field goes in to fieldName in SQL query to retrieve data not from direct table's field */
@@ -154,14 +159,10 @@ interface FieldDesc {
 	childrenFields?: FieldDesc[];
 }
 
-interface FilterDesc {
-	order?: number;
+interface ClientSideFilterRecord {
 	name: string;
-	hiPriority?: BoolNum;
-	view?: string;
-	fields?: string;
-	roles?: number[];
-}
+	order: number
+};
 
 interface NodeDesc extends INodesRecord {
 	id: RecId;
@@ -185,7 +186,7 @@ interface NodeDesc extends INodesRecord {
 	defaultFilterId?: number;
 	fields?: FieldDesc[];
 	cssClass?: string;
-	filters?: { [key: string]: FilterDesc };
+	filters?: { [key: string]: IFiltersRecord | ClientSideFilterRecord };
 	filtersList?: { name: string; value: any }[];
 	sortFieldName?: string;
 	/** CLIENT SIDE ONLY */
@@ -271,33 +272,11 @@ const enum PRIVILEGES_MASK {
 
 const HASH_DIVIDER = '.';
 
-const enum NODE_ID {
-	PRIVILEGES = 1,
-	NODES = 4,
-	USERS = 5,
-	FIELDS = 6,
-	ORGANIZATIONS = 7,
-	ROLES = 8,
-	FILTERS = 9,
-	LANGUAGES = 12,
-	LOGIN = 20,
-	REGISTER = 21,
-	RESET = 22,
-	PAGES = 49,
-	ENUMERATIONS = 52,
-	ENUMERATION_VALUES = 53,
-	FILES = 83
-}
-
 const enum USER_ID {
 	SUPER_ADMIN = 1,
 	GUEST = 2,
 	USER = 3,
 	VIEW_ALL = 7
-}
-
-const enum FIELD_ID {
-	MAX_LENGTH = 9
 }
 
 const LANGUAGE_ID_DEFAULT: RecId = 1;
@@ -315,11 +294,9 @@ export {
 	BoolNum,
 	EnumList,
 	EnumListItem,
-	FIELD_DISPLAY_TYPE,
 	FIELD_ID,
 	FIELD_TYPE,
 	FieldDesc,
-	FilterDesc,
 	Filters,
 	getCurrentStack,
 	GetRecordsParams,
@@ -327,9 +304,7 @@ export {
 	IFormParameters,
 	IMAGE_THUMBNAIL_PREFIX,
 	LANGUAGE_ID_DEFAULT,
-	NODE_ID,
-	NODE_TYPE,
-	NodeDesc,
+	NODE_ID, NODE_TYPE, NodeDesc,
 	PRIVILEGES_MASK,
 	RecId,
 	RecordData,
@@ -344,3 +319,4 @@ export {
 	UserSession,
 	VIEW_MASK
 };
+

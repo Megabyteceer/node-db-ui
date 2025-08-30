@@ -38,7 +38,7 @@ export default {
 
 		if (newData.hasOwnProperty('company')) {
 			if (currentData._organizationId.id) {
-				await submitRecord(NODE_ID.ORGANIZATIONS, { name: newData.company }, currentData._organizationId.id);
+				await submitRecord(NODE_ID.ORGANIZATION, { name: newData.company }, currentData._organizationId.id);
 			}
 		}
 		return clearUserParams(newData, currentData, userSession);

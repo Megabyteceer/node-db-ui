@@ -23,7 +23,7 @@ export default tseslint.config(
     "space-in-parens": "warn",
     "comma-spacing": "warn",
     "@/key-spacing": "warn",
-    "eol-last": "warn",
+    "eol-last": "off",
     "no-trailing-spaces": "warn",
     "prefer-const": 0,
     "indent": ["warn", "tab"],

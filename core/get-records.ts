@@ -1,5 +1,6 @@
+import type { FILTER_ID, IFiltersRecord } from '../types/generated';
 import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
-import type { FilterDesc, RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
+import type { FIELD_ID, RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
 import { FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { UserSession } from './auth';
 import { ADMIN_USER_SESSION, filtersById, getNodeDesc, getNodeEventHandler, ServerSideEventHandlersNames } from './describe-node';
@@ -20,6 +21,31 @@ const STATUS_FILTER_SQL_PART_ANY = '".status > ' + NUM_0 + ')';
 const STATUS_FILTER_SQL_PART_PUBLISHED = '".status = ' + NUM_1 + ')';
 const ORDERING_SQL_PART = ' LIMIT ' + NUM_1;
 
+export interface GetRecordsFilter {
+
+	/** page number */
+	p?: number | '*';
+
+	/** items per page */
+	n?: number;
+
+	excludeIDs?: number[];
+
+	onlyIDs?: number[];
+
+	/** order by field*/
+	o?: FIELD_ID;
+
+	/** reversed order */
+	r?: 1;
+
+	/** filterId */
+	filterId?: FILTER_ID;
+
+	/** filter by other field. numeric types only */
+	[fieldId:string]: number | any| undefined;
+}
+
 /*
 * @param filterFields	array with [fieldName: string]=>value filters. Only numeric fields is support
 *									special fields:
@@ -32,13 +58,13 @@ const ORDERING_SQL_PART = ' LIMIT ' + NUM_1;
 										['filterId'] = 1; filter's id to be applied on result;
 */
 async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<RecordData>;
-async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecId[], userSession?: UserSession, filterFields?: any, search?: string): Promise<RecordsData>;
+async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecId[], userSession?: UserSession, filterFields?: GetRecordsFilter, search?: string): Promise<RecordsData>;
 async function getRecords(
 	nodeId: RecId,
 	viewMask: VIEW_MASK,
 	recId: null | RecId | RecId[] = null,
 	userSession: UserSession = ADMIN_USER_SESSION,
-	filterFields: any = EMPTY_FILTERS,
+	filterFields: GetRecordsFilter = EMPTY_FILTERS,
 	search?: string
 ): Promise<RecordData | RecordsData> {
 	const node = getNodeDesc(nodeId, userSession);
@@ -203,7 +229,7 @@ async function getRecords(
 	//=========================================================
 
 	const filterId = filterFields.filterId;
-	let filter: FilterDesc;
+	let filter: IFiltersRecord;
 
 	if (node.filters) {
 		/// #if DEBUG
@@ -299,8 +325,8 @@ async function getRecords(
 			let fw = filter['filter'];
 			if (fw) {
 				if (fw.indexOf('@') >= 0) {
-					fw = fw.replaceAll('@userId', userSession.id);
-					fw = fw.replaceAll('@orgId', userSession.orgId);
+					fw = fw.replaceAll('@userId', userSession.id.toString());
+					fw = fw.replaceAll('@orgId', userSession.orgId.toString());
 					if (fw.indexOf('@') >= 0) {
 						for (const k in filterFields) {
 							fw.replaceAll('@' + k, D(filterFields[k]));

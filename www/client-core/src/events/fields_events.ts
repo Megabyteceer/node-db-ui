@@ -190,11 +190,11 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_login_sign_up_link_btn_onChange() {
-		crudJs.Stage.showForm(NODE_ID.REGISTER, 'new', undefined, true);
+		crudJs.Stage.showForm(NODE_ID.REGISTRATION, 'new', undefined, true);
 	}
 
 	_login_forgot_password_button_onChange() {
-		crudJs.Stage.showForm(NODE_ID.RESET, 'new', undefined, true);
+		crudJs.Stage.showForm(NODE_ID.RESET_PASSWORD, 'new', undefined, true);
 	}
 
 	_reset_password_back_to_login_onChange() {
@@ -285,7 +285,7 @@ class FieldsEvents extends FormEvents {
 			this.hideField('maxLength');
 			break;
 		case FIELD_TYPE.BOOL:
-		case FIELD_TYPE.DATETIME:
+		case FIELD_TYPE.DATE_TIME:
 		case FIELD_TYPE.DATE:
 		case FIELD_TYPE.COLOR:
 		case FIELD_TYPE.FILE:

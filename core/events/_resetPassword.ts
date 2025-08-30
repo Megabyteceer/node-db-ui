@@ -22,7 +22,7 @@ export default {
 				const href =
 					getServerHref() +
 					'#n/' +
-					NODE_ID.RESET +
+					NODE_ID.RESET_PASSWORD +
 					'/r/new/e/f/userId/' +
 					user.id +
 					'/resetCode/' +

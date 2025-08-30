@@ -25,7 +25,7 @@ export default {
 			const href =
 				getServerHref() +
 				'#n/' +
-				NODE_ID.RESET +
+				NODE_ID.RESET_PASSWORD +
 				'/r/new/e/f/activationKey/' +
 				encodeURIComponent(data.activationKey);
 			await mail_utf8(

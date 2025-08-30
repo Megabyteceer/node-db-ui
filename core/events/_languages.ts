@@ -7,7 +7,7 @@ import { getRecords } from '../get-records';
 import { createFieldInTable } from './_fields';
 
 export default {
-	afterCreate: async function (data: RecordDataWrite, userSession: UserSession) {
+	afterCreate: async function (data: RecordDataWrite, _userSession: UserSession) {
 		shouldBeAdmin();
 		const fieldsData = await getRecords(NODE_ID.FIELDS, 1, null, undefined, {
 			multilingual: 1,
@@ -24,9 +24,9 @@ export default {
 	},
 
 	beforeUpdate: async function (
-		currentData: RecordData,
+		_currentData: RecordData,
 		newData: RecordDataWrite,
-		userSession: UserSession
+		_userSession: UserSession
 	) {
 		if (newData.hasOwnProperty('code')) {
 			throwError('Cant change \'code\' of language.');
@@ -34,7 +34,7 @@ export default {
 		reloadMetadataSchedule();
 	},
 
-	beforeDelete: async function (data: RecordData, userSession: UserSession) {
+	beforeDelete: async function (_data: RecordData, _userSession: UserSession) {
 		throwError('_languages beforeCreate deletion event is not implemented');
 	},
 };

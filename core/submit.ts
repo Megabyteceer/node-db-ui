@@ -273,7 +273,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 						}
 						values.push(fieldVal);
 						break;
-					case FIELD_TYPE.DATETIME:
+					case FIELD_TYPE.DATE_TIME:
 					case FIELD_TYPE.DATE:
 						values.push('\'' + fieldVal + '\'');
 						break;

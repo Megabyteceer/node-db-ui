@@ -79,7 +79,7 @@ const handlers: NodeEventsHandlers = {
 	beforeUpdate: async function (currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
-		if (currentData.id === FIELD_ID.MAX_LENGTH && newData.hasOwnProperty('maxLength')) {
+		if (currentData.id === FIELD_ID.FIELDS__MAX_LENGTH && newData.hasOwnProperty('maxLength')) {
 			throwError(L('SIZE_FLD_BLOCKED', userSession));
 		}
 
@@ -143,7 +143,7 @@ const handlers: NodeEventsHandlers = {
 		reloadMetadataSchedule();
 	},
 
-	beforeDelete: async function (data: RecordData, userSession: UserSession) {
+	beforeDelete: async function (_data: RecordData, _userSession: UserSession) {
 		throwError('_fields beforeCreate deletion event is not implemented');
 	}
 };
@@ -172,7 +172,7 @@ function getFieldTypeSQL(data) {
 		} else {
 			return 'NUMERIC(' + data.maxLength + ', 0) NOT NULL DEFAULT 0';
 		}
-	case FIELD_TYPE.DATETIME:
+	case FIELD_TYPE.DATE_TIME:
 	case FIELD_TYPE.DATE:
 		return 'timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\'';
 	case FIELD_TYPE.BOOL:
