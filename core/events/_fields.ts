@@ -1,6 +1,7 @@
+import { FIELD_ID, NODE_ID } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import type { RecordData, RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
-import { FIELD_ID, FIELD_TYPE, NODE_ID, VIEW_MASK } from '../../www/client-core/src/bs-utils';
+import { FIELD_TYPE, VIEW_MASK } from '../../www/client-core/src/bs-utils';
 import { shouldBeAdmin } from '../admin/admin';
 import { mustBeUnset } from '../auth';
 import type { NodeEventsHandlers } from '../describe-node';
@@ -217,7 +218,7 @@ async function createFieldInTable(data: RecordDataWrite) {
 				nodeFieldsLinker: linkedNodeId,
 				fieldType: FIELD_TYPE.IMAGE
 			};
-			const records = await getRecords(6, VIEW_MASK.LIST, undefined, undefined, filters);
+			const records = await getRecords(NODE_ID.FIELDS, VIEW_MASK.LIST, undefined, undefined, filters);
 			if (records.total) {
 				data.lookupIcon = records.items[0].fieldName;
 			}

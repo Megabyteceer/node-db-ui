@@ -2,8 +2,9 @@
 
 import moment from 'moment';
 import { Component } from 'react';
+import { NODE_ID } from '../../../types/generated';
 import type { UserSession } from './bs-utils';
-import { NODE_ID, USER_ID } from './bs-utils';
+import { USER_ID } from './bs-utils';
 import { Select } from './components/select';
 import { LITE_UI_PREFIX } from './consts';
 import { LoadingIndicator } from './loading-indicator';

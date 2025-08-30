@@ -1,11 +1,11 @@
 import { randomBytes } from 'crypto';
 import type { RecordDataWrite } from '../../www/client-core/src/bs-utils';
-import { NODE_ID } from '../../www/client-core/src/bs-utils';
 import type { UserSession } from '../auth';
 import { generateSalt, getPasswordHash, getServerHref, mail_utf8 } from '../auth';
 
 import { ENV } from '../../core/ENV';
 
+import { NODE_ID } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import { L } from '../locale';
 import { mysqlExec } from '../mysql-connection';

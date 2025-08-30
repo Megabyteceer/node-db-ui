@@ -1,9 +1,10 @@
 import ReactDOM from 'react-dom';
-import { FIELD_TYPE, NODE_ID, NODE_TYPE, VIEW_MASK } from '../bs-utils';
+import { FIELD_TYPE, NODE_TYPE, VIEW_MASK } from '../bs-utils';
 
 import { L } from '../utils';
 import { FormEvents } from './forms_events';
 /// #if DEBUG
+import { NODE_ID } from '../../../../types/generated';
 import { makeReactClassSelectionField, removeReactClassSelectionField } from '../admin/admin-utils';
 /// #endif
 

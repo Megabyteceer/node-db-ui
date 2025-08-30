@@ -4,7 +4,7 @@ import type { LANG_KEYS } from './locales/en/lang';
 
 import ReactDOM from 'react-dom';
 import type { FieldDesc, Filters, GetRecordsParams, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, RecordSubmitResult, UserSession } from './bs-utils';
-import { FIELD_TYPE, HASH_DIVIDER, NODE_ID, ROLE_ID, USER_ID, VIEW_MASK } from './bs-utils';
+import { FIELD_TYPE, HASH_DIVIDER, ROLE_ID, USER_ID, VIEW_MASK } from './bs-utils';
 import { LoadingIndicator } from './loading-indicator';
 import { Modal } from './modal';
 import { Notify } from './notify';
@@ -16,6 +16,7 @@ import { DebugPanel } from './debug-panel';
 /// #endif
 import type { Component } from 'react';
 import React from 'react';
+import { NODE_ID } from '../../../types/generated';
 import { assert } from './assert';
 import { HotkeyButton } from './components/hotkey-button';
 import type { List } from './forms/list';

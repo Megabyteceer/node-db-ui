@@ -1,9 +1,10 @@
-import type { FILTER_ID, IFiltersRecord } from '../types/generated';
+import type { FIELD_ID, FILTER_ID, IFiltersRecord, NODE_ID, TypeGenerationHelper } from '../types/generated';
 import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
-import type { FIELD_ID, RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
+import type { RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
 import { FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { UserSession } from './auth';
 import { ADMIN_USER_SESSION, filtersById, getNodeDesc, getNodeEventHandler, ServerSideEventHandlersNames } from './describe-node';
+
 import { A, D, escapeString, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 
 const isASCII = (str) => {
@@ -46,27 +47,15 @@ export interface GetRecordsFilter {
 	[fieldId:string]: number | any| undefined;
 }
 
-/*
-* @param filterFields	array with [fieldName: string]=>value filters. Only numeric fields is support
-*									special fields:
-										['p'] = 5; - page of records to retrieve; * - retrieve all
-										['n'] = 5; - number of records per page;
-										['excludeIDs'] = [3,5,64,5,45]; - exclude records with these IDs;
-										['onlyIDs'] = '3,5,64,5,45'; - filter by IDs;
-										['o'] = 1; fieldId;
-										['r'] = 1; reverse order;
-										['filterId'] = 1; filter's id to be applied on result;
-*/
-async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<RecordData>;
-async function getRecords(nodeId: RecId, viewMask: VIEW_MASK, recId: null | RecId[], userSession?: UserSession, filterFields?: GetRecordsFilter, search?: string): Promise<RecordsData>;
-async function getRecords(
-	nodeId: RecId,
+//@ts-ignore
+const getRecords: TypeGenerationHelper['g'] = async(
+	nodeId: NODE_ID,
 	viewMask: VIEW_MASK,
 	recId: null | RecId | RecId[] = null,
 	userSession: UserSession = ADMIN_USER_SESSION,
 	filterFields: GetRecordsFilter = EMPTY_FILTERS,
 	search?: string
-): Promise<RecordData | RecordsData> {
+): Promise<RecordData | RecordsData> => {
 	const node = getNodeDesc(nodeId, userSession);
 
 	if (!node.storeForms) {
@@ -482,7 +471,7 @@ async function getRecords(
 			throwError('Record not found.');
 		}
 	}
-}
+};
 
 const DELETE_RECORD_SQL_PART = '" SET status=' + NUM_0 + ' WHERE id=';
 async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {

@@ -1,4 +1,5 @@
-import { NODE_ID } from '../bs-utils';
+
+import { NODE_ID } from '../../../../types/generated';
 import { renderItemsButtons } from '../forms/form-list-item';
 import type { List } from '../forms/list';
 import { R } from '../r';

@@ -1,5 +1,5 @@
 import { assert, throwError } from '../www/client-core/src/assert';
-import type { RecId, RecordDataWrite, RecordSubmitResult } from '../www/client-core/src/bs-utils';
+import type { RecId, RecordData, RecordDataWrite, RecordSubmitResult } from '../www/client-core/src/bs-utils';
 import { FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 
 
@@ -21,6 +21,7 @@ import { L } from './locale';
 import {mysqlRollback} } from './mysql-connection';
 //*/
 import axios from 'axios';
+import type { NODE_ID } from '../types/generated';
 import { D, escapeString, mysqlCommit, mysqlExec, mysqlStartTransaction, NUM_1 } from './mysql-connection';
 import { idToImgURLServer, UPLOADS_FILES_PATH } from './upload';
 
@@ -38,7 +39,7 @@ for (const tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 	);
 }
 
-async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult> {
+async function submitRecord(nodeId: NODE_ID, data: RecordDataWrite, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult> {
 	const node = getNodeDesc(nodeId);
 
 	if (node.captcha && SERVER_ENV.CAPTCHA_SERVER_SECRET) {
@@ -52,7 +53,7 @@ async function submitRecord(nodeId: RecId, data: RecordDataWrite, recId: RecId |
 		}
 	}
 
-	let currentData;
+	let currentData:RecordData;
 	if (recId) {
 		currentData = await getRecords(nodeId, VIEW_MASK.ALL, recId, userSession);
 	}

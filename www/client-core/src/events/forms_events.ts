@@ -4,8 +4,9 @@ import { attachGoogleLoginAPI, getData, getNode, getNodeData, goToHome, isAdmin,
 import { makeIconSelectionField } from '../admin/admin-utils';
 /// #endif
 
+import { NODE_ID } from '../../../../types/generated';
 import type { NodeDesc, RecordSubmitResult } from '../bs-utils';
-import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NODE_ID, NODE_TYPE, VIEW_MASK } from '../bs-utils';
+import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NODE_TYPE, VIEW_MASK } from '../bs-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
 import { FormFull } from '../forms/form-full';
 import { ENV } from '../main-frame';

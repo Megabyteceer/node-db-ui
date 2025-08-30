@@ -1,4 +1,5 @@
-import { NODE_ID } from '../../www/client-core/src/bs-utils';
+
+import { NODE_ID } from '../../types/generated';
 import { generateSalt, getPasswordHash, isAdmin } from '../auth';
 import { mysqlExec } from '../mysql-connection';
 import { submitRecord } from '../submit';

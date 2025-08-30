@@ -6,6 +6,7 @@
 	],
 	"settings": {
 		"files.exclude": {
+			"data/**": true,
 			"www/images/**": true,
 			"www/uploads/**": true,
 			"core/admin/settings_store/**": true,

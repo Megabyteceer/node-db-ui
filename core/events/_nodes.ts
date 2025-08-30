@@ -1,6 +1,7 @@
+import { NODE_ID } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import type { RecordData, RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
-import { FIELD_TYPE, NODE_ID, NODE_TYPE, VIEW_MASK } from '../../www/client-core/src/bs-utils';
+import { FIELD_TYPE, NODE_TYPE, VIEW_MASK } from '../../www/client-core/src/bs-utils';
 import { shouldBeAdmin } from '../admin/admin';
 import type { NodeEventsHandlers } from '../describe-node';
 import { reloadMetadataSchedule } from '../describe-node';

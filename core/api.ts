@@ -26,14 +26,14 @@ const api: object = {
 		}
 		return ret;
 	},
-	'api/logout': (reqData, userSession: UserSession) => {
+	'api/logout': (_reqData, userSession: UserSession) => {
 		killSession(userSession);
 		return Promise.resolve(getGuestUserForBrowserLanguage(userSession.lang.code));
 	},
-	'api/getMe': (reqData, userSession: UserSession) => {
+	'api/getMe': (_reqData, userSession: UserSession) => {
 		return Promise.resolve(userSession);
 	},
-	'api/getOptions': (reqData, userSession: UserSession) => {
+	'api/getOptions': (_reqData, userSession: UserSession) => {
 		return Promise.resolve(getNodesTree(userSession));
 	},
 	'api/delete': (reqData, userSession: UserSession) => {
@@ -42,7 +42,7 @@ const api: object = {
 	'api/setCurrentOrg': (reqData, userSession: UserSession) => {
 		return setCurrentOrg(reqData.orgId, userSession, true);
 	},
-	'api/toggleMultilingual': (reqData, userSession: UserSession) => {
+	'api/toggleMultilingual': (_reqData, userSession: UserSession) => {
 		return setMultilingual(!userSession.multilingualEnabled, userSession);
 	},
 	'api/descNode': (reqData, userSession: UserSession) => {
@@ -70,7 +70,7 @@ const api: object = {
 	'admin/nodePrivileges': (reqData, userSession: UserSession) => {
 		return nodePrivileges(reqData, userSession);
 	},
-	'admin/cache_info': (reqData, userSession: UserSession) => {
+	'admin/cache_info': (_reqData, userSession: UserSession) => {
 		return clearCache(userSession);
 	},
 	'admin/editEventHandler': (reqData, userSession: UserSession) => {

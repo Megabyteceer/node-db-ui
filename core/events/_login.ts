@@ -17,7 +17,7 @@ const handlers: NodeEventsHandlers = {
 			return await loginWithGoogle(password, userSession);
 		}
 
-		const users = await mysqlExec('SELECT id, salt, EXTRACT(SECOND FROM (blockedTo - NOW())) AS blocked, password, mistakes FROM _users WHERE email=\'' + username + LOGIN_SQL_PART);
+		const users = await mysqlExec('SELECT id, salt, EXTRACT(SECOND FROM ("blockedTo" - NOW())) AS blocked, password, mistakes FROM _users WHERE email=\'' + username + LOGIN_SQL_PART);
 		const user = users[0];
 		if (user) {
 

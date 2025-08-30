@@ -23,15 +23,11 @@
 		"skipLibCheck": true,
 		"assumeChangesOnlyAffectDirectDependencies": true,
 	},
-	"include": [
-		"www",
-		"core",
-		"types"
-	],
 	"exclude": [
 		"node_modules",
 		"**/build-prod/**",
 		"**/build-debug/**",
-		"**/uploads/**"
+		"www/uploads/**",
+		"data/**"
 	]
 }

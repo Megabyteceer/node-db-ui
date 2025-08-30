@@ -9,10 +9,10 @@ import { existsSync, writeFileSync } from 'fs';
 import { D, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 
 import { join } from 'path';
-import { ENUM_FIELD_TYPE, ENUM_NODE_TYPE, type IFiltersRecord } from '../types/generated';
+import { ENUM_FIELD_TYPE, ENUM_NODE_TYPE, NODE_ID, type IFiltersRecord } from '../types/generated';
 import { assert, throwError } from '../www/client-core/src/assert';
 import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, RecordData, RecordDataWrite, UserLangEntry } from '../www/client-core/src/bs-utils';
-import { NODE_ID, ROLE_ID, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import { ROLE_ID, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { UserSession /*, usersSessionsStartedCount*/ } from './auth';
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode /*, usersSessionsStartedCount*/ } from './auth';
 import { ENV } from './ENV';
@@ -128,7 +128,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				ret.defaultFilterId = srcNode.defaultFilterId;
 
 				for (const id in srcNode.filters) {
-					const filter = filtersById[id];
+					const filter = filtersById.get(parseInt(id));
 					if (filter.roles && !isUserHaveRole(ROLE_ID.ADMIN, userSession)) {
 						// TODO roles
 						if (!filter.roles.find((roleId) => isUserHaveRole(roleId, userSession))) {
@@ -587,6 +587,30 @@ import type { RecordData } from '../www/client-core/src/bs-utils';
 		src.push('\t' + nodeName + '__' + normalizeEnumName(filterData.name) + ' = ' + filterData.id + ',');
 	});
 	src.push('}');
+
+	src.push(`
+import type { RecId, UserSession, VIEW_MASK } from '../www/client-core/src/bs-utils';
+export class TypeGenerationHelper {`);
+
+	nodesData.forEach((nodeData) => {
+		if (nodeData.fields?.length && nodeData.storeForms) {
+			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
+			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
+			src.push(`
+	async g(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<${typeName}>;
+	async g(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: any, search?: string): Promise<{items:${typeName}[], total:number}>;
+`);
+		}
+	});
+
+	src.push(`
+	async g(nodeId: NODE_ID, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<RecordData>;
+	async g(nodeId: NODE_ID, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: any, search?: string): Promise<{items:RecordData[], total:number}>;
+
+	async g() {
+		return 1 as any;
+	}
+}`);
 
 	writeFileSync('types/generated.ts', src.join('\n'));
 

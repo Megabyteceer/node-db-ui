@@ -4,7 +4,7 @@ import type { UserSession } from './auth';
 import { ENV } from './ENV';
 
 
-const dictionaries: Map<string, {}> = new Map();
+const dictionaries: Map<string, {[key:string]: string}> = new Map();
 
 function initDictionaryServerSide(o, langId) {
 	dictionaries.set(langId, Object.assign(dictionaries.get(langId) || {}, o));
@@ -24,3 +24,5 @@ function L(key: LANG_KEYS_SERVER_SIDE, userSession: UserSession, param?: any) {
 	return ('#' + key);
 }
 export { initDictionaryServerSide, L };
+
+
