@@ -1,5 +1,5 @@
 
-import { NODE_ID } from '../../../../types/generated';
+import { NODE_ID, type IUsersRecord } from '../../../../types/generated';
 import { renderItemsButtons } from '../forms/form-list-item';
 import type { List } from '../forms/list';
 import { R } from '../r';
@@ -20,13 +20,10 @@ registerListRenderer(NODE_ID.USERS, function (this: List): React.ReactNode {
 	const node = this.state.node;
 	const data = this.state.data;
 
-	return data.items.map((item) => {
+	return (data.items as IUsersRecord[]).map((item) => {
 
 		const imgUrl = idToImgURL(item.avatar, 'avatar');
-		let phone;
-		if (item.phone) {
-			phone = R.div({ className: 'user-item-info' }, renderIcon('phone'), ' ' + item.public_phone);
-		}
+
 		let email;
 		if (item.email) {
 			email = R.div({ className: 'user-item-info' }, renderIcon('envelope'), ' ',
@@ -52,7 +49,6 @@ registerListRenderer(NODE_ID.USERS, function (this: List): React.ReactNode {
 				R.div({ className: 'user-item-text' }, item.company)
 			),
 			R.div({ className: 'user-item-block user-item-block-small' },
-				phone,
 				email,
 				additionalFields
 			),

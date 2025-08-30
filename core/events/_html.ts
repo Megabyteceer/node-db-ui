@@ -1,24 +1,27 @@
 
 import { readFile, unlink, writeFile } from 'fs';
 import { join } from 'path';
-import type { RecordData, RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import type { IHtmlRecord } from '../../types/generated';
+import type { RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
 import type { NodeEventsHandlers } from '../describe-node';
 
+type T = IHtmlRecord;
+
 const handlers: NodeEventsHandlers = {
-	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
+	beforeCreate: async function(data: RecordDataWrite<T>, _userSession: UserSession) {
 		saveDoc(data);
 	},
 
-	afterCreate: async function(data: RecordDataWrite, userSession: UserSession) {
+	afterCreate: async function(_data: RecordDataWrite<T>, _userSession: UserSession) {
 
 	},
 
-	beforeUpdate: async function(currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
+	beforeUpdate: async function(currentData: T, newData: RecordDataWrite<T>, _userSession: UserSession) {
 		currentData = Object.assign(currentData, newData);
 		saveDoc(currentData);
 	},
 
-	beforeDelete: async function(data: RecordData, userSession: UserSession) {
+	beforeDelete: async function(data: T, _userSession: UserSession) {
 		unlink(getDocFilename(data), emptyCallback);
 	}
 };
@@ -26,7 +29,7 @@ export default handlers;
 
 const emptyCallback = () => { };
 
-async function saveDoc(data): Promise<void> {
+async function saveDoc(data: RecordDataWrite<T>): Promise<void> {
 	return new Promise((resolve, rejects) => {
 		readFile(join(__dirname, '../../www/custom/html/_template.htmp'), 'utf8', (err, txt) => {
 

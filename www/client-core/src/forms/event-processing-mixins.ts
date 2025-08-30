@@ -1,10 +1,9 @@
 import type React from 'react';
 import ReactDOM from 'react-dom';
 import { assert, throwError, validateFieldName } from '../assert';
-import type { FieldDesc, RecordData } from '../bs-utils';
+import type { FieldDesc, GetRecordsFilter, RecordData } from '../bs-utils';
 import { FIELD_TYPE } from '../bs-utils';
 import type { FieldWrap } from '../fields/field-wrap';
-import type { Filters } from '../utils';
 import { CLIENT_SIDE_FORM_EVENTS, consoleLog, getData, L } from '../utils';
 import { BaseForm } from './base-form';
 
@@ -205,9 +204,9 @@ class FormEventProcessingMixins extends BaseForm {
 		return this.disabledFields[fieldName] === 1;
 	}
 
-	addLookupFilters(fieldName: string, filtersObjOrName: Filters);
+	addLookupFilters(fieldName: string, filtersObjOrName: GetRecordsFilter);
 	addLookupFilters(fieldName: string, filtersObjOrName: string, val: any);
-	addLookupFilters(fieldName: string, filtersObjOrName: string | Filters, val?: any) {
+	addLookupFilters(fieldName: string, filtersObjOrName: string | GetRecordsFilter, val?: any) {
 		this.getField(fieldName).setLookupFilter(filtersObjOrName, val);
 	}
 

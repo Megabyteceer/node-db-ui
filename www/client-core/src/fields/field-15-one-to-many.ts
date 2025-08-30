@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Filters, RecId, RecordData, RecordsData } from '../bs-utils';
+import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../bs-utils';
 import { FIELD_TYPE, VIEW_MASK } from '../bs-utils';
 import { List } from '../forms/list';
 import { R } from '../r';
@@ -99,7 +99,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 		this.state.filters[linkerFieldName] = this.props.form.currentData.id;
 	}
 
-	setLookupFilter(filtersObjOrName: string | Filters, val?: any) {
+	setLookupFilter(filtersObjOrName: string | GetRecordsFilter, val?: any) {
 		super.setLookupFilter(filtersObjOrName, val);
 		if (this.inlineListRef) {
 			assignFilters(this.state.filters, this.inlineListRef.filters);

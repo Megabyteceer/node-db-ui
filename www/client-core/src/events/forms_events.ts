@@ -1,11 +1,11 @@
-import type { Filters } from '../utils';
+
 import { attachGoogleLoginAPI, getData, getNode, getNodeData, goToHome, isAdmin, L, myAlert, showPrompt } from '../utils';
 /// #if DEBUG
 import { makeIconSelectionField } from '../admin/admin-utils';
 /// #endif
 
-import { NODE_ID } from '../../../../types/generated';
-import type { NodeDesc, RecordSubmitResult } from '../bs-utils';
+import { NODE_ID, type IUsersRecord } from '../../../../types/generated';
+import type { GetRecordsFilter, NodeDesc, RecordSubmitResult } from '../bs-utils';
 import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NODE_TYPE, VIEW_MASK } from '../bs-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
 import { FormFull } from '../forms/form-full';
@@ -78,7 +78,7 @@ class FormEvents extends FormFull {
 			this.header = L('EDIT_USER_PROFILE', myName);
 			this.setFieldValue('password', 'nc_l4DFn76ds5yhg');
 			this.setFieldValue('passwordConfirm', 'nc_l4DFn76ds5yhg');
-			this.props.initialData.password = 'nc_l4DFn76ds5yhg';
+			(this.props.initialData as IUsersRecord).password = 'nc_l4DFn76ds5yhg';
 		}
 
 		if (this.isNewRecord) {
@@ -86,7 +86,7 @@ class FormEvents extends FormFull {
 			this.hideField('_organizationId');
 			this.setFieldValue('password', 'nc_l4DFn76ds5yhg');
 			this.setFieldValue('passwordConfirm', 'nc_l4DFn76ds5yhg');
-			this.props.initialData.password = 'nc_l4DFn76ds5yhg';
+			(this.props.initialData as IUsersRecord).password = 'nc_l4DFn76ds5yhg';
 		}
 	}
 
@@ -98,8 +98,8 @@ class FormEvents extends FormFull {
 		}
 
 		if (User.currentUserData.id === this.fieldValue('id')) {
-			let pLang = this.props.initialData.language;
-			let nLang = this.currentData.language;
+			let pLang = (this.props.initialData as IUsersRecord).language;
+			let nLang = (this.props.initialData as IUsersRecord).language;
 			if (pLang && pLang.hasOwnProperty('id')) {
 				pLang = pLang.id;
 			}
@@ -285,13 +285,13 @@ class FormEvents extends FormFull {
 			this._fieldsNameIsBad = false;
 
 			const checkFieldExists = (fName, nodeId) => {
-				const fieldsFilter: Filters = {
+				const fieldsFilter: GetRecordsFilter = {
 					fieldName: fName
 				};
 				if (this.fieldValue('fieldType') !== FIELD_TYPE.LOOKUP_N_TO_M) {
 					fieldsFilter.nodeFieldsLinker = nodeId;
 				}
-				getNodeData(6, undefined, fieldsFilter).then((data) => {
+				getNodeData(NODE_ID.FIELDS, undefined, fieldsFilter).then((data) => {
 					if (this._fieldsNameIsBad) return;
 					if (data.items.length > 0) {
 						if (this.fieldValue('fieldType') === FIELD_TYPE.LOOKUP_N_TO_M) {

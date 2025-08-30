@@ -228,7 +228,7 @@ async function resetPassword(key, userId, userSession) {
 	throwError(L('RECOVERY_EXPIRED', userSession));
 }
 
-function getPasswordHash(password, salt) {
+function getPasswordHash(password, salt):Promise<string> {
 	return new Promise((resolve, rejects) => {
 		pbkdf2(password, salt, 1000, 64, 'sha512', (err, key) => {
 			if (err) {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { NODE_ID, type IFieldsRecord, type INodesRecord } from '../../../../types/generated';
 import type { FieldDesc } from '../bs-utils';
 import { FIELD_TYPE } from '../bs-utils';
 import { Select } from '../components/select';
@@ -132,9 +133,10 @@ class admin {
 				f.prior = prior;
 				prior++;
 			}
+
 			await Promise.all(
 				group1.map((f) => {
-					return submitRecord(6, { prior: f.prior }, f.id);
+					return submitRecord(NODE_ID.FIELDS, {prior: f.prior} as IFieldsRecord, f.id);
 				})
 			);
 			await getNode(node.id, true);
@@ -145,19 +147,19 @@ class admin {
 		if (node1 && node2) {
 			await Promise.all([
 				submitRecord(
-					4,
+					NODE_ID.NODES,
 					{
 						prior: node1.prior,
-					},
+					} as INodesRecord,
 					node2.id
 				).then(() => {
 					console.log(1);
 				}),
 				submitRecord(
-					4,
+					NODE_ID.NODES,
 					{
 						prior: node2.prior,
-					},
+					}as INodesRecord,
 					node1.id
 				).then(() => {
 					console.log(2);

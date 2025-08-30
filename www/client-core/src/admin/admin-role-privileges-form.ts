@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import type { RecordData } from '../bs-utils';
+import type { NodeDesc, RecordData } from '../bs-utils';
 import { NODE_TYPE, PRIVILEGES_MASK } from '../bs-utils';
 import { BaseForm } from '../forms/base-form';
 import { R } from '../r';
@@ -150,16 +150,18 @@ class AdminRolePrivilegesForm extends BaseForm {
 	}
 
 	async saveClick() {
-		if (JSON.stringify(this.initData) !== JSON.stringify(this.state.data.privileges)) {
+		if (JSON.stringify(this.initData) !== JSON.stringify((this.state.data as NodeDesc).privileges)) {
 			const submit = (toChild?: boolean) => {
+				//@ts-ignore
 				this.state.data.nodeId = this.props.recId;
+				//@ts-ignore
 				this.state.data.toChild = toChild;
 				submitData('admin/nodePrivileges', this.state.data).then(() => {
 					this.cancelClick();
 				});
 			};
 
-			if (this.state.data.nodeType === NODE_TYPE.DOCUMENT) {
+			if ((this.state.data as NodeDesc).nodeType === NODE_TYPE.DOCUMENT) {
 				submit();
 			} else {
 				submit(!(await showPrompt(L('APPLY_CHILD'), L('TO_THIS'), L('TO_ALL'), 'check', 'check')));
@@ -171,7 +173,7 @@ class AdminRolePrivilegesForm extends BaseForm {
 
 	render() {
 		if (this.state && this.state.data) {
-			const data = this.state.data;
+			const data = this.state.data as NodeDesc;
 			const node = this.state.node;
 
 			const lines = data.privileges.map((i) => {

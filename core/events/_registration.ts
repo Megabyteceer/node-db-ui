@@ -5,13 +5,15 @@ import { generateSalt, getPasswordHash, getServerHref, mail_utf8 } from '../auth
 
 import { ENV } from '../../core/ENV';
 
-import { NODE_ID } from '../../types/generated';
+import { NODE_ID, type IRegistrationRecord } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import { L } from '../locale';
 import { mysqlExec } from '../mysql-connection';
 
+type T = IRegistrationRecord;
+
 export default {
-	beforeCreate: async function (data: RecordDataWrite, userSession: UserSession) {
+	beforeCreate: async function (data: RecordDataWrite<T>, userSession: UserSession) {
 		data.salt = generateSalt();
 		data.activationKey = randomBytes(24).toString('base64');
 		data.password = await getPasswordHash(data.password, data.salt);

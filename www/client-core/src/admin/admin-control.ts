@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { NODE_ID } from '../../../../types/generated';
+import { NODE_ID, type INodesRecord } from '../../../../types/generated';
 import type { NodeDesc } from '../bs-utils';
 import { NODE_TYPE } from '../bs-utils';
 import { R } from '../r';
@@ -297,10 +297,10 @@ class NodeAdmin extends Component<any, any> {
 						{
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
-								getNodeData(4, undefined, {
+								getNodeData(NODE_ID.NODES, undefined, {
 									_nodesID: item.parent,
 								}).then((data) => {
-									data.items.sort((a, b) => {
+									(data.items as INodesRecord[]).sort((a, b) => {
 										return a.prior - b.prior;
 									});
 									const index = data.items.findIndex((i) => i.id === item.id);
@@ -318,7 +318,7 @@ class NodeAdmin extends Component<any, any> {
 								getNodeData(4, undefined, {
 									_nodesID: item.parent,
 								}).then((data) => {
-									data.items.sort((a, b) => {
+									(data.items as INodesRecord[]).sort((a, b) => {
 										return a.prior - b.prior;
 									});
 									const index = data.items.findIndex((i) => i.id === item.id);

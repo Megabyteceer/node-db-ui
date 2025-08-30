@@ -1,6 +1,6 @@
 import type React from 'react';
 import { Component } from 'react';
-import type { BoolNum, Filters, NodeDesc, RecId, RecordData, VIEW_MASK } from '../bs-utils';
+import type { BoolNum, GetRecordsFilter, NodeDesc, RecId, RecordData, RecordsData, VIEW_MASK } from '../bs-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import type { FieldWrap } from '../fields/field-wrap';
@@ -13,7 +13,7 @@ interface FormProps {
 	initialData?: RecordData;
 	list?: List;
 	parentForm?: LookupOneToManyFiled;
-	filters?: Filters;
+	filters?: GetRecordsFilter;
 	node: NodeDesc;
 	isRootForm?: boolean;
 	nodeId: RecId;
@@ -33,7 +33,7 @@ interface FormProps {
 }
 
 interface FormState {
-	data?: RecordData;
+	data?: RecordData | RecordsData;
 	node: NodeDesc;
 	preventCreateButton: boolean;
 	footerHidden: boolean;
@@ -50,7 +50,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 
 	/** *List* - uses *filters* as filters values for records fetch request;
 	 * *FullForm* - uses *filters* as initialData and current tab store;  */
-	filters: Filters;
+	filters: GetRecordsFilter;
 
 	fieldsRefs: { [key: string]: FieldWrap };
 	/** set content of form header */

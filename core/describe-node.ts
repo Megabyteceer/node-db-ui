@@ -21,6 +21,10 @@ const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
 const FIELD_TYPE_ENUM_ID = 1;
 
+interface FilterRecord extends IFiltersRecord {
+	roles: number[];
+}
+
 let fieldsById: Map<number, FieldDesc>;
 let nodes: NodeDesc[];
 let nodesById: Map<number, NodeDesc>;
@@ -35,7 +39,7 @@ const GUEST_USER_SESSION: UserSession = {} as UserSession;
 const clientSideNodes = new Map();
 const nodesTreeCache = new Map();
 
-const filtersById = new Map() as Map<RecId, IFiltersRecord>;
+const filtersById = new Map() as Map<RecId, FilterRecord>;
 
 const normalizeName = (txt:string) => {
 	return snakeToCamel(txt).replace(/[`']/g, '').replace(/[^\w]/gm, '_');
@@ -212,7 +216,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 	return clientSideNodes.get(userNodesCacheKey);
 }
 
-function getUserAccessToNode(node: NodeDesc, userSession: UserSession) {
+function getUserAccessToNode(node: NodeDesc, userSession: UserSession): number {
 	let ret = 0;
 	for (const role of node.rolesToAccess) {
 		if (isUserHaveRole(role.roleId, userSession)) {
@@ -346,7 +350,7 @@ async function initNodesData() {
 				fieldsById.set(field.id, field);
 			}
 			nodeData.fields = fields;
-			const filtersRes = await mysqlExec('SELECT * FROM _filters WHERE status = ' + NUM_1 + ' AND "nodeFiltersLinker"=' + D(nodeData.id) + ' ORDER BY _filters.order') as IFiltersRecord[];
+			const filtersRes = await mysqlExec('SELECT * FROM _filters WHERE status = ' + NUM_1 + ' AND "nodeFiltersLinker"=' + D(nodeData.id) + ' ORDER BY _filters.order') as FilterRecord[];
 
 			const filters = {};
 			for (const f of filtersRes) {
@@ -448,20 +452,20 @@ enum ServerSideEventHandlersNames {
 }
 
 interface NodeEventsHandlers {
-	beforeCreate?: (data: RecordDataWrite, userSession: UserSession) => Promise<void>;
-	afterCreate?: (data: RecordDataWrite, userSession: UserSession) => Promise<void>;
-	beforeUpdate?: (currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) => Promise<void>;
+	beforeCreate?: (data: RecordDataWrite<RecordData>, userSession: UserSession) => Promise<void>;
+	afterCreate?: (data: RecordDataWrite<RecordData>, userSession: UserSession) => Promise<void>;
+	beforeUpdate?: (currentData: RecordData, newData: RecordDataWrite<RecordData>, userSession: UserSession) => Promise<void>;
 	afterUpdate?: (data: RecordData, userSession: UserSession) => Promise<void>;
 	beforeDelete?: (data: RecordData, userSession: UserSession) => Promise<void>;
 	afterDelete?: (data: RecordData, userSession: UserSession) => Promise<void>;
 }
 
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeUpdate, currentData: RecordData, newData: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterUpdate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeCreate, data: RecordDataWrite<RecordData>, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterCreate, data: RecordDataWrite<RecordData>, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeUpdate, currentData: RecordData, newData: RecordDataWrite<RecordData>, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterUpdate, data: RecordDataWrite<RecordData>, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeDelete, data: RecordDataWrite<RecordData>, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterDelete, data: RecordDataWrite<RecordData>, userSession: UserSession): Promise<void>;
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames, data1, data2, data3?): Promise<void> {
 	if (eventsHandlersServerSide.has(nodeId)) {
 		const serverSideNodeEventHandler = eventsHandlersServerSide.get(nodeId)[eventName];
@@ -514,7 +518,7 @@ const destroyObject = (o) => {
 const generateTypings = async () => {
 	const src = [`
 import type { Moment } from 'moment';
-import type { RecordData } from '../www/client-core/src/bs-utils';
+import type { GetRecordsFilter, RecordData, RecordDataWrite, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
 `] as string[];
 
 	for (const node of nodes) {
@@ -592,22 +596,62 @@ import type { RecordData } from '../www/client-core/src/bs-utils';
 import type { RecId, UserSession, VIEW_MASK } from '../www/client-core/src/bs-utils';
 export class TypeGenerationHelper {`);
 
+	// generate getRecords() typing
 	nodesData.forEach((nodeData) => {
 		if (nodeData.fields?.length && nodeData.storeForms) {
 			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
 			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
 			src.push(`
 	async g(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<${typeName}>;
-	async g(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: any, search?: string): Promise<{items:${typeName}[], total:number}>;
+	async g(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: GetRecordsFilter, search?: string): Promise<{items:${typeName}[], total:number}>;
 `);
 		}
 	});
 
 	src.push(`
 	async g(nodeId: NODE_ID, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<RecordData>;
-	async g(nodeId: NODE_ID, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: any, search?: string): Promise<{items:RecordData[], total:number}>;
+	async g(nodeId: NODE_ID, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: GetRecordsFilter, search?: string): Promise<{items:RecordData[], total:number}>;
 
 	async g() {
+		return 1 as any;
+	}`);
+
+	// generate getNodeData() typing
+	nodesData.forEach((nodeData) => {
+		if (nodeData.fields?.length && nodeData.storeForms) {
+			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
+			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
+			src.push(`
+	async gc(nodeId: NODE_ID.${enumName}, recId: RecId, filters?: undefined, editable?: undefined, viewMask?: VIEW_MASK | boolean, isForCustomList?: undefined, noLoadingIndicator?: boolean): Promise<${typeName}>;
+	async gc(nodeId: NODE_ID.${enumName}, recId?: RecId[], filters?: GetRecordsFilter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{items:${typeName}[], total:number}>;
+`);
+		}
+	});
+
+
+	src.push(`
+	async gc(nodeId: NODE_ID, recId: RecId, filters?: undefined, editable?: undefined, viewMask?: VIEW_MASK | boolean, isForCustomList?: undefined, noLoadingIndicator?: boolean): Promise<RecordData>;
+	async gc(nodeId: NODE_ID, recId?: RecId[], filters?: GetRecordsFilter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{items:RecordData[], total:number}>;
+
+	async gc() {
+		return 1 as any;
+	}`);
+
+
+	// generate submit() typings
+	nodesData.forEach((nodeData) => {
+		if (nodeData.fields?.length && nodeData.storeForms) {
+			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
+			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
+			src.push(`
+	async s(nodeId: NODE_ID.${enumName}, data: RecordDataWrite<${typeName}>, recId: RecId, userSession?: UserSession): Promise<RecordSubmitResult>;
+	async s(nodeId: NODE_ID.${enumName}, data: RecordDataWrite<${typeName}>, recId?: RecId, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;
+`);
+		}
+	});
+
+	src.push(`
+	async s() {
 		return 1 as any;
 	}
 }`);

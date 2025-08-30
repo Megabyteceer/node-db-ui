@@ -3,7 +3,7 @@ import { LITE_UI_PREFIX } from './consts';
 import type { LANG_KEYS } from './locales/en/lang';
 
 import ReactDOM from 'react-dom';
-import type { FieldDesc, Filters, GetRecordsParams, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, RecordSubmitResult, UserSession } from './bs-utils';
+import type { FieldDesc, GetRecordsFilter, GetRecordsParams, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, RecordSubmitResult, RecordSubmitResultNewRecord, UserSession } from './bs-utils';
 import { FIELD_TYPE, HASH_DIVIDER, ROLE_ID, USER_ID, VIEW_MASK } from './bs-utils';
 import { LoadingIndicator } from './loading-indicator';
 import { Modal } from './modal';
@@ -16,7 +16,7 @@ import { DebugPanel } from './debug-panel';
 /// #endif
 import type { Component } from 'react';
 import React from 'react';
-import { NODE_ID } from '../../../types/generated';
+import { NODE_ID, type TypeGenerationHelper } from '../../../types/generated';
 import { assert } from './assert';
 import { HotkeyButton } from './components/hotkey-button';
 import type { List } from './forms/list';
@@ -299,7 +299,7 @@ function goToHome() {
 	}
 }
 
-function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: Filters, editable?: boolean) {
+function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: GetRecordsFilter, editable?: boolean) {
 	let newHash = ['n', encodeURIComponent(nodeId)];
 
 	if (recId || recId === 0) {
@@ -639,33 +639,16 @@ function normalizeNode(node: NodeDesc) {
 	}
 }
 
-async function getNodeData(
+//@ts-ignore
+const getNodeData:TypeGenerationHelper['gc'] = async (
 	nodeId: RecId,
-	recId: undefined,
-	filters?: { [key: string]: any },
-	editable?: boolean,
-	viewMask?: VIEW_MASK | boolean,
-	isForCustomList?: boolean,
-	noLoadingIndicator?: boolean
-): Promise<RecordsData>;
-async function getNodeData(
-	nodeId: RecId,
-	recId: RecId,
+	recId?: RecId | RecId[],
 	filters?: undefined,
 	editable?: boolean,
 	viewMask?: VIEW_MASK | boolean,
 	isForCustomList?: boolean,
 	noLoadingIndicator?: boolean
-): Promise<RecordData>;
-async function getNodeData(
-	nodeId: RecId,
-	recId: RecId | undefined,
-	filters?: undefined,
-	editable?: boolean,
-	viewMask?: VIEW_MASK | boolean,
-	isForCustomList?: boolean,
-	noLoadingIndicator?: boolean
-): Promise<RecordData | RecordsData> {
+): Promise<RecordData | RecordsData> => {
 	/// #if DEBUG
 	if (typeof recId !== 'undefined' && typeof filters !== 'undefined') {
 		throw 'Can\'t use recId and filters in one request';
@@ -733,7 +716,7 @@ async function getNodeData(
 	} catch (_err) {
 		delete nodesRequested[nodeId];
 	}
-}
+};
 
 const _fieldClasses = {};
 const fieldsEncoders = [];
@@ -790,13 +773,14 @@ function addMixins(Class, mixins) {
 	Object.assign(Class.prototype, mixins);
 }
 
-async function submitRecord(nodeId: RecId, data: RecordData, recId?: RecId): Promise<RecordSubmitResult> {
+//@ts-ignore
+const submitRecord: TypeGenerationHelper['s'] = async (nodeId: RecId, data: RecordData, recId?: RecId): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	if (Object.keys(data).length === 0) {
 		throw 'Tried to submit empty object';
 	}
 	const node = await getNode(nodeId);
 	return submitData('api/submit', { nodeId, recId, data: encodeData(data, node) });
-}
+};
 
 let UID_counter = 1;
 function UID(obj): number {
@@ -1410,7 +1394,6 @@ export {
 	deleteIndexedDB,
 	deleteRecord,
 	draftRecord,
-	Filters,
 	getCaptchaToken,
 	getClassForField,
 	getData,

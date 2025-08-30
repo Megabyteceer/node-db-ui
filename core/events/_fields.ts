@@ -1,6 +1,6 @@
-import { FIELD_ID, NODE_ID } from '../../types/generated';
+import { FIELD_ID, NODE_ID, type IFieldsRecord } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
-import type { RecordData, RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import type { RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
 import { FIELD_TYPE, VIEW_MASK } from '../../www/client-core/src/bs-utils';
 import { shouldBeAdmin } from '../admin/admin';
 import { mustBeUnset } from '../auth';
@@ -11,8 +11,10 @@ import { L } from '../locale';
 import { mysqlExec } from '../mysql-connection';
 import { submitRecord } from '../submit';
 
+type T = IFieldsRecord;
+
 const handlers: NodeEventsHandlers = {
-	beforeCreate: async function (data: RecordDataWrite, userSession: UserSession) {
+	beforeCreate: async function (data: RecordDataWrite<T>, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
 		if (data.multilingual) {
@@ -30,7 +32,7 @@ const handlers: NodeEventsHandlers = {
 		await createFieldInTable(data);
 	},
 
-	afterCreate: async function (data: RecordDataWrite, userSession: UserSession) {
+	afterCreate: async function (data: RecordDataWrite<T>, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
 		const fieldType = data.fieldType;
@@ -77,7 +79,7 @@ const handlers: NodeEventsHandlers = {
 		reloadMetadataSchedule();
 	},
 
-	beforeUpdate: async function (currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
+	beforeUpdate: async function (currentData: T, newData: RecordDataWrite<T>, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
 		if (currentData.id === FIELD_ID.FIELDS__MAX_LENGTH && newData.hasOwnProperty('maxLength')) {
@@ -144,7 +146,7 @@ const handlers: NodeEventsHandlers = {
 		reloadMetadataSchedule();
 	},
 
-	beforeDelete: async function (_data: RecordData, _userSession: UserSession) {
+	beforeDelete: async function (_data: T, _userSession: UserSession) {
 		throwError('_fields beforeCreate deletion event is not implemented');
 	}
 };
@@ -192,7 +194,7 @@ function getFieldTypeSQL(data) {
 	}
 }
 
-async function createFieldInTable(data: RecordDataWrite) {
+async function createFieldInTable(data: RecordDataWrite<T>) {
 	let nodeId = data.nodeFieldsLinker;
 	if (typeof nodeId !== 'number') {
 		nodeId = nodeId.id;

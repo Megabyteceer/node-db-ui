@@ -149,7 +149,7 @@ class FieldAdmin extends Component<any, any> {
 						{
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
-								getNodeData(6, field.id).then((data) => {
+								getNodeData(NODE_ID.FIELDS, field.id).then((data) => {
 									crudJs.Stage.showForm(
 										NODE_ID.FIELDS,
 										'new',

@@ -1,14 +1,16 @@
-import { NODE_ID } from '../../types/generated';
+import { NODE_ID, type ILanguagesRecord } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
-import type { RecordData, RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import type { RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
 
 import { shouldBeAdmin } from '../admin/admin';
 import { reloadMetadataSchedule } from '../describe-node';
 import { getRecords } from '../get-records';
 import { createFieldInTable } from './_fields';
 
+type T = ILanguagesRecord;
+
 export default {
-	afterCreate: async function (data: RecordDataWrite, _userSession: UserSession) {
+	afterCreate: async function (data: RecordDataWrite<T>, _userSession: UserSession) {
 		shouldBeAdmin();
 		const fieldsData = await getRecords(NODE_ID.FIELDS, 1, null, undefined, {
 			multilingual: 1,
@@ -25,8 +27,8 @@ export default {
 	},
 
 	beforeUpdate: async function (
-		_currentData: RecordData,
-		newData: RecordDataWrite,
+		_currentData: ILanguagesRecord,
+		newData: RecordDataWrite<T>,
 		_userSession: UserSession
 	) {
 		if (newData.hasOwnProperty('code')) {
@@ -35,7 +37,7 @@ export default {
 		reloadMetadataSchedule();
 	},
 
-	beforeDelete: async function (_data: RecordData, _userSession: UserSession) {
+	beforeDelete: async function (_data: T, _userSession: UserSession) {
 		throwError('_languages beforeCreate deletion event is not implemented');
 	},
 };

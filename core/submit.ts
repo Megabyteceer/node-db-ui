@@ -1,5 +1,5 @@
 import { assert, throwError } from '../www/client-core/src/assert';
-import type { RecId, RecordData, RecordDataWrite, RecordSubmitResult } from '../www/client-core/src/bs-utils';
+import type { RecId, RecordData, RecordDataWrite, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
 import { FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 
 
@@ -38,8 +38,8 @@ for (const tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 		}
 	);
 }
-
-async function submitRecord(nodeId: NODE_ID, data: RecordDataWrite, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult> {
+//@ts-ignore
+const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: RecordDataWrite, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	const node = getNodeDesc(nodeId);
 
 	if (node.captcha && SERVER_ENV.CAPTCHA_SERVER_SECRET) {
@@ -383,7 +383,7 @@ async function submitRecord(nodeId: NODE_ID, data: RecordDataWrite, recId: RecId
 		throw er;
 	}
 	//*/
-}
+};
 
 const LIMIT_SQL_PART = ' LIMIT ' + NUM_1;
 async function uniqueCheckInner(tableName, fieldName, val, recId) {

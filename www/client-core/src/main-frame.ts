@@ -14,7 +14,6 @@ import { TopBar } from './top-bar';
 import { User } from './user';
 import { getData, goToPageByHash, onNewUser } from './utils';
 
-
 const ROOT_NODE_ID = 2;
 const ENV = {} as ENV_TYPE;
 let isFirstCall = true;

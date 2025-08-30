@@ -1,17 +1,20 @@
-import type { RecordData, RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import type { IFiltersRecord } from '../../types/generated';
+import type { RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
 import { reloadMetadataSchedule } from '../describe-node';
+
+type T = IFiltersRecord;
 
 export default {
 
-	afterCreate: async function(data: RecordDataWrite, userSession: UserSession) {
+	afterCreate: async function(_data: RecordDataWrite<T>, _userSession: UserSession) {
 		reloadMetadataSchedule();
 	},
 
-	beforeUpdate: async function(currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
+	beforeUpdate: async function(_currentData: T, _newData: RecordDataWrite<T>, _userSession: UserSession) {
 		reloadMetadataSchedule();
 	},
 
-	beforeDelete: async function(data: RecordData, userSession: UserSession) {
+	beforeDelete: async function(_data: T, _userSession: UserSession) {
 		reloadMetadataSchedule();
 	}
 };

@@ -1,14 +1,13 @@
 ﻿import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { assert, throwError } from './assert';
-import type { RecId, RecordData } from './bs-utils';
+import type { GetRecordsFilter, RecId, RecordData } from './bs-utils';
 import { NODE_TYPE } from './bs-utils';
 import type { BaseForm } from './forms/base-form';
 import { FormFull } from './forms/form-full';
 import { List } from './forms/list';
 import { LeftBar } from './left-bar';
 import { R } from './r';
-import type { Filters } from './utils';
 import { getNode, getNodeData, getNodeIfPresentOnClient, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from './utils';
 
 let mouseX: number;
@@ -107,7 +106,7 @@ class Stage extends Component<any, any> {
 	static async showForm(
 		nodeId: RecId,
 		recId?: RecId | 'new',
-		filters: Filters = {},
+		filters: GetRecordsFilter = {},
 		editable?: boolean,
 		modal?: boolean,
 		onModified?: (dataToSend: RecordData) => void,

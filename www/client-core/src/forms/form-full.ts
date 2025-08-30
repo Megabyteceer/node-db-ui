@@ -8,7 +8,7 @@ import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 
 import React from 'react';
-import type { FieldDesc, RecordData, RecordSubmitResult } from '../bs-utils';
+import type { FieldDesc, RecId, RecordData, RecordDataWrite, RecordSubmitResult, RecordSubmitResultNewRecord } from '../bs-utils';
 import { FIELD_TYPE, PRIVILEGES_MASK } from '../bs-utils';
 import { HotkeyButton } from '../components/hotkey-button';
 import { LoadingIndicator } from '../loading-indicator';
@@ -198,7 +198,7 @@ class FormFull extends FormEventProcessingMixins {
 	async saveClickInner(isDraft): Promise<boolean> {
 		this.isPreventCloseFormAfterSave = false;
 		this.forceBouncingTimeout();
-		const data: RecordData = {};
+		const data: RecordDataWrite<RecordData> = {};
 
 		if (isDraft !== 'keepStatus') {
 			if (this.props.initialData.isP || !this.props.initialData.id) {
@@ -268,8 +268,8 @@ class FormFull extends FormEventProcessingMixins {
 			if (this.props.node.captcha) {
 				data.c = await getCaptchaToken();
 			}
-			const submitResult: RecordSubmitResult = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
-			const recId = submitResult.recId;
+			const submitResult: RecordSubmitResult | RecordSubmitResultNewRecord = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
+			const recId: RecId | undefined = (submitResult as RecordSubmitResultNewRecord).recId;
 			if (!recId) {
 				// save error
 				return;
@@ -527,7 +527,7 @@ class FormFull extends FormEventProcessingMixins {
 						this.recId === 'new'
 							? (node.storeForms ? L('CREATE') + ' ' : undefined, node.creationName || node.singleName)
 							: this.state.data
-								? this.state.data.name
+								? (this.state.data as RecordData).name
 								: this.props.initialData.name
 					);
 				header = R.h4({ className: 'form-header' }, headerContent);

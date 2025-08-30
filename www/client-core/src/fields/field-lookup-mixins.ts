@@ -1,8 +1,7 @@
 import type React from 'react';
-import type { NodeDesc, RecordData } from '../bs-utils';
+import type { GetRecordsFilter, NodeDesc, RecordData } from '../bs-utils';
 import { FIELD_TYPE } from '../bs-utils';
 import type { FormListItem } from '../forms/form-list-item';
-import type { Filters } from '../utils';
 import { assignFilters } from '../utils';
 import type { FieldProps, FieldState } from './base-field';
 import { BaseField } from './base-field';
@@ -16,7 +15,7 @@ type AdditionalButtonsRenderer = (
 ) => React.Component[];
 
 interface LookupFieldState extends FieldState {
-	filters?: Filters;
+	filters?: GetRecordsFilter;
 	expanded?: boolean;
 	preventCreateButton?: boolean;
 	extendedEditor?: boolean;
@@ -29,7 +28,7 @@ interface LookupFieldState extends FieldState {
 }
 
 interface LookupFieldProps extends FieldProps {
-	filters?: Filters;
+	filters?: GetRecordsFilter;
 	expanded?: boolean;
 	hideIcon?: boolean;
 	noPreviewButton?: boolean;
@@ -68,7 +67,7 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 		return ret;
 	}
 
-	setLookupFilter(filtersObjOrName: string | Filters, val?: any) {
+	setLookupFilter(filtersObjOrName: string | GetRecordsFilter, val?: any) {
 		if (typeof filtersObjOrName === 'string') {
 			if (this.state.filters[filtersObjOrName] !== val) {
 				this.state.filters[filtersObjOrName] = val;

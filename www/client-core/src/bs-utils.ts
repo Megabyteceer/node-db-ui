@@ -1,33 +1,38 @@
-import type { ENUM_FIELD_DISPLAY, IFieldsRecord, IFiltersRecord, INodesRecord } from '../../../types/generated';
+
+import type { ENUM_FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord } from '../../../types/generated';
 import { ENUM_FIELD_TYPE as FIELD_TYPE, ENUM_NODE_TYPE as NODE_TYPE } from '../../../types/generated';
 
+export interface GetRecordsFilter {
 
-interface Filters {
-	[key: string]: string | number | {}; // eslint-disable-line @typescript-eslint/no-empty-object-type
-
-	excludeIDs?: RecId[];
-
-	onlyIDs?: RecId[];
-
-	/** filter id to apply to query */
-	filterId?: RecId;
-
-	/** page number. '*' - to retrieve all */
+	/** page number */
 	p?: number | '*';
 
 	/** items per page */
 	n?: number;
 
-	/** field id to order by */
-	o?: number;
+	excludeIDs?: number[];
 
-	/** reverse order */
-	r?: boolean;
+	onlyIDs?: number[];
+
+	/** order by field*/
+	o?: FIELD_ID;
+
+	/** reversed order */
+	r?: 1;
+
+	/** filterId */
+	filterId?: FILTER_ID;
+
+	/** filter by other field. numeric types only */
+	[fieldId:string]: number | any| undefined;
 }
 
 interface RecordSubmitResult {
-	recId: RecId;
 	handlerResult: any;
+}
+
+interface RecordSubmitResultNewRecord extends RecordSubmitResult {
+	recId: RecId;
 }
 
 const getCurrentStack = () => {
@@ -194,21 +199,24 @@ interface NodeDesc extends INodesRecord {
 	fieldsByName?: { [key: string]: FieldDesc };
 }
 
-interface UserLangEntry {
-	id: RecId;
-	name: string;
-	code: string;
+interface UserLangEntry extends ILanguagesRecord {
 	prefix: string;
-	isUILanguage: boolean;
 }
 
-interface RecordDataWrite {
-	[key: string]: any;
-	/** Recaptcha v3 token */
+export type RecordDataWrite<T> = {
+
+	/** submit captcha token */
 	c?: string;
+
+} & Omit<T, 'isE' | 'isP' | 'isD'>;
+
+export const enum STATUS {
+	DELETED = 0,
+	PUBLIC = 1,
+	DRAFT = 2,
 }
 
-interface RecordData extends RecordDataWrite {
+interface RecordData {
 	/** **edit** access to the record */
 	isE?: BoolNum;
 	/** **publish** access to the record */
@@ -216,7 +224,13 @@ interface RecordData extends RecordDataWrite {
 	/** **delete** access to the record */
 	isD?: BoolNum;
 
+	status?: STATUS;
 	id?: RecId;
+
+	/** item deleted from list in lookup field */
+	__deleted_901d123f?: true;
+
+
 	name?: string;
 }
 
@@ -233,7 +247,7 @@ interface RecordsDataResponse {
 interface GetRecordsParams {
 	nodeId: RecId;
 	viewFields?: VIEW_MASK;
-	recId?: RecId;
+	recId?: RecId | RecId[];
 	s?: string;
 	descNode?: boolean;
 }
@@ -287,7 +301,7 @@ interface IFormParameters {
 	recId?: RecId | 'new';
 	/** true if form is editable or read only */
 	editable?: boolean;
-	filters?: Filters;
+	filters?: GetRecordsFilter;
 }
 
 export {
@@ -295,9 +309,7 @@ export {
 	EnumList,
 	EnumListItem,
 	FIELD_TYPE, FieldDesc,
-	Filters,
-	getCurrentStack,
-	GetRecordsParams,
+	getCurrentStack, GetRecordsParams,
 	HASH_DIVIDER,
 	IFormParameters,
 	IMAGE_THUMBNAIL_PREFIX,
@@ -305,10 +317,10 @@ export {
 	PRIVILEGES_MASK,
 	RecId,
 	RecordData,
-	RecordDataWrite,
 	RecordsData,
 	RecordsDataResponse,
 	RecordSubmitResult,
+	RecordSubmitResultNewRecord,
 	ROLE_ID,
 	USER_ID,
 	UserLangEntry,

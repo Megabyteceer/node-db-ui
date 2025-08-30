@@ -1,6 +1,6 @@
-import type { FIELD_ID, FILTER_ID, IFiltersRecord, NODE_ID, TypeGenerationHelper } from '../types/generated';
+import type { IFiltersRecord, NODE_ID, TypeGenerationHelper } from '../types/generated';
 import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
-import type { RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
+import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
 import { FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { UserSession } from './auth';
 import { ADMIN_USER_SESSION, filtersById, getNodeDesc, getNodeEventHandler, ServerSideEventHandlersNames } from './describe-node';
@@ -22,30 +22,6 @@ const STATUS_FILTER_SQL_PART_ANY = '".status > ' + NUM_0 + ')';
 const STATUS_FILTER_SQL_PART_PUBLISHED = '".status = ' + NUM_1 + ')';
 const ORDERING_SQL_PART = ' LIMIT ' + NUM_1;
 
-export interface GetRecordsFilter {
-
-	/** page number */
-	p?: number | '*';
-
-	/** items per page */
-	n?: number;
-
-	excludeIDs?: number[];
-
-	onlyIDs?: number[];
-
-	/** order by field*/
-	o?: FIELD_ID;
-
-	/** reversed order */
-	r?: 1;
-
-	/** filterId */
-	filterId?: FILTER_ID;
-
-	/** filter by other field. numeric types only */
-	[fieldId:string]: number | any| undefined;
-}
 
 //@ts-ignore
 const getRecords: TypeGenerationHelper['g'] = async(
@@ -395,8 +371,10 @@ const getRecords: TypeGenerationHelper['g'] = async(
 		if (viewMask) {
 			if (privileges & PRIVILEGES_MASK.EDIT_ALL) {
 				pag.isE = 1;
+				//@ts-ignore
 			} else if (privileges & PRIVILEGES_MASK.EDIT_ORG && userSession.orgId !== 0 && pag.creatorORG === userSession.orgId) {
 				pag.isE = 1;
+				//@ts-ignore
 			} else if (privileges & PRIVILEGES_MASK.EDIT_OWN && pag.creatorUSER === userSession.id) {
 				pag.isE = 1;
 			}
