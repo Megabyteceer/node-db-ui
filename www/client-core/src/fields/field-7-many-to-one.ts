@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { FIELD_TYPE } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import type { RecId, RecordData } from '../bs-utils';
 import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
 import { List } from '../forms/list';
@@ -106,7 +107,7 @@ registerFieldClass(
 					[this.getLinkerFieldName()]: { id: this.props.form.recId },
 				  }
 				: undefined;
-			crudJs.Stage.showForm(
+			globals.Stage.showForm(
 				this.props.field.nodeRef.id,
 				recIdToEdit,
 				filters,

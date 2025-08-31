@@ -1,6 +1,7 @@
 ﻿import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { NODE_TYPE } from '../../../types/generated';
+import { globals } from '../../../types/globals';
 import { assert, throwError } from './assert';
 import type { FormFilters, RecId, RecordData } from './bs-utils';
 import type { BaseForm } from './forms/base-form';
@@ -175,11 +176,11 @@ class Stage extends Component<any, any> {
 			}
 			break;
 		case NODE_TYPE.REACT_CLASS:
-			if (typeof crudJs.customClasses[node.tableName] === 'undefined') {
+			if (typeof globals.customClasses[node.tableName] === 'undefined') {
 				myAlert('Unknown react class: ' + node.tableName);
 				formType = 'div';
 			} else {
-				formType = crudJs.customClasses[node.tableName];
+				formType = globals.customClasses[node.tableName];
 			}
 			break;
 		case NODE_TYPE.STATIC_LINK:

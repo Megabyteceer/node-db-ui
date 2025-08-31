@@ -1,29 +1,5 @@
 
 
-
-генерация типа записи переделать -
-
-IBaseEnumRecord  в котором нет лукапПолей не экспортится
-
-export type IEnumRecord = IBaseEnumRecord & RecordData & {
-	nodeLinker: {id,name, icon};
-}
-
-export type IEnumRecordWrite = IBaseEnumRecord & RecordDataWrite & {
-	nodeLinker: RectId;
-}
-
-
-
-
-
-
-в фильтр добавить s - search
-
-
-
-Удалить все d.ts файлы
-
 preact всместо реакта
 
 

@@ -3,6 +3,7 @@
 import moment from 'moment';
 import { Component } from 'react';
 import { NODE_ID } from '../../../types/generated';
+import { globals } from '../../../types/globals';
 import type { UserSession } from './bs-utils';
 import { USER_ID } from './bs-utils';
 import { Select } from './components/select';
@@ -132,7 +133,7 @@ class User extends Component<any, any> {
 				btn1 = R.a({
 					key: 'b1',
 					onClick: () => {
-						crudJs.Stage.showForm(NODE_ID.USERS, userData.id, undefined, true, true);
+						globals.Stage.showForm(NODE_ID.USERS, userData.id, undefined, true, true);
 					}, title: L('USER_PROFILE'), className: 'clickable top-bar-user-btn'
 				},
 				R.img({ className: 'user-avatar', src: imgUrl })

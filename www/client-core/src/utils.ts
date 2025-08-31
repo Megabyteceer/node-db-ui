@@ -17,6 +17,7 @@ import { DebugPanel } from './debug-panel';
 import type { Component } from 'react';
 import React from 'react';
 import { FIELD_TYPE, NODE_ID, type TypeGenerationHelper } from '../../../types/generated';
+import { globals } from '../../../types/globals';
 import { assert } from './assert';
 import { HotkeyButton } from './components/hotkey-button';
 import type { List } from './forms/list';
@@ -349,7 +350,7 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: GetRecord
 }
 
 function isCurrentlyShowedLeftBarItem(item) {
-	const currentFormParameters = crudJs.Stage.currentForm;
+	const currentFormParameters = globals.Stage.currentForm;
 	if (item.id === false) {
 		if (!currentFormParameters.filters || Object.keys(currentFormParameters.filters).length === 0) {
 			return item.isDefault;
@@ -420,7 +421,7 @@ async function goToPageByHash() {
 	const hash = window.location.hash.substr(1);
 	const formParamsByLevels = hash.split(HASH_DIVIDER).map(hashToFormParams);
 
-	const Stage = crudJs.Stage;
+	const Stage = globals.Stage;
 	let level;
 
 	for (level = 0; level < formParamsByLevels.length && level < Stage.allForms.length; level++) {
@@ -465,7 +466,7 @@ SKIP_HISTORY_NODES[NODE_ID.REGISTRATION] = true;
 SKIP_HISTORY_NODES[NODE_ID.RESET_PASSWORD] = true;
 
 async function goBack(isAfterDelete?: boolean) {
-	const currentFormParameters = crudJs.Stage.currentForm;
+	const currentFormParameters = globals.Stage.currentForm;
 
 	if (isLitePage() && window.history.length < 2) {
 		window.close();
@@ -476,12 +477,12 @@ async function goBack(isAfterDelete?: boolean) {
 			window.history.back();
 			isHistoryChanging = false;
 		} else {
-			crudJs.Stage.showForm(getHomeNode());
+			globals.Stage.showForm(getHomeNode());
 		}
 	} else if (currentFormParameters && currentFormParameters.recId) {
-		crudJs.Stage.showForm(currentFormParameters.nodeId, undefined, currentFormParameters.filters);
+		globals.Stage.showForm(currentFormParameters.nodeId, undefined, currentFormParameters.filters);
 	} else if (isAfterDelete) {
-		crudJs.Stage.refreshForm();
+		globals.Stage.refreshForm();
 	}
 }
 
@@ -509,7 +510,7 @@ function updateHashLocation(replaceState = false) {
 	}
 	const newHash =
 		'#' +
-		crudJs.Stage.allForms
+		globals.Stage.allForms
 			.map((formEntry) => {
 				const formParameters = formEntry.form;
 				const filters = formParameters.filters;
@@ -915,10 +916,10 @@ function isAuthNeed(data) {
 	const token = getSessionToken();
 	if (token && token !== 'guest-session' && data.error && (data.error.startsWith('Error: <auth>') || data.error.startsWith('<auth>'))) {
 		clearSessionToken();
-		crudJs.Stage.showForm(NODE_ID.LOGIN, 'new', undefined, true);
+		globals.Stage.showForm(NODE_ID.LOGIN, 'new', undefined, true);
 		return true;
 	} else if (data.error && (data.error.startsWith('Error: <access>') || data.error.startsWith('<access>'))) {
-		if (crudJs.Stage?.currentForm?.props?.node?.id !== NODE_ID.LOGIN) {
+		if (globals.Stage?.currentForm?.props?.node?.id !== NODE_ID.LOGIN) {
 			goToHome();
 		}
 		return true;
@@ -1035,7 +1036,7 @@ async function deleteRecord(name, nodeId: RecId, recId: RecId, noPrompt?: boolea
 			onYes();
 		} else {
 			await submitData('api/delete', { nodeId, recId });
-			crudJs.Stage.dataDidModified(null);
+			globals.Stage.dataDidModified(null);
 			return true;
 		}
 	} else {

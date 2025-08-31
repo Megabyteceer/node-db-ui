@@ -1,5 +1,6 @@
 import React from 'react';
 import { FIELD_TYPE } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import { R } from '../r';
 import { registerFieldClass } from '../utils';
 import { BaseField } from './base-field';
@@ -10,9 +11,9 @@ registerFieldClass(FIELD_TYPE.STATIC_HTML_BLOCK, class StaticTextField extends B
 
 	render() {
 		const field = this.props.field;
-		if (crudJs.customClasses[field.htmlContent]) {
+		if (globals.customClasses[field.htmlContent]) {
 			//@ts-ignore
-			return React.createElement(crudJs.customClasses[field.htmlContent], this.props);
+			return React.createElement(globals.customClasses[field.htmlContent], this.props);
 		} else {
 			return R.span({
 				dangerouslySetInnerHTML: {

@@ -31,7 +31,7 @@ import { MainFrame } from './main-frame';
 import { Stage } from './stage';
 import './views/view_5_users';
 
-import React from 'react';
+import React, { type Component } from 'react';
 import ReactDOM from 'react-dom';
 
 import { registerEventHandler } from './forms/event-processing-mixins';
@@ -40,23 +40,21 @@ import { registerEventHandler } from './forms/event-processing-mixins';
 import { AdminRolePrivilegesForm } from './admin/admin-role-privileges-form';
 /// #endif
 
+import { globals } from '../../../types/globals';
 import { FieldsEvents } from './events/fields_events';
 import { FormEvents } from './events/forms_events';
 
-//@ts-ignore
-window.crudJs = {
-	Stage,
-	registerEventHandler,
-	customClasses: {}
-};
+
+globals.Stage = Stage;
+globals.registerEventHandler = registerEventHandler;
+globals.customClasses = {};
 
 /// #if DEBUG
-//@ts-ignore
-crudJs.customClasses.AdminRolePrivilegesForm = AdminRolePrivilegesForm;
+globals.customClasses.AdminRolePrivilegesForm = AdminRolePrivilegesForm as any as Component;
 /// #endif
 
 setTimeout(() => {
-	crudJs.registerEventHandler(FormEvents);
-	crudJs.registerEventHandler(FieldsEvents);
+	globals.registerEventHandler(FormEvents);
+	globals.registerEventHandler(FieldsEvents);
 	ReactDOM.render(React.createElement(MainFrame), document.getElementById('container'));
 }, 10);

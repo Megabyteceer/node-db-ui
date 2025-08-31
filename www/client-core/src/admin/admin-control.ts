@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { NODE_ID, NODE_TYPE, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import type { NodeDesc } from '../bs-utils';
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getNode, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
@@ -237,7 +238,7 @@ class NodeAdmin extends Component<any, any> {
 							className: 'clickable tool-btn admin-form-btn',
 							title: L('FLD_ADD'),
 							onClick: () => {
-								crudJs.Stage.showForm(
+								globals.Stage.showForm(
 									NODE_ID.FIELDS,
 									'new',
 									{
@@ -357,7 +358,7 @@ class NodeAdmin extends Component<any, any> {
 							className: 'clickable tool-btn admin-form-btn',
 							title: L('EDIT_NODE'),
 							onClick: () => {
-								crudJs.Stage.showForm(NODE_ID.NODES, nodeId, undefined, true, true, reloadLocation);
+								globals.Stage.showForm(NODE_ID.NODES, nodeId, undefined, true, true, reloadLocation);
 							},
 						},
 						renderIcon('pencil')
@@ -367,7 +368,7 @@ class NodeAdmin extends Component<any, any> {
 							className: 'clickable tool-btn admin-form-btn',
 							title: L('EDIT_ACCESS'),
 							onClick: () => {
-								crudJs.Stage.showForm(
+								globals.Stage.showForm(
 									NODE_ID.RIGHT_ACCESS_FORM,
 									nodeId,
 									undefined,
@@ -412,7 +413,7 @@ class NodeAdmin extends Component<any, any> {
 function createNodeForMenuItem(item) {
 	const isBasedOnDocument = item.nodeType === NODE_TYPE.DOCUMENT;
 	getNodeData(NODE_ID.NODES, (isBasedOnDocument ? item.parent : item.id) as number).then((data) => {
-		crudJs.Stage.showForm(
+		globals.Stage.showForm(
 			NODE_ID.NODES,
 			'new',
 			{

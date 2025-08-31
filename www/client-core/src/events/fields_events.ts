@@ -5,6 +5,7 @@ import { L } from '../utils';
 import { FormEvents } from './forms_events';
 /// #if DEBUG
 import { FIELD_TYPE, NODE_ID, NODE_TYPE } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import { makeReactClassSelectionField, removeReactClassSelectionField } from '../admin/admin-utils';
 /// #endif
 
@@ -187,15 +188,15 @@ class FieldsEvents extends FormEvents {
 	}
 
 	_registration_already_have_account_btn_onChange() {
-		crudJs.Stage.showForm(NODE_ID.LOGIN);
+		globals.Stage.showForm(NODE_ID.LOGIN);
 	}
 
 	_login_sign_up_link_btn_onChange() {
-		crudJs.Stage.showForm(NODE_ID.REGISTRATION, 'new', undefined, true);
+		globals.Stage.showForm(NODE_ID.REGISTRATION, 'new', undefined, true);
 	}
 
 	_login_forgotPasswordButton_onChange() {
-		crudJs.Stage.showForm(NODE_ID.RESET_PASSWORD, 'new', undefined, true);
+		globals.Stage.showForm(NODE_ID.RESET_PASSWORD, 'new', undefined, true);
 	}
 
 	_reset_password_back_to_login_onChange() {

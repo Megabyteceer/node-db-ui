@@ -1,5 +1,6 @@
 import React from 'react';
 import { FIELD_TYPE } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import type { NodeDesc, RecordData } from '../bs-utils';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import { FieldWrap } from '../fields/field-wrap';
@@ -95,7 +96,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 								if (formItem && formItem.props.parentForm) {
 									formItem.props.parentForm.toggleCreateDialogue(data.id);
 								} else {
-									crudJs.Stage.showForm(node.id, data.id, undefined, true);
+									globals.Stage.showForm(node.id, data.id, undefined, true);
 								}
 							},
 						},
@@ -115,7 +116,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 						title: L('DETAILS') + itemName,
 						key: 2,
 						onClick: (_ev: MouseEvent) => {
-							crudJs.Stage.showForm(node.id, data.id);
+							globals.Stage.showForm(node.id, data.id);
 						},
 					},
 					renderIcon('search')

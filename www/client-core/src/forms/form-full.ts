@@ -16,6 +16,7 @@ import { R } from '../r';
 import { iAdmin, User } from '../user';
 
 import { FIELD_TYPE } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import { LeftBar } from '../left-bar';
 
 const sortEntries = (a, b) => {
@@ -285,7 +286,7 @@ class FormFull extends FormEventProcessingMixins {
 			//renew current data
 			this.currentData = Object.assign(this.currentData, data);
 			//renew initial data;
-			crudJs.Stage.dataDidModified(this.currentData);
+			globals.Stage.dataDidModified(this.currentData);
 
 			for (const k in data) {
 				const val = data[k];

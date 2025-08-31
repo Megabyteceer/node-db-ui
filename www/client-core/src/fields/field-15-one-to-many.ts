@@ -1,5 +1,6 @@
 import React from 'react';
 import { FIELD_TYPE } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../bs-utils';
 import { VIEW_MASK } from '../bs-utils';
 import { List } from '../forms/list';
@@ -48,7 +49,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 		const filters = {
 			[this.getLinkerFieldName()]: { id: this.props.form.recId },
 		};
-		crudJs.Stage.showForm(this.props.field.nodeRef.id, recIdToEdit, filters, true, true, () => {
+		globals.Stage.showForm(this.props.field.nodeRef.id, recIdToEdit, filters, true, true, () => {
 			this.inlineListRef.refreshData();
 		});
 	}

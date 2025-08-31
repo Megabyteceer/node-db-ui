@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { FIELD_TYPE } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import type { RecId } from '../bs-utils';
 import { R } from '../r';
 import { getClassForField, L, n2mValuesEqual, registerFieldClass, renderIcon, sp, UID } from '../utils';
@@ -150,7 +151,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 								const filters = {
 									[this.getLinkerFieldName()]: { id: recId },
 								};
-								crudJs.Stage.showForm(
+								globals.Stage.showForm(
 									this.props.field.nodeRef.id,
 									recId,
 									filters,

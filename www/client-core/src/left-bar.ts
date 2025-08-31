@@ -5,6 +5,7 @@ import { createNodeForMenuItem, NodeAdmin } from './admin/admin-control';
 import { FieldAdmin } from './admin/field-admin';
 /// #endif
 import { NODE_TYPE } from '../../../types/generated';
+import { globals } from '../../../types/globals';
 import { assert } from './assert';
 import { Modal } from './modal';
 import { R } from './r';
@@ -281,7 +282,7 @@ class BarItem extends Component<any, any> {
 					isActive === SELECTED_LIST
 						? undefined
 						: () => {
-							crudJs.Stage.showForm(item.id, item.recId, item.filters, item.editable);
+							globals.Stage.showForm(item.id, item.recId, item.filters, item.editable);
 						  };
 			}
 			return R.a(

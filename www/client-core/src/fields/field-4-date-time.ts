@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 
 import moment from 'moment';
 import { FIELD_TYPE } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import type { FormFull } from '../forms/form-full';
 import { R } from '../r';
 import { innerDateTimeFormat, L, readableDateFormat, readableTimeFormat, registerFieldClass, renderIcon, toReadableDate, toReadableDateTime, toReadableTime } from '../utils';
@@ -26,8 +27,8 @@ const ReactDateTimeClassHolder: { importReactDateTime: () => void, isRequired?: 
 			ReactDateTimeClassHolder.isRequired = true;
 			import('react-datetime').then((module) => {
 				ReactDateTimeClassHolder.ReactDateTimeClass = module.default;
-				if (crudJs.Stage.currentForm) {
-					(crudJs.Stage.currentForm as FormFull).forceUpdate();
+				if (globals.Stage.currentForm) {
+					(globals.Stage.currentForm as FormFull).forceUpdate();
 				}
 			});
 		}

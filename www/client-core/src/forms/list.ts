@@ -9,6 +9,7 @@ import { FieldAdmin } from '../admin/field-admin';
 
 import React from 'react';
 import { FIELD_TYPE } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import { assert } from '../assert';
 import { Select } from '../components/select';
 import type { RefToInput } from '../fields/base-field';
@@ -474,7 +475,7 @@ class List extends BaseForm<ListProps, ListState> {
 						{
 							className: 'clickable create-button',
 							onClick: () => {
-								crudJs.Stage.showForm(node.id, 'new', filters, true);
+								globals.Stage.showForm(node.id, 'new', filters, true);
 							},
 						},
 						renderIcon('plus'),

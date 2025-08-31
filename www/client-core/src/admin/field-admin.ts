@@ -2,6 +2,7 @@ import { Component } from 'react';
 import type { FieldDesc, NodeDesc } from '../bs-utils';
 
 import { NODE_ID, type IFieldsRecord } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import { List } from '../forms/list';
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
@@ -150,7 +151,7 @@ class FieldAdmin extends Component<any, any> {
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
 								getNodeData(NODE_ID.FIELDS, field.id).then((data) => {
-									crudJs.Stage.showForm(
+									globals.Stage.showForm(
 										NODE_ID.FIELDS,
 										'new',
 										{
@@ -173,7 +174,7 @@ class FieldAdmin extends Component<any, any> {
 					R.button(
 						{
 							onClick: () => {
-								crudJs.Stage.showForm(
+								globals.Stage.showForm(
 									NODE_ID.FIELDS,
 									field.id,
 									undefined,

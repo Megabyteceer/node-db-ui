@@ -1,5 +1,6 @@
 import React from 'react';
 import { FIELD_TYPE, NODE_ID, type IFieldsRecord, type INodesRecord } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import type { FieldDesc } from '../bs-utils';
 import { Select } from '../components/select';
 import type { FormFull } from '../forms/form-full';
@@ -233,7 +234,7 @@ function makeIconSelectionField(form: FormFull, fieldName) {
 }
 
 function makeReactClassSelectionField(form: FormFull, fieldName) {
-	const options = Object.keys(crudJs.customClasses).map((k) => {
+	const options = Object.keys(globals.customClasses).map((k) => {
 		return { name: k, value: k };
 	});
 	const input = form.getFieldDomElement(fieldName).querySelector('input') as HTMLInputElement;

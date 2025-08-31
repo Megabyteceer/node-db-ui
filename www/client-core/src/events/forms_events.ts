@@ -6,6 +6,7 @@ import { makeIconSelectionField } from '../admin/admin-utils';
 
 import type { ResetPasswordData } from '../../../../core/events/_resetPassword';
 import { FIELD_TYPE, NODE_ID, NODE_TYPE, type IFieldsFilter, type IFiltersFilter, type ILanguagesFilter, type INodesFilter, type IUsersRecord } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
 import type { NodeDesc, RecordSubmitResult } from '../bs-utils';
 import { LANGUAGE_ID_DEFAULT, VIEW_MASK } from '../bs-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
@@ -417,8 +418,8 @@ class FormEvents extends FormFull {
 
 	_login_onAfterSave(saveResult: RecordSubmitResult) {
 		User.setUserData(saveResult.handlerResult);
-		if (onCurdJSLogin) {
-			onCurdJSLogin(saveResult.handlerResult);
+		if (globals.onCurdJSLogin) {
+			globals.onCurdJSLogin(saveResult.handlerResult);
 		}
 	}
 
@@ -438,7 +439,7 @@ class FormEvents extends FormFull {
 			false,
 			true,
 			() => {
-				crudJs.Stage.showForm(NODE_ID.LOGIN);
+				globals.Stage.showForm(NODE_ID.LOGIN);
 			},
 			L('GO_TO_LOGIN')
 		);
@@ -490,7 +491,7 @@ class FormEvents extends FormFull {
 				getData('api/reset', this.filters)
 					.then((userSession) => {
 						User.setUserData(userSession);
-						crudJs.Stage.showForm(NODE_ID.USERS, userSession.id, { tab: 'passwordTab' }, true);
+						globals.Stage.showForm(NODE_ID.USERS, userSession.id, { tab: 'passwordTab' }, true);
 					})
 					.catch((_er) => {});
 			}
