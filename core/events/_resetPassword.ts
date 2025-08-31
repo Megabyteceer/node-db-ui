@@ -1,11 +1,15 @@
 import { randomBytes } from 'crypto';
 
-import { NODE_ID, type IResetPasswordRecordWrite } from '../../types/generated';
+import { NODE_ID, type IResetPasswordFilter, type IResetPasswordRecordWrite } from '../../types/generated';
 import type { UserSession } from '../auth';
 import { getServerHref, mail_utf8 } from '../auth';
 import { L } from '../locale';
 import { mysqlExec } from '../mysql-connection';
 
+export interface ResetPasswordData extends IResetPasswordFilter {
+	activationKey: string;
+	resetCode: string;
+}
 
 export default {
 	beforeCreate: async function (data: IResetPasswordRecordWrite, userSession: UserSession) {

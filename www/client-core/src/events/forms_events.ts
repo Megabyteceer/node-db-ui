@@ -4,7 +4,8 @@ import { attachGoogleLoginAPI, getData, getNode, getNodeData, goToHome, isAdmin,
 import { makeIconSelectionField } from '../admin/admin-utils';
 /// #endif
 
-import { FIELD_TYPE, NODE_ID, NODE_TYPE, type IFieldsFilter, type IFiltersFilter, type ILanguagesFilter, type INodesFilter, type IResetPasswordFilter, type IUsersRecord } from '../../../../types/generated';
+import type { ResetPasswordData } from '../../../../core/events/_resetPassword';
+import { FIELD_TYPE, NODE_ID, NODE_TYPE, type IFieldsFilter, type IFiltersFilter, type ILanguagesFilter, type INodesFilter, type IUsersRecord } from '../../../../types/generated';
 import type { NodeDesc, RecordSubmitResult } from '../bs-utils';
 import { LANGUAGE_ID_DEFAULT, VIEW_MASK } from '../bs-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
@@ -473,8 +474,8 @@ class FormEvents extends FormFull {
 
 	_resetPassword_onLoad() {
 		this.hideCancelButton();
-		const activationKey = (this.filters as IResetPasswordFilter).activationKey;
-		const resetCode = (this.filters as IResetPasswordFilter).resetCode;
+		const activationKey = (this.filters as ResetPasswordData).activationKey;
+		const resetCode = (this.filters as ResetPasswordData).resetCode;
 		if (activationKey || resetCode) {
 			this.hideField('email');
 			this.hideFooter();
