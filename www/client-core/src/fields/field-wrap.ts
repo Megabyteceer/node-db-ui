@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import type { FieldDesc } from '../bs-utils';
-import { FIELD_TYPE } from '../bs-utils';
 import { R } from '../r';
 /// #if DEBUG
 import { FieldAdmin } from '../admin/field-admin';
 /// #endif
-import { ENUM_FIELD_DISPLAY } from '../../../../types/generated';
+import { FIELD_DISPLAY, FIELD_TYPE } from '../../../../types/generated';
 import { iAdmin } from '../user';
 import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible } from '../utils';
 import type { BaseField, FieldProps } from './base-field';
@@ -257,7 +256,7 @@ class FieldWrap extends Component<FieldProps, any> {
 		const noLabel = !field.name; // (field.fieldType===FIELD_TYPE.LOOKUP_N_TO_M)||(field.fieldType===FIELD_TYPE.LOOKUP_1_TO_N);
 
 		let help;
-		if (field.description && field.fieldType !== FIELD_TYPE.STATIC_HTML_BLOCK) {
+		if (field.description) {
 			help = React.createElement(FieldHelp, {
 				text: R.div(null, R.h4(null, field.name), field.description),
 			});
@@ -287,7 +286,7 @@ class FieldWrap extends Component<FieldProps, any> {
 			className += ' ' + field.cssClass;
 		}
 
-		if (field.display === ENUM_FIELD_DISPLAY.INLINE) {
+		if (field.display === FIELD_DISPLAY.INLINE) {
 			className += ' field-wrap-inline';
 		}
 

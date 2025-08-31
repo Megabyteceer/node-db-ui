@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
+import { NODE_TYPE } from '../../../../types/generated';
 import type { NodeDesc, RecordData } from '../bs-utils';
-import { NODE_TYPE, PRIVILEGES_MASK } from '../bs-utils';
+import { PRIVILEGES_MASK } from '../bs-utils';
 import { BaseForm } from '../forms/base-form';
 import { R } from '../r';
 import { FormLoaderCog } from '../stage';

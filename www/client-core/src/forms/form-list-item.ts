@@ -1,6 +1,6 @@
 import React from 'react';
+import { FIELD_TYPE } from '../../../../types/generated';
 import type { NodeDesc, RecordData } from '../bs-utils';
-import { FIELD_TYPE } from '../bs-utils';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import { FieldWrap } from '../fields/field-wrap';
 import type { ComponentProps } from '../r';
@@ -91,7 +91,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 							className: 'clickable tool-btn edit-btn',
 							title: L('EDIT', itemName),
 							key: 2,
-							onClick: (e) => {
+							onClick: (_ev:PointerEvent) => {
 								if (formItem && formItem.props.parentForm) {
 									formItem.props.parentForm.toggleCreateDialogue(data.id);
 								} else {
@@ -114,7 +114,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 						className: 'clickable tool-btn view-btn',
 						title: L('DETAILS') + itemName,
 						key: 2,
-						onClick: (e) => {
+						onClick: (_ev: MouseEvent) => {
 							crudJs.Stage.showForm(node.id, data.id);
 						},
 					},

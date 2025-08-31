@@ -19,7 +19,6 @@ export default {
 		} as IFieldsFilter);
 		const fields = fieldsData.items;
 		for (const f of fields) {
-			f.nodeFieldsLinker = f.nodeFieldsLinker.id;
 			f.fieldName = f.fieldName + '$' + data.code;
 			f.unique = 0;
 			await createFieldInTable(f);

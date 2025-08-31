@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { Component } from 'react';
-import { FIELD_TYPE, IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
+import { FIELD_TYPE } from '../../../../types/generated';
+import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
 import { Modal } from '../modal';
 import { R } from '../r';
 import { checkFileSize, idToImgURL, L, myAlert, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
@@ -133,7 +134,7 @@ class CropperFieldBody extends Component<any, any> {
 		if (this.waitingForUpload) {
 			const form = ReactDOM.findDOMNode(this.references.form) as HTMLFormElement;
 			const imageId = await submitData('api/uploadImage', serializeForm(form), true).catch(
-				(er) => {}
+				(_er) => {}
 			);
 			if (!imageId) {
 				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.fieldName, L('IMAGE_UPLOAD_ERROR'));

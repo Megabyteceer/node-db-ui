@@ -1,6 +1,6 @@
 import React from 'react';
-import type { EnumList } from '../bs-utils';
-import { FIELD_TYPE, normalizeEnumName } from '../bs-utils';
+import { FIELD_TYPE } from '../../../../types/generated';
+import { normalizeEnumName, type EnumList } from '../bs-utils';
 import { Select } from '../components/select';
 import { R } from '../r';
 import { registerFieldClass } from '../utils';

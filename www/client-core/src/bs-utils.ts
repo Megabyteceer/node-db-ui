@@ -1,7 +1,5 @@
 
-import type { ENUM_FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord } from '../../../types/generated';
-import { ENUM_FIELD_TYPE as FIELD_TYPE, ENUM_NODE_TYPE as NODE_TYPE } from '../../../types/generated';
-
+import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord } from '../../../types/generated';
 
 export const normalizeName = (txt:string) => {
 	return snakeToCamel(txt).replace(/[`']/g, '').replace(/[^\w]/gm, '_').toUpperCase();
@@ -26,8 +24,11 @@ export const snakeToCamel = (str: string) => {
 
 export interface LookupValue {
 	id:number;
-	icon?: string;
 	name?: string;
+}
+
+export interface LookupValueIconic extends LookupValue {
+	icon?: string;
 }
 
 export interface GetRecordsFilter {
@@ -55,7 +56,7 @@ export interface GetRecordsFilter {
 	filterId?: FILTER_ID;
 }
 
-export interface FormFilters extends GetRecordsFilter {
+export interface FormControlFilters {
 	/** form tab to show */
 	tab?: string;
 
@@ -67,9 +68,9 @@ export interface FormFilters extends GetRecordsFilter {
 
 	/** override form title by string */
 	formTitle?:string;
-
-
 }
+
+export type FormFilters = FormControlFilters & RecordData & GetRecordsFilter;
 
 interface RecordSubmitResult {
 	handlerResult: any;
@@ -134,25 +135,13 @@ export const enum FIELD_DATA_TYPE {
 	TEXT = 0,
 	NUMBER = 1,
 	TIMESTAMP = 2,
-	NODATA = 3
+	NODATA = 3,
+	BOOL = 4
 }
 
 interface FieldDesc extends IFieldsRecord {
-	/** readable name */
-	name: string;
-
-	/** could be string for multilingual fields */
-	id: RecId;
 
 	dataType: FIELD_DATA_TYPE;
-
-	/** owner node */
-	nodeFieldsLinker: RecId;
-
-	/** field's name in database table */
-	fieldName: string;
-	/** maximal data length in database */
-	maxLength: number;
 
 	show: VIEW_MASK;
 
@@ -162,7 +151,7 @@ interface FieldDesc extends IFieldsRecord {
 	/** value of the field should be unique for whole database table. */
 	unique: BoolNum;
 
-	/** if true - field data do not go to the server on form save. */
+	/** if true - field data will go to the server on form save. */
 	sendToServer: BoolNum;
 
 	/** has multilingual input */
@@ -181,10 +170,7 @@ interface FieldDesc extends IFieldsRecord {
 
 	cssClass?: string;
 
-	display: ENUM_FIELD_DISPLAY;
-
-	/** node id lookup field points to*/
-	nodeRef: RecId;
+	display: FIELD_DISPLAY;
 
 	/** SERVER SIDE FIELD ONLY. If it not empty - content of this field goes in to fieldName in SQL query to retrieve data not from direct table's field */
 	selectFieldName?: string;
@@ -194,6 +180,9 @@ interface FieldDesc extends IFieldsRecord {
 
 	/** field tip. or html content for FIELD_TYPE.STATIC_HTML_BLOCK fields */
 	description: string;
+
+	/** content for static HTML field */
+	htmlContent?: string;
 
 	/** client side only field */
 	node?: NodeDesc;
@@ -219,32 +208,18 @@ interface ClientSideFilterRecord {
 };
 
 interface NodeDesc extends INodesRecord {
-	id: RecId;
-	/** parent node id */
-	_nodesId: RecId;
-	singleName: string;
 	rolesToAccess: { roleId: RecId; privileges: number }[];
 	privileges: PRIVILEGES_MASK;
 	matchName: string;
-	description: string;
-	nodeType: NODE_TYPE;
-	storeForms?: BoolNum;
-	reverse?: BoolNum;
-	creationName?: string;
-	staticLink?: string;
-	captcha?: BoolNum;
-	tableName?: string;
-	draftable?: BoolNum;
-	icon?: string;
-	recPerPage?: number;
-	defaultFilterId?: number;
+
 	fields?: FieldDesc[];
-	cssClass?: string;
+
 	filters?: { [key: string]: IFiltersRecord | ClientSideFilterRecord };
 	filtersList?: { name: string; value: any }[];
 	sortFieldName?: string;
 	/** CLIENT SIDE ONLY */
 	fieldsById?: { [key: number]: FieldDesc };
+	/** CLIENT SIDE ONLY */
 	fieldsByName?: { [key: string]: FieldDesc };
 }
 
@@ -359,12 +334,12 @@ export {
 	BoolNum,
 	EnumList,
 	EnumListItem,
-	FIELD_TYPE, FieldDesc,
+	FieldDesc,
 	getCurrentStack, GetRecordsParams,
 	HASH_DIVIDER,
 	IFormParameters,
 	IMAGE_THUMBNAIL_PREFIX,
-	LANGUAGE_ID_DEFAULT, NODE_TYPE, NodeDesc,
+	LANGUAGE_ID_DEFAULT, NodeDesc,
 	PRIVILEGES_MASK,
 	RecId,
 	RecordData,

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { NODE_ID, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../../../../types/generated';
+import { NODE_ID, NODE_TYPE, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../../../../types/generated';
 import type { NodeDesc } from '../bs-utils';
-import { NODE_TYPE } from '../bs-utils';
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getNode, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
@@ -85,7 +84,7 @@ class NodeAdmin extends Component<any, any> {
 	}
 
 	render() {
-		let node;
+		let node: NodeDesc;
 		let form;
 		let item;
 
@@ -96,7 +95,7 @@ class NodeAdmin extends Component<any, any> {
 				return R.div();
 			}
 		} else {
-			node = {};
+			node = {} as any;
 			item = this.props.menuItem; //left-bar-item
 		}
 

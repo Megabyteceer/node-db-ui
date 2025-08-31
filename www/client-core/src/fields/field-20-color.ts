@@ -1,6 +1,5 @@
 'use strict';
-
-import { FIELD_TYPE } from '../bs-utils';
+import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
 import { registerFieldClass } from '../utils';
 import type { FieldProps, FieldState } from './base-field';

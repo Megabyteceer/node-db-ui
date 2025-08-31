@@ -4,9 +4,9 @@ import { attachGoogleLoginAPI, getData, getNode, getNodeData, goToHome, isAdmin,
 import { makeIconSelectionField } from '../admin/admin-utils';
 /// #endif
 
-import { NODE_ID, type IFieldsFilter, type IFiltersFilter, type ILanguagesFilter, type INodesFilter, type IResetPasswordFilter, type IUsersRecord } from '../../../../types/generated';
+import { FIELD_TYPE, NODE_ID, NODE_TYPE, type IFieldsFilter, type IFiltersFilter, type ILanguagesFilter, type INodesFilter, type IResetPasswordFilter, type IUsersRecord } from '../../../../types/generated';
 import type { NodeDesc, RecordSubmitResult } from '../bs-utils';
-import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NODE_TYPE, VIEW_MASK } from '../bs-utils';
+import { LANGUAGE_ID_DEFAULT, VIEW_MASK } from '../bs-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
 import { FormFull } from '../forms/form-full';
 import { ENV } from '../main-frame';
@@ -100,13 +100,8 @@ class FormEvents extends FormFull {
 		if (User.currentUserData.id === this.fieldValue('id')) {
 			let pLang = (this.props.initialData as IUsersRecord).language;
 			let nLang = (this.props.initialData as IUsersRecord).language;
-			if (pLang && pLang.hasOwnProperty('id')) {
-				pLang = pLang.id;
-			}
-			if (nLang && nLang.hasOwnProperty('id')) {
-				nLang = nLang.id;
-			}
-			uiLanguageIsChanged = nLang != pLang;
+
+			uiLanguageIsChanged = nLang.id != pLang.id;
 		}
 	}
 

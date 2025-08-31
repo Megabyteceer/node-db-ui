@@ -1,7 +1,7 @@
-import type { IFiltersRecord, NODE_ID, TypeGenerationHelper } from '../types/generated';
+import { FIELD_TYPE, type IFiltersRecord, type NODE_ID, type TypeGenerationHelper } from '../types/generated';
 import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
 import type { GetRecordsFilter, RecId, RecordData, RecordDataWrite, RecordsData } from '../www/client-core/src/bs-utils';
-import { FIELD_DATA_TYPE, FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import { FIELD_DATA_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { UserSession } from './auth';
 import { ADMIN_USER_SESSION, filtersById, getNodeDesc, getNodeEventHandler, ServerSideEventHandlersNames } from './describe-node';
 
@@ -207,7 +207,7 @@ const getRecords: TypeGenerationHelper['g'] = async(
 			//user selected filter
 			filter = filtersById.get(filterId);
 		} else if (node.defaultFilterId) {
-			filter = filtersById.get(node.defaultFilterId);
+			filter = filtersById.get(node.defaultFilterId.id);
 		}
 	}
 

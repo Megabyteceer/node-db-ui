@@ -1,6 +1,7 @@
 import React from 'react';
+import { FIELD_TYPE } from '../../../../types/generated';
 import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../bs-utils';
-import { FIELD_TYPE, VIEW_MASK } from '../bs-utils';
+import { VIEW_MASK } from '../bs-utils';
 import { List } from '../forms/list';
 import { R } from '../r';
 import { assignFilters, deleteRecord, L, registerFieldClass } from '../utils';
@@ -47,7 +48,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 		const filters = {
 			[this.getLinkerFieldName()]: { id: this.props.form.recId },
 		};
-		crudJs.Stage.showForm(this.props.field.nodeRef, recIdToEdit, filters, true, true, () => {
+		crudJs.Stage.showForm(this.props.field.nodeRef.id, recIdToEdit, filters, true, true, () => {
 			this.inlineListRef.refreshData();
 		});
 	}
@@ -77,7 +78,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 			for (const item of listData.items) {
 				if (item.hasOwnProperty('__deleted_901d123f')) {
 					if (item.hasOwnProperty('id')) {
-						await deleteRecord('', field.nodeRef, item.id, true);
+						await deleteRecord('', field.nodeRef.id, item.id, true);
 					}
 				}
 			}
@@ -139,7 +140,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 				preventCreateButton: this.state.preventCreateButton,
 				askToSaveParentBeforeCreation,
 				editable: this.state.inlineEditing,
-				nodeId: field.nodeRef,
+				nodeId: field.nodeRef.id,
 				parentForm: this,
 				filters: this.state.filters,
 			})

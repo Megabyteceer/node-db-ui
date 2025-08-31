@@ -9,10 +9,10 @@ import { existsSync, writeFileSync } from 'fs';
 import { D, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 
 import { join } from 'path';
-import { ENUM_FIELD_TYPE, ENUM_NODE_TYPE, NODE_ID, type IFiltersRecord } from '../types/generated';
+import { FIELD_TYPE, NODE_ID, NODE_TYPE, type IFiltersRecord } from '../types/generated';
 import { assert, throwError } from '../www/client-core/src/assert';
 import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, RecordData, RecordDataWrite, UserLangEntry } from '../www/client-core/src/bs-utils';
-import { FIELD_DATA_TYPE, FIELD_TYPE, NODE_TYPE, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import { FIELD_DATA_TYPE, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { UserSession /*, usersSessionsStartedCount*/ } from './auth';
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode /*, usersSessionsStartedCount*/ } from './auth';
 import { ENV } from './ENV';
@@ -73,7 +73,7 @@ async function getEnumDesc(enumId: RecId) {
 	return enumsById.get(enumId);
 }
 
-function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
+function getNodeDesc(nodeId: NODE_ID, userSession = ADMIN_USER_SESSION): NodeDesc {
 	assert(!isNaN(nodeId), 'nodeId expected');
 	const userNodesCacheKey = nodeId + 'n_' + userSession.cacheKey;
 	if (!clientSideNodes.has(userNodesCacheKey)) {
@@ -96,9 +96,9 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 				ret.cssClass = srcNode.cssClass;
 			}
 
-			if (srcNode.nodeType === ENUM_NODE_TYPE.REACT_CLASS) {
+			if (srcNode.nodeType === NODE_TYPE.REACT_CLASS) {
 				ret.tableName = srcNode.tableName;
-			} else if (srcNode.nodeType === ENUM_NODE_TYPE.DOCUMENT) {
+			} else if (srcNode.nodeType === NODE_TYPE.DOCUMENT) {
 				ret.captcha = srcNode.captcha;
 				ret.reverse = srcNode.reverse;
 				ret.creationName = srcNode['creationName' + landQ];
@@ -312,11 +312,12 @@ async function initNodesData() {
 		nodeData.privileges = 65535;
 		const sortField = nodeData._fieldsId;
 
-		if (nodeData.nodeType === ENUM_NODE_TYPE.DOCUMENT) {
+		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
 			const query = 'SELECT * FROM _fields WHERE "nodeFieldsLinker"=' + D(nodeData.id) + ' AND status = ' + NUM_1 + ' ORDER BY prior';
 			const fields = (await mysqlExec(query)) as any;
+
 			for (const field of fields as FieldDesc[]) {
-				if (field.id === sortField) {
+				if (field.id === sortField.id) {
 					nodeData.sortFieldName = field.fieldName;
 				}
 
@@ -338,14 +339,25 @@ async function initNodesData() {
 				case FIELD_TYPE.DATE:
 					field.dataType = FIELD_DATA_TYPE.TIMESTAMP;
 					break;
+				case FIELD_TYPE.BOOL:
+					field.dataType = FIELD_DATA_TYPE.BOOL;
+					break;
 				default:
 					field.dataType = FIELD_DATA_TYPE.NUMBER;
 					break;
 				}
 
-				if (field.fieldType === ENUM_FIELD_TYPE.ENUM && field.show) {
-					const enums = await getEnumDesc(field.enum);
+				field.nodeRef = {id: field.nodeRef as any};
+				field.nodeFieldsLinker = {id: field.nodeFieldsLinker as any};
+
+				if (field.fieldType === FIELD_TYPE.ENUM && field.show) {
+					field.enum = {id: field.enum as any};
+					const enums = await getEnumDesc(field.enum.id);
 					field.enumList = enums;
+				}
+				if (field.fieldType === FIELD_TYPE.STATIC_HTML_BLOCK) {
+					field.htmlContent = field.description;
+					delete field.description;
 				}
 				fieldsById.set(field.id, field);
 			}
@@ -358,6 +370,7 @@ async function initNodesData() {
 				if (filterRoles.length > 0) {
 					f.roles = filterRoles.map((i) => i._rolesId);
 				}
+				f.nodeFiltersLinker = {id: f.nodeFiltersLinker as any};
 				filtersById.set(f.id, f);
 				filters[f.id] = f;
 			}
@@ -518,7 +531,7 @@ const destroyObject = (o) => {
 const generateTypings = async () => {
 	const src = [`
 import type { Moment } from 'moment';
-import type { GetRecordsFilter, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
+import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
 `] as string[];
 
 	for (const node of nodes) {
@@ -529,40 +542,40 @@ import type { GetRecordsFilter, RecordData, RecordDataWrite, RecordDataWriteDraf
 			for (const field of node.fields) {
 				let type = 'any';
 				switch (field.fieldType) {
-				case ENUM_FIELD_TYPE.BOOL:
-				case ENUM_FIELD_TYPE.COLOR:
-				case ENUM_FIELD_TYPE.NUMBER:
+				case FIELD_TYPE.BOOL:
+					type = 'BoolNum';
+					break;
+				case FIELD_TYPE.COLOR:
+				case FIELD_TYPE.NUMBER:
 					type = 'number';
 					break;
-				case ENUM_FIELD_TYPE.DATE:
-				case ENUM_FIELD_TYPE.DATE_TIME:
+				case FIELD_TYPE.DATE:
+				case FIELD_TYPE.DATE_TIME:
 					type = 'Moment';
 					break;
 
-				case ENUM_FIELD_TYPE.ENUM:
-					type = 'ENUM_' + normalizeName((await getEnumDesc(field.enum!)).name);
+				case FIELD_TYPE.ENUM:
+					type = normalizeName((await getEnumDesc(field.enum.id)).name);
 					break;
 
-				case ENUM_FIELD_TYPE.TEXT:
-				case ENUM_FIELD_TYPE.PASSWORD:
-				case ENUM_FIELD_TYPE.FILE:
-				case ENUM_FIELD_TYPE.IMAGE:
-				case ENUM_FIELD_TYPE.HTML_EDITOR:
+				case FIELD_TYPE.TEXT:
+				case FIELD_TYPE.PASSWORD:
+				case FIELD_TYPE.FILE:
+				case FIELD_TYPE.IMAGE:
+				case FIELD_TYPE.HTML_EDITOR:
 					type = 'string';
 					break;
-				case ENUM_FIELD_TYPE.LOOKUP:
-					type = 'number';
-					//TODO
-					/*if (field.lookupIcon) {
-						type = '{name:string, icon: string, id:RecId}';
+				case FIELD_TYPE.LOOKUP:
+					if (field.lookupIcon) {
+						type = 'LookupValueIconic';
 					} else {
-						type = '{name:string, id:RecId}';
-					}*/
+						type = 'LookupValue';
+					}
 				}
-				src.push('	/** ' + (await getEnumDesc(FIELD_TYPE_ENUM_ID)).namesByValue[field.fieldType] + ' */');
+				src.push('	/** **' + (await getEnumDesc(FIELD_TYPE_ENUM_ID)).namesByValue[field.fieldType] + '** ' + (field.description || '') + ' */');
 				src.push('	' + field.fieldName + (field.requirement ? '' : '?') + ': ' + type + ';');
 				if (field.forSearch) {
-					searchFields.push('\t' + field.fieldName + ': ' + type + ';');
+					searchFields.push('\t' + field.fieldName + ': ' + (field.fieldType === FIELD_TYPE.LOOKUP ? 'number' : type) + ';');
 				}
 			}
 			src.push('}', '');
@@ -572,7 +585,7 @@ import type { GetRecordsFilter, RecordData, RecordDataWrite, RecordDataWriteDraf
 				src.push(...searchFields);
 				src.push('}>', '');
 			} else {
-				src.push('export type I' + snakeToCamel(node.tableName) + 'Filter = GetRecordsFilter;');
+				src.push('export type I' + snakeToCamel(node.tableName) + 'Filter = GetRecordsFilter;\n');
 			}
 		}
 	}
@@ -586,7 +599,7 @@ import type { GetRecordsFilter, RecordData, RecordDataWrite, RecordDataWriteDraf
 	}
 
 	enumsById.forEach((enumData) => {
-		src.push('export const enum ENUM_' + normalizeName(enumData.name) + ' {');
+		src.push('export const enum ' + normalizeName(enumData.name) + ' {');
 		for (const val of enumData.items) {
 			src.push('\t' + normalizeEnumName(val.name).toUpperCase() + ' = ' + val.value + ',');
 		}
@@ -605,7 +618,7 @@ import type { GetRecordsFilter, RecordData, RecordDataWrite, RecordDataWriteDraf
 	const fieldsData = Array.from(fieldsById.values());
 	fieldsData.sort((a, b) => a.id - b.id);
 	fieldsData.forEach((fieldData) => {
-		const node = nodesById.get(fieldData.nodeFieldsLinker);
+		const node = nodesById.get(fieldData.nodeFieldsLinker.id);
 		const nodeName = normalizeEnumName(node.tableName || node.name);
 		src.push('\t' + nodeName + '__' + normalizeEnumName(fieldData.fieldName || fieldData.name) + ' = ' + fieldData.id + ',');
 	});
@@ -615,7 +628,7 @@ import type { GetRecordsFilter, RecordData, RecordDataWrite, RecordDataWriteDraf
 	const filtersData = Array.from(filtersById.values());
 	filtersData.sort((a, b) => a.id - b.id);
 	filtersData.forEach((filterData) => {
-		const node = nodesById.get(filterData.nodeFiltersLinker);
+		const node = nodesById.get(filterData.nodeFiltersLinker.id);
 		const nodeName = normalizeEnumName(node.tableName || node.name);
 		src.push('\t' + nodeName + '__' + normalizeEnumName(filterData.name) + ' = ' + filterData.id + ',');
 	});

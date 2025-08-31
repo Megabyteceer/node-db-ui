@@ -4,7 +4,7 @@ import type { LANG_KEYS } from './locales/en/lang';
 
 import ReactDOM from 'react-dom';
 import type { FieldDesc, GetRecordsFilter, GetRecordsParams, IFormParameters, NodeDesc, RecId, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordsData, RecordSubmitResult, RecordSubmitResultNewRecord, UserSession } from './bs-utils';
-import { FIELD_TYPE, HASH_DIVIDER, ROLE_ID, STATUS, USER_ID, VIEW_MASK } from './bs-utils';
+import { HASH_DIVIDER, ROLE_ID, STATUS, USER_ID, VIEW_MASK } from './bs-utils';
 import { LoadingIndicator } from './loading-indicator';
 import { Modal } from './modal';
 import { Notify } from './notify';
@@ -16,7 +16,7 @@ import { DebugPanel } from './debug-panel';
 /// #endif
 import type { Component } from 'react';
 import React from 'react';
-import { NODE_ID, type TypeGenerationHelper } from '../../../types/generated';
+import { FIELD_TYPE, NODE_ID, type TypeGenerationHelper } from '../../../types/generated';
 import { assert } from './assert';
 import { HotkeyButton } from './components/hotkey-button';
 import type { List } from './forms/list';
@@ -538,19 +538,19 @@ window.addEventListener('hashchange', () => {
 	isHistoryChanging = false;
 });
 
-let nodes;
-let nodesRequested;
+let nodes: Map<NODE_ID, NodeDesc>;
+let nodesRequested: Set<NODE_ID>;
 
 function onNewUser() {
-	nodes = {};
-	nodesRequested = {};
+	nodes = new Map();
+	nodesRequested = new Set();
 }
 
 onNewUser();
 
-function waitForNodeInner(nodeId, callback) {
-	if (nodes.hasOwnProperty(nodeId)) {
-		callback(nodes[nodeId]);
+function waitForNodeInner(nodeId: NODE_ID, callback: (node: NodeDesc) =>void) {
+	if (nodes.has(nodeId)) {
+		callback(nodes.get(nodeId));
 	} else {
 		setTimeout(() => {
 			waitForNodeInner(nodeId, callback);
@@ -558,9 +558,9 @@ function waitForNodeInner(nodeId, callback) {
 	}
 }
 
-async function waitForNode(nodeId) {
-	if (nodes.hasOwnProperty(nodeId)) {
-		return nodes[nodeId];
+async function waitForNode(nodeId):Promise<NodeDesc> {
+	if (nodes.has(nodeId)) {
+		return nodes.get(nodeId);
 	}
 	return new Promise((resolve) => {
 		waitForNodeInner(nodeId, resolve);
@@ -568,33 +568,33 @@ async function waitForNode(nodeId) {
 }
 
 function getNodeIfPresentOnClient(nodeId: RecId): NodeDesc {
-	return nodes[nodeId];
+	return nodes.get(nodeId);
 }
 
-async function getNode(nodeId: RecId, forceRefresh = false, callStack?: string): Promise<NodeDesc> {
+async function getNode(nodeId: NODE_ID, forceRefresh = false, callStack?: string): Promise<NodeDesc> {
 	if (!callStack) {
 		callStack = new Error('getNode called from: ').stack;
 	}
 
 	if (forceRefresh) {
-		delete nodes[nodeId];
-		delete nodesRequested[nodeId];
+		nodes.delete(nodeId);
+		nodesRequested.delete(nodeId);
 	}
 
 	if (nodes.hasOwnProperty(nodeId)) {
-		return nodes[nodeId];
+		return nodes.get(nodeId);
 	} else {
-		if (nodesRequested.hasOwnProperty(nodeId)) {
+		if (nodesRequested.has(nodeId)) {
 			return waitForNode(nodeId);
 		} else {
 			try {
-				nodesRequested[nodeId] = true;
+				nodesRequested.add(nodeId);
 				const data = await getData('api/descNode', { nodeId });
 				normalizeNode(data);
-				nodes[nodeId] = data;
+				nodes.set(nodeId, data);
 				return data;
 			} catch (_er) {
-				delete nodesRequested[nodeId];
+				nodesRequested.delete(nodeId);
 			}
 		}
 	}
@@ -630,7 +630,7 @@ function normalizeNode(node: NodeDesc) {
 			.map((k) => {
 				return { value: k, name: node.filters[k].name };
 			});
-		if (node.defaultFilterId && !node.filters[node.defaultFilterId]) {
+		if (node.defaultFilterId && !node.filters[node.defaultFilterId.id]) {
 			node.defaultFilterId = node.filtersList.length ? node.filtersList[0].value : 0;
 		}
 		if (!node.defaultFilterId) {
@@ -680,9 +680,9 @@ const getNodeData:TypeGenerationHelper['gc'] = async (
 		}
 	}
 
-	if (!nodes.hasOwnProperty(nodeId) && !nodesRequested.hasOwnProperty(nodeId)) {
+	if (!nodes.hasOwnProperty(nodeId) && !nodesRequested.has(nodeId)) {
 		params.descNode = true;
-		nodesRequested[nodeId] = true;
+		nodesRequested.add(nodeId);
 	}
 	try {
 		if (filters) {
@@ -692,11 +692,11 @@ const getNodeData:TypeGenerationHelper['gc'] = async (
 		let data = await getData('api/', params, callStack, noLoadingIndicator);
 
 		if (data.hasOwnProperty('node')) {
-			if (nodes[nodeId]) {
+			if (nodes.has(nodeId)) {
 				debugError('Node description overriding.');
 			}
 			normalizeNode(data.node);
-			nodes[nodeId] = data.node;
+			nodes.set(nodeId, data.node);
 			delete data.node;
 		}
 
@@ -714,7 +714,7 @@ const getNodeData:TypeGenerationHelper['gc'] = async (
 		}
 		return data;
 	} catch (_err) {
-		delete nodesRequested[nodeId];
+		nodesRequested.delete(nodeId);
 	}
 };
 

@@ -648,6 +648,7 @@ input[readonly] {
 }
 
 .stage-container {
+	min-height: calc(100vh - 177px);
 	vertical-align: top;
 	flex-grow: 2;
 }

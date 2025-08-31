@@ -1,7 +1,6 @@
 import React from 'react';
-import { NODE_ID, type IFieldsRecord, type INodesRecord } from '../../../../types/generated';
+import { FIELD_TYPE, NODE_ID, type IFieldsRecord, type INodesRecord } from '../../../../types/generated';
 import type { FieldDesc } from '../bs-utils';
-import { FIELD_TYPE } from '../bs-utils';
 import { Select } from '../components/select';
 import type { FormFull } from '../forms/form-full';
 import { MainFrame } from '../main-frame';

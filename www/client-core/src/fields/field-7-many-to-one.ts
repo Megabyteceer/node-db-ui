@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { FIELD_TYPE } from '../../../../types/generated';
 import type { RecId, RecordData } from '../bs-utils';
-import { FIELD_TYPE, IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
+import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
 import { List } from '../forms/list';
 import { R } from '../r';
 import { idToImgURL, L, registerFieldClass, renderIcon, scrollToVisible, sp } from '../utils';
@@ -50,7 +51,7 @@ registerFieldClass(
 			}
 		}
 
-		UNSAFE_componentWillReceiveProps(nextProps) {
+		UNSAFE_componentWillReceiveProps(_nextProps) {
 			if (this.props.filters) {
 				if (!this.state.filters) {
 					//@ts-ignore
@@ -68,7 +69,7 @@ registerFieldClass(
 			}
 		}
 
-		valueSelected(recordData: RecordData, isNewCreated?: boolean, noToggleList?: boolean) {
+		valueSelected(recordData: RecordData, _isNewCreated?: boolean, noToggleList?: boolean) {
 			if (recordData) {
 				if (!noToggleList) {
 					this.toggleList();
@@ -106,7 +107,7 @@ registerFieldClass(
 				  }
 				: undefined;
 			crudJs.Stage.showForm(
-				this.props.field.nodeRef,
+				this.props.field.nodeRef.id,
 				recIdToEdit,
 				filters,
 				true,
@@ -176,7 +177,7 @@ registerFieldClass(
 				if (this.state.expanded) {
 					list = React.createElement(List, {
 						preventCreateButton: this.state.preventCreateButton || this.props.preventCreateButton,
-						nodeId: field.nodeRef,
+						nodeId: field.nodeRef.id,
 						isLookup: true,
 						parentForm: this,
 						filters: this.state.filters,

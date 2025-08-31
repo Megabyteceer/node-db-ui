@@ -1,6 +1,6 @@
 import { assert, throwError } from '../www/client-core/src/assert';
 import type { RecId, RecordData, RecordDataWrite, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
-import { FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import { PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 
 
 const captchaRequestConfig = {
@@ -21,7 +21,7 @@ import { L } from './locale';
 import {mysqlRollback} } from './mysql-connection';
 //*/
 import axios from 'axios';
-import type { NODE_ID } from '../types/generated';
+import { FIELD_TYPE, type NODE_ID } from '../types/generated';
 import { D, escapeString, mysqlCommit, mysqlExec, mysqlStartTransaction, NUM_1 } from './mysql-connection';
 import { idToImgURLServer, UPLOADS_FILES_PATH } from './upload';
 
@@ -270,7 +270,7 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 
 					case FIELD_TYPE.LOOKUP:
 						if (!isAdmin(userSession) && fieldVal) {
-							await getRecords(f.nodeRef, VIEW_MASK.DROPDOWN_LIST, fieldVal, userSession); //check if you have read access to referenced item
+							await getRecords(f.nodeRef.id, VIEW_MASK.DROPDOWN_LIST, fieldVal, userSession); //check if you have read access to referenced item
 						}
 						values.push(D(fieldVal));
 						break;
@@ -351,7 +351,7 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 								}
 
 								if (!isAdmin(userSession) && id) {
-									await getRecords(f.nodeRef, 8, id, userSession); //check if you have read access to referenced item
+									await getRecords(f.nodeRef.id, 8, id, userSession); //check if you have read access to referenced item
 								}
 
 								n2miQ.push('(', recId as unknown as string, ',', id, ')');

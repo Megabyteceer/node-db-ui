@@ -1,5 +1,5 @@
 import type { RecordsData } from '../bs-utils';
-import { FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../bs-utils';
+import { PRIVILEGES_MASK, VIEW_MASK } from '../bs-utils';
 import { R } from '../r';
 
 /// #if DEBUG
@@ -8,6 +8,8 @@ import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 
 import React from 'react';
+import { FIELD_TYPE } from '../../../../types/generated';
+import { assert } from '../assert';
 import { Select } from '../components/select';
 import type { RefToInput } from '../fields/base-field';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
@@ -66,6 +68,7 @@ class List extends BaseForm<ListProps, ListState> {
 	private searchTimeout: NodeJS.Timeout;
 
 	constructor(props) {
+		assert(props.node || typeof props.nodeId === 'number', 'number expected');
 		super(props);
 		this.filters = Object.assign({}, props.filters);
 		//@ts-ignore
@@ -521,7 +524,7 @@ class List extends BaseForm<ListProps, ListState> {
 					React.createElement(Select, {
 						options,
 						defaultValue: node.defaultFilterId
-							? node.filters[this.filters.filterId || node.defaultFilterId].name
+							? node.filters[this.filters.filterId || node.defaultFilterId.id].name
 							: undefined,
 						onChange: (val) => {
 							this.changeFilter('filterId', parseInt(val), true);

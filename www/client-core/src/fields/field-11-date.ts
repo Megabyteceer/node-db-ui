@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import moment from 'moment';
-import { FIELD_TYPE } from '../bs-utils';
+import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
 import { innerDateTimeFormat, readableDateFormat, registerFieldClass, renderIcon, toReadableDate } from '../utils';
 import { dateFieldMixins, ReactDateTimeClassHolder } from './field-4-date-time';

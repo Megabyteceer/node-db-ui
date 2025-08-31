@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { Component } from 'react';
-import { FIELD_TYPE } from '../bs-utils';
+import { FIELD_TYPE } from '../../../../types/generated';
 import { ENV } from '../main-frame';
 import { Modal } from '../modal';
 import { R } from '../r';

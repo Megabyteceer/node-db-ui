@@ -9,12 +9,13 @@ import { FieldAdmin } from '../admin/field-admin';
 
 import React from 'react';
 import type { FieldDesc, RecId, RecordData, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../bs-utils';
-import { FIELD_TYPE, PRIVILEGES_MASK } from '../bs-utils';
+import { PRIVILEGES_MASK } from '../bs-utils';
 import { HotkeyButton } from '../components/hotkey-button';
 import { LoadingIndicator } from '../loading-indicator';
 import { R } from '../r';
 import { iAdmin, User } from '../user';
 
+import { FIELD_TYPE } from '../../../../types/generated';
 import { LeftBar } from '../left-bar';
 
 const sortEntries = (a, b) => {

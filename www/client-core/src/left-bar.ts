@@ -4,8 +4,8 @@ import ReactDOM from 'react-dom';
 import { createNodeForMenuItem, NodeAdmin } from './admin/admin-control';
 import { FieldAdmin } from './admin/field-admin';
 /// #endif
+import { NODE_TYPE } from '../../../types/generated';
 import { assert } from './assert';
-import { NODE_TYPE } from './bs-utils';
 import { Modal } from './modal';
 import { R } from './r';
 import { Stage } from './stage';

@@ -1,14 +1,14 @@
-import { FIELD_ID, NODE_ID, type IFieldsFilter, type IFieldsRecord, type IFieldsRecordWrite } from '../../types/generated';
+import { FIELD_ID, FIELD_TYPE, NODE_ID, type IFieldsFilter, type IFieldsRecord, type IFieldsRecordWrite } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import type { UserSession } from '../../www/client-core/src/bs-utils';
-import { FIELD_TYPE, VIEW_MASK } from '../../www/client-core/src/bs-utils';
+import { VIEW_MASK } from '../../www/client-core/src/bs-utils';
 import { shouldBeAdmin } from '../admin/admin';
 import { mustBeUnset } from '../auth';
 import type { NodeEventsHandlers } from '../describe-node';
 import { getLangs, getNodeDesc, reloadMetadataSchedule } from '../describe-node';
 import { getRecords } from '../get-records';
 import { L } from '../locale';
-import { mysqlExec } from '../mysql-connection';
+import { D, mysqlExec } from '../mysql-connection';
 import { submitRecord } from '../submit';
 
 type T = IFieldsRecord;
@@ -38,7 +38,7 @@ const handlers: NodeEventsHandlers = {
 		const fieldType = data.fieldType;
 		const fieldName = data.fieldName;
 		if (fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
-			const parentNode = await getRecords(NODE_ID.NODES, 1, data.nodeFieldsLinker, userSession);
+			const parentNode = await getRecords(NODE_ID.NODES, 1, data.nodeFieldsLinker.id, userSession);
 
 			const linkerFieldData = {
 				status: 1,
@@ -61,8 +61,7 @@ const handlers: NodeEventsHandlers = {
 
 		// update priority
 		const fields = await getRecords(NODE_ID.FIELDS, VIEW_MASK.ALL, null, userSession, {
-
-			nodeFieldsLinker: data.nodeFieldsLinker
+			nodeFieldsLinker: data.nodeFieldsLinker.id
 		} as IFieldsFilter);
 		fields.items.sort((a, b) => {
 			return a.prior - b.prior;
@@ -197,28 +196,25 @@ function getFieldTypeSQL(data) {
 
 async function createFieldInTable(data: IFieldsRecordWrite) {
 	let nodeId = data.nodeFieldsLinker;
-	if (typeof nodeId !== 'number') {
-		nodeId = nodeId.id;
-	}
 
 	// prepare space for field
-	await mysqlExec('UPDATE _fields SET prior=prior+20 WHERE (nodeFieldsLinker =' + nodeId + ') AND (prior >' + data.prior + ')');
+	await mysqlExec('UPDATE _fields SET prior=prior+20 WHERE (nodeFieldsLinker =' + D(nodeId.id) + ') AND (prior >' + data.prior + ')');
 
 	const fieldType = data.fieldType;
 	const fieldName = data.fieldName;
 
-	const node = getNodeDesc(nodeId);
+	const node = getNodeDesc(nodeId.id);
 	const nodeName = node.tableName;
 	let linkedNodeName;
 
 	if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_N_TO_M || fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
-		const linkedNodeId = data.nodeRef;
-		linkedNodeName = getNodeDesc(linkedNodeId).tableName;
+		const linkedNode = data.nodeRef;
+		linkedNodeName = getNodeDesc(linkedNode.id).tableName;
 
 		if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 			const filters = {
 				status: 1,
-				nodeFieldsLinker: linkedNodeId,
+				nodeFieldsLinker: linkedNode.id,
 				fieldType: FIELD_TYPE.IMAGE
 			} as IFieldsFilter;
 			const records = await getRecords(NODE_ID.FIELDS, VIEW_MASK.LIST, undefined, undefined, filters);

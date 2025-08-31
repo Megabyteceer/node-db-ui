@@ -1,4 +1,4 @@
-import { FIELD_TYPE } from '../bs-utils';
+import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
 import { User } from '../user';
 import { L, registerFieldClass, renderIcon } from '../utils';

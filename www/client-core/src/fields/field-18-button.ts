@@ -1,4 +1,4 @@
-import { FIELD_TYPE } from '../bs-utils';
+import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
 import { registerFieldClass, renderIcon } from '../utils';
 import { BaseField } from './base-field';
@@ -10,7 +10,7 @@ registerFieldClass(FIELD_TYPE.BUTTON, class ButtonField extends BaseField {
 		this.onClick = this.onClick.bind(this);
 	}
 
-	setValue(val) {
+	setValue(_val) {
 		throw new Error('Cant set value for button');
 	}
 

@@ -1,8 +1,8 @@
 import type React from 'react';
 import ReactDOM from 'react-dom';
+import { FIELD_TYPE } from '../../../../types/generated';
 import { assert, throwError, validateFieldName } from '../assert';
 import type { FieldDesc, GetRecordsFilter, RecordData } from '../bs-utils';
-import { FIELD_TYPE } from '../bs-utils';
 import type { FieldWrap } from '../fields/field-wrap';
 import { CLIENT_SIDE_FORM_EVENTS, consoleLog, getData, L } from '../utils';
 import { BaseForm } from './base-form';

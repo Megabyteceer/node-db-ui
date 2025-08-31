@@ -1,6 +1,6 @@
 import type React from 'react';
+import { FIELD_TYPE } from '../../../../types/generated';
 import type { GetRecordsFilter, NodeDesc, RecordData } from '../bs-utils';
-import { FIELD_TYPE } from '../bs-utils';
 import type { FormListItem } from '../forms/form-list-item';
 import { assignFilters } from '../utils';
 import type { FieldProps, FieldState } from './base-field';

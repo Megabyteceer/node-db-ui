@@ -1,8 +1,8 @@
 ﻿import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { NODE_TYPE } from '../../../types/generated';
 import { assert, throwError } from './assert';
 import type { FormFilters, RecId, RecordData } from './bs-utils';
-import { NODE_TYPE } from './bs-utils';
 import type { BaseForm } from './forms/base-form';
 import { FormFull } from './forms/form-full';
 import { List } from './forms/list';
