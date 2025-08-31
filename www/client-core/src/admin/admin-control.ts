@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { NODE_ID, type INodesRecord } from '../../../../types/generated';
+import { NODE_ID, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../../../../types/generated';
 import type { NodeDesc } from '../bs-utils';
 import { NODE_TYPE } from '../bs-utils';
 import { R } from '../r';
@@ -246,7 +246,7 @@ class NodeAdmin extends Component<any, any> {
 											id: node.id,
 											name: node.singleName,
 										},
-									},
+									} as IFieldsRecord,
 									true,
 									true,
 									reloadLocation
@@ -299,7 +299,7 @@ class NodeAdmin extends Component<any, any> {
 							onClick: () => {
 								getNodeData(NODE_ID.NODES, undefined, {
 									_nodesID: item.parent,
-								}).then((data) => {
+								} as INodesFilter).then((data) => {
 									(data.items as INodesRecord[]).sort((a, b) => {
 										return a.prior - b.prior;
 									});
@@ -315,9 +315,9 @@ class NodeAdmin extends Component<any, any> {
 						{
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
-								getNodeData(4, undefined, {
+								getNodeData(NODE_ID.NODES, undefined, {
 									_nodesID: item.parent,
-								}).then((data) => {
+								} as INodesFilter).then((data) => {
 									(data.items as INodesRecord[]).sort((a, b) => {
 										return a.prior - b.prior;
 									});
@@ -418,11 +418,11 @@ function createNodeForMenuItem(item) {
 			'new',
 			{
 				prior: 100000,
-				_nodesID: {
+				_nodesId: {
 					id: data.id,
 					name: data.name,
 				},
-			},
+			} as INodesRecord,
 			true,
 			true,
 			reloadLocation

@@ -12,7 +12,7 @@ import { join } from 'path';
 import { ENUM_FIELD_TYPE, ENUM_NODE_TYPE, NODE_ID, type IFiltersRecord } from '../types/generated';
 import { assert, throwError } from '../www/client-core/src/assert';
 import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, RecordData, RecordDataWrite, UserLangEntry } from '../www/client-core/src/bs-utils';
-import { ROLE_ID, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import { FIELD_DATA_TYPE, FIELD_TYPE, NODE_TYPE, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { UserSession /*, usersSessionsStartedCount*/ } from './auth';
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode /*, usersSessionsStartedCount*/ } from './auth';
 import { ENV } from './ENV';
@@ -40,27 +40,6 @@ const clientSideNodes = new Map();
 const nodesTreeCache = new Map();
 
 const filtersById = new Map() as Map<RecId, FilterRecord>;
-
-const normalizeName = (txt:string) => {
-	return snakeToCamel(txt).replace(/[`']/g, '').replace(/[^\w]/gm, '_');
-};
-
-const normalizeEnumName = (txt:string) => {
-	return camelToSnake(txt.replace(/^_/, '')).replace(/[`']/g, '').replace(/[^\w]/gm, '_').toUpperCase().replace(/__+/gm, '_');
-};
-
-const camelToSnake = (str: string) => {
-	str = str.replace(/([a-z][A-Z])/gm, (group) =>
-	{
-		return group[0].toUpperCase() + '_' + group[1];
-	});
-	return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
-const snakeToCamel = (str: string) => {
-	str = str.toLowerCase().replace(/([_][a-z])/g, (group) => group.toUpperCase().replace('_', ''));
-	return str.charAt(0).toUpperCase() + str.slice(1);
-};
 
 function getFieldDesc(fieldId: number): FieldDesc {
 	assert(fieldsById.has(fieldId), 'Unknown field id ' + fieldId);
@@ -157,6 +136,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 						name: srcField['name' + landQ] || srcField.name,
 						description: srcField['description' + landQ] || srcField.description,
 						show: srcField.show,
+						dataType: srcField.dataType,
 						prior: srcField.prior,
 						fieldType: srcField.fieldType,
 						multilingual: srcField.multilingual,
@@ -167,6 +147,7 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 						requirement: srcField.requirement,
 						unique: srcField.unique,
 						enum: srcField.enum,
+						enumList: srcField.enumList,
 						forSearch: srcField.forSearch,
 						storeInDb: srcField.storeInDb,
 						nodeRef: srcField.nodeRef,
@@ -176,9 +157,6 @@ function getNodeDesc(nodeId, userSession = ADMIN_USER_SESSION): NodeDesc {
 						display: srcField.display
 					};
 
-					if (field.enum) {
-						field.enumId = srcField.enumId;
-					}
 					if (srcField.cssClass) {
 						field.cssClass = srcField.cssClass;
 					}
@@ -337,15 +315,37 @@ async function initNodesData() {
 		if (nodeData.nodeType === ENUM_NODE_TYPE.DOCUMENT) {
 			const query = 'SELECT * FROM _fields WHERE "nodeFieldsLinker"=' + D(nodeData.id) + ' AND status = ' + NUM_1 + ' ORDER BY prior';
 			const fields = (await mysqlExec(query)) as any;
-			for (const field of fields) {
+			for (const field of fields as FieldDesc[]) {
 				if (field.id === sortField) {
 					nodeData.sortFieldName = field.fieldName;
 				}
 
+				switch (field.fieldType) {
+
+				case FIELD_TYPE.FILE:
+				case FIELD_TYPE.IMAGE:
+				case FIELD_TYPE.TEXT:
+				case FIELD_TYPE.PASSWORD:
+				case FIELD_TYPE.HTML_EDITOR:
+					field.dataType = FIELD_DATA_TYPE.TEXT;
+					break;
+				case FIELD_TYPE.TAB:
+				case FIELD_TYPE.LOOKUP_N_TO_M:
+				case FIELD_TYPE.LOOKUP_1_TO_N:
+					field.dataType = FIELD_DATA_TYPE.NODATA;
+					break;
+				case FIELD_TYPE.DATE_TIME:
+				case FIELD_TYPE.DATE:
+					field.dataType = FIELD_DATA_TYPE.TIMESTAMP;
+					break;
+				default:
+					field.dataType = FIELD_DATA_TYPE.NUMBER;
+					break;
+				}
+
 				if (field.fieldType === ENUM_FIELD_TYPE.ENUM && field.show) {
 					const enums = await getEnumDesc(field.enum);
-					field.enumId = field.enum;
-					field.enum = enums;
+					field.enumList = enums;
 				}
 				fieldsById.set(field.id, field);
 			}
@@ -452,20 +452,20 @@ enum ServerSideEventHandlersNames {
 }
 
 interface NodeEventsHandlers {
-	beforeCreate?: (data: RecordDataWrite<RecordData>, userSession: UserSession) => Promise<void>;
-	afterCreate?: (data: RecordDataWrite<RecordData>, userSession: UserSession) => Promise<void>;
-	beforeUpdate?: (currentData: RecordData, newData: RecordDataWrite<RecordData>, userSession: UserSession) => Promise<void>;
+	beforeCreate?: (data: RecordDataWrite, userSession: UserSession) => Promise<void>;
+	afterCreate?: (data: RecordDataWrite, userSession: UserSession) => Promise<void>;
+	beforeUpdate?: (currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) => Promise<void>;
 	afterUpdate?: (data: RecordData, userSession: UserSession) => Promise<void>;
 	beforeDelete?: (data: RecordData, userSession: UserSession) => Promise<void>;
 	afterDelete?: (data: RecordData, userSession: UserSession) => Promise<void>;
 }
 
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeCreate, data: RecordDataWrite<RecordData>, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterCreate, data: RecordDataWrite<RecordData>, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeUpdate, currentData: RecordData, newData: RecordDataWrite<RecordData>, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterUpdate, data: RecordDataWrite<RecordData>, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeDelete, data: RecordDataWrite<RecordData>, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterDelete, data: RecordDataWrite<RecordData>, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeUpdate, currentData: RecordData, newData: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterUpdate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
+async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
 async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames, data1, data2, data3?): Promise<void> {
 	if (eventsHandlersServerSide.has(nodeId)) {
 		const serverSideNodeEventHandler = eventsHandlersServerSide.get(nodeId)[eventName];
@@ -518,12 +518,14 @@ const destroyObject = (o) => {
 const generateTypings = async () => {
 	const src = [`
 import type { Moment } from 'moment';
-import type { GetRecordsFilter, RecordData, RecordDataWrite, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
+import type { GetRecordsFilter, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
 `] as string[];
 
 	for (const node of nodes) {
-		if (node.fields?.length) {
-			src.push('export interface I' + snakeToCamel(node.tableName) + 'Record extends RecordData {');
+		if (node.nodeType === NODE_TYPE.DOCUMENT) {
+			const searchFields = [] as string[];
+
+			src.push('type ' + snakeToCamel(node.tableName) + 'Base = {');
 			for (const field of node.fields) {
 				let type = 'any';
 				switch (field.fieldType) {
@@ -537,8 +539,8 @@ import type { GetRecordsFilter, RecordData, RecordDataWrite, RecordSubmitResult,
 					type = 'Moment';
 					break;
 
-				case ENUM_FIELD_TYPE.ENUM: // TODO
-					type = 'number';
+				case ENUM_FIELD_TYPE.ENUM:
+					type = 'ENUM_' + normalizeName((await getEnumDesc(field.enum!)).name);
 					break;
 
 				case ENUM_FIELD_TYPE.TEXT:
@@ -548,16 +550,43 @@ import type { GetRecordsFilter, RecordData, RecordDataWrite, RecordSubmitResult,
 				case ENUM_FIELD_TYPE.HTML_EDITOR:
 					type = 'string';
 					break;
+				case ENUM_FIELD_TYPE.LOOKUP:
+					type = 'number';
+					//TODO
+					/*if (field.lookupIcon) {
+						type = '{name:string, icon: string, id:RecId}';
+					} else {
+						type = '{name:string, id:RecId}';
+					}*/
 				}
 				src.push('	/** ' + (await getEnumDesc(FIELD_TYPE_ENUM_ID)).namesByValue[field.fieldType] + ' */');
 				src.push('	' + field.fieldName + (field.requirement ? '' : '?') + ': ' + type + ';');
+				if (field.forSearch) {
+					searchFields.push('\t' + field.fieldName + ': ' + type + ';');
+				}
 			}
 			src.push('}', '');
+
+			if (searchFields.length) {
+				src.push('export type I' + snakeToCamel(node.tableName) + 'Filter = GetRecordsFilter & Partial<{');
+				src.push(...searchFields);
+				src.push('}>', '');
+			} else {
+				src.push('export type I' + snakeToCamel(node.tableName) + 'Filter = GetRecordsFilter;');
+			}
+		}
+	}
+
+	for (const node of nodes) {
+		if (node.nodeType === NODE_TYPE.DOCUMENT) {
+			const name = snakeToCamel(node.tableName);
+			src.push(`export type I${name}Record = ${name}Base & RecordData;`);
+			src.push(`export type I${name}RecordWrite = ${name}Base & RecordDataWrite;`);
 		}
 	}
 
 	enumsById.forEach((enumData) => {
-		src.push('export const enum ENUM_' + normalizeName(enumData.name).toUpperCase() + ' {');
+		src.push('export const enum ENUM_' + normalizeName(enumData.name) + ' {');
 		for (const val of enumData.items) {
 			src.push('\t' + normalizeEnumName(val.name).toUpperCase() + ' = ' + val.value + ',');
 		}
@@ -602,15 +631,15 @@ export class TypeGenerationHelper {`);
 			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
 			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
 			src.push(`
+	async g(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: I${snakeToCamel(nodeData.tableName)}Filter, search?: string): Promise<{items:${typeName}[], total:number}>;
 	async g(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<${typeName}>;
-	async g(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: GetRecordsFilter, search?: string): Promise<{items:${typeName}[], total:number}>;
 `);
 		}
 	});
 
 	src.push(`
-	async g(nodeId: NODE_ID, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<RecordData>;
 	async g(nodeId: NODE_ID, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: GetRecordsFilter, search?: string): Promise<{items:RecordData[], total:number}>;
+	async g(nodeId: NODE_ID, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<RecordData>;
 
 	async g() {
 		return 1 as any;
@@ -622,15 +651,15 @@ export class TypeGenerationHelper {`);
 			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
 			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
 			src.push(`
-	async gc(nodeId: NODE_ID.${enumName}, recId: RecId, filters?: undefined, editable?: undefined, viewMask?: VIEW_MASK | boolean, isForCustomList?: undefined, noLoadingIndicator?: boolean): Promise<${typeName}>;
-	async gc(nodeId: NODE_ID.${enumName}, recId?: RecId[], filters?: GetRecordsFilter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{items:${typeName}[], total:number}>;
+	async gc(nodeId: NODE_ID.${enumName}, recId?: RecId[], filters?: I${snakeToCamel(nodeData.tableName)}Filter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{items:${typeName}[], total:number}>;
+	async gc(nodeId: NODE_ID.${enumName}, recId: RecId, filters?: undefined, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<${typeName}>;
 `);
 		}
 	});
 
 
 	src.push(`
-	async gc(nodeId: NODE_ID, recId: RecId, filters?: undefined, editable?: undefined, viewMask?: VIEW_MASK | boolean, isForCustomList?: undefined, noLoadingIndicator?: boolean): Promise<RecordData>;
+	async gc(nodeId: NODE_ID, recId: RecId, filters?: undefined, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<RecordData>;
 	async gc(nodeId: NODE_ID, recId?: RecId[], filters?: GetRecordsFilter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{items:RecordData[], total:number}>;
 
 	async gc() {
@@ -640,17 +669,20 @@ export class TypeGenerationHelper {`);
 
 	// generate submit() typings
 	nodesData.forEach((nodeData) => {
-		if (nodeData.fields?.length && nodeData.storeForms) {
+		if (nodeData.fields?.length) {
 			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
-			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
+			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'RecordWrite';
 			src.push(`
-	async s(nodeId: NODE_ID.${enumName}, data: RecordDataWrite<${typeName}>, recId: RecId, userSession?: UserSession): Promise<RecordSubmitResult>;
-	async s(nodeId: NODE_ID.${enumName}, data: RecordDataWrite<${typeName}>, recId?: RecId, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;
+	async s(nodeId: NODE_ID.${enumName}, data: ${typeName}, recId: RecId, userSession?: UserSession): Promise<RecordSubmitResult>;
+	async s(nodeId: NODE_ID.${enumName}, data: ${typeName}, recId?: RecId, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;
 `);
 		}
 	});
 
 	src.push(`
+	async s(nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId: RecId, userSession?: UserSession): Promise<RecordSubmitResult>;
+	async s(nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId?: RecId, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;
+
 	async s() {
 		return 1 as any;
 	}

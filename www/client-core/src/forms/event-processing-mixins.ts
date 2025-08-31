@@ -73,7 +73,7 @@ class FormEventProcessingMixins extends BaseForm {
 		this.callOnTabShowEvent(this.props.filters.tab);
 	}
 
-	isFieldVisibleByFormViewMask(field) {
+	isFieldVisibleByFormViewMask(_field) {
 		return true;
 	}
 
@@ -87,7 +87,7 @@ class FormEventProcessingMixins extends BaseForm {
 		this.forceUpdate();
 	}
 
-	callOnTabShowEvent(tabNameToShow) {
+	callOnTabShowEvent(tabNameToShow: string) {
 		if (this.currentTabName !== tabNameToShow) {
 			this.currentTabName = tabNameToShow;
 			let field;

@@ -194,7 +194,7 @@ class FieldsEvents extends FormEvents {
 		crudJs.Stage.showForm(NODE_ID.REGISTRATION, 'new', undefined, true);
 	}
 
-	_login_forgot_password_button_onChange() {
+	_login_forgotPasswordButton_onChange() {
 		crudJs.Stage.showForm(NODE_ID.RESET_PASSWORD, 'new', undefined, true);
 	}
 

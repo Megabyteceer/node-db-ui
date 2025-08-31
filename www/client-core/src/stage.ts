@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { assert, throwError } from './assert';
-import type { GetRecordsFilter, RecId, RecordData } from './bs-utils';
+import type { FormFilters, RecId, RecordData } from './bs-utils';
 import { NODE_TYPE } from './bs-utils';
 import type { BaseForm } from './forms/base-form';
 import { FormFull } from './forms/form-full';
@@ -106,7 +106,7 @@ class Stage extends Component<any, any> {
 	static async showForm(
 		nodeId: RecId,
 		recId?: RecId | 'new',
-		filters: GetRecordsFilter = {},
+		filters: FormFilters = {},
 		editable?: boolean,
 		modal?: boolean,
 		onModified?: (dataToSend: RecordData) => void,
@@ -134,23 +134,9 @@ class Stage extends Component<any, any> {
 		if (!node || node.nodeType === NODE_TYPE.DOCUMENT) {
 			if (recId !== 'new') {
 				if (typeof recId === 'number') {
-					data = await getNodeData(
-						nodeId,
-						recId,
-						undefined,
-						editable,
-						false,
-						isPresentListRenderer(nodeId)
-					);
+					data = await getNodeData(nodeId, recId as RecId, undefined, editable, false, isPresentListRenderer(nodeId));
 				} else {
-					data = await getNodeData(
-						nodeId,
-						undefined,
-						filters,
-						editable,
-						false,
-						isPresentListRenderer(nodeId)
-					);
+					data = await getNodeData(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
 				}
 			}
 		}

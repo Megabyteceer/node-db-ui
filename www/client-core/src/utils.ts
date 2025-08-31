@@ -3,8 +3,8 @@ import { LITE_UI_PREFIX } from './consts';
 import type { LANG_KEYS } from './locales/en/lang';
 
 import ReactDOM from 'react-dom';
-import type { FieldDesc, GetRecordsFilter, GetRecordsParams, IFormParameters, NodeDesc, RecId, RecordData, RecordsData, RecordSubmitResult, RecordSubmitResultNewRecord, UserSession } from './bs-utils';
-import { FIELD_TYPE, HASH_DIVIDER, ROLE_ID, USER_ID, VIEW_MASK } from './bs-utils';
+import type { FieldDesc, GetRecordsFilter, GetRecordsParams, IFormParameters, NodeDesc, RecId, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordsData, RecordSubmitResult, RecordSubmitResultNewRecord, UserSession } from './bs-utils';
+import { FIELD_TYPE, HASH_DIVIDER, ROLE_ID, STATUS, USER_ID, VIEW_MASK } from './bs-utils';
 import { LoadingIndicator } from './loading-indicator';
 import { Modal } from './modal';
 import { Notify } from './notify';
@@ -366,7 +366,7 @@ function hashToFormParams(hashTxt: string): IFormParameters {
 	let nodeId;
 	let recId;
 	let editable;
-	let filters = {};
+	let filters = {} as GetRecordsFilter;
 	const hash = hashTxt.split('/');
 	let i;
 	while (hash.length) {
@@ -641,7 +641,7 @@ function normalizeNode(node: NodeDesc) {
 
 //@ts-ignore
 const getNodeData:TypeGenerationHelper['gc'] = async (
-	nodeId: RecId,
+	nodeId: NODE_ID,
 	recId?: RecId | RecId[],
 	filters?: undefined,
 	editable?: boolean,
@@ -774,7 +774,7 @@ function addMixins(Class, mixins) {
 }
 
 //@ts-ignore
-const submitRecord: TypeGenerationHelper['s'] = async (nodeId: RecId, data: RecordData, recId?: RecId): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
+const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId?: RecId): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	if (Object.keys(data).length === 0) {
 		throw 'Tried to submit empty object';
 	}
@@ -903,12 +903,12 @@ const isAdmin = () => {
 	return isUserHaveRole(ROLE_ID.ADMIN);
 };
 
-async function publishRecord(nodeId, recId): Promise<RecordSubmitResult> {
-	return submitRecord(nodeId, { status: 1 }, recId);
+async function publishRecord(nodeId:NODE_ID, recId:RecId): Promise<RecordSubmitResult> {
+	return submitRecord(nodeId, { status: STATUS.PUBLIC }, recId);
 }
 
-async function draftRecord(nodeId, recId): Promise<RecordSubmitResult> {
-	return submitRecord(nodeId, { status: 2 }, recId);
+async function draftRecord(nodeId:NODE_ID, recId:RecId): Promise<RecordSubmitResult> {
+	return submitRecord(nodeId, { status: STATUS.DRAFT }, recId);
 }
 
 function isAuthNeed(data) {

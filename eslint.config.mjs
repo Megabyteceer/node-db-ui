@@ -6,6 +6,7 @@ export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.recommended, {
   rules: {
+    "@typescript-eslint/no-empty-object-type": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/ban-ts-comment": 0,
     "no-prototype-builtins": 0,

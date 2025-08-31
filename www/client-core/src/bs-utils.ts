@@ -2,7 +2,38 @@
 import type { ENUM_FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord } from '../../../types/generated';
 import { ENUM_FIELD_TYPE as FIELD_TYPE, ENUM_NODE_TYPE as NODE_TYPE } from '../../../types/generated';
 
+
+export const normalizeName = (txt:string) => {
+	return snakeToCamel(txt).replace(/[`']/g, '').replace(/[^\w]/gm, '_').toUpperCase();
+};
+
+export const normalizeEnumName = (txt:string) => {
+	return camelToSnake(txt.replace(/^_/, '')).replace(/[`']/g, '').replace(/[^\w]/gm, '_').toUpperCase().replace(/__+/gm, '_');
+};
+
+export const camelToSnake = (str: string) => {
+	str = str.replace(/([a-z][A-Z])/gm, (group) =>
+	{
+		return group[0].toUpperCase() + '_' + group[1];
+	});
+	return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const snakeToCamel = (str: string) => {
+	str = str.replace(/([_][a-z])/g, (group) => group.toUpperCase().replace('_', ''));
+	return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export interface LookupValue {
+	id:number;
+	icon?: string;
+	name?: string;
+}
+
 export interface GetRecordsFilter {
+
+	/** search text */
+	s?: string;
 
 	/** page number */
 	p?: number | '*';
@@ -22,9 +53,22 @@ export interface GetRecordsFilter {
 
 	/** filterId */
 	filterId?: FILTER_ID;
+}
 
-	/** filter by other field. numeric types only */
-	[fieldId:string]: number | any| undefined;
+export interface FormFilters extends GetRecordsFilter {
+	/** form tab to show */
+	tab?: string;
+
+	/** render standard list view */
+	noCustomList?: BoolNum;
+
+	/** hide creation button */
+	preventCreateButton?: BoolNum;
+
+	/** override form title by string */
+	formTitle?:string;
+
+
 }
 
 interface RecordSubmitResult {
@@ -86,12 +130,21 @@ type EnumList = {
 	namesByValue: { [key: number]: string };
 };
 
+export const enum FIELD_DATA_TYPE {
+	TEXT = 0,
+	NUMBER = 1,
+	TIMESTAMP = 2,
+	NODATA = 3
+}
+
 interface FieldDesc extends IFieldsRecord {
 	/** readable name */
 	name: string;
 
 	/** could be string for multilingual fields */
 	id: RecId;
+
+	dataType: FIELD_DATA_TYPE;
 
 	/** owner node */
 	nodeFieldsLinker: RecId;
@@ -121,8 +174,6 @@ interface FieldDesc extends IFieldsRecord {
 	/** fields will have index in database, and search will be processed in this field */
 	forSearch: BoolNum;
 
-	fieldType: FIELD_TYPE;
-
 	icon: string;
 
 	/** name of picture field in relative table. Thin picture will be used as icon in Lookup fields. */
@@ -150,9 +201,7 @@ interface FieldDesc extends IFieldsRecord {
 	/** index in parent's node 'fields' list. Client side only field */
 	index?: number;
 
-	/** client side only field */
-	enum?: EnumList;
-	enumId?: RecId;
+	enumList?: EnumList;
 
 	/** contains language id, if field is multilingual and refers to non default language */
 	lang?: string;
@@ -203,12 +252,14 @@ interface UserLangEntry extends ILanguagesRecord {
 	prefix: string;
 }
 
-export type RecordDataWrite<T> = {
-
+export type RecordDataWrite = {
 	/** submit captcha token */
 	c?: string;
+}
 
-} & Omit<T, 'isE' | 'isP' | 'isD'>;
+export type RecordDataWriteDraftable = RecordDataWrite & {
+	status?: STATUS;
+}
 
 export const enum STATUS {
 	DELETED = 0,

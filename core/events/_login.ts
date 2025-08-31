@@ -1,19 +1,17 @@
-import type { ILoginRecord } from '../../types/generated';
+import type { ILoginRecordWrite } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
-import type { RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import type { UserSession } from '../../www/client-core/src/bs-utils';
 import { authorizeUserByID, getPasswordHash } from '../auth';
 import type { NodeEventsHandlers } from '../describe-node';
 import { L } from '../locale';
 import { loginWithGoogle } from '../login-social';
 import { D, mysqlExec, NUM_1 } from '../mysql-connection';
 
-type T = ILoginRecord;
-
 const LOGIN_SQL_PART = '\' AND _users.status=' + NUM_1 + ' LIMIT ' + NUM_1;
 const LOGIN_SQL_UPDATE_PART = 'UPDATE _users SET blockedTo=DATE_ADD( NOW(),INTERVAL ' + NUM_1 + ' MINUTE), mistakes=' + D(3) + ' WHERE id=';
 const LOGIN_UPDATE_SQL_PART2 = 'UPDATE _users SET mistakes=(mistakes-' + NUM_1 + ') WHERE id=';
 const handlers: NodeEventsHandlers = {
-	beforeCreate: async function (data: RecordDataWrite<T>, userSession: UserSession): Promise<any> {
+	beforeCreate: async function (data: ILoginRecordWrite, userSession: UserSession): Promise<any> {
 		const username = data.username;
 		const password = data.password;
 		if (username === 'google-auth-sign-in') {

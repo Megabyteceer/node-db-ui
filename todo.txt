@@ -1,4 +1,25 @@
-getNodeData типизоват
+
+
+
+генерация типа записи переделать -
+
+IBaseEnumRecord  в котором нет лукапПолей не экспортится
+
+export type IEnumRecord = IBaseEnumRecord & RecordData & {
+	nodeLinker: {id,name, icon};
+}
+
+export type IEnumRecordWrite = IBaseEnumRecord & RecordDataWrite & {
+	nodeLinker: RectId;
+}
+
+
+
+
+
+
+в фильтр добавить s - search
+
 
 
 Удалить все d.ts файлы
@@ -63,8 +84,6 @@ field_roles_view, create, update
 
 проверить просить вход если ответ нет прав и юзер гость  <access>
 
-
-
 hide left menu if one non section item only
 
 check if guest try to upload file or image to prevent sessions collision
@@ -84,5 +103,6 @@ Deploy data for _tables by default
 
 в релизе настроить CDN заголовки кеша. апи на поддомене.
 
+проверить лишние SQL запросы в логах админки иеонка справа
 
 

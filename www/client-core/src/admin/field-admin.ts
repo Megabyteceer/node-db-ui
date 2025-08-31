@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import type { FieldDesc, NodeDesc } from '../bs-utils';
 
-import { NODE_ID } from '../../../../types/generated';
+import { NODE_ID, type IFieldsRecord } from '../../../../types/generated';
 import { List } from '../forms/list';
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
@@ -159,7 +159,7 @@ class FieldAdmin extends Component<any, any> {
 												id: node.id,
 												name: node.singleName,
 											},
-										},
+										} as IFieldsRecord,
 										true,
 										true,
 										reloadLocation

@@ -1,6 +1,6 @@
 import type React from 'react';
 import { Component } from 'react';
-import type { BoolNum, GetRecordsFilter, NodeDesc, RecId, RecordData, RecordsData, VIEW_MASK } from '../bs-utils';
+import type { BoolNum, FormFilters, NodeDesc, RecId, RecordData, RecordsData, VIEW_MASK } from '../bs-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import type { FieldWrap } from '../fields/field-wrap';
@@ -13,7 +13,7 @@ interface FormProps {
 	initialData?: RecordData;
 	list?: List;
 	parentForm?: LookupOneToManyFiled;
-	filters?: GetRecordsFilter;
+	filters?: FormFilters;
 	node: NodeDesc;
 	isRootForm?: boolean;
 	nodeId: RecId;
@@ -50,7 +50,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 
 	/** *List* - uses *filters* as filters values for records fetch request;
 	 * *FullForm* - uses *filters* as initialData and current tab store;  */
-	filters: GetRecordsFilter;
+	filters: FormFilters;
 
 	fieldsRefs: { [key: string]: FieldWrap };
 	/** set content of form header */
@@ -78,8 +78,8 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		assert(((this.recId || 'new') === ((newProps.initialData ? newProps.initialData.id : newProps.recId) || 'new')) && (this.nodeId === (newProps.nodeId || newProps.node.id)), 'Form should be recreated, and not receive new props. Add \'key\' to parent element contains nodeId and recId.');
 	}
 
-	callOnTabShowEvent(tabNameToShow) {
-
+	callOnTabShowEvent(_tabNameToShow: string) {
+		/** virtual */
 	}
 
 	isSubForm() {

@@ -1,7 +1,7 @@
 import type { IFiltersRecord, NODE_ID, TypeGenerationHelper } from '../types/generated';
 import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
-import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
-import { FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import type { GetRecordsFilter, RecId, RecordData, RecordDataWrite, RecordsData } from '../www/client-core/src/bs-utils';
+import { FIELD_DATA_TYPE, FIELD_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { UserSession } from './auth';
 import { ADMIN_USER_SESSION, filtersById, getNodeDesc, getNodeEventHandler, ServerSideEventHandlersNames } from './describe-node';
 
@@ -29,8 +29,7 @@ const getRecords: TypeGenerationHelper['g'] = async(
 	viewMask: VIEW_MASK,
 	recId: null | RecId | RecId[] = null,
 	userSession: UserSession = ADMIN_USER_SESSION,
-	filterFields: GetRecordsFilter = EMPTY_FILTERS,
-	search?: string
+	filterFields: GetRecordsFilter = EMPTY_FILTERS
 ): Promise<RecordData | RecordsData> => {
 	const node = getNodeDesc(nodeId, userSession);
 
@@ -216,6 +215,11 @@ const getRecords: TypeGenerationHelper['g'] = async(
 	let wheres;
 	let ordering;
 
+	const search = filterFields.s;
+	const isNumericSearch = search ? !/\D/.test(search) : undefined;
+	const searchSQL = search ? '" LIKE ' + escapeString('%' + search + '%') + ' ' : undefined;
+	const searchSQLNumeric = isNumericSearch ? '=' + D(parseInt(search)) + ' ' : undefined;
+
 	if (singleSelectionById) {
 		wheres = [' AND "', tableName, '".id=', D(recId as number)];
 		ordering = [ORDERING_SQL_PART];
@@ -249,12 +253,15 @@ const getRecords: TypeGenerationHelper['g'] = async(
 
 			if (search && f.forSearch) {
 				if (isAsciiSearch || f.fieldType === FIELD_TYPE.TEXT) {
-					if (!searchWHERE) {
-						searchWHERE = [];
-					} else {
-						searchWHERE.push(' OR ');
+					const isNumericField = (f.dataType === FIELD_DATA_TYPE.NUMBER);
+					if (!isNumericSearch || isNumericField) {
+						if (!searchWHERE) {
+							searchWHERE = [];
+						} else {
+							searchWHERE.push(' OR ');
+						}
+						searchWHERE.push('"', tableName, '"."', fieldName, isNumericField ? searchSQLNumeric : searchSQL);
 					}
-					searchWHERE.push('"', tableName, '"."', fieldName, '" LIKE ', escapeString('%' + search + '%'), ' ');
 				}
 			}
 
@@ -452,7 +459,7 @@ const getRecords: TypeGenerationHelper['g'] = async(
 };
 
 const DELETE_RECORD_SQL_PART = '" SET status=' + NUM_0 + ' WHERE id=';
-async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
+async function deleteRecord(nodeId: NODE_ID, recId:RecId, userSession = ADMIN_USER_SESSION) {
 	const node = getNodeDesc(nodeId, userSession);
 
 	const recordData = await getRecords(nodeId, 4, recId, userSession);
@@ -460,11 +467,11 @@ async function deleteRecord(nodeId, recId, userSession = ADMIN_USER_SESSION) {
 		throwError('Deletion access is denied');
 	}
 
-	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeDelete, recordData, userSession);
+	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeDelete, recordData as RecordDataWrite, userSession);
 
 	await mysqlExec('UPDATE "' + node.tableName + DELETE_RECORD_SQL_PART + D(recId));
 
-	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterDelete, recordData, userSession);
+	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterDelete, recordData as RecordDataWrite, userSession);
 
 	return 1;
 }

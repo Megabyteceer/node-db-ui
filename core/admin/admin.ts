@@ -27,9 +27,9 @@ async function nodePrivileges(reqData, userSession) {
 	} else {
 		//get node privileges
 		const privileges = await mysqlExec(
-			'SELECT id, name, (SELECT privileges FROM rolePrivileges WHERE (nodeId=' +
+			'SELECT id, name, (SELECT privileges FROM "rolePrivileges" WHERE ("nodeId"=' +
 				nodeId +
-				') AND (_roles.id=roleId) LIMIT 1) AS privileges FROM _roles WHERE id != ' +
+				') AND (_roles.id="roleId") LIMIT 1) AS privileges FROM _roles WHERE id != ' +
 				USER_ID.SUPER_ADMIN +
 				' AND id != ' +
 				USER_ID.VIEW_ALL +
@@ -143,7 +143,7 @@ function editFunction(fileName, functionName, args = '') {
 	try {
 		const arg = fileName + ':' + line + ':2';
 		exec('code -r -g "' + arg + '"');
-	} catch (err) {
+	} catch (_err) {
 		return 'Can not open file to edit: ' + fileName;
 	}
 	return 1;

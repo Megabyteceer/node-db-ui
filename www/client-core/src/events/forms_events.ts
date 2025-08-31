@@ -4,8 +4,8 @@ import { attachGoogleLoginAPI, getData, getNode, getNodeData, goToHome, isAdmin,
 import { makeIconSelectionField } from '../admin/admin-utils';
 /// #endif
 
-import { NODE_ID, type IUsersRecord } from '../../../../types/generated';
-import type { GetRecordsFilter, NodeDesc, RecordSubmitResult } from '../bs-utils';
+import { NODE_ID, type IFieldsFilter, type IFiltersFilter, type ILanguagesFilter, type INodesFilter, type IResetPasswordFilter, type IUsersRecord } from '../../../../types/generated';
+import type { NodeDesc, RecordSubmitResult } from '../bs-utils';
 import { FIELD_TYPE, LANGUAGE_ID_DEFAULT, NODE_TYPE, VIEW_MASK } from '../bs-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
 import { FormFull } from '../forms/form-full';
@@ -34,7 +34,7 @@ class FormEvents extends FormFull {
 		if (this.isUserEdit) {
 			this.addLookupFilters('language', {
 				isUILanguage: 1
-			});
+			} as ILanguagesFilter);
 		}
 
 		if (window.document.querySelector('#org-edit-link')!) {
@@ -167,7 +167,7 @@ class FormEvents extends FormFull {
 		} else if (this.isUpdateRecord) {
 			this.addLookupFilters('defaultFilterId', {
 				nodeFiltersLinker: this.recId
-			});
+			} as IFiltersFilter);
 		} else {
 			if (!this.currentData.hasOwnProperty('storeForms')) {
 				this.setFieldValue('storeForms', 1);
@@ -195,7 +195,7 @@ class FormEvents extends FormFull {
 		this.addLookupFilters('_fieldsId', {
 			nodeFieldsLinker: this.recId,
 			forSearch: 1
-		});
+		} as IFieldsFilter);
 	}
 
 	_nodes_onSave() {
@@ -271,12 +271,12 @@ class FormEvents extends FormFull {
 		}
 
 		this.addLookupFilters('nodeFieldsLinker', {
-			nodeType: 2
-		});
+			nodeType: NODE_TYPE.DOCUMENT
+		} as INodesFilter);
 		this.addLookupFilters('nodeRef', {
-			nodeType: 2,
+			nodeType: NODE_TYPE.DOCUMENT,
 			storeForms: 1
-		});
+		} as INodesFilter);
 		this.hideField('show');
 	}
 
@@ -284,8 +284,8 @@ class FormEvents extends FormFull {
 		if (this.isNewRecord) {
 			this._fieldsNameIsBad = false;
 
-			const checkFieldExists = (fName, nodeId) => {
-				const fieldsFilter: GetRecordsFilter = {
+			const checkFieldExists = (fName: string, nodeId: NODE_ID) => {
+				const fieldsFilter: IFieldsFilter = {
 					fieldName: fName
 				};
 				if (this.fieldValue('fieldType') !== FIELD_TYPE.LOOKUP_N_TO_M) {
@@ -478,8 +478,8 @@ class FormEvents extends FormFull {
 
 	_resetPassword_onLoad() {
 		this.hideCancelButton();
-		const activationKey = this.filters.activationKey;
-		const resetCode = this.filters.resetCode;
+		const activationKey = (this.filters as IResetPasswordFilter).activationKey;
+		const resetCode = (this.filters as IResetPasswordFilter).resetCode;
 		if (activationKey || resetCode) {
 			this.hideField('email');
 			this.hideFooter();

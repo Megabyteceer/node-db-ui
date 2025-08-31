@@ -1,6 +1,6 @@
-import { NODE_ID, type ILanguagesRecord } from '../../types/generated';
+import { NODE_ID, type IFieldsFilter, type ILanguagesRecord, type ILanguagesRecordWrite } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
-import type { RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import { VIEW_MASK, type UserSession } from '../../www/client-core/src/bs-utils';
 
 import { shouldBeAdmin } from '../admin/admin';
 import { reloadMetadataSchedule } from '../describe-node';
@@ -8,14 +8,15 @@ import { getRecords } from '../get-records';
 import { createFieldInTable } from './_fields';
 
 type T = ILanguagesRecord;
+type W = ILanguagesRecordWrite;
 
 export default {
-	afterCreate: async function (data: RecordDataWrite<T>, _userSession: UserSession) {
+	afterCreate: async function (data: W, _userSession: UserSession) {
 		shouldBeAdmin();
-		const fieldsData = await getRecords(NODE_ID.FIELDS, 1, null, undefined, {
+		const fieldsData = await getRecords(NODE_ID.FIELDS, VIEW_MASK.EDITABLE, undefined, undefined, {
 			multilingual: 1,
 			p: '*',
-		});
+		} as IFieldsFilter);
 		const fields = fieldsData.items;
 		for (const f of fields) {
 			f.nodeFieldsLinker = f.nodeFieldsLinker.id;
@@ -28,7 +29,7 @@ export default {
 
 	beforeUpdate: async function (
 		_currentData: ILanguagesRecord,
-		newData: RecordDataWrite<T>,
+		newData: W,
 		_userSession: UserSession
 	) {
 		if (newData.hasOwnProperty('code')) {

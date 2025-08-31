@@ -1,6 +1,6 @@
 import React from 'react';
 import type { EnumList } from '../bs-utils';
-import { FIELD_TYPE } from '../bs-utils';
+import { FIELD_TYPE, normalizeEnumName } from '../bs-utils';
 import { Select } from '../components/select';
 import { R } from '../r';
 import { registerFieldClass } from '../utils';
@@ -17,7 +17,7 @@ class EnumField extends BaseField {
 
 	setFilterValues(filter) {
 		if (filter) {
-			const en = Object.assign({}, this.props.field.enum);
+			const en = Object.assign({}, this.props.field.enumList);
 			en.items = en.items.filter(v => filter.indexOf(v) < 0);
 			this.enum = en;
 		} else {
@@ -44,13 +44,13 @@ class EnumField extends BaseField {
 				onChange: (val) => {
 					this.props.wrapper.valueListener(parseInt(val), false, this);
 				},
-				options: this.enum ? this.enum.items : field.enum.items
+				options: this.enum ? this.enum.items : field.enumList.items
 			};
 			return React.createElement(Select, inputsProps);
 		} else {
 			return R.span({
-				className: 'enum-type-' + field.enumId + ' enum-val-' + value,
-			}, field.enum.namesByValue[value]);
+				className: 'enum-type-' + normalizeEnumName(field.enumList.name).toLowerCase() + ' enum-val-' + value,
+			}, field.enumList.namesByValue[value]);
 		}
 	}
 }

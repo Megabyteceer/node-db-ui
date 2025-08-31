@@ -1,4 +1,4 @@
-import type { GetRecordsParams, RecId, RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
+import type { GetRecordsFilter, GetRecordsParams, RecId, RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
 /// #if DEBUG
 import { clearCache, getClientEventHandler, nodePrivileges } from './admin/admin';
 import { getDeployPackage } from './admin/deploy';
@@ -11,7 +11,7 @@ import { submitRecord, uniqueCheck } from './submit';
 import { uploadFile, uploadImage } from './upload';
 
 const api: object = {
-	'api/': async (reqData:GetRecordsParams, userSession: UserSession) => {
+	'api/': async (reqData:GetRecordsParams & GetRecordsFilter, userSession: UserSession) => {
 		const data = await getRecords(
 			reqData.nodeId,
 			reqData.viewFields,

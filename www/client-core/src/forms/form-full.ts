@@ -8,7 +8,7 @@ import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 
 import React from 'react';
-import type { FieldDesc, RecId, RecordData, RecordDataWrite, RecordSubmitResult, RecordSubmitResultNewRecord } from '../bs-utils';
+import type { FieldDesc, RecId, RecordData, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../bs-utils';
 import { FIELD_TYPE, PRIVILEGES_MASK } from '../bs-utils';
 import { HotkeyButton } from '../components/hotkey-button';
 import { LoadingIndicator } from '../loading-indicator';
@@ -198,7 +198,7 @@ class FormFull extends FormEventProcessingMixins {
 	async saveClickInner(isDraft): Promise<boolean> {
 		this.isPreventCloseFormAfterSave = false;
 		this.forceBouncingTimeout();
-		const data: RecordDataWrite<RecordData> = {};
+		const data: RecordDataWriteDraftable = {};
 
 		if (isDraft !== 'keepStatus') {
 			if (this.props.initialData.isP || !this.props.initialData.id) {

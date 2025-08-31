@@ -1,6 +1,6 @@
-import { FIELD_ID, NODE_ID, type IFieldsRecord } from '../../types/generated';
+import { FIELD_ID, NODE_ID, type IFieldsFilter, type IFieldsRecord, type IFieldsRecordWrite } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
-import type { RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import type { UserSession } from '../../www/client-core/src/bs-utils';
 import { FIELD_TYPE, VIEW_MASK } from '../../www/client-core/src/bs-utils';
 import { shouldBeAdmin } from '../admin/admin';
 import { mustBeUnset } from '../auth';
@@ -14,7 +14,7 @@ import { submitRecord } from '../submit';
 type T = IFieldsRecord;
 
 const handlers: NodeEventsHandlers = {
-	beforeCreate: async function (data: RecordDataWrite<T>, userSession: UserSession) {
+	beforeCreate: async function (data: IFieldsRecordWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
 		if (data.multilingual) {
@@ -32,7 +32,7 @@ const handlers: NodeEventsHandlers = {
 		await createFieldInTable(data);
 	},
 
-	afterCreate: async function (data: RecordDataWrite<T>, userSession: UserSession) {
+	afterCreate: async function (data: IFieldsRecordWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
 		const fieldType = data.fieldType;
@@ -61,8 +61,9 @@ const handlers: NodeEventsHandlers = {
 
 		// update priority
 		const fields = await getRecords(NODE_ID.FIELDS, VIEW_MASK.ALL, null, userSession, {
+
 			nodeFieldsLinker: data.nodeFieldsLinker
-		});
+		} as IFieldsFilter);
 		fields.items.sort((a, b) => {
 			return a.prior - b.prior;
 		});
@@ -79,7 +80,7 @@ const handlers: NodeEventsHandlers = {
 		reloadMetadataSchedule();
 	},
 
-	beforeUpdate: async function (currentData: T, newData: RecordDataWrite<T>, userSession: UserSession) {
+	beforeUpdate: async function (currentData: T, newData: IFieldsRecordWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
 		if (currentData.id === FIELD_ID.FIELDS__MAX_LENGTH && newData.hasOwnProperty('maxLength')) {
@@ -194,7 +195,7 @@ function getFieldTypeSQL(data) {
 	}
 }
 
-async function createFieldInTable(data: RecordDataWrite<T>) {
+async function createFieldInTable(data: IFieldsRecordWrite) {
 	let nodeId = data.nodeFieldsLinker;
 	if (typeof nodeId !== 'number') {
 		nodeId = nodeId.id;
@@ -219,7 +220,7 @@ async function createFieldInTable(data: RecordDataWrite<T>) {
 				status: 1,
 				nodeFieldsLinker: linkedNodeId,
 				fieldType: FIELD_TYPE.IMAGE
-			};
+			} as IFieldsFilter;
 			const records = await getRecords(NODE_ID.FIELDS, VIEW_MASK.LIST, undefined, undefined, filters);
 			if (records.total) {
 				data.lookupIcon = records.items[0].fieldName;

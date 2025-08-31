@@ -601,8 +601,7 @@ class List extends BaseForm<ListProps, ListState> {
 
 				const hideControls =
 					this.props.hideControls ||
-					this.state.hideControls ||
-					(this.props.filters && this.props.filters.hideControls);
+					this.state.hideControls;
 
 				const lines = data.items.map((item) => {
 					return React.createElement(FormListItem, {
@@ -628,7 +627,7 @@ class List extends BaseForm<ListProps, ListState> {
 			}
 		} else if (!this.props.isLookup) {
 			let t1, t2;
-			if (filters.s || filters.s === 0) {
+			if (filters.s) {
 				t1 = L('NO_RESULTS', filters.s);
 				t2 = '';
 			} else if (createButton) {

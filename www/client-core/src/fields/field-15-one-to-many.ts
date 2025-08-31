@@ -15,7 +15,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 		this.state = { filters };
 	}
 
-	setValue(val) {
+	setValue(_val: any) {
 		if (this.state.inlineEditing) {
 			this.forceUpdate();
 		}

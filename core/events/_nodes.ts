@@ -1,6 +1,6 @@
-import { NODE_ID, type INodesRecord } from '../../types/generated';
+import { NODE_ID, type INodesFilter, type INodesRecord, type INodesRecordWrite } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
-import type { RecordDataWrite, UserSession } from '../../www/client-core/src/bs-utils';
+import type { UserSession } from '../../www/client-core/src/bs-utils';
 import { FIELD_TYPE, NODE_TYPE, VIEW_MASK } from '../../www/client-core/src/bs-utils';
 import { shouldBeAdmin } from '../admin/admin';
 import type { NodeEventsHandlers } from '../describe-node';
@@ -9,16 +9,14 @@ import { getRecords } from '../get-records';
 import { mysqlExec } from '../mysql-connection';
 import { submitRecord } from '../submit';
 
-type T = INodesRecord;
-
 const handlers: NodeEventsHandlers = {
-	beforeCreate: async function (data: RecordDataWrite<T>, userSession: UserSession) {
+	beforeCreate: async function (data: INodesRecordWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 		// shift all nodes in the same parent node
 		await mysqlExec('UPDATE _nodes SET prior=prior+10 WHERE (_nodesId =' + data._nodesId + ') AND (prior >=' + data.prior + ')');
 	},
 
-	afterCreate: async function (data: RecordDataWrite<T>, userSession: UserSession) {
+	afterCreate: async function (data: INodesRecordWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 
 		const createdID = data.id;
@@ -88,9 +86,9 @@ const handlers: NodeEventsHandlers = {
 			await mysqlExec(createdByOrganization);
 		}
 
-		const nodes = await getRecords(NODE_ID.NODES, VIEW_MASK.ALL, null, userSession, {
+		const nodes = await getRecords(NODE_ID.NODES, VIEW_MASK.ALL, undefined, userSession, {
 			_nodesId: data._nodesId
-		});
+		} as INodesFilter);
 		nodes.items.sort((a, b) => {
 			return a.prior - b.prior;
 		});
@@ -105,12 +103,12 @@ const handlers: NodeEventsHandlers = {
 		reloadMetadataSchedule();
 	},
 
-	beforeUpdate: async function (_currentData: T, _newData: RecordDataWrite<T>, userSession: UserSession) {
+	beforeUpdate: async function (_currentData: INodesRecord, _newData: INodesRecordWrite, userSession: UserSession) {
 		shouldBeAdmin(userSession);
 		reloadMetadataSchedule();
 	},
 
-	beforeDelete: async function (_data: T, _userSession: UserSession) {
+	beforeDelete: async function (_data: INodesRecord, _userSession: UserSession) {
 		throwError('_nodes beforeCreate deletion event is not implemented');
 	}
 };

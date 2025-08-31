@@ -39,7 +39,7 @@ for (const tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 	);
 }
 //@ts-ignore
-const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: RecordDataWrite, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
+const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	const node = getNodeDesc(nodeId);
 
 	if (node.captcha && SERVER_ENV.CAPTCHA_SERVER_SECRET) {
@@ -223,7 +223,7 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 
 					switch (fieldType) {
 					case FIELD_TYPE.BOOL:
-						values.push(fieldVal);
+						values.push(D(fieldVal));
 						break;
 
 					case FIELD_TYPE.FILE:
@@ -263,7 +263,7 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 						if (fieldVal.length > 16000000) {
 							throwError('Value length for field \'' + fieldName + '\' (' + tableName + ') is longer that 16000000');
 						}
-						values.push('\'', fieldVal, '\'');
+						values.push(escapeString(fieldVal));
 						break;
 					case FIELD_TYPE.TAB:
 						break;
@@ -272,11 +272,11 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 						if (!isAdmin(userSession) && fieldVal) {
 							await getRecords(f.nodeRef, VIEW_MASK.DROPDOWN_LIST, fieldVal, userSession); //check if you have read access to referenced item
 						}
-						values.push(fieldVal);
+						values.push(D(fieldVal));
 						break;
 					case FIELD_TYPE.DATE_TIME:
 					case FIELD_TYPE.DATE:
-						values.push('\'' + fieldVal + '\'');
+						values.push(escapeString(fieldVal));
 						break;
 					default:
 						if (typeof fieldVal !== 'number' || isNaN(fieldVal)) {
@@ -285,7 +285,7 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 						if (f.maxLength && fieldVal.toString().length > f.maxLength) {
 							throwError('Value -length for field \'' + fieldName + '\' (' + tableName + ') is longer that ' + f.maxLength);
 						}
-						values.push(fieldVal as unknown as string);
+						values.push(D(fieldVal));
 						break;
 					}
 				}

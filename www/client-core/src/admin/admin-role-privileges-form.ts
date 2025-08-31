@@ -176,7 +176,8 @@ class AdminRolePrivilegesForm extends BaseForm {
 			const data = this.state.data as NodeDesc;
 			const node = this.state.node;
 
-			const lines = data.privileges.map((i) => {
+			//@ts-ignore
+			const lines = data.privileges.map((i) => { // TODO: data type is from admin/nodePrivileges url
 				return R.tr(
 					{
 						key: i.id,
