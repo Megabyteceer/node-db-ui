@@ -15,6 +15,7 @@ const GROUP_SPLITTER = '␞';
 const GROUP_SPLITTER_ESCAPED = escapeString(GROUP_SPLITTER);
 
 const EMPTY_FILTERS = {};
+const EMPTY_LOOKUP_VALUE = { id: 0, name: '' };
 
 const FILTERS_LIMIT_SQL_PART = '",' + NUM_1 + ',' + D(500) + ') AS "';
 const LOOKUP_LIMIT_SQL_PART = '".id LIMIT ' + NUM_1 + ') AS "';
@@ -432,7 +433,7 @@ const getRecords: TypeGenerationHelper['g'] = async(
 								};
 							}
 						} else {
-							pag[fieldName] = { id: 0, name: 'deleted record.' };
+							pag[fieldName] = EMPTY_LOOKUP_VALUE;
 						}
 					}
 				}

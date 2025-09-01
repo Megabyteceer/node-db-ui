@@ -2,7 +2,6 @@ import type { LANG_KEYS_CUSTOM } from '../../src/locales/en/lang';
 import { LITE_UI_PREFIX } from './consts';
 import type { LANG_KEYS } from './locales/en/lang';
 
-import ReactDOM from 'react-dom';
 import type { FieldDesc, GetRecordsFilter, GetRecordsParams, IFormParameters, NodeDesc, RecId, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordsData, RecordSubmitResult, RecordSubmitResultNewRecord, UserSession } from './bs-utils';
 import { HASH_DIVIDER, ROLE_ID, STATUS, USER_ID, VIEW_MASK } from './bs-utils';
 import { LoadingIndicator } from './loading-indicator';
@@ -14,8 +13,9 @@ import { User } from './user';
 /// #if DEBUG
 import { DebugPanel } from './debug-panel';
 /// #endif
-import type { Component } from 'react';
-import React from 'react';
+
+
+import { h, type Component, type ComponentChild } from 'preact';
 import { FIELD_TYPE, NODE_ID, type TypeGenerationHelper } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { assert } from './assert';
@@ -82,7 +82,7 @@ function isRecordRestrictedForDeletion(nodeId, recordId) {
 	}
 }
 
-function myAlert(txt: string | React.ReactElement, isSuccess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean, onOk?: () => void, okButtonText?: string) {
+function myAlert(txt: string | preact.Component, isSuccess?: boolean, autoHide?: boolean, noDiscardByBackdrop?: boolean, onOk?: () => void, okButtonText?: string) {
 	if (!Modal.instance) {
 		alert(txt);
 	} else {
@@ -138,7 +138,7 @@ async function showPrompt(txt: string | Component, yesLabel?: string, noLabel?: 
 			noIcon = 'times';
 		}
 
-		const noButton = React.createElement(HotkeyButton, {
+		const noButton = h(HotkeyButton, {
 			hotkey: 27,
 			onClick: () => {
 				Modal.instance.hide();
@@ -154,7 +154,7 @@ async function showPrompt(txt: string | Component, yesLabel?: string, noLabel?: 
 			R.div(
 				{ className: 'prompt-footer' },
 				noButton,
-				React.createElement(HotkeyButton, {
+				h(HotkeyButton, {
 					hotkey: 13,
 					onClick: () => {
 						Modal.instance.hide();
@@ -1094,7 +1094,7 @@ if (isLitePage()) {
 
 function scrollToVisible(elem, doNotShake = false) {
 	if (elem) {
-		const element = ReactDOM.findDOMNode(elem) as HTMLDivElement;
+		const element = elem.base as HTMLDivElement;
 		if ((element as any).scrollIntoViewIfNeeded) {
 			(element as any).scrollIntoViewIfNeeded(false);
 		 } else {
@@ -1207,9 +1207,9 @@ async function deleteIndexedDB(filename: string): Promise<any> {
 	return true;
 }
 
-function keepInWindow(body) {
-	if (body) {
-		body = ReactDOM.findDOMNode(body);
+function keepInWindow(bodyComponent: Component) {
+	if (bodyComponent) {
+		const body = bodyComponent.base as HTMLDivElement;
 
 		const modalContainer = body.closest('.form-modal-container');
 		let screenR = window.innerWidth - 10;
@@ -1306,7 +1306,7 @@ function L(key: LANG_KEYS | LANG_KEYS_CUSTOM, param?: any) {
 
 const listRenderers = [];
 
-function registerListRenderer(nodeId: RecId, renderFunction: (this: List) => React.ReactNode) {
+function registerListRenderer(nodeId: RecId, renderFunction: (this: List) => ComponentChild) {
 	if (listRenderers.hasOwnProperty(nodeId)) {
 		throw 'List renderer for node ' + nodeId + ' is already registered.';
 	}
@@ -1317,7 +1317,7 @@ function isPresentListRenderer(nodeId: RecId) {
 	return listRenderers.hasOwnProperty(nodeId);
 }
 
-function getListRenderer(nodeId: RecId): (this: List) => React.ReactNode {
+function getListRenderer(nodeId: RecId): (this: List) => ComponentChild {
 	return listRenderers[nodeId];
 }
 

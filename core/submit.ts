@@ -130,9 +130,9 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 	/// #endif
 	try {
 	//*/
-	let insQ: any[];
+	let insQ: (string | string[])[];
 	const fieldsNames: string[] = [];
-	const values: (string | number)[] = [];
+	const values: string[] = [];
 
 	if (recId) {
 		insQ = ['UPDATE "', tableName, '" SET '];
@@ -151,7 +151,7 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 			assert(userSession, 'submitRecord without userSession requires _usersId to be defined.');
 
 			fieldsNames.push('"_usersId"');
-			values.push(userSession.id);
+			values.push(D(userSession.id));
 
 			leastOneTablesFieldUpdated = true;
 		}
@@ -164,7 +164,7 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 			assert(userSession, 'submitRecord without userSession requires _organizationId to be defined.');
 
 			fieldsNames.push('"_organizationId"');
-			values.push(userSession.orgId);
+			values.push(D(userSession.orgId));
 
 			leastOneTablesFieldUpdated = true;
 		}
@@ -295,7 +295,7 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 		if (data.hasOwnProperty('status')) {
 			leastOneTablesFieldUpdated = true;
 			fieldsNames.push('status');
-			values.push(data.status);
+			values.push(D(data.status));
 		}
 
 		if (recId) {

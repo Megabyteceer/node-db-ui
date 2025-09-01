@@ -1,8 +1,10 @@
-import { Component } from 'react';
+
 import type { FieldDesc, NodeDesc } from '../bs-utils';
 
+import { Component, type ComponentChild } from 'preact';
 import { NODE_ID, type IFieldsRecord } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
+import type { FormFull } from '../forms/form-full';
 import { List } from '../forms/list';
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
@@ -17,7 +19,18 @@ let showedFieldId;
 throw new Error("field-admin imported in release build.");
 //*/
 
-class FieldAdmin extends Component<any, any> {
+interface FieldAdminState {
+	show?: boolean;
+	locked?: boolean;
+}
+
+interface FieldAdminProps {
+	field: FieldDesc;
+	form?:FormFull;
+
+}
+
+class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 	private timeout: NodeJS.Timeout;
 
 	constructor(props) {
@@ -73,12 +86,9 @@ class FieldAdmin extends Component<any, any> {
 		const bodyVisible = this.state.show || this.state.locked;
 
 		if (bodyVisible) {
-			let extendedInfo;
+			let extendedInfo: ComponentChild;
 			if (
-				form.fieldsRefs &&
-				form.fieldsRefs[field.fieldName] &&
-				form.fieldsRefs[field.fieldName].fieldRef &&
-				form.getField(field.fieldName).fieldRef.state.filters
+				form.getField(field.fieldName)?.fieldRef?.state?.filters
 			) {
 				extendedInfo = R.div(
 					null,
@@ -97,7 +107,7 @@ class FieldAdmin extends Component<any, any> {
 					onClick: () => {
 						clearTimeout(this.timeout);
 						delete this.timeout;
-						showedFieldId = this.props.field.id;
+						showedFieldId = field.id;
 					},
 					onMouseLeave: () => {
 						this.hide();

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Component } from 'react';
+
 import { R } from '../r';
 import { renderIcon } from '../utils';
 

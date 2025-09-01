@@ -1,13 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 
-import { Component } from 'react';
+
+import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { ENV } from '../main-frame';
 import { Modal } from '../modal';
 import { R } from '../r';
 import { checkFileSize, getReadableUploadSize, idToFileUrl, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
-import type { RefToInput } from './base-field';
+import type { FieldProps, FieldState, RefToInput } from './base-field';
 import { BaseField } from './base-field';
 import type { FieldWrap } from './field-wrap';
 
@@ -48,7 +47,7 @@ registerFieldClass(
 
 			if (this.props.isEdit) {
 				const accept = ENV.ALLOWED_UPLOADS.map((i) => '.' + i).join(', ');
-				return React.createElement(FileFormBody, {
+				return h(FileFormBody, {
 					field,
 					ref: (r) => {
 						this.fileFormBodyRef = r;
@@ -69,7 +68,14 @@ registerFieldClass(
 	}
 );
 
-class FileFormBody extends Component<any, any> {
+class FileFormBody extends Component<FieldProps & {
+	/** image/*,.pdf */
+	accept: string;
+	currentFileName?: string;
+
+}, FieldState & {
+	file? : File
+}> {
 	fileInputRef: RefToInput;
 	formRef: RefToInput;
 	selectButtonRef: RefToInput;
@@ -92,7 +98,7 @@ class FileFormBody extends Component<any, any> {
 
 	async save(fieldWrap: FieldWrap) {
 		if (this.waitingForUpload) {
-			const n = ReactDOM.findDOMNode(this.formRef) as HTMLFormElement;
+			const n = this.formRef.base as HTMLFormElement;
 			const fileId = await submitData('api/uploadFile', serializeForm(n), true);
 			if (!fileId) {
 				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.fieldName, L('UPLOAD_ERROR'));
@@ -193,7 +199,7 @@ class FileFormBody extends Component<any, any> {
 				},
 				type: 'file',
 				accept: this.props.accept,
-				onChange: this._onChange,
+				onInput: this._onChange,
 			}),
 			R.input({ name: 'MAX_FILE_SIZE', defaultValue: 30000000 }),
 			R.input({ name: 'fid', defaultValue: field.id }),

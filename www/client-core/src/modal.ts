@@ -1,4 +1,5 @@
-import { Component } from 'react';
+
+import { Component } from 'preact';
 import { LeftBar } from './left-bar';
 import { R } from './r';
 import { debugError, sp } from './utils';
@@ -6,7 +7,12 @@ import { debugError, sp } from './utils';
 let modalStack = [];
 let idCounter = 0;
 
-class Modal extends Component<any, any> {
+class Modal extends Component<{
+	//props
+},
+{
+	//state
+}> {
 	static instance: Modal;
 
 	constructor(props) {

@@ -1,6 +1,6 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 
+
+import { h, type Component } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { RecId } from '../bs-utils';
@@ -13,7 +13,7 @@ let dragItem;
 let dragList: LookupManyToManyFiled;
 let dragListenersInitialized;
 
-const refs = [];
+const refs = [] as Component[];
 
 class LookupManyToManyFiled extends fieldLookupMixins {
 	excludeIDs: RecId[];
@@ -73,7 +73,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 					let closestItem = undefined;
 
 					dragList.state.value.some((i) => {
-						const el = ReactDOM.findDOMNode(refs[UID(i)]) as HTMLDivElement;
+						const el = refs[UID(i)].base as HTMLDivElement;
 
 						const bounds = el.getBoundingClientRect();
 						const elementY = (bounds.top + bounds.bottom) / 2;
@@ -217,7 +217,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 						className,
 					},
 
-					React.createElement(getClassForField(FIELD_TYPE.LOOKUP), {
+					h(getClassForField(FIELD_TYPE.LOOKUP), {
 						field,
 						preventCreateButton: this.state.preventCreateButton,
 						pos: i,

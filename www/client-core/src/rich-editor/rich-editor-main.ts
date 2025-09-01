@@ -24,7 +24,7 @@
 		if (data.hasOwnProperty('options')) {
 
 			data.options.callbacks = {
-				onChange: function (contents, $editable) {
+				onInput: function (contents, $editable) {
 					sendValueToParent();
 				}
 			};

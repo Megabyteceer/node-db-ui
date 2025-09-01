@@ -1,11 +1,11 @@
-import type React from 'react';
-import { Component } from 'react';
+
 import type { BoolNum, FormFilters, NodeDesc, RecId, RecordData, RecordsData, VIEW_MASK } from '../bs-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import type { FieldWrap } from '../fields/field-wrap';
 import { goBack, L, showPrompt, updateHashLocation } from '../utils';
 
+import { Component, type ComponentChildren } from 'preact';
 import { assert } from '../assert';
 import type { List } from './list';
 
@@ -42,6 +42,7 @@ interface FormState {
 }
 
 class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState> extends Component<T, T2> {
+
 	nodeId: RecId;
 	/** id of current edited/shown record. 'new' - if record is not saved yet.*/
 	recId: RecId | 'new';
@@ -54,13 +55,13 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 
 	fieldsRefs: { [key: string]: FieldWrap };
 	/** set content of form header */
-	header: string | React.ReactElement;
+	header: string | preact.Component;
 	hiddenFields: { [key: string]: BoolNum };
 
 	isDataModified: boolean;
 
-	constructor(props: FormProps) {
-		super(props as T);
+	constructor(props: T) {
+		super(props);
 		this.nodeId = this.props.nodeId || this.props.node.id;
 		this.recId = (this.props.initialData && this.props.initialData.hasOwnProperty('id')) ? this.props.initialData.id : this.props.recId;
 		this.filters = Object.assign({}, this.props.filters);
@@ -74,7 +75,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		this.isDataModified = false;
 	}
 
-	UNSAFE_componentWillReceiveProps(newProps) {
+	componentWillReceiveProps(newProps) {
 		assert(((this.recId || 'new') === ((newProps.initialData ? newProps.initialData.id : newProps.recId) || 'new')) && (this.nodeId === (newProps.nodeId || newProps.node.id)), 'Form should be recreated, and not receive new props. Add \'key\' to parent element contains nodeId and recId.');
 	}
 
@@ -113,6 +114,10 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 			updateHashLocation(true);
 			return true;
 		}
+	}
+
+	render(): ComponentChildren {
+		return 'base form has no default render';
 	}
 }
 export { BaseForm, FormProps, FormState };

@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+
+import { Component, h } from 'preact';
 import { R } from './r';
 import { User } from './user';
 
@@ -12,7 +13,7 @@ class TopBar extends Component<any, any> {
 			R.img({ src: 'images/logo.png' })),
 			//search,
 			R.div({ className: 'top-bar-right-area' },
-				React.createElement(User)
+				h(User, null)
 			)
 		);
 	}

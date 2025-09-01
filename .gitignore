@@ -15,3 +15,5 @@ ENV.json
 /www/images/uploads
 /www/uploads
 /types/generated*
+
+data/public*

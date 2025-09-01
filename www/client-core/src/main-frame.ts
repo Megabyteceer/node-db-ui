@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+
 /// #if DEBUG
 import { DebugPanel } from './debug-panel';
 /// #endif
 
+import { Component, h } from 'preact';
+import type { ITreeAndOptions, TreeItem } from '../../../core/describe-node';
 import type { ENV_TYPE } from '../../../core/ENV';
 import { LeftBar } from './left-bar';
 import { LoadingIndicator } from './loading-indicator';
@@ -18,11 +20,15 @@ const ROOT_NODE_ID = 2;
 const ENV = {} as ENV_TYPE;
 let isFirstCall = true;
 
-type NodeTreRec = any;
-let nodesTree: NodeTreRec[];
-let rootItem: NodeTreRec;
+let nodesTree: TreeItem[];
+let rootItem: TreeItem;
 
-class MainFrame extends Component<any, any> {
+class MainFrame extends Component<{
+	//props
+},
+{
+	//state
+}> {
 	static instance: MainFrame;
 
 	constructor(props) {
@@ -37,27 +43,26 @@ class MainFrame extends Component<any, any> {
 	async reloadOptions() {
 		onNewUser();
 
-		const data = await getData('api/getOptions');
+		const data = await getData('api/getOptions') as ITreeAndOptions;
 
 		nodesTree = data.nodesTree;
 		const items = {};
 		Object.assign(ENV, data.options);
 
-		nodesTree.some((i) => {
-			items[i.id] = i;
-			if (i.id === ROOT_NODE_ID) {
-				rootItem = i;
+		for (const treeItem of nodesTree) {
+			items[treeItem.id] = treeItem;
+			if (treeItem.id === ROOT_NODE_ID) {
+				rootItem = treeItem;
 			}
-		});
+		}
 
-		for (const k in nodesTree) {
-			const i = nodesTree[k];
-			if (items.hasOwnProperty(i.parent)) {
-				const parent = items[i.parent];
-				if (!parent.hasOwnProperty('children')) {
-					parent.children = [];
+		for (const treeItem of nodesTree) {
+			if (items.hasOwnProperty(treeItem.parent)) {
+				const parentItem = items[treeItem.parent];
+				if (!parentItem.hasOwnProperty('children')) {
+					parentItem.children = [];
 				}
-				parent.children.push(i);
+				parentItem.children.push(treeItem);
 			}
 		}
 		this.forceUpdate();
@@ -69,20 +74,20 @@ class MainFrame extends Component<any, any> {
 
 	render() {
 		return R.div(null,
-			React.createElement(TopBar),
+			h(TopBar, null),
 			R.div({ className: 'main-frame' },
-				nodesTree ? React.createElement(LeftBar, { menuItems: rootItem.children }) : undefined,
+				nodesTree ? h(LeftBar, { menuItems: rootItem.children }) : undefined,
 				R.div({ className: 'stage-container' },
-					React.createElement(Stage)
+					h(Stage, null)
 				)
 			),
 			R.div({ className: 'footer' }, ENV.APP_TITLE),
-			React.createElement(Modal),
-			React.createElement(Notify),
+			h(Modal, null),
+			h(Notify, null),
 			/// #if DEBUG
-			React.createElement(DebugPanel),
+			h(DebugPanel, null),
 			/// #endif
-			React.createElement(LoadingIndicator)
+			h(LoadingIndicator, null)
 
 		);
 	}

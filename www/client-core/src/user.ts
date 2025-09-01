@@ -1,7 +1,7 @@
-﻿import React from 'react';
-
+﻿
 import moment from 'moment';
-import { Component } from 'react';
+
+import { Component, h } from 'preact';
 import { NODE_ID } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import type { UserSession } from './bs-utils';
@@ -25,11 +25,11 @@ function iAdmin() {
 	return User.currentUserData && isAdmin();
 }
 
-class User extends Component<any, any> {
+class User extends Component<{}, {}> {
 
 	static instance: User;
 	static currentUserData: UserSession;
-	static additionalUserDataRenderer: () => React.ReactElement<any, string | React.JSXElementConstructor<any>>;
+	static additionalUserDataRenderer: () => preact.Component;
 
 
 	componentDidMount() {
@@ -117,7 +117,7 @@ class User extends Component<any, any> {
 					options.push({ value: k, name });
 				};
 
-				org = React.createElement(Select, { key: '2', options, className: 'top-bar-user-org-select', isCompact: true, defaultValue: userData.orgId, onChange: this.changeOrg });
+				org = h(Select, { key: '2', options, className: 'top-bar-user-org-select', isCompact: true, defaultValue: userData.orgId, onInput: this.changeOrg });
 			}
 
 			let btn1, btn2;

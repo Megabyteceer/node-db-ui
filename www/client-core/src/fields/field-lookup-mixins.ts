@@ -1,4 +1,4 @@
-import type React from 'react';
+import type { Component } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import type { GetRecordsFilter, NodeDesc, RecordData } from '../bs-utils';
 import type { FormListItem } from '../forms/form-list-item';
@@ -12,7 +12,7 @@ type AdditionalButtonsRenderer = (
 	data: RecordData,
 	refreshFunction?: () => void,
 	formItem?: FormListItem | LookupManyToManyFiled
-) => React.Component[];
+) => Component[];
 
 interface LookupFieldState extends FieldState {
 	filters?: GetRecordsFilter;

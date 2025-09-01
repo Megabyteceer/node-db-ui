@@ -13,9 +13,10 @@ import { FIELD_TYPE, NODE_ID, NODE_TYPE, type IFiltersRecord } from '../types/ge
 import { assert, throwError } from '../www/client-core/src/assert';
 import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, RecordData, RecordDataWrite, UserLangEntry } from '../www/client-core/src/bs-utils';
 import { FIELD_DATA_TYPE, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import type { BaseForm } from '../www/client-core/src/forms/base-form';
 import type { UserSession /*, usersSessionsStartedCount*/ } from './auth';
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode /*, usersSessionsStartedCount*/ } from './auth';
-import { ENV } from './ENV';
+import { ENV, type ENV_TYPE } from './ENV';
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
@@ -23,6 +24,19 @@ const FIELD_TYPE_ENUM_ID = 1;
 
 interface FilterRecord extends IFiltersRecord {
 	roles: number[];
+}
+
+export interface TreeItem {
+	children: TreeItem[],
+	icon: string,
+	id: NODE_ID,
+	name: string,
+	nodeType: NODE_TYPE,
+	parent: NODE_ID,
+	privileges: number,
+	field?: FieldDesc,
+	form?: BaseForm,
+	staticLink: string
 }
 
 let fieldsById: Map<number, FieldDesc>;
@@ -36,8 +50,13 @@ let eventsHandlersServerSide;
 const ADMIN_USER_SESSION: UserSession = {} as UserSession;
 const GUEST_USER_SESSION: UserSession = {} as UserSession;
 
+export interface ITreeAndOptions {
+	nodesTree:TreeItem[];
+	options: typeof options;
+}
+
 const clientSideNodes = new Map();
-const nodesTreeCache = new Map();
+const nodesTreeCache = new Map() as Map<string, ITreeAndOptions>;
 
 const filtersById = new Map() as Map<RecId, FilterRecord>;
 
@@ -204,7 +223,9 @@ function getUserAccessToNode(node: NodeDesc, userSession: UserSession): number {
 	return ret;
 }
 
-let options;
+let options: ENV_TYPE | {
+	langs?: UserLangEntry[];
+};
 
 function getNodesTree(userSession) {
 	// get nodes tree visible to user
@@ -212,8 +233,11 @@ function getNodesTree(userSession) {
 	const cacheKey = userSession.cacheKey;
 
 	if (!nodesTreeCache.has(cacheKey)) {
-		const nodesTree = [];
-		const ret = { nodesTree, options };
+		const nodesTree = [] as TreeItem[];
+		const ret = {
+			nodesTree,
+			options
+		} as ITreeAndOptions;
 		for (const nodeSrc of nodes) {
 			/// #if DEBUG
 			/*
@@ -237,10 +261,10 @@ function getNodesTree(userSession) {
 					id: nodeSrc.id,
 					name: nodeSrc['name' + langId],
 					nodeType: nodeSrc.nodeType,
-					parent: nodeSrc._nodesId,
+					parent: nodeSrc._nodesId as any, // SQL returns Lookup fields as number
 					privileges,
 					staticLink: nodeSrc.staticLink
-				});
+				} as TreeItem);
 			}
 		}
 		nodesTreeCache.set(cacheKey, ret);
@@ -273,7 +297,7 @@ async function initNodesData() {
 
 	const eventsHandlers_new = new Map();
 
-	options = Object.assign({}, ENV);
+	options = Object.assign({}, ENV) as any;
 
 	fieldsById = new Map();
 	nodesById = new Map();

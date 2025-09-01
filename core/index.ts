@@ -15,15 +15,15 @@ import { ENV, SERVER_ENV } from './ENV';
 import { performance } from 'perf_hooks';
 /// #endif
 
-const express = require('express');
-const bodyParser = require('body-parser');
+import bodyParser from 'body-parser';
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-const multer = require('multer');
-const upload = multer();
 
-const path = require('path');
+const upload = multer();
 
 const upload2 = upload.single('file');
 

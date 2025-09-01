@@ -1,7 +1,10 @@
-import React, { Component } from 'react';
+
+import { Component, h } from 'preact';
+import type { TreeItem } from '../../../../core/describe-node';
 import { NODE_ID, NODE_TYPE, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { NodeDesc } from '../bs-utils';
+import type { BaseForm } from '../forms/base-form';
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getNode, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
@@ -15,7 +18,20 @@ let showedNodeId;
 /// #endif
 throw new Error("admin-control imported in release build.");
 //*/
-class NodeAdmin extends Component<any, any> {
+
+interface NodeAdminProps {
+	form:BaseForm;
+	menuItem?: TreeItem;
+}
+
+interface NodeAdminState {
+		show?:boolean;
+		allFieldsVisible?:boolean;
+		locked?:boolean;
+}
+
+
+class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 	private timeout: NodeJS.Timeout;
 	node: NodeDesc;
 
@@ -174,7 +190,7 @@ class NodeAdmin extends Component<any, any> {
 								renderIcon(f.show & 8 ? 'eye' : 'eye-slash half-visible'),
 
 								renderIcon(f.forSearch ? 'search-plus' : 'search half-visible'),
-								React.createElement(FieldAdmin, {
+								h(FieldAdmin, {
 									field: f,
 									form: form,
 									x: 370,

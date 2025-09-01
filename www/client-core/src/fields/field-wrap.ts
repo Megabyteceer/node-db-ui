@@ -1,15 +1,22 @@
-import React, { Component } from 'react';
+
 import type { FieldDesc } from '../bs-utils';
 import { R } from '../r';
 /// #if DEBUG
 import { FieldAdmin } from '../admin/field-admin';
 /// #endif
+import { Component, h } from 'preact';
 import { FIELD_DISPLAY, FIELD_TYPE } from '../../../../types/generated';
 import { iAdmin } from '../user';
 import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible } from '../utils';
-import type { BaseField, FieldProps } from './base-field';
+import type { BaseField, FieldProps, FieldState } from './base-field';
+import type { AdditionalButtonsRenderer } from './field-lookup-mixins';
 
-class FieldWrap extends Component<FieldProps, any> {
+class FieldWrap extends Component<FieldProps, FieldState & {
+	showToolTip?: boolean;
+	fieldAlert?: string;
+	isSuccessAlert?: boolean;
+	additionalButtons?: AdditionalButtonsRenderer;
+}> {
 	afterSave: () => Promise<any>;
 	fieldRef: BaseField;
 	hidden: boolean;
@@ -22,10 +29,10 @@ class FieldWrap extends Component<FieldProps, any> {
 		super(props);
 		this.state = {};
 		this.hidden = props.hidden;
-		this.UNSAFE_componentWillReceiveProps(this.props);
+		this.componentWillReceiveProps(this.props);
 	}
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps(nextProps) {
 		this.hidden = nextProps.hidden;
 		//this.currentValue = nextProps.initialValue;
 		if (nextProps.fieldDisabled) {
@@ -250,21 +257,21 @@ class FieldWrap extends Component<FieldProps, any> {
 			},
 		};
 
-		const fieldTypedBody = React.createElement(getClassForField(field.fieldType), fieldProps);
+		const fieldTypedBody = h(getClassForField(field.fieldType), fieldProps);
 		let fieldCustomBody;
 
 		const noLabel = !field.name; // (field.fieldType===FIELD_TYPE.LOOKUP_N_TO_M)||(field.fieldType===FIELD_TYPE.LOOKUP_1_TO_N);
 
 		let help;
 		if (field.description) {
-			help = React.createElement(FieldHelp, {
+			help = h(FieldHelp, {
 				text: R.div(null, R.h4(null, field.name), field.description),
 			});
 		}
 		/// #if DEBUG
 		let fieldAdmin;
 		if (iAdmin() && !field.lang && !this.props.isCompact) {
-			fieldAdmin = React.createElement(FieldAdmin, { field, form: this.props.form });
+			fieldAdmin = h(FieldAdmin, { field, form: this.props.form });
 		}
 		/// #endif
 		let className =
@@ -337,7 +344,7 @@ class FieldWrap extends Component<FieldProps, any> {
 			}
 			let label;
 			if (!noLabel) {
-				label = React.createElement(FieldLabel, {
+				label = h(FieldLabel, {
 					field,
 					isEdit: this.props.isEdit,
 					labelOverride: this.labelOverride,

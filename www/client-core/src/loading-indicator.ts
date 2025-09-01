@@ -1,10 +1,17 @@
 
 
-import { Component } from 'react';
+import { Component } from 'preact';
 import { R } from './r';
 import { isLitePage, renderIcon } from './utils';
 
-class LoadingIndicator extends Component<any, any> {
+
+class LoadingIndicator extends Component<{
+	//props
+},
+{
+	//state
+	showCount: number;
+}> {
 	static instance: LoadingIndicator;
 
 	constructor(props) {

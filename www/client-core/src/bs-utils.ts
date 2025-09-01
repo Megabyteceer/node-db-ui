@@ -1,5 +1,6 @@
 
 import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord } from '../../../types/generated';
+import type { SelectItem } from './components/select';
 
 export const normalizeName = (txt:string) => {
 	return snakeToCamel(txt).replace(/[`']/g, '').replace(/[^\w]/gm, '_').toUpperCase();
@@ -215,7 +216,7 @@ interface NodeDesc extends INodesRecord {
 	fields?: FieldDesc[];
 
 	filters?: { [key: string]: IFiltersRecord | ClientSideFilterRecord };
-	filtersList?: { name: string; value: any }[];
+	filtersList?: SelectItem[];
 	sortFieldName?: string;
 	/** CLIENT SIDE ONLY */
 	fieldsById?: { [key: number]: FieldDesc };

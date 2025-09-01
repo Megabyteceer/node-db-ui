@@ -60,7 +60,7 @@ registerFieldClass(
 					placeholder: field.name + (field.lang ? ' (' + field.lang + ')' : ''),
 					readOnly: this.props.fieldDisabled,
 					ref: this.refGetter,
-					onChange: () => {
+					onInput: () => {
 						this.props.wrapper.valueListener(this.refToInput.value, true, this);
 					},
 				};

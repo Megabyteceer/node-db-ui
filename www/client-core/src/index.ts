@@ -1,6 +1,7 @@
-import 'cropperjs/dist/cropper.min.css';
+// import 'cropperjs/dist/cropper.min.css'; TODO
+
 import 'font-awesome/css/font-awesome.min.css';
-import 'react-datetime/css/react-datetime.css';
+// import 'react-datetime/css/react-datetime.css'; TODO
 import 'reset-css/reset.css';
 import '../css/consts.css';
 import '../css/style.css';
@@ -31,15 +32,13 @@ import { MainFrame } from './main-frame';
 import { Stage } from './stage';
 import './views/view_5_users';
 
-import React, { type Component } from 'react';
-import ReactDOM from 'react-dom';
-
 import { registerEventHandler } from './forms/event-processing-mixins';
 
 /// #if DEBUG
 import { AdminRolePrivilegesForm } from './admin/admin-role-privileges-form';
 /// #endif
 
+import { h, render } from 'preact';
 import { globals } from '../../../types/globals';
 import { FieldsEvents } from './events/fields_events';
 import { FormEvents } from './events/forms_events';
@@ -50,11 +49,11 @@ globals.registerEventHandler = registerEventHandler;
 globals.customClasses = {};
 
 /// #if DEBUG
-globals.customClasses.AdminRolePrivilegesForm = AdminRolePrivilegesForm as any as Component;
+globals.customClasses.AdminRolePrivilegesForm = AdminRolePrivilegesForm;
 /// #endif
 
 setTimeout(() => {
 	globals.registerEventHandler(FormEvents);
 	globals.registerEventHandler(FieldsEvents);
-	ReactDOM.render(React.createElement(MainFrame), document.getElementById('container'));
+	render(h(MainFrame, null), document.getElementById('container'));
 }, 10);

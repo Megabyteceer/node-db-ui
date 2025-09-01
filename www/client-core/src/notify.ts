@@ -1,4 +1,5 @@
-import { Component } from 'react';
+
+import { Component } from 'preact';
 import { R } from './r';
 
 let instance;
@@ -6,8 +7,12 @@ let instance;
 let stack = [];
 let idCounter = 0;
 
-
-class Notify extends Component<any, any> {
+class Notify extends Component<{
+	//props
+},
+{
+	//state
+}> {
 	componentDidMount() {
 		instance = this;
 	}

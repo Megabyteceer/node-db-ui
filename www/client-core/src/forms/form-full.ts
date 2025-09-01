@@ -7,7 +7,7 @@ import { NodeAdmin } from '../admin/admin-control';
 import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 
-import React from 'react';
+
 import type { FieldDesc, RecId, RecordData, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../bs-utils';
 import { PRIVILEGES_MASK } from '../bs-utils';
 import { HotkeyButton } from '../components/hotkey-button';
@@ -15,6 +15,7 @@ import { LoadingIndicator } from '../loading-indicator';
 import { R } from '../r';
 import { iAdmin, User } from '../user';
 
+import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { LeftBar } from '../left-bar';
@@ -379,7 +380,7 @@ class FormFull extends FormEventProcessingMixins {
 					}
 
 					currentTabName = field.fieldName;
-					currentTab = React.createElement(FormTab, {
+					currentTab = h(FormTab, {
 						key: field.id,
 						ref,
 						title: field.name,
@@ -391,7 +392,7 @@ class FormFull extends FormEventProcessingMixins {
 					});
 					tabs.push(currentTab);
 				} else if (this.props.editable || data[field.fieldName] || !field.storeInDb || field.fieldType === FIELD_TYPE.LOOKUP_1_TO_N || field.fieldType >= 100) {
-					const tf = React.createElement(FieldWrap, {
+					const tf = h(FieldWrap, {
 						ref,
 						key: field.id,
 						field,
@@ -516,7 +517,7 @@ class FormFull extends FormEventProcessingMixins {
 			}
 			/// #if DEBUG
 			if (iAdmin()) {
-				nodeAdmin = React.createElement(NodeAdmin, { form: this });
+				nodeAdmin = h(NodeAdmin, { form: this });
 			}
 			/// #endif
 			if (!this.props.isCompact) {
@@ -537,7 +538,7 @@ class FormFull extends FormEventProcessingMixins {
 
 			if (!this.isCancelButtonHidden) {
 				if (this.props.editable) {
-					closeButton = React.createElement(HotkeyButton, {
+					closeButton = h(HotkeyButton, {
 						hotkey: 27,
 						className: 'clickable default-button',
 						onClick: this.cancelClick,
@@ -545,7 +546,7 @@ class FormFull extends FormEventProcessingMixins {
 						label: R.span(null, renderIcon('caret-left'), this.isSubForm() ? '' : L('CANCEL'))
 					});
 				} else {
-					closeButton = React.createElement(HotkeyButton, {
+					closeButton = h(HotkeyButton, {
 						hotkey: 27,
 						className: 'clickable default-button',
 						onClick: this.cancelClick,
@@ -577,7 +578,7 @@ class FormFull extends FormEventProcessingMixins {
 								tabField.name
 							),
 							/// #if DEBUG
-							React.createElement(FieldAdmin, { field: tabField, form: this })
+							h(FieldAdmin, { field: tabField, form: this })
 							/// #endif
 						  )
 						: undefined;

@@ -37,7 +37,7 @@ registerFieldClass(
 					placeholder: field.name,
 					readOnly: this.props.fieldDisabled,
 					ref: this.refGetter,
-					onChange: () => {
+					onInput: () => {
 						const value = parseInt(this.refToInput.value.substr(0, field.maxLength));
 						this.setState({ value });
 						this.props.wrapper.valueListener(value, true, this);

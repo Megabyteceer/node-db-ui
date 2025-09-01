@@ -1,11 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+
 
 import moment from 'moment';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
-import { innerDateTimeFormat, readableDateFormat, registerFieldClass, renderIcon, toReadableDate } from '../utils';
-import { dateFieldMixins, ReactDateTimeClassHolder } from './field-4-date-time';
+import { innerDateTimeFormat, registerFieldClass, renderIcon, toReadableDate } from '../utils';
+import { dateFieldMixins /*, ReactDateTimeClassHolder*/ } from './field-4-date-time';
 
 registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 
@@ -25,7 +24,7 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 
 	focus() {
 		// @ts-ignore
-		ReactDOM.findDOMNode(this.refToInput).querySelector('input').focus();
+		this.refToInput.base.querySelector('input').focus();
 	}
 
 	render() {
@@ -33,10 +32,10 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 		const field = this.props.field;
 		const value = toReadableDate(this.state.value);
 		if (this.props.isEdit) {
-			if (!ReactDateTimeClassHolder.ReactDateTimeClass) {
-				ReactDateTimeClassHolder.importReactDateTime();
-				return renderIcon('cog fa-spin');
-			}
+			/*if (!ReactDateTimeClassHolder.ReactDateTimeClass) {
+				ReactDateTimeClassHolder.importReactDateTime();*/
+			return renderIcon('cog fa-spin');
+			/*}
 			const inputsProps = {
 				closeOnSelect: true,
 				defaultValue: value,
@@ -48,7 +47,7 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 				isValidDate: this.state.focused ? this.validateDate : undefined,
 				timeFormat: false,
 				ref: this.refGetter,
-				onChange: (val) => {
+				onInput: (val) => {
 					if (!val._isAMomentObject) {
 						val = null;
 					}
@@ -58,8 +57,8 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 			return R.div({
 				title: (this.props.isCompact ? field.name : '')
 			},
-			React.createElement(ReactDateTimeClassHolder.ReactDateTimeClass, inputsProps)
-			);
+			h(ReactDateTimeClassHolder.ReactDateTimeClass, inputsProps)
+			);*/
 
 		} else {
 			return R.span(null, value);

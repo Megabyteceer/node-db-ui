@@ -1,4 +1,5 @@
-import { Component } from 'react';
+
+import { Component } from 'preact';
 import { R } from './r';
 import { iAdmin } from './user';
 import { getData, isLitePage, L, reloadLocation, renderIcon, sp, strip_tags } from './utils';
@@ -12,7 +13,12 @@ const debugInfo = [];
 throw new Error("debug-panel imported in release build.");
 //*/
 
-class DebugPanel extends Component<any, any> {
+
+class DebugPanel extends Component<{
+	// props
+}, {
+	expanded?:boolean;
+}> {
 	static instance: DebugPanel;
 
 	constructor(props) {
@@ -115,7 +121,7 @@ class DebugPanel extends Component<any, any> {
 		} else {
 			if (this.state.expanded) {
 
-				const items = debugInfo.map((i, iKey) => {
+				const items = debugInfo.map((i) => {
 
 					let entryBody;
 

@@ -1,9 +1,32 @@
-import { Component } from 'react';
-import ReactDOM from 'react-dom';
+
+import { Component, type ComponentChild } from 'preact';
 import { R } from '../r';
 import { L, renderIcon } from '../utils';
 
-class Select extends Component<any, any> {
+export interface SelectItem {
+	name:string | ComponentChild
+	search?:string;
+	value: any;
+}
+
+interface SelectState {
+	search?:string;
+	expanded?:boolean;
+	curVal?: any;
+}
+
+interface SelectProps {
+	disabled?: boolean,
+	isCompact?: boolean,
+	defaultValue?: any,
+	title?: string,
+	readOnly?: boolean,
+	onInput: (val) => void,
+	options: SelectItem[]
+}
+
+
+class Select extends Component<SelectProps, SelectState> {
 	constructor(props) {
 		super(props);
 		this.state = {};
@@ -21,7 +44,7 @@ class Select extends Component<any, any> {
 	}
 
 	handleClickOutside(event) {
-		const domNode = ReactDOM.findDOMNode(this);
+		const domNode = this.base;
 		if (!domNode || !domNode.contains(event.target)) {
 			if (this.state.expanded) {
 				this.toggle();
@@ -39,7 +62,7 @@ class Select extends Component<any, any> {
 
 	setValue(v) {
 		if (this.state.curVal !== v) {
-			this.props.onChange(v);
+			this.props.onInput(v);
 			if (this.state.curVal !== v) {
 				this.setState({
 					curVal: v
@@ -70,7 +93,7 @@ class Select extends Component<any, any> {
 					autoFocus: true,
 					defaultValue: this.state.search || '',
 					placeholder: L('SEARCH'),
-					onChange: (ev) => {
+					onInput: (ev) => {
 						this.setState({ search: ev.target.value.toLowerCase() });
 					}
 				});
@@ -78,7 +101,7 @@ class Select extends Component<any, any> {
 
 			if (this.state.search) {
 				options = options.filter((i) => {
-					return (i.search || i.name).toLowerCase().indexOf(this.state.search) >= 0;
+					return (i.search || i.name as string).toLowerCase().indexOf(this.state.search) >= 0;
 				});
 			}
 

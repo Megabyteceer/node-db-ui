@@ -1,5 +1,4 @@
-import type React from 'react';
-import ReactDOM from 'react-dom';
+import { render, type ComponentChild } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { assert, throwError, validateFieldName } from '../assert';
 import type { FieldDesc, GetRecordsFilter, RecordData } from '../bs-utils';
@@ -32,10 +31,10 @@ class FormEventProcessingMixins extends BaseForm {
 	saveButtonTitle: string;
 	isCancelButtonHidden: boolean;
 
-	/** previous value of changed field. Can be used in onChange event of field */
+	/** previous value of changed field. Can be used in onInput event of field */
 	prev_value: any;
 
-	/**  says if field was changed by user's action. Can be used in onChange event of field */
+	/**  says if field was changed by user's action. Can be used in onInput event of field */
 	isUserEdit: boolean;
 
 	currentData: RecordData;
@@ -243,13 +242,13 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	getFieldDomElement(fieldName: string): HTMLDivElement {
-		const formElement = ReactDOM.findDOMNode(this) as HTMLDivElement;
+		const formElement = this.base as HTMLDialogElement;
 		return formElement.querySelector(
 			'.field-container-id-' + this.getField(fieldName).props.field.id
 		) as HTMLDivElement;
 	}
 
-	renderToField(fieldName: string, containerClassName: string, reactContent: React.ReactElement) {
+	renderToField(fieldName: string, containerClassName: string, reactContent: ComponentChild) {
 		const el = this.getFieldDomElement(fieldName);
 		let container = el.querySelector('.' + containerClassName);
 		if (!container) {
@@ -257,7 +256,7 @@ class FormEventProcessingMixins extends BaseForm {
 			container.className = containerClassName;
 			el.appendChild(container);
 		}
-		ReactDOM.render(reactContent, container);
+		render(reactContent, container);
 	}
 
 	save() {

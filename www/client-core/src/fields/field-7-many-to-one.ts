@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+
+import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { RecId, RecordData } from '../bs-utils';
@@ -46,13 +46,13 @@ registerFieldClass(
 		}
 
 		handleClickOutside(event) {
-			const domNode = ReactDOM.findDOMNode(this);
+			const domNode = this.base;
 			if (!domNode || !domNode.contains(event.target)) {
 				this.collapseList();
 			}
 		}
 
-		UNSAFE_componentWillReceiveProps(_nextProps) {
+		componentWillReceiveProps(_nextProps) {
 			if (this.props.filters) {
 				if (!this.state.filters) {
 					//@ts-ignore
@@ -176,7 +176,7 @@ registerFieldClass(
 				let list;
 				let clearBtn;
 				if (this.state.expanded) {
-					list = React.createElement(List, {
+					list = h(List, {
 						preventCreateButton: this.state.preventCreateButton || this.props.preventCreateButton,
 						nodeId: field.nodeRef.id,
 						isLookup: true,
@@ -194,7 +194,7 @@ registerFieldClass(
 					);
 				}
 
-				if (!this.isRequired() && !this.props.isN2M) {
+				if (!this.isRequired() && !this.props.isN2M && value?.id) {
 					clearBtn = R.div(
 						{
 							title: L('CLEAR'),
@@ -209,7 +209,7 @@ registerFieldClass(
 				}
 
 				let valLabel;
-				if (value && value.name) {
+				if (value?.name) {
 					valLabel = R.span(null, value.name);
 				} else {
 					valLabel = R.span(

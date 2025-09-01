@@ -1,4 +1,5 @@
-import React from 'react';
+
+import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../bs-utils';
@@ -128,7 +129,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 				  };
 		return R.div(
 			null,
-			React.createElement(List, {
+			h(List, {
 				ref: (r) => {
 					this.inlineListRef = r;
 				},

@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+
+import { Component, h } from 'preact';
 import { NODE_TYPE } from '../../../../types/generated';
 import type { NodeDesc, RecordData } from '../bs-utils';
 import { PRIVILEGES_MASK } from '../bs-utils';
@@ -24,7 +25,21 @@ function check() {
 	);
 }
 
-class PrivilegesEditor extends Component<any, any> {
+interface IHavePrivileges {
+	privileges: PRIVILEGES_MASK;
+}
+
+interface PrivilegesEditorProps {
+	bitsCount: 1 | 3,
+	baseBit: number,
+	item: IHavePrivileges,
+}
+interface PrivilegesEditorState {
+
+}
+
+
+class PrivilegesEditor extends Component<PrivilegesEditorProps, PrivilegesEditorState> {
 	render() {
 		let body;
 		const item = this.props.item;
@@ -190,28 +205,28 @@ class AdminRolePrivilegesForm extends BaseForm {
 						},
 						i.name
 					),
-					React.createElement(PrivilegesEditor, {
+					h(PrivilegesEditor, {
 						bitsCount: 3,
 						baseBit: PRIVILEGES_MASK.VIEW_OWN,
 						item: i,
 					}),
-					React.createElement(PrivilegesEditor, {
+					h(PrivilegesEditor, {
 						bitsCount: 1,
 						baseBit: PRIVILEGES_MASK.CREATE,
 						item: i,
 					}),
-					React.createElement(PrivilegesEditor, {
+					h(PrivilegesEditor, {
 						bitsCount: 3,
 						baseBit: PRIVILEGES_MASK.EDIT_OWN,
 						item: i,
 					}),
-					React.createElement(PrivilegesEditor, {
+					h(PrivilegesEditor, {
 						bitsCount: 1,
 						baseBit: PRIVILEGES_MASK.DELETE,
 						item: i,
 					}),
 					node.draftable
-						? React.createElement(PrivilegesEditor, {
+						? h(PrivilegesEditor, {
 							bitsCount: 1,
 							baseBit: PRIVILEGES_MASK.PUBLISH,
 							item: i,
@@ -271,7 +286,7 @@ class AdminRolePrivilegesForm extends BaseForm {
 			/// #if DEBUG
 			let nodeAdmin;
 			if (iAdmin()) {
-				nodeAdmin = React.createElement(NodeAdmin, {
+				nodeAdmin = h(NodeAdmin, {
 					form: this,
 					x: 320,
 					y: -40,
@@ -298,7 +313,7 @@ class AdminRolePrivilegesForm extends BaseForm {
 				R.div(null, saveButton, closeButton)
 			);
 		} else {
-			return React.createElement(FormLoaderCog);
+			return h(FormLoaderCog, null);
 		}
 	}
 }

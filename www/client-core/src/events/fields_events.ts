@@ -1,4 +1,3 @@
-import ReactDOM from 'react-dom';
 import { VIEW_MASK } from '../bs-utils';
 
 import { L } from '../utils';
@@ -31,7 +30,7 @@ class FieldsEvents extends FormEvents {
 			'.html';
 		this.setFieldValue('link', href);
 
-		const e: HTMLDivElement = ReactDOM.findDOMNode(this) as HTMLDivElement;
+		const e: HTMLDivElement = this.base as HTMLDivElement;
 		(e.querySelector('.clickable-link') as HTMLAnchorElement).href = href;
 		(e.querySelector('.clickable-link-text') as HTMLAnchorElement).innerText = href;
 	}
@@ -81,7 +80,7 @@ class FieldsEvents extends FormEvents {
 		}
 
 		if (nodeType === NODE_TYPE.REACT_CLASS) {
-			this.setFieldLabel('tableName', L('REACT_CLASS_NAME'));
+			this.setFieldLabel('tableName', L('CLASS_NAME'));
 			makeReactClassSelectionField(this, 'tableName');
 		} else {
 			this.setFieldLabel('tableName');

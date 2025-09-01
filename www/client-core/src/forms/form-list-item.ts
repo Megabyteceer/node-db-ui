@@ -1,11 +1,11 @@
-import React from 'react';
+
+import { h, type Component } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { NodeDesc, RecordData } from '../bs-utils';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import { FieldWrap } from '../fields/field-wrap';
-import type { ComponentProps } from '../r';
-import { R } from '../r';
+import { R, type ComponentProps } from '../r';
 import { deleteRecord, draftRecord, isRecordRestrictedForDeletion, L, publishRecord, renderIcon, sp } from '../utils';
 import { BaseForm } from './base-form';
 
@@ -22,7 +22,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 	data: RecordData,
 	refreshFunction?: () => void,
 	formItem?: FormListItem
-): React.Component[] => {
+): Component[] => {
 	let buttons;
 	if (formItem && formItem.props.isLookup) {
 		if (data.hasOwnProperty('isE')) {
@@ -180,7 +180,7 @@ class FormListItem extends BaseForm {
 				fields.push(
 					R.td(
 						{ key: field.id, className },
-						React.createElement(FieldWrap, {
+						h(FieldWrap, {
 							key: k,
 							field,
 							initialValue: data[field.fieldName],

@@ -1,4 +1,5 @@
-import React from 'react';
+
+import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { normalizeEnumName, type EnumList } from '../bs-utils';
 import { Select } from '../components/select';
@@ -41,12 +42,12 @@ class EnumField extends BaseField {
 				defaultValue: value,
 				title: field.name,
 				readOnly: this.props.fieldDisabled,
-				onChange: (val) => {
+				onInput: (val) => {
 					this.props.wrapper.valueListener(parseInt(val), false, this);
 				},
 				options: this.enum ? this.enum.items : field.enumList.items
 			};
-			return React.createElement(Select, inputsProps);
+			return h(Select, inputsProps);
 		} else {
 			return R.span({
 				className: 'enum-type-' + normalizeEnumName(field.enumList.name).toLowerCase() + ' enum-val-' + value,

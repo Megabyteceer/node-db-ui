@@ -1,4 +1,5 @@
 
+import type { ComponentChild } from 'preact';
 import { NODE_ID, type IUsersRecord } from '../../../../types/generated';
 import { renderItemsButtons } from '../forms/form-list-item';
 import type { List } from '../forms/list';
@@ -15,7 +16,7 @@ const RENDERED_FIELDS = {
 	creator_user: true,
 };
 
-registerListRenderer(NODE_ID.USERS, function (this: List): React.ReactNode {
+registerListRenderer(NODE_ID.USERS, function (this: List): ComponentChild {
 
 	const node = this.state.node;
 	const data = this.state.data;
@@ -59,5 +60,3 @@ registerListRenderer(NODE_ID.USERS, function (this: List): React.ReactNode {
 	});
 
 });
-
-

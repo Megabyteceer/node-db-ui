@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+
 /// #if DEBUG
 import { createNodeForMenuItem, NodeAdmin } from './admin/admin-control';
 import { FieldAdmin } from './admin/field-admin';
 /// #endif
+import { Component, h, type ComponentChildren } from 'preact';
+import type { TreeItem } from '../../../core/describe-node';
 import { NODE_TYPE } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { assert } from './assert';
@@ -65,7 +66,16 @@ function isStrictlySelected(item) {
 	}
 }
 
-class BarItem extends Component<any, any> {
+interface BarItemState {
+	expanded?:boolean;
+}
+
+interface BarItemProps {
+	item: TreeItem;
+	level: number;
+}
+
+class BarItem extends Component<BarItemProps, BarItemState> {
 	constructor(props) {
 		super(props);
 		itemsById[props.item.id] = this;
@@ -146,7 +156,7 @@ class BarItem extends Component<any, any> {
 	}
 
 	_findGroupContainer(): HTMLElement {
-		return (ReactDOM.findDOMNode(this) as HTMLDivElement).querySelector('.left-bar-children');
+		return (this.base as HTMLDivElement).querySelector('.left-bar-children');
 	}
 
 	toggle(ev) {
@@ -175,12 +185,12 @@ class BarItem extends Component<any, any> {
 			if (item.field) {
 				adminControl = R.div(
 					{ className: 'left-bar-admin-button' },
-					React.createElement(FieldAdmin, { field: item.field, form: item.form })
+					h(FieldAdmin, { field: item.field, form: item.form })
 				);
 			} else {
 				adminControl = R.div(
 					{ className: 'left-bar-admin-button' },
-					React.createElement(NodeAdmin, { menuItem: item })
+					h(NodeAdmin, { menuItem: item })
 				);
 			}
 		}
@@ -197,7 +207,7 @@ class BarItem extends Component<any, any> {
 		}
 		/*
 		if(item.children && item.children.length === 1) {
-			return React.createElement(BarItem, {item: item.children[0], key: this.props.key, level: this.props.level});
+			return h(BarItem, {item: item.children[0], key: this.props.key, level: this.props.level});
 		}*/
 
 		const itemsIcon = R.div(
@@ -269,7 +279,7 @@ class BarItem extends Component<any, any> {
 			caret
 		);
 
-		if (item.nodeType === NODE_TYPE.DOCUMENT && item.id !== false) {
+		if (item.nodeType !== NODE_TYPE.SECTION && item.id) {
 			const props = {
 				className: 'left-bar-item-container',
 				onClick: this.collapseOtherGroups,
@@ -279,10 +289,11 @@ class BarItem extends Component<any, any> {
 				props.href = item.staticLink;
 			} else {
 				props.onClick =
-					isActive === SELECTED_LIST
+					(isActive === SELECTED_LIST)
 						? undefined
 						: () => {
-							globals.Stage.showForm(item.id, item.recId, item.filters, item.editable);
+							// TODO: form tabs as menu items
+							globals.Stage.showForm(item.id);
 						  };
 			}
 			return R.a(
@@ -334,13 +345,18 @@ function renderItemsArray(itemsArray, level, item?) {
 				ret.push(R.h5({ key: ret.length, className: 'left-bar-tabs-header' }, item));
 			}
 		} else {
-			ret.push(React.createElement(BarItem, { item, key: ret.length, level }));
+			ret.push(h(BarItem, { item, key: ret.length, level }));
 		}
 	}
 	return ret;
 }
 
-class LeftBar extends Component<any, any> {
+class LeftBar extends Component<{
+	menuItems: ComponentChildren[]
+},
+{
+	//state
+}> {
 	static instance?: LeftBar;
 
 	constructor(props) {
@@ -372,7 +388,7 @@ class LeftBar extends Component<any, any> {
 				}
 				item = itemElement.props.item;
 				if (item.nodeType === NODE_TYPE.SECTION) {
-					const e = ReactDOM.findDOMNode(itemElement) as HTMLDivElement;
+					const e = itemElement.base as HTMLDivElement;
 					const group = e.querySelector('.left-bar-children') as HTMLDivElement;
 					if (group.style.maxHeight) {
 						group.style.maxHeight = '';

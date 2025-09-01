@@ -103,7 +103,7 @@ initDictionary({
 	'RESET_EMAIL_SENT': 'We sent link for reset password to E-mail: ',
 	'GO_TO_LOGIN': 'Go to login',
 	'REGISTER': 'Зарегистрироваться',
-	'REACT_CLASS_NAME': 'Имя React класса',
+	'CLASS_NAME': 'Имя класса',
 	'FORM_IS_MODIFIED': 'Данные в форме отредактированы!',
 	'LEAVE_WITHOUT_SAVING': 'Покинуть форму без сохранения'
 });

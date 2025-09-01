@@ -1,12 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+
 
 import moment from 'moment';
+import type { ComponentChild } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
-import { globals } from '../../../../types/globals';
-import type { FormFull } from '../forms/form-full';
-import { R } from '../r';
-import { innerDateTimeFormat, L, readableDateFormat, readableTimeFormat, registerFieldClass, renderIcon, toReadableDate, toReadableDateTime, toReadableTime } from '../utils';
+import { innerDateTimeFormat, registerFieldClass, renderIcon, toReadableDate, toReadableDateTime, toReadableTime } from '../utils';
 import type { FieldProps, FieldState, RefToInput } from './base-field';
 import { BaseField } from './base-field';
 
@@ -20,8 +17,12 @@ interface DateTimeFieldState extends FieldState {
 	maxDate?: moment.Moment;
 	allowedDays?: moment.Moment[];
 }
-
-const ReactDateTimeClassHolder: { importReactDateTime: () => void, isRequired?: boolean, ReactDateTimeClass?: typeof import('react-datetime') } = {
+/*
+const ReactDateTimeClassHolder: {
+	importReactDateTime: () => void,
+	isRequired?: boolean,
+	ReactDateTimeClass?: typeof import('react-datetime')
+} = {
 	importReactDateTime: () => {
 		if (!ReactDateTimeClassHolder.isRequired) {
 			ReactDateTimeClassHolder.isRequired = true;
@@ -33,7 +34,7 @@ const ReactDateTimeClassHolder: { importReactDateTime: () => void, isRequired?: 
 			});
 		}
 	}
-};
+};*/
 
 class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 
@@ -188,7 +189,7 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 
 	focus() {
 		// @ts-ignore
-		ReactDOM.findDOMNode(this.timeRef).querySelector('input').focus();
+		this.timeRef.base.querySelector('input').focus();
 	}
 
 	clearValue() {
@@ -196,7 +197,7 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 		this.props.wrapper.valueListener(null, true, this);
 	}
 
-	render() {
+	render():ComponentChild {
 
 		const field = this.props.field;
 
@@ -207,10 +208,11 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 		}
 
 		if (this.props.isEdit) {
-			if (!ReactDateTimeClassHolder.ReactDateTimeClass) {
-				ReactDateTimeClassHolder.importReactDateTime();
-				return renderIcon('cog fa-spin');
-			}
+			/*if (!ReactDateTimeClassHolder.ReactDateTimeClass) {
+				ReactDateTimeClassHolder.importReactDateTime();*/
+			//TODO datetime input
+			return renderIcon('cog fa-spin');
+			/*}
 			const inputsProps1 = {
 				closeOnSelect: true,
 				initialValue: value,
@@ -226,7 +228,7 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 					this.timeRef = ref;
 					this.refGetter(ref);
 				},
-				onChange: (val) => {
+				onInput: (val) => {
 					if (val._isAMomentObject) {
 						let mergedValue;
 						const value = this.state.value;
@@ -260,7 +262,7 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 				ref: (ref) => {
 					this.refToInput = ref;
 				},
-				onChange: (val) => {
+				onInput: (val) => {
 					if (val._isAMomentObject) {
 						let mergedValue;
 						const value = this.state.value;
@@ -284,11 +286,11 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 			},
 			R.div({
 				className: 'field-date-time-time'
-			}, React.createElement(ReactDateTimeClassHolder.ReactDateTimeClass, inputsProps1)),
+			}, R.input(inputsProps1)),
 			R.div({
 				className: 'field-date-time-date'
-			}, React.createElement(ReactDateTimeClassHolder.ReactDateTimeClass, inputsProps2))
-			);
+			}, R.input(inputsProps2))
+			);*/
 		} else {
 			return toReadableDateTime(value);
 		}
@@ -296,6 +298,6 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 });
 
 export {
-	dateFieldMixins, ReactDateTimeClassHolder
+	dateFieldMixins /*, ReactDateTimeClassHolder*/
 };
 

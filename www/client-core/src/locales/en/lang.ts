@@ -103,7 +103,7 @@ const LANGS = {
 	'RESET_EMAIL_SENT': 'We sent link for reset password to E-mail: ',
 	'GO_TO_LOGIN': 'Go to login',
 	'REGISTER': 'Register',
-	'REACT_CLASS_NAME': 'React Class Name',
+	'CLASS_NAME': 'Class Name',
 	'FORM_IS_MODIFIED': 'Current data in the form is modified!',
 	'LEAVE_WITHOUT_SAVING': 'Leave form without saving.',
 	'DATA_NOT_SAVED': 'Page contains modified data.'

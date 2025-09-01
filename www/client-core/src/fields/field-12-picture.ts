@@ -1,13 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 
-import { Component } from 'react';
+
+import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
 import { Modal } from '../modal';
 import { R } from '../r';
-import { checkFileSize, idToImgURL, L, myAlert, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
-import type { RefToInput } from './base-field';
+import { checkFileSize, idToImgURL, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
+import type { FieldProps, FieldState, RefToInput } from './base-field';
 import { BaseField } from './base-field';
 import type { FieldWrap } from './field-wrap';
 
@@ -40,7 +39,7 @@ registerFieldClass(
 			const imgUrl = idToImgURL(this.props.initialValue, this.props.field.fieldName);
 
 			if (this.props.isEdit) {
-				return React.createElement(CropperFieldBody, {
+				return h(CropperFieldBody, {
 					field,
 					ref: (r) => {
 						this.cropperBody = r;
@@ -59,7 +58,15 @@ registerFieldClass(
 	}
 );
 
-class CropperFieldBody extends Component<any, any> {
+class CropperFieldBody extends Component<FieldProps & {
+	currentPicUrl?:string;
+}, FieldState & {
+	cleared?: boolean;
+	waiting?: boolean;
+	src?: string;
+	cropResult?: string | null;
+}> {
+
 	references: { [key: string]: RefToInput };
 	cropper: any;
 	waitingForUpload: boolean;
@@ -87,7 +94,7 @@ class CropperFieldBody extends Component<any, any> {
 		this.props.parent.props.wrapper.hideTooltip();
 	}
 
-	_cropImage(exactlySize:boolean | MouseEvent, imgData?) {
+	_cropImage(exactlySize:boolean | MouseEvent, imgData?: string) {
 		if (exactlySize === true) {
 			//no cropper need
 			this.setState({
@@ -132,7 +139,7 @@ class CropperFieldBody extends Component<any, any> {
 
 	async save(fieldWrap: FieldWrap) {
 		if (this.waitingForUpload) {
-			const form = ReactDOM.findDOMNode(this.references.form) as HTMLFormElement;
+			const form = this.references.form.base as HTMLFormElement;
 			const imageId = await submitData('api/uploadImage', serializeForm(form), true).catch(
 				(_er) => {}
 			);
@@ -163,12 +170,12 @@ class CropperFieldBody extends Component<any, any> {
 			}
 			const reader = new FileReader();
 			reader.onload = () => {
-				this.setState({ waiting: 0, src: reader.result, cropResult: false });
+				this.setState({ waiting: false, src: reader.result as string, cropResult: null });
 				this.waitingForUpload = false;
 				const selectedImage = new Image();
-				const cropperLoader = import('react-cropper');
-
 				selectedImage.onload = () => {
+					/* TODO cropper
+					const cropperLoader = import('react-cropper');
 					cropperLoader.then((module) => {
 						const ReactCropper = module.Cropper;
 						const field = this.props.field;
@@ -176,7 +183,7 @@ class CropperFieldBody extends Component<any, any> {
 						const h = field.maxLength % 10000;
 
 						if (w === selectedImage.width && h === selectedImage.height) {
-							this._cropImage(true, reader.result);
+							this._cropImage(true, reader.result as string);
 						} else {
 							let cropperW = 900;
 							let cropperH = (900 / w) * h;
@@ -188,7 +195,7 @@ class CropperFieldBody extends Component<any, any> {
 							myAlert(
 								R.div(
 									{ className: 'image-copper-popup' },
-									React.createElement(ReactCropper, {
+									h(ReactCropper, {
 										zoomable: false,
 										style: { margin: 'auto', height: cropperH, width: cropperW },
 										aspectRatio: w / h,
@@ -225,11 +232,12 @@ class CropperFieldBody extends Component<any, any> {
 							);
 						}
 					});
+					*/
 				};
 				// @ts-ignore
 				selectedImage.src = reader.result;
 			};
-			this.setState({ waiting: 1 });
+			this.setState({ waiting: true });
 			reader.readAsDataURL(files[0]);
 		}
 	}
@@ -319,7 +327,7 @@ class CropperFieldBody extends Component<any, any> {
 				},
 				type: 'file',
 				accept: '.jpg, .jpeg, .png, .gif',
-				onChange: this._onChange,
+				onInput: this._onChange,
 			}),
 			R.input({ name: 'MAX_FILE_SIZE', defaultValue: 3000000 }),
 			R.input({ name: 'fid', defaultValue: field.id }),

@@ -1,8 +1,9 @@
-import React from 'react';
+
+import { h } from 'preact';
 import { FIELD_TYPE, NODE_ID, type IFieldsRecord, type INodesRecord } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { FieldDesc } from '../bs-utils';
-import { Select } from '../components/select';
+import { Select, type SelectItem } from '../components/select';
 import type { FormFull } from '../forms/form-full';
 import { MainFrame } from '../main-frame';
 import { R } from '../r';
@@ -39,7 +40,7 @@ setTimeout(() => {
 	}
 }, 100);
 /// #endif
-let iconsList;
+let iconsList: SelectItem[];
 
 class admin {
 	static async moveField(fIndex, form, node, direction = 0) {
@@ -216,16 +217,17 @@ function makeIconSelectionField(form: FormFull, fieldName) {
 	if (!iconsList) {
 		initIconsList();
 	}
+
 	const input = form.getFieldDomElement(fieldName).querySelector('input') as HTMLInputElement;
 	input.style.display = 'none';
 	form.renderToField(
 		fieldName,
 		'icons-selector',
-		React.createElement(Select, {
+		h(Select, {
 			isCompact: form.props.isCompact,
 			defaultValue: form.fieldValue(fieldName),
 			readOnly: form.isFieldDisabled(fieldName),
-			onChange: (value) => {
+			onInput: (value) => {
 				form.setFieldValue(fieldName, value);
 			},
 			options: iconsList,
@@ -242,11 +244,11 @@ function makeReactClassSelectionField(form: FormFull, fieldName) {
 	form.renderToField(
 		fieldName,
 		'classes-selector',
-		React.createElement(Select, {
+		h(Select, {
 			isCompact: form.props.isCompact,
 			defaultValue: form.fieldValue(fieldName),
 			readOnly: form.isFieldDisabled(fieldName),
-			onChange: (value) => {
+			onInput: (value) => {
 				form.setFieldValue(fieldName, value);
 			},
 			options,

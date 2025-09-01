@@ -1,10 +1,17 @@
-import React, { Component } from 'react';
+
+import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
 import { L, registerFieldClass, renderIcon } from '../utils';
 import { BaseField } from './base-field';
 
-class CheckBox extends Component<any, any> {
+class CheckBox extends Component<{
+	defaultValue?: boolean,
+	title?: string;
+	onClick: (val: boolean) => void;
+}, {
+	value: boolean;
+}> {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -12,7 +19,7 @@ class CheckBox extends Component<any, any> {
 		};
 	}
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps(nextProps) {
 		this.setState({
 			value: nextProps.defaultValue
 		});
@@ -20,7 +27,7 @@ class CheckBox extends Component<any, any> {
 
 	render() {
 		let check;
-		if (this.state && this.state.value) {
+		if (this.state.value) {
 			check = R.span({
 				className: 'field-boolean-check'
 			}, renderIcon('check'));
@@ -64,7 +71,7 @@ registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField {
 
 		if (this.props.isEdit) {
 
-			return React.createElement(CheckBox, {
+			return h(CheckBox, {
 				title: this.props.isCompact ? field.name : '',
 				defaultValue: value,
 				onClick: this.props.fieldDisabled ? undefined : (val) => {

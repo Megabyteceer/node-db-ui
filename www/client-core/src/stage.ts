@@ -1,5 +1,5 @@
-﻿import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+﻿import { Component, h, render } from 'preact';
+
 import { NODE_TYPE } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { assert, throwError } from './assert';
@@ -23,7 +23,7 @@ window.document.addEventListener(
 	true
 );
 
-class FormLoaderCog extends Component<any, any> {
+class FormLoaderCog extends Component {
 	render() {
 		return R.div({ className: 'fade-in loading-icon' }, renderIcon('cog fa-spin fa-5x'));
 	}
@@ -55,7 +55,7 @@ class Stage extends Component<any, any> {
 	}
 
 	static destroyForm() {
-		ReactDOM.render(React.createElement(React.Fragment), Stage.currentFormEntry.container);
+		render(R.fragment(), Stage.currentFormEntry.container);
 	}
 
 	static refreshForm() {
@@ -79,7 +79,7 @@ class Stage extends Component<any, any> {
 			formContainer.style.transform = 'scale(0.01)';
 			e.container.style.backgroundColor = '#00112200';
 			setTimeout(() => {
-				ReactDOM.render(React.createElement(React.Fragment), formContainer);
+				render(R.fragment(), formContainer);
 				formContainer.remove();
 				if (formContainer !== e.container) {
 					e.container.remove();
@@ -198,11 +198,11 @@ class Stage extends Component<any, any> {
 			className += ' ' + node.cssClass;
 		}
 
-		ReactDOM.render(
-			React.createElement(
+		render(
+			h(
 				'div',
 				{ key: node.id + '_' + recId, className },
-				React.createElement(formType, {
+				h(formType, {
 					ref,
 					node,
 					recId,

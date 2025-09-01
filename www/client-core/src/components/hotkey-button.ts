@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+
+import { Component } from 'preact';
 import { R } from '../r';
 import { sp } from '../utils';
 
@@ -45,11 +45,11 @@ const isEventFocusOnInputElement = (ev) => {
 	return (((tag === 'input') && (ev.target.type !== 'checkbox')) || tag === 'textarea' || tag === 'select');
 };
 
-const isUIBlockedByModal = (element) => {
-
+const isUIBlockedByModal = (_element) => {
+	// TODO:
 };
 
-class HotkeyButton extends React.Component<HotkeyButtonProps> {
+class HotkeyButton extends Component<HotkeyButtonProps> {
 
 	onKeyDown(e) {
 		if (!this.props.hotkey) {
@@ -61,7 +61,7 @@ class HotkeyButton extends React.Component<HotkeyButtonProps> {
 			this.props.disabled ||
 			((this.props.hotkey === 1067) && window.getSelection().toString()) ||
 			(isEventFocusOnInputElement(e) && (isHotkeyBlockedOnInput(this))) ||
-			isUIBlockedByModal(ReactDOM.findDOMNode(this))
+			isUIBlockedByModal(this.base)
 		) {
 			return;
 		}
@@ -79,7 +79,7 @@ class HotkeyButton extends React.Component<HotkeyButtonProps> {
 		this.onClick = this.onClick.bind(this);
 	}
 
-	UNSAFE_componentWillReceiveProps(props) {
+	componentWillReceiveProps(props) {
 		if (this.props.hotkey !== props.hotkey) {
 			if (!props.hotkey && this.props.hotkey) {
 				this.unregisterHotkey();
@@ -132,3 +132,4 @@ class HotkeyButton extends React.Component<HotkeyButtonProps> {
 }
 
 export { HotkeyButton };
+

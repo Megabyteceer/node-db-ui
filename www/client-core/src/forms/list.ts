@@ -1,4 +1,4 @@
-import type { RecordsData } from '../bs-utils';
+import type { NodeDesc, RecordsData } from '../bs-utils';
 import { PRIVILEGES_MASK, VIEW_MASK } from '../bs-utils';
 import { R } from '../r';
 
@@ -7,7 +7,8 @@ import { NodeAdmin } from '../admin/admin-control';
 import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 
-import React from 'react';
+
+import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { assert } from '../assert';
@@ -58,6 +59,7 @@ interface ListState extends Omit<FormState, 'data'> {
 	hideControls?: boolean;
 	noPreviewButton?: boolean;
 	data: RecordsData;
+	node:NodeDesc;
 	viewMask: VIEW_MASK;
 }
 
@@ -367,7 +369,7 @@ class List extends BaseForm<ListProps, ListState> {
 									key: UID(item),
 									className: 'inline-editable-item inline-editable-item-rec-id-' + item.id,
 								},
-								React.createElement(FormFull, {
+								h(FormFull, {
 									ref: (ref) => {
 										this.subFormRef(ref, itemNum);
 									},
@@ -392,7 +394,7 @@ class List extends BaseForm<ListProps, ListState> {
 		/// #if DEBUG
 		let nodeAdmin;
 		if (iAdmin()) {
-			nodeAdmin = React.createElement(NodeAdmin, { form: this });
+			nodeAdmin = h(NodeAdmin, { form: this });
 		}
 		/// #endif
 
@@ -499,7 +501,7 @@ class List extends BaseForm<ListProps, ListState> {
 						},
 						className: 'list-search-input',
 						placeholder: L('SEARCH_LIST'),
-						onChange: this.changeSearch,
+						onInput: this.changeSearch,
 						defaultValue: this.filters.s,
 					}),
 					R.a(
@@ -522,12 +524,12 @@ class List extends BaseForm<ListProps, ListState> {
 					{
 						className: 'filter-select',
 					},
-					React.createElement(Select, {
+					h(Select, {
 						options,
 						defaultValue: node.defaultFilterId
 							? node.filters[this.filters.filterId || node.defaultFilterId.id].name
 							: undefined,
-						onChange: (val) => {
+						onInput: (val) => {
 							this.changeFilter('filterId', parseInt(val), true);
 						},
 					})
@@ -554,7 +556,7 @@ class List extends BaseForm<ListProps, ListState> {
 					/// #if DEBUG
 					let fieldAdmin;
 					if (iAdmin()) {
-						fieldAdmin = React.createElement(FieldAdmin, { field, form: this });
+						fieldAdmin = h(FieldAdmin, { field, form: this });
 					}
 					/// #endif
 
@@ -608,7 +610,7 @@ class List extends BaseForm<ListProps, ListState> {
 					this.state.hideControls;
 
 				const lines = data.items.map((item) => {
-					return React.createElement(FormListItem, {
+					return h(FormListItem, {
 						key: Math.random() + '_' + item.id,
 						disableDrafting: this.props.disableDrafting,
 						noPreviewButton: this.props.noPreviewButton,
@@ -702,7 +704,7 @@ class List extends BaseForm<ListProps, ListState> {
 		/// #if DEBUG
 		let nodeAdmin;
 		if (iAdmin()) {
-			nodeAdmin = React.createElement(NodeAdmin, { form: this });
+			nodeAdmin = h(NodeAdmin, { form: this });
 		}
 		/// #endif
 

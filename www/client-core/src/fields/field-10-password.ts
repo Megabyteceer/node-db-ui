@@ -27,7 +27,7 @@ registerFieldClass(
 					placeholder: field.name,
 					readOnly: this.props.fieldDisabled,
 					ref: this.refGetter,
-					onChange: () => {
+					onInput: () => {
 						this.props.wrapper.valueListener(this.refToInput.value, true, this);
 					},
 				};

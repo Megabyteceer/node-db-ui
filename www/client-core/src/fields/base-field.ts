@@ -1,10 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 
-import { Component } from 'react';
-import Highlighter from 'react-highlight-words';
+
+import { Component, type ComponentChild } from 'preact';
 import { assert } from '../assert';
-import type { FieldDesc } from '../bs-utils';
+import type { FieldDesc, GetRecordsFilter } from '../bs-utils';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import type { FormFull } from '../forms/form-full';
 import type { FieldWrap } from './field-wrap';
@@ -17,6 +15,7 @@ const resetAutofocus = () => {
 interface FieldProps {
 	field: FieldDesc;
 	form: FormFull;
+	parent: BaseField;
 	isEdit: boolean;
 	disabled: boolean;
 	isCompact: boolean;
@@ -33,6 +32,7 @@ interface FieldState {
 	focused?: boolean;
 	value?: any;
 	requirement?: boolean;
+	filters?: GetRecordsFilter;
 }
 
 interface RefToInput extends Component {
@@ -41,10 +41,7 @@ interface RefToInput extends Component {
 	click();
 }
 
-class BaseField<
-	T extends FieldProps = FieldProps,
-	T2 extends FieldState = FieldState
-> extends Component<T, T2> {
+class BaseField< T extends FieldProps = FieldProps, T2 extends FieldState = FieldState > extends Component<T, T2> {
 	refToInput: RefToInput;
 	forceBouncingTimeout?(): void;
 
@@ -85,19 +82,19 @@ class BaseField<
 		throw 'class ' + this.constructor.name + ' has no getBackupData() method.';
 	}
 
-	setMin(val: number) {
+	setMin(_val: number) {
 		throw 'class ' + this.constructor.name + ' has no setMin() method.';
 	}
 
-	setMax(val: number) {
+	setMax(_val: number) {
 		throw 'class ' + this.constructor.name + ' has no setMax() method.';
 	}
 
-	setLookupFilter(name: string, value: any) {
+	setLookupFilter(_name: string, _value: any) {
 		throw 'class ' + this.constructor.name + ' has no setLookupFilter() method.';
 	}
 
-	setValue(value: any) {
+	setValue(_value: any) {
 		throw 'class ' + this.constructor.name + ' has no setValue() method.';
 	}
 
@@ -108,10 +105,10 @@ class BaseField<
 	extendEditor?(): void;
 
 	renderTextValue(txt) {
-		if (this.props.field.forSearch) {
+		/*if (this.props.field.forSearch) { // TODO: searching highlighting
 			const list = this.props.form.props.list;
 			if (list && list.filters && list.filters.s) {
-				return React.createElement(Highlighter, {
+				return h(Highlighter, {
 					highlightClassName: 'mark-search',
 					searchWords: [
 						typeof list.filters.s === 'string' ? list.filters.s : String(list.filters.s),
@@ -120,19 +117,24 @@ class BaseField<
 					textToHighlight: txt,
 				});
 			}
-		}
+		}*/
 		return txt;
 	}
 
 	focus() {
 		if (this.refToInput) {
 			//@ts-ignore
-			ReactDOM.findDOMNode(this.refToInput).focus();
+			this.refToInput.base.focus();
 		}
 	}
 
 	refGetter(refToInput) {
 		this.refToInput = refToInput;
 	}
+
+	render():ComponentChild {
+		return 'BaseField has no view.';
+	}
 }
 export { BaseField, FieldProps, FieldState, RefToInput };
+
