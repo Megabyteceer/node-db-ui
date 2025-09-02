@@ -23,9 +23,8 @@ const STATUS_FILTER_SQL_PART_ANY = '".status > ' + NUM_0 + ')';
 const STATUS_FILTER_SQL_PART_PUBLISHED = '".status = ' + NUM_1 + ')';
 const ORDERING_SQL_PART = ' LIMIT ' + NUM_1;
 
-
 //@ts-ignore
-const getRecords: TypeGenerationHelper['g'] = async(
+const _getRecords: TypeGenerationHelper['g'] = async(
 	nodeId: NODE_ID,
 	viewMask: VIEW_MASK,
 	recId: null | RecId | RecId[] = null,
@@ -460,10 +459,10 @@ const getRecords: TypeGenerationHelper['g'] = async(
 };
 
 const DELETE_RECORD_SQL_PART = '" SET status=' + NUM_0 + ' WHERE id=';
-async function deleteRecord(nodeId: NODE_ID, recId:RecId, userSession = ADMIN_USER_SESSION) {
+export async function deleteRecord(nodeId: NODE_ID, recId:RecId, userSession = ADMIN_USER_SESSION) {
 	const node = getNodeDesc(nodeId, userSession);
 
-	const recordData = await getRecords(nodeId, 4, recId, userSession);
+	const recordData = await getRecord(nodeId, VIEW_MASK.READONLY, recId, userSession);
 	if (!recordData.isD) {
 		throwError('Deletion access is denied');
 	}
@@ -477,4 +476,9 @@ async function deleteRecord(nodeId: NODE_ID, recId:RecId, userSession = ADMIN_US
 	return 1;
 }
 
-export { deleteRecord, getRecords };
+
+export const getRecords: TypeGenerationHelper['m'] = _getRecords as any;
+
+export const getRecord: TypeGenerationHelper['g'] = _getRecords as any;
+
+

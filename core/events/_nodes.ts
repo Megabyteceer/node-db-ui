@@ -1,4 +1,4 @@
-import { FIELD_TYPE, NODE_ID, NODE_TYPE, type INodesFilter, type INodesRecord, type INodesRecordWrite } from '../../types/generated';
+import { FIELD_TYPE, NODE_ID, NODE_TYPE, type INodesRecord, type INodesRecordWrite } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import type { UserSession } from '../../www/client-core/src/bs-utils';
 import { VIEW_MASK } from '../../www/client-core/src/bs-utils';
@@ -88,7 +88,7 @@ const handlers: NodeEventsHandlers = {
 
 		const nodes = await getRecords(NODE_ID.NODES, VIEW_MASK.ALL, undefined, userSession, {
 			_nodesId: data._nodesId.id
-		} as INodesFilter);
+		});
 		nodes.items.sort((a, b) => {
 			return a.prior - b.prior;
 		});

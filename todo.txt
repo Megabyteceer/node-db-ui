@@ -1,9 +1,4 @@
 
-
-GetTecord. GetRecords.  Two separated methods passing inside one
-Submit вообще не требует примимать рекордс в виде массива один тип на нодуидАйди
-
-
 react-cropper  перенесть обрезку картинки на клиент.
 react-datetime - стандартное полe  input type="datetime-local"
 react-highlight-words
@@ -19,6 +14,7 @@ client.on('_nodes.name.change', (form:FormFull<INodesRecord>):Result=>{
 
 типизировать данные кастом вьюъх
 
+css классы не id а cssClassName поле прсвоить каждому полю node-name--field-name  и ноде
 
 переписать все компоненты на типизацию.  У класса геттеры .parent который укорачивает .props.parent
 

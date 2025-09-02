@@ -1,4 +1,4 @@
-import { NODE_ID, type IFieldsFilter, type ILanguagesRecord, type ILanguagesRecordWrite } from '../../types/generated';
+import { NODE_ID, type ILanguagesRecord, type ILanguagesRecordWrite } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import { VIEW_MASK, type UserSession } from '../../www/client-core/src/bs-utils';
 
@@ -16,7 +16,7 @@ export default {
 		const fieldsData = await getRecords(NODE_ID.FIELDS, VIEW_MASK.EDITABLE, undefined, undefined, {
 			multilingual: 1,
 			p: '*',
-		} as IFieldsFilter);
+		});
 		const fields = fieldsData.items;
 		for (const f of fields) {
 			f.fieldName = f.fieldName + '$' + data.code;

@@ -9,7 +9,7 @@ import { FormFull } from './forms/form-full';
 import { List } from './forms/list';
 import { LeftBar } from './left-bar';
 import { R } from './r';
-import { getNode, getNodeData, getNodeIfPresentOnClient, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from './utils';
+import { getNode, getNodeIfPresentOnClient, getRecordClient, getRecordsClient, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from './utils';
 
 let mouseX: number;
 let mouseY: number;
@@ -135,9 +135,9 @@ class Stage extends Component<any, any> {
 		if (!node || node.nodeType === NODE_TYPE.DOCUMENT) {
 			if (recId !== 'new') {
 				if (typeof recId === 'number') {
-					data = await getNodeData(nodeId, recId as RecId, undefined, editable, false, isPresentListRenderer(nodeId));
+					data = await getRecordClient(nodeId, recId as RecId, undefined, editable, false, isPresentListRenderer(nodeId));
 				} else {
-					data = await getNodeData(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
+					data = await getRecordsClient(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
 				}
 			}
 		}

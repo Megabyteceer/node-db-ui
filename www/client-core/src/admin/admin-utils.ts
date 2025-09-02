@@ -7,7 +7,7 @@ import { Select, type SelectItem } from '../components/select';
 import type { FormFull } from '../forms/form-full';
 import { MainFrame } from '../main-frame';
 import { R } from '../r';
-import { consoleDir, getItem, getNode, getNodeData, isLitePage, renderIcon, setItem, submitRecord } from '../utils';
+import { consoleDir, getItem, getNode, getRecordClient, isLitePage, renderIcon, setItem, submitRecord } from '../utils';
 
 /// #if DEBUG
 /*
@@ -121,8 +121,8 @@ class admin {
 				return;
 			}
 
-			const field1 = await getNodeData(6, group1[0].id);
-			const field2 = await getNodeData(6, group2[0].id);
+			const field1 = await getRecordClient(6, group1[0].id);
+			const field2 = await getRecordClient(6, group2[0].id);
 
 			let prior = Math.min(field1.prior, field2.prior);
 			if (direction < 0) {

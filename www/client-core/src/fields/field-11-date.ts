@@ -29,7 +29,7 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 
 	render() {
 
-		const field = this.props.field;
+		//const field = this.props.field;
 		const value = toReadableDate(this.state.value);
 		if (this.props.isEdit) {
 			/*if (!ReactDateTimeClassHolder.ReactDateTimeClass) {

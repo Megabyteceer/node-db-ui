@@ -17,7 +17,7 @@ import type { RefToInput } from '../fields/base-field';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import { LeftBar } from '../left-bar';
 import { iAdmin } from '../user';
-import { deleteRecord, getListRenderer, getNode, getNodeData, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from '../utils';
+import { deleteRecord, getListRenderer, getNode, getRecordsClient, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from '../utils';
 import type { FormProps, FormState } from './base-form';
 import { BaseForm } from './base-form';
 import { FormFull } from './form-full';
@@ -149,7 +149,7 @@ class List extends BaseForm<ListProps, ListState> {
 			}
 
 			//TODO: Понять почему рефреш листа дает другой вьюмаск. this.state.viewMask отличается от того что в кастом вью
-			const data = await getNodeData(
+			const data = await getRecordsClient(
 				nodeIdToFetch,
 				undefined,
 				this.filters,

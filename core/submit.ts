@@ -13,7 +13,7 @@ import type { UserSession } from './auth';
 import { isAdmin, notificationOut } from './auth';
 import { getFieldDesc, getNodeDesc, getNodeEventHandler, ServerSideEventHandlersNames } from './describe-node';
 import { ENV, SERVER_ENV } from './ENV';
-import { getRecords } from './get-records';
+import { getRecord, getRecords } from './get-records';
 import { L } from './locale';
 /// #if DEBUG
 /*
@@ -55,7 +55,7 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 
 	let currentData:RecordData;
 	if (recId) {
-		currentData = await getRecords(nodeId, VIEW_MASK.ALL, recId, userSession);
+		currentData = await getRecord(nodeId, VIEW_MASK.ALL, recId, userSession);
 	}
 
 	const tableName = node.tableName;

@@ -6,7 +6,7 @@ import { shouldBeAdmin } from '../admin/admin';
 import { mustBeUnset } from '../auth';
 import type { NodeEventsHandlers } from '../describe-node';
 import { getLangs, getNodeDesc, reloadMetadataSchedule } from '../describe-node';
-import { getRecords } from '../get-records';
+import { getRecord, getRecords } from '../get-records';
 import { L } from '../locale';
 import { D, mysqlExec } from '../mysql-connection';
 import { submitRecord } from '../submit';
@@ -38,7 +38,7 @@ const handlers: NodeEventsHandlers = {
 		const fieldType = data.fieldType;
 		const fieldName = data.fieldName;
 		if (fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
-			const parentNode = await getRecords(NODE_ID.NODES, 1, data.nodeFieldsLinker.id, userSession);
+			const parentNode = await getRecord(NODE_ID.NODES, VIEW_MASK.EDITABLE, data.nodeFieldsLinker.id, userSession);
 
 			const linkerFieldData = {
 				status: 1,
@@ -62,7 +62,7 @@ const handlers: NodeEventsHandlers = {
 		// update priority
 		const fields = await getRecords(NODE_ID.FIELDS, VIEW_MASK.ALL, null, userSession, {
 			nodeFieldsLinker: data.nodeFieldsLinker.id
-		} as IFieldsFilter);
+		});
 		fields.items.sort((a, b) => {
 			return a.prior - b.prior;
 		});

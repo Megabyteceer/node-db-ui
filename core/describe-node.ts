@@ -596,10 +596,11 @@ import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordD
 						type = 'LookupValue';
 					}
 				}
-				src.push('	/** **' + (await getEnumDesc(FIELD_TYPE_ENUM_ID)).namesByValue[field.fieldType] + '** ' + (field.description || '') + ' */');
+				const jsDoc = '\t/** **' + (await getEnumDesc(FIELD_TYPE_ENUM_ID)).namesByValue[field.fieldType] + '** ' + (field.description || '') + ' */';
+				src.push(jsDoc);
 				src.push('	' + field.fieldName + (field.requirement ? '' : '?') + ': ' + type + ';');
 				if (field.forSearch) {
-					searchFields.push('\t' + field.fieldName + ': ' + (field.fieldType === FIELD_TYPE.LOOKUP ? 'number' : type) + ';');
+					searchFields.push(jsDoc, '\t' + field.fieldName + ': ' + (field.fieldType === FIELD_TYPE.LOOKUP ? 'number' : type) + ';');
 				}
 			}
 			src.push('}', '');
@@ -662,44 +663,58 @@ import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordD
 import type { RecId, UserSession, VIEW_MASK } from '../www/client-core/src/bs-utils';
 export class TypeGenerationHelper {`);
 
+	// generate getRecord() typing
+	nodesData.forEach((nodeData) => {
+		if (nodeData.fields?.length && nodeData.storeForms) {
+			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
+			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
+			src.push(`	async g(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<${typeName}>;`);
+		}
+	});
+	src.push(`	async g(nodeId: NODE_ID, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<RecordData>;
+	async g() {
+		return 1 as any;
+	}`);
+
 	// generate getRecords() typing
 	nodesData.forEach((nodeData) => {
 		if (nodeData.fields?.length && nodeData.storeForms) {
 			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
 			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
-			src.push(`
-	async g(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: I${snakeToCamel(nodeData.tableName)}Filter, search?: string): Promise<{items:${typeName}[], total:number}>;
-	async g(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<${typeName}>;
-`);
+			src.push(`	async m(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: I${snakeToCamel(nodeData.tableName)}Filter, search?: string): Promise<{items:${typeName}[], total:number}>;`);
 		}
 	});
 
-	src.push(`
-	async g(nodeId: NODE_ID, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: GetRecordsFilter, search?: string): Promise<{items:RecordData[], total:number}>;
-	async g(nodeId: NODE_ID, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<RecordData>;
-
-	async g() {
+	src.push(`	async m(nodeId: NODE_ID, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: GetRecordsFilter, search?: string): Promise<{items:RecordData[], total:number}>;
+	async m() {
 		return 1 as any;
 	}`);
 
-	// generate getNodeData() typing
+	// generate getRecordClient() typing
 	nodesData.forEach((nodeData) => {
 		if (nodeData.fields?.length && nodeData.storeForms) {
 			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
 			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
-			src.push(`
-	async gc(nodeId: NODE_ID.${enumName}, recId?: RecId[], filters?: I${snakeToCamel(nodeData.tableName)}Filter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{items:${typeName}[], total:number}>;
-	async gc(nodeId: NODE_ID.${enumName}, recId: RecId, filters?: undefined, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<${typeName}>;
-`);
+			src.push(`	async gc(nodeId: NODE_ID.${enumName}, recId: RecId, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<${typeName}>;`);
 		}
 	});
 
-
-	src.push(`
-	async gc(nodeId: NODE_ID, recId: RecId, filters?: undefined, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<RecordData>;
-	async gc(nodeId: NODE_ID, recId?: RecId[], filters?: GetRecordsFilter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{items:RecordData[], total:number}>;
-
+	src.push(`	async gc(nodeId: NODE_ID, recId: RecId, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<RecordData>;
 	async gc() {
+		return 1 as any;
+	}`);
+
+	// generate getRecordsClient() typing
+	nodesData.forEach((nodeData) => {
+		if (nodeData.fields?.length && nodeData.storeForms) {
+			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
+			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
+			src.push(`	async gcm(nodeId: NODE_ID.${enumName}, recId?: RecId[], filters?: I${snakeToCamel(nodeData.tableName)}Filter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{items:${typeName}[], total:number}>;`);
+		}
+	});
+
+	src.push(`	async gcm(nodeId: NODE_ID, recId?: RecId[], filters?: GetRecordsFilter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{items:RecordData[], total:number}>;
+	async gcm() {
 		return 1 as any;
 	}`);
 

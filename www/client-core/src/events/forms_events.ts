@@ -1,5 +1,5 @@
 
-import { attachGoogleLoginAPI, getData, getNode, getNodeData, goToHome, isAdmin, L, myAlert, showPrompt } from '../utils';
+import { attachGoogleLoginAPI, getData, getNode, getRecordsClient, goToHome, isAdmin, L, myAlert, showPrompt } from '../utils';
 /// #if DEBUG
 import { makeIconSelectionField } from '../admin/admin-utils';
 /// #endif
@@ -288,7 +288,7 @@ class FormEvents extends FormFull {
 				if (this.fieldValue('fieldType') !== FIELD_TYPE.LOOKUP_N_TO_M) {
 					fieldsFilter.nodeFieldsLinker = nodeId;
 				}
-				getNodeData(NODE_ID.FIELDS, undefined, fieldsFilter).then((data) => {
+				getRecordsClient(NODE_ID.FIELDS, undefined, fieldsFilter).then((data) => {
 					if (this._fieldsNameIsBad) return;
 					if (data.items.length > 0) {
 						if (this.fieldValue('fieldType') === FIELD_TYPE.LOOKUP_N_TO_M) {

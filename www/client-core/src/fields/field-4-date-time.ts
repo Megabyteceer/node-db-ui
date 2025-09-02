@@ -199,7 +199,7 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 
 	render():ComponentChild {
 
-		const field = this.props.field;
+		//const field = this.props.field;
 
 		let value = this.state.value;
 

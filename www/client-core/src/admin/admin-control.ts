@@ -6,7 +6,7 @@ import { globals } from '../../../../types/globals';
 import type { NodeDesc } from '../bs-utils';
 import type { BaseForm } from '../forms/base-form';
 import { R } from '../r';
-import { CLIENT_SIDE_FORM_EVENTS, getNode, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
+import { CLIENT_SIDE_FORM_EVENTS, getNode, getRecordClient, getRecordsClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
 import { admin } from './admin-utils';
 import { FieldAdmin } from './field-admin';
@@ -313,7 +313,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 						{
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
-								getNodeData(NODE_ID.NODES, undefined, {
+								getRecordsClient(NODE_ID.NODES, undefined, {
 									_nodesID: item.parent,
 								} as INodesFilter).then((data) => {
 									(data.items as INodesRecord[]).sort((a, b) => {
@@ -331,7 +331,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 						{
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
-								getNodeData(NODE_ID.NODES, undefined, {
+								getRecordsClient(NODE_ID.NODES, undefined, {
 									_nodesID: item.parent,
 								} as INodesFilter).then((data) => {
 									(data.items as INodesRecord[]).sort((a, b) => {
@@ -428,7 +428,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 
 function createNodeForMenuItem(item) {
 	const isBasedOnDocument = item.nodeType === NODE_TYPE.DOCUMENT;
-	getNodeData(NODE_ID.NODES, (isBasedOnDocument ? item.parent : item.id) as number).then((data) => {
+	getRecordClient(NODE_ID.NODES, (isBasedOnDocument ? item.parent : item.id) as number).then((data) => {
 		globals.Stage.showForm(
 			NODE_ID.NODES,
 			'new',

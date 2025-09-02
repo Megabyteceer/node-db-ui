@@ -7,7 +7,7 @@ import { globals } from '../../../../types/globals';
 import type { FormFull } from '../forms/form-full';
 import { List } from '../forms/list';
 import { R } from '../r';
-import { CLIENT_SIDE_FORM_EVENTS, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
+import { CLIENT_SIDE_FORM_EVENTS, getRecordClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
 import { admin } from './admin-utils';
 
@@ -160,7 +160,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 						{
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
-								getNodeData(NODE_ID.FIELDS, field.id).then((data) => {
+								getRecordClient(NODE_ID.FIELDS, field.id).then((data) => {
 									globals.Stage.showForm(
 										NODE_ID.FIELDS,
 										'new',

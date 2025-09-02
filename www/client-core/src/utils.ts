@@ -641,7 +641,7 @@ function normalizeNode(node: NodeDesc) {
 }
 
 //@ts-ignore
-const getNodeData:TypeGenerationHelper['gc'] = async (
+const _getRecordsClient = async (
 	nodeId: NODE_ID,
 	recId?: RecId | RecId[],
 	filters?: undefined,
@@ -656,7 +656,7 @@ const getNodeData:TypeGenerationHelper['gc'] = async (
 	}
 	/// #endif
 
-	const callStack = new Error('getNodeData called from: ').stack;
+	const callStack = new Error('getRecordsClient called from: ').stack;
 
 	const params: GetRecordsParams = { nodeId };
 
@@ -1381,6 +1381,9 @@ async function attachGoogleLoginAPI(enforces = false) {
 	googleLoginAPIattached = true;
 }
 
+const getRecordsClient: TypeGenerationHelper['gcm'] = _getRecordsClient as any;
+const getRecordClient: TypeGenerationHelper['gc'] = _getRecordsClient as any;
+
 export {
 	__corePath,
 	addMixins,
@@ -1400,11 +1403,8 @@ export {
 	getData,
 	getItem,
 	getListRenderer,
-	getNode,
-	getNodeData,
-	getNodeIfPresentOnClient,
-	getReadableUploadSize,
-	getSessionToken,
+	getNode, getNodeIfPresentOnClient,
+	getReadableUploadSize, getRecordClient, getRecordsClient, getSessionToken,
 	goBack,
 	goToHome,
 	goToPageByHash,
