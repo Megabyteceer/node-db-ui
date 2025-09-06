@@ -47,7 +47,6 @@ class FieldsEvents extends FormEvents {
 			this.showField(
 				'creationName',
 				'singleName',
-				'captcha',
 				'reverse',
 				'draftable',
 				'storeForms',
@@ -60,7 +59,6 @@ class FieldsEvents extends FormEvents {
 			this.hideField(
 				'creationName',
 				'singleName',
-				'captcha',
 				'reverse',
 				'draftable',
 				'storeForms',

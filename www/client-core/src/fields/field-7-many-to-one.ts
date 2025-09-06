@@ -2,7 +2,7 @@
 import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
-import type { RecId, RecordData } from '../bs-utils';
+import type { LookupValue, RecId, RecordData } from '../bs-utils';
 import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
 import { List } from '../forms/list';
 import { R } from '../r';
@@ -130,12 +130,11 @@ registerFieldClass(
 			);
 		}
 
-		static encodeValue(val) {
-			if (val && val.hasOwnProperty('id')) {
-				return val.id;
-			} else {
-				return val;
+		static encodeValue(val:LookupValue) {
+			if (val) {
+				return {id: val.id};
 			}
+			return val;
 		}
 
 		setValue(val) {

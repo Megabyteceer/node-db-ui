@@ -261,7 +261,7 @@ function handleAdditionalData(data, url) {
 	}
 }
 
-const innerDateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+const INNER_DATE_TIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 const readableDateFormat = 'D MMMM YYYY';
 const readableTimeFormat = 'H:mm';
 
@@ -996,40 +996,6 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 	);
 }
 
-let isCaptchaInitialized;
-
-async function getCaptchaToken(): Promise<string | undefined> {
-	if (!ENV.CAPTCHA_CLIENT_SECRET) {
-		return;
-	}
-
-	let resolve;
-	const requireCaptcha = () => {
-		//@ts-ignore
-		window.grecaptcha.ready(function () {
-			//@ts-ignore
-			window.grecaptcha.execute(ENV.CAPTCHA_CLIENT_SECRET, { action: 'submit' }).then((token) => {
-				resolve(token);
-			});
-		});
-	};
-
-	if (!isCaptchaInitialized) {
-		isCaptchaInitialized = true;
-		const scriptElement = document.createElement('script');
-		scriptElement.src = 'https://www.google.com/recaptcha/api.js?render=' + ENV.CAPTCHA_CLIENT_SECRET;
-		scriptElement.addEventListener('load', requireCaptcha);
-		document.head.appendChild(scriptElement);
-	} else {
-		requireCaptcha();
-	}
-
-	return new Promise((resolve_) => {
-		//@ts-ignore
-		resolve = resolve_;
-	});
-}
-
 async function deleteRecord(name, nodeId: RecId, recId: RecId, noPrompt?: boolean, onYes?: () => void) {
 	if (noPrompt) {
 		if (onYes) {
@@ -1207,9 +1173,9 @@ async function deleteIndexedDB(filename: string): Promise<any> {
 	return true;
 }
 
-function keepInWindow(bodyComponent: Component) {
+function keepInWindow(bodyComponent: HTMLDivElement) {
 	if (bodyComponent) {
-		const body = bodyComponent.base as HTMLDivElement;
+		const body = bodyComponent as HTMLDivElement;
 
 		const modalContainer = body.closest('.form-modal-container');
 		let screenR = window.innerWidth - 10;
@@ -1398,7 +1364,6 @@ export {
 	deleteIndexedDB,
 	deleteRecord,
 	draftRecord,
-	getCaptchaToken,
 	getClassForField,
 	getData,
 	getItem,
@@ -1411,7 +1376,7 @@ export {
 	idToFileUrl,
 	idToImgURL,
 	initDictionary,
-	innerDateTimeFormat,
+	INNER_DATE_TIME_FORMAT as innerDateTimeFormat,
 	isAdmin,
 	isCurrentlyShowedLeftBarItem,
 	isDBWriteInProgress,

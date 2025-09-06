@@ -21,8 +21,7 @@ const LANGS = {
 	'EMAIL_ALREADY': 'This e-mail already in usage.',
 	'CONFIRM_EMAIL': `Please confirm your registration in %
 Link for confirmation: `,
-	'CONFIRM_EMAIL_SUBJ': 'Registration confirmation',
-	'CAPTCHA_ERROR': 'Spam checking error.'
+	'CONFIRM_EMAIL_SUBJ': 'Registration confirmation'
 };
 
 initDictionaryServerSide(LANGS, 'en');

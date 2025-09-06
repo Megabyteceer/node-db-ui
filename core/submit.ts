@@ -1,18 +1,14 @@
 import { assert, throwError } from '../www/client-core/src/assert';
-import type { RecId, RecordData, RecordDataWrite, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
+import type { LookupValue, RecId, RecordData, RecordDataWrite, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
 import { PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 
-
-const captchaRequestConfig = {
-	headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-};
 
 import { unlink } from 'fs';
 import { join } from 'path';
 import type { UserSession } from './auth';
 import { isAdmin, notificationOut } from './auth';
 import { getFieldDesc, getNodeDesc, getNodeEventHandler, ServerSideEventHandlersNames } from './describe-node';
-import { ENV, SERVER_ENV } from './ENV';
+import { ENV } from './ENV';
 import { getRecord, getRecords } from './get-records';
 import { L } from './locale';
 /// #if DEBUG
@@ -20,7 +16,7 @@ import { L } from './locale';
 /// #endif
 import {mysqlRollback} } from './mysql-connection';
 //*/
-import axios from 'axios';
+
 import { FIELD_TYPE, type NODE_ID } from '../types/generated';
 import { D, escapeString, mysqlCommit, mysqlExec, mysqlStartTransaction, NUM_1 } from './mysql-connection';
 import { idToImgURLServer, UPLOADS_FILES_PATH } from './upload';
@@ -41,17 +37,6 @@ for (const tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 //@ts-ignore
 const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	const node = getNodeDesc(nodeId);
-
-	if (node.captcha && SERVER_ENV.CAPTCHA_SERVER_SECRET) {
-		const captchaRes = await axios.post(
-			'https://www.google.com/recaptcha/api/siteverify',
-			'secret=' + encodeURIComponent(SERVER_ENV.CAPTCHA_SERVER_SECRET) + '&response=' + data.c,
-			captchaRequestConfig
-		);
-		if (!captchaRes.data || !captchaRes.data.success) {
-			throwError(L('CAPTCHA_ERROR', userSession));
-		}
-	}
 
 	let currentData:RecordData;
 	if (recId) {
@@ -270,9 +255,9 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 
 					case FIELD_TYPE.LOOKUP:
 						if (!isAdmin(userSession) && fieldVal) {
-							await getRecords(f.nodeRef.id, VIEW_MASK.DROPDOWN_LIST, fieldVal, userSession); //check if you have read access to referenced item
+							await getRecord(f.nodeRef.id, VIEW_MASK.DROPDOWN_LIST, (fieldVal as LookupValue).id, userSession); //check if you have read access to referenced item
 						}
-						values.push(D(fieldVal));
+						values.push(D((fieldVal as LookupValue).id));
 						break;
 					case FIELD_TYPE.DATE_TIME:
 					case FIELD_TYPE.DATE:

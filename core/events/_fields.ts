@@ -2,13 +2,14 @@ import { FIELD_ID, FIELD_TYPE, NODE_ID, type IFieldsFilter, type IFieldsRecord, 
 import { throwError } from '../../www/client-core/src/assert';
 import type { UserSession } from '../../www/client-core/src/bs-utils';
 import { VIEW_MASK } from '../../www/client-core/src/bs-utils';
+import { EMPTY_DATE } from '../../www/client-core/src/consts';
 import { shouldBeAdmin } from '../admin/admin';
 import { mustBeUnset } from '../auth';
 import type { NodeEventsHandlers } from '../describe-node';
 import { getLangs, getNodeDesc, reloadMetadataSchedule } from '../describe-node';
 import { getRecord, getRecords } from '../get-records';
 import { L } from '../locale';
-import { D, mysqlExec } from '../mysql-connection';
+import { D, ESCAPED_LITERAL, escapeString, mysqlExec, NUM_0 } from '../mysql-connection';
 import { submitRecord } from '../submit';
 
 type T = IFieldsRecord;
@@ -159,46 +160,47 @@ function getFieldTypeSQL(data) {
 	case FIELD_TYPE.PASSWORD:
 	case FIELD_TYPE.TEXT:
 		if (data.maxLength <= 255) {
-			return 'VARCHAR(' + data.maxLength + ') NOT NULL DEFAULT \'\'';
+			return 'VARCHAR(' + D(data.maxLength) + ') NOT NULL DEFAULT ' + ESCAPED_LITERAL;
 		} else {
-			return 'text NOT NULL DEFAULT \'\'';
+			return 'text NOT NULL DEFAULT ' + ESCAPED_LITERAL;
 		}
 	case FIELD_TYPE.COLOR:
-		return 'int8 NOT NULL DEFAULT 4294967295';
+		return 'int8 NOT NULL DEFAULT ' + D(4294967295);
 	case FIELD_TYPE.NUMBER:
 		if (data.maxLength <= 5) {
-			return 'int2 NOT NULL DEFAULT 0';
+			return 'int2 NOT NULL DEFAULT ' + NUM_0;
 		} else if (data.maxLength <= 9) {
-			return 'int4 NOT NULL DEFAULT 0';
+			return 'int4 NOT NULL DEFAULT ' + NUM_0;
 		} else if (data.maxLength <= 19) {
-			return 'int8 NOT NULL DEFAULT 0';
+			return 'int8 NOT NULL DEFAULT ' + NUM_0;
 		} else {
-			return 'NUMERIC(' + data.maxLength + ', 0) NOT NULL DEFAULT 0';
+			return 'NUMERIC(' + D(data.maxLength) + ', ' + NUM_0 + ') NOT NULL DEFAULT ' + NUM_0;
 		}
 	case FIELD_TYPE.DATE_TIME:
 	case FIELD_TYPE.DATE:
-		return 'timestamp NOT NULL DEFAULT \'0000-00-00 00:00:00\'';
+		return 'timestamp NOT NULL DEFAULT ' + escapeString(EMPTY_DATE);
 	case FIELD_TYPE.BOOL:
-		return 'int2 NOT NULL DEFAULT 0';
+		return 'int2 NOT NULL DEFAULT ' + NUM_0;
 	case FIELD_TYPE.ENUM:
 	case FIELD_TYPE.LOOKUP:
-		return 'int4 UNSIGNED NOT NULL DEFAULT 0';
+		return 'int4 UNSIGNED NOT NULL DEFAULT ' + NUM_0;
 	case FIELD_TYPE.IMAGE:
-		return 'VARCHAR(32) NOT NULL DEFAULT \'\'';
+		return 'VARCHAR(' + D(32) + ') NOT NULL DEFAULT ' + ESCAPED_LITERAL;
 	case FIELD_TYPE.HTML_EDITOR:
-		return 'text NOT NULL DEFAULT \'\'';
+		return 'text NOT NULL DEFAULT ' + ESCAPED_LITERAL;
 	case FIELD_TYPE.FILE:
-		return 'VARCHAR(127) NOT NULL DEFAULT \'\'';
+		return 'VARCHAR(' + D(127) + ') NOT NULL DEFAULT ' + ESCAPED_LITERAL;
 	default:
 		return false;
 	}
 }
 
+const PRIORITY_UPDATE_SQL_PART = 'UPDATE _fields SET prior=prior+' + D(20) + ' WHERE ("nodeFieldsLinker" =';
 async function createFieldInTable(data: IFieldsRecordWrite) {
 	let nodeId = data.nodeFieldsLinker;
 
 	// prepare space for field
-	await mysqlExec('UPDATE _fields SET prior=prior+20 WHERE (nodeFieldsLinker =' + D(nodeId.id) + ') AND (prior >' + data.prior + ')');
+	await mysqlExec(PRIORITY_UPDATE_SQL_PART + D(nodeId.id) + ') AND (prior >' + D(data.prior) + ')');
 
 	const fieldType = data.fieldType;
 	const fieldName = data.fieldName;
@@ -252,7 +254,7 @@ async function createFieldInTable(data: IFieldsRecordWrite) {
 
 		const typeQ = getFieldTypeSQL(data);
 		if (typeQ) {
-			const altQ = ['ALTER TABLE ', nodeName, ' ADD COLUMN ', fieldName, ' ', typeQ];
+			const altQ = ['ALTER TABLE "', nodeName, '" ADD COLUMN "', fieldName, '" ', typeQ];
 
 			if (data.forSearch || data.unique) {
 				altQ.push(', ADD', data.unique ? ' UNIQUE' : '', 'ALTER TABLE "', nodeName, '" ADD INDEX ("', fieldName, '");');
@@ -261,7 +263,7 @@ async function createFieldInTable(data: IFieldsRecordWrite) {
 			await mysqlExec(altQ.join(''));
 
 			if (fieldType === FIELD_TYPE.LOOKUP) {
-				await mysqlExec('ALTER TABLE ' + nodeName + ' ADD INDEX(' + fieldName + ');');
+				await mysqlExec('ALTER TABLE "' + nodeName + '" ADD INDEX("' + fieldName + '");');
 			}
 		}
 	}

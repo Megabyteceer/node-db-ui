@@ -23,10 +23,24 @@ const D = (val: number): string => {
 	);
 };
 
+const escapeString = (str: string): string => {
+	return (
+		/// #if DEBUG
+		ESCAPE_BEGIN +
+		/// #endif
+		escapeLiteral(str) +
+		/// #if DEBUG
+		ESCAPE_END
+		/// #endif
+	);
+};
+
 /** escaped 0 for SQL */
 const NUM_0 = D(0);
 /** escaped 1 for SQL */
 const NUM_1 = D(1);
+/** escaped '' fro SQL */
+export const ESCAPED_LITERAL = escapeString('');
 
 const pool = new Pool();
 
@@ -122,17 +136,5 @@ const A = (val: number[]) => {
 const escapeNumber = D;
 /** deprecated - use A() shortcut instead */
 const escapeNumbersArray = A;
-
-const escapeString = (str: string): string => {
-	return (
-		/// #if DEBUG
-		ESCAPE_BEGIN +
-		/// #endif
-		escapeLiteral(str) +
-		/// #if DEBUG
-		ESCAPE_END
-		/// #endif
-	);
-};
 
 export { A, D, escapeNumber, escapeNumbersArray, escapeString, mysqlCommit, mysqlDebug, mysqlExec, mysqlRollback, mysqlStartTransaction, NUM_0, NUM_1 };

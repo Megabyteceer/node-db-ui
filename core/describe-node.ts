@@ -118,7 +118,6 @@ function getNodeDesc(nodeId: NODE_ID, userSession = ADMIN_USER_SESSION): NodeDes
 			if (srcNode.nodeType === NODE_TYPE.REACT_CLASS) {
 				ret.tableName = srcNode.tableName;
 			} else if (srcNode.nodeType === NODE_TYPE.DOCUMENT) {
-				ret.captcha = srcNode.captcha;
 				ret.reverse = srcNode.reverse;
 				ret.creationName = srcNode['creationName' + landQ];
 				ret.storeForms = srcNode.storeForms;

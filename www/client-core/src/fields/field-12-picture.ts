@@ -67,7 +67,7 @@ class CropperFieldBody extends Component<FieldProps & {
 	cropResult?: string | null;
 }> {
 
-	references: { [key: string]: RefToInput };
+	references: { [key: string]: RefToInput | HTMLFormElement };
 	cropper: any;
 	waitingForUpload: boolean;
 
@@ -139,7 +139,7 @@ class CropperFieldBody extends Component<FieldProps & {
 
 	async save(fieldWrap: FieldWrap) {
 		if (this.waitingForUpload) {
-			const form = this.references.form.base as HTMLFormElement;
+			const form = this.references.form as HTMLFormElement;
 			const imageId = await submitData('api/uploadImage', serializeForm(form), true).catch(
 				(_er) => {}
 			);
@@ -174,6 +174,7 @@ class CropperFieldBody extends Component<FieldProps & {
 				this.waitingForUpload = false;
 				const selectedImage = new Image();
 				selectedImage.onload = () => {
+					this._cropImage(true, reader.result as string);
 					/* TODO cropper
 					const cropperLoader = import('react-cropper');
 					cropperLoader.then((module) => {

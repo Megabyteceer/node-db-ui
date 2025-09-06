@@ -24,7 +24,7 @@ export const snakeToCamel = (str: string) => {
 };
 
 export interface LookupValue {
-	id:number;
+	id: RecId;
 	name?: string;
 }
 
@@ -140,88 +140,91 @@ export const enum FIELD_DATA_TYPE {
 	BOOL = 4
 }
 
-interface FieldDesc extends IFieldsRecord {
-
-	dataType: FIELD_DATA_TYPE;
-
-	show: VIEW_MASK;
-
-	/** value is required for form. */
-	requirement: BoolNum;
-
-	/** value of the field should be unique for whole database table. */
-	unique: BoolNum;
-
-	/** if true - field data will go to the server on form save. */
-	sendToServer: BoolNum;
-
-	/** has multilingual input */
-	multilingual: BoolNum;
-
-	/** fields data go to the server, but has no store in database table. */
-	storeInDb: BoolNum;
-
-	/** fields will have index in database, and search will be processed in this field */
-	forSearch: BoolNum;
-
-	icon: string;
-
-	/** name of picture field in relative table. Thin picture will be used as icon in Lookup fields. */
-	lookupIcon: string;
-
-	cssClass?: string;
-
-	display: FIELD_DISPLAY;
-
-	/** SERVER SIDE FIELD ONLY. If it not empty - content of this field goes in to fieldName in SQL query to retrieve data not from direct table's field */
-	selectFieldName?: string;
-
-	/** order of the field in the form */
-	prior: number;
-
-	/** field tip. or html content for FIELD_TYPE.STATIC_HTML_BLOCK fields */
-	description: string;
-
-	/** content for static HTML field */
-	htmlContent?: string;
-
-	/** client side only field */
-	node?: NodeDesc;
-
-	/** index in parent's node 'fields' list. Client side only field */
-	index?: number;
-
-	enumList?: EnumList;
-
-	/** contains language id, if field is multilingual and refers to non default language */
-	lang?: string;
-
-	/** field name without language prefix */
-	fieldNamePure?: string /** field name without language prefix */;
-
-	/** fields which contains other languages data for that field */
-	childrenFields?: FieldDesc[];
-}
-
 interface ClientSideFilterRecord {
 	name: string;
 	order: number
-};
+}
 
-interface NodeDesc extends INodesRecord {
-	rolesToAccess: { roleId: RecId; privileges: number }[];
-	privileges: PRIVILEGES_MASK;
-	matchName: string;
+declare global {
 
-	fields?: FieldDesc[];
+	interface FieldDesc extends IFieldsRecord {
 
-	filters?: { [key: string]: IFiltersRecord | ClientSideFilterRecord };
-	filtersList?: SelectItem[];
-	sortFieldName?: string;
-	/** CLIENT SIDE ONLY */
-	fieldsById?: { [key: number]: FieldDesc };
-	/** CLIENT SIDE ONLY */
-	fieldsByName?: { [key: string]: FieldDesc };
+		dataType: FIELD_DATA_TYPE;
+
+		show: VIEW_MASK;
+
+		/** value is required for form. */
+		requirement: BoolNum;
+
+		/** value of the field should be unique for whole database table. */
+		unique: BoolNum;
+
+		/** if true - field data will go to the server on form save. */
+		sendToServer: BoolNum;
+
+		/** has multilingual input */
+		multilingual: BoolNum;
+
+		/** fields data go to the server, but has no store in database table. */
+		storeInDb: BoolNum;
+
+		/** fields will have index in database, and search will be processed in this field */
+		forSearch: BoolNum;
+
+		icon: string;
+
+		/** name of picture field in relative table. Thin picture will be used as icon in Lookup fields. */
+		lookupIcon: string;
+
+		cssClass?: string;
+
+		display: FIELD_DISPLAY;
+
+		/** SERVER SIDE FIELD ONLY. If it not empty - content of this field goes in to fieldName in SQL query to retrieve data not from direct table's field */
+		selectFieldName?: string;
+
+		/** order of the field in the form */
+		prior: number;
+
+		/** field tip. or html content for FIELD_TYPE.STATIC_HTML_BLOCK fields */
+		description: string;
+
+		/** content for static HTML field */
+		htmlContent?: string;
+
+		/** client side only field */
+		node?: NodeDesc;
+
+		/** index in parent's node 'fields' list. Client side only field */
+		index?: number;
+
+		enumList?: EnumList;
+
+		/** contains language id, if field is multilingual and refers to non default language */
+		lang?: string;
+
+		/** field name without language prefix */
+		fieldNamePure?: string /** field name without language prefix */;
+
+		/** fields which contains other languages data for that field */
+		childrenFields?: FieldDesc[];
+	}
+
+	interface NodeDesc extends INodesRecord {
+		rolesToAccess: { roleId: RecId; privileges: number }[];
+		privileges: PRIVILEGES_MASK;
+		matchName: string;
+
+		fields?: FieldDesc[];
+
+		filters?: { [key: string]: IFiltersRecord | ClientSideFilterRecord };
+		filtersList?: SelectItem[];
+		sortFieldName?: string;
+		/** CLIENT SIDE ONLY */
+		fieldsById?: { [key: number]: FieldDesc };
+		/** CLIENT SIDE ONLY */
+		fieldsByName?: { [key: string]: FieldDesc };
+	}
 }
 
 interface UserLangEntry extends ILanguagesRecord {
@@ -229,8 +232,7 @@ interface UserLangEntry extends ILanguagesRecord {
 }
 
 export type RecordDataWrite = {
-	/** submit captcha token */
-	c?: string;
+	/** no fields */
 }
 
 export type RecordDataWriteDraftable = RecordDataWrite & {

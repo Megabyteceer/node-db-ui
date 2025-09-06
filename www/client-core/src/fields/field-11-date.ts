@@ -2,6 +2,7 @@
 
 import moment from 'moment';
 import { FIELD_TYPE } from '../../../../types/generated';
+import { EMPTY_DATE } from '../consts';
 import { R } from '../r';
 import { innerDateTimeFormat, registerFieldClass, renderIcon, toReadableDate } from '../utils';
 import { dateFieldMixins /*, ReactDateTimeClassHolder*/ } from './field-4-date-time';
@@ -9,7 +10,7 @@ import { dateFieldMixins /*, ReactDateTimeClassHolder*/ } from './field-4-date-t
 registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 
 	static decodeValue(val) {
-		if (val === '0000-00-00 00:00:00') {
+		if (val === EMPTY_DATE) {
 			return null;
 		}
 		return moment(val, innerDateTimeFormat);
@@ -17,7 +18,7 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 
 	static encodeValue(val) {
 		if (!val) {
-			return ('0000-00-00 00:00:00');
+			return (EMPTY_DATE);
 		}
 		return val.format(innerDateTimeFormat);
 	}
@@ -34,6 +35,7 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 		if (this.props.isEdit) {
 			/*if (!ReactDateTimeClassHolder.ReactDateTimeClass) {
 				ReactDateTimeClassHolder.importReactDateTime();*/
+			debugger; // TODO
 			return renderIcon('cog fa-spin');
 			/*}
 			const inputsProps = {

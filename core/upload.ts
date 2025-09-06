@@ -4,7 +4,7 @@ import { IMAGE_THUMBNAIL_PREFIX } from '../www/client-core/src/bs-utils';
 
 import * as fs from 'fs';
 import { join } from 'path';
-const sharp = require('sharp');
+import sharp from 'sharp';
 
 import { ENV, getFieldDesc, getNodeDesc } from './describe-node';
 import { L } from './locale';
@@ -154,10 +154,10 @@ async function uploadImage(reqData, userSession: UserSession) {
 		let resizeTargetW = targetW;
 		let resizeTargetH = targetH;
 
-		let W = parseFloat(reqData.w);
-		let H = parseFloat(reqData.h);
-		let X = parseFloat(reqData.x);
-		let Y = parseFloat(reqData.y);
+		let W = parseFloat(reqData.w) || srcW;
+		let H = parseFloat(reqData.h) || srcH;
+		let X = parseFloat(reqData.x) || 0;
+		let Y = parseFloat(reqData.y) || 0;
 
 		const Q = targetW / W;
 

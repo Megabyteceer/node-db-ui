@@ -21,8 +21,7 @@ const LANGS = {
 	'EMAIL_ALREADY': 'Этот e-mail уже занят.',
 	'CONFIRM_EMAIL': `требуется подтверждение регистрации в системе %
 Перейдите по ссылке для подтверждения регистрации: `,
-	'CONFIRM_EMAIL_SUBJ': 'Подтверждение регистрации.',
-	'CAPTCHA_ERROR': 'Ошибка защиты от спама.'
+	'CONFIRM_EMAIL_SUBJ': 'Подтверждение регистрации.'
 };
 
 initDictionaryServerSide(LANGS, 'ru');

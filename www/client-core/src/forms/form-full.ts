@@ -1,5 +1,5 @@
 import { FieldWrap } from '../fields/field-wrap';
-import { CLIENT_SIDE_FORM_EVENTS, deleteRecord, getCaptchaToken, getItem, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, submitRecord } from '../utils';
+import { CLIENT_SIDE_FORM_EVENTS, deleteRecord, getItem, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, submitRecord } from '../utils';
 import { FormEventProcessingMixins } from './event-processing-mixins';
 import { FormTab } from './form-tab';
 /// #if DEBUG
@@ -268,9 +268,6 @@ class FormFull extends FormEventProcessingMixins {
 		}
 
 		if (Object.keys(data).length > 0) {
-			if (this.props.node.captcha) {
-				data.c = await getCaptchaToken();
-			}
 			const submitResult: RecordSubmitResult | RecordSubmitResultNewRecord = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
 			const recId: RecId | undefined = (submitResult as RecordSubmitResultNewRecord).recId;
 			if (!recId) {
