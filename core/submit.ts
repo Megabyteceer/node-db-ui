@@ -7,7 +7,7 @@ import { unlink } from 'fs';
 import { join } from 'path';
 import type { UserSession } from './auth';
 import { isAdmin, notificationOut } from './auth';
-import { getFieldDesc, getNodeDesc, getNodeEventHandler, ServerSideEventHandlersNames } from './describe-node';
+import { getFieldDesc, getNodeDesc } from './describe-node';
 import { ENV } from './ENV';
 import { getRecord, getRecords } from './get-records';
 import { L } from './locale';
@@ -18,6 +18,12 @@ import {mysqlRollback} } from './mysql-connection';
 //*/
 
 import { FIELD_TYPE, type NODE_ID } from '../types/generated';
+import {
+	/// #if DEBUG
+	__destroyRecordToPreventAccess,
+	/// #endif
+	eventDispatch, ServerEventName
+} from '../www/client-core/src/events-handle';
 import { D, escapeString, mysqlCommit, mysqlExec, mysqlStartTransaction, NUM_1 } from './mysql-connection';
 import { idToImgURLServer, UPLOADS_FILES_PATH } from './upload';
 
@@ -109,7 +115,8 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 	if (userSession && node.storeForms) {
 		await mysqlStartTransaction();
 	}
-	let handlerResult;
+	let handlerResult1;
+	let handlerResult2;
 	/// #if DEBUG
 	/*
 	/// #endif
@@ -179,9 +186,9 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 	}
 
 	if (recId) {
-		handlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeUpdate, currentData, data, userSession);
+		handlerResult1 = await eventDispatch(node.tableName, ServerEventName.beforeUpdate, currentData, data, userSession);
 	} else {
-		handlerResult = await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeCreate, data, userSession);
+		handlerResult1 = await eventDispatch(node.tableName, node.storeForms ? ServerEventName.beforeCreate : ServerEventName.onSubmit, data, userSession);
 		if (!node.storeForms) {
 			recId = 1;
 		}
@@ -312,10 +319,16 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 		if (!recId) {
 			recId = qResult[0].id;
 			data.id = recId;
-			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterCreate, data, userSession);
+			handlerResult2 = await eventDispatch(node.tableName, ServerEventName.afterCreate, data, userSession);
 		} else {
-			await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterUpdate, Object.assign(currentData, data), userSession);
+			handlerResult2 = await eventDispatch(node.tableName, ServerEventName.afterUpdate, Object.assign(currentData, data), userSession);
 		}
+
+		/// #if DEBUG
+		__destroyRecordToPreventAccess(data);
+		__destroyRecordToPreventAccess(currentData);
+		/// #endif
+
 		if (needProcess_n2m) {
 			for (const f of node.fields) {
 				if (f.fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
@@ -357,7 +370,12 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 			unlink(f, () => {});
 		}
 	}
-	return { recId, handlerResult };
+
+	if (handlerResult1 && handlerResult2) {
+		Object.assign(handlerResult1, handlerResult2);
+	}
+
+	return { recId, handlerResult: handlerResult1 || handlerResult2 };
 	/// #if DEBUG
 	/*
 	/// #endif

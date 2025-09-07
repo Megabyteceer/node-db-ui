@@ -1,30 +1,29 @@
 import { randomBytes } from 'crypto';
 
-import { NODE_ID, type IResetPasswordFilter, type IResetPasswordRecordWrite } from '../../types/generated';
-import type { UserSession } from '../auth';
+import { NODE_ID, type IResetPasswordFilter } from '../../types/generated';
+import { serverOn } from '../../www/client-core/src/events-handle';
 import { getServerHref, mail_utf8 } from '../auth';
 import { L } from '../locale';
-import { mysqlExec } from '../mysql-connection';
+import { D, escapeString, mysqlExec, NUM_1 } from '../mysql-connection';
 
-export interface ResetPasswordData extends IResetPasswordFilter {
+export interface ResetPasswordData extends IResetPasswordFilter { // TODO remove type
 	activationKey: string;
 	resetCode: string;
 }
 
-export default {
-	beforeCreate: async function (data: IResetPasswordRecordWrite, userSession: UserSession) {
-		const email = data.email;
-		if (email) {
-			const pgs = await mysqlExec(
-				'SELECT id FROM _users WHERE _users.status=1 AND email=\'' + email + '\' LIMIT 1'
+serverOn('_resetPassword.onSubmit', async (data, userSession) => {
+	const email = data.email;
+	if (email) {
+		const pgs = await mysqlExec(
+			'SELECT id FROM _users WHERE _users.status=' + NUM_1 + ' AND email=' + escapeString(email) + ' LIMIT ' + NUM_1
+		);
+		if (pgs.length > 0) {
+			const user = pgs[0];
+			const resetCode = randomBytes(24).toString('base64');
+			await mysqlExec(
+				'UPDATE _users SET "resetTime"=NOW(), "resetCode" = ' + escapeString(resetCode) + ' WHERE id=' + D(user.id)
 			);
-			if (pgs.length > 0) {
-				const user = pgs[0];
-				const resetCode = randomBytes(24).toString('base64');
-				await mysqlExec(
-					'UPDATE _users SET resetTime=NOW(), resetCode = \'' + resetCode + '\' WHERE id=' + user.id
-				);
-				const href =
+			const href =
 					getServerHref() +
 					'#n/' +
 					NODE_ID.RESET_PASSWORD +
@@ -32,12 +31,11 @@ export default {
 					user.id +
 					'/resetCode/' +
 					encodeURIComponent(resetCode);
-				await mail_utf8(
-					data.email,
-					L('PASSWORD_RESET_EMAIL_HEADER', userSession),
-					L('PASSWORD_RESET_EMAIL_BODY', userSession, href)
-				);
-			}
+			await mail_utf8(
+				data.email,
+				L('PASSWORD_RESET_EMAIL_HEADER', userSession),
+				L('PASSWORD_RESET_EMAIL_BODY', userSession, href)
+			);
 		}
-	},
-};
+	}
+});

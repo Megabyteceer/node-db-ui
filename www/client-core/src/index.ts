@@ -28,32 +28,28 @@ import './fields/field-5-bool';
 import './fields/field-6-enum';
 import './fields/field-7-many-to-one';
 import './fields/field-8-static-text';
-import { MainFrame } from './main-frame';
 import { Stage } from './stage';
 import './views/view_5_users';
 
-import { registerEventHandler } from './forms/event-processing-mixins';
 
 /// #if DEBUG
 import { AdminRolePrivilegesForm } from './admin/admin-role-privileges-form';
 /// #endif
 
-import { h, render } from 'preact';
 import { globals } from '../../../types/globals';
-import { FieldsEvents } from './events/fields_events';
-import { FormEvents } from './events/forms_events';
 
 
 globals.Stage = Stage;
-globals.registerEventHandler = registerEventHandler;
+
 globals.customClasses = {};
 
 /// #if DEBUG
 globals.customClasses.AdminRolePrivilegesForm = AdminRolePrivilegesForm;
 /// #endif
 
-setTimeout(() => {
-	globals.registerEventHandler(FormEvents);
-	globals.registerEventHandler(FieldsEvents);
-	render(h(MainFrame, null), document.getElementById('container'));
-}, 10);
+import { h, render } from 'preact';
+import './events/forms_events';
+import { MainFrame } from './main-frame';
+
+render(h(MainFrame, null), document.getElementById('container'));
+

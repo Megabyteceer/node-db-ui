@@ -433,6 +433,7 @@ class FormFull extends FormEventProcessingMixins {
 			});
 		}
 
+		let closeSubFormButton;
 		let closeButton;
 		let header;
 
@@ -550,6 +551,15 @@ class FormFull extends FormEventProcessingMixins {
 						label: R.span(null, renderIcon('caret-left'), this.isSubForm() ? '' : L('BACK'))
 					});
 				}
+
+				closeSubFormButton = R.div({className: 'close-popup-wrap'}, R.button(
+					{
+						className: 'clickable tool-btn danger-btn close-popup-button',
+						title: L('CLOSE'),
+						onClick: this.cancelClick
+					},
+					renderIcon('times')
+				));
 			}
 		}
 
@@ -588,6 +598,7 @@ class FormFull extends FormEventProcessingMixins {
 			/// #if DEBUG
 			nodeAdmin,
 			/// #endif
+			closeSubFormButton,
 			header,
 			tabsHeader,
 			tabs || fields,

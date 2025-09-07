@@ -4,14 +4,13 @@
 import handlers from '../___index';
 //*/
 
-import { existsSync, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 
 import { D, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 
-import { join } from 'path';
 import { FIELD_TYPE, NODE_ID, NODE_TYPE, type IFiltersRecord } from '../types/generated';
 import { assert, throwError } from '../www/client-core/src/assert';
-import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, RecordData, RecordDataWrite, UserLangEntry } from '../www/client-core/src/bs-utils';
+import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, UserLangEntry } from '../www/client-core/src/bs-utils';
 import { FIELD_DATA_TYPE, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { BaseForm } from '../www/client-core/src/forms/base-form';
 import type { UserSession /*, usersSessionsStartedCount*/ } from './auth';
@@ -45,7 +44,6 @@ let nodesById: Map<number, NodeDesc>;
 let enumsById: Map<number, EnumList>;
 let nodesByTableName: Map<string, NodeDesc>;
 let langs: UserLangEntry[];
-let eventsHandlersServerSide;
 
 const ADMIN_USER_SESSION: UserSession = {} as UserSession;
 const GUEST_USER_SESSION: UserSession = {} as UserSession;
@@ -294,8 +292,6 @@ function attemptToReloadMetadataSchedule() {
 async function initNodesData() {
 	// load whole nodes data in to memory
 
-	const eventsHandlers_new = new Map();
-
 	options = Object.assign({}, ENV) as any;
 
 	fieldsById = new Map();
@@ -399,37 +395,14 @@ async function initNodesData() {
 			}
 			nodeData.filters = filters;
 
-			//events handlers
-			/// #if DEBUG
-			const importServerSideEvents = async (folderName) => {
-				const moduleFileName = join(__dirname, folderName + nodeData.tableName + '.js');
-				if (existsSync(moduleFileName)) {
-					const handler = await import(`./${folderName}${nodeData.tableName}.js`);
-					eventsHandlers_new.set(nodeData.id, handler.default.default || handler.default);
-				}
-			};
-			await importServerSideEvents('events/');
-			await importServerSideEvents('../events/');
-			/// #endif
+
 		}
 	}
-	//events handlers
-	/// #if DEBUG
-	/*
-	/// #endif
-	for(let tableName in handlers) {
-		if(!nodesByTableName.has(tableName)) {
-			throwError('Event handler ./events/' + tableName + '.ts has no related node in database.');
-		}
-		let nodeId = nodesByTableName.get(tableName).id;
-		eventsHandlers_new.set(nodeId, handlers[tableName]);
-	}
-	//*/
 
 	if (langs.length > 1) {
 		options.langs = langs;
 	}
-	eventsHandlersServerSide = eventsHandlers_new;
+
 	clientSideNodes.clear();
 	nodesTreeCache.clear();
 	Object.assign(
@@ -478,78 +451,7 @@ function getLangs(): UserLangEntry[] {
 	return langs;
 }
 
-enum ServerSideEventHandlersNames {
-	beforeCreate = 'beforeCreate',
-	afterCreate = 'afterCreate',
-	beforeUpdate = 'beforeUpdate',
-	afterUpdate = 'afterUpdate',
-	beforeDelete = 'beforeDelete',
-	afterDelete = 'afterDelete'
-}
-
-interface NodeEventsHandlers {
-	beforeCreate?: (data: RecordDataWrite, userSession: UserSession) => Promise<void>;
-	afterCreate?: (data: RecordDataWrite, userSession: UserSession) => Promise<void>;
-	beforeUpdate?: (currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) => Promise<void>;
-	afterUpdate?: (data: RecordData, userSession: UserSession) => Promise<void>;
-	beforeDelete?: (data: RecordData, userSession: UserSession) => Promise<void>;
-	afterDelete?: (data: RecordData, userSession: UserSession) => Promise<void>;
-}
-
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterCreate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeUpdate, currentData: RecordData, newData: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterUpdate, data: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.beforeDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames.afterDelete, data: RecordDataWrite, userSession: UserSession): Promise<void>;
-async function getNodeEventHandler(nodeId: RecId, eventName: ServerSideEventHandlersNames, data1, data2, data3?): Promise<void> {
-	if (eventsHandlersServerSide.has(nodeId)) {
-		const serverSideNodeEventHandler = eventsHandlersServerSide.get(nodeId)[eventName];
-		/// #if DEBUG
-		data1 = wrapObjectToDestroy(data1);
-		data2 = wrapObjectToDestroy(data2);
-		data3 = wrapObjectToDestroy(data3);
-		/// #endif
-		let res;
-		if (serverSideNodeEventHandler) {
-			// call node server side event handler
-			res = await serverSideNodeEventHandler(data1, data2, data3);
-		}
-
-		/// #if DEBUG
-		destroyObject(data1);
-		destroyObject(data2);
-		destroyObject(data3);
-		/// #endif
-		return res;
-	}
-}
-
 /// #if DEBUG
-const wrapObjectToDestroy = (o) => {
-	let destroyed = false;
-	if (o) {
-		return new Proxy(o, {
-			set: function (obj, prop, value) {
-				if (destroyed) {
-					throwError('Attempt to assign data after exit on eventHandler. Has eventHandler not "await" for something?');
-				}
-				if (prop === 'destroyObject_ONKwFSqwSFd123123') {
-					destroyed = true;
-				} else {
-					obj[prop] = value;
-				}
-				return true;
-			}
-		});
-	}
-};
-
-const destroyObject = (o) => {
-	if (o) {
-		o.destroyObject_ONKwFSqwSFd123123 = true;
-	}
-};
 
 const generateTypings = async () => {
 	const src = [`
@@ -658,9 +560,62 @@ import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordD
 	});
 	src.push('}');
 
+	const HANDLER_RET = 'HandlerRet';
+
 	src.push(`
 import type { RecId, UserSession, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import type { FormFull } from '../www/client-core/src/forms/form-full';
 export class TypeGenerationHelper {`);
+
+
+	nodesData.forEach((nodeData) => {
+		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
+			const name = snakeToCamel(nodeData.tableName);
+			if (nodeData.storeForms) {
+				src.push(`
+	async e(eventName: '${nodeData.tableName}.beforeCreate', handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async e(eventName: '${nodeData.tableName}.afterCreate', handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async e(eventName: '${nodeData.tableName}.beforeUpdate', handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async e(eventName: '${nodeData.tableName}.afterUpdate', handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async e(eventName: '${nodeData.tableName}.beforeDelete', handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET});
+	async e(eventName: '${nodeData.tableName}.afterDelete', handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET});
+`);
+			} else {
+				src.push(`
+	async e(eventName: '${nodeData.tableName}.onSubmit', handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+`);
+			}
+		}
+	});
+	src.push(`	async e() {
+		return 1 as any;
+	}`);
+
+	const CLIENT_HANDLER_RET = 'Promise<boolean | void> | boolean | void';
+
+	nodesData.forEach((nodeData) => {
+		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
+			src.push(`
+	async ec(eventName: '${nodeData.tableName}.onLoad', handler: (form: FormFull) => ${CLIENT_HANDLER_RET});
+	async ec(eventName: '${nodeData.tableName}.onSave', handler: (form: FormFull) => ${CLIENT_HANDLER_RET});
+	async ec(eventName: '${nodeData.tableName}.afterSave', handler: (form: FormFull, result?: KeyedMap<any>) => ${CLIENT_HANDLER_RET});
+`);
+			for (const field of nodeData.fields) {
+				const isClickable = (field.fieldType === FIELD_TYPE.BUTTON) || (field.fieldType === FIELD_TYPE.TAB);
+				if (isClickable || (field.show && VIEW_MASK.EDITABLE)) {
+					if(isClickable) {
+						src.push(`	async ec(eventName: '${nodeData.tableName},${field.fieldName}.onClick', handler: (form: FormFull) => void);`);
+					} else {
+						src.push(`	async ec(eventName: '${nodeData.tableName},${field.fieldName}.onChange', handler: (form: FormFull, isUserAction: boolean, prevValue: any) => void);`);
+					}
+				}
+			}
+		}
+	});
+	src.push(`	async ec() {
+		return 1 as any;
+	}`);
+
 
 	// generate getRecord() typing
 	nodesData.forEach((nodeData) => {
@@ -755,11 +710,8 @@ export {
 	getGuestUserForBrowserLanguage,
 	getLangs,
 	getNodeDesc,
-	getNodeEventHandler,
 	getNodesTree,
 	initNodesData,
-	NodeEventsHandlers,
-	reloadMetadataSchedule,
-	ServerSideEventHandlersNames
+	reloadMetadataSchedule
 };
 

@@ -2,25 +2,10 @@ import { render, type ComponentChild } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { assert, throwError, validateFieldName } from '../assert';
 import type { FieldDesc, GetRecordsFilter, RecordData } from '../bs-utils';
+import { clientHandlers } from '../events-handle';
 import type { FieldWrap } from '../fields/field-wrap';
 import { CLIENT_SIDE_FORM_EVENTS, consoleLog, getData, L } from '../utils';
 import { BaseForm } from './base-form';
-
-const eventsHandlers = [];
-
-function registerEventHandler(classInstance) {
-	const proto = classInstance.prototype;
-	eventsHandlers.push(proto);
-	const names = Object.getOwnPropertyNames(proto);
-	for (const name of names) {
-		if (name !== 'constructor') {
-			const method = proto[name];
-			if (typeof method === 'function') {
-				FormEventProcessingMixins.prototype[name] = method;
-			}
-		}
-	}
-}
 
 class FormEventProcessingMixins extends BaseForm {
 	/** true if form opened for new record creation */
@@ -30,12 +15,6 @@ class FormEventProcessingMixins extends BaseForm {
 
 	saveButtonTitle: string;
 	isCancelButtonHidden: boolean;
-
-	/** previous value of changed field. Can be used in onInput event of field */
-	prev_value: any;
-
-	/**  says if field was changed by user's action. Can be used in onInput event of field */
-	isUserEdit: boolean;
 
 	currentData: RecordData;
 
@@ -369,39 +348,37 @@ class FormEventProcessingMixins extends BaseForm {
 	}
 
 	_getFormEventHandler(eventName: CLIENT_SIDE_FORM_EVENTS) {
-		const name = this.props.node.tableName + '_' + eventName;
-		return this._getEventHandler(name);
+		const name = this.props.node.tableName + '.' + eventName;
+		return this._getEventHandlers(name);
 	}
 
-	_getFieldEventHandler(field: FieldDesc) {
+	_getFieldEventHandlers(field: FieldDesc) {
 		const name =
 			this.props.node.tableName +
-			'_' +
+			',' +
 			field.fieldName +
-			'_' +
-			CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE;
-		return this._getEventHandler(name);
+			'.' +
+			(field.fieldType === FIELD_TYPE.BUTTON || field.fieldType === FIELD_TYPE.TAB) ?
+				CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CLICK :
+				CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE;
+		return this._getEventHandlers(name);
 	}
 
-	_getEventHandler(name) {
-		const ret = eventsHandlers.filter((i) => i.hasOwnProperty(name)).map((i) => i[name]);
-		return ret.length > 0 && ret;
+	_getEventHandlers(name: string) {
+		return clientHandlers.get(name);
 	}
 
 	processFieldEvent(field: FieldDesc, isUserAction?: boolean, prev_val?) {
-		return this.processEvent(this._getFieldEventHandler(field), isUserAction, prev_val);
+		return this.processEvent(this._getFieldEventHandlers(field), isUserAction, prev_val);
 	}
 
-	/** @argument arg - result of server side onSave event handler */
-	processFormEvent(eventName: CLIENT_SIDE_FORM_EVENTS, arg?: any) {
-		return this.processEvent(this._getFormEventHandler(eventName), undefined, undefined, arg);
+	processFormEvent(eventName: CLIENT_SIDE_FORM_EVENTS, ...args: any[]) {
+		return this.processEvent(this._getFormEventHandler(eventName), ...args);
 	}
 
-	async processEvent(handlers, isUserAction = false, prev_val = undefined, arg?: any) {
-		let ret;
+	async processEvent(handlers, ...args) {
 		if (handlers) {
 			for (const handler of handlers) {
-				this.prev_value = prev_val;
 				this.recId = this.props.initialData.id || 'new';
 				this.isUpdateRecord = this.props.editable;
 				if (this.isUpdateRecord) {
@@ -410,12 +387,12 @@ class FormEventProcessingMixins extends BaseForm {
 						this.isUpdateRecord = false;
 					}
 				}
-				this.isUserEdit = isUserAction;
-				ret = (await handler.call(this, arg)) || ret;
+				if(await handler(this, ...args)) {
+					return true;
+				}
 			}
 		}
-		return ret;
 	}
 }
 
-export { FormEventProcessingMixins, registerEventHandler };
+export { FormEventProcessingMixins };

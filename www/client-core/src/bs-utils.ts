@@ -147,6 +147,16 @@ interface ClientSideFilterRecord {
 
 declare global {
 
+	type KeyedMap<T> = {
+		[key: string]: T;
+	};
+
+	type HandlerRet = AsyncHandlerRet | SyncHandlerRet;
+
+	type AsyncHandlerRet = Promise<KeyedMap<any> | undefined>;
+
+	type SyncHandlerRet = KeyedMap<any> | undefined;
+
 	interface FieldDesc extends IFieldsRecord {
 
 		dataType: FIELD_DATA_TYPE;

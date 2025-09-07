@@ -1,11 +1,18 @@
 import { FIELD_TYPE, type IFiltersRecord, type NODE_ID, type TypeGenerationHelper } from '../types/generated';
 import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
-import type { GetRecordsFilter, RecId, RecordData, RecordDataWrite, RecordsData } from '../www/client-core/src/bs-utils';
+import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
 import { FIELD_DATA_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { UserSession } from './auth';
-import { ADMIN_USER_SESSION, filtersById, getNodeDesc, getNodeEventHandler, ServerSideEventHandlersNames } from './describe-node';
+import { ADMIN_USER_SESSION, filtersById, getNodeDesc } from './describe-node';
 
+import {
+	/// #if DEBUG
+	__destroyRecordToPreventAccess,
+	/// #endif
+	eventDispatch, ServerEventName
+} from '../www/client-core/src/events-handle';
 import { A, D, escapeString, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
+
 
 const isASCII = (str) => {
 	return /^[\x00-\x7F]*$/.test(str);
@@ -467,13 +474,19 @@ export async function deleteRecord(nodeId: NODE_ID, recId:RecId, userSession = A
 		throwError('Deletion access is denied');
 	}
 
-	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.beforeDelete, recordData as RecordDataWrite, userSession);
+	const ret1 = await eventDispatch(node.tableName, ServerEventName.beforeDelete, recordData, userSession);
 
 	await mysqlExec('UPDATE "' + node.tableName + DELETE_RECORD_SQL_PART + D(recId));
 
-	await getNodeEventHandler(nodeId, ServerSideEventHandlersNames.afterDelete, recordData as RecordDataWrite, userSession);
+	const ret2 = await eventDispatch(node.tableName, ServerEventName.afterDelete, recordData, userSession);
 
-	return 1;
+	/// #if DEBUG
+	__destroyRecordToPreventAccess(recordData);
+	/// #endif
+	if (ret1 && ret2) {
+		Object.assign(ret1, ret2);
+	}
+	return ret1 || ret2;
 }
 
 

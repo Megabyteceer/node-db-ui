@@ -1,30 +1,22 @@
 
 import { readFile, unlink, writeFile } from 'fs';
 import { join } from 'path';
-import type { IHtmlRecord, IHtmlRecordWrite } from '../../types/generated';
-import type { UserSession } from '../../www/client-core/src/bs-utils';
-import type { NodeEventsHandlers } from '../describe-node';
+import type { IHtmlRecordWrite } from '../../types/generated';
+import { serverOn } from '../../www/client-core/src/events-handle';
 
 
-const handlers: NodeEventsHandlers = {
-	beforeCreate: async function(data: IHtmlRecordWrite, _userSession: UserSession) {
-		saveDoc(data);
-	},
+serverOn('_html.beforeCreate', async (data, _userSession) => {
+	saveDoc(data);
+});
 
-	afterCreate: async function(_data: IHtmlRecordWrite, _userSession: UserSession) {
+serverOn('_html.beforeUpdate', async (currentData, newData, _userSession) => {
+	currentData = Object.assign(currentData, newData);
+	saveDoc(currentData);
+});
 
-	},
-
-	beforeUpdate: async function(currentData: IHtmlRecord, newData: IHtmlRecordWrite, _userSession: UserSession) {
-		currentData = Object.assign(currentData, newData);
-		saveDoc(currentData);
-	},
-
-	beforeDelete: async function(data: IHtmlRecord, _userSession: UserSession) {
-		unlink(getDocFilename(data), emptyCallback);
-	}
-};
-export default handlers;
+serverOn('_html.beforeDelete', async (data, _userSession) => {
+	unlink(getDocFilename(data), emptyCallback);
+});
 
 const emptyCallback = () => { };
 

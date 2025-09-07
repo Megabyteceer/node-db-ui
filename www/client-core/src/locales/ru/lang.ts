@@ -60,6 +60,7 @@ initDictionary({
 	'DETAILS': 'Подробнее',
 	'SELECT': 'Выбрать',
 	'REQUIRED_FLD': 'Поле обязательно к заполнению.',
+	'CLOSE': 'Закрыть',
 	'SAVE': 'Сохранить',
 	'SAVE_TEMPLATE': 'Сохранить черновик',
 	'BACK': 'Назад',

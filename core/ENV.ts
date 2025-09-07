@@ -1,6 +1,6 @@
 const SERVER_ENV = {
 	PORT: 1443,
-	SERVER_NAME: 'http://node-db-ui.com:1443/',
+	SERVER_NAME: 'http://node-db-ui.com:5173/',
 	ADMIN_ENABLED_DEFAULT: true,
 	ERROR_NOTIFY_EMAIL: '',
 

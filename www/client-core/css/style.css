@@ -351,6 +351,20 @@ input[readonly] {
 	color: #fee;
 }
 
+.close-popup-wrap {
+	display: none;
+	text-align: right;
+}
+
+.form-layer-modal .close-popup-wrap {
+	display: block;
+}
+
+.close-popup-button {
+	position: fixed;
+	top: 60px;
+}
+
 .edit-btn {
 	color: #fff;
 	background: var(--EDIT_COLOR);

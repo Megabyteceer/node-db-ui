@@ -77,7 +77,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		let body;
 		let border;
 
-		if (form._getFieldEventHandler && form._getFieldEventHandler(field)) {
+		if (form._getFieldEventHandlers && form._getFieldEventHandlers(field)) {
 			border = ' admin-button-highlighted';
 		} else {
 			border = '';

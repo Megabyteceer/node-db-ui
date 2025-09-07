@@ -124,7 +124,7 @@ class BaseField< T extends FieldProps = FieldProps, T2 extends FieldState = Fiel
 	focus() {
 		if (this.refToInput) {
 			//@ts-ignore
-			this.refToInput.base.focus();
+			this.refToInput.focus();
 		}
 	}
 

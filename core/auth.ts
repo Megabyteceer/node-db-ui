@@ -1,12 +1,12 @@
 import { pbkdf2, randomBytes } from 'crypto';
 import { NODE_ID } from '../types/generated';
-import { assert, throwError } from '../www/client-core/src/assert';
+import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
 import type { RecId, UserLangEntry, UserRoles, UserSession } from '../www/client-core/src/bs-utils';
-import { ROLE_ID } from '../www/client-core/src/bs-utils';
+import { ROLE_ID, USER_ID } from '../www/client-core/src/bs-utils';
 import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from './describe-node';
 import { ENV, SERVER_ENV } from './ENV';
 import { L } from './locale';
-import { D, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
+import { D, escapeString, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 import { submitRecord } from './submit';
 
 const sessions = new Map();
@@ -211,16 +211,28 @@ async function resetPassword(key, userId, userSession) {
 	if (key && userId) {
 		const users = await mysqlExec(
 			'SELECT id FROM _users WHERE id= ' +
-				userId +
-				' AND status = 1 AND "resetCode"=\'' +
-				key +
-				'\' AND "resetTime" > DATE_ADD(CURDATE(), INTERVAL -1 DAY) LIMIT 1'
+				D(userId) +
+				/// #if DEBUG
+				ESCAPE_BEGIN +
+				/// #endif
+				' AND status = 1 AND "resetCode"=' +
+				/// #if DEBUG
+				ESCAPE_END +
+				/// #endif
+				escapeString(key) +
+				/// #if DEBUG
+				ESCAPE_BEGIN +
+				/// #endif
+				' AND "resetTime" > (NOW() + interval \'-1\' day) LIMIT 1'
+				/// #if DEBUG
+				+ ESCAPE_END
+				/// #endif
+
 		);
 		if (users.length === 1) {
 			await mysqlExec(
-				'UPDATE _users SET "resetCode" = \'\' WHERE id =\'' +
-					userId +
-					'\''
+				'UPDATE _users SET "resetCode" = ' + escapeString('') + ' WHERE id =' +
+					D(userId)
 			);
 			return authorizeUserByID(userId);
 		}
@@ -301,7 +313,7 @@ async function authorizeUserByID(
 
 	let cacheKeyGenerator: string[];
 	const userRoles: UserRoles = {};
-	if (userID === 2) {
+	if (userID === USER_ID.GUEST) {
 		userRoles[ROLE_ID.GUEST] = 1;
 		cacheKeyGenerator = [ROLE_ID.GUEST as unknown as string];
 	} else {

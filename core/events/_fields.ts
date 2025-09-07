@@ -1,158 +1,154 @@
-import { FIELD_ID, FIELD_TYPE, NODE_ID, type IFieldsFilter, type IFieldsRecord, type IFieldsRecordWrite } from '../../types/generated';
+import { FIELD_ID, FIELD_TYPE, NODE_ID, type IFieldsFilter, type IFieldsRecordWrite } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
-import type { UserSession } from '../../www/client-core/src/bs-utils';
 import { VIEW_MASK } from '../../www/client-core/src/bs-utils';
 import { EMPTY_DATE } from '../../www/client-core/src/consts';
+import { serverOn } from '../../www/client-core/src/events-handle';
 import { shouldBeAdmin } from '../admin/admin';
 import { mustBeUnset } from '../auth';
-import type { NodeEventsHandlers } from '../describe-node';
 import { getLangs, getNodeDesc, reloadMetadataSchedule } from '../describe-node';
 import { getRecord, getRecords } from '../get-records';
 import { L } from '../locale';
 import { D, ESCAPED_LITERAL, escapeString, mysqlExec, NUM_0 } from '../mysql-connection';
 import { submitRecord } from '../submit';
 
-type T = IFieldsRecord;
+serverOn('_fields.beforeCreate', async (data, userSession) => {
+	shouldBeAdmin(userSession);
 
-const handlers: NodeEventsHandlers = {
-	beforeCreate: async function (data: IFieldsRecordWrite, userSession: UserSession) {
-		shouldBeAdmin(userSession);
+	if (data.multilingual) {
+		const langs = getLangs();
+		const fn = data.fieldName;
+		for (const l of langs) {
+			if (l.prefix) {
+				data.fieldName = fn + l.prefix;
+				await createFieldInTable(data);
+			}
+		}
+		data.fieldName = fn;
+	}
 
-		if (data.multilingual) {
-			const langs = getLangs();
-			const fn = data.fieldName;
-			for (const l of langs) {
-				if (l.prefix) {
-					data.fieldName = fn + l.prefix;
-					await createFieldInTable(data);
+	await createFieldInTable(data);
+}
+);
+
+serverOn('_fields.afterCreate', async (data, userSession) => {
+	shouldBeAdmin(userSession);
+
+	const fieldType = data.fieldType;
+	const fieldName = data.fieldName;
+	if (fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
+		const parentNode = await getRecord(NODE_ID.NODES, VIEW_MASK.EDITABLE, data.nodeFieldsLinker.id, userSession);
+
+		const linkerFieldData = {
+			status: 1,
+			fieldName: fieldName + 'Linker',
+			nodeFieldsLinker: data.nodeRef,
+			nodeRef: data.nodeFieldsLinker,
+			name: parentNode.singleName,
+			show: VIEW_MASK.EDITABLE,
+			prior: 1000,
+			sendToServer: 1,
+			storeInDb: 1,
+			fieldType: FIELD_TYPE.LOOKUP,
+			forSearch: 1,
+			selectFieldName: parentNode.tableName,
+			_usersId: userSession.id,
+			_organizationId: userSession.orgId
+		};
+		await submitRecord(NODE_ID.FIELDS, linkerFieldData);
+	}
+
+	// update priority
+	const fields = await getRecords(NODE_ID.FIELDS, VIEW_MASK.ALL, null, userSession, {
+		nodeFieldsLinker: data.nodeFieldsLinker.id
+	});
+	fields.items.sort((a, b) => {
+		return a.prior - b.prior;
+	});
+	let prior = 0;
+	await Promise.all(
+		fields.items.map((i) => {
+			prior += 10;
+			if (i.prior !== prior) {
+				return submitRecord(NODE_ID.FIELDS, { prior }, i.id, userSession);
+			}
+		})
+	);
+
+	reloadMetadataSchedule();
+});
+
+serverOn('_fields.beforeUpdate', async (currentData, newData, userSession) => {
+	shouldBeAdmin(userSession);
+
+	if (currentData.id === FIELD_ID.FIELDS__MAX_LENGTH && newData.hasOwnProperty('maxLength')) {
+		throwError(L('SIZE_FLD_BLOCKED', userSession));
+	}
+
+	mustBeUnset(newData, 'fieldName');
+	mustBeUnset(newData, 'storeInDb');
+	mustBeUnset(newData, 'nodeFieldsLinker');
+
+	if (currentData.storeInDb) {
+		if (newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxLength') || newData.hasOwnProperty('multilingual') || newData.hasOwnProperty('forSearch')) {
+			const multilingualChanged = newData.hasOwnProperty('multilingual') && currentData.multilingual !== newData.multilingual;
+
+			const node = getNodeDesc(currentData.nodeFieldsLinker.id);
+			const realFieldName = currentData.fieldName;
+			const fieldType = currentData.fieldType;
+
+			if (currentData.forSearch !== newData.forSearch) {
+				if (newData.forSearch) {
+					await mysqlExec(`CREATE INDEX "${node.tableName}${realFieldName}" ON ${node.tableName} USING btree (${realFieldName});`);
+				} else {
+					await mysqlExec(`DROP INDEX IF EXISTS "${node.tableName}${realFieldName};`);
 				}
 			}
-			data.fieldName = fn;
-		}
 
-		await createFieldInTable(data);
-	},
+			currentData = Object.assign(currentData, newData);
 
-	afterCreate: async function (data: IFieldsRecordWrite, userSession: UserSession) {
-		shouldBeAdmin(userSession);
+			if (realFieldName !== '_organizationId' && realFieldName !== '_usersId' && realFieldName !== '_createdOn' && realFieldName !== 'id') {
+				if (currentData.storeInDb && fieldType !== FIELD_TYPE.STATIC_HTML_BLOCK && fieldType !== FIELD_TYPE.LOOKUP_N_TO_M && fieldType !== FIELD_TYPE.LOOKUP_1_TO_N) {
+					const typeQ = getFieldTypeSQL(currentData);
+					if (typeQ) {
+						const langs = getLangs();
 
-		const fieldType = data.fieldType;
-		const fieldName = data.fieldName;
-		if (fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
-			const parentNode = await getRecord(NODE_ID.NODES, VIEW_MASK.EDITABLE, data.nodeFieldsLinker.id, userSession);
-
-			const linkerFieldData = {
-				status: 1,
-				fieldName: fieldName + 'Linker',
-				nodeFieldsLinker: data.nodeRef,
-				nodeRef: data.nodeFieldsLinker,
-				name: parentNode.singleName,
-				show: VIEW_MASK.EDITABLE,
-				prior: 1000,
-				sendToServer: 1,
-				storeInDb: 1,
-				fieldType: FIELD_TYPE.LOOKUP,
-				forSearch: 1,
-				selectFieldName: parentNode.tableName,
-				_usersId: userSession.id,
-				_organizationId: userSession.orgId
-			};
-			await submitRecord(NODE_ID.FIELDS, linkerFieldData);
-		}
-
-		// update priority
-		const fields = await getRecords(NODE_ID.FIELDS, VIEW_MASK.ALL, null, userSession, {
-			nodeFieldsLinker: data.nodeFieldsLinker.id
-		});
-		fields.items.sort((a, b) => {
-			return a.prior - b.prior;
-		});
-		let prior = 0;
-		await Promise.all(
-			fields.items.map((i) => {
-				prior += 10;
-				if (i.prior !== prior) {
-					return submitRecord(NODE_ID.FIELDS, { prior }, i.id, userSession);
-				}
-			})
-		);
-
-		reloadMetadataSchedule();
-	},
-
-	beforeUpdate: async function (currentData: T, newData: IFieldsRecordWrite, userSession: UserSession) {
-		shouldBeAdmin(userSession);
-
-		if (currentData.id === FIELD_ID.FIELDS__MAX_LENGTH && newData.hasOwnProperty('maxLength')) {
-			throwError(L('SIZE_FLD_BLOCKED', userSession));
-		}
-
-		mustBeUnset(newData, 'fieldName');
-		mustBeUnset(newData, 'storeInDb');
-		mustBeUnset(newData, 'nodeFieldsLinker');
-
-		if (currentData.storeInDb) {
-			if (newData.hasOwnProperty('fieldName') || newData.hasOwnProperty('maxLength') || newData.hasOwnProperty('multilingual') || newData.hasOwnProperty('forSearch')) {
-				const multilingualChanged = newData.hasOwnProperty('multilingual') && currentData.multilingual !== newData.multilingual;
-
-				const node = getNodeDesc(currentData.nodeFieldsLinker.id);
-				const realFieldName = currentData.fieldName;
-				const fieldType = currentData.fieldType;
-
-				if (currentData.forSearch !== newData.forSearch) {
-					if (newData.forSearch) {
-						await mysqlExec(`CREATE INDEX "${node.tableName}${realFieldName}" ON ${node.tableName} USING btree (${realFieldName});`);
-					} else {
-						await mysqlExec(`DROP INDEX IF EXISTS "${node.tableName}${realFieldName};`);
-					}
-				}
-
-				currentData = Object.assign(currentData, newData);
-
-				if (realFieldName !== '_organizationId' && realFieldName !== '_usersId' && realFieldName !== '_createdOn' && realFieldName !== 'id') {
-					if (currentData.storeInDb && fieldType !== FIELD_TYPE.STATIC_HTML_BLOCK && fieldType !== FIELD_TYPE.LOOKUP_N_TO_M && fieldType !== FIELD_TYPE.LOOKUP_1_TO_N) {
-						const typeQ = getFieldTypeSQL(currentData);
-						if (typeQ) {
-							const langs = getLangs();
-
-							if (multilingualChanged) {
-								if (currentData.multilingual) {
-									for (const l of langs) {
-										if (l.prefix) {
-											currentData.fieldName = realFieldName + l.prefix;
-											await createFieldInTable(currentData);
-										}
-									}
-									currentData.fieldName = realFieldName;
-								} else {
-									for (const l of langs) {
-										if (l.prefix) {
-											await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realFieldName + l.prefix);
-										}
-									}
-								}
-							} else if (currentData.multilingual) {
+						if (multilingualChanged) {
+							if (currentData.multilingual) {
 								for (const l of langs) {
 									if (l.prefix) {
-										await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + l.prefix + ' ' + typeQ);
+										currentData.fieldName = realFieldName + l.prefix;
+										await createFieldInTable(currentData);
+									}
+								}
+								currentData.fieldName = realFieldName;
+							} else {
+								for (const l of langs) {
+									if (l.prefix) {
+										await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realFieldName + l.prefix);
 									}
 								}
 							}
-							await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + ' ' + typeQ);
+						} else if (currentData.multilingual) {
+							for (const l of langs) {
+								if (l.prefix) {
+									await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + l.prefix + ' ' + typeQ);
+								}
+							}
 						}
+						await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + ' ' + typeQ);
 					}
 				}
 			}
 		}
-		reloadMetadataSchedule();
-	},
-
-	beforeDelete: async function (_data: T, _userSession: UserSession) {
-		throwError('_fields beforeCreate deletion event is not implemented');
 	}
-};
+	reloadMetadataSchedule();
+});
 
-export default handlers;
+serverOn('_fields.beforeDelete', async (_data, _userSession) => {
+	throwError('_fields beforeCreate deletion event is not implemented');
+});
+
+
 export { createFieldInTable };
 
 function getFieldTypeSQL(data) {

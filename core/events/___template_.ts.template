@@ -1,0 +1,26 @@
+import { serverOn } from '../server';
+
+serverOn('%node_name%.beforeCreate', async (data, userSession) => {
+
+});
+
+serverOn('%node_name%.afterCreate', async (data, userSession) => {
+
+});
+
+serverOn('%node_name%.beforeUpdate', async (data, userSession) => {
+
+});
+
+serverOn('%node_name%.afterUpdate', async (data, userSession) => {
+
+});
+
+serverOn('%node_name%.beforeDelete', async (data, userSession) => {
+
+});
+
+serverOn('%node_name%.afterDelete', async (data, userSession) => {
+
+});
+

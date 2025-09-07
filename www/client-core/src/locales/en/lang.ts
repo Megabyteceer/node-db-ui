@@ -60,6 +60,7 @@ const LANGS = {
 	'DETAILS': 'Details',
 	'SELECT': 'Select',
 	'REQUIRED_FLD': 'Required.',
+	'CLOSE': 'Close.',
 	'SAVE': 'Save',
 	'SAVE_TEMPLATE': 'Save as template',
 	'BACK': 'Back',
