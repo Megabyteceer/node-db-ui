@@ -14,7 +14,7 @@ const resetAutofocus = () => {
 
 interface FieldProps {
 	field: FieldDesc;
-	form: FormFull;
+	form: FormFull<string>;
 	parent: BaseField;
 	isEdit: boolean;
 	disabled: boolean;

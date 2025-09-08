@@ -225,7 +225,7 @@ const _getRecords: TypeGenerationHelper['g'] = async(
 	const search = filterFields.s;
 	const isNumericSearch = search ? !/\D/.test(search) : undefined;
 	const searchSQL = search ? '" LIKE ' + escapeString('%' + search + '%') + ' ' : undefined;
-	const searchSQLNumeric = isNumericSearch ? '=' + D(parseInt(search)) + ' ' : undefined;
+	const searchSQLNumeric = isNumericSearch ? '"=' + D(parseInt(search)) + ' ' : undefined;
 
 	if (singleSelectionById) {
 		wheres = [' AND "', tableName, '".id=', D(recId as number)];

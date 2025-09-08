@@ -1,7 +1,7 @@
 
 import { attachGoogleLoginAPI, getData, getNode, getRecordsClient, goToHome, isAdmin, L, myAlert, showPrompt } from '../utils';
 /// #if DEBUG
-import { FIELD_TYPE, NODE_ID, NODE_TYPE } from '../../../../types/generated';
+import { FIELD_TYPE, NODE_ID, NODE_TYPE, type TFieldsFieldsList, type TNodesFieldsList, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList, type TypeGenerationHelper } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField } from '../admin/admin-utils';
 import type { FormFull } from '../forms/form-full';
@@ -23,7 +23,7 @@ import { iAdmin, User } from '../user';
 let uiLanguageIsChanged;
 
 
-const checkPasswordConfirmation = (form: FormFull) => {
+const checkPasswordConfirmation = (form: FormFull<TUsersFieldsList> | FormFull<TRegistrationFieldsList>) => {
 	const p = form.fieldValue('password');
 	const p2 = form.fieldValue('passwordConfirm');
 	if (p && p !== p2) {
@@ -102,7 +102,7 @@ clientOn('_users.onSave', (form) => {
 		form.fieldAlert('password', L('PASS_LEN', 6));
 	}
 
-	if (User.currentUserData.id === form.fieldValue('id')) {
+	if (User.currentUserData.id === form.recId) {
 		let pLang = (form.props.initialData as IUsersRecord).language;
 		let nLang = (form.props.initialData as IUsersRecord).language;
 
@@ -131,12 +131,12 @@ clientOn('_roles.onLoad', (form) => {
 	}
 });
 
-clientOn('_enumValues.onLoad', (form) => {
+clientOn('_enums.onLoad', (form) => {
 	form.getField('values').inlineEditable();
 });
 
 
-const _nodes_recalculateFieldsVisibility = (form:FormFull) => {
+const _nodes_recalculateFieldsVisibility = (form:FormFull<TNodesFieldsList, TypeGenerationHelper['getValueNodes']>) => {
 	if (!form.isNewRecord && form.fieldValue('nodeType') === NODE_TYPE.DOCUMENT) {
 		form.showField('_fieldsId');
 		form.showField('reverse');
@@ -209,7 +209,7 @@ clientOn('_nodes.onSave', (form) => {
 			form.fieldAlert('tableName', L('LATIN_ONLY'));
 		}
 
-		if (form.fieldValue('tableName') == parseInt(form.fieldValue('tableName'))) {
+		if (form.fieldValue('tableName') == parseInt(form.fieldValue('tableName')).toString()) {
 			form.fieldAlert('tableName', L('NO_NUMERIC_NAME'));
 		}
 	}
@@ -294,7 +294,7 @@ clientOn('_fields.onSave', (form) => {
 		form.fieldAlert('fieldName', L('LATIN_ONLY'));
 	}
 
-	if (form.fieldValue('fieldName') == parseInt(form.fieldValue('fieldName'))) {
+	if (form.fieldValue('fieldName') == parseInt(form.fieldValue('fieldName')).toString()) {
 		form.fieldAlert('fieldName', L('NO_NUMERIC_NAME'));
 	}
 
@@ -392,7 +392,7 @@ clientOn('_registration.afterSave', (form) => {
 	form.isPreventCloseFormAfterSave = true;
 });
 
-const showMessageAboutEmailSent = (txt, form: FormFull) => {
+const showMessageAboutEmailSent = (txt, form: FormFull<TRegistrationFieldsList> | FormFull<TResetPasswordFieldsList>) => {
 	myAlert(
 		R.span(null, txt, R.div({ className: 'email-highlight' }, form.fieldValue('email'))),
 		true,
@@ -470,10 +470,7 @@ clientOn('_enumValues.onLoad', (form) => {
 	}
 });
 
-
-
-
-const check12nFieldName = (form: FormFull) => {
+const check12nFieldName = (form: FormFull<TFieldsFieldsList>) => {
 	if (form.isNewRecord) {
 		_fieldsNameIsBad = false;
 
@@ -520,7 +517,7 @@ const check12nFieldName = (form: FormFull) => {
 };
 
 
-const removeWrongCharactersInField = (form: FormFull, fieldName: string) => {
+const removeWrongCharactersInField = (form: FormFull<string>, fieldName: string) => {
 	const oldValue = form.fieldValue(fieldName);
 	if (oldValue) {
 		const newValue = oldValue.toLowerCase().replace(/[^a-z0-9]/gm, '_');
@@ -528,7 +525,7 @@ const removeWrongCharactersInField = (form: FormFull, fieldName: string) => {
 			form.setFieldValue(fieldName, newValue);
 		}
 	}
-}
+};
 
 clientOn('_html,title.onChange', (form) => {
 	removeWrongCharactersInField(form, 'title');
@@ -697,7 +694,7 @@ clientOn('_registration,passwordConfirm.onChange', (form) => {
 	checkPasswordConfirmation(form);
 });
 
-clientOn('_registration,alreadyHaveAccountBtn.onClick', (form) => {
+clientOn('_registration,alreadyHaveAccountBtn.onClick', (_form) => {
 	globals.Stage.showForm(NODE_ID.LOGIN);
 });
 
@@ -709,11 +706,11 @@ clientOn('_login,forgotPasswordButton.onClick', (_form) => {
 	globals.Stage.showForm(NODE_ID.RESET_PASSWORD, 'new', undefined, true);
 });
 
-clientOn('_resetPassword,backToLogin.onClick', (form) => {
+clientOn('_resetPassword,backToLogin.onClick', (_form) => {
 	globals.Stage.showForm(NODE_ID.LOGIN);
 });
 
-const _fields_recalculateFieldsVisibility = (form:FormFull) => {
+const _fields_recalculateFieldsVisibility = (form:FormFull<TFieldsFieldsList>) => {
 	const fieldType = form.fieldValue('fieldType');
 
 	form.showField('maxLength', 'requirement', 'storeInDb', 'sendToServer', 'unique', 'forSearch');
@@ -751,7 +748,7 @@ const _fields_recalculateFieldsVisibility = (form:FormFull) => {
 	case FIELD_TYPE.TAB:
 	case FIELD_TYPE.SPLITTER:
 		form.hideField(
-			'storage_setting_splitter',
+			'storageSettingSplitter',
 			'maxLength',
 			'sendToServer',
 			'storeInDb',
@@ -844,7 +841,7 @@ const _fields_recalculateFieldsVisibility = (form:FormFull) => {
 	}
 
 	form.makeFieldRequired('maxLength', form.isFieldVisible('maxLength'));
-}
+};
 
 clientOn('_fields,storeInDb.onChange', (form) => {
 	_fields_recalculateFieldsVisibility(form);

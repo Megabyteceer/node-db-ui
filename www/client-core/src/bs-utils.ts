@@ -255,6 +255,8 @@ export const enum STATUS {
 	DRAFT = 2,
 }
 
+export type RecordDataBaseFields = Extract< keyof RecordData, string>;
+
 interface RecordData {
 	/** **edit** access to the record */
 	isE?: BoolNum;

@@ -65,7 +65,7 @@ interface ListState extends Omit<FormState, 'data'> {
 
 class List extends BaseForm<ListProps, ListState> {
 	private searchInput: RefToInput;
-	private subFormsRefs: { [key: number]: FormFull };
+	private subFormsRefs: { [key: number]: FormFull<string> };
 	private currentFetchingNodeId: number;
 	private unmounted: boolean;
 	private searchTimeout: NodeJS.Timeout;
@@ -236,7 +236,7 @@ class List extends BaseForm<ListProps, ListState> {
 		this.subFormsRefs[itemNum] = ref;
 	}
 
-	getSubForms(): FormFull[] {
+	getSubForms(): FormFull<string>[] {
 		const ret = [];
 		for (const k in this.subFormsRefs) {
 			if (this.subFormsRefs.hasOwnProperty(k)) {
@@ -512,7 +512,7 @@ class List extends BaseForm<ListProps, ListState> {
 								sp(e);
 							},
 						},
-						renderIcon('times')
+						R.h2(null, '×')
 					)
 				);
 			}

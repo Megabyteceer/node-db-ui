@@ -48,8 +48,8 @@ const on = (eventName: string, handler: () => any) => {
 
 export const eventDispatch = dispatch;
 
-export const serverOn = on as any as TypeGenerationHelper['e'];
-export const clientOn = on as any as TypeGenerationHelper['ec'];
+export const serverOn = on as any as TypeGenerationHelper['eventsServer'];
+export const clientOn = on as any as TypeGenerationHelper['eventsClient'];
 export const clientHandlers = handlers;
 
 

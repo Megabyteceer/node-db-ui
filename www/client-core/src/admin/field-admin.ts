@@ -26,7 +26,7 @@ interface FieldAdminState {
 
 interface FieldAdminProps {
 	field: FieldDesc;
-	form?:FormFull;
+	form?:FormFull<string>;
 
 }
 

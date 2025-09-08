@@ -47,7 +47,7 @@ async function callForEachField(fieldRefs, data, functionName) {
 	}
 }
 
-class FormFull extends FormEventProcessingMixins {
+class FormFull<FieldsNames extends string, GetValueType = (name: string) => any, SetValueType = (filedName: string, value: any, isUserAction?: boolean) => Promise<void> | void> extends FormEventProcessingMixins<FieldsNames, GetValueType, SetValueType> {
 	backupInterval: NodeJS.Timeout;
 
 	constructor(props) {
@@ -78,7 +78,9 @@ class FormFull extends FormEventProcessingMixins {
 		this.onShow();
 
 		if (this.props.overrideOrderData >= 0) {
-			if (this.getField('order')) {
+			//@ts-ignore
+			if (this.hasField('order')) {
+				//@ts-ignore
 				this.hideField('order');
 			}
 		}
@@ -105,7 +107,7 @@ class FormFull extends FormEventProcessingMixins {
 		for (const k in fields) {
 			const f = fields[k];
 			if (f.fieldType === FIELD_TYPE.LOOKUP_1_TO_N && this.isFieldVisibleByFormViewMask(f)) {
-				this.currentData[f.fieldName] = this.getField(f.fieldName).getBackupData();
+				this.currentData[f.fieldName] = this.getField(f.fieldName as FieldsNames).getBackupData();
 			}
 		}
 	}
@@ -168,10 +170,10 @@ class FormFull extends FormEventProcessingMixins {
 			}
 
 			if (fieldWrapperRef.fieldRef.isRequired() && fieldWrapperRef.isEmpty()) {
-				this.fieldAlert(field.fieldName, L('REQUIRED_FLD'), false, this.formIsValid);
+				this.fieldAlert(field.fieldName as FieldsNames, L('REQUIRED_FLD'), false, this.formIsValid);
 				this.formIsValid = false;
 			} else {
-				this.fieldAlert(field.fieldName);
+				this.fieldAlert(field.fieldName as FieldsNames);
 				const isValid = await this.checkUniqueValue(field, !fieldWrapperRef.isEmpty() && this.currentData[field.fieldName]);
 				const isValid2 = await fieldWrapperRef.checkValidityBeforeSave(this.formIsValid);
 				if (!isValid || !isValid2) {

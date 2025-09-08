@@ -63,30 +63,7 @@ function getFieldDesc(fieldId: number): FieldDesc {
 	return fieldsById.get(fieldId);
 }
 
-async function getEnumDesc(enumId: RecId) {
-	if (!enumsById.has(enumId)) {
-		const name = (await mysqlExec('SELECT name FROM _enums WHERE id = ' + D(enumId)))[0].name;
-		const items = (await mysqlExec(
-			'SELECT value,' +
-				langs
-					.map((l) => {
-						return 'name' + l.prefix;
-					})
-					.join() +
-				' FROM "_enumValues" WHERE status = 1 AND "valuesLinker"=' +
-				D(enumId) +
-				' ORDER BY "_enumValues".order'
-		)) as any as EnumListItem[];
-		const namesByValue = {} as { [key: number]: string };
-		for (const item of items) {
-			namesByValue[item.value] = item.name;
-		}
-		enumsById.set(enumId, {
-			name,
-			items,
-			namesByValue
-		});
-	}
+function getEnumDesc(enumId: RecId) {
 	return enumsById.get(enumId);
 }
 
@@ -312,6 +289,33 @@ async function initNodesData() {
 		}
 	}
 
+	const enums = await mysqlExec('SELECT name, id FROM _enums');
+	for (const en of enums) {
+		const name = en.name;
+		const enumId = en.id;
+		const items = (await mysqlExec(
+			'SELECT value,' +
+				langs
+					.map((l) => {
+						return 'name' + l.prefix;
+					})
+					.join() +
+				' FROM "_enumValues" WHERE status = 1 AND "valuesLinker"=' +
+				D(enumId) +
+				' ORDER BY "_enumValues".order'
+		)) as any as EnumListItem[];
+		const namesByValue = {} as { [key: number]: string };
+		for (const item of items) {
+			namesByValue[item.value] = item.name;
+		}
+		enumsById.set(enumId, {
+			name,
+			items,
+			namesByValue
+		});
+	}
+
+
 	const query = 'SELECT * FROM _nodes WHERE status = ' + NUM_1 + ' ORDER BY prior';
 	nodes = (await mysqlExec(query)) as any;
 	for (const nodeData of nodes) {
@@ -371,7 +375,7 @@ async function initNodesData() {
 
 				if (field.fieldType === FIELD_TYPE.ENUM && field.show) {
 					field.enum = {id: field.enum as any};
-					const enums = await getEnumDesc(field.enum.id);
+					const enums = getEnumDesc(field.enum.id);
 					field.enumList = enums;
 				}
 				if (field.fieldType === FIELD_TYPE.STATIC_HTML_BLOCK) {
@@ -465,39 +469,8 @@ import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordD
 
 			src.push('type ' + snakeToCamel(node.tableName) + 'Base = {');
 			for (const field of node.fields) {
-				let type = 'any';
-				switch (field.fieldType) {
-				case FIELD_TYPE.BOOL:
-					type = 'BoolNum';
-					break;
-				case FIELD_TYPE.COLOR:
-				case FIELD_TYPE.NUMBER:
-					type = 'number';
-					break;
-				case FIELD_TYPE.DATE:
-				case FIELD_TYPE.DATE_TIME:
-					type = 'Moment';
-					break;
-
-				case FIELD_TYPE.ENUM:
-					type = normalizeName((await getEnumDesc(field.enum.id)).name);
-					break;
-
-				case FIELD_TYPE.TEXT:
-				case FIELD_TYPE.PASSWORD:
-				case FIELD_TYPE.FILE:
-				case FIELD_TYPE.IMAGE:
-				case FIELD_TYPE.HTML_EDITOR:
-					type = 'string';
-					break;
-				case FIELD_TYPE.LOOKUP:
-					if (field.lookupIcon) {
-						type = 'LookupValueIconic';
-					} else {
-						type = 'LookupValue';
-					}
-				}
-				const jsDoc = '\t/** **' + (await getEnumDesc(FIELD_TYPE_ENUM_ID)).namesByValue[field.fieldType] + '** ' + (field.description || '') + ' */';
+				let type = getFieldTypeSrc(field);
+				const jsDoc = '\t/** **' + (getEnumDesc(FIELD_TYPE_ENUM_ID)).namesByValue[field.fieldType] + '** ' + (field.description || '') + ' */';
 				src.push(jsDoc);
 				src.push('	' + field.fieldName + (field.requirement ? '' : '?') + ': ' + type + ';');
 				if (field.forSearch) {
@@ -560,6 +533,13 @@ import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordD
 	});
 	src.push('}');
 
+	nodesData.forEach((nodeData) => {
+		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
+			const name = snakeToCamel(nodeData.tableName);
+			src.push(`export type T${name}FieldsList = keyof I${name}Record | ${nodeData.fields.map(f => '\'' + f.fieldName + '\'').join(' | ') || 'string'};`);
+		}
+	});
+
 	const HANDLER_RET = 'HandlerRet';
 
 	src.push(`
@@ -573,21 +553,21 @@ export class TypeGenerationHelper {`);
 			const name = snakeToCamel(nodeData.tableName);
 			if (nodeData.storeForms) {
 				src.push(`
-	async e(eventName: '${nodeData.tableName}.beforeCreate', handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-	async e(eventName: '${nodeData.tableName}.afterCreate', handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-	async e(eventName: '${nodeData.tableName}.beforeUpdate', handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-	async e(eventName: '${nodeData.tableName}.afterUpdate', handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-	async e(eventName: '${nodeData.tableName}.beforeDelete', handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET});
-	async e(eventName: '${nodeData.tableName}.afterDelete', handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: '${nodeData.tableName}.beforeCreate', handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: '${nodeData.tableName}.afterCreate', handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: '${nodeData.tableName}.beforeUpdate', handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: '${nodeData.tableName}.afterUpdate', handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: '${nodeData.tableName}.beforeDelete', handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: '${nodeData.tableName}.afterDelete', handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET});
 `);
 			} else {
 				src.push(`
-	async e(eventName: '${nodeData.tableName}.onSubmit', handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: '${nodeData.tableName}.onSubmit', handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
 `);
 			}
 		}
 	});
-	src.push(`	async e() {
+	src.push(`	async eventsServer() {
 		return 1 as any;
 	}`);
 
@@ -595,26 +575,71 @@ export class TypeGenerationHelper {`);
 
 	nodesData.forEach((nodeData) => {
 		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
+			const methodNameGet = 'getValue' + snakeToCamel(nodeData.tableName);
+			const methodNameSet = 'setValue' + snakeToCamel(nodeData.tableName);
+
+			const hasFieldsWithData = nodeData.fields.some(f => f.dataType !== FIELD_DATA_TYPE.NODATA);
+
+			const formArg = hasFieldsWithData ?
+				`form: FormFull<T${snakeToCamel(nodeData.tableName)}FieldsList, TypeGenerationHelper['${methodNameGet}'], TypeGenerationHelper['${methodNameSet}']>`
+				:
+				`form: FormFull<T${snakeToCamel(nodeData.tableName)}FieldsList>`;
+
 			src.push(`
-	async ec(eventName: '${nodeData.tableName}.onLoad', handler: (form: FormFull) => ${CLIENT_HANDLER_RET});
-	async ec(eventName: '${nodeData.tableName}.onSave', handler: (form: FormFull) => ${CLIENT_HANDLER_RET});
-	async ec(eventName: '${nodeData.tableName}.afterSave', handler: (form: FormFull, result?: KeyedMap<any>) => ${CLIENT_HANDLER_RET});
+	async eventsClient(eventName: '${nodeData.tableName}.onLoad', handler: (${formArg}) => ${CLIENT_HANDLER_RET});
+	async eventsClient(eventName: '${nodeData.tableName}.onSave', handler: (${formArg}) => ${CLIENT_HANDLER_RET});
+	async eventsClient(eventName: '${nodeData.tableName}.afterSave', handler: (${formArg}, result?: KeyedMap<any>) => ${CLIENT_HANDLER_RET});
 `);
 			for (const field of nodeData.fields) {
 				const isClickable = (field.fieldType === FIELD_TYPE.BUTTON) || (field.fieldType === FIELD_TYPE.TAB);
 				if (isClickable || (field.show && VIEW_MASK.EDITABLE)) {
-					if(isClickable) {
-						src.push(`	async ec(eventName: '${nodeData.tableName},${field.fieldName}.onClick', handler: (form: FormFull) => void);`);
+					if (isClickable) {
+						src.push(`	async eventsClient(eventName: '${nodeData.tableName},${field.fieldName}.onClick', handler: (${formArg}) => void);`);
 					} else {
-						src.push(`	async ec(eventName: '${nodeData.tableName},${field.fieldName}.onChange', handler: (form: FormFull, isUserAction: boolean, prevValue: any) => void);`);
+						src.push(`	async eventsClient(eventName: '${nodeData.tableName},${field.fieldName}.onChange', handler: (${formArg}, isUserAction: boolean, prevValue: any) => void);`);
 					}
 				}
 			}
 		}
 	});
-	src.push(`	async ec() {
+	src.push(`	async eventsClient() {
 		return 1 as any;
 	}`);
+
+
+	// generate getValue() typing
+	nodesData.forEach((nodeData) => {
+		if (nodeData.fields) {
+			const fields = nodeData.fields.filter(f => f.dataType !== FIELD_DATA_TYPE.NODATA);
+			if (fields.length) {
+				const methodName = 'getValue' + snakeToCamel(nodeData.tableName);
+				for (const field of fields) {
+					let type = getFieldTypeSrc(field);
+					src.push(`	${methodName}(fieldName: '${field.fieldName}'): ${type};`);
+				}
+				src.push(`	${methodName}() {
+		return 1 as any;
+	}`);
+			}
+		}
+	});
+
+	// generate setValue() typing
+	nodesData.forEach((nodeData) => {
+		if (nodeData.fields) {
+			const fields = nodeData.fields.filter(f => f.dataType !== FIELD_DATA_TYPE.NODATA);
+			if (fields.length) {
+				const methodName = 'setValue' + snakeToCamel(nodeData.tableName);
+				for (const field of fields) {
+					let type = getFieldTypeSrc(field);
+					src.push(`	${methodName}(fieldName: '${field.fieldName}', value: ${type}): Promise<void> | void;`);
+				}
+				src.push(`	${methodName}() {
+		return 1 as any;
+	}`);
+			}
+		}
+	});
 
 
 	// generate getRecord() typing
@@ -715,3 +740,39 @@ export {
 	reloadMetadataSchedule
 };
 
+
+function getFieldTypeSrc(field: FieldDesc) {
+	let type = 'any';
+	switch (field.fieldType) {
+	case FIELD_TYPE.BOOL:
+		type = 'BoolNum';
+		break;
+	case FIELD_TYPE.COLOR:
+	case FIELD_TYPE.NUMBER:
+		type = 'number';
+		break;
+	case FIELD_TYPE.DATE:
+	case FIELD_TYPE.DATE_TIME:
+		type = 'Moment';
+		break;
+
+	case FIELD_TYPE.ENUM:
+		type = normalizeName((getEnumDesc(field.enum.id)).name);
+		break;
+
+	case FIELD_TYPE.TEXT:
+	case FIELD_TYPE.PASSWORD:
+	case FIELD_TYPE.FILE:
+	case FIELD_TYPE.IMAGE:
+	case FIELD_TYPE.HTML_EDITOR:
+		type = 'string';
+		break;
+	case FIELD_TYPE.LOOKUP:
+		if (field.lookupIcon) {
+			type = 'LookupValueIconic';
+		} else {
+			type = 'LookupValue';
+		}
+	}
+	return type;
+}
