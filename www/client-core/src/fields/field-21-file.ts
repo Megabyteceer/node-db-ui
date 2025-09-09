@@ -17,8 +17,7 @@ registerFieldClass(
 
 		setValue(val) {
 			if (typeof val === 'string') {
-				//@ts-ignore
-				this.state.value = val;
+				this.setState({value: val});
 			} else {
 				this.props.form.currentData[this.props.field.fieldName] = undefined;
 			}

@@ -16,7 +16,7 @@ import { isLitePage, L, renderIcon } from './utils';
 
 let collapsed;
 
-function isMustBeExpanded(i) {
+function isMustBeExpanded(i):boolean {
 	if (i.children) {
 		for (const k in i.children) {
 			const j = i.children[k];
@@ -26,7 +26,7 @@ function isMustBeExpanded(i) {
 		}
 		return false;
 	} else {
-		return isCurrentlyShowedLeftBarItem(i);
+		return !!isCurrentlyShowedLeftBarItem(i);
 	}
 }
 
@@ -232,9 +232,8 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 
 		const _isMustBeExpanded = isMustBeExpanded(this.props.item);
 		const isExpanded = this.state.expanded || _isMustBeExpanded;
-		if (isExpanded) {
-			//@ts-ignore
-			this.state.expanded = isExpanded;
+		if (isExpanded != this.state.expanded) {
+			this.setState({expanded: isExpanded});
 		}
 
 		if (item.nodeType === NODE_TYPE.SECTION) {

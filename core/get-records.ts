@@ -30,8 +30,8 @@ const STATUS_FILTER_SQL_PART_ANY = '".status > ' + NUM_0 + ')';
 const STATUS_FILTER_SQL_PART_PUBLISHED = '".status = ' + NUM_1 + ')';
 const ORDERING_SQL_PART = ' LIMIT ' + NUM_1;
 
-//@ts-ignore
-const _getRecords: TypeGenerationHelper['g'] = async(
+
+const _getRecords: TypeGenerationHelper['g'] = (async (
 	nodeId: NODE_ID,
 	viewMask: VIEW_MASK,
 	recId: null | RecId | RecId[] = null,
@@ -177,7 +177,6 @@ const _getRecords: TypeGenerationHelper['g'] = async(
 					);
 				}
 			} else if (selectFieldName) {
-				//@ts-ignore
 				selQ.push('(', ESCAPE_BEGIN, selectFieldName.replaceAll('@userId', userSession.id.toString()), ESCAPE_END, ')AS "', fieldName, '"');
 			} else if ((viewMask === VIEW_MASK.LIST || viewMask === VIEW_MASK.CUSTOM_LIST) && (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.HTML_EDITOR) && f.maxLength > 500) {
 				selQ.push('SUBSTRING("', tableName, '"."', fieldName, FILTERS_LIMIT_SQL_PART, fieldName, '"');
@@ -190,7 +189,7 @@ const _getRecords: TypeGenerationHelper['g'] = async(
 
 	selQ.push('"', tableName, '".id');
 
-	selQ.push(',"', tableName, '"."_organizationId" AS creator_org,"', tableName, '"."_usersId" AS creator_user');
+	selQ.push(',"', tableName, '"."_organizationId" AS co,"', tableName, '"."_usersId" AS cu');
 	if (node.draftable) {
 		selQ.push(',"', tableName, '".status');
 	}
@@ -385,11 +384,9 @@ const _getRecords: TypeGenerationHelper['g'] = async(
 		if (viewMask) {
 			if (privileges & PRIVILEGES_MASK.EDIT_ALL) {
 				pag.isE = 1;
-				//@ts-ignore
-			} else if (privileges & PRIVILEGES_MASK.EDIT_ORG && userSession.orgId !== 0 && pag.creatorORG === userSession.orgId) {
+			} else if (privileges & PRIVILEGES_MASK.EDIT_ORG && userSession.orgId !== 0 && pag.co === userSession.orgId) {
 				pag.isE = 1;
-				//@ts-ignore
-			} else if (privileges & PRIVILEGES_MASK.EDIT_OWN && pag.creatorUSER === userSession.id) {
+			} else if (privileges & PRIVILEGES_MASK.EDIT_OWN && pag.cu === userSession.id) {
 				pag.isE = 1;
 			}
 
@@ -463,7 +460,7 @@ const _getRecords: TypeGenerationHelper['g'] = async(
 			throwError('Record not found.');
 		}
 	}
-};
+}) as any;
 
 const DELETE_RECORD_SQL_PART = '" SET status=' + NUM_0 + ' WHERE id=';
 export async function deleteRecord(nodeId: NODE_ID, recId:RecId, userSession = ADMIN_USER_SESSION) {

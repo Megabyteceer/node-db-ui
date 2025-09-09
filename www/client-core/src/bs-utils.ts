@@ -242,11 +242,12 @@ interface UserLangEntry extends ILanguagesRecord {
 }
 
 export type RecordDataWrite = {
-	/** no fields */
+
 }
 
 export type RecordDataWriteDraftable = RecordDataWrite & {
 	status?: STATUS;
+	id?: RecId;
 }
 
 export const enum STATUS {
@@ -258,6 +259,13 @@ export const enum STATUS {
 export type RecordDataBaseFields = Extract< keyof RecordData, string>;
 
 interface RecordData {
+
+	/** owner org id */
+	co?: RecId;
+
+	/** owner by user id */
+	cu?: RecId;
+
 	/** **edit** access to the record */
 	isE?: BoolNum;
 	/** **publish** access to the record */
@@ -313,6 +321,7 @@ const enum VIEW_MASK {
 }
 
 const enum PRIVILEGES_MASK {
+	NONE = 0,
 	VIEW_OWN = 1,
 	VIEW_ORG = 2,
 	VIEW_ALL = 4,

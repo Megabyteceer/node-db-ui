@@ -7,10 +7,7 @@ import type { FieldWrap } from '../fields/field-wrap';
 import { CLIENT_SIDE_FORM_EVENTS, consoleLog, getData, L } from '../utils';
 import { BaseForm } from './base-form';
 
-type a = ((name: string) => any);
-type b = ((filedName: string, value: any, isUserAction?: boolean) => Promise<void> | void);
-
-class FormEventProcessingMixins<FieldsNames extends string, GetValueType = a, SetValueType = b> extends BaseForm {
+class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 	/** true if form opened for new record creation */
 	isNewRecord: boolean;
 	/** true if form opened for editing existing form */
@@ -155,7 +152,7 @@ class FormEventProcessingMixins<FieldsNames extends string, GetValueType = a, Se
 		this.setState({ footerHidden: false });
 	}
 
-	disableField(fieldName) {
+	disableField(fieldName: FieldsNames) {
 		validateFieldName(fieldName);
 		if (this.disabledFields[fieldName] !== 1) {
 			this.disabledFields[fieldName] = 1;
@@ -167,7 +164,7 @@ class FormEventProcessingMixins<FieldsNames extends string, GetValueType = a, Se
 		}
 	}
 
-	enableField(fieldName) {
+	enableField(fieldName: FieldsNames) {
 		validateFieldName(fieldName);
 		if (this.disabledFields[fieldName] === 1) {
 			delete this.disabledFields[fieldName];
@@ -175,12 +172,12 @@ class FormEventProcessingMixins<FieldsNames extends string, GetValueType = a, Se
 		}
 	}
 
-	makeFieldRequired(fieldName, required = true) {
+	makeFieldRequired(fieldName: FieldsNames, required = true) {
 		validateFieldName(fieldName);
 		this.getField(fieldName).makeFieldRequired(required);
 	}
 
-	isFieldDisabled(fieldName) {
+	isFieldDisabled(fieldName: FieldsNames) {
 		validateFieldName(fieldName);
 		return this.disabledFields[fieldName] === 1;
 	}
@@ -191,7 +188,40 @@ class FormEventProcessingMixins<FieldsNames extends string, GetValueType = a, Se
 		this.getField(fieldName).setLookupFilter(filtersObjOrName, val);
 	}
 
-	focusField(fieldName) {
+
+	async setFieldValue(fieldName: FieldsNames, val: any, isUserAction = false) {
+		const f = this.getField(fieldName);
+		if (!f) {
+			return; // prevent crash on unmount values debouncing
+		}
+		const field = f.props.field;
+
+		if (this.currentData[fieldName as string] !== val) {
+			if (!isUserAction) {
+				f.setValue(val);
+			}
+			if (isUserAction) {
+				this.isDataModified = true;
+				if (this.isSubForm()) {
+					this.props.parentForm.props.form.isDataModified = true;
+				}
+			}
+			const prev_value = this.currentData[fieldName as string];
+			this.currentData[fieldName as string] = val;
+
+			await this.processFieldEvent(field, val, isUserAction, prev_value);
+
+			this.checkUniqueValue(field, val);
+		}
+	};
+
+	fieldValue(fieldName: string) {
+		validateFieldName(fieldName);
+		return this.currentData[fieldName as string];
+	};
+
+
+	focusField(fieldName: FieldsNames) {
 		this.getField(fieldName).focus();
 	}
 
@@ -209,7 +239,7 @@ class FormEventProcessingMixins<FieldsNames extends string, GetValueType = a, Se
 				f.props.field.fieldType !== FIELD_TYPE.BUTTON &&
 				f.props.field.fieldType !== FIELD_TYPE.TAB
 			) {
-				await this.processFieldEvent(f.props.field, false);
+				await this.processFieldEvent(f.props.field, (this.fieldValue as any)(f.props.field.fieldName), false);
 			}
 		}
 
@@ -241,8 +271,11 @@ class FormEventProcessingMixins<FieldsNames extends string, GetValueType = a, Se
 		render(reactContent, container);
 	}
 
+	saveClick(_isDraft?:boolean): Promise<boolean> {
+		throw new Error('should be implemented in child class');
+	}
+
 	save() {
-		//@ts-ignore
 		this.saveClick();
 	}
 
@@ -273,11 +306,7 @@ class FormEventProcessingMixins<FieldsNames extends string, GetValueType = a, Se
 		return true;
 	}
 
-	declare fieldValue: GetValueType;
-	declare setFieldValue: SetValueType;
-
 	isFieldEmpty(fieldName: FieldsNames) {
-		//@ts-ignore
 		const v = this.fieldValue(fieldName);
 		if (Array.isArray(v)) {
 			return v.length === 0;
@@ -329,9 +358,9 @@ class FormEventProcessingMixins<FieldsNames extends string, GetValueType = a, Se
 			',' +
 			field.fieldName +
 			'.' +
-			(field.fieldType === FIELD_TYPE.BUTTON || field.fieldType === FIELD_TYPE.TAB) ?
+			((field.fieldType === FIELD_TYPE.BUTTON || field.fieldType === FIELD_TYPE.TAB) ?
 				CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CLICK :
-				CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE;
+				CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE);
 		return this._getEventHandlers(name);
 	}
 
@@ -339,8 +368,8 @@ class FormEventProcessingMixins<FieldsNames extends string, GetValueType = a, Se
 		return clientHandlers.get(name);
 	}
 
-	processFieldEvent(field: FieldDesc, isUserAction?: boolean, prev_val?) {
-		return this.processEvent(this._getFieldEventHandlers(field), isUserAction, prev_val);
+	processFieldEvent(field: FieldDesc, value: any, isUserAction?: boolean, prev_val?) {
+		return this.processEvent(this._getFieldEventHandlers(field), value, isUserAction, prev_val);
 	}
 
 	processFormEvent(eventName: CLIENT_SIDE_FORM_EVENTS, ...args: any[]) {
@@ -365,37 +394,5 @@ class FormEventProcessingMixins<FieldsNames extends string, GetValueType = a, Se
 		}
 	}
 }
-
-
-FormEventProcessingMixins.prototype.setFieldValue = async function setFieldValue(fieldName: string, val: any, isUserAction = false) {
-	const f = this.getField(fieldName);
-	if (!f) {
-		return; // prevent crash on unmount values debouncing
-	}
-	const field = f.props.field;
-
-	if (this.currentData[fieldName as string] !== val) {
-		if (!isUserAction) {
-			f.setValue(val);
-		}
-		if (isUserAction) {
-			this.isDataModified = true;
-			if (this.isSubForm()) {
-				this.props.parentForm.props.form.isDataModified = true;
-			}
-		}
-		const prev_value = this.currentData[fieldName as string];
-		this.currentData[fieldName as string] = val;
-
-		await this.processFieldEvent(field, isUserAction, prev_value);
-
-		this.checkUniqueValue(field, val);
-	}
-};
-
-FormEventProcessingMixins.prototype.fieldValue = function fieldValue(fieldName: string) {
-	validateFieldName(fieldName);
-	return this.currentData[fieldName as string];
-};
 
 export { FormEventProcessingMixins };

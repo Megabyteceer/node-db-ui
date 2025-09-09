@@ -35,8 +35,8 @@ interface FormProps {
 interface FormState {
 	data?: RecordData | RecordsData;
 	node: NodeDesc;
-	preventCreateButton: boolean;
-	footerHidden: boolean;
+	preventCreateButton?: boolean;
+	footerHidden?: boolean;
 	header?: string;
 	hideControls?: boolean;
 }
@@ -67,8 +67,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		this.filters = Object.assign({}, this.props.filters);
 		this.editable = this.props.editable;
 
-		//@ts-ignore
-		this.state = {};
+		(this as any).state = {};
 		this.fieldsRefs = {};
 		this.cancelClick = this.cancelClick.bind(this);
 		this.header = '';

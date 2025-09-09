@@ -1,4 +1,7 @@
 ﻿
+import '../../../node_modules/@types/gapi.auth2/index.d.ts';
+import '../../../node_modules/@types/gapi/index.d.ts';
+
 import moment from 'moment';
 
 import { Component, h } from 'preact';
@@ -144,9 +147,9 @@ class User extends Component<{}, {}> {
 						LoadingIndicator.instance.show();
 						removeItem('go-to-after-login');
 						await attachGoogleLoginAPI();
-						//@ts-ignore
+
 						if (window.gapi && window.gapi.auth2) {
-							//@ts-ignore
+
 							const auth2 = window.gapi.auth2.getAuthInstance();
 							await auth2.signOut();
 						}

@@ -21,16 +21,14 @@ class LoadingIndicator extends Component<{
 	}
 
 	hide() {
-		this.setState({ showCount: Math.max(0, this.state.showCount - 1) });
+		if (isLitePage()) return;
+		this.setState({ showCount: this.state.showCount - 1 });
 	}
 
 	show() {
 		if (isLitePage()) return;
-		//@ts-ignore
-		this.state.showCount++;
-		if (this.state.showCount === 1) {
-			this.forceUpdate();
-		}
+
+		this.setState({ showCount: this.state.showCount + 1 });
 	}
 
 	render() {

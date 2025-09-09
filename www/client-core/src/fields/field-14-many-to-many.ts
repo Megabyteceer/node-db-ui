@@ -20,8 +20,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 
 	constructor(props) {
 		super(props);
-		// @ts-ignore
-		this.state.filters = this.generateDefaultFiltersByProps(this.props);
+		this.state = {filters: this.generateDefaultFiltersByProps(this.props)};
 	}
 
 	setValue(val) {
@@ -224,9 +223,8 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 						isEdit,
 						isN2M: true,
 						filters: this.state.filters,
-						ref: (ref) => {
+						ref: (ref: fieldLookupMixins) => {
 							if (ref) {
-								// @ts-ignore
 								ref.setLookupFilter({
 									excludeIDs: this.excludeIDs || this.state.filters.excludeIDs,
 								});
@@ -249,8 +247,8 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 
 	render() {
 		if (!this.state.value) {
-			//@ts-ignore
-			this.state.value = [];
+			this.setState({value: []});
+			return R.fragment();
 		}
 		const value = this.state.value;
 		const field = this.props.field;

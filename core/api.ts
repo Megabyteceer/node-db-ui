@@ -1,7 +1,8 @@
-import type { GetRecordsFilter, GetRecordsParams, RecId, RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
+import type { NODE_ID } from '../types/generated';
+import type { GetRecordsFilter, GetRecordsParams, RecId, RecordDataWriteDraftable, RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
 /// #if DEBUG
 import { clearCache, getClientEventHandler, nodePrivileges } from './admin/admin';
-import { getDeployPackage } from './admin/deploy';
+import { getDeployPackage, isFiledExists } from './admin/deploy';
 /// #endif
 
 import { activateUser, getGuestUserForBrowserLanguage, killSession, resetPassword, setCurrentOrg, setMultilingual } from './auth';
@@ -48,7 +49,7 @@ const api: object = {
 	'api/descNode': (reqData, userSession: UserSession) => {
 		return Promise.resolve(getNodeDesc(reqData.nodeId, userSession));
 	},
-	'api/submit': (reqData, userSession: UserSession) => {
+	'api/submit': (reqData:{recId?: RecId, data: RecordDataWriteDraftable, nodeId:NODE_ID}, userSession: UserSession) => {
 		return submitRecord(reqData.nodeId, reqData.data, reqData.recId, userSession);
 	},
 	'api/uploadImage': (reqData, userSession: UserSession) => {
@@ -78,6 +79,9 @@ const api: object = {
 	},
 	'admin/getDeployPackage': (reqData, userSession: UserSession) => {
 		return getDeployPackage(reqData, userSession);
+	},
+	'admin/isFiledExists': (reqData, userSession: UserSession) => {
+		return isFiledExists(reqData, userSession);
 	},
 	/// #endif
 };

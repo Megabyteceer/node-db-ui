@@ -3,14 +3,32 @@ import { ADMIN_USER_SESSION, getFieldDesc, getNodeDesc, reloadMetadataSchedule }
 import * as fs from 'fs';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
+import type { NODE_ID } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
-import { USER_ID } from '../../www/client-core/src/bs-utils';
-import { isAdmin } from '../auth.js';
-import { mysqlExec } from '../mysql-connection';
+import { USER_ID, type PRIVILEGES_MASK, type RecId } from '../../www/client-core/src/bs-utils';
+import { isAdmin, type UserSession } from '../auth.js';
+import { D, mysqlExec, NUM_1 } from '../mysql-connection';
 
 const { exec } = require('child_process'); // eslint-disable-line @typescript-eslint/no-require-imports
 
-async function nodePrivileges(reqData, userSession) {
+export interface NodePrivileges {
+	id: RecId,
+	name: string;
+	privileges: PRIVILEGES_MASK;
+}
+
+export interface NodePrivilegesRequest {
+	nodeId: NODE_ID;
+	toChild?: boolean;
+	privileges: NodePrivileges[];
+}
+
+export interface NodePrivilegesRes {
+	privileges: NodePrivileges[];
+}
+
+
+async function nodePrivileges(reqData: NodePrivilegesRequest, userSession) {
 	shouldBeAdmin(userSession);
 	const nodeId = reqData.nodeId;
 	if (reqData.privileges) {
@@ -28,14 +46,14 @@ async function nodePrivileges(reqData, userSession) {
 		//get node privileges
 		const privileges = await mysqlExec(
 			'SELECT id, name, (SELECT privileges FROM "rolePrivileges" WHERE ("nodeId"=' +
-				nodeId +
-				') AND (_roles.id="roleId") LIMIT 1) AS privileges FROM _roles WHERE id != ' +
-				USER_ID.SUPER_ADMIN +
+				D(nodeId) +
+				') AND (_roles.id="roleId") LIMIT ' + NUM_1 + ') AS privileges FROM _roles WHERE id != ' +
+				D(USER_ID.SUPER_ADMIN) +
 				' AND id != ' +
-				USER_ID.VIEW_ALL +
-				' AND status = 1'
-		);
-		return { privileges, nodeType: getNodeDesc(nodeId).nodeType };
+				D(USER_ID.VIEW_ALL) +
+				' AND status = ' + NUM_1
+		) as NodePrivileges[];
+		return { privileges, nodeType: getNodeDesc(nodeId).nodeType } as NodePrivilegesRes;
 	}
 }
 
@@ -54,25 +72,25 @@ const shouldBeAdmin = (userSession = ADMIN_USER_SESSION) => {
 };
 
 async function setRolePrivilegesForNode(
-	nodeId,
-	rolePrivileges,
-	toChild,
-	userSession
+	nodeId: RecId,
+	rolePrivileges: NodePrivileges[],
+	toChild: boolean,
+	userSession: UserSession
 ) {
 	shouldBeAdmin(userSession);
 	await mysqlExec(
-		'DELETE FROM "rolePrivileges" WHERE "nodeId"=' + nodeId + ';'
+		'DELETE FROM "rolePrivileges" WHERE "nodeId"=' + D(nodeId) + ';'
 	);
 
 	for (const p of rolePrivileges) {
 		if (p.privileges) {
 			await mysqlExec(
 				'INSERT INTO rolePrivileges SET nodeId=' +
-					nodeId +
+					D(nodeId) +
 					', roleId=' +
-					p.id +
+					D(p.id) +
 					', privileges=' +
-					p.privileges +
+					D(p.privileges) +
 					';'
 			);
 		}

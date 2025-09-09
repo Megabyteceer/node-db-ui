@@ -158,7 +158,7 @@ async function activateUser(key, userSession: UserSession) {
 async function createUser(
 	userData: {
 		email: string;
-		name?: string;
+		name: string;
 		salt?: string;
 	},
 	userSession: UserSession
@@ -176,9 +176,8 @@ async function createUser(
 	}
 	const salt = userData.salt || '';
 	delete userData.salt;
-	const userID: RecId = (
-		await submitRecord(NODE_ID.USERS, userData, undefined, userSession)
-	).recId;
+	const result = await submitRecord(NODE_ID.USERS, userData);
+	const userID: RecId = result.recId;
 	const organizationID = (
 		await mysqlExec(
 			'INSERT INTO "_organization" ("name", "status", "_usersId") VALUES (\'\', \'1\', ' +

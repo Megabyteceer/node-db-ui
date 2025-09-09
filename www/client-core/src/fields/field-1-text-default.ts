@@ -6,10 +6,10 @@ import { BaseField } from './base-field';
 registerFieldClass(
 	FIELD_TYPE.TEXT,
 	class TextField extends BaseField {
-		setValue(val) {
-			this.refToInput.value = val;
-			//@ts-ignore
-			this.state.value = val;
+
+		setValue(value: string) {
+			this.refToInput.value = value;
+			this.setState({value});
 		}
 
 		render() {

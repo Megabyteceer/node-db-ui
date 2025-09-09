@@ -2,13 +2,16 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { mysqlExec } from '../mysql-connection';
+import { escapeString, mysqlExec } from '../mysql-connection';
 
 import { createHash } from 'crypto';
 import { SERVER_ENV } from '../../core/ENV';
+import type { NODE_ID } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import type { UserSession } from '../../www/client-core/src/bs-utils';
 import { isAdmin } from '../auth';
+import { getNodeDesc } from '../describe-node';
+import { shouldBeAdmin } from './admin';
 
 async function getDeployPackage(reqData, userSession: UserSession) {
 	isAdmin(userSession);
@@ -290,6 +293,16 @@ async function deployToRemoteServer(_fileName:string) {
 	debugger;
 	//TODO
 }
+
+export const isFiledExists = async (reqData: {fieldName: string, nodeId: NODE_ID}, userSession: UserSession) => {
+	shouldBeAdmin(userSession);
+	const tableName = getNodeDesc(reqData.nodeId, userSession).tableName;
+
+	const exists = await mysqlExec(`SELECT column_name 
+FROM information_schema.columns 
+WHERE table_name=${escapeString(tableName)} and column_name=${escapeString(reqData.fieldName)}`);
+	return (await exists).length === 0;
+};
 
 const walkSync = (dir, fileList = []) => {
 	fs.readdirSync(dir).forEach((file) => {

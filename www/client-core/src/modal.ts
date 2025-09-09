@@ -27,8 +27,7 @@ class Modal extends Component<{
 
 	show(content, noDiscardByBackdrop) {
 		if (document.activeElement) {
-			// @ts-ignore
-			document.activeElement.blur();
+			(document.activeElement as HTMLInputElement).blur();
 		}
 		idCounter++;
 		if (content) {

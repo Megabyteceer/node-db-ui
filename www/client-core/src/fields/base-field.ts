@@ -52,8 +52,7 @@ class BaseField< T extends FieldProps = FieldProps, T2 extends FieldState = Fiel
 		if (Array.isArray(value)) {
 			value = value.slice();
 		}
-		//@ts-ignore
-		this.state = { value };
+		(this as any).state = { value } as FieldState;
 		this.refGetter = this.refGetter.bind(this);
 	}
 
@@ -123,7 +122,6 @@ class BaseField< T extends FieldProps = FieldProps, T2 extends FieldState = Fiel
 
 	focus() {
 		if (this.refToInput) {
-			//@ts-ignore
 			this.refToInput.focus();
 		}
 	}

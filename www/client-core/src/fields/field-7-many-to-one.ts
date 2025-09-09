@@ -2,7 +2,7 @@
 import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
-import type { LookupValue, RecId, RecordData } from '../bs-utils';
+import type { LookupValue, RecId } from '../bs-utils';
 import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
 import { List } from '../forms/list';
 import { R } from '../r';
@@ -55,8 +55,7 @@ registerFieldClass(
 		componentWillReceiveProps(_nextProps) {
 			if (this.props.filters) {
 				if (!this.state.filters) {
-					//@ts-ignore
-					this.state.filters = {};
+					this.setState({filters: {}});
 				}
 				Object.assign(this.state.filters, this.props.filters);
 			}
@@ -70,7 +69,7 @@ registerFieldClass(
 			}
 		}
 
-		valueSelected(recordData: RecordData, _isNewCreated?: boolean, noToggleList?: boolean) {
+		valueSelected(recordData: LookupValue, _isNewCreated?: boolean, noToggleList?: boolean) {
 			if (recordData) {
 				if (!noToggleList) {
 					this.toggleList();
@@ -113,7 +112,7 @@ registerFieldClass(
 				filters,
 				true,
 				true,
-				(newData: RecordData) => {
+				(newData: LookupValue) => {
 					const value = this.state.value;
 					if (recIdToEdit === value.id) {
 						if (!newData) {
@@ -137,10 +136,8 @@ registerFieldClass(
 			return val;
 		}
 
-		setValue(val) {
-			//@ts-ignore
-			this.state.value = val;
-			this.forceUpdate();
+		setValue(value: LookupValue) {
+			this.setState({value});
 		}
 
 		clearValue() {

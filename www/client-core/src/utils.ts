@@ -51,11 +51,11 @@ interface RestrictDeletionData {
 }
 
 function restrictRecordsDeletion(nodes: RestrictDeletionData) {
-	for (let nodeId in nodes) {
-		if (nodeId) {
-			const recordsIds = nodes[nodeId];
-			//@ts-ignore
-			nodeId = parseInt(nodeId);
+	for (let key in nodes) {
+		if (key) {
+			const recordsIds = nodes[key];
+
+			const nodeId = parseInt(key);
 			if (!restrictedRecords.has(nodeId)) {
 				restrictedRecords.set(nodeId, new Map());
 			}
@@ -392,10 +392,10 @@ function hashToFormParams(hashTxt: string): IFormParameters {
 				let val = decodeURIComponent(hash.shift());
 				const numVal = parseInt(val); // return numeric values to filter
 				if (val == numVal.toString()) {
-					// @ts-ignore
-					val = numVal;
+					filters[key] = numVal;
+				} else {
+					filters[key] = val;
 				}
-				filters[key] = val;
 			}
 			break;
 		default:
@@ -641,7 +641,6 @@ function normalizeNode(node: NodeDesc) {
 	}
 }
 
-//@ts-ignore
 const _getRecordsClient = async (
 	nodeId: NODE_ID,
 	recId?: RecId | RecId[],
@@ -775,14 +774,13 @@ function addMixins(Class, mixins) {
 	Object.assign(Class.prototype, mixins);
 }
 
-//@ts-ignore
-const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId?: RecId): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
+const submitRecord: TypeGenerationHelper['s'] = (async (nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId?: RecId): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	if (Object.keys(data).length === 0) {
 		throw 'Tried to submit empty object';
 	}
 	const node = await getNode(nodeId);
 	return submitData('api/submit', { nodeId, recId, data: encodeData(data, node) });
-};
+}) as unknown as TypeGenerationHelper['s'];
 
 let UID_counter = 1;
 function UID(obj): number {
@@ -1312,7 +1310,6 @@ async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
 			backdrop.remove();
 		});
 		return new Promise((resolve) => {
-			//@ts-ignore
 			iframe.contentWindow.onCurdJSLogin = (userData) => {
 				User.currentUserData = userData;
 				resolve(userData);
@@ -1338,7 +1335,6 @@ async function attachGoogleLoginAPI(enforces = false) {
 		document.head.append(s);
 		await new Promise((resolve) => {
 			setInterval(() => {
-				//@ts-ignore
 				if (window.gapi) {
 					resolve(true);
 				}

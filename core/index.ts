@@ -61,21 +61,17 @@ const handleRequest = (req, res) => {
 			'Access-Control-Allow-Methods': 'POST'
 		};
 
-		//@ts-ignore
+		/// #if DEBUG
+		/*
+		/// #endif
 		const onError = (error) => {
 			let ret;
-			/// #if DEBUG
-			ret = { error: error.stack };
-			addDebugDataToResponse(resHeaders, ret, startTime);
-			console.error(error.stack);
-			/*
-			/// #endif
 			console.error(error.stack);
 			ret = { error: error.message };
-			//*/
 			res.set(resHeaders);
 			res.end(JSON.stringify(ret));
 		};
+		//*/
 		startSession(body.sessionToken, req.headers['accept-language'])
 			.then((session) => {
 				userSession = session;

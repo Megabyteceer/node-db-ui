@@ -11,9 +11,7 @@ const RENDERED_FIELDS = {
 	avatar: true,
 	name: true,
 	company: true,
-	email: true,
-	creator_org: true,
-	creator_user: true,
+	email: true
 };
 
 registerListRenderer(NODE_ID.USERS, function (this: List): ComponentChild {

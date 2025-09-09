@@ -24,8 +24,7 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 	}
 
 	focus() {
-		// @ts-ignore
-		this.refToInput.base.querySelector('input').focus();
+		(this.refToInput.base as HTMLDivElement).querySelector('input').focus();
 	}
 
 	render() {

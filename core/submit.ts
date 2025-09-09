@@ -1,5 +1,5 @@
 import { assert, throwError } from '../www/client-core/src/assert';
-import type { LookupValue, RecId, RecordData, RecordDataWrite, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
+import type { LookupValue, RecId, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
 import { PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 
 
@@ -17,7 +17,7 @@ import { L } from './locale';
 import {mysqlRollback} } from './mysql-connection';
 //*/
 
-import { FIELD_TYPE, type NODE_ID } from '../types/generated';
+import { FIELD_TYPE, type NODE_ID, type TypeGenerationHelper } from '../types/generated';
 import {
 	/// #if DEBUG
 	__destroyRecordToPreventAccess,
@@ -40,8 +40,8 @@ for (const tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 		}
 	);
 }
-//@ts-ignore
-const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
+
+let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWriteDraftable, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	const node = getNodeDesc(nodeId);
 
 	let currentData:RecordData;
@@ -136,8 +136,8 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 
 	if (!recId) {
 		if (data.hasOwnProperty('_usersId')) {
-			if (userSession && !isAdmin(userSession) && userSession.id !== data._usersId) {
-				throwError('wrong _usersId detected');
+			if (!isAdmin(userSession)) {
+				throwError('_usersId admin expected');
 			}
 		} else {
 			assert(userSession, 'submitRecord without userSession requires _usersId to be defined.');
@@ -149,8 +149,8 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 		}
 
 		if (data.hasOwnProperty('_organizationId')) {
-			if (userSession && !isAdmin(userSession) && userSession.id !== data._organizationId) {
-				throwError('wrong _organizationId detected');
+			if (!isAdmin(userSession)) {
+				throwError('_organizationId admin expected');
 			}
 		} else {
 			assert(userSession, 'submitRecord without userSession requires _organizationId to be defined.');
@@ -387,6 +387,8 @@ const submitRecord: TypeGenerationHelper['s'] = async (nodeId: NODE_ID, data: Re
 	}
 	//*/
 };
+
+const submitRecord: TypeGenerationHelper['s'] = _submitRecord as unknown as TypeGenerationHelper['s'];
 
 const LIMIT_SQL_PART = ' LIMIT ' + NUM_1;
 async function uniqueCheckInner(tableName, fieldName, val, recId) {

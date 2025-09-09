@@ -47,7 +47,7 @@ async function callForEachField(fieldRefs, data, functionName) {
 	}
 }
 
-class FormFull<FieldsNames extends string, GetValueType = (name: string) => any, SetValueType = (filedName: string, value: any, isUserAction?: boolean) => Promise<void> | void> extends FormEventProcessingMixins<FieldsNames, GetValueType, SetValueType> {
+class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<FieldsNames> {
 	backupInterval: NodeJS.Timeout;
 
 	constructor(props) {
@@ -78,10 +78,8 @@ class FormFull<FieldsNames extends string, GetValueType = (name: string) => any,
 		this.onShow();
 
 		if (this.props.overrideOrderData >= 0) {
-			//@ts-ignore
-			if (this.hasField('order')) {
-				//@ts-ignore
-				this.hideField('order');
+			if (this.hasField('order' as any)) {
+				this.hideField('order' as any);
 			}
 		}
 
@@ -401,7 +399,7 @@ class FormFull<FieldsNames extends string, GetValueType = (name: string) => any,
 						isEdit: this.props.editable,
 						isCompact: this.props.isCompact,
 						hidden: this.hiddenFields.hasOwnProperty(field.fieldNamePure) || forcedValues.hasOwnProperty(field.fieldNamePure),
-						fieldDisabled: this.isFieldDisabled(field.fieldNamePure) || forcedValues.hasOwnProperty(field.fieldNamePure)
+						fieldDisabled: this.isFieldDisabled(field.fieldNamePure as FieldsNames) || forcedValues.hasOwnProperty(field.fieldNamePure)
 					});
 
 					fields.push(tf);

@@ -74,13 +74,12 @@ class List extends BaseForm<ListProps, ListState> {
 		assert(props.node || typeof props.nodeId === 'number', 'number expected');
 		super(props);
 		this.filters = Object.assign({}, props.filters);
-		//@ts-ignore
-		this.state.node = props.node;
-		//@ts-ignore
-		this.state.data = props.initialData;
-		//@ts-ignore
-		this.state.viewMask =
-			this.props.viewMask || (this.props.isLookup ? VIEW_MASK.DROPDOWN_LIST : VIEW_MASK.LIST);
+
+		this.state = {
+			node: props.node,
+			data: props.initialData,
+			viewMask: this.props.viewMask || (this.props.isLookup ? VIEW_MASK.DROPDOWN_LIST : VIEW_MASK.LIST)
+		};
 		this.refreshData = this.refreshData.bind(this);
 		this.changeSearch = this.changeSearch.bind(this);
 		this.subFormRef = this.subFormRef.bind(this);

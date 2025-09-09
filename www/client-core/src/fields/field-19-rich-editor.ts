@@ -87,8 +87,7 @@ registerFieldClass(
 					const s = this.getSummerNote();
 					s.postMessage({ value: val }, '*');
 				}
-				///@ts-ignore
-				this.state.value = val;
+				this.setState({value: val});
 			}
 		}
 

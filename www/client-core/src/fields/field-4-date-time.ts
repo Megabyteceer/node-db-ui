@@ -41,8 +41,7 @@ class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 	}
 
 	setMin(moment) {
-		//@ts-ignore
-		this.state.minDate = moment;
+		this.setState({minDate: moment});
 		if (moment && (this.state.focused)) {
 			if (!this.state.value) {
 				this.setValue(moment);
@@ -54,8 +53,7 @@ class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 	}
 
 	setMax(moment) {
-		//@ts-ignore
-		this.state.maxDate = moment;
+		this.setState({maxDate: moment});
 		if (moment && (this.state.focused)) {
 			if (!this.state.value) {
 				this.setValue(moment);

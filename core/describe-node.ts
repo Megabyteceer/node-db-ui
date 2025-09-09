@@ -458,6 +458,7 @@ function getLangs(): UserLangEntry[] {
 /// #if DEBUG
 
 const generateTypings = async () => {
+	const srcAdd = [''];
 	const src = [`
 import type { Moment } from 'moment';
 import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
@@ -575,15 +576,27 @@ export class TypeGenerationHelper {`);
 
 	nodesData.forEach((nodeData) => {
 		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
-			const methodNameGet = 'getValue' + snakeToCamel(nodeData.tableName);
-			const methodNameSet = 'setValue' + snakeToCamel(nodeData.tableName);
 
-			const hasFieldsWithData = nodeData.fields.some(f => f.dataType !== FIELD_DATA_TYPE.NODATA);
+			const nodeName = snakeToCamel(nodeData.tableName);
 
-			const formArg = hasFieldsWithData ?
-				`form: FormFull<T${snakeToCamel(nodeData.tableName)}FieldsList, TypeGenerationHelper['${methodNameGet}'], TypeGenerationHelper['${methodNameSet}']>`
-				:
-				`form: FormFull<T${snakeToCamel(nodeData.tableName)}FieldsList>`;
+			const methodNameGet = 'getValue' + nodeName;
+			const methodNameSet = 'setValue' + nodeName;
+			const fieldsWithData = nodeData.fields.filter(f => f.dataType !== FIELD_DATA_TYPE.NODATA);
+
+			const formInterfaceName = 'Form' + nodeName;
+
+			srcAdd.push(`export interface ${formInterfaceName} extends FormFull<T${nodeName}FieldsList> {`);
+			for (const field of fieldsWithData) {
+				let type = getFieldTypeSrc(field);
+				srcAdd.push(`	${methodNameSet}(fieldName: '${field.fieldName}'): ${type};`);
+			}
+			for (const field of fieldsWithData) {
+				let type = getFieldTypeSrc(field);
+				srcAdd.push(`	${methodNameGet}(fieldName: '${field.fieldName}', value: ${type}): Promise<void> | void;`);
+			}
+			srcAdd.push('}');
+			const formArg =
+				`form: ${formInterfaceName}`;
 
 			src.push(`
 	async eventsClient(eventName: '${nodeData.tableName}.onLoad', handler: (${formArg}) => ${CLIENT_HANDLER_RET});
@@ -596,7 +609,7 @@ export class TypeGenerationHelper {`);
 					if (isClickable) {
 						src.push(`	async eventsClient(eventName: '${nodeData.tableName},${field.fieldName}.onClick', handler: (${formArg}) => void);`);
 					} else {
-						src.push(`	async eventsClient(eventName: '${nodeData.tableName},${field.fieldName}.onChange', handler: (${formArg}, isUserAction: boolean, prevValue: any) => void);`);
+						src.push(`	async eventsClient(eventName: '${nodeData.tableName},${field.fieldName}.onChange', handler: (${formArg}, value: ${getFieldTypeSrc(field)}, isUserAction: boolean, prevValue: any) => void);`);
 					}
 				}
 			}
@@ -605,42 +618,6 @@ export class TypeGenerationHelper {`);
 	src.push(`	async eventsClient() {
 		return 1 as any;
 	}`);
-
-
-	// generate getValue() typing
-	nodesData.forEach((nodeData) => {
-		if (nodeData.fields) {
-			const fields = nodeData.fields.filter(f => f.dataType !== FIELD_DATA_TYPE.NODATA);
-			if (fields.length) {
-				const methodName = 'getValue' + snakeToCamel(nodeData.tableName);
-				for (const field of fields) {
-					let type = getFieldTypeSrc(field);
-					src.push(`	${methodName}(fieldName: '${field.fieldName}'): ${type};`);
-				}
-				src.push(`	${methodName}() {
-		return 1 as any;
-	}`);
-			}
-		}
-	});
-
-	// generate setValue() typing
-	nodesData.forEach((nodeData) => {
-		if (nodeData.fields) {
-			const fields = nodeData.fields.filter(f => f.dataType !== FIELD_DATA_TYPE.NODATA);
-			if (fields.length) {
-				const methodName = 'setValue' + snakeToCamel(nodeData.tableName);
-				for (const field of fields) {
-					let type = getFieldTypeSrc(field);
-					src.push(`	${methodName}(fieldName: '${field.fieldName}', value: ${type}): Promise<void> | void;`);
-				}
-				src.push(`	${methodName}() {
-		return 1 as any;
-	}`);
-			}
-		}
-	});
-
 
 	// generate getRecord() typing
 	nodesData.forEach((nodeData) => {
@@ -705,19 +682,21 @@ export class TypeGenerationHelper {`);
 			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'RecordWrite';
 			src.push(`
 	async s(nodeId: NODE_ID.${enumName}, data: ${typeName}, recId: RecId, userSession?: UserSession): Promise<RecordSubmitResult>;
-	async s(nodeId: NODE_ID.${enumName}, data: ${typeName}, recId?: RecId, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;
+	async s(nodeId: NODE_ID.${enumName}, data: ${typeName}, recId?: undefined, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;
 `);
 		}
 	});
 
 	src.push(`
 	async s(nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId: RecId, userSession?: UserSession): Promise<RecordSubmitResult>;
-	async s(nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId?: RecId, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;
+	async s(nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId?: undefined, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;
 
 	async s() {
 		return 1 as any;
 	}
 }`);
+
+	src.push(...srcAdd);
 
 	writeFileSync('types/generated.ts', src.join('\n'));
 

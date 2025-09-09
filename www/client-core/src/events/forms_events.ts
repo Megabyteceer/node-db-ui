@@ -1,7 +1,7 @@
 
-import { attachGoogleLoginAPI, getData, getNode, getRecordsClient, goToHome, isAdmin, L, myAlert, showPrompt } from '../utils';
+import { attachGoogleLoginAPI, getData, getNode, goToHome, isAdmin, L, myAlert, showPrompt, submitData } from '../utils';
 /// #if DEBUG
-import { FIELD_TYPE, NODE_ID, NODE_TYPE, type TFieldsFieldsList, type TNodesFieldsList, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList, type TypeGenerationHelper } from '../../../../types/generated';
+import { FIELD_TYPE, NODE_ID, NODE_TYPE, type FormFields, type FormNodes, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField } from '../admin/admin-utils';
 import type { FormFull } from '../forms/form-full';
@@ -136,7 +136,7 @@ clientOn('_enums.onLoad', (form) => {
 });
 
 
-const _nodes_recalculateFieldsVisibility = (form:FormFull<TNodesFieldsList, TypeGenerationHelper['getValueNodes']>) => {
+const _nodes_recalculateFieldsVisibility = (form:FormNodes) => {
 	if (!form.isNewRecord && form.fieldValue('nodeType') === NODE_TYPE.DOCUMENT) {
 		form.showField('_fieldsId');
 		form.showField('reverse');
@@ -218,7 +218,7 @@ clientOn('_nodes.onSave', (form) => {
 let _fieldsNameIsBad: boolean;
 
 clientOn('_fields.onLoad', async (form) => {
-	makeIconSelectionField(this, 'icon');
+	makeIconSelectionField(form, 'icon');
 
 	const parentNodeVal = form.fieldValue('nodeFieldsLinker');
 	let parentNode: NodeDesc;
@@ -279,6 +279,25 @@ clientOn('_fields.onLoad', async (form) => {
 		storeForms: 1
 	} as INodesFilter);
 	form.hideField('show');
+});
+
+const checkFieldExists = async (form:FormFields) => {
+	if (!form.isUpdateRecord) {
+		const fieldName = form.fieldValue('fieldName');
+		const parentNode = form.fieldValue('nodeFieldsLinker');
+		if (parentNode?.id) {
+			const ret = await submitData('admin/isFiledExists', {fieldName, nodeId: parentNode.id});
+			if (!ret) {
+				form.fieldAlert('fieldName', L('FLD_EXISTS'));
+			}
+		} else {
+			form.fieldAlert('fieldName');
+		}
+	}
+};
+
+clientOn('_fields,fieldName.onChange', async (form) => {
+	await checkFieldExists(form);
 });
 
 clientOn('_fields.onSave', (form) => {
@@ -376,10 +395,9 @@ clientOn('_filters.onLoad', (form) => {
 });
 
 clientOn('_login.afterSave', (_form, result) => {
-	debugger;
 	User.setUserData(result.handlerResult);
-	if (globals.onCurdJSLogin) {
-		globals.onCurdJSLogin(result.handlerResult);
+	if (window.onCurdJSLogin) {
+		window.onCurdJSLogin(result.handlerResult);
 	}
 });
 
@@ -421,8 +439,8 @@ clientOn('_login.onLoad', (form) => {
 		/// #if DEBUG
 		return;
 		/// #endif
-		//@ts-ignore
-		window.onGoogleSignIn = (googleUser) => {
+
+		window.onGoogleSignIn = (googleUser: any) => {
 			const id_token = googleUser.getAuthResponse().id_token;
 			form.setFieldValue('username', 'google-auth-sign-in');
 			form.setFieldValue('password', id_token);
@@ -470,31 +488,9 @@ clientOn('_enumValues.onLoad', (form) => {
 	}
 });
 
-const check12nFieldName = (form: FormFull<TFieldsFieldsList>) => {
+const check12nFieldName = (form: FormFields) => {
 	if (form.isNewRecord) {
 		_fieldsNameIsBad = false;
-
-		const checkFieldExists = (fName: string, nodeId: NODE_ID) => {
-			const fieldsFilter: IFieldsFilter = {
-				fieldName: fName
-			};
-			if (form.fieldValue('fieldType') !== FIELD_TYPE.LOOKUP_N_TO_M) {
-				fieldsFilter.nodeFieldsLinker = nodeId;
-			}
-			getRecordsClient(NODE_ID.FIELDS, undefined, fieldsFilter).then((data) => {
-				if (_fieldsNameIsBad) return;
-				if (data.items.length > 0) {
-					if (form.fieldValue('fieldType') === FIELD_TYPE.LOOKUP_N_TO_M) {
-						form.fieldAlert('fieldName', L('LOOKUP_NAME_NOT_UNIQUE'));
-					} else {
-						form.fieldAlert('fieldName', L('FLD_EXISTS'));
-					}
-					_fieldsNameIsBad = true;
-				} else {
-					form.fieldAlert('fieldName', undefined, true);
-				}
-			});
-		};
 
 		const fn = form.fieldValue('fieldName');
 		let nodeId = form.fieldValue('nodeFieldsLinker');
@@ -508,9 +504,9 @@ const check12nFieldName = (form: FormFull<TFieldsFieldsList>) => {
 
 		if (nodeId && fn && fn.length >= 3) {
 			if (form.fieldValue('fieldType') === FIELD_TYPE.LOOKUP_1_TO_N && nodeRef) {
-				checkFieldExists(fn + 'Linker', nodeRef);
+				checkFieldExists(form);
 			} else {
-				checkFieldExists(fn, nodeId);
+				checkFieldExists(form);
 			}
 		}
 	}
@@ -710,7 +706,7 @@ clientOn('_resetPassword,backToLogin.onClick', (_form) => {
 	globals.Stage.showForm(NODE_ID.LOGIN);
 });
 
-const _fields_recalculateFieldsVisibility = (form:FormFull<TFieldsFieldsList>) => {
+const _fields_recalculateFieldsVisibility = (form:FormFields) => {
 	const fieldType = form.fieldValue('fieldType');
 
 	form.showField('maxLength', 'requirement', 'storeInDb', 'sendToServer', 'unique', 'forSearch');

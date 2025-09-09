@@ -193,8 +193,8 @@ function initIconsList() {
 	const ruleList = Array.from(document.styleSheets);
 	for (const style of ruleList) {
 		const rules = Array.from(style.cssRules);
-		//@ts-ignore
-		if (rules.find((r) => r.selectorText === '.fa')) {
+
+		if (rules.find((r: CSSRule) => (r as unknown as {selectorText : string}).selectorText === '.fa')) {
 			for (const rule of rules) {
 				const s = rule.cssText.split('.fa-');
 				const allNames = s

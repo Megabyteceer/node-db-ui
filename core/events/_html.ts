@@ -28,10 +28,8 @@ async function saveDoc(data: IHtmlRecordWrite): Promise<void> {
 				rejects(err);
 			} else {
 				for (const name in data) {
-					//@ts-ignore
 					txt = txt.replaceAll('\\$\\{' + name + '\\}', data[name]);
 				}
-				//@ts-ignore
 				txt = txt.replaceAll('\\$\\{name\\}', data.name);
 				writeFile(getDocFilename(data), txt, (err) => {
 					if (err) {

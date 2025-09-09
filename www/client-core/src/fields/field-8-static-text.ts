@@ -13,7 +13,6 @@ registerFieldClass(FIELD_TYPE.STATIC_HTML_BLOCK, class StaticTextField extends B
 	render() {
 		const field = this.props.field;
 		if (globals.customClasses[field.htmlContent]) {
-			//@ts-ignore
 			return h(globals.customClasses[field.htmlContent], this.props);
 		} else {
 			return R.span({

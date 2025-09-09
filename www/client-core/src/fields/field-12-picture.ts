@@ -102,12 +102,11 @@ class CropperFieldBody extends Component<FieldProps & {
 				src: null,
 			});
 		} else {
-			// @ts-ignore
+
 			if (typeof this.cropper.cropper.getCroppedCanvas() === 'undefined') {
 				return;
 			}
 
-			// @ts-ignore
 			const bounds = this.cropper.cropper.getData();
 			this.references.w.value = bounds.width;
 			this.references.h.value = bounds.height;
@@ -116,7 +115,6 @@ class CropperFieldBody extends Component<FieldProps & {
 
 			this.setState({
 				cleared: false,
-				// @ts-ignore
 				cropResult: this.cropper.cropper.getCroppedCanvas().toDataURL(),
 				src: null,
 			});
@@ -202,7 +200,6 @@ class CropperFieldBody extends Component<FieldProps & {
 										aspectRatio: w / h,
 										preview: '.image-copper-preview',
 										guides: false,
-										// @ts-ignore
 										src: reader.result,
 										ref: (ref) => {
 											this.cropper = ref;
@@ -235,8 +232,8 @@ class CropperFieldBody extends Component<FieldProps & {
 					});
 					*/
 				};
-				// @ts-ignore
-				selectedImage.src = reader.result;
+
+				selectedImage.src = reader.result as string;
 			};
 			this.setState({ waiting: true });
 			reader.readAsDataURL(files[0]);

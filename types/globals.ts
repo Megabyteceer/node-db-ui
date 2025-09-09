@@ -1,12 +1,20 @@
 
-import type { Component } from 'preact';
+import type { ComponentType } from 'preact';
 import type { UserSession } from '../core/auth';
 import type { Stage } from '../www/client-core/src/stage';
 
+declare global {
+	interface Window {
+		onCurdJSLogin: (userSession: UserSession) => void;
+		onGoogleSignIn: (googleUser: any) => void;
+		Bootstrap: any;
+		Popper: any;
+	}
+}
+
 interface Globals {
-	onCurdJSLogin: (userSession: UserSession) => void;
 	customClasses: {
-		[key: string]: typeof Component<any>;
+		[key: string]: ComponentType<any>;
 	};
 	registerEventHandler: (classInstance) => void;
 	Stage: typeof Stage;
