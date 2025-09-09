@@ -29,7 +29,7 @@ import './fields/field-6-enum';
 import './fields/field-7-many-to-one';
 import './fields/field-8-static-text';
 import { Stage } from './stage';
-import './views/view_5_users';
+import './views/view_users';
 
 
 /// #if DEBUG

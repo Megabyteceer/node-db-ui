@@ -44,9 +44,28 @@ export const ESCAPED_LITERAL = escapeString('');
 
 const pool = new Pool();
 
-const mysqlDebug = {
-	debug: null
+/// #if DEBUG
+export interface SQLDebugInfo {
+	SQL:string;
+	stack: string[];
+	timeElapsed_ms?: number;
+}
+
+export interface DebugInfo {
+	timeElapsed_ms?: number;
+	request?: string;
+	message?: string;
+	id?: number;
+	SQLs?: SQLDebugInfo[];
+}
+
+export const mysqlDebug = {
+	debugOutPut: undefined as DebugInfo
 };
+
+
+/// #endif
+
 
 const mysqlExec = (query: string): Promise<QueryResultRow[]> => {
 	/// #if DEBUG
@@ -59,11 +78,11 @@ const mysqlExec = (query: string): Promise<QueryResultRow[]> => {
 		SQL: query,
 		stack: getCurrentStack()
 	};
-	if (mysqlDebug.debug) {
-		if (!mysqlDebug.debug.SQLs) {
-			mysqlDebug.debug.SQLs = [];
+	if (mysqlDebug.debugOutPut) {
+		if (!mysqlDebug.debugOutPut.SQLs) {
+			mysqlDebug.debugOutPut.SQLs = [];
 		}
-		mysqlDebug.debug.SQLs.push(SQL);
+		mysqlDebug.debugOutPut.SQLs.push(SQL);
 	}
 	/// #endif
 	return new Promise((resolve) => {
@@ -137,4 +156,4 @@ const escapeNumber = D;
 /** deprecated - use A() shortcut instead */
 const escapeNumbersArray = A;
 
-export { A, D, escapeNumber, escapeNumbersArray, escapeString, mysqlCommit, mysqlDebug, mysqlExec, mysqlRollback, mysqlStartTransaction, NUM_0, NUM_1 };
+export { A, D, escapeNumber, escapeNumbersArray, escapeString, mysqlCommit, mysqlExec, mysqlRollback, mysqlStartTransaction, NUM_0, NUM_1 };

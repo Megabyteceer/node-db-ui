@@ -15,12 +15,12 @@ import { DebugPanel } from './debug-panel';
 /// #endif
 
 
-import { h, type Component, type ComponentChild } from 'preact';
+import type { Component, ComponentChild } from 'preact';
+import { h } from 'preact';
 import { FIELD_TYPE, NODE_ID, type TypeGenerationHelper } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { assert } from './assert';
 import { HotkeyButton } from './components/hotkey-button';
-import type { List } from './forms/list';
 import { ENV } from './main-frame';
 
 enum CLIENT_SIDE_FORM_EVENTS {
@@ -1269,9 +1269,10 @@ function L(key: LANG_KEYS | LANG_KEYS_CUSTOM, param?: any) {
 	return '#' + key;
 }
 
-const listRenderers = [];
+type ListRenderer = (node: NodeDesc, items: RecordData[], refreshFunction?: () => void) => ComponentChild;
+const listRenderers = {} as KeyedMap<ListRenderer>;
 
-function registerListRenderer(nodeId: RecId, renderFunction: (this: List) => ComponentChild) {
+function registerListRenderer(nodeId: RecId, renderFunction: ListRenderer) {
 	if (listRenderers.hasOwnProperty(nodeId)) {
 		throw 'List renderer for node ' + nodeId + ' is already registered.';
 	}
@@ -1282,7 +1283,7 @@ function isPresentListRenderer(nodeId: RecId) {
 	return listRenderers.hasOwnProperty(nodeId);
 }
 
-function getListRenderer(nodeId: RecId): (this: List) => ComponentChild {
+function getListRenderer(nodeId: RecId): ListRenderer {
 	return listRenderers[nodeId];
 }
 

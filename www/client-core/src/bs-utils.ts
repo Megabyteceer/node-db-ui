@@ -1,4 +1,5 @@
 
+import type { DebugInfo } from '../../../core/mysql-connection';
 import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord } from '../../../types/generated';
 import type { SelectItem } from './components/select';
 
@@ -100,6 +101,16 @@ type RecId = number;
 
 type UserRoles = { [key: number]: 1 };
 type UserOrganizations = { [key: number]: string };
+
+export type APIResult = any;
+
+export interface ApiResponse {
+	result: APIResult;
+	isGuest?:boolean;
+	/// #if DEBUG
+	debug: DebugInfo;
+	/// #endif
+}
 
 interface UserSession {
 	id: RecId;

@@ -1,5 +1,5 @@
 import type { NODE_ID } from '../types/generated';
-import type { GetRecordsFilter, GetRecordsParams, RecId, RecordDataWriteDraftable, RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
+import type { APIResult, GetRecordsFilter, GetRecordsParams, RecId, RecordDataWriteDraftable, RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
 /// #if DEBUG
 import { clearCache, getClientEventHandler, nodePrivileges } from './admin/admin';
 import { getDeployPackage, isFiledExists } from './admin/deploy';
@@ -84,6 +84,6 @@ const api: object = {
 		return isFiledExists(reqData, userSession);
 	},
 	/// #endif
-};
+} as KeyedMap<(any, UserSession) => APIResult>;
 
 export default api;

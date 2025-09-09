@@ -547,7 +547,7 @@ class List extends BaseForm<ListProps, ListState> {
 		let body;
 		if (data.total > 0 || this.isCustomListRendering()) {
 			if (this.isCustomListRendering()) {
-				body = getListRenderer(node.id).call(this);
+				body = getListRenderer(node.id)(node, this.state.data.items, this.refreshData);
 			}
 			if (!body) {
 				const tableHeader = [];

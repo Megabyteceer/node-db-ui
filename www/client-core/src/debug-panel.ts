@@ -1,11 +1,12 @@
 
 import { Component } from 'preact';
+import type { DebugInfo } from '../../../core/mysql-connection';
 import { R } from './r';
 import { iAdmin } from './user';
 import { getData, isLitePage, L, reloadLocation, renderIcon, sp, strip_tags } from './utils';
 
 let currentId = 10;
-const debugInfo = [];
+const debugInfo = [] as DebugInfo[];
 
 /// #if DEBUG
 /*
@@ -46,7 +47,7 @@ class DebugPanel extends Component<{
 		this.hide();
 	}
 
-	addEntry(entry: any, expand?: boolean, url?: string) {
+	addEntry(entry: DebugInfo | string, expand?: boolean, url?: string) {
 
 		if (typeof (entry) !== 'object') {
 			entry = { message: entry + '' };
@@ -143,21 +144,11 @@ class DebugPanel extends Component<{
 						entryBody = '';
 					}
 
-					let stackBody;
-					if (i.hasOwnProperty('stack')) {
-						stackBody = i.stack.map((i, key) => {
-							return R.p({ key: key, className: 'debug-panel-entry' }, i);
-						});
-					} else {
-						stackBody = '';
-					}
-
 					return R.div({ className: 'debug-panel-item', key: i.id },
 						R.span({ className: 'debug-panel-request-header' }, i.request + ': '),
 
-						R.b({ className: 'debug-panel-message' }, R.div({ dangerouslySetInnerHTML: { __html: strip_tags(i.message) } })),
+						R.b({ className: 'debug-panel-message' }, R.div({ dangerouslySetInnerHTML: { __html: strip_tags(i.message || '') } })),
 						R.div({ className: 'debug-panel-time' }, 'time elapsed (ms): ' + (i.timeElapsed_ms || -9999).toFixed(4)),
-						stackBody,
 						R.hr(),
 						entryBody
 					);

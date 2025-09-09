@@ -2,7 +2,7 @@ import api from './api';
 import { finishSession, isUserHaveRole, startSession } from './auth';
 import { initNodesData } from './describe-node';
 
-import { ROLE_ID } from '../www/client-core/src/bs-utils';
+import { ROLE_ID, type ApiResponse } from '../www/client-core/src/bs-utils';
 import './locale';
 import { mysqlDebug } from './mysql-connection';
 
@@ -28,22 +28,25 @@ const upload = multer();
 
 const upload2 = upload.single('file');
 
-function addDebugDataToResponse(resHeaders, ret, startTime) {
-	if (mysqlDebug.debug) {
-		ret.debug = mysqlDebug.debug;
-		delete mysqlDebug.debug;
+/// #if DEBUG
+function addDebugDataToResponse(ret: ApiResponse, startTime: number) {
+	if (mysqlDebug.debugOutPut) {
+		ret.debug = mysqlDebug.debugOutPut;
+		delete mysqlDebug.debugOutPut;
 		ret.debug.timeElapsed_ms = performance.now() - startTime;
 	}
 }
+/// #endif
+
 
 const handleRequest = (req, res) => {
 	/// #if DEBUG
 	const startTime = performance.now();
 	/// #endif
 
-	let handler = req.url.substr(6);
-	if (api.hasOwnProperty(handler)) {
-		handler = api[handler];
+	let handlerName = req.url.substr(6);
+	if (api.hasOwnProperty(handlerName)) {
+		const handler = api[handlerName];
 		const body = req.body;
 		/// #if DEBUG
 		//console.log(req.url);
@@ -52,7 +55,7 @@ const handleRequest = (req, res) => {
 
 		let userSession;
 		/// #if DEBUG
-		mysqlDebug.debug = { requestTime: new Date(), stack: [] };
+		mysqlDebug.debugOutPut = {};
 		/// #endif
 
 		const resHeaders = {
@@ -78,13 +81,12 @@ const handleRequest = (req, res) => {
 				handler(body, session).then((result) => {
 					const ret: any = {
 						result,
-						isGuest: false,
 						/// #if DEBUG
 						debug: null
 						/// #endif
-					};
+					} as ApiResponse;
 					/// #if DEBUG
-					addDebugDataToResponse(resHeaders, ret, startTime);
+					addDebugDataToResponse(ret, startTime);
 					/// #endif
 
 					if (isUserHaveRole(ROLE_ID.GUEST, userSession)) {
@@ -115,7 +117,7 @@ const handleRequest = (req, res) => {
 			});
 	} else {
 		res.writeHead(404);
-		res.end('wrong api request');
+		res.end('wrong api request: ' + handlerName);
 	}
 };
 
@@ -127,7 +129,7 @@ const handleUpload = (req, res) => {
 	});
 };
 
-app.options('/core/*', (req, res) => {
+app.options('/core/*', (_req, res) => {
 	res.set({
 		'Access-Control-Allow-Origin': ENV.ALLOW_ORIGIN,
 		'Access-Control-Allow-Credentials': true,

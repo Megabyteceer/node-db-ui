@@ -2,10 +2,9 @@
 import type { ComponentChild } from 'preact';
 import { NODE_ID, type IUsersRecord } from '../../../../types/generated';
 import { renderItemsButtons } from '../forms/form-list-item';
-import type { List } from '../forms/list';
 import { R } from '../r';
 import { idToImgURL, registerListRenderer, renderIcon } from '../utils';
-import './view_5_users.css';
+import './view_users.css';
 
 const RENDERED_FIELDS = {
 	avatar: true,
@@ -14,12 +13,9 @@ const RENDERED_FIELDS = {
 	email: true
 };
 
-registerListRenderer(NODE_ID.USERS, function (this: List): ComponentChild {
+registerListRenderer(NODE_ID.USERS, (node: NodeDesc, items: IUsersRecord[], refreshFunction?: () => void): ComponentChild => {
 
-	const node = this.state.node;
-	const data = this.state.data;
-
-	return (data.items as IUsersRecord[]).map((item) => {
+	return items.map((item) => {
 
 		const imgUrl = idToImgURL(item.avatar, 'avatar');
 
@@ -52,9 +48,8 @@ registerListRenderer(NODE_ID.USERS, function (this: List): ComponentChild {
 				additionalFields
 			),
 			R.div({ className: 'user-item-controls' },
-				renderItemsButtons(node, item, this.refreshData)
+				renderItemsButtons(node, item, refreshFunction)
 			)
 		);
 	});
-
 });
