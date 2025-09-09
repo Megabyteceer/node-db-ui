@@ -68,13 +68,13 @@ function restrictRecordsDeletion(nodes: RestrictDeletionData) {
 }
 
 restrictRecordsDeletion({
-	4: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 20, 22, 50, 52, 53] /* disable critical sections  deletion/hiding*/,
-	5: [1, 2, 3] /* disable admin,user,guest deletion*/,
-	7: [1, 2, 3] /* disable critical organizations deletion*/,
-	8: [1, 2, 3] /* disable critical roles deletion*/,
-	12: [1] /* disable default language deletion*/,
-	52: [1] /* disable field type enum deletion*/,
-	53: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 30, 43] /* disable field type enum deletion*/
+	[NODE_ID.NODES]: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 20, 22, 50, 52, 53] /* disable critical sections  deletion/hiding*/,
+	[NODE_ID.USERS]: [1, 2, 3] /* disable admin,user,guest deletion*/,
+	[NODE_ID.ORGANIZATION]: [1, 2, 3] /* disable critical organizations deletion*/,
+	[NODE_ID.ROLES]: [1, 2, 3] /* disable critical roles deletion*/,
+	[NODE_ID.LANGUAGES]: [1] /* disable default language deletion*/,
+	[NODE_ID.ENUMS]: [1] /* disable field type enum deletion*/,
+	[NODE_ID.ENUM_VALUES]: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 30, 43] /* disable field type enum deletion*/
 });
 
 function isRecordRestrictedForDeletion(nodeId, recordId) {

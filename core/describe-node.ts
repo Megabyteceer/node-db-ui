@@ -499,7 +499,7 @@ import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordD
 	}
 
 	enumsById.forEach((enumData) => {
-		src.push('export const enum ' + normalizeName(enumData.name) + ' {');
+		src.push('export enum ' + normalizeName(enumData.name) + ' {');
 		for (const val of enumData.items) {
 			src.push('\t' + normalizeEnumName(val.name).toUpperCase() + ' = ' + val.value + ',');
 		}

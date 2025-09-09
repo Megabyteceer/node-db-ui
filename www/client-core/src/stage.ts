@@ -3,7 +3,7 @@
 import { NODE_TYPE } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { assert, throwError } from './assert';
-import type { FormFilters, RecId, RecordData } from './bs-utils';
+import { normalizeEnumName, type FormFilters, type RecId, type RecordData } from './bs-utils';
 import type { BaseForm } from './forms/base-form';
 import { FormFull } from './forms/form-full';
 import { List } from './forms/list';
@@ -192,7 +192,7 @@ class Stage extends Component<any, any> {
 
 		let className =
 			'form-container-node-' +
-			nodeId +
+			normalizeEnumName(node.tableName).toLowerCase().replaceAll('_', '-') || nodeId +
 			(isRootForm ? ' form-root-container' : ' form-modal-container');
 		if (node.cssClass) {
 			className += ' ' + node.cssClass;

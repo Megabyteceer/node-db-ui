@@ -161,7 +161,7 @@ clientOn('_nodes.onLoad', (form) => {
 		form.hideField('filtersTab');
 	}
 
-	makeIconSelectionField(this, 'icon');
+	makeIconSelectionField(form, 'icon');
 
 	if (form.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
 		form.hideField('defaultFilterId');
@@ -546,7 +546,7 @@ clientOn('_users,passwordConfirm.onChange', (form) => {
 /// #if DEBUG
 
 
-const nodeTypeOnChange = (form) => {
+const nodeTypeOnChange = (form: FormNodes) => {
 	const nodeType = form.fieldValue('nodeType');
 
 	if (nodeType === NODE_TYPE.DOCUMENT) {
@@ -557,8 +557,8 @@ const nodeTypeOnChange = (form) => {
 			'draftable',
 			'storeForms',
 			'recPerPage',
-			'data_storage_group',
-			'appearance_group'
+			'dataStorageGroup',
+			'appearanceGroup'
 		);
 		form.makeFieldRequired('singleName');
 	} else {
@@ -569,8 +569,8 @@ const nodeTypeOnChange = (form) => {
 			'draftable',
 			'storeForms',
 			'recPerPage',
-			'data_storage_group',
-			'appearance_group'
+			'dataStorageGroup',
+			'appearanceGroup'
 		);
 		form.makeFieldRequired('singleName', false);
 	}
@@ -585,10 +585,10 @@ const nodeTypeOnChange = (form) => {
 
 	if (nodeType === NODE_TYPE.REACT_CLASS) {
 		form.setFieldLabel('tableName', L('CLASS_NAME'));
-		makeReactClassSelectionField(this, 'tableName');
+		makeReactClassSelectionField(form, 'tableName');
 	} else {
 		form.setFieldLabel('tableName');
-		removeReactClassSelectionField(this, 'tableName');
+		removeReactClassSelectionField(form, 'tableName');
 	}
 
 	_nodes_recalculateFieldsVisibility(form);

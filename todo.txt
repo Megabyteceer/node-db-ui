@@ -1,7 +1,10 @@
 
-
-
 css классы не id а cssClassName поле прсвоить каждому полю node-name--field-name  и ноде
+
+-\d
+
+
+
 
 темная тема
 

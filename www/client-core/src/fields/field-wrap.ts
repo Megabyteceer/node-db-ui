@@ -277,7 +277,7 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 		let className =
 			domId +
 			' field-wrap field-container-type-' +
-			field.fieldType +
+			FIELD_TYPE[field.fieldType].toLowerCase().replaceAll('_', '-') +
 			' field-container-name-' +
 			field.fieldName;
 		if (

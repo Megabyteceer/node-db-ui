@@ -50,7 +50,7 @@ class EnumField extends BaseField {
 			return h(Select, inputsProps);
 		} else {
 			return R.span({
-				className: 'enum-type-' + normalizeEnumName(field.enumList.name).toLowerCase() + ' enum-val-' + value,
+				className: 'enum-type-' + normalizeEnumName(field.enumList.name).toLowerCase().replaceAll('_', '-') + ' enum-val-' + normalizeEnumName(field.enumList.namesByValue[value]).toLowerCase().replaceAll('_', '-'),
 			}, field.enumList.namesByValue[value]);
 		}
 	}

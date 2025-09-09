@@ -310,28 +310,3 @@
 	color: #ccc;
 	font-size: 80%;
 }
-
-.enum-type-100 {
-	font-weight: bold;
-	font-size: 80%;
-}
-
-.enum-type-100.enum-val-1 {
-	color: rgb(135, 128, 136);
-}
-
-.enum-type-100.enum-val-2 {
-	color: #070;
-}
-
-.enum-type-100.enum-val-2 {
-	color: #070;
-}
-
-.enum-type-100.enum-val-3 {
-	color: rgb(135, 128, 136);
-}
-
-.enum-type-100.enum-val-4 {
-	color: rgb(129, 0, 146);
-}
