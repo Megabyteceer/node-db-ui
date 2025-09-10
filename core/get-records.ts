@@ -13,11 +13,6 @@ import {
 } from '../www/client-core/src/events-handle';
 import { A, D, escapeString, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 
-
-const isASCII = (str) => {
-	return /^[\x00-\x7F]*$/.test(str);
-};
-
 const GROUP_SPLITTER = '␞';
 const GROUP_SPLITTER_ESCAPED = escapeString(GROUP_SPLITTER);
 
@@ -242,8 +237,6 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 		let sortFieldName: string | undefined;
 		let fieldName;
 
-		const isAsciiSearch = search && isASCII(search);
-
 		for (const f of node.fields) {
 			fieldName = f.fieldName;
 
@@ -257,17 +250,15 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 				}
 			}
 
-			if (search && f.forSearch) {
-				if (isAsciiSearch || f.fieldType === FIELD_TYPE.TEXT) {
-					const isNumericField = (f.dataType === FIELD_DATA_TYPE.NUMBER);
-					if (!isNumericSearch || isNumericField) {
-						if (!searchWHERE) {
-							searchWHERE = [];
-						} else {
-							searchWHERE.push(' OR ');
-						}
-						searchWHERE.push('"', tableName, '"."', fieldName, isNumericField ? searchSQLNumeric : searchSQL);
+			if (search && f.forSearch && (f.dataType !== FIELD_DATA_TYPE.BOOL)) {
+				const isNumericField = (f.dataType === FIELD_DATA_TYPE.NUMBER);
+				if ((isNumericSearch === isNumericField) || !isNumericField) {
+					if (!searchWHERE) {
+						searchWHERE = [];
+					} else {
+						searchWHERE.push(' OR ');
 					}
+					searchWHERE.push('"', tableName, '"."', fieldName, isNumericField ? searchSQLNumeric : searchSQL);
 				}
 			}
 

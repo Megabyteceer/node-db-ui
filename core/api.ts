@@ -1,7 +1,7 @@
 import type { NODE_ID } from '../types/generated';
 import type { APIResult, GetRecordsFilter, GetRecordsParams, RecId, RecordDataWriteDraftable, RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
 /// #if DEBUG
-import { clearCache, getClientEventHandler, nodePrivileges } from './admin/admin';
+import { getClientEventHandler, nodePrivileges } from './admin/admin';
 import { getDeployPackage, isFiledExists } from './admin/deploy';
 /// #endif
 
@@ -70,9 +70,6 @@ const api: object = {
 	/// #if DEBUG
 	'admin/nodePrivileges': (reqData, userSession: UserSession) => {
 		return nodePrivileges(reqData, userSession);
-	},
-	'admin/cache_info': (_reqData, userSession: UserSession) => {
-		return clearCache(userSession);
 	},
 	'admin/editEventHandler': (reqData, userSession: UserSession) => {
 		return getClientEventHandler(reqData, userSession);

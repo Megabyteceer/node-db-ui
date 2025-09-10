@@ -59,12 +59,6 @@ async function nodePrivileges(reqData: NodePrivilegesRequest, userSession) {
 
 const NEW_FUNCTION_MARKER = '//_insertNewHandlersHere_';
 
-async function clearCache(userSession) {
-	shouldBeAdmin(userSession);
-	reloadMetadataSchedule();
-	return 1;
-}
-
 const shouldBeAdmin = (userSession = ADMIN_USER_SESSION) => {
 	if (!isAdmin(userSession)) {
 		throwError('Access denied');
@@ -196,4 +190,4 @@ async function getClientEventHandler(
 	}
 }
 
-export { clearCache, getClientEventHandler, nodePrivileges, shouldBeAdmin };
+export { getClientEventHandler, nodePrivileges, shouldBeAdmin };

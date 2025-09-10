@@ -283,17 +283,6 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 							},
 						},
 						renderIcon('eye')
-					),
-					R.button(
-						{
-							className: 'clickable tool-btn admin-form-btn',
-							title: L('ADD_RATING_FLD'),
-							onClick: () => {
-								// TODO: implement ratings creation process
-							},
-						},
-						renderIcon('plus'),
-						renderIcon('bar-chart')
 					)
 				);
 			} else {

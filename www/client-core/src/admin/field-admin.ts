@@ -27,7 +27,6 @@ interface FieldAdminState {
 interface FieldAdminProps {
 	field: FieldDesc;
 	form?:FormFull<string>;
-
 }
 
 class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
@@ -88,7 +87,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		if (bodyVisible) {
 			let extendedInfo: ComponentChild;
 			if (
-				form.getField(field.fieldName)?.fieldRef?.state?.filters
+				form.getField && form.getField(field.fieldName)?.fieldRef?.state?.filters
 			) {
 				extendedInfo = R.div(
 					null,

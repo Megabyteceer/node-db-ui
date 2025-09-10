@@ -14,7 +14,11 @@ import { Stage } from './stage';
 import { iAdmin, User } from './user';
 import { isLitePage, L, renderIcon } from './utils';
 
-let collapsed;
+
+const isNeedCollapse = () => {
+	return window.document.body.clientWidth < 1300;
+};
+let collapsed = isNeedCollapse();
 
 function isMustBeExpanded(i):boolean {
 	if (i.children) {
@@ -75,12 +79,12 @@ interface BarItemProps {
 	level: number;
 }
 
+
 class BarItem extends Component<BarItemProps, BarItemState> {
 	constructor(props) {
 		super(props);
 		itemsById[props.item.id] = this;
 		this.state = {};
-		this.collapseOtherGroups = this.collapseOtherGroups.bind(this);
 	}
 
 	componentDidMount() {
@@ -95,14 +99,6 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 			assert(i >= 0, 'BarItem registration is corrupted.');
 			allGroups.splice(i, 1);
 		}
-	}
-
-	collapseOtherGroups() {
-		/*for(let g of allGroups) {
-			if(g.props.item.children && g.props.item.children.indexOf(this.props.item) < 0) {
-				g.collapse();
-			}
-		}*/
 	}
 
 	expand() {
@@ -171,7 +167,7 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 	}
 
 	closeMenuIfNeed() {
-		if (collapsable && !collapsed) {
+		if (!collapsed && isNeedCollapse()) {
 			LeftBar.instance.toggleCollapse();
 		}
 	}
@@ -281,7 +277,7 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 		if (item.nodeType !== NODE_TYPE.SECTION && item.id) {
 			const props = {
 				className: 'left-bar-item-container',
-				onClick: this.collapseOtherGroups,
+				onClick: undefined,
 				href: undefined,
 			};
 			if (item.nodeType === NODE_TYPE.STATIC_LINK) {
@@ -379,7 +375,6 @@ class LeftBar extends Component<{
 		setTimeout(() => {
 			if (!activeItem) return;
 			let item = activeItem.props.item;
-			activeItem.collapseOtherGroups();
 			while (item.parent) {
 				const itemElement: BarItem = itemsById[item.parent];
 				if (!itemElement) {
@@ -404,28 +399,27 @@ class LeftBar extends Component<{
 			return R.td(null);
 		}
 
-		const menuItems = collapsed ? [] : renderItemsArray(this.props.menuItems, 0);
+		const menuItems = renderItemsArray(this.props.menuItems, 0);
 
-		if (collapsable) {
-			menuItems.unshift(
-				R.div(
-					{
-						key: 'toggle-collapsing',
-						className: 'left-bar-collapse-button clickable',
-						onClick: this.toggleCollapse,
-					},
-					renderIcon('bars')
-				)
-			);
-		}
+
+		menuItems.unshift(
+			R.div(
+				{
+					key: 'toggle-collapsing',
+					className: 'left-bar-collapse-button clickable',
+					onClick: this.toggleCollapse,
+				},
+				renderIcon('bars')
+			)
+		);
+
 
 		let className = 'left-bar';
-		if (collapsable) {
-			className += ' left-bar-collapsable';
-			if ((Modal.instance && Modal.instance.isShowed()) || Stage.allForms.length > 1) {
-				className += ' hidden';
-			}
+
+		if ((Modal.instance && Modal.instance.isShowed()) || Stage.allForms.length > 1) {
+			className += ' hidden';
 		}
+
 		if (collapsed) {
 			className += ' left-bar-collapsed';
 		}
@@ -436,18 +430,6 @@ class LeftBar extends Component<{
 
 /** @type LeftBar */
 LeftBar.instance = null;
-
-let collapsable;
-function renewIsCollapsable() {
-	collapsable = window.innerWidth < 1330;
-	collapsed = collapsable;
-	if (LeftBar.instance) {
-		LeftBar.instance.forceUpdate();
-	}
-}
-
-window.addEventListener('resize', renewIsCollapsable);
-renewIsCollapsable();
 
 export { LeftBar };
 

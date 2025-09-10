@@ -503,16 +503,16 @@ class List extends BaseForm<ListProps, ListState> {
 						onInput: this.changeSearch,
 						defaultValue: this.filters.s,
 					}),
-					R.a(
+					this.filters?.s ? R.a(
 						{
-							className: 'clickable tool-btn default-btn',
+							className: 'clickable tool-btn default-btn search-clear-btn',
 							onClick: (e) => {
 								this.clearSearch();
 								sp(e);
 							},
 						},
 						R.h2(null, '×')
-					)
+					) : undefined
 				);
 			}
 

@@ -1,7 +1,7 @@
 .user-item {
 	position: relative;
-	border: 1px solid #ccc;
-	border-radius: 4px;
+	background-color: var(--INPUT_COLOR);
+	border-radius: 400px;
 	margin-bottom: 18px;
 	margin-left: 10px;
 	padding: 10px;
@@ -9,13 +9,13 @@
 
 .user-item-text {
 	font-size: 90%;
-	color: #999;
+	color: var(--BRAND_COLOR_LIGHT);
 	margin-top: 10px;
 }
 
 .user-item-info {
 	font-size: 90%;
-	color: #47f;
+	color: var(--BRAND_COLOR_SHINE);
 	margin-top: 10px;
 }
 

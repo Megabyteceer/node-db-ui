@@ -25,7 +25,7 @@ import { ENV } from './main-frame';
 
 enum CLIENT_SIDE_FORM_EVENTS {
 	ON_FORM_SAVE = 'onSave',
-	ON_FORM_AFTER_SAVE = 'onAfterSave',
+	ON_FORM_AFTER_SAVE = 'afterSave',
 	ON_FORM_LOAD = 'onLoad',
 	ON_FIELD_CHANGE = 'onChange',
 	ON_FIELD_CLICK = 'onClick',

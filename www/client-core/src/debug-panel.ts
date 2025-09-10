@@ -3,7 +3,7 @@ import { Component } from 'preact';
 import type { DebugInfo } from '../../../core/mysql-connection';
 import { R } from './r';
 import { iAdmin } from './user';
-import { getData, isLitePage, L, reloadLocation, renderIcon, sp, strip_tags } from './utils';
+import { isLitePage, L, renderIcon, sp, strip_tags } from './utils';
 
 let currentId = 10;
 const debugInfo = [] as DebugInfo[];
@@ -99,7 +99,6 @@ class DebugPanel extends Component<{
 		let body;
 
 		let deployBtn;
-		let cacheClearBtn;
 		const clearBtn = R.a({ className: 'clickable admin-control', onClick: this.clear },
 			renderIcon('trash')
 		);
@@ -107,14 +106,6 @@ class DebugPanel extends Component<{
 			/*deployBtn = R.a({ className: 'clickable admin-control', title: L('DEPLOY'), onClick: this.deployClick },
 				renderIcon('upload')
 			);*/
-			cacheClearBtn = R.a({
-				className: 'clickable admin-control', title: L('CLEAR_CACHE'), onClick: (ev) => {
-					sp(ev);
-					getData('admin/cache_info', { clear: 1, json: 1 }).then(() => { reloadLocation(); });
-				}
-			},
-			renderIcon('refresh')
-			);
 		}
 
 		if (debugInfo.length === 0) {
@@ -170,7 +161,6 @@ class DebugPanel extends Component<{
 					body = R.span();
 				} else {
 					body = R.div({ className: 'admin-control debug-panel-panel' },
-						cacheClearBtn,
 						deployBtn,
 						clearBtn,
 						R.br(),
