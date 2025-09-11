@@ -209,7 +209,7 @@ class Stage extends Component<any, any> {
 					isRootForm,
 					initialData: data || {},
 					filters,
-					editable,
+					editable
 				})
 			),
 			formEntry.formContainer
@@ -271,7 +271,7 @@ function addFormEntry(noAnimation = false) {
 	document.querySelector('#stage').appendChild(container);
 	const entry: FormEntry = {
 		container,
-		formContainer,
+		formContainer
 	};
 	if (allForms.length === 1) {
 		// disable scrolling
@@ -286,4 +286,3 @@ function addFormEntry(noAnimation = false) {
 }
 
 export { FormLoaderCog, Stage };
-

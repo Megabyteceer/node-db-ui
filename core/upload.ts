@@ -22,7 +22,7 @@ if (!fs.existsSync(UPLOADS_IMAGES_PATH)) {
 /// #endif
 const UPLOADS_IMAGES_PATH = join(__dirname, './html/images/uploads');
 const UPLOADS_FILES_PATH = join(__dirname, './html/uploads/file');
-//*/
+// */
 
 const IMAGE_EXTENSION = '.jpg';
 const IMAGE_EXTENSION_TRANSPARENCY = '.png';
@@ -90,7 +90,7 @@ async function uploadFile(reqData, userSession) {
 	if (reqData.filename.indexOf('..') >= 0) {
 		throwError(L('UPL_ERROR_WFN', userSession));
 	}
-	getFieldForUpload(reqData, userSession); //Check access to the field
+	getFieldForUpload(reqData, userSession); // Check access to the field
 	if (!allowedUpload) {
 		allowedUpload = RegExp('\\.(' + ENV.ALLOWED_UPLOADS.join('|') + ')$', 'i');
 	}
@@ -140,7 +140,7 @@ async function uploadImage(reqData, userSession: UserSession) {
 
 	const isPerfectSize = srcW === targetW && srcH === targetH;
 
-	const isTransparency = meta.format === 'png'; //TODO: Transparency checkbox for image field. Not via extension.
+	const isTransparency = meta.format === 'png'; // TODO: Transparency checkbox for image field. Not via extension.
 
 	const extendOptions = {
 		top: 0,

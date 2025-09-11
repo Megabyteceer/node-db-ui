@@ -1,4 +1,3 @@
-
 import { Component } from 'preact';
 import { R } from '../r';
 import { sp } from '../utils';
@@ -6,7 +5,7 @@ import { sp } from '../utils';
 const allHotKeyedButtons = [];
 window.addEventListener('keydown', (ev) => {
 	for (const b of allHotKeyedButtons) {
-		if (b.onKeyDown(ev)) { //call only first button with this hotkey
+		if (b.onKeyDown(ev)) { // call only first button with this hotkey
 			return;
 		}
 	}
@@ -32,12 +31,12 @@ function isHotkeyBlockedOnInput(btn) {
 }
 
 interface HotkeyButtonProps {
-	hotkey: number,
-	disabled?: boolean
-	className?: string,
-	title?: string,
-	label?: any,
-	onClick: (ev) => void
+	hotkey: number;
+	disabled?: boolean;
+	className?: string;
+	title?: string;
+	label?: any;
+	onClick: (ev) => void;
 }
 
 const isEventFocusOnInputElement = (ev) => {
@@ -126,10 +125,9 @@ class HotkeyButton extends Component<HotkeyButtonProps> {
 			disabled: this.props.disabled,
 			className: (this.props.disabled ? 'not-clickable ' : 'clickable ') + this.props.className,
 			onClick: this.onClick,
-			title: this.props.title,
+			title: this.props.title
 		}, this.props.label);
 	}
 }
 
 export { HotkeyButton };
-

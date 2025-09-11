@@ -38,7 +38,6 @@ function addDebugDataToResponse(ret: ApiResponse, startTime: number) {
 }
 /// #endif
 
-
 const handleRequest = (req, res) => {
 	/// #if DEBUG
 	const startTime = performance.now();
@@ -49,8 +48,8 @@ const handleRequest = (req, res) => {
 		const handler = api[handlerName];
 		const body = req.body;
 		/// #if DEBUG
-		//console.log(req.url);
-		//console.dir(body);
+		// console.log(req.url);
+		// console.dir(body);
 		/// #endif
 
 		let userSession;
@@ -74,7 +73,7 @@ const handleRequest = (req, res) => {
 			res.set(resHeaders);
 			res.end(JSON.stringify(ret));
 		};
-		//*/
+		// */
 		startSession(body.sessionToken, req.headers['accept-language'])
 			.then((session) => {
 				userSession = session;
@@ -105,13 +104,13 @@ const handleRequest = (req, res) => {
 				/*
 					/// #endif
 					.catch(onError);
-					//*/
+					// */
 			})
 			/// #if DEBUG
 			/*
 					/// #endif
 					.catch(onError);
-					//*/
+					// */
 			.finally(() => {
 				finishSession(body.sessionToken);
 			});

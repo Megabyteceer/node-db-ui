@@ -1,4 +1,3 @@
-
 import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
@@ -6,7 +5,7 @@ import { L, registerFieldClass, renderIcon } from '../utils';
 import { BaseField } from './base-field';
 
 class CheckBox extends Component<{
-	defaultValue?: boolean,
+	defaultValue?: boolean;
 	title?: string;
 	onClick: (val: boolean) => void;
 }, {
@@ -68,7 +67,6 @@ registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField {
 		const value = this.state.value;
 		const field = this.props.field;
 
-
 		if (this.props.isEdit) {
 
 			return h(CheckBox, {
@@ -79,7 +77,6 @@ registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField {
 					this.props.wrapper.valueListener(val, false, this);
 				}
 			});
-
 
 		} else {
 			if (this.props.isCompact) {
@@ -102,4 +99,3 @@ registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField {
 });
 
 export { CheckBox };
-

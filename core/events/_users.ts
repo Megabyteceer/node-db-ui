@@ -1,4 +1,3 @@
-
 import { E, NODE_ID } from '../../types/generated';
 import { serverOn } from '../../www/client-core/src/events-handle';
 import { generateSalt, getPasswordHash, isAdmin } from '../auth';

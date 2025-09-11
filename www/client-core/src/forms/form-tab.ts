@@ -11,8 +11,8 @@ class FormTab extends Component<{
 	visible: boolean;
 	highlightFrame: boolean;
 	field: FieldDesc;
-	fields: ComponentChild
-	form?:FormFull<string>;
+	fields: ComponentChild;
+	form?: FormFull<string>;
 }, {
 	visible: boolean;
 }> {
@@ -56,4 +56,3 @@ class FormTab extends Component<{
 }
 
 export { FormTab };
-

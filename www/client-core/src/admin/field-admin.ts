@@ -1,4 +1,3 @@
-
 import type { FieldDesc, NodeDesc } from '../bs-utils';
 
 import { Component, type ComponentChild } from 'preact';
@@ -17,7 +16,7 @@ let showedFieldId;
 /*
 /// #endif
 throw new Error("field-admin imported in release build.");
-//*/
+// */
 
 interface FieldAdminState {
 	show?: boolean;
@@ -26,7 +25,7 @@ interface FieldAdminState {
 
 interface FieldAdminProps {
 	field: FieldDesc;
-	form?:FormFull<string>;
+	form?: FormFull<string>;
 }
 
 class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
@@ -35,7 +34,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			show: showedFieldId === this.props.field.id,
+			show: showedFieldId === this.props.field.id
 		};
 		this.onShow = this.onShow.bind(this);
 		this.hide = this.hide.bind(this);
@@ -50,7 +49,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		}
 		if (!this.state.show) {
 			this.setState({
-				show: true,
+				show: true
 			});
 		}
 	}
@@ -58,14 +57,14 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 	hide() {
 		if (this.state.show) {
 			this.setState({
-				show: false,
+				show: false
 			});
 		}
 	}
 
 	toggleLock() {
 		this.setState({
-			locked: !this.state.locked,
+			locked: !this.state.locked
 		});
 	}
 
@@ -93,7 +92,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 					null,
 					'filters:',
 					R.input({
-						defaultValue: JSON.stringify(form.getField(field.fieldName).fieldRef.state.filters),
+						defaultValue: JSON.stringify(form.getField(field.fieldName).fieldRef.state.filters)
 					})
 				);
 			}
@@ -110,14 +109,14 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 					},
 					onMouseLeave: () => {
 						this.hide();
-					},
+					}
 				},
 				L('FLD_SETTINGS'),
 				R.b({ className: 'admin-form-header' }, field.fieldName),
 				R.div(null, 'type: ' + field.fieldType + '; id: ' + field.id + '; len:' + field.maxLength),
 				R.div(
 					{
-						className: 'admin-form-content',
+						className: 'admin-form-content'
 					},
 					R.button(
 						{
@@ -125,7 +124,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 							onClick: () => {
 								admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE, node, field);
 							},
-							title: 'Edit client side script which execute on field value change.',
+							title: 'Edit client side script which execute on field value change.'
 						},
 						'onChange...'
 					),
@@ -138,7 +137,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 									admin.moveField(i, form, node, -1).then(reloadLocation);
 								}
 							},
-							title: 'Increase field priority',
+							title: 'Increase field priority'
 						},
 						renderIcon(isList ? 'arrow-left' : 'arrow-up')
 					),
@@ -151,7 +150,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 									admin.moveField(i, form, node, +1).then(reloadLocation);
 								}
 							},
-							title: 'Decrease field priority',
+							title: 'Decrease field priority'
 						},
 						renderIcon(isList ? 'arrow-right' : 'arrow-down')
 					),
@@ -167,8 +166,8 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 											prior: data.prior,
 											nodeFieldsLinker: {
 												id: node.id,
-												name: node.singleName,
-											},
+												name: node.singleName
+											}
 										} as IFieldsRecord,
 										true,
 										true,
@@ -176,7 +175,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 									);
 								});
 							},
-							title: 'Add new field',
+							title: 'Add new field'
 						},
 						renderIcon('plus')
 					),
@@ -193,14 +192,14 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 								);
 							},
 							className: 'clickable tool-btn admin-form-btn',
-							title: 'Edit field properties',
+							title: 'Edit field properties'
 						},
 						renderIcon('pencil')
 					),
 					R.span(
 						{
 							className: 'clickable admin-form-lock-btn',
-							onClick: this.toggleLock,
+							onClick: this.toggleLock
 						},
 						renderIcon(this.state.locked ? 'lock' : 'unlock')
 					)
@@ -214,12 +213,12 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 				className:
 					'admin-control admin-control-field admin-form-wrap' +
 					(bodyVisible ? ' admin-form-wrap-visible' : ''),
-				onClick: sp,
+				onClick: sp
 			},
 			R.span(
 				{
 					className: 'half-visible admin-field-open-btn clickable' + border,
-					onClick: this.onShow,
+					onClick: this.onShow
 				},
 				renderIcon('wrench')
 			),
@@ -229,4 +228,3 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 }
 
 export { FieldAdmin };
-

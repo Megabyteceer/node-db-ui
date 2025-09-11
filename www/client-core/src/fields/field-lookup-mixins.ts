@@ -62,7 +62,7 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 			ret[props.field.fieldName + 'Linker'] = parentId;
 		} /* else {
 			ret[props.field.fieldName] = parentId;
-		}*/
+		} */
 
 		return ret;
 	}
@@ -82,4 +82,3 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 }
 
 export { AdditionalButtonsRenderer, fieldLookupMixins };
-

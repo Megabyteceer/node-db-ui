@@ -1,4 +1,3 @@
-
 import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { normalizeEnumName, type EnumList } from '../bs-utils';
@@ -6,7 +5,6 @@ import { Select } from '../components/select';
 import { R } from '../r';
 import { registerFieldClass } from '../utils';
 import { BaseField } from './base-field';
-
 
 class EnumField extends BaseField {
 
@@ -50,7 +48,7 @@ class EnumField extends BaseField {
 			return h(Select, inputsProps);
 		} else {
 			return R.span({
-				className: 'enum-type-' + normalizeEnumName(field.enumList.name).toLowerCase().replaceAll('_', '-') + ' enum-val-' + normalizeEnumName(field.enumList.namesByValue[value]).toLowerCase().replaceAll('_', '-'),
+				className: 'enum-type-' + normalizeEnumName(field.enumList.name).toLowerCase().replaceAll('_', '-') + ' enum-val-' + normalizeEnumName(field.enumList.namesByValue[value]).toLowerCase().replaceAll('_', '-')
 			}, field.enumList.namesByValue[value]);
 		}
 	}
@@ -59,4 +57,3 @@ class EnumField extends BaseField {
 registerFieldClass(FIELD_TYPE.ENUM, EnumField);
 
 export { EnumField };
-

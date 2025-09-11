@@ -12,7 +12,7 @@ import { submitRecord, uniqueCheck } from './submit';
 import { uploadFile, uploadImage } from './upload';
 
 const api: object = {
-	'api/': async (reqData:GetRecordsParams & GetRecordsFilter, userSession: UserSession) => {
+	'api/': async (reqData: GetRecordsParams & GetRecordsFilter, userSession: UserSession) => {
 		const data = await getRecords(
 			reqData.nodeId,
 			reqData.viewFields,
@@ -49,7 +49,7 @@ const api: object = {
 	'api/descNode': (reqData, userSession: UserSession) => {
 		return Promise.resolve(getNodeDesc(reqData.nodeId, userSession));
 	},
-	'api/submit': (reqData:{recId?: RecId, data: RecordDataWriteDraftable, nodeId:NODE_ID}, userSession: UserSession) => {
+	'api/submit': (reqData: { recId?: RecId; data: RecordDataWriteDraftable; nodeId: NODE_ID }, userSession: UserSession) => {
 		return submitRecord(reqData.nodeId, reqData.data, reqData.recId, userSession);
 	},
 	'api/uploadImage': (reqData, userSession: UserSession) => {
@@ -79,7 +79,7 @@ const api: object = {
 	},
 	'admin/isFiledExists': (reqData, userSession: UserSession) => {
 		return isFiledExists(reqData, userSession);
-	},
+	}
 	/// #endif
 } as KeyedMap<(any, UserSession) => APIResult>;
 

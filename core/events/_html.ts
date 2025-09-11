@@ -1,9 +1,7 @@
-
 import { readFile, unlink, writeFile } from 'fs';
 import { join } from 'path';
 import { E, type IHtmlRecordWrite } from '../../types/generated';
 import { serverOn } from '../../www/client-core/src/events-handle';
-
 
 serverOn(E._html.beforeCreate, async (data, _userSession) => {
 	saveDoc(data);

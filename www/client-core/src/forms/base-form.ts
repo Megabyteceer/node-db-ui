@@ -1,4 +1,3 @@
-
 import type { BoolNum, FormFilters, NodeDesc, RecId, RecordData, RecordsData, VIEW_MASK } from '../bs-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
@@ -44,7 +43,7 @@ interface FormState {
 class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState> extends Component<T, T2> {
 
 	nodeId: RecId;
-	/** id of current edited/shown record. 'new' - if record is not saved yet.*/
+	/** id of current edited/shown record. 'new' - if record is not saved yet. */
 	recId: RecId | 'new';
 	/** true if form is editable or read only */
 	editable: boolean;
@@ -120,4 +119,3 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	}
 }
 export { BaseForm, FormProps, FormState };
-

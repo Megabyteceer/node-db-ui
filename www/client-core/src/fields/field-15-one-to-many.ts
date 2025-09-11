@@ -1,4 +1,3 @@
-
 import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
@@ -48,7 +47,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 
 	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
 		const filters = {
-			[this.getLinkerFieldName()]: { id: this.props.form.recId },
+			[this.getLinkerFieldName()]: { id: this.props.form.recId }
 		};
 		globals.Stage.showForm(this.props.field.nodeRef.id, recIdToEdit, filters, true, true, () => {
 			this.inlineListRef.refreshData();
@@ -125,8 +124,8 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 				? undefined
 				: {
 					items: [],
-					total: 0,
-				  };
+					total: 0
+				};
 		return R.div(
 			null,
 			h(List, {
@@ -144,7 +143,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 				editable: this.state.inlineEditing,
 				nodeId: field.nodeRef.id,
 				parentForm: this,
-				filters: this.state.filters,
+				filters: this.state.filters
 			})
 		);
 	}
@@ -153,4 +152,3 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 registerFieldClass(FIELD_TYPE.LOOKUP_1_TO_N, LookupOneToManyFiled);
 
 export { LookupOneToManyFiled };
-

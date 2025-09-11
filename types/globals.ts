@@ -1,4 +1,3 @@
-
 import type { ComponentType } from 'preact';
 import type { UserSession } from '../core/auth';
 import type { Stage } from '../www/client-core/src/stage';

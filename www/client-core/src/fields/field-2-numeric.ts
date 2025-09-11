@@ -9,7 +9,7 @@ registerFieldClass(
 
 		setValue(value: number) {
 			this.refToInput.value = value;
-			this.setState({value});
+			this.setState({ value });
 		}
 
 		static decodeValue(val) {
@@ -41,7 +41,7 @@ registerFieldClass(
 						const value = parseInt(this.refToInput.value.substr(0, field.maxLength));
 						this.setState({ value });
 						this.props.wrapper.valueListener(value, true, this);
-					},
+					}
 				};
 
 				return R.input(inputsProps);

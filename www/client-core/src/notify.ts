@@ -1,4 +1,3 @@
-
 import { Component } from 'preact';
 import { R } from './r';
 
@@ -8,10 +7,10 @@ let stack = [];
 let idCounter = 0;
 
 class Notify extends Component<{
-	//props
+	// props
 },
 {
-	//state
+	// state
 }> {
 	componentDidMount() {
 		instance = this;
@@ -60,4 +59,3 @@ class Notify extends Component<{
 	}
 }
 export { Notify };
-

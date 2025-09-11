@@ -25,7 +25,6 @@ const STATUS_FILTER_SQL_PART_ANY = '".status > ' + NUM_0 + ')';
 const STATUS_FILTER_SQL_PART_PUBLISHED = '".status = ' + NUM_1 + ')';
 const ORDERING_SQL_PART = ' LIMIT ' + NUM_1;
 
-
 const _getRecords: TypeGenerationHelper['g'] = (async (
 	nodeId: NODE_ID,
 	viewMask: VIEW_MASK,
@@ -46,9 +45,9 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 	const tableName = node.tableName;
 	let tables = tableName;
 
-	//=========================================================
-	//===== fields list =======================================
-	//=========================================================
+	// =========================================================
+	// ===== fields list =======================================
+	// =========================================================
 	for (const f of node.fields) {
 		if (f.storeInDb && f.show & viewMask) {
 			const fieldType = f.fieldType;
@@ -56,7 +55,7 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 			const selectFieldName = f.selectFieldName;
 
 			if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
-				//n2m
+				// n2m
 				const tblTmpName = '"t' + f.id + '"';
 				if (f.lookupIcon) {
 					selQ.push(
@@ -130,7 +129,7 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 					);
 				}
 			} else if (fieldType === FIELD_TYPE.LOOKUP) {
-				//n21
+				// n21
 				if (f.lookupIcon) {
 					selQ.push(
 						'(SELECT CONCAT(id,',
@@ -189,9 +188,9 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 		selQ.push(',"', tableName, '".status');
 	}
 
-	//=========================================================
-	//===== filters ===========================================
-	//=========================================================
+	// =========================================================
+	// ===== filters ===========================================
+	// =========================================================
 
 	const filterId = filterFields.filterId;
 	let filter: IFiltersRecord;
@@ -205,7 +204,7 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 		);
 		/// #endif
 		if (filterId && node.filters[filterId]) {
-			//user selected filter
+			// user selected filter
 			filter = filtersById.get(filterId);
 		} else if (node.defaultFilterId) {
 			filter = filtersById.get(node.defaultFilterId.id);
@@ -231,7 +230,7 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 			wheres = [''];
 		}
 
-		//search ----------------------------
+		// search ----------------------------
 
 		let searchWHERE;
 		let sortFieldName: string | undefined;
@@ -399,7 +398,7 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 					const fieldType = f.fieldType;
 					const fieldName = f.fieldName;
 					if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M || fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
-						//n2m,12n
+						// n2m,12n
 						if (pag[fieldName]) {
 							pag[fieldName] = pag[fieldName].map((src: string) => {
 								const a = src.split(GROUP_SPLITTER);
@@ -411,7 +410,7 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 							});
 						}
 					} else if (fieldType === FIELD_TYPE.LOOKUP) {
-						//n21
+						// n21
 						if (pag[fieldName]) {
 							const a = pag[fieldName].split(GROUP_SPLITTER);
 							if (f.lookupIcon) {
@@ -454,7 +453,7 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 }) as any;
 
 const DELETE_RECORD_SQL_PART = '" SET status=' + NUM_0 + ' WHERE id=';
-export async function deleteRecord(nodeId: NODE_ID, recId:RecId, userSession = ADMIN_USER_SESSION) {
+export async function deleteRecord(nodeId: NODE_ID, recId: RecId, userSession = ADMIN_USER_SESSION) {
 	const node = getNodeDesc(nodeId, userSession);
 
 	const recordData = await getRecord(nodeId, VIEW_MASK.READONLY, recId, userSession);
@@ -477,9 +476,6 @@ export async function deleteRecord(nodeId: NODE_ID, recId:RecId, userSession = A
 	return ret1 || ret2;
 }
 
-
 export const getRecords: TypeGenerationHelper['m'] = _getRecords as any;
 
 export const getRecord: TypeGenerationHelper['g'] = _getRecords as any;
-
-

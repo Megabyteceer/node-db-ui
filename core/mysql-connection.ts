@@ -46,7 +46,7 @@ const pool = new Pool();
 
 /// #if DEBUG
 export interface SQLDebugInfo {
-	SQL:string;
+	SQL: string;
 	stack: string[];
 	timeElapsed_ms?: number;
 }
@@ -63,9 +63,7 @@ export const mysqlDebug = {
 	debugOutPut: undefined as DebugInfo
 };
 
-
 /// #endif
-
 
 const mysqlExec = (query: string): Promise<QueryResultRow[]> => {
 	/// #if DEBUG
@@ -97,7 +95,7 @@ const mysqlExec = (query: string): Promise<QueryResultRow[]> => {
 				console.error(er.message);
 				/// #if DEBUG
 				debugger;
-				//throw er;
+				// throw er;
 				/// #endif
 			}) as any;
 	});
@@ -116,12 +114,12 @@ async function mysqlStartTransaction() {
 	if (mysqlTransactStarted) {
 		await waitPrevTransactionFinish();
 		/// #if DEBUG
-		//debugger;
+		// debugger;
 		/// #endif
 	}
-	//const ret = mysqlExec("START TRANSACTION;");
+	// const ret = mysqlExec("START TRANSACTION;");
 	mysqlTransactStarted = true;
-	//return ret;
+	// return ret;
 	return Promise.resolve();
 }
 
@@ -133,14 +131,14 @@ function nextTransaction() {
 
 async function mysqlCommit() {
 	assert(mysqlTransactStarted, 'transaction is not started');
-	//await mysqlExec("COMMIT;");
+	// await mysqlExec("COMMIT;");
 	mysqlTransactStarted = false;
 	nextTransaction();
 }
 
 async function mysqlRollback() {
 	if (mysqlTransactStarted) {
-		//await mysqlExec("ROLLBACK;");
+		// await mysqlExec("ROLLBACK;");
 		mysqlTransactStarted = false;
 		nextTransaction();
 	}

@@ -1,5 +1,3 @@
-
-
 import { Component, type ComponentChild } from 'preact';
 import { assert } from '../assert';
 import type { FieldDesc, GetRecordsFilter } from '../bs-utils';
@@ -41,7 +39,7 @@ interface RefToInput extends Component {
 	click();
 }
 
-class BaseField< T extends FieldProps = FieldProps, T2 extends FieldState = FieldState > extends Component<T, T2> {
+class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = FieldState> extends Component<T, T2> {
 	refToInput: RefToInput;
 	forceBouncingTimeout?(): void;
 
@@ -104,7 +102,7 @@ class BaseField< T extends FieldProps = FieldProps, T2 extends FieldState = Fiel
 	extendEditor?(): void;
 
 	renderTextValue(txt) {
-		/*if (this.props.field.forSearch) { // TODO: searching highlighting
+		/* if (this.props.field.forSearch) { // TODO: searching highlighting
 			const list = this.props.form.props.list;
 			if (list && list.filters && list.filters.s) {
 				return h(Highlighter, {
@@ -116,7 +114,7 @@ class BaseField< T extends FieldProps = FieldProps, T2 extends FieldState = Fiel
 					textToHighlight: txt,
 				});
 			}
-		}*/
+		} */
 		return txt;
 	}
 
@@ -130,9 +128,8 @@ class BaseField< T extends FieldProps = FieldProps, T2 extends FieldState = Fiel
 		this.refToInput = refToInput;
 	}
 
-	render():ComponentChild {
+	render(): ComponentChild {
 		return 'BaseField has no view.';
 	}
 }
 export { BaseField, FieldProps, FieldState, RefToInput };
-

@@ -1,4 +1,3 @@
-
 import { attachGoogleLoginAPI, getData, getNode, goToHome, isAdmin, L, myAlert, showPrompt, submitData } from '../utils';
 /// #if DEBUG
 import { E, FIELD_TYPE, NODE_ID, NODE_TYPE, type FormFields, type FormNodes, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList } from '../../../../types/generated';
@@ -8,7 +7,6 @@ import type { FormFull } from '../forms/form-full';
 /// #endif
 
 import { VIEW_MASK } from '../bs-utils';
-
 
 import type { ResetPasswordData } from '../../../../core/events/_resetPassword';
 import { type IFieldsFilter, type IFiltersFilter, type ILanguagesFilter, type INodesFilter, type IUsersRecord } from '../../../../types/generated';
@@ -21,7 +19,6 @@ import { R } from '../r';
 import { iAdmin, User } from '../user';
 
 let uiLanguageIsChanged;
-
 
 const checkPasswordConfirmation = (form: FormFull<TUsersFieldsList> | FormFull<TRegistrationFieldsList>) => {
 	const p = form.fieldValue('password');
@@ -48,8 +45,8 @@ clientOn(E._users.onLoad, (form) => {
 			(window.document.querySelector('.field-container-id-63 input') as HTMLDivElement).insertAdjacentHTML(
 				'beforeend',
 				'<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organization settings" href="#n/7/r/' +
-					form.fieldValue('_organizationId').id +
-					'/e">additional organization settings <p class="fa fa-wrench"></p></a>'
+				form.fieldValue('_organizationId').id +
+				'/e">additional organization settings <p class="fa fa-wrench"></p></a>'
 			);
 		}
 	}
@@ -135,8 +132,7 @@ clientOn(E._enums.onLoad, (form) => {
 	form.getField('values').inlineEditable();
 });
 
-
-const _nodes_recalculateFieldsVisibility = (form:FormNodes) => {
+const _nodes_recalculateFieldsVisibility = (form: FormNodes) => {
 	if (!form.isNewRecord && form.fieldValue('nodeType') === NODE_TYPE.DOCUMENT) {
 		form.showField('_fieldsId');
 		form.showField('reverse');
@@ -281,12 +277,12 @@ clientOn(E._fields.onLoad, async (form) => {
 	form.hideField('show');
 });
 
-const checkFieldExists = async (form:FormFields) => {
+const checkFieldExists = async (form: FormFields) => {
 	if (!form.isUpdateRecord) {
 		const fieldName = form.fieldValue('fieldName');
 		const parentNode = form.fieldValue('nodeFieldsLinker');
 		if (parentNode?.id) {
-			const ret = await submitData('admin/isFiledExists', {fieldName, nodeId: parentNode.id});
+			const ret = await submitData('admin/isFiledExists', { fieldName, nodeId: parentNode.id });
 			if (!ret) {
 				form.fieldAlert('fieldName', L('FLD_EXISTS'));
 			}
@@ -446,7 +442,7 @@ clientOn(E._login.onLoad, (form) => {
 			form.setFieldValue('password', id_token);
 			form.save();
 		};
-		form.renderToField('socialLoginButtons', 'social-buttons', R.span(null, R.div({ className: 'g-signin2', 'data-onsuccess': 'onGoogleSignIn' })));
+		form.renderToField('socialLoginButtons', 'social-buttons', R.span(null, R.div({ 'className': 'g-signin2', 'data-onsuccess': 'onGoogleSignIn' })));
 		attachGoogleLoginAPI(true);
 	}
 });
@@ -512,7 +508,6 @@ const check12nFieldName = (form: FormFields) => {
 	}
 };
 
-
 const removeWrongCharactersInField = (form: FormFull<string>, fieldName: string) => {
 	const oldValue = form.fieldValue(fieldName);
 	if (oldValue) {
@@ -544,7 +539,6 @@ clientOn(E._users.passwordConfirm.onChange, (form) => {
 });
 
 /// #if DEBUG
-
 
 const nodeTypeOnChange = (form: FormNodes) => {
 	const nodeType = form.fieldValue('nodeType');
@@ -706,7 +700,7 @@ clientOn(E._resetPassword.backToLogin.onClick, (_form) => {
 	globals.Stage.showForm(NODE_ID.LOGIN);
 });
 
-const _fields_recalculateFieldsVisibility = (form:FormFields) => {
+const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 	const fieldType = form.fieldValue('fieldType');
 
 	form.showField('maxLength', 'requirement', 'storeInDb', 'sendToServer', 'unique', 'forSearch');
@@ -732,7 +726,7 @@ const _fields_recalculateFieldsVisibility = (form:FormFields) => {
 
 	if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 		form.getField('nodeRef').setLookupFilter('excludeIDs', [
-			form.fieldValue('nodeFieldsLinker').id,
+			form.fieldValue('nodeFieldsLinker').id
 		]);
 	} else {
 		form.getField('nodeRef').setLookupFilter('excludeIDs', undefined);

@@ -1,39 +1,36 @@
-
 import { Component, type ComponentChild } from 'preact';
 import { R } from '../r';
 import { L, renderIcon } from '../utils';
 
 export interface SelectItem {
-	name:string | ComponentChild
-	search?:string;
+	name: string | ComponentChild;
+	search?: string;
 	value: any;
 }
 
 interface SelectState {
-	search?:string;
-	expanded?:boolean;
+	search?: string;
+	expanded?: boolean;
 	curVal?: any;
 }
 
 interface SelectProps {
-	disabled?: boolean,
-	isCompact?: boolean,
-	defaultValue?: any,
-	title?: string,
-	readOnly?: boolean,
-	onInput: (val) => void,
-	options: SelectItem[]
+	disabled?: boolean;
+	isCompact?: boolean;
+	defaultValue?: any;
+	title?: string;
+	readOnly?: boolean;
+	onInput: (val: string) => void;
+	options: SelectItem[];
 }
 
-
 class Select extends Component<SelectProps, SelectState> {
-	constructor(props) {
+	constructor(props: SelectProps) {
 		super(props);
 		this.state = {};
 		this.toggle = this.toggle.bind(this);
 		this.handleClickOutside = this.handleClickOutside.bind(this);
 	}
-
 
 	componentDidMount() {
 		document.addEventListener('mousedown', this.handleClickOutside, true);
@@ -43,9 +40,9 @@ class Select extends Component<SelectProps, SelectState> {
 		document.removeEventListener('mousedown', this.handleClickOutside, true);
 	}
 
-	handleClickOutside(event) {
+	handleClickOutside(event: MouseEvent) {
 		const domNode = this.base;
-		if (!domNode || !domNode.contains(event.target)) {
+		if (!domNode || !domNode.contains(event.target as HTMLDivElement)) {
 			if (this.state.expanded) {
 				this.toggle();
 			}
@@ -60,7 +57,7 @@ class Select extends Component<SelectProps, SelectState> {
 		}
 	}
 
-	setValue(v) {
+	setValue(v: any) {
 		if (this.state.curVal !== v) {
 			this.props.onInput(v);
 			if (this.state.curVal !== v) {
@@ -93,8 +90,8 @@ class Select extends Component<SelectProps, SelectState> {
 					autoFocus: true,
 					defaultValue: this.state.search || '',
 					placeholder: L('SEARCH'),
-					onInput: (ev) => {
-						this.setState({ search: ev.target.value.toLowerCase() });
+					onInput: (ev: InputEvent) => {
+						this.setState({ search: (ev.target as HTMLInputElement).value.toLowerCase() });
 					}
 				});
 			}
@@ -143,4 +140,3 @@ class Select extends Component<SelectProps, SelectState> {
 }
 
 export { Select };
-

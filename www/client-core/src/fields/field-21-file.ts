@@ -1,5 +1,3 @@
-
-
 import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { ENV } from '../main-frame';
@@ -17,7 +15,7 @@ registerFieldClass(
 
 		setValue(val) {
 			if (typeof val === 'string') {
-				this.setState({value: val});
+				this.setState({ value: val });
 			} else {
 				this.props.form.currentData[this.props.field.fieldName] = undefined;
 			}
@@ -45,7 +43,7 @@ registerFieldClass(
 			}
 
 			if (this.props.isEdit) {
-				const accept = ENV.ALLOWED_UPLOADS.map((i) => '.' + i).join(', ');
+				const accept = ENV.ALLOWED_UPLOADS.map(i => '.' + i).join(', ');
 				return h(FileFormBody, {
 					field,
 					ref: (r) => {
@@ -56,7 +54,7 @@ registerFieldClass(
 					parent: this,
 					form: this.props.form,
 					currentFileName: fileName,
-					isCompact: this.props.isCompact,
+					isCompact: this.props.isCompact
 				});
 			}
 			return R.a(
@@ -73,7 +71,7 @@ class FileFormBody extends Component<FieldProps & {
 	currentFileName?: string;
 
 }, FieldState & {
-	file? : File
+	file?: File;
 }> {
 	fileInputRef: RefToInput;
 	formRef: RefToInput;
@@ -88,7 +86,7 @@ class FileFormBody extends Component<FieldProps & {
 
 	_cancel() {
 		this.setState({
-			file: null,
+			file: null
 		});
 		this.fileInputRef.value = '';
 		Modal.instance.hide();
@@ -133,14 +131,13 @@ class FileFormBody extends Component<FieldProps & {
 		let curFile;
 		let selFile;
 
-
 		if (this.props.currentFileName) {
 			curFile = R.a(
 				{
 					href: idToFileUrl(this.props.currentFileName),
 					download: true,
 					target: '_blank',
-					className: 'field-file-link',
+					className: 'field-file-link'
 				},
 				this.props.currentFileName.split('/').pop()
 			);
@@ -163,7 +160,7 @@ class FileFormBody extends Component<FieldProps & {
 				onClick: () => {
 					this.fileInputRef.value = null;
 					this.fileInputRef.click();
-				},
+				}
 			},
 			renderIcon('folder-open'),
 			L('FILE_SELECT', getReadableUploadSize())
@@ -174,12 +171,12 @@ class FileFormBody extends Component<FieldProps & {
 			recIdField = R.input({
 				name: 'recId',
 				className: 'hidden',
-				defaultValue: this.props.form.currentData.id,
+				defaultValue: this.props.form.currentData.id
 			});
 			nodeIdField = R.input({
 				name: 'nodeId',
 				className: 'hidden',
-				defaultValue: this.props.form.props.node.id,
+				defaultValue: this.props.form.props.node.id
 			});
 		}
 
@@ -189,7 +186,7 @@ class FileFormBody extends Component<FieldProps & {
 					this.formRef = r;
 				},
 				encType: 'multipart/form-data',
-				className: 'hidden',
+				className: 'hidden'
 			},
 			R.input({
 				name: 'file',
@@ -198,7 +195,7 @@ class FileFormBody extends Component<FieldProps & {
 				},
 				type: 'file',
 				accept: this.props.accept,
-				onInput: this._onChange,
+				onInput: this._onChange
 			}),
 			R.input({ name: 'MAX_FILE_SIZE', defaultValue: 30000000 }),
 			R.input({ name: 'fid', defaultValue: field.id }),
@@ -212,4 +209,3 @@ class FileFormBody extends Component<FieldProps & {
 }
 
 export { FileFormBody };
-

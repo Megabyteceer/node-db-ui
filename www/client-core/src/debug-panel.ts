@@ -1,4 +1,3 @@
-
 import { Component } from 'preact';
 import type { DebugInfo } from '../../../core/mysql-connection';
 import { R } from './r';
@@ -12,13 +11,12 @@ const debugInfo = [] as DebugInfo[];
 /*
 /// #endif
 throw new Error("debug-panel imported in release build.");
-//*/
-
+// */
 
 class DebugPanel extends Component<{
 	// props
 }, {
-	expanded?:boolean;
+	expanded?: boolean;
 }> {
 	static instance: DebugPanel;
 
@@ -74,7 +72,6 @@ class DebugPanel extends Component<{
 		/*
 		let ret = await getData('admin/getDeployPackage');
 
-
 		if(await showPrompt(L('DEPLOY_TO', ENV.DEPLOY_TO))) {
 			let testResult = await getData('/test');
 			if(testResult === 'ok') {
@@ -92,7 +89,7 @@ class DebugPanel extends Component<{
 			} else {
 				myAlert(R.div(null, R.h2(null, L('TESTS_ERROR')), testResult));
 			}
-		}*/
+		} */
 	}
 
 	render() {
@@ -103,9 +100,9 @@ class DebugPanel extends Component<{
 			renderIcon('trash')
 		);
 		if (iAdmin()) {
-			/*deployBtn = R.a({ className: 'clickable admin-control', title: L('DEPLOY'), onClick: this.deployClick },
+			/* deployBtn = R.a({ className: 'clickable admin-control', title: L('DEPLOY'), onClick: this.deployClick },
 				renderIcon('upload')
-			);*/
+			); */
 		}
 
 		if (debugInfo.length === 0) {
@@ -116,7 +113,6 @@ class DebugPanel extends Component<{
 				const items = debugInfo.map((i) => {
 
 					let entryBody;
-
 
 					if (i.hasOwnProperty('SQLs')) {
 						entryBody = i.SQLs.map((SQL, key) => {
@@ -188,4 +184,3 @@ class DebugPanel extends Component<{
 DebugPanel.instance = null;
 
 export { DebugPanel };
-

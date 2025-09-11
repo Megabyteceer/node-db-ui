@@ -12,7 +12,7 @@ import { D, mysqlExec, NUM_1 } from '../mysql-connection';
 const { exec } = require('child_process'); // eslint-disable-line @typescript-eslint/no-require-imports
 
 export interface NodePrivileges {
-	id: RecId,
+	id: RecId;
 	name: string;
 	privileges: PRIVILEGES_MASK;
 }
@@ -27,12 +27,11 @@ export interface NodePrivilegesRes {
 	privileges: NodePrivileges[];
 }
 
-
 async function nodePrivileges(reqData: NodePrivilegesRequest, userSession) {
 	shouldBeAdmin(userSession);
 	const nodeId = reqData.nodeId;
 	if (reqData.privileges) {
-		//set node privileges
+		// set node privileges
 		const privileges = reqData.privileges;
 		await setRolePrivilegesForNode(
 			nodeId,
@@ -43,15 +42,15 @@ async function nodePrivileges(reqData: NodePrivilegesRequest, userSession) {
 		reloadMetadataSchedule();
 		return 1;
 	} else {
-		//get node privileges
+		// get node privileges
 		const privileges = await mysqlExec(
-			'SELECT id, name, (SELECT privileges FROM "rolePrivileges" WHERE ("nodeId"=' +
-				D(nodeId) +
-				') AND (_roles.id="roleId") LIMIT ' + NUM_1 + ') AS privileges FROM _roles WHERE id != ' +
-				D(USER_ID.SUPER_ADMIN) +
-				' AND id != ' +
-				D(USER_ID.VIEW_ALL) +
-				' AND status = ' + NUM_1
+			'SELECT id, name, (SELECT privileges FROM "rolePrivileges" WHERE ("nodeId"='
+			+ D(nodeId)
+			+ ') AND (_roles.id="roleId") LIMIT ' + NUM_1 + ') AS privileges FROM _roles WHERE id != '
+			+ D(USER_ID.SUPER_ADMIN)
+			+ ' AND id != '
+			+ D(USER_ID.VIEW_ALL)
+			+ ' AND status = ' + NUM_1
 		) as NodePrivileges[];
 		return { privileges, nodeType: getNodeDesc(nodeId).nodeType } as NodePrivilegesRes;
 	}
@@ -79,18 +78,18 @@ async function setRolePrivilegesForNode(
 	for (const p of rolePrivileges) {
 		if (p.privileges) {
 			await mysqlExec(
-				'INSERT INTO rolePrivileges SET nodeId=' +
-					D(nodeId) +
-					', roleId=' +
-					D(p.id) +
-					', privileges=' +
-					D(p.privileges) +
-					';'
+				'INSERT INTO rolePrivileges SET nodeId='
+				+ D(nodeId)
+				+ ', roleId='
+				+ D(p.id)
+				+ ', privileges='
+				+ D(p.privileges)
+				+ ';'
 			);
 		}
 	}
 	if (toChild) {
-		//apply to sub sections
+		// apply to sub sections
 		const pgs = await mysqlExec(
 			'SELECT id FROM _nodes WHERE _nodesId =' + nodeId
 		);
@@ -119,38 +118,34 @@ function editFunction(fileName, functionName, args = '') {
 
 	if (c1 > 1) {
 		throwError(
-			'function (' +
-				functionName +
-				') present more that once in file: ' +
-				fileName
+			'function ('
+			+ functionName
+			+ ') present more that once in file: '
+			+ fileName
 		);
 	} else if (!c1) {
 		// TODO: add function and got to source
 		const i = text.indexOf(NEW_FUNCTION_MARKER);
 		if (i < 0) {
 			throwError(
-				'marker (' +
-					NEW_FUNCTION_MARKER +
-					') is not detected in file: ' +
-					fileName
+				'marker ('
+				+ NEW_FUNCTION_MARKER
+				+ ') is not detected in file: '
+				+ fileName
 			);
 		}
-		text =
-			text.substr(0, i) +
-			functionName +
-			'(' +
-			args +
-			`) {
+		text
+			= text.substr(0, i) + functionName + '(' + args + `) {
 		
 	}
 
-	` +
-			text.substr(i);
+	`
+				+ text.substr(i);
 		writeFileSync(fileName, text);
 	}
 
 	const a = text.split('\n');
-	let line = a.findIndex((s) => s.match(functionSearchPattern));
+	let line = a.findIndex(s => s.match(functionSearchPattern));
 	line += 2;
 	try {
 		const arg = fileName + ':' + line + ':2';

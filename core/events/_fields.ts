@@ -148,7 +148,6 @@ serverOn(E._fields.beforeDelete, async (_data, _userSession) => {
 	throwError('_fields beforeCreate deletion event is not implemented');
 });
 
-
 export { createFieldInTable };
 
 function getFieldTypeSQL(data) {

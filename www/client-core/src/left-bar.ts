@@ -1,4 +1,3 @@
-
 /// #if DEBUG
 import { createNodeForMenuItem, NodeAdmin } from './admin/admin-control';
 import { FieldAdmin } from './admin/field-admin';
@@ -14,13 +13,12 @@ import { Stage } from './stage';
 import { iAdmin, User } from './user';
 import { isLitePage, L, renderIcon } from './utils';
 
-
 const isNeedCollapse = () => {
 	return window.document.body.clientWidth < 1300;
 };
 let collapsed = isNeedCollapse();
 
-function isMustBeExpanded(i):boolean {
+function isMustBeExpanded(i): boolean {
 	if (i.children) {
 		for (const k in i.children) {
 			const j = i.children[k];
@@ -71,14 +69,13 @@ function isStrictlySelected(item) {
 }
 
 interface BarItemState {
-	expanded?:boolean;
+	expanded?: boolean;
 }
 
 interface BarItemProps {
 	item: TreeItem;
 	level: number;
 }
-
 
 class BarItem extends Component<BarItemProps, BarItemState> {
 	constructor(props) {
@@ -204,7 +201,7 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 		/*
 		if(item.children && item.children.length === 1) {
 			return h(BarItem, {item: item.children[0], key: this.props.key, level: this.props.level});
-		}*/
+		} */
 
 		const itemsIcon = R.div(
 			{ className: 'left-bar-item-icon' },
@@ -229,7 +226,7 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 		const _isMustBeExpanded = isMustBeExpanded(this.props.item);
 		const isExpanded = this.state.expanded || _isMustBeExpanded;
 		if (isExpanded != this.state.expanded) {
-			this.setState({expanded: isExpanded});
+			this.setState({ expanded: isExpanded });
 		}
 
 		if (item.nodeType === NODE_TYPE.SECTION) {
@@ -267,7 +264,7 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 						this.closeMenuIfNeed();
 					}
 				},
-				className,
+				className
 			},
 			itemsIcon,
 			collapsed ? undefined : R.div({ className: 'left-bar-item-body' }, item.name),
@@ -278,7 +275,7 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 			const props = {
 				className: 'left-bar-item-container',
 				onClick: undefined,
-				href: undefined,
+				href: undefined
 			};
 			if (item.nodeType === NODE_TYPE.STATIC_LINK) {
 				props.href = item.staticLink;
@@ -289,7 +286,7 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 						: () => {
 							// TODO: form tabs as menu items
 							globals.Stage.showForm(item.id);
-						  };
+						};
 			}
 			return R.a(
 				props,
@@ -323,10 +320,10 @@ function renderItemsArray(itemsArray, level, item?) {
 					className: 'clickable left-bar-empty-section',
 					onClick: () => {
 						createNodeForMenuItem(item);
-					},
+					}
 				},
 				L('EMPTY_SECTION')
-			),
+			)
 		];
 	}
 	/// #endif
@@ -347,10 +344,10 @@ function renderItemsArray(itemsArray, level, item?) {
 }
 
 class LeftBar extends Component<{
-	menuItems: ComponentChildren[]
+	menuItems: ComponentChildren[];
 },
 {
-	//state
+	// state
 }> {
 	static instance?: LeftBar;
 
@@ -401,18 +398,16 @@ class LeftBar extends Component<{
 
 		const menuItems = renderItemsArray(this.props.menuItems, 0);
 
-
 		menuItems.unshift(
 			R.div(
 				{
 					key: 'toggle-collapsing',
 					className: 'left-bar-collapse-button clickable',
-					onClick: this.toggleCollapse,
+					onClick: this.toggleCollapse
 				},
 				renderIcon('bars')
 			)
 		);
-
 
 		let className = 'left-bar';
 
@@ -432,4 +427,3 @@ class LeftBar extends Component<{
 LeftBar.instance = null;
 
 export { LeftBar };
-

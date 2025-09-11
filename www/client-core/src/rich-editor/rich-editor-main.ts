@@ -1,9 +1,8 @@
-
 (async function () {
 	await Promise.all([
-		//@ts-ignore
+		// @ts-ignore
 		import('bootstrap/dist/css/bootstrap.min.css'),
-		//@ts-ignore
+		// @ts-ignore
 		import('summernote/dist/summernote.min.css'),
 		import('summernote/dist/summernote.min.js')
 	]);

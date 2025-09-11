@@ -1,4 +1,3 @@
-
 import { h, type Component } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
@@ -35,10 +34,10 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 						onMouseDown: (e) => {
 							sp(e);
 							formItem.props.parentForm.toggleCreateDialogue(data.id);
-						},
+						}
 					},
 					renderIcon('pencil')
-				),
+				)
 			];
 		}
 	} else {
@@ -62,7 +61,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 							title: L('UNPUBLISH'),
 							onClick: () => {
 								publishClick(true, node, data).then(refreshFunction);
-							},
+							}
 						},
 						renderIcon('eye')
 					)
@@ -76,7 +75,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 							title: L('PUBLISH'),
 							onClick: () => {
 								publishClick(false, node, data).then(refreshFunction);
-							},
+							}
 						},
 						renderIcon('eye-slash')
 					)
@@ -92,13 +91,13 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 							className: 'clickable tool-btn edit-btn',
 							title: L('EDIT', itemName),
 							key: 2,
-							onClick: (_ev:PointerEvent) => {
+							onClick: (_ev: PointerEvent) => {
 								if (formItem && formItem.props.parentForm) {
 									formItem.props.parentForm.toggleCreateDialogue(data.id);
 								} else {
 									globals.Stage.showForm(node.id, data.id, undefined, true);
 								}
-							},
+							}
 						},
 						renderIcon('pencil')
 					)
@@ -117,7 +116,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 						key: 2,
 						onClick: (_ev: MouseEvent) => {
 							globals.Stage.showForm(node.id, data.id);
-						},
+						}
 					},
 					renderIcon('search')
 				)
@@ -140,7 +139,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 							} else {
 								refreshFunction();
 							}
-						},
+						}
 					},
 					renderIcon('times')
 				)
@@ -186,7 +185,7 @@ class FormListItem extends BaseForm {
 							initialValue: data[field.fieldName],
 							form: this,
 							isCompact: true,
-							isTable: true,
+							isTable: true
 						})
 					)
 				);
@@ -235,4 +234,3 @@ class FormListItem extends BaseForm {
 }
 
 export { FormListItem, renderItemsButtons };
-

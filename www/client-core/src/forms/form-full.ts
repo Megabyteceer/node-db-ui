@@ -7,7 +7,6 @@ import { NodeAdmin } from '../admin/admin-control';
 import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 
-
 import type { FieldDesc, RecId, RecordData, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../bs-utils';
 import { PRIVILEGES_MASK } from '../bs-utils';
 import { HotkeyButton } from '../components/hotkey-button';
@@ -181,6 +180,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 		}
 		return this.formIsValid;
 	}
+
 	async saveClick(isDraft): Promise<boolean> {
 		LoadingIndicator.instance.show();
 
@@ -192,12 +192,13 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 				console.log('invalid form.');
 				console.dir(er);
 			})
-			//*/
+			// */
 			.finally(() => {
 				LoadingIndicator.instance.hide();
 			});
 		return ret;
 	}
+
 	async saveClickInner(isDraft): Promise<boolean> {
 		this.isPreventCloseFormAfterSave = false;
 		this.forceBouncingTimeout();
@@ -207,7 +208,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 			if (this.props.initialData.isP || !this.props.initialData.id) {
 				if (isDraft === true) {
 					if (this.props.initialData.status !== 2) {
-						data.status = 2; //TODO: add RECORD_STATUS enum
+						data.status = 2; // TODO: add RECORD_STATUS enum
 					}
 				} else {
 					if (this.props.initialData.status !== 1) {
@@ -233,7 +234,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 			if (field.sendToServer) {
 				if (field.fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 					if (!n2mValuesEqual(this.props.initialData[field.fieldName], val)) {
-						data[field.fieldName] = val.map((v) => v.id);
+						data[field.fieldName] = val.map(v => v.id);
 					}
 				} else if (field.fieldType === FIELD_TYPE.LOOKUP) {
 					let cVal = val;
@@ -281,9 +282,9 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 				this.props.initialData.id = recId;
 			}
 			this.deleteBackup();
-			//renew current data
+			// renew current data
 			this.currentData = Object.assign(this.currentData, data);
-			//renew initial data;
+			// renew initial data;
 			globals.Stage.dataDidModified(this.currentData);
 
 			for (const k in data) {
@@ -359,7 +360,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 				};
 
 				if (field.fieldType === FIELD_TYPE.TAB && field.maxLength === 0 && !this.isSubForm()) {
-					//tab
+					// tab
 					let isDefaultTab;
 					if (!tabs) {
 						tabs = [];
@@ -552,7 +553,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 					});
 				}
 
-				closeSubFormButton = R.div({className: 'close-popup-wrap'}, R.button(
+				closeSubFormButton = R.div({ className: 'close-popup-wrap' }, R.button(
 					{
 						className: 'clickable tool-btn danger-btn close-popup-button',
 						title: L('CLOSE'),
@@ -579,7 +580,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 										? undefined
 										: () => {
 											this.setFormFilter('tab', tabField.fieldName);
-											  }
+										}
 								},
 								renderIcon(tabField.icon),
 								tabField.name
@@ -587,7 +588,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 							/// #if DEBUG
 							h(FieldAdmin, { field: tabField, form: this })
 							/// #endif
-						  )
+						)
 						: undefined;
 				})
 			);
@@ -616,4 +617,3 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 }
 
 export { FormFull };
-

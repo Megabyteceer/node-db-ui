@@ -2,7 +2,6 @@ import { assert, throwError } from '../www/client-core/src/assert';
 import type { LookupValue, RecId, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
 import { PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 
-
 import { unlink } from 'fs';
 import { join } from 'path';
 import type { UserSession } from './auth';
@@ -15,7 +14,7 @@ import { L } from './locale';
 /*
 /// #endif
 import {mysqlRollback} } from './mysql-connection';
-//*/
+// */
 
 import { FIELD_TYPE, type NODE_ID, type TypeGenerationHelper } from '../types/generated';
 import {
@@ -44,7 +43,7 @@ for (const tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWriteDraftable, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	const node = getNodeDesc(nodeId);
 
-	let currentData:RecordData;
+	let currentData: RecordData;
 	if (recId) {
 		currentData = await getRecord(nodeId, VIEW_MASK.ALL, recId, userSession);
 	}
@@ -82,7 +81,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 		}
 	}
 
-	//check if required fields is filled, and hidden fields is unfilled
+	// check if required fields is filled, and hidden fields is unfilled
 	for (const f of node.fields) {
 		const fieldName = f.fieldName;
 
@@ -121,7 +120,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 	/*
 	/// #endif
 	try {
-	//*/
+	// */
 	let insQ: (string | string[])[];
 	const fieldsNames: string[] = [];
 	const values: string[] = [];
@@ -204,7 +203,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 				const fieldVal = data[fieldName];
 
 				if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
-					//will process later
+					// will process later
 					needProcess_n2m = 1;
 				} else if (fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 					throwError('children records addition/deletion is independent.');
@@ -220,7 +219,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 
 					case FIELD_TYPE.FILE:
 
-						//continue to process as uploaded image
+						// continue to process as uploaded image
 					case FIELD_TYPE.IMAGE:
 						if (fieldVal) {
 							if (userSession.uploaded && userSession.uploaded[f.id] === fieldVal) {
@@ -242,7 +241,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 							}
 						}
 
-						//continue to process as text
+						// continue to process as text
 					case FIELD_TYPE.TEXT:
 					case FIELD_TYPE.PASSWORD:
 						if (f.maxLength && fieldVal.length > f.maxLength) {
@@ -262,7 +261,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 
 					case FIELD_TYPE.LOOKUP:
 						if (!isAdmin(userSession) && fieldVal) {
-							await getRecord(f.nodeRef.id, VIEW_MASK.DROPDOWN_LIST, (fieldVal as LookupValue).id, userSession); //check if you have read access to referenced item
+							await getRecord(f.nodeRef.id, VIEW_MASK.DROPDOWN_LIST, (fieldVal as LookupValue).id, userSession); // check if you have read access to referenced item
 						}
 						values.push(D((fieldVal as LookupValue).id));
 						break;
@@ -302,7 +301,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 			for (const key in data) {
 				if (key !== 'status' && key !== '_organizationId' && key !== '_usersId') {
 					assert(
-						node.fields.find((f) => f.fieldName === key && f.sendToServer),
+						node.fields.find(f => f.fieldName === key && f.sendToServer),
 						'Unknown field \'' + key + '\' in data set detected.'
 					);
 				}
@@ -334,12 +333,12 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 				if (f.fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 					const fieldName = f.fieldName;
 					if (data.hasOwnProperty(fieldName)) {
-						//clear all n2m links
+						// clear all n2m links
 						await mysqlExec('DELETE FROM "' + fieldName + '" WHERE "' + tableName + 'Id" = ' + recId);
 						const fieldVal = data[fieldName];
 
 						if (fieldVal.length) {
-							//add new n2m links
+							// add new n2m links
 							const n2miQ = ['INSERT INTO "', fieldName, '" ("', tableName, 'Id", "', f.selectFieldName, 'Id") VALUES'];
 
 							let isNotFirst = false;
@@ -349,7 +348,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 								}
 
 								if (!isAdmin(userSession) && id) {
-									await getRecords(f.nodeRef.id, 8, id, userSession); //check if you have read access to referenced item
+									await getRecords(f.nodeRef.id, 8, id, userSession); // check if you have read access to referenced item
 								}
 
 								n2miQ.push('(', recId as unknown as string, ',', id, ')');
@@ -385,7 +384,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 		}
 		throw er;
 	}
-	//*/
+	// */
 };
 
 const submitRecord: TypeGenerationHelper['s'] = _submitRecord as unknown as TypeGenerationHelper['s'];

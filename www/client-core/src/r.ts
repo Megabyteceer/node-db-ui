@@ -1,4 +1,3 @@
-
 import { Fragment, h, type ComponentChildren } from 'preact';
 
 export interface ComponentProps {
@@ -53,6 +52,4 @@ for (let factoryType of ['div', 'input', 'form', 'span', 'p', 'img', 'button', '
 	};
 }
 
-
 export { R };
-

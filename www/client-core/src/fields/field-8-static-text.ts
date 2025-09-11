@@ -1,4 +1,3 @@
-
 import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';

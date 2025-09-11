@@ -1,4 +1,3 @@
-
 /// #if DEBUG
 import { DebugPanel } from './debug-panel';
 /// #endif
@@ -24,10 +23,10 @@ let nodesTree: TreeItem[];
 let rootItem: TreeItem;
 
 class MainFrame extends Component<{
-	//props
+	// props
 },
 {
-	//state
+	// state
 }> {
 	static instance: MainFrame;
 
@@ -96,4 +95,3 @@ class MainFrame extends Component<{
 MainFrame.instance = null;
 
 export { ENV, MainFrame };
-

@@ -9,7 +9,6 @@ import { getRecords } from '../get-records';
 import { D, mysqlExec } from '../mysql-connection';
 import { submitRecord } from '../submit';
 
-
 serverOn(E._nodes.beforeCreate, async (data, userSession) => {
 	shouldBeAdmin(userSession);
 	// shift all nodes in the same parent node
@@ -22,7 +21,7 @@ serverOn(E._nodes.afterCreate, async (data, userSession) => {
 
 	const createdID = data.id;
 
-	//inherit access privileges from parent node
+	// inherit access privileges from parent node
 	const rpQ = 'SELECT roleId, privileges FROM rolePrivileges, _roles ' + 'WHERE (rolePrivileges.roleId = _roles.id)AND(rolePrivileges.nodeId=' + data._nodesId + ')';
 
 	const parentPrivileges = await mysqlExec(rpQ);
@@ -64,7 +63,7 @@ serverOn(E._nodes.afterCreate, async (data, userSession) => {
 
 		await mysqlExec(tblCrtQ);
 
-		//create default fields
+		// create default fields
 		const mainFieldQ = `INSERT INTO _fields
 				(nodeFieldsLinker, status, show,              prior, fieldType,           fieldName,    selectFieldName,   name,        description,    maxLength,      requirement,     "unique",  _usersId,    forSearch,     storeInDb,    sendToServer, _organizationId) VALUES
 				(${createdID},        1,     ${VIEW_MASK.ALL},  0,     ${FIELD_TYPE.TEXT},   'name',        '',                  'Name',      '',              64,             1,               0,         0,             1,             1,              1,              1);`;

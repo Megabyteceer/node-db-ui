@@ -3,7 +3,7 @@ import { getData } from '../utils';
 /*
 /// #endif
 throw new Error("admin-event-editor imported in release build.");
-//*/
+// */
 function admin_editSource(handler, node, field, args = '') {
 	let nodeId, fieldId;
 	if (field) {
@@ -22,4 +22,3 @@ function admin_editSource(handler, node, field, args = '') {
 export {
 	admin_editSource
 };
-

@@ -1,4 +1,3 @@
-
 import type { ComponentChild } from 'preact';
 import { NODE_ID, type IUsersRecord } from '../../../../types/generated';
 import { renderItemsButtons } from '../forms/form-list-item';
@@ -30,7 +29,7 @@ registerListRenderer(NODE_ID.USERS, (node: NodeDesc, items: IUsersRecord[], refr
 		const additionalFields = [];
 		const keys = Object.keys(item);
 		for (const key of keys) {
-			if (key.length > 3 && !RENDERED_FIELDS[key] && item[key]) {
+			if (key.length > 3 && !RENDERED_FIELDS.hasOwnProperty(key) && item[key]) {
 				additionalFields.push(R.div({ key, className: 'user-item-info user-item-info-' + key },
 					node.fieldsByName[key].name, ': ', item[key]
 				));

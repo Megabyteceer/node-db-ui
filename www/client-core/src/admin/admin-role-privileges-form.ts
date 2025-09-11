@@ -1,4 +1,3 @@
-
 import { Component, h } from 'preact';
 import type { NodePrivileges, NodePrivilegesRequest, NodePrivilegesRes } from '../../../../core/admin/admin';
 import { NODE_TYPE } from '../../../../types/generated';
@@ -15,12 +14,12 @@ import { NodeAdmin } from './admin-control';
 /*
 /// #endif
 throw new Error("admin-role-privileges-form imported in release build.");
-//*/
+// */
 
 function check() {
 	return R.span(
 		{
-			className: 'admin-role-privileges-check',
+			className: 'admin-role-privileges-check'
 		},
 		renderIcon('check')
 	);
@@ -31,9 +30,9 @@ interface IHavePrivileges {
 }
 
 interface PrivilegesEditorProps {
-	bitsCount: 1 | 3,
-	baseBit: number,
-	item: IHavePrivileges,
+	bitsCount: 1 | 3;
+	baseBit: number;
+	item: IHavePrivileges;
 }
 
 class PrivilegesEditor extends Component<PrivilegesEditorProps> {
@@ -50,7 +49,7 @@ class PrivilegesEditor extends Component<PrivilegesEditorProps> {
 		if (curVal === 0) {
 			body = R.span(
 				{
-					className: 'admin-role-privileges-disabled',
+					className: 'admin-role-privileges-disabled'
 				},
 				renderIcon('ban')
 			);
@@ -58,7 +57,7 @@ class PrivilegesEditor extends Component<PrivilegesEditorProps> {
 		} else if (this.props.bitsCount === 1) {
 			body = R.span(
 				{
-					className: 'admin-role-privileges-enabled',
+					className: 'admin-role-privileges-enabled'
 				},
 				check()
 			);
@@ -68,7 +67,7 @@ class PrivilegesEditor extends Component<PrivilegesEditorProps> {
 			case 1:
 				body = R.span(
 					{
-						className: 'admin-role-privileges-enabled',
+						className: 'admin-role-privileges-enabled'
 					},
 					check()
 				);
@@ -78,11 +77,11 @@ class PrivilegesEditor extends Component<PrivilegesEditorProps> {
 			case 3:
 				body = R.span(
 					{
-						className: 'admin-role-privileges-enabled',
+						className: 'admin-role-privileges-enabled'
 					},
 					R.span(
 						{
-							className: 'admin-role-privileges-size2',
+							className: 'admin-role-privileges-size2'
 						},
 						check(),
 						check()
@@ -96,11 +95,11 @@ class PrivilegesEditor extends Component<PrivilegesEditorProps> {
 			case 7:
 				body = R.span(
 					{
-						className: 'admin-role-privileges-enabled',
+						className: 'admin-role-privileges-enabled'
 					},
 					R.span(
 						{
-							className: 'admin-role-privileges-size3',
+							className: 'admin-role-privileges-size3'
 						},
 						check(),
 						check(),
@@ -127,7 +126,7 @@ class PrivilegesEditor extends Component<PrivilegesEditorProps> {
 					}
 					item.privileges = (item.privileges & (65535 ^ mask)) | curVal;
 					this.forceUpdate();
-				},
+				}
 			},
 			body
 		);
@@ -149,7 +148,7 @@ class AdminRolePrivilegesForm extends BaseForm<FormProps, FormState & {
 		const node = await getNode(this.props.recId);
 
 		const data: NodePrivilegesRes = await getData('admin/nodePrivileges', {
-			nodeId: this.props.recId,
+			nodeId: this.props.recId
 		});
 
 		for (const i of data.privileges) {
@@ -161,7 +160,7 @@ class AdminRolePrivilegesForm extends BaseForm<FormProps, FormState & {
 		this.initData = data.privileges;
 		this.setState({
 			node,
-			data,
+			data
 		});
 	}
 
@@ -198,53 +197,53 @@ class AdminRolePrivilegesForm extends BaseForm<FormProps, FormState & {
 				return R.tr(
 					{
 						key: i.id,
-						className: 'admin-role-privileges-line',
+						className: 'admin-role-privileges-line'
 					},
 					R.td(
 						{
-							className: 'admin-role-privileges-line-header',
+							className: 'admin-role-privileges-line-header'
 						},
 						i.name
 					),
 					h(PrivilegesEditor, {
 						bitsCount: 3,
 						baseBit: PRIVILEGES_MASK.VIEW_OWN,
-						item: i,
+						item: i
 					}),
 					h(PrivilegesEditor, {
 						bitsCount: 1,
 						baseBit: PRIVILEGES_MASK.CREATE,
-						item: i,
+						item: i
 					}),
 					h(PrivilegesEditor, {
 						bitsCount: 3,
 						baseBit: PRIVILEGES_MASK.EDIT_OWN,
-						item: i,
+						item: i
 					}),
 					h(PrivilegesEditor, {
 						bitsCount: 1,
 						baseBit: PRIVILEGES_MASK.DELETE,
-						item: i,
+						item: i
 					}),
 					node.draftable
 						? h(PrivilegesEditor, {
 							bitsCount: 1,
 							baseBit: PRIVILEGES_MASK.PUBLISH,
-							item: i,
-						  })
+							item: i
+						})
 						: undefined
 				);
 			});
 
 			const body = R.div(
 				{
-					className: 'admin-role-privileges-block',
+					className: 'admin-role-privileges-block'
 				},
 				R.h3(
 					null,
 					R.span(
 						{
-							className: 'admin-role-privileges-header',
+							className: 'admin-role-privileges-header'
 						},
 						L('ADM_NODE_ACCESS')
 					),
@@ -253,15 +252,15 @@ class AdminRolePrivilegesForm extends BaseForm<FormProps, FormState & {
 
 				R.table(
 					{
-						className: 'admin-role-privileges-table',
+						className: 'admin-role-privileges-table'
 					},
 					R.thead(
 						{
-							className: 'admin-role-privileges-row-header',
+							className: 'admin-role-privileges-row-header'
 						},
 						R.tr(
 							{
-								className: 'admin-role-privileges-line',
+								className: 'admin-role-privileges-line'
 							},
 							R.th(),
 							R.th(null, L('VIEW')),
@@ -278,7 +277,7 @@ class AdminRolePrivilegesForm extends BaseForm<FormProps, FormState & {
 			const saveButton = R.button(
 				{
 					className: 'clickable success-button',
-					onClick: this.saveClick,
+					onClick: this.saveClick
 				},
 				this.isSubForm() ? renderIcon('check') : renderIcon('floppy-o'),
 				this.isSubForm() ? '' : L('SAVE')
@@ -290,7 +289,7 @@ class AdminRolePrivilegesForm extends BaseForm<FormProps, FormState & {
 				nodeAdmin = h(NodeAdmin, {
 					form: this,
 					x: 320,
-					y: -40,
+					y: -40
 				});
 			}
 			/// #endif
@@ -298,7 +297,7 @@ class AdminRolePrivilegesForm extends BaseForm<FormProps, FormState & {
 			const closeButton = R.button(
 				{
 					className: 'clickable default-button',
-					onClick: this.cancelClick,
+					onClick: this.cancelClick
 				},
 				renderIcon('times'),
 				this.isSubForm() ? '' : L('CANCEL')
@@ -320,4 +319,3 @@ class AdminRolePrivilegesForm extends BaseForm<FormProps, FormState & {
 }
 
 export { AdminRolePrivilegesForm };
-

@@ -9,7 +9,7 @@ registerFieldClass(
 
 		setValue(value: string) {
 			this.refToInput.value = value;
-			this.setState({value});
+			this.setState({ value });
 		}
 
 		render() {
@@ -29,7 +29,7 @@ registerFieldClass(
 					ref: this.refGetter,
 					onInput: () => {
 						this.props.wrapper.valueListener(this.refToInput.value, true, this);
-					},
+					}
 				};
 
 				return R.input(inputsProps);

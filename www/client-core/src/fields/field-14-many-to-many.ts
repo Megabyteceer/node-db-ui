@@ -1,5 +1,3 @@
-
-
 import { h, type Component } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
@@ -20,7 +18,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 
 	constructor(props) {
 		super(props);
-		this.state = {filters: this.generateDefaultFiltersByProps(this.props)};
+		this.state = { filters: this.generateDefaultFiltersByProps(this.props) };
 	}
 
 	setValue(val) {
@@ -132,7 +130,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 							onMouseDown: (e) => {
 								sp(e);
 								this.dragStart(value);
-							},
+							}
 						},
 						renderIcon('reorder')
 					);
@@ -148,7 +146,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 							onClick: () => {
 								const recId = this.props.form.recId;
 								const filters = {
-									[this.getLinkerFieldName()]: { id: recId },
+									[this.getLinkerFieldName()]: { id: recId }
 								};
 								globals.Stage.showForm(
 									this.props.field.nodeRef.id,
@@ -158,7 +156,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 									true,
 									(newData: object) => {
 										if (!newData) {
-											//deleted
+											// deleted
 											this.deleteItemByIndex(i);
 										} else {
 											for (const fName in value) {
@@ -170,7 +168,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 										this.forceUpdate();
 									}
 								);
-							},
+							}
 						},
 						renderIcon('pencil')
 					),
@@ -180,7 +178,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 							className: 'clickable tool-btn danger-btn',
 							onClick: () => {
 								this.deleteItemByIndex(i);
-							},
+							}
 						},
 						renderIcon('times')
 					),
@@ -211,9 +209,9 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 						ref: value
 							? (ref) => {
 								refs[UID(value)] = ref;
-							  }
+							}
 							: undefined,
-						className,
+						className
 					},
 
 					h(getClassForField(FIELD_TYPE.LOOKUP), {
@@ -226,7 +224,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 						ref: (ref: fieldLookupMixins) => {
 							if (ref) {
 								ref.setLookupFilter({
-									excludeIDs: this.excludeIDs || this.state.filters.excludeIDs,
+									excludeIDs: this.excludeIDs || this.state.filters.excludeIDs
 								});
 							}
 						},
@@ -234,7 +232,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 						wrapper: this,
 						initialValue: value,
 						isCompact: this.props.isCompact,
-						fieldDisabled: this.props.fieldDisabled,
+						fieldDisabled: this.props.fieldDisabled
 					}),
 					buttons
 				);
@@ -247,7 +245,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 
 	render() {
 		if (!this.state.value) {
-			this.setState({value: []});
+			this.setState({ value: [] });
 			return R.fragment();
 		}
 		const value = this.state.value;
@@ -282,4 +280,3 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 registerFieldClass(FIELD_TYPE.LOOKUP_N_TO_M, LookupManyToManyFiled);
 
 export { LookupManyToManyFiled };
-

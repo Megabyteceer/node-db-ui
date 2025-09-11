@@ -9,7 +9,7 @@ registerFieldClass(
 
 		setValue(value: string) {
 			this.refToInput.value = value;
-			this.setState({value});
+			this.setState({ value });
 		}
 
 		render() {
@@ -22,7 +22,7 @@ registerFieldClass(
 				} else {
 					setTimeout(() => {
 						console.error('non string value for field ' + field.name + ' with default type');
-						//debugError('non string value for field '+field.name+' with default type');
+						// debugError('non string value for field '+field.name+' with default type');
 					}, 1);
 					/// #if DEBUG
 					consoleDir(field);
@@ -62,7 +62,7 @@ registerFieldClass(
 					ref: this.refGetter,
 					onInput: () => {
 						this.props.wrapper.valueListener(this.refToInput.value, true, this);
-					},
+					}
 				};
 
 				if (field.maxLength > 200) {

@@ -50,7 +50,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 		}
 
 		if (tableOptions === 's') {
-			//skip
+			// skip
 			continue;
 		}
 
@@ -63,7 +63,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 			}
 			tableData = { type: 'VIEW', SQL };
 		} else {
-			//copy table
+			// copy table
 
 			SQL = await mySqlGetCreateTableSql(source_db, tableName);
 
@@ -74,7 +74,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 			tableData = { type: 'TABLE', SQL };
 
 			if (tableOptions === 'd') {
-				//include table [d]ata
+				// include table [d]ata
 
 				tableData['isData'] = 1;
 				const ts = await mysqlExec(
@@ -97,25 +97,25 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 
 				if (
 					!(await mysqlExec(
-						'SELECT * FROM "' +
-							source_db +
-							'"."' +
-							tableName +
-							'" INTO OUTFILE \'' +
-							tmpFileNameSQL +
-							'\''
+						'SELECT * FROM "'
+						+ source_db
+						+ '"."'
+						+ tableName
+						+ '" INTO OUTFILE \''
+						+ tmpFileNameSQL
+						+ '\''
 					))
 				) {
 					const rows = await mysqlExec('SELECT * FROM "' + source_db + '"."' + tableName + '"');
 					if (rows.length > 0) {
 						throwError(
-							'have no privileges to dump table "' +
-								source_db +
-								'"."' +
-								tableName +
-								'" in to file \'' +
-								tmpFileNameSQL +
-								'\''
+							'have no privileges to dump table "'
+							+ source_db
+							+ '"."'
+							+ tableName
+							+ '" in to file \''
+							+ tmpFileNameSQL
+							+ '\''
 						);
 					}
 				}
@@ -126,7 +126,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 		dbTables[tableName] = tableData;
 	}
 
-	//get stored functions
+	// get stored functions
 	const dbFunctions = {};
 	const dbFunctionsSrc = await mysqlExec('SHOW FUNCTION STATUS WHERE Db=\'' + source_db + '\'');
 	if (!tablesSettings.functions) {
@@ -135,11 +135,11 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 	for (const t of dbFunctionsSrc) {
 		const procName = t.Name;
 		if (!tablesSettings.functions[procName]) {
-			tablesSettings.functions[procName] = 'n'; //save settings
+			tablesSettings.functions[procName] = 'n'; // save settings
 		}
 		const opts = tablesSettings.functions[procName];
 		if (opts === 's') {
-			//skip item
+			// skip item
 			continue;
 		}
 		const SQL = mySqlGetCreateFunctionSql(source_db, procName);
@@ -149,7 +149,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 		dbFunctions[procName] = { SQL };
 	}
 
-	//get stored procedures
+	// get stored procedures
 	const dbProcedures = {};
 	const storedProcedures = await mysqlExec('SHOW PROCEDURE STATUS WHERE Db=\'' + source_db + '\'');
 	if (!tablesSettings.procedures) {
@@ -159,12 +159,12 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 		const procName = t['Name'];
 
 		if (!tablesSettings.procedures[procName]) {
-			tablesSettings.procedures[procName] = 'n'; //save settings
+			tablesSettings.procedures[procName] = 'n'; // save settings
 		}
 		const opts = tablesSettings['procedures'][procName];
 
 		if (opts === 's') {
-			//skip item
+			// skip item
 			continue;
 		}
 
@@ -175,7 +175,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 		dbProcedures[procName] = { SQL };
 	}
 
-	//get events
+	// get events
 	const dbEvents = {};
 	let storedEvents = await mysqlExec('SHOW EVENTS IN "' + source_db + '"');
 	if (!tablesSettings.events) {
@@ -185,12 +185,12 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 		const eventName = t.Name;
 
 		if (!tablesSettings.events[eventName]) {
-			tablesSettings.events[eventName] = 'n'; //save settings
+			tablesSettings.events[eventName] = 'n'; // save settings
 		}
 		const opts = tablesSettings['events'][eventName];
 
 		if (opts === 's') {
-			//skip item
+			// skip item
 			continue;
 		}
 
@@ -201,7 +201,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 		dbEvents[eventName] = { SQL };
 	}
 
-	//get triggers
+	// get triggers
 	const dbTriggers = {};
 	storedEvents = await mysqlExec('show triggers IN "' + source_db + '"');
 	if (tablesSettings.triggers) {
@@ -211,12 +211,12 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 		const triggerName = t.Trigger;
 
 		if (!tablesSettings.triggers[triggerName]) {
-			tablesSettings.triggers[triggerName] = 'n'; //save settings
+			tablesSettings.triggers[triggerName] = 'n'; // save settings
 		}
 		const opts = tablesSettings.triggers[triggerName];
 
 		if (opts === 's') {
-			//skip item
+			// skip item
 			continue;
 		}
 
@@ -245,7 +245,7 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 		functions: dbFunctions,
 		procedures: dbProcedures,
 		events: dbEvents,
-		triggers: dbTriggers,
+		triggers: dbTriggers
 	};
 
 	archive.append(JSON.stringify(deployData), { name: 'tables.json' });
@@ -289,12 +289,12 @@ async function getDeployPackage(reqData, userSession: UserSession) {
 	});
 }
 
-async function deployToRemoteServer(_fileName:string) {
+async function deployToRemoteServer(_fileName: string) {
 	debugger;
-	//TODO
+	// TODO
 }
 
-export const isFiledExists = async (reqData: {fieldName: string, nodeId: NODE_ID}, userSession: UserSession) => {
+export const isFiledExists = async (reqData: { fieldName: string; nodeId: NODE_ID }, userSession: UserSession) => {
 	shouldBeAdmin(userSession);
 	const tableName = getNodeDesc(reqData.nodeId, userSession).tableName;
 
@@ -317,7 +317,7 @@ const walkSync = (dir, fileList = []) => {
 	return fileList;
 };
 
-//TODO: ignore files
+// TODO: ignore files
 const skipFiles = [
 	/.*\/.js.map$/,
 	/.*\/uploads\/*/,
@@ -328,7 +328,7 @@ const skipFiles = [
 	/.*\/.vscode\/*/,
 	/.*.log/,
 	/.*.bak/,
-	/.*.pem/,
+	/.*.pem/
 ];
 
 function isSkipFile(fn) {
@@ -347,7 +347,7 @@ function packFiles(archive, files, prevFiles, isFull) {
 		if (!prevFilesMap[fname]) {
 			const f = {
 				mtime: 0,
-				name: fname,
+				name: fname
 			};
 			prevFilesMap[fname] = f;
 			prevFiles.push(f);
@@ -370,9 +370,9 @@ async function mySqlGetCreateViewSql(dbName, viewName) {
 	if (!SQLstring) {
 		return false;
 	}
-	//remove target db name.
+	// remove target db name.
 	SQLstring = SQLstring.replaceAll('"' + dbName + '".', '');
-	//remove definer.
+	// remove definer.
 	const a = SQLstring.split('VIEW "' + viewName + '" AS');
 	if (a[1]) {
 		return false;
@@ -428,9 +428,9 @@ async function mySqlGetCreateEventSql(dbName, eventName) {
 	if (!SQLstring) {
 		return false;
 	}
-	//remove target db name.
+	// remove target db name.
 	SQLstring = SQLstring.replaceAll('"' + dbName + '".', '');
-	//remove definer.
+	// remove definer.
 	const a = SQLstring.split('EVENT "' + eventName + '"');
 	if (!a[1]) {
 		return false;
@@ -444,9 +444,9 @@ async function mySqlGetCreateTriggerSql(dbName, triggerName) {
 	if (!SQLstring) {
 		return false;
 	}
-	//remove target db name.
+	// remove target db name.
 	SQLstring = SQLstring.replaceAll('"' + dbName + '".', '');
-	//remove definer.
+	// remove definer.
 	const a = SQLstring.split('TRIGGER "' + triggerName + '"');
 	if (!a[1]) {
 		return false;
@@ -458,7 +458,7 @@ async function mySqlGetHeaderInfo() {
 	const v = await mysqlExec('SELECT version()');
 	return {
 		'PMD.version': 'v0.0.3',
-		'SQL.version': v[0]['version()'],
+		'SQL.version': v[0]['version()']
 	};
 }
 

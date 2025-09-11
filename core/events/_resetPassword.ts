@@ -23,14 +23,14 @@ serverOn(E._resetPassword.onSubmit, async (data, userSession) => {
 			await mysqlExec(
 				'UPDATE _users SET "resetTime"=NOW(), "resetCode" = ' + escapeString(resetCode) + ' WHERE id=' + D(user.id)
 			);
-			const href =
-					getServerHref() +
-					'#n/' +
-					NODE_ID.RESET_PASSWORD +
-					'/r/new/e/f/userId/' +
-					user.id +
-					'/resetCode/' +
-					encodeURIComponent(resetCode);
+			const href
+				= getServerHref()
+					+ '#n/'
+					+ NODE_ID.RESET_PASSWORD
+					+ '/r/new/e/f/userId/'
+					+ user.id
+					+ '/resetCode/'
+					+ encodeURIComponent(resetCode);
 			await mail_utf8(
 				data.email,
 				L('PASSWORD_RESET_EMAIL_HEADER', userSession),

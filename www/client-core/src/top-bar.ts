@@ -1,4 +1,3 @@
-
 import { Component, h } from 'preact';
 import { R } from './r';
 import { User } from './user';
@@ -11,7 +10,7 @@ class TopBar extends Component<any, any> {
 				href: '/'
 			},
 			R.img({ src: 'images/logo.png' })),
-			//search,
+			// search,
 			R.div({ className: 'top-bar-right-area' },
 				h(User, null)
 			)
@@ -20,4 +19,3 @@ class TopBar extends Component<any, any> {
 }
 
 export { TopBar };
-

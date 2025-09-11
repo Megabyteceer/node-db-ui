@@ -1,4 +1,3 @@
-
 import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
@@ -21,13 +20,13 @@ registerFieldClass(
 			if (typeof val === 'string') {
 				val = {
 					id: val,
-					name: 'selected',
+					name: 'selected'
 				};
 				this.props.wrapper.valueListener(val, false, this);
 			}
 			this.state = {
 				filters: this.generateDefaultFiltersByProps(this.props),
-				value: val,
+				value: val
 			};
 			this.toggleList = this.toggleList.bind(this);
 			this.valueSelected = this.valueSelected.bind(this);
@@ -55,7 +54,7 @@ registerFieldClass(
 		componentWillReceiveProps(_nextProps) {
 			if (this.props.filters) {
 				if (!this.state.filters) {
-					this.setState({filters: {}});
+					this.setState({ filters: {} });
 				}
 				Object.assign(this.state.filters, this.props.filters);
 			}
@@ -64,7 +63,7 @@ registerFieldClass(
 		toggleList() {
 			if (!this.props.fieldDisabled || this.state.expanded) {
 				this.setState({
-					expanded: !this.state.expanded,
+					expanded: !this.state.expanded
 				});
 			}
 		}
@@ -82,7 +81,7 @@ registerFieldClass(
 				) {
 					const newVal: any = {
 						id: recordData.id,
-						name: recordData.name,
+						name: recordData.name
 					};
 					if (this.props.field.lookupIcon) {
 						newVal.icon = recordData[this.props.field.lookupIcon];
@@ -103,8 +102,8 @@ registerFieldClass(
 			this.collapseList();
 			const filters = this.props.form
 				? {
-					[this.getLinkerFieldName()]: { id: this.props.form.recId },
-				  }
+					[this.getLinkerFieldName()]: { id: this.props.form.recId }
+				}
 				: undefined;
 			globals.Stage.showForm(
 				this.props.field.nodeRef.id,
@@ -129,22 +128,22 @@ registerFieldClass(
 			);
 		}
 
-		static encodeValue(val:LookupValue) {
+		static encodeValue(val: LookupValue) {
 			if (val) {
-				return {id: val.id};
+				return { id: val.id };
 			}
 			return val;
 		}
 
 		setValue(value: LookupValue) {
-			this.setState({value});
+			this.setState({ value });
 		}
 
 		clearValue() {
 			this.valueSelected(
 				{
 					id: 0,
-					name: '',
+					name: ''
 				},
 				false,
 				true
@@ -160,11 +159,11 @@ registerFieldClass(
 				if (field.lookupIcon && !this.props.hideIcon && value.icon) {
 					iconPic = R.img({
 						className: 'field-lookup-icon-pic',
-						src: idToImgURL(value.icon, field.lookupIcon) + IMAGE_THUMBNAIL_PREFIX,
+						src: idToImgURL(value.icon, field.lookupIcon) + IMAGE_THUMBNAIL_PREFIX
 					});
 				} else {
 					iconPic = R.div({
-						className: 'field-lookup-icon-pic field-lookup-icon-pic-empty',
+						className: 'field-lookup-icon-pic field-lookup-icon-pic-empty'
 					});
 				}
 			}
@@ -177,14 +176,14 @@ registerFieldClass(
 						nodeId: field.nodeRef.id,
 						isLookup: true,
 						parentForm: this,
-						filters: this.state.filters,
+						filters: this.state.filters
 					});
 				}
 
 				if (list) {
 					list = R.div(
 						{
-							className: 'field-lookup-drop-list',
+							className: 'field-lookup-drop-list'
 						},
 						list
 					);
@@ -198,7 +197,7 @@ registerFieldClass(
 							onClick: (e) => {
 								sp(e);
 								this.clearValue();
-							},
+							}
 						},
 						renderIcon('times')
 					);
@@ -210,7 +209,7 @@ registerFieldClass(
 				} else {
 					valLabel = R.span(
 						{
-							className: 'field-lookup-value-label',
+							className: 'field-lookup-value-label'
 						},
 						this.props.isN2M ? L('+ADD') : L('SELECT')
 					);
@@ -218,7 +217,7 @@ registerFieldClass(
 
 				return R.div(
 					{
-						className: 'field-lookup-wrapper',
+						className: 'field-lookup-wrapper'
 					},
 					R.div(
 						{
@@ -226,11 +225,11 @@ registerFieldClass(
 								? 'field-lookup-chooser not-clickable disabled'
 								: 'field-lookup-chooser clickable',
 							title: this.props.isCompact ? field.name : L('SELECT'),
-							onClick: this.toggleList,
+							onClick: this.toggleList
 						},
 						R.span(
 							{
-								className: 'field-lookup-value',
+								className: 'field-lookup-value'
 							},
 							iconPic,
 							valLabel
@@ -239,7 +238,7 @@ registerFieldClass(
 							{ className: 'field-lookup-right-block' },
 							R.span(
 								{
-									className: 'field-lookup-caret',
+									className: 'field-lookup-caret'
 								},
 								renderIcon('caret-down')
 							),

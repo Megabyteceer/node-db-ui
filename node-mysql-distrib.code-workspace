@@ -8,6 +8,7 @@
 		"files.exclude": {
 			"data/**": true,
 			"www/images/**": true,
+			"node_modules/**": true,
 			"www/uploads/**": true,
 			"core/admin/settings_store/**": true,
 			"build-debug/**": true,

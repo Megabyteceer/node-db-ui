@@ -1,4 +1,3 @@
-
 import { Component } from 'preact';
 import { LeftBar } from './left-bar';
 import { R } from './r';
@@ -8,10 +7,10 @@ let modalStack = [];
 let idCounter = 0;
 
 class Modal extends Component<{
-	//props
+	// props
 },
 {
-	//state
+	// state
 }> {
 	static instance: Modal;
 
@@ -86,11 +85,9 @@ class Modal extends Component<{
 	}
 }
 
+// TODO: block scroll body under modals
 
-//TODO: block scroll body under modals
-
-/* @type = {Modal}*/// #if DEBUG
+/* @type = {Modal} */// #if DEBUG
 Modal.instance = null;
 
 export { Modal };
-

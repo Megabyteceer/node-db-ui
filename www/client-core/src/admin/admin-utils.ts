@@ -1,4 +1,3 @@
-
 import { h } from 'preact';
 import { FIELD_TYPE, NODE_ID, type IFieldsRecord, type INodesRecord } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
@@ -13,7 +12,7 @@ import { consoleDir, getItem, getNode, getRecordClient, isLitePage, renderIcon, 
 /*
 /// #endif
 throw new Error("admin-utils imported in release build.");
-//*/
+// */
 
 function debugInfoGetter() {
 	consoleDir(this);
@@ -31,8 +30,8 @@ setTimeout(() => {
 	window.document.body.insertAdjacentHTML(
 		'beforeend',
 		'<span class="admin-tools-enable-btn"><span>Admin tools </span><input type="checkbox" checked="' +
-			adminOn +
-			'" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>'
+		adminOn +
+		'" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>'
 	);
 	window.document.querySelector('#admin-disable').addEventListener('click', admin.toggleAdminUI);
 	if (getItem('__admin-ui-enables', true)) {
@@ -64,7 +63,7 @@ class admin {
 			let i;
 
 			if (field.fieldType === FIELD_TYPE.TAB) {
-				//two tabs exchanging
+				// two tabs exchanging
 				i = fieldIndex;
 				group1.push(fields[i]);
 				i++;
@@ -108,7 +107,7 @@ class admin {
 					}
 				}
 			} else {
-				//field and field exchange;
+				// field and field exchange;
 
 				group1.push(fields[fieldIndex]);
 				i = fieldIndex + direction;
@@ -137,7 +136,7 @@ class admin {
 
 			await Promise.all(
 				group1.map((f) => {
-					return submitRecord(NODE_ID.FIELDS, {prior: f.prior} as IFieldsRecord, f.id);
+					return submitRecord(NODE_ID.FIELDS, { prior: f.prior } as IFieldsRecord, f.id);
 				})
 			);
 			await getNode(node.id, true);
@@ -150,7 +149,7 @@ class admin {
 				submitRecord(
 					NODE_ID.NODES,
 					{
-						prior: node1.prior,
+						prior: node1.prior
 					} as INodesRecord,
 					node2.id
 				).then(() => {
@@ -159,12 +158,12 @@ class admin {
 				submitRecord(
 					NODE_ID.NODES,
 					{
-						prior: node2.prior,
-					}as INodesRecord,
+						prior: node2.prior
+					} as INodesRecord,
 					node1.id
 				).then(() => {
 					console.log(2);
-				}),
+				})
 			]);
 			MainFrame.instance.reloadOptions();
 		}
@@ -194,18 +193,18 @@ function initIconsList() {
 	for (const style of ruleList) {
 		const rules = Array.from(style.cssRules);
 
-		if (rules.find((r: CSSRule) => (r as unknown as {selectorText : string}).selectorText === '.fa')) {
+		if (rules.find((r: CSSRule) => (r as unknown as { selectorText: string }).selectorText === '.fa')) {
 			for (const rule of rules) {
 				const s = rule.cssText.split('.fa-');
 				const allNames = s
-					.filter((s) => s.indexOf('::before') > 0)
-					.map((s) => s.substr(0, s.indexOf('::before')));
+					.filter(s => s.indexOf('::before') > 0)
+					.map(s => s.substr(0, s.indexOf('::before')));
 				if (allNames.length) {
 					const iconName = allNames[0];
 					iconsList.push({
 						search: allNames.join(', '),
 						name: R.span(null, renderIcon(iconName), allNames.join(', ')),
-						value: iconName,
+						value: iconName
 					});
 				}
 			}
@@ -230,7 +229,7 @@ function makeIconSelectionField(form: FormFull<string>, fieldName) {
 			onInput: (value) => {
 				form.setFieldValue(fieldName, value);
 			},
-			options: iconsList,
+			options: iconsList
 		})
 	);
 }
@@ -251,7 +250,7 @@ function makeReactClassSelectionField(form: FormFull<string>, fieldName) {
 			onInput: (value) => {
 				form.setFieldValue(fieldName, value);
 			},
-			options,
+			options
 		})
 	);
 }
@@ -268,4 +267,3 @@ export {
 	makeReactClassSelectionField,
 	removeReactClassSelectionField
 };
-

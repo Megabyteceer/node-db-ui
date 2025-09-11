@@ -7,7 +7,6 @@ import { NodeAdmin } from '../admin/admin-control';
 import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 
-
 import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
@@ -37,7 +36,7 @@ function createPageButton(self, page, isActive) {
 			className: 'clickable page-btn',
 			onClick: () => {
 				self.changeFilter('p', page, true);
-			},
+			}
 		},
 		page + 1
 	);
@@ -59,7 +58,7 @@ interface ListState extends Omit<FormState, 'data'> {
 	hideControls?: boolean;
 	noPreviewButton?: boolean;
 	data: RecordsData;
-	node:NodeDesc;
+	node: NodeDesc;
 	viewMask: VIEW_MASK;
 }
 
@@ -147,7 +146,7 @@ class List extends BaseForm<ListProps, ListState> {
 				this.filters.p = '*';
 			}
 
-			//TODO: Понять почему рефреш листа дает другой вьюмаск. this.state.viewMask отличается от того что в кастом вью
+			// TODO: Понять почему рефреш листа дает другой вьюмаск. this.state.viewMask отличается от того что в кастом вью
 			const data = await getRecordsClient(
 				nodeIdToFetch,
 				undefined,
@@ -284,7 +283,7 @@ class List extends BaseForm<ListProps, ListState> {
 											item.__deleted_901d123f = true;
 											this.forceUpdate();
 										});
-									},
+									}
 								},
 								renderIcon('times')
 							)
@@ -328,7 +327,7 @@ class List extends BaseForm<ListProps, ListState> {
 													this.subFormsRefs[uidM1].setFieldValue('order', itemNum);
 													this.subFormsRefs[uidM1].saveForm();
 													this.forceUpdate();
-												},
+												}
 											},
 											renderIcon('arrow-up')
 										)
@@ -353,7 +352,7 @@ class List extends BaseForm<ListProps, ListState> {
 													this.subFormsRefs[uidP1].setFieldValue('order', itemNum);
 													this.subFormsRefs[uidP1].saveForm();
 													this.forceUpdate();
-												},
+												}
 											},
 											renderIcon('arrow-down')
 										)
@@ -366,7 +365,7 @@ class List extends BaseForm<ListProps, ListState> {
 							R.div(
 								{
 									key: UID(item),
-									className: 'inline-editable-item inline-editable-item-rec-id-' + item.id,
+									className: 'inline-editable-item inline-editable-item-rec-id-' + item.id
 								},
 								h(FormFull, {
 									ref: (ref) => {
@@ -381,7 +380,7 @@ class List extends BaseForm<ListProps, ListState> {
 									list: this,
 									node,
 									initialData: item,
-									overrideOrderData: sorting ? itemNum : -1,
+									overrideOrderData: sorting ? itemNum : -1
 								}),
 								R.span({ key: UID(item) + 'buttons', className: 'buttons' }, buttons)
 							)
@@ -408,7 +407,7 @@ class List extends BaseForm<ListProps, ListState> {
 						onClick: () => {
 							data.items.push({});
 							this.forceUpdate();
-						},
+						}
 					},
 					renderIcon('plus')
 				)
@@ -466,7 +465,7 @@ class List extends BaseForm<ListProps, ListState> {
 									await this.props.parentForm.saveParentFormBeforeCreation();
 								}
 								this.props.parentForm.toggleCreateDialogue('new');
-							},
+							}
 						},
 						renderIcon('plus'),
 						' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
@@ -477,7 +476,7 @@ class List extends BaseForm<ListProps, ListState> {
 							className: 'clickable create-button',
 							onClick: () => {
 								globals.Stage.showForm(node.id, 'new', filters, true);
-							},
+							}
 						},
 						renderIcon('plus'),
 						' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
@@ -501,7 +500,7 @@ class List extends BaseForm<ListProps, ListState> {
 						className: 'list-search-input',
 						placeholder: L('SEARCH_LIST'),
 						onInput: this.changeSearch,
-						defaultValue: this.filters.s,
+						defaultValue: this.filters.s
 					}),
 					this.filters?.s ? R.a(
 						{
@@ -509,7 +508,7 @@ class List extends BaseForm<ListProps, ListState> {
 							onClick: (e) => {
 								this.clearSearch();
 								sp(e);
-							},
+							}
 						},
 						R.h2(null, '×')
 					) : undefined
@@ -521,7 +520,7 @@ class List extends BaseForm<ListProps, ListState> {
 				const options = node.filtersList;
 				filtersPanel = R.div(
 					{
-						className: 'filter-select',
+						className: 'filter-select'
 					},
 					h(Select, {
 						options,
@@ -530,7 +529,7 @@ class List extends BaseForm<ListProps, ListState> {
 							: undefined,
 						onInput: (val) => {
 							this.changeFilter('filterId', parseInt(val), true);
-						},
+						}
 					})
 				);
 			}
@@ -571,7 +570,7 @@ class List extends BaseForm<ListProps, ListState> {
 									} else {
 										this.changeFilter('o', field.id, true);
 									}
-								},
+								}
 							},
 							renderIcon(field.icon),
 							field.name,
@@ -589,7 +588,7 @@ class List extends BaseForm<ListProps, ListState> {
 									className:
 										field.fieldType === FIELD_TYPE.NUMBER
 											? 'list-row-header list-row-header-num'
-											: 'list-row-header',
+											: 'list-row-header'
 								},
 								rowHeader,
 								/// #if DEBUG
@@ -620,7 +619,7 @@ class List extends BaseForm<ListProps, ListState> {
 						isLookup: this.props.isLookup,
 						list: this,
 						node,
-						initialData: item,
+						initialData: item
 					});
 				});
 
@@ -729,4 +728,3 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 }
 export { List };
-

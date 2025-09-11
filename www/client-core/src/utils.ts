@@ -14,7 +14,6 @@ import { User } from './user';
 import { DebugPanel } from './debug-panel';
 /// #endif
 
-
 import type { Component, ComponentChild } from 'preact';
 import { h } from 'preact';
 import { FIELD_TYPE, NODE_ID, type TypeGenerationHelper } from '../../../types/generated';
@@ -28,14 +27,14 @@ enum CLIENT_SIDE_FORM_EVENTS {
 	ON_FORM_AFTER_SAVE = 'afterSave',
 	ON_FORM_LOAD = 'onLoad',
 	ON_FIELD_CHANGE = 'onChange',
-	ON_FIELD_CLICK = 'onClick',
+	ON_FIELD_CLICK = 'onClick'
 }
 /// #if DEBUG
 const __corePath = 'http://127.0.0.1:1443/core/';
 /*
 /// #endif
 const __corePath = '/core/';
-//*/
+// */
 
 const headersJSON = new Headers();
 headersJSON.append('Content-Type', 'application/json');
@@ -68,13 +67,13 @@ function restrictRecordsDeletion(nodes: RestrictDeletionData) {
 }
 
 restrictRecordsDeletion({
-	[NODE_ID.NODES]: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 20, 22, 50, 52, 53] /* disable critical sections  deletion/hiding*/,
-	[NODE_ID.USERS]: [1, 2, 3] /* disable admin,user,guest deletion*/,
-	[NODE_ID.ORGANIZATION]: [1, 2, 3] /* disable critical organizations deletion*/,
-	[NODE_ID.ROLES]: [1, 2, 3] /* disable critical roles deletion*/,
-	[NODE_ID.LANGUAGES]: [1] /* disable default language deletion*/,
-	[NODE_ID.ENUMS]: [1] /* disable field type enum deletion*/,
-	[NODE_ID.ENUM_VALUES]: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 30, 43] /* disable field type enum deletion*/
+	[NODE_ID.NODES]: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 20, 22, 50, 52, 53] /* disable critical sections  deletion/hiding */,
+	[NODE_ID.USERS]: [1, 2, 3] /* disable admin,user,guest deletion */,
+	[NODE_ID.ORGANIZATION]: [1, 2, 3] /* disable critical organizations deletion */,
+	[NODE_ID.ROLES]: [1, 2, 3] /* disable critical roles deletion */,
+	[NODE_ID.LANGUAGES]: [1] /* disable default language deletion */,
+	[NODE_ID.ENUMS]: [1] /* disable field type enum deletion */,
+	[NODE_ID.ENUM_VALUES]: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 30, 43] /* disable field type enum deletion */
 });
 
 function isRecordRestrictedForDeletion(nodeId, recordId) {
@@ -202,14 +201,13 @@ function handleError(error, url, callStack) {
 	/*
 	/// #endif
 
-
 	if(!_oneFormShowed) {
 		if(triesGotoHome < 5) {
 			triesGotoHome++;
 			goToHome();
 		}
 	} else
-	//*/
+	// */
 	{
 		if (error.message) {
 			error = error.message;
@@ -550,7 +548,7 @@ function onNewUser() {
 
 onNewUser();
 
-function waitForNodeInner(nodeId: NODE_ID, callback: (node: NodeDesc) =>void) {
+function waitForNodeInner(nodeId: NODE_ID, callback: (node: NodeDesc) => void) {
 	if (nodes.has(nodeId)) {
 		callback(nodes.get(nodeId));
 	} else {
@@ -560,7 +558,7 @@ function waitForNodeInner(nodeId: NODE_ID, callback: (node: NodeDesc) =>void) {
 	}
 }
 
-async function waitForNode(nodeId):Promise<NodeDesc> {
+async function waitForNode(nodeId): Promise<NodeDesc> {
 	if (nodes.has(nodeId)) {
 		return nodes.get(nodeId);
 	}
@@ -879,7 +877,7 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 
 				myAlert(L('CHECK_CONNECTION'), false, true);
 			})
-			//*/
+			// */
 			.finally(() => {
 				if (isOrderNeedDispose) {
 					releaseQuiresOrder(requestRecord);
@@ -903,11 +901,11 @@ const isAdmin = () => {
 	return isUserHaveRole(ROLE_ID.ADMIN);
 };
 
-async function publishRecord(nodeId:NODE_ID, recId:RecId): Promise<RecordSubmitResult> {
+async function publishRecord(nodeId: NODE_ID, recId: RecId): Promise<RecordSubmitResult> {
 	return submitRecord(nodeId, { status: STATUS.PUBLIC }, recId);
 }
 
-async function draftRecord(nodeId:NODE_ID, recId:RecId): Promise<RecordSubmitResult> {
+async function draftRecord(nodeId: NODE_ID, recId: RecId): Promise<RecordSubmitResult> {
 	return submitRecord(nodeId, { status: STATUS.DRAFT }, recId);
 }
 
@@ -987,7 +985,7 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 			myAlert(error.message);
 			consoleDir(error);
 		})
-		//*/
+		// */
 			.finally(() => {
 				requestsInProgress--;
 				LoadingIndicator.instance.hide();
@@ -1062,9 +1060,9 @@ function scrollToVisible(elem, doNotShake = false) {
 		const element = elem.base as HTMLDivElement;
 		if ((element as any).scrollIntoViewIfNeeded) {
 			(element as any).scrollIntoViewIfNeeded(false);
-		 } else {
+		} else {
 			element.scrollIntoView();
-			 }
+		}
 		if (!doNotShake) {
 			shakeDomElement(element);
 		}
@@ -1414,4 +1412,3 @@ export {
 	UID,
 	updateHashLocation
 };
-

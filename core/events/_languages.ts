@@ -12,7 +12,7 @@ serverOn(E._languages.afterCreate, async (data, _userSession) => {
 	shouldBeAdmin();
 	const fieldsData = await getRecords(NODE_ID.FIELDS, VIEW_MASK.EDITABLE, undefined, undefined, {
 		multilingual: 1,
-		p: '*',
+		p: '*'
 	});
 	const fields = fieldsData.items;
 	for (const f of fields) {

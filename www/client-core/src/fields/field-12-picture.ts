@@ -1,5 +1,3 @@
-
-
 import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
@@ -47,7 +45,7 @@ registerFieldClass(
 					parent: this,
 					form: this.props.form,
 					currentPicUrl: imgUrl,
-					isCompact: this.props.isCompact,
+					isCompact: this.props.isCompact
 				});
 			} else if (this.props.isCompact) {
 				return R.img({ src: imgUrl + IMAGE_THUMBNAIL_PREFIX, className: 'field-readonly-image' });
@@ -59,7 +57,7 @@ registerFieldClass(
 );
 
 class CropperFieldBody extends Component<FieldProps & {
-	currentPicUrl?:string;
+	currentPicUrl?: string;
 }, FieldState & {
 	cleared?: boolean;
 	waiting?: boolean;
@@ -75,7 +73,7 @@ class CropperFieldBody extends Component<FieldProps & {
 		super(props);
 		this.state = {
 			src: '',
-			cropResult: null,
+			cropResult: null
 		};
 		this.references = {};
 		this._onChange = this._onChange.bind(this);
@@ -87,19 +85,19 @@ class CropperFieldBody extends Component<FieldProps & {
 
 	_cancel() {
 		this.setState({
-			src: null,
+			src: null
 		});
 		this.references.fileInput.value = '';
 		Modal.instance.hide();
 		this.props.parent.props.wrapper.hideTooltip();
 	}
 
-	_cropImage(exactlySize:boolean | MouseEvent, imgData?: string) {
+	_cropImage(exactlySize: boolean | MouseEvent, imgData?: string) {
 		if (exactlySize === true) {
-			//no cropper need
+			// no cropper need
 			this.setState({
 				cropResult: imgData,
-				src: null,
+				src: null
 			});
 		} else {
 
@@ -116,7 +114,7 @@ class CropperFieldBody extends Component<FieldProps & {
 			this.setState({
 				cleared: false,
 				cropResult: this.cropper.cropper.getCroppedCanvas().toDataURL(),
-				src: null,
+				src: null
 			});
 			Modal.instance.hide();
 			this.props.parent.props.wrapper.hideTooltip();
@@ -128,7 +126,7 @@ class CropperFieldBody extends Component<FieldProps & {
 		this.setState({
 			cleared: true,
 			cropResult: null,
-			src: '',
+			src: ''
 		});
 		this.waitingForUpload = false;
 		this.props.parent.setValue('');
@@ -289,7 +287,7 @@ class CropperFieldBody extends Component<FieldProps & {
 					onClick: () => {
 						this.references.fileInput.value = null;
 						this.references.fileInput.click();
-					},
+					}
 				});
 
 				select = R.div(
@@ -300,7 +298,7 @@ class CropperFieldBody extends Component<FieldProps & {
 							onClick: () => {
 								this.references.fileInput.value = null;
 								this.references.fileInput.click();
-							},
+							}
 						},
 						renderIcon('folder-open'),
 						L('SELECT_IMG')
@@ -316,7 +314,7 @@ class CropperFieldBody extends Component<FieldProps & {
 					this.references.form = r;
 				},
 				encType: 'multipart/form-data',
-				className: 'hidden',
+				className: 'hidden'
 			},
 			R.input({
 				name: 'file',
@@ -325,7 +323,7 @@ class CropperFieldBody extends Component<FieldProps & {
 				},
 				type: 'file',
 				accept: '.jpg, .jpeg, .png, .gif',
-				onInput: this._onChange,
+				onInput: this._onChange
 			}),
 			R.input({ name: 'MAX_FILE_SIZE', defaultValue: 3000000 }),
 			R.input({ name: 'fid', defaultValue: field.id }),
@@ -334,25 +332,25 @@ class CropperFieldBody extends Component<FieldProps & {
 				name: 'w',
 				ref: (r) => {
 					this.references.w = r;
-				},
+				}
 			}),
 			R.input({
 				name: 'h',
 				ref: (r) => {
 					this.references.h = r;
-				},
+				}
 			}),
 			R.input({
 				name: 'x',
 				ref: (r) => {
 					this.references.x = r;
-				},
+				}
 			}),
 			R.input({
 				name: 'y',
 				ref: (r) => {
 					this.references.y = r;
-				},
+				}
 			})
 		);
 

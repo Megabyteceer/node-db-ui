@@ -1,11 +1,9 @@
-
-
 import moment from 'moment';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { EMPTY_DATE } from '../consts';
 import { R } from '../r';
 import { innerDateTimeFormat, registerFieldClass, renderIcon, toReadableDate } from '../utils';
-import { dateFieldMixins /*, ReactDateTimeClassHolder*/ } from './field-4-date-time';
+import { dateFieldMixins /* , ReactDateTimeClassHolder */ } from './field-4-date-time';
 
 registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 
@@ -29,14 +27,14 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 
 	render() {
 
-		//const field = this.props.field;
+		// const field = this.props.field;
 		const value = toReadableDate(this.state.value);
 		if (this.props.isEdit) {
-			/*if (!ReactDateTimeClassHolder.ReactDateTimeClass) {
-				ReactDateTimeClassHolder.importReactDateTime();*/
+			/* if (!ReactDateTimeClassHolder.ReactDateTimeClass) {
+				ReactDateTimeClassHolder.importReactDateTime(); */
 			debugger; // TODO
 			return renderIcon('cog fa-spin');
-			/*}
+			/* }
 			const inputsProps = {
 				closeOnSelect: true,
 				defaultValue: value,
@@ -59,7 +57,7 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 				title: (this.props.isCompact ? field.name : '')
 			},
 			h(ReactDateTimeClassHolder.ReactDateTimeClass, inputsProps)
-			);*/
+			); */
 
 		} else {
 			return R.span(null, value);

@@ -1,11 +1,40 @@
 
 import eslint from '@eslint/js';
+import stylistic from '@stylistic/eslint-plugin';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
+  stylistic.configs.recommended,
   eslint.configs.recommended,
   tseslint.configs.recommended, {
   rules: {
+    "@stylistic/member-delimiter-style": ["warn", {
+      "multiline": {
+        "delimiter": "semi",
+        "requireLast": true
+      },
+      "singleline": {
+        "delimiter": "semi",
+        "requireLast": false
+      },
+      "multilineDetection": "brackets"
+    }],
+    "@stylistic/key-spacing": ["warn"],
+    "@stylistic/object-curly-spacing": ["warn"],
+    "@stylistic/object-curly-spacing": ["warn"],
+    "@stylistic/no-multiple-empty-lines": ["warn"],
+    "@stylistic/spaced-comment": ["warn"],
+    "@stylistic/brace-style": ["warn", "1tbs"],
+    "@stylistic/comma-dangle": ["warn", "never"],
+    "@stylistic/operator-linebreak": ["off"],
+    "@stylistic/multiline-ternary": ["off"],
+    "@stylistic/eol-last": ["off"],
+    "@stylistic/padded-blocks": ["off"],
+    "@stylistic/semi": ["warn", "always"],
+    "@stylistic/indent": ["warn", "tab", {"SwitchCase": 0}],
+    "@stylistic/indent-binary-ops": ["warn", "tab"],
+    "@stylistic/no-tabs": "off",
+    '@stylistic/type-annotation-spacing': ['warn', {"before": true, "after": true, "overrides": {"colon": {"before": false, "after": true}}}],
     "@typescript-eslint/no-empty-object-type": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/ban-ts-comment": 0,
@@ -16,14 +45,12 @@ export default tseslint.config(
     "no-control-regex": "off",
     "no-multi-spaces": "warn",
     "no-multiple-empty-lines": "warn",
-    "key-spacing": "warn",
     "block-spacing": "warn",
     "space-before-blocks": "warn",
     "keyword-spacing": "warn",
     "space-infix-ops": "warn",
     "space-in-parens": "warn",
     "comma-spacing": "warn",
-    "@/key-spacing": "warn",
     "eol-last": "off",
     "no-trailing-spaces": "warn",
     "prefer-const": 0,

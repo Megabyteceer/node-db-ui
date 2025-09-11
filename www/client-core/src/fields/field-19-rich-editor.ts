@@ -21,6 +21,7 @@ registerFieldClass(
 			super(props);
 			this.iframeId = idCounter++;
 		}
+
 		resolveValueAwaiting: () => void;
 		viewportRef: HTMLIFrameElement;
 		iframeId: number;
@@ -38,7 +39,7 @@ registerFieldClass(
 				const options = {
 					width: w,
 					height: h,
-					lang: User.currentUserData.lang.code,
+					lang: User.currentUserData.lang.code
 				};
 
 				listeners[this.iframeId] = (data) => {
@@ -87,7 +88,7 @@ registerFieldClass(
 					const s = this.getSummerNote();
 					s.postMessage({ value: val }, '*');
 				}
-				this.setState({value: val});
+				this.setState({ value: val });
 			}
 		}
 
@@ -122,7 +123,7 @@ registerFieldClass(
 						allowFullScreen: true,
 						sandbox: 'allow-scripts allow-forms allow-same-origin',
 						style,
-						src: './src/rich-editor/index.html?iframeId=' + this.iframeId,
+						src: './src/rich-editor/index.html?iframeId=' + this.iframeId
 					})
 				);
 			} else {

@@ -1,4 +1,3 @@
-
 import { Component, h } from 'preact';
 import type { TreeItem } from '../../../../core/describe-node';
 import { NODE_ID, NODE_TYPE, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../../../../types/generated';
@@ -17,19 +16,18 @@ let showedNodeId;
 /*
 /// #endif
 throw new Error("admin-control imported in release build.");
-//*/
+// */
 
 interface NodeAdminProps {
-	form:BaseForm;
+	form: BaseForm;
 	menuItem?: TreeItem;
 }
 
 interface NodeAdminState {
-		show?:boolean;
-		allFieldsVisible?:boolean;
-		locked?:boolean;
+	show?: boolean;
+	allFieldsVisible?: boolean;
+	locked?: boolean;
 }
-
 
 class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 	private timeout: NodeJS.Timeout;
@@ -40,11 +38,11 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 
 		if (this.props.form) {
 			this.state = {
-				show: this.props.form.props.node && showedNodeId === this.props.form.props.node.id,
+				show: this.props.form.props.node && showedNodeId === this.props.form.props.node.id
 			};
 		} else {
 			this.state = {
-				show: showedNodeId === this.props.menuItem.id,
+				show: showedNodeId === this.props.menuItem.id
 			};
 		}
 		this.timeout = null;
@@ -75,7 +73,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 		}
 		if (!this.state.show) {
 			this.setState({
-				show: true,
+				show: true
 			});
 		}
 	}
@@ -83,20 +81,20 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 	hide() {
 		if (this.state.show) {
 			this.setState({
-				show: false,
+				show: false
 			});
 		}
 	}
 
 	toggleAllFields() {
 		this.setState({
-			allFieldsVisible: !this.state.allFieldsVisible,
+			allFieldsVisible: !this.state.allFieldsVisible
 		});
 	}
 
 	toggleLock() {
 		this.setState({
-			locked: !this.state.locked,
+			locked: !this.state.locked
 		});
 	}
 
@@ -113,7 +111,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 			}
 		} else {
 			node = {} as any;
-			item = this.props.menuItem; //left-bar-item
+			item = this.props.menuItem; // left-bar-item
 		}
 
 		const nodeId = node && (node.id || item.id);
@@ -168,18 +166,18 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 						allFields.push(
 							R.span({
 								key: f.id + 'a',
-								className: 'admin-form-header',
+								className: 'admin-form-header'
 							})
 						);
 						allFields.push(
 							R.div(
 								{
 									key: f.id,
-									className: 'admin-form-all-fields',
+									className: 'admin-form-all-fields'
 								},
 								R.div(
 									{
-										className: 'admin-form-all-fields-name',
+										className: 'admin-form-all-fields-name'
 									},
 									f.fieldName + '; (' + f.id + ')'
 								),
@@ -194,7 +192,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 									field: f,
 									form: form,
 									x: 370,
-									zIndex: 10,
+									zIndex: 10
 								})
 							)
 						);
@@ -209,7 +207,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 							onClick: () => {
 								this.toggleAllFields();
 							},
-							title: 'Show full list of fields document contains.',
+							title: 'Show full list of fields document contains.'
 						},
 						'all fields ',
 						renderIcon('caret-down')
@@ -220,7 +218,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 							onClick: () => {
 								admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD, node, undefined);
 							},
-							title: 'Edit client side script which execute on form open.',
+							title: 'Edit client side script which execute on form open.'
 						},
 						'onLoad...'
 					),
@@ -230,7 +228,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 							onClick: () => {
 								admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE, node, undefined);
 							},
-							title: 'Edit client side script which execute before form save.',
+							title: 'Edit client side script which execute before form save.'
 						},
 						'onSave...'
 					),
@@ -245,7 +243,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 									'saveResult: RecordSubmitResult'
 								);
 							},
-							title: 'Edit client side script which execute after form save.',
+							title: 'Edit client side script which execute after form save.'
 						},
 						'onAfterSave...'
 					),
@@ -260,14 +258,14 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 									{
 										nodeFieldsLinker: {
 											id: node.id,
-											name: node.singleName,
-										},
+											name: node.singleName
+										}
 									} as IFieldsRecord,
 									true,
 									true,
 									reloadLocation
 								);
-							},
+							}
 						},
 						renderIcon('plus')
 					),
@@ -280,7 +278,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 									form.showAllDebug = !form.showAllDebug;
 									form.forceUpdate();
 								}
-							},
+							}
 						},
 						renderIcon('eye')
 					)
@@ -294,7 +292,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 							title: L('ADD_NODE'),
 							onClick: () => {
 								createNodeForMenuItem(item);
-							},
+							}
 						},
 						renderIcon('plus')
 					),
@@ -303,16 +301,16 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
 								getRecordsClient(NODE_ID.NODES, undefined, {
-									_nodesID: item.parent,
+									_nodesID: item.parent
 								} as INodesFilter).then((data) => {
 									(data.items as INodesRecord[]).sort((a, b) => {
 										return a.prior - b.prior;
 									});
-									const index = data.items.findIndex((i) => i.id === item.id);
+									const index = data.items.findIndex(i => i.id === item.id);
 									admin.exchangeNodes(data.items[index], data.items[index + 1]);
 								});
 							},
-							title: 'Move node down',
+							title: 'Move node down'
 						},
 						renderIcon('arrow-down')
 					),
@@ -321,16 +319,16 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
 								getRecordsClient(NODE_ID.NODES, undefined, {
-									_nodesID: item.parent,
+									_nodesID: item.parent
 								} as INodesFilter).then((data) => {
 									(data.items as INodesRecord[]).sort((a, b) => {
 										return a.prior - b.prior;
 									});
-									const index = data.items.findIndex((i) => i.id === item.id);
+									const index = data.items.findIndex(i => i.id === item.id);
 									admin.exchangeNodes(data.items[index], data.items[index - 1]);
 								});
 							},
-							title: 'Move node up',
+							title: 'Move node up'
 						},
 						renderIcon('arrow-up')
 					)
@@ -348,14 +346,14 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 					},
 					onMouseLeave: () => {
 						this.hide();
-					},
+					}
 				},
 				L('NODE_SETTINGS'),
 				R.b({ className: 'admin-form-header' }, node.tableName),
 				R.span(null, '; (' + (node.matchName || item.name) + '); id: ' + nodeId),
 				R.div(
 					{
-						className: 'admin-form-content',
+						className: 'admin-form-content'
 					},
 					buttons,
 					R.button(
@@ -364,7 +362,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 							title: L('EDIT_NODE'),
 							onClick: () => {
 								globals.Stage.showForm(NODE_ID.NODES, nodeId, undefined, true, true, reloadLocation);
-							},
+							}
 						},
 						renderIcon('pencil')
 					),
@@ -381,14 +379,14 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 									true,
 									reloadLocation
 								);
-							},
+							}
 						},
 						renderIcon('user')
 					),
 					R.span(
 						{
 							className: 'clickable admin-form-lock-btn',
-							onClick: this.toggleLock,
+							onClick: this.toggleLock
 						},
 						renderIcon(this.state.locked ? 'lock' : 'unlock')
 					)
@@ -401,12 +399,12 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 			{
 				className:
 					'admin-control admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
-				onClick: sp,
+				onClick: sp
 			},
 			R.span(
 				{
 					className: 'half-visible admin-form-open-btn clickable' + (borderOnLoad || borderOnSave),
-					onClick: this.show,
+					onClick: this.show
 				},
 				renderIcon('wrench')
 			),
@@ -425,8 +423,8 @@ function createNodeForMenuItem(item) {
 				prior: 100000,
 				_nodesId: {
 					id: data.id,
-					name: data.name,
-				},
+					name: data.name
+				}
 			} as INodesRecord,
 			true,
 			true,
@@ -436,4 +434,3 @@ function createNodeForMenuItem(item) {
 }
 
 export { createNodeForMenuItem, NodeAdmin };
-

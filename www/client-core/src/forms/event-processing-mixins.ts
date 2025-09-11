@@ -16,7 +16,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 	saveButtonTitle: string;
 	isCancelButtonHidden: boolean;
 
-	currentData: {[key in (FieldsNames | RecordDataBaseFields)]: any};
+	currentData: { [key in (FieldsNames | RecordDataBaseFields)]: any };
 
 	/** show all fields for debug purposes (hidden and field of another tabs) */
 	showAllDebug: boolean;
@@ -74,7 +74,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 				const f = nodeFields[k];
 				if (this.isFieldVisibleByFormViewMask(f)) {
 					if (f.fieldType === FIELD_TYPE.TAB && f.maxLength === 0) {
-						//tab
+						// tab
 						if (tabNameToShow === f.fieldName || !tabNameToShow) {
 							field = f;
 							break;
@@ -94,7 +94,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		return this.fieldsRefs.hasOwnProperty(fieldName);
 	}
 
-	getField(fieldName:FieldsNames): FieldWrap {
+	getField(fieldName: FieldsNames): FieldWrap {
 		validateFieldName(fieldName);
 		if (this.hasField(fieldName)) {
 			return this.fieldsRefs[fieldName];
@@ -188,7 +188,6 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		this.getField(fieldName).setLookupFilter(filtersObjOrName, val);
 	}
 
-
 	async setFieldValue(fieldName: FieldsNames, val: any, isUserAction = false) {
 		const f = this.getField(fieldName);
 		if (!f) {
@@ -219,7 +218,6 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		validateFieldName(fieldName);
 		return this.currentData[fieldName as string];
 	};
-
 
 	focusField(fieldName: FieldsNames) {
 		this.getField(fieldName).focus();
@@ -271,7 +269,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		render(reactContent, container);
 	}
 
-	saveClick(_isDraft?:boolean): Promise<boolean> {
+	saveClick(_isDraft?: boolean): Promise<boolean> {
 		throw new Error('should be implemented in child class');
 	}
 
@@ -291,7 +289,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 					fieldId: field.id,
 					nodeId: field.node.id,
 					recId: this.recId !== 'new' && this.recId,
-					val,
+					val
 				},
 				undefined,
 				true
@@ -323,7 +321,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		/// #endif
 
 		for (const fieldName in this.fieldsRefs) {
-			this.fieldAlert(fieldName as FieldsNames); //hide all alerts
+			this.fieldAlert(fieldName as FieldsNames); // hide all alerts
 		}
 
 		this.invalidAlertInOnSaveHandler = false;

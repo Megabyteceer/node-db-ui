@@ -1,15 +1,12 @@
-
-
 import { Component } from 'preact';
 import { R } from './r';
 import { isLitePage, renderIcon } from './utils';
 
-
 class LoadingIndicator extends Component<{
-	//props
+	// props
 },
 {
-	//state
+	// state
 	showCount: number;
 }> {
 	static instance: LoadingIndicator;
@@ -47,4 +44,3 @@ class LoadingIndicator extends Component<{
 LoadingIndicator.instance = null;
 
 export { LoadingIndicator };
-

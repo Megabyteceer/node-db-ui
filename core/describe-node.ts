@@ -2,7 +2,7 @@
 /*
 /// #endif
 import handlers from '../___index';
-//*/
+// */
 
 import { writeFileSync } from 'fs';
 
@@ -13,8 +13,8 @@ import { assert, throwError } from '../www/client-core/src/assert';
 import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, UserLangEntry } from '../www/client-core/src/bs-utils';
 import { FIELD_DATA_TYPE, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { BaseForm } from '../www/client-core/src/forms/base-form';
-import type { UserSession /*, usersSessionsStartedCount*/ } from './auth';
-import { authorizeUserByID, isUserHaveRole, setMaintenanceMode /*, usersSessionsStartedCount*/ } from './auth';
+import type { UserSession /* , usersSessionsStartedCount */ } from './auth';
+import { authorizeUserByID, isUserHaveRole, setMaintenanceMode /* , usersSessionsStartedCount */ } from './auth';
 import { ENV, type ENV_TYPE } from './ENV';
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
@@ -26,16 +26,16 @@ interface FilterRecord extends IFiltersRecord {
 }
 
 export interface TreeItem {
-	children: TreeItem[],
-	icon: string,
-	id: NODE_ID,
-	name: string,
-	nodeType: NODE_TYPE,
-	parent: NODE_ID,
-	privileges: number,
-	field?: FieldDesc,
-	form?: BaseForm,
-	staticLink: string
+	children: TreeItem[];
+	icon: string;
+	id: NODE_ID;
+	name: string;
+	nodeType: NODE_TYPE;
+	parent: NODE_ID;
+	privileges: number;
+	field?: FieldDesc;
+	form?: BaseForm;
+	staticLink: string;
 }
 
 let fieldsById: Map<number, FieldDesc>;
@@ -49,7 +49,7 @@ const ADMIN_USER_SESSION: UserSession = {} as UserSession;
 const GUEST_USER_SESSION: UserSession = {} as UserSession;
 
 export interface ITreeAndOptions {
-	nodesTree:TreeItem[];
+	nodesTree: TreeItem[];
 	options: typeof options;
 }
 
@@ -59,22 +59,29 @@ const nodesTreeCache = new Map() as Map<string, ITreeAndOptions>;
 const filtersById = new Map() as Map<RecId, FilterRecord>;
 
 function getFieldDesc(fieldId: number): FieldDesc {
+
 	assert(fieldsById.has(fieldId), 'Unknown field id ' + fieldId);
 	return fieldsById.get(fieldId);
+
 }
 
 function getEnumDesc(enumId: RecId) {
+
 	return enumsById.get(enumId);
+
 }
 
 function getNodeDesc(nodeId: NODE_ID, userSession = ADMIN_USER_SESSION): NodeDesc {
+
 	assert(!isNaN(nodeId), 'nodeId expected');
 	const userNodesCacheKey = nodeId + 'n_' + userSession.cacheKey;
 	if (!clientSideNodes.has(userNodesCacheKey)) {
+
 		const srcNode = nodesById.get(nodeId);
 		let privileges;
 
 		if (srcNode && (privileges = getUserAccessToNode(srcNode, userSession))) {
+
 			const landQ = userSession.lang.prefix;
 
 			const ret: NodeDesc = {
@@ -87,14 +94,19 @@ function getNodeDesc(nodeId: NODE_ID, userSession = ADMIN_USER_SESSION): NodeDes
 			} as any;
 
 			if (srcNode.cssClass) {
+
 				ret.cssClass = srcNode.cssClass;
+
 			}
 
 			if (srcNode.nodeType === NODE_TYPE.REACT_CLASS) {
+
 				ret.tableName = srcNode.tableName;
+
 			} else if (srcNode.nodeType === NODE_TYPE.DOCUMENT) {
+
 				ret.reverse = srcNode.reverse;
-				ret.creationName = srcNode['creationName' + landQ];
+				ret.creationName = (srcNode as unknown as KeyedMap<string>)['creationName' + landQ];
 				ret.storeForms = srcNode.storeForms;
 				ret.staticLink = srcNode.staticLink;
 				ret.tableName = srcNode.tableName;
@@ -104,30 +116,39 @@ function getNodeDesc(nodeId: NODE_ID, userSession = ADMIN_USER_SESSION): NodeDes
 				ret.defaultFilterId = srcNode.defaultFilterId;
 
 				for (const id in srcNode.filters) {
+
 					const filter = filtersById.get(parseInt(id));
 					if (filter.roles && !isUserHaveRole(ROLE_ID.ADMIN, userSession)) {
+
 						// TODO roles
-						if (!filter.roles.find((roleId) => isUserHaveRole(roleId, userSession))) {
+						if (!filter.roles.find(roleId => isUserHaveRole(roleId, userSession))) {
+
 							continue;
+
 						}
+
 					}
 					if (!ret.filters) {
+
 						ret.filters = {};
+
 					}
 					ret.filters[id] = {
 						order: filter.order,
-						name: filter['name' + userSession.lang.prefix]
+						name: (filter as unknown as KeyedMap<string>)['name' + userSession.lang.prefix]
 					};
+
 				}
 
 				ret.sortFieldName = srcNode.sortFieldName;
 
 				const fields = [];
 				for (const srcField of srcNode.fields) {
+
 					const field: FieldDesc = {
 						id: srcField.id,
-						name: srcField['name' + landQ] || srcField.name,
-						description: srcField['description' + landQ] || srcField.description,
+						name: (srcField as unknown as KeyedMap<string>)['name' + landQ] || srcField.name,
+						description: (srcField as unknown as KeyedMap<string>)['description' + landQ] || srcField.description,
 						show: srcField.show,
 						dataType: srcField.dataType,
 						prior: srcField.prior,
@@ -151,21 +172,30 @@ function getNodeDesc(nodeId: NODE_ID, userSession = ADMIN_USER_SESSION): NodeDes
 					};
 
 					if (srcField.cssClass) {
+
 						field.cssClass = srcField.cssClass;
+
 					}
 
 					fields.push(field);
 					if (srcField.multilingual && userSession.multilingualEnabled) {
+
 						const fieldName = field.fieldName;
 						const fieldId = field.id;
 						const langs = getLangs();
 						for (const l of langs) {
+
 							if (l.prefix) {
+
 								if (nodeId === NODE_ID.NODES || nodeId === NODE_ID.FIELDS || nodeId === NODE_ID.FILTERS) {
+
 									// for nodes, fields, and filters, add only languages which used in system UI
 									if (!l.isUILanguage) {
+
 										continue;
+
 									}
+
 								}
 								const langFiled = Object.assign({}, field);
 								langFiled.show = field.show & (VIEW_MASK.ALL - VIEW_MASK.LIST - VIEW_MASK.DROPDOWN_LIST);
@@ -173,46 +203,65 @@ function getNodeDesc(nodeId: NODE_ID, userSession = ADMIN_USER_SESSION): NodeDes
 								langFiled.id = (fieldId + l.prefix) as unknown as number;
 								langFiled.lang = l.name;
 								fields.push(langFiled);
+
 							}
+
 						}
+
 					}
+
 				}
 				ret.fields = fields;
+
 			}
 			clientSideNodes.set(userNodesCacheKey, ret);
+
 		} else {
+
 			throwError('<access> Access to node ' + nodeId + ' is denied');
+
 		}
+
 	}
 	return clientSideNodes.get(userNodesCacheKey);
+
 }
 
 function getUserAccessToNode(node: NodeDesc, userSession: UserSession): number {
+
 	let ret = 0;
 	for (const role of node.rolesToAccess) {
+
 		if (isUserHaveRole(role.roleId, userSession)) {
+
 			ret |= role.privileges;
+
 		}
+
 	}
 	return ret;
+
 }
 
 let options: ENV_TYPE | {
 	langs?: UserLangEntry[];
 };
 
-function getNodesTree(userSession) {
+function getNodesTree(userSession: UserSession) {
+
 	// get nodes tree visible to user
 	const langId = userSession.lang.prefix;
 	const cacheKey = userSession.cacheKey;
 
 	if (!nodesTreeCache.has(cacheKey)) {
+
 		const nodesTree = [] as TreeItem[];
 		const ret = {
 			nodesTree,
 			options
 		} as ITreeAndOptions;
 		for (const nodeSrc of nodes) {
+
 			/// #if DEBUG
 			/*
 			/// #endif
@@ -226,47 +275,63 @@ function getNodesTree(userSession) {
 			if(ADMIN_NODES[nodeSrc.id]) {
 				continue;
 			}
-			//*/
+			// */
 
 			const privileges = getUserAccessToNode(nodeSrc, userSession);
 			if (privileges) {
+
 				nodesTree.push({
 					icon: nodeSrc.icon,
 					id: nodeSrc.id,
-					name: nodeSrc['name' + langId],
+					name: (nodeSrc as unknown as KeyedMap<string>)['name' + langId],
 					nodeType: nodeSrc.nodeType,
 					parent: nodeSrc._nodesId as any, // SQL returns Lookup fields as number
 					privileges,
 					staticLink: nodeSrc.staticLink
 				} as TreeItem);
+
 			}
+
 		}
 		nodesTreeCache.set(cacheKey, ret);
+
 	}
 	return nodesTreeCache.get(cacheKey);
+
 }
 
-let metadataReloadingInterval;
+let metadataReloadingInterval = 0;
 function reloadMetadataSchedule() {
+
 	if (!metadataReloadingInterval) {
+
 		setMaintenanceMode(true);
-		metadataReloadingInterval = setInterval(attemptToReloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl);
+		metadataReloadingInterval = window.setInterval(attemptToReloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl);
+
 	}
+
 }
 
 function attemptToReloadMetadataSchedule() {
-	//if(usersSessionsStartedCount() === 0) { //TODO: disabled because of freezes
+
+	// if(usersSessionsStartedCount() === 0) { //TODO: disabled because of freezes
 	if (metadataReloadingInterval) {
+
 		clearInterval(metadataReloadingInterval);
 		metadataReloadingInterval = null;
+
 	}
 	initNodesData().then(() => {
+
 		setMaintenanceMode(false);
+
 	});
 	//	}
+
 }
 
 async function initNodesData() {
+
 	// load whole nodes data in to memory
 
 	options = Object.assign({}, ENV) as any;
@@ -282,46 +347,58 @@ async function initNodesData() {
 
 	langs = (await mysqlExec('SELECT "id", "name", "code", "isUILanguage" FROM "_languages"')) as UserLangEntry[];
 	for (const l of langs) {
+
 		l.prefix = l.code ? '$' + l.code : '';
 		ALL_LANGUAGES_BY_CODES.set(l.code || ENV.DEFAULT_LANG_CODE, l);
-		if (!DEFAULT_LANGUAGE || l.code === ENV.DEFAULT_LANG_CODE) {
-			DEFAULT_LANGUAGE = l;
+		if (!DEFAULT_LANGUAGE.lang || l.code === ENV.DEFAULT_LANG_CODE) {
+
+			DEFAULT_LANGUAGE.lang = l;
+
 		}
+
 	}
 
 	const enums = await mysqlExec('SELECT name, id FROM _enums');
 	for (const en of enums) {
+
 		const name = en.name;
 		const enumId = en.id;
 		const items = (await mysqlExec(
-			'SELECT value,' +
-				langs
-					.map((l) => {
-						return 'name' + l.prefix;
-					})
-					.join() +
-				' FROM "_enumValues" WHERE status = 1 AND "valuesLinker"=' +
-				D(enumId) +
-				' ORDER BY "_enumValues".order'
+			'SELECT value,'
+			+ langs
+				.map((l) => {
+
+					return 'name' + l.prefix;
+
+				})
+				.join()
+				+ ' FROM "_enumValues" WHERE status = 1 AND "valuesLinker"='
+				+ D(enumId)
+				+ ' ORDER BY "_enumValues".order'
 		)) as any as EnumListItem[];
 		const namesByValue = {} as { [key: number]: string };
 		for (const item of items) {
+
 			namesByValue[item.value] = item.name;
+
 		}
 		enumsById.set(enumId, {
 			name,
 			items,
 			namesByValue
 		});
-	}
 
+	}
 
 	const query = 'SELECT * FROM _nodes WHERE status = ' + NUM_1 + ' ORDER BY prior';
 	nodes = (await mysqlExec(query)) as any;
 	for (const nodeData of nodes) {
+
 		nodesById.set(nodeData.id, nodeData);
 		if (nodeData.tableName) {
+
 			nodesByTableName.set(nodeData.tableName, nodeData);
+
 		}
 		nodeData.sortFieldName = '_createdOn';
 
@@ -336,12 +413,16 @@ async function initNodesData() {
 		const sortField = nodeData._fieldsId;
 
 		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
+
 			const query = 'SELECT * FROM _fields WHERE "nodeFieldsLinker"=' + D(nodeData.id) + ' AND status = ' + NUM_1 + ' ORDER BY prior';
 			const fields = (await mysqlExec(query)) as any;
 
 			for (const field of fields as FieldDesc[]) {
+
 				if (field.id === sortField.id) {
+
 					nodeData.sortFieldName = field.fieldName;
+
 				}
 
 				switch (field.fieldType) {
@@ -368,43 +449,55 @@ async function initNodesData() {
 				default:
 					field.dataType = FIELD_DATA_TYPE.NUMBER;
 					break;
+
 				}
 
-				field.nodeRef = {id: field.nodeRef as any};
-				field.nodeFieldsLinker = {id: field.nodeFieldsLinker as any};
+				field.nodeRef = { id: field.nodeRef as any };
+				field.nodeFieldsLinker = { id: field.nodeFieldsLinker as any };
 
 				if (field.fieldType === FIELD_TYPE.ENUM && field.show) {
-					field.enum = {id: field.enum as any};
+
+					field.enum = { id: field.enum as any };
 					const enums = getEnumDesc(field.enum.id);
 					field.enumList = enums;
+
 				}
 				if (field.fieldType === FIELD_TYPE.STATIC_HTML_BLOCK) {
+
 					field.htmlContent = field.description;
 					delete field.description;
+
 				}
 				fieldsById.set(field.id, field);
+
 			}
 			nodeData.fields = fields;
 			const filtersRes = await mysqlExec('SELECT * FROM _filters WHERE status = ' + NUM_1 + ' AND "nodeFiltersLinker"=' + D(nodeData.id) + ' ORDER BY _filters.order') as FilterRecord[];
 
-			const filters = {};
+			const filters = {} as KeyedMap<FilterRecord>;
 			for (const f of filtersRes) {
+
 				const filterRoles = await mysqlExec('SELECT "_rolesId" FROM "_filterAccessRoles" WHERE "_filtersId"=' + D(f.id));
 				if (filterRoles.length > 0) {
-					f.roles = filterRoles.map((i) => i._rolesId);
+
+					f.roles = filterRoles.map(i => i._rolesId);
+
 				}
-				f.nodeFiltersLinker = {id: f.nodeFiltersLinker as any};
+				f.nodeFiltersLinker = { id: f.nodeFiltersLinker as any };
 				filtersById.set(f.id, f);
-				filters[f.id] = f;
+				(filters)[f.id] = f;
+
 			}
 			nodeData.filters = filters;
 
-
 		}
+
 	}
 
 	if (langs.length > 1) {
+
 		options.langs = langs;
+
 	}
 
 	clientSideNodes.clear();
@@ -427,139 +520,180 @@ async function initNodesData() {
 	generateTypings();
 	await authorizeUserByID(3, undefined, 'dev-user-session-token');
 	/// #endif
+
 }
 
 const GUEST_USER_SESSIONS = new Map();
 
-let DEFAULT_LANGUAGE;
+let DEFAULT_LANGUAGE = { lang: null as UserLangEntry };
 const ALL_LANGUAGES_BY_CODES: Map<string, UserLangEntry> = new Map();
 
 function getGuestUserForBrowserLanguage(browserLanguage: string) {
+
 	if (browserLanguage) {
+
 		browserLanguage = browserLanguage.substr(0, 2);
+
 	} else {
+
 		browserLanguage = ENV.DEFAULT_LANG_CODE;
+
 	}
 
 	const languageCode = ALL_LANGUAGES_BY_CODES.has(browserLanguage) ? browserLanguage : ENV.DEFAULT_LANG_CODE;
 
 	if (!GUEST_USER_SESSIONS.has(languageCode)) {
+
 		const session: UserSession = Object.assign({}, GUEST_USER_SESSION);
 		session.lang = ALL_LANGUAGES_BY_CODES.get(languageCode);
 		GUEST_USER_SESSIONS.set(languageCode, session);
+
 	}
 	return GUEST_USER_SESSIONS.get(languageCode);
+
 }
 
 function getLangs(): UserLangEntry[] {
+
 	return langs;
+
 }
 
 /// #if DEBUG
 type EventType = number;
 
-type EventMap = { [Key: string]: EventMap | EventType }
+type EventMap = { [Key: string]: EventMap | EventType };
 
 let eventsEnum: EventMap = {};
 let eventCounter = 0;
 
 const eventName = (event: string): EventType => {
+
 	eventCounter++;
 	const path = event.split('.');
 	let node = eventsEnum;
 	while (path.length > 1) {
+
 		const nodeName = path.shift();
 		if (!node[nodeName]) {
+
 			node[nodeName] = {};
+
 		}
 		node = node[nodeName] as EventMap;
+
 	}
 	node[path[0]] = eventCounter;
 	return eventCounter;
+
 };
 
 const generateTypings = async () => {
+
 	const srcAdd = [''];
-	const src = [`
-import type { Moment } from 'moment';
+	const src = [`import type { Moment } from 'moment';
 import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
 `] as string[];
 
 	for (const node of nodes) {
+
 		if (node.nodeType === NODE_TYPE.DOCUMENT) {
+
 			const searchFields = [] as string[];
 
 			src.push('type ' + snakeToCamel(node.tableName) + 'Base = {');
 			for (const field of node.fields) {
+
 				let type = getFieldTypeSrc(field);
 				const jsDoc = '\t/** **' + (getEnumDesc(FIELD_TYPE_ENUM_ID)).namesByValue[field.fieldType] + '** ' + (field.description || '') + ' */';
 				src.push(jsDoc);
 				src.push('	' + field.fieldName + (field.requirement ? '' : '?') + ': ' + type + ';');
 				if (field.forSearch) {
+
 					searchFields.push(jsDoc, '\t' + field.fieldName + ': ' + (field.fieldType === FIELD_TYPE.LOOKUP ? 'number' : type) + ';');
+
 				}
+
 			}
-			src.push('}', '');
+			src.push('};', '');
 
 			if (searchFields.length) {
+
 				src.push('export type I' + snakeToCamel(node.tableName) + 'Filter = GetRecordsFilter & Partial<{');
 				src.push(...searchFields);
-				src.push('}>', '');
+				src.push('}>;', '');
+
 			} else {
+
 				src.push('export type I' + snakeToCamel(node.tableName) + 'Filter = GetRecordsFilter;\n');
+
 			}
+
 		}
+
 	}
 
 	for (const node of nodes) {
+
 		if (node.nodeType === NODE_TYPE.DOCUMENT) {
+
 			const name = snakeToCamel(node.tableName);
 			src.push(`export type I${name}Record = ${name}Base & RecordData;`);
 			src.push(`export type I${name}RecordWrite = ${name}Base & RecordDataWrite;`);
+
 		}
+
 	}
 
 	enumsById.forEach((enumData) => {
 		src.push('export enum ' + normalizeName(enumData.name) + ' {');
-		for (const val of enumData.items) {
-			src.push('\t' + normalizeEnumName(val.name).toUpperCase() + ' = ' + val.value + ',');
-		}
+		src.push(enumData.items.map(val =>
+			'\t' + normalizeEnumName(val.name).toUpperCase() + ' = ' + val.value
+		).join(',\n'));
 		src.push('}');
 	});
 
 	src.push('export const enum NODE_ID {');
 	const nodesData = Array.from(nodesById.values());
 	nodesData.sort((a, b) => a.id - b.id);
-	nodesData.forEach((nodeData) => {
-		src.push('\t' + normalizeEnumName(nodeData.tableName || nodeData.name) + ' = ' + nodeData.id + ',');
-	});
+	src.push(nodesData.map((nodeData) => {
+		return '\t' + normalizeEnumName(nodeData.tableName || nodeData.name) + ' = ' + nodeData.id;
+	}).join(',\n'));
+
 	src.push('}');
 
 	src.push('export const enum FIELD_ID {');
 	const fieldsData = Array.from(fieldsById.values());
 	fieldsData.sort((a, b) => a.id - b.id);
-	fieldsData.forEach((fieldData) => {
+	src.push(fieldsData.map((fieldData) => {
 		const node = nodesById.get(fieldData.nodeFieldsLinker.id);
 		const nodeName = normalizeEnumName(node.tableName || node.name);
-		src.push('\t' + nodeName + '__' + normalizeEnumName(fieldData.fieldName || fieldData.name) + ' = ' + fieldData.id + ',');
-	});
+		return '\t' + nodeName + '__' + normalizeEnumName(fieldData.fieldName || fieldData.name) + ' = ' + fieldData.id;
+	}).join(',\n'));
 	src.push('}');
 
 	src.push('export const enum FILTER_ID {');
 	const filtersData = Array.from(filtersById.values());
 	filtersData.sort((a, b) => a.id - b.id);
-	filtersData.forEach((filterData) => {
-		const node = nodesById.get(filterData.nodeFiltersLinker.id);
-		const nodeName = normalizeEnumName(node.tableName || node.name);
-		src.push('\t' + nodeName + '__' + normalizeEnumName(filterData.name) + ' = ' + filterData.id + ',');
-	});
+	src.push(
+		filtersData.map((filterData) => {
+			const node = nodesById.get(filterData.nodeFiltersLinker.id);
+			const nodeName = normalizeEnumName(node.tableName || node.name);
+			return '\t' + nodeName + '__' + normalizeEnumName(filterData.name) + ' = ' + filterData.id;
+		}).join(',\n')
+	);
+
 	src.push('}');
 
 	nodesData.forEach((nodeData) => {
+
 		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
+
 			const name = snakeToCamel(nodeData.tableName);
 			src.push(`export type T${name}FieldsList = keyof I${name}Record | ${nodeData.fields.map(f => '\'' + f.fieldName + '\'').join(' | ') || 'string'};`);
+
 		}
+
 	});
 
 	const HANDLER_RET = 'HandlerRet';
@@ -569,33 +703,39 @@ import type { RecId, UserSession, VIEW_MASK } from '../www/client-core/src/bs-ut
 import type { FormFull } from '../www/client-core/src/forms/form-full';
 export class TypeGenerationHelper {`);
 
-
 	nodesData.forEach((nodeData) => {
+
 		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
+
 			const name = snakeToCamel(nodeData.tableName);
 			if (nodeData.storeForms) {
-				src.push(`
-	async eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeCreate')}, handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-	async eventsServer(eventName: ${eventName(nodeData.tableName + '.afterCreate')}, handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-	async eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeUpdate')}, handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-	async eventsServer(eventName: ${eventName(nodeData.tableName + '.afterUpdate')}, handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-	async eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeDelete')}, handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET});
-	async eventsServer(eventName: ${eventName(nodeData.tableName + '.afterDelete')}, handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET});
-`);
+
+				src.push(`	eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeCreate')}, handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET}): void;
+	eventsServer(eventName: ${eventName(nodeData.tableName + '.afterCreate')}, handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET}): void;
+	eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeUpdate')}, handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET}): void;
+	eventsServer(eventName: ${eventName(nodeData.tableName + '.afterUpdate')}, handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET}): void;
+	eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeDelete')}, handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET}): void;
+	eventsServer(eventName: ${eventName(nodeData.tableName + '.afterDelete')}, handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET}): void;`);
+
 			} else {
-				src.push(`
-	async eventsServer(eventName: ${eventName(nodeData.tableName + '.onSubmit')}, handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-`);
+
+				src.push(`	eventsServer(eventName: ${eventName(nodeData.tableName + '.onSubmit')}, handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET}): void;`);
+
 			}
+
 		}
+
 	});
-	src.push(`	async eventsServer() {
+	src.push(`
+	eventsServer(): void {
 		return 1 as any;
-	}`);
+	}
+`);
 
 	const CLIENT_HANDLER_RET = 'Promise<boolean | void> | boolean | void';
 
 	nodesData.forEach((nodeData) => {
+
 		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
 
 			const nodeName = snakeToCamel(nodeData.tableName);
@@ -608,72 +748,102 @@ export class TypeGenerationHelper {`);
 
 			srcAdd.push(`export interface ${formInterfaceName} extends FormFull<T${nodeName}FieldsList> {`);
 			for (const field of fieldsWithData) {
+
 				let type = getFieldTypeSrc(field);
 				srcAdd.push(`	${methodNameSet}(fieldName: '${field.fieldName}'): ${type};`);
+
 			}
 			for (const field of fieldsWithData) {
+
 				let type = getFieldTypeSrc(field);
 				srcAdd.push(`	${methodNameGet}(fieldName: '${field.fieldName}', value: ${type}): Promise<void> | void;`);
+
 			}
 			srcAdd.push('}');
-			const formArg =
-				`form: ${formInterfaceName}`;
+			const formArg
+				= `form: ${formInterfaceName}`;
 
-			src.push(`
-	async eventsClient(eventName: ${eventName(nodeData.tableName + '.onLoad')}, handler: (${formArg}) => ${CLIENT_HANDLER_RET});
-	async eventsClient(eventName: ${eventName(nodeData.tableName + '.onSave')}, handler: (${formArg}) => ${CLIENT_HANDLER_RET});
-	async eventsClient(eventName: ${eventName(nodeData.tableName + '.afterSave')}, handler: (${formArg}, result?: KeyedMap<any>) => ${CLIENT_HANDLER_RET});
-`);
+			src.push(`	eventsClient(eventName: ${eventName(nodeData.tableName + '.onLoad')}, handler: (${formArg}) => ${CLIENT_HANDLER_RET}): void;
+	eventsClient(eventName: ${eventName(nodeData.tableName + '.onSave')}, handler: (${formArg}) => ${CLIENT_HANDLER_RET}): void;
+	eventsClient(eventName: ${eventName(nodeData.tableName + '.afterSave')}, handler: (${formArg}, result?: KeyedMap<any>) => ${CLIENT_HANDLER_RET}): void;`);
 			for (const field of nodeData.fields) {
+
 				const isClickable = (field.fieldType === FIELD_TYPE.BUTTON) || (field.fieldType === FIELD_TYPE.TAB);
 				if (isClickable || (field.show && VIEW_MASK.EDITABLE)) {
+
 					if (isClickable) {
-						src.push(`	async eventsClient(eventName: ${eventName(nodeData.tableName + '.' + field.fieldName + '.onClick')}, handler: (${formArg}) => void);`);
+
+						src.push(`	eventsClient(eventName: ${eventName(nodeData.tableName + '.' + field.fieldName + '.onClick')}, handler: (${formArg}) => void): void;`);
+
 					} else {
-						src.push(`	async eventsClient(eventName: ${eventName(nodeData.tableName + '.' + field.fieldName + '.onChange')}, handler: (${formArg}, value: ${getFieldTypeSrc(field)}, isUserAction: boolean, prevValue: any) => void);`);
+
+						src.push(`	eventsClient(eventName: ${eventName(nodeData.tableName + '.' + field.fieldName + '.onChange')}, handler: (${formArg}, value: ${getFieldTypeSrc(field)}, isUserAction: boolean, prevValue: any) => void): void;`);
+
 					}
+
 				}
+
 			}
+
 		}
+
 	});
-	src.push(`	async eventsClient() {
+	src.push(`
+	eventsClient() {
 		return 1 as any;
-	}`);
+	}
+`);
 
 	// generate getRecord() typing
 	nodesData.forEach((nodeData) => {
+
 		if (nodeData.fields?.length && nodeData.storeForms) {
+
 			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
 			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
 			src.push(`	async g(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<${typeName}>;`);
+
 		}
+
 	});
 	src.push(`	async g(nodeId: NODE_ID, viewMask: VIEW_MASK, recId: RecId, userSession?: UserSession): Promise<RecordData>;
+
 	async g() {
 		return 1 as any;
-	}`);
+	}
+`);
 
 	// generate getRecords() typing
 	nodesData.forEach((nodeData) => {
+
 		if (nodeData.fields?.length && nodeData.storeForms) {
+
 			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
 			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
-			src.push(`	async m(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: I${snakeToCamel(nodeData.tableName)}Filter, search?: string): Promise<{items:${typeName}[], total:number}>;`);
+			src.push(`	async m(nodeId: NODE_ID.${enumName}, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: I${snakeToCamel(nodeData.tableName)}Filter, search?: string): Promise<{ items: ${typeName}[]; total: number }>;`);
+
 		}
+
 	});
 
-	src.push(`	async m(nodeId: NODE_ID, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: GetRecordsFilter, search?: string): Promise<{items:RecordData[], total:number}>;
+	src.push(`	async m(nodeId: NODE_ID, viewMask: VIEW_MASK, recId?: RecId[], userSession?: UserSession, filterFields?: GetRecordsFilter, search?: string): Promise<{ items: RecordData[]; total: number }>;
+
 	async m() {
 		return 1 as any;
-	}`);
+	}
+`);
 
 	// generate getRecordClient() typing
 	nodesData.forEach((nodeData) => {
+
 		if (nodeData.fields?.length && nodeData.storeForms) {
+
 			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
 			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
 			src.push(`	async gc(nodeId: NODE_ID.${enumName}, recId: RecId, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<${typeName}>;`);
+
 		}
+
 	});
 
 	src.push(`	async gc(nodeId: NODE_ID, recId: RecId, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<RecordData>;
@@ -683,38 +853,45 @@ export class TypeGenerationHelper {`);
 
 	// generate getRecordsClient() typing
 	nodesData.forEach((nodeData) => {
+
 		if (nodeData.fields?.length && nodeData.storeForms) {
+
 			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
 			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'Record';
-			src.push(`	async gcm(nodeId: NODE_ID.${enumName}, recId?: RecId[], filters?: I${snakeToCamel(nodeData.tableName)}Filter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{items:${typeName}[], total:number}>;`);
+			src.push(`	async gcm(nodeId: NODE_ID.${enumName}, recId?: RecId[], filters?: I${snakeToCamel(nodeData.tableName)}Filter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{ items: ${typeName}[]; total: number }>;`);
+
 		}
+
 	});
 
-	src.push(`	async gcm(nodeId: NODE_ID, recId?: RecId[], filters?: GetRecordsFilter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{items:RecordData[], total:number}>;
+	src.push(`	async gcm(nodeId: NODE_ID, recId?: RecId[], filters?: GetRecordsFilter, editable?: boolean, viewMask?: VIEW_MASK | boolean, isForCustomList?: boolean, noLoadingIndicator?: boolean): Promise<{ items: RecordData[]; total: number }>;
+
 	async gcm() {
 		return 1 as any;
-	}`);
-
+	}
+`);
 
 	// generate submit() typings
 	nodesData.forEach((nodeData) => {
+
 		if (nodeData.fields?.length) {
+
 			const enumName = normalizeEnumName(nodeData.tableName || nodeData.name);
 			const typeName = 'I' + snakeToCamel(nodeData.tableName) + 'RecordWrite';
-			src.push(`
-	async s(nodeId: NODE_ID.${enumName}, data: ${typeName}, recId: RecId, userSession?: UserSession): Promise<RecordSubmitResult>;
-	async s(nodeId: NODE_ID.${enumName}, data: ${typeName}, recId?: undefined, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;
-`);
+			src.push(`	async s(nodeId: NODE_ID.${enumName}, data: ${typeName}, recId: RecId, userSession?: UserSession): Promise<RecordSubmitResult>;
+	async s(nodeId: NODE_ID.${enumName}, data: ${typeName}, recId?: undefined, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;`);
+
 		}
+
 	});
 
-	src.push(`
-	async s(nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId: RecId, userSession?: UserSession): Promise<RecordSubmitResult>;
+	src.push(`	async s(nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId: RecId, userSession?: UserSession): Promise<RecordSubmitResult>;
 	async s(nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId?: undefined, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;
 
 	async s() {
 		return 1 as any;
 	}
+
 }`);
 
 	src.push('export const E = ' + JSON.stringify(eventsEnum, undefined, '\t').replaceAll('"', '') + ' as const;');
@@ -726,7 +903,6 @@ export class TypeGenerationHelper {`);
 };
 
 /// #endif
-
 
 export {
 	ADMIN_USER_SESSION,
@@ -742,10 +918,11 @@ export {
 	reloadMetadataSchedule
 };
 
-
 function getFieldTypeSrc(field: FieldDesc) {
+
 	let type = 'any';
 	switch (field.fieldType) {
+
 	case FIELD_TYPE.BOOL:
 		type = 'BoolNum';
 		break;
@@ -771,10 +948,14 @@ function getFieldTypeSrc(field: FieldDesc) {
 		break;
 	case FIELD_TYPE.LOOKUP:
 		if (field.lookupIcon) {
+
 			type = 'LookupValueIconic';
 		} else {
+
 			type = 'LookupValue';
 		}
+
 	}
 	return type;
+
 }

@@ -31,13 +31,11 @@ import './fields/field-8-static-text';
 import { Stage } from './stage';
 import './views/view_users';
 
-
 /// #if DEBUG
 import { AdminRolePrivilegesForm } from './admin/admin-role-privileges-form';
 /// #endif
 
 import { globals } from '../../../types/globals';
-
 
 globals.Stage = Stage;
 
@@ -52,4 +50,3 @@ import './events/forms_events';
 import { MainFrame } from './main-frame';
 
 render(h(MainFrame, null), document.getElementById('container'));
-

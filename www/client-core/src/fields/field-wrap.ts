@@ -1,4 +1,3 @@
-
 import type { FieldDesc } from '../bs-utils';
 import { R } from '../r';
 /// #if DEBUG
@@ -34,7 +33,7 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 
 	componentWillReceiveProps(nextProps) {
 		this.hidden = nextProps.hidden;
-		//this.currentValue = nextProps.initialValue;
+		// this.currentValue = nextProps.initialValue;
 		if (nextProps.fieldDisabled) {
 			this.fieldDisabled = true;
 		}
@@ -254,7 +253,7 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 			additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
 			ref: (fieldRef) => {
 				this.fieldRef = fieldRef;
-			},
+			}
 		};
 
 		const fieldTypedBody = h(getClassForField(field.fieldType), fieldProps);
@@ -265,7 +264,7 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 		let help;
 		if (field.description) {
 			help = h(FieldHelp, {
-				text: R.div(null, R.h4(null, field.name), field.description),
+				text: R.div(null, R.h4(null, field.name), field.description)
 			});
 		}
 		/// #if DEBUG
@@ -329,7 +328,7 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 					},
 					onBlur: () => {
 						this.setState({ showToolTip: false });
-					},
+					}
 				},
 				fieldTypedBody,
 				fieldCustomBody,
@@ -349,7 +348,7 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 					isEdit: this.props.isEdit,
 					labelOverride: this.labelOverride,
 					fieldAlert: this.state ? this.state.fieldAlert : undefined,
-					isSuccessAlert: this.state ? this.state.isSuccessAlert : undefined,
+					isSuccessAlert: this.state ? this.state.isSuccessAlert : undefined
 				});
 			}
 			return R.div(
@@ -357,7 +356,7 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 				label,
 				R.div(
 					{
-						className: noLabel ? 'field-wrap-value field-wrap-value-no-label' : 'field-wrap-value',
+						className: noLabel ? 'field-wrap-value field-wrap-value-no-label' : 'field-wrap-value'
 					},
 					fieldTypedBody,
 					fieldCustomBody,
@@ -396,7 +395,7 @@ class FieldHelp extends Component<any, any> {
 			{
 				onMouseEnter: this.mouseOver,
 				onMouseLeave: this.mouseOut,
-				className: 'field-wrap-help-container',
+				className: 'field-wrap-help-container'
 			},
 			btn,
 			body
@@ -444,4 +443,3 @@ class FieldLabel extends Component<any, any> {
 }
 
 export { FieldHelp, FieldLabel, FieldWrap };
-

@@ -9,12 +9,12 @@ export const enum ServerEventName {
 	afterUpdate = 'afterUpdate',
 	beforeDelete = 'beforeDelete',
 	afterDelete = 'afterDelete',
-	onSubmit = 'onSubmit',
+	onSubmit = 'onSubmit'
 }
 
-const handlers = new Map() as Map<string, ((...args:any[]) => any)[]>;
+const handlers = new Map() as Map<string, ((...args: any[]) => any)[]>;
 
-const dispatch = async (nodeTableName: string, eventName: ServerEventName, ...args: any[]):Promise<KeyedMap<any> | undefined> => {
+const dispatch = async (nodeTableName: string, eventName: ServerEventName, ...args: any[]): Promise<KeyedMap<any> | undefined> => {
 	const eventFullName = nodeTableName + '.' + eventName;
 	const h = handlers.get(eventFullName);
 
@@ -45,13 +45,11 @@ const on = (eventName: string, handler: () => any) => {
 	}
 };
 
-
 export const eventDispatch = dispatch;
 
 export const serverOn = on as any as TypeGenerationHelper['eventsServer'];
 export const clientOn = on as any as TypeGenerationHelper['eventsClient'];
 export const clientHandlers = handlers;
-
 
 /// #if DEBUG
 
@@ -59,7 +57,7 @@ const errorText = 'Record processing is finished. Read only access.';
 
 export const __destroyRecordToPreventAccess = (record: RecordData) => {
 	const a = Object.keys(record);
-	a.map((key:string) => {
+	a.map((key: string) => {
 		const val = a[key];
 		delete a[key];
 		Object.defineProperty(record, key, {
@@ -71,7 +69,7 @@ export const __destroyRecordToPreventAccess = (record: RecordData) => {
 		});
 	});
 	for (const key of a) {
-		delete(record[key]);
+		delete (record[key]);
 	}
 	(record as any).__recordIsDestroyed = errorText;
 	Object.freeze(record);

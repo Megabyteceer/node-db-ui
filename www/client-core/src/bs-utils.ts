@@ -1,26 +1,24 @@
-
 import type { DebugInfo } from '../../../core/mysql-connection';
 import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord } from '../../../types/generated';
 import type { SelectItem } from './components/select';
 
-export const normalizeName = (txt:string) => {
+export const normalizeName = (txt: string) => {
 	return snakeToCamel(txt).replace(/[`']/g, '').replace(/[^\w]/gm, '_').toUpperCase();
 };
 
-export const normalizeEnumName = (txt:string) => {
+export const normalizeEnumName = (txt: string) => {
 	return camelToSnake(txt.replace(/^_/, '')).replace(/[`']/g, '').replace(/[^\w]/gm, '_').toUpperCase().replace(/__+/gm, '_');
 };
 
 export const camelToSnake = (str: string) => {
-	str = str.replace(/([a-z][A-Z])/gm, (group) =>
-	{
+	str = str.replace(/([a-z][A-Z])/gm, (group) => {
 		return group[0].toUpperCase() + '_' + group[1];
 	});
 	return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 export const snakeToCamel = (str: string) => {
-	str = str.replace(/([_][a-z])/g, (group) => group.toUpperCase().replace('_', ''));
+	str = str.replace(/([_][a-z])/g, group => group.toUpperCase().replace('_', ''));
 	return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
@@ -48,7 +46,7 @@ export interface GetRecordsFilter {
 
 	onlyIDs?: number[];
 
-	/** order by field*/
+	/** order by field */
 	o?: FIELD_ID;
 
 	/** reversed order */
@@ -69,7 +67,7 @@ export interface FormControlFilters {
 	preventCreateButton?: BoolNum;
 
 	/** override form title by string */
-	formTitle?:string;
+	formTitle?: string;
 }
 
 export type FormFilters = FormControlFilters & RecordData & GetRecordsFilter;
@@ -94,7 +92,7 @@ const getCurrentStack = () => {
 /// #endif
 const assert = null;
 const getCurrentStack = null;
-//*/
+// */
 const IMAGE_THUMBNAIL_PREFIX = '_thumb.jpg';
 
 type RecId = number;
@@ -106,7 +104,7 @@ export type APIResult = any;
 
 export interface ApiResponse {
 	result: APIResult;
-	isGuest?:boolean;
+	isGuest?: boolean;
 	/// #if DEBUG
 	debug: DebugInfo;
 	/// #endif
@@ -153,7 +151,7 @@ export const enum FIELD_DATA_TYPE {
 
 interface ClientSideFilterRecord {
 	name: string;
-	order: number
+	order: number;
 }
 
 declare global {
@@ -225,7 +223,7 @@ declare global {
 		lang?: string;
 
 		/** field name without language prefix */
-		fieldNamePure?: string /** field name without language prefix */;
+		fieldNamePure?: string;
 
 		/** fields which contains other languages data for that field */
 		childrenFields?: FieldDesc[];
@@ -254,20 +252,20 @@ interface UserLangEntry extends ILanguagesRecord {
 
 export type RecordDataWrite = {
 
-}
+};
 
 export type RecordDataWriteDraftable = RecordDataWrite & {
 	status?: STATUS;
 	id?: RecId;
-}
+};
 
 export const enum STATUS {
 	DELETED = 0,
 	PUBLIC = 1,
-	DRAFT = 2,
+	DRAFT = 2
 }
 
-export type RecordDataBaseFields = Extract< keyof RecordData, string>;
+export type RecordDataBaseFields = Extract<keyof RecordData, string>;
 
 interface RecordData {
 
@@ -289,7 +287,6 @@ interface RecordData {
 
 	/** item deleted from list in lookup field */
 	__deleted_901d123f?: true;
-
 
 	name?: string;
 }
@@ -317,9 +314,8 @@ type BoolNum = 0 | 1;
 const enum ROLE_ID {
 	ADMIN = 1,
 	GUEST = 2,
-	USER = 3,
+	USER = 3
 }
-
 
 const enum VIEW_MASK {
 	EDITABLE = 1,
@@ -358,7 +354,7 @@ const LANGUAGE_ID_DEFAULT: RecId = 1;
 
 interface IFormParameters {
 	nodeId: RecId;
-	/** id of current edited/shown record. 'new' - if record is not saved yet.*/
+	/** id of current edited/shown record. 'new' - if record is not saved yet. */
 	recId?: RecId | 'new';
 	/** true if form is editable or read only */
 	editable?: boolean;
@@ -389,4 +385,3 @@ export {
 	UserSession,
 	VIEW_MASK
 };
-

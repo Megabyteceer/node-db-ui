@@ -1,5 +1,4 @@
-﻿
-import '../../../node_modules/@types/gapi.auth2/index.d.ts';
+﻿import '../../../node_modules/@types/gapi.auth2/index.d.ts';
 import '../../../node_modules/@types/gapi/index.d.ts';
 
 import moment from 'moment';
@@ -33,7 +32,6 @@ class User extends Component<{}, {}> {
 	static instance: User;
 	static currentUserData: UserSession;
 	static additionalUserDataRenderer: () => preact.Component;
-
 
 	componentDidMount() {
 		User.instance = this;
@@ -75,7 +73,7 @@ class User extends Component<{}, {}> {
 	changeOrg(value) {
 		setTimeout(() => {
 			setUserOrg(value);
-			//Stage.showForm(14, undefined, undefined, undefined, true);
+			// Stage.showForm(14, undefined, undefined, undefined, true);
 		}, 10);
 	}
 
@@ -183,4 +181,3 @@ User.instance = null;
 User.currentUserData = null;
 
 export { iAdmin, User };
-
