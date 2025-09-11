@@ -1,4 +1,4 @@
-import { FIELD_TYPE, NODE_ID, NODE_TYPE, type INodesRecord, type INodesRecordWrite } from '../../types/generated';
+import { E, FIELD_TYPE, NODE_ID, NODE_TYPE, type INodesRecord, type INodesRecordWrite } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import type { UserSession } from '../../www/client-core/src/bs-utils';
 import { VIEW_MASK } from '../../www/client-core/src/bs-utils';
@@ -10,14 +10,14 @@ import { D, mysqlExec } from '../mysql-connection';
 import { submitRecord } from '../submit';
 
 
-serverOn('_nodes.beforeCreate', async (data, userSession) => {
+serverOn(E._nodes.beforeCreate, async (data, userSession) => {
 	shouldBeAdmin(userSession);
 	// shift all nodes in the same parent node
 
 	await mysqlExec('UPDATE _nodes SET prior = prior + ' + D(10) + ' WHERE (_nodesId =' + D(data._nodesId.id) + ') AND (prior >= ' + D(data.prior) + ')');
 });
 
-serverOn('_nodes.afterCreate', async (data, userSession) => {
+serverOn(E._nodes.afterCreate, async (data, userSession) => {
 	shouldBeAdmin(userSession);
 
 	const createdID = data.id;
@@ -104,11 +104,11 @@ serverOn('_nodes.afterCreate', async (data, userSession) => {
 	reloadMetadataSchedule();
 });
 
-serverOn('_nodes.beforeUpdate', async (_currentData: INodesRecord, _newData: INodesRecordWrite, userSession: UserSession) => {
+serverOn(E._nodes.beforeUpdate, async (_currentData: INodesRecord, _newData: INodesRecordWrite, userSession: UserSession) => {
 	shouldBeAdmin(userSession);
 	reloadMetadataSchedule();
 });
 
-serverOn('_nodes.beforeDelete', async (_data: INodesRecord, _userSession: UserSession) => {
+serverOn(E._nodes.beforeDelete, async (_data: INodesRecord, _userSession: UserSession) => {
 	throwError('_nodes beforeCreate deletion event is not implemented');
 });

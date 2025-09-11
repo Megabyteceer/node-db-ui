@@ -1,4 +1,4 @@
-import { FIELD_ID, FIELD_TYPE, NODE_ID, type IFieldsFilter, type IFieldsRecordWrite } from '../../types/generated';
+import { E, FIELD_ID, FIELD_TYPE, NODE_ID, type IFieldsFilter, type IFieldsRecordWrite } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import { VIEW_MASK } from '../../www/client-core/src/bs-utils';
 import { EMPTY_DATE } from '../../www/client-core/src/consts';
@@ -11,7 +11,7 @@ import { L } from '../locale';
 import { D, ESCAPED_LITERAL, escapeString, mysqlExec, NUM_0 } from '../mysql-connection';
 import { submitRecord } from '../submit';
 
-serverOn('_fields.beforeCreate', async (data, userSession) => {
+serverOn(E._fields.beforeCreate, async (data, userSession) => {
 	shouldBeAdmin(userSession);
 
 	if (data.multilingual) {
@@ -30,7 +30,7 @@ serverOn('_fields.beforeCreate', async (data, userSession) => {
 }
 );
 
-serverOn('_fields.afterCreate', async (data, userSession) => {
+serverOn(E._fields.afterCreate, async (data, userSession) => {
 	shouldBeAdmin(userSession);
 
 	const fieldType = data.fieldType;
@@ -77,7 +77,7 @@ serverOn('_fields.afterCreate', async (data, userSession) => {
 	reloadMetadataSchedule();
 });
 
-serverOn('_fields.beforeUpdate', async (currentData, newData, userSession) => {
+serverOn(E._fields.beforeUpdate, async (currentData, newData, userSession) => {
 	shouldBeAdmin(userSession);
 
 	if (currentData.id === FIELD_ID.FIELDS__MAX_LENGTH && newData.hasOwnProperty('maxLength')) {
@@ -144,7 +144,7 @@ serverOn('_fields.beforeUpdate', async (currentData, newData, userSession) => {
 	reloadMetadataSchedule();
 });
 
-serverOn('_fields.beforeDelete', async (_data, _userSession) => {
+serverOn(E._fields.beforeDelete, async (_data, _userSession) => {
 	throwError('_fields beforeCreate deletion event is not implemented');
 });
 

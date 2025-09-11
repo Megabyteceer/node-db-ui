@@ -3,13 +3,13 @@ import { generateSalt, getPasswordHash, getServerHref, mail_utf8 } from '../auth
 
 import { ENV } from '../../core/ENV';
 
-import { NODE_ID } from '../../types/generated';
+import { E, NODE_ID } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import { serverOn } from '../../www/client-core/src/events-handle';
 import { L } from '../locale';
 import { mysqlExec } from '../mysql-connection';
 
-serverOn('_registration.beforeCreate', async (data, userSession) => {
+serverOn(E._registration.beforeCreate, async (data, userSession) => {
 	data.salt = generateSalt();
 	data.activationKey = randomBytes(24).toString('base64');
 	data.password = await getPasswordHash(data.password, data.salt);

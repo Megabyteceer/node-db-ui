@@ -1,5 +1,5 @@
 
-import { NODE_ID } from '../../types/generated';
+import { E, NODE_ID } from '../../types/generated';
 import { serverOn } from '../../www/client-core/src/events-handle';
 import { generateSalt, getPasswordHash, isAdmin } from '../auth';
 import { D, escapeString, mysqlExec } from '../mysql-connection';
@@ -32,7 +32,7 @@ async function clearUserParams(data, currentData, userSession) {
 	}
 }
 
-serverOn('_users.beforeUpdate', async (currentData, newData, userSession) => {
+serverOn(E._users.beforeUpdate, async (currentData, newData, userSession) => {
 	if (!isAdmin(userSession)) {
 		delete newData.email;
 	}

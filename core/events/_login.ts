@@ -1,3 +1,4 @@
+import { E } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import { serverOn } from '../../www/client-core/src/events-handle';
 import { authorizeUserByID, getPasswordHash } from '../auth';
@@ -9,7 +10,7 @@ const LOGIN_SQL_PART = '\' AND _users.status=' + NUM_1 + ' LIMIT ' + NUM_1;
 const LOGIN_SQL_UPDATE_PART = 'UPDATE _users SET blockedTo=DATE_ADD( NOW(),INTERVAL ' + NUM_1 + ' MINUTE), mistakes=' + D(3) + ' WHERE id=';
 const LOGIN_UPDATE_SQL_PART2 = 'UPDATE _users SET mistakes=(mistakes-' + NUM_1 + ') WHERE id=';
 
-serverOn('_login.onSubmit', async (data, userSession): AsyncHandlerRet => {
+serverOn(E._login.onSubmit, async (data, userSession): AsyncHandlerRet => {
 	const username = data.username;
 	const password = data.password;
 	if (username === 'google-auth-sign-in') {

@@ -1,20 +1,20 @@
 
 import { readFile, unlink, writeFile } from 'fs';
 import { join } from 'path';
-import type { IHtmlRecordWrite } from '../../types/generated';
+import { E, type IHtmlRecordWrite } from '../../types/generated';
 import { serverOn } from '../../www/client-core/src/events-handle';
 
 
-serverOn('_html.beforeCreate', async (data, _userSession) => {
+serverOn(E._html.beforeCreate, async (data, _userSession) => {
 	saveDoc(data);
 });
 
-serverOn('_html.beforeUpdate', async (currentData, newData, _userSession) => {
+serverOn(E._html.beforeUpdate, async (currentData, newData, _userSession) => {
 	currentData = Object.assign(currentData, newData);
 	saveDoc(currentData);
 });
 
-serverOn('_html.beforeDelete', async (data, _userSession) => {
+serverOn(E._html.beforeDelete, async (data, _userSession) => {
 	unlink(getDocFilename(data), emptyCallback);
 });
 

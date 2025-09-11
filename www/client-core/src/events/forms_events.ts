@@ -1,7 +1,7 @@
 
 import { attachGoogleLoginAPI, getData, getNode, goToHome, isAdmin, L, myAlert, showPrompt, submitData } from '../utils';
 /// #if DEBUG
-import { FIELD_TYPE, NODE_ID, NODE_TYPE, type FormFields, type FormNodes, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList } from '../../../../types/generated';
+import { E, FIELD_TYPE, NODE_ID, NODE_TYPE, type FormFields, type FormNodes, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField } from '../admin/admin-utils';
 import type { FormFull } from '../forms/form-full';
@@ -33,7 +33,7 @@ const checkPasswordConfirmation = (form: FormFull<TUsersFieldsList> | FormFull<T
 	}
 };
 
-clientOn('_users.onLoad', (form) => {
+clientOn(E._users.onLoad, (form) => {
 	if (!ENV.langs) {
 		form.hideField('language');
 	} else {
@@ -95,7 +95,7 @@ clientOn('_users.onLoad', (form) => {
 	}
 });
 
-clientOn('_users.onSave', (form) => {
+clientOn(E._users.onSave, (form) => {
 	checkPasswordConfirmation(form);
 	const pass = form.fieldValue('password');
 	if (pass.length < 6) {
@@ -110,7 +110,7 @@ clientOn('_users.onSave', (form) => {
 	}
 });
 
-clientOn('_users.afterSave', (form) => {
+clientOn(E._users.afterSave, (form) => {
 	if (uiLanguageIsChanged) {
 		showPrompt(L('RESTART_NOW')).then((isYes) => {
 			if (isYes) {
@@ -124,14 +124,14 @@ clientOn('_users.afterSave', (form) => {
 	}
 });
 
-clientOn('_roles.onLoad', (form) => {
+clientOn(E._roles.onLoad, (form) => {
 	form.getField('_userRoles').setLookupFilter('excludeIDs', [1, 2, 3]);
 	if (form.recId === 2 || form.recId === 3) {
 		form.hideField('_userRoles');
 	}
 });
 
-clientOn('_enums.onLoad', (form) => {
+clientOn(E._enums.onLoad, (form) => {
 	form.getField('values').inlineEditable();
 });
 
@@ -155,7 +155,7 @@ const _nodes_recalculateFieldsVisibility = (form:FormNodes) => {
 };
 
 /// #if DEBUG
-clientOn('_nodes.onLoad', (form) => {
+clientOn(E._nodes.onLoad, (form) => {
 	if (form.isNewRecord || form.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
 		form.hideField('fieldsTab');
 		form.hideField('filtersTab');
@@ -199,7 +199,7 @@ clientOn('_nodes.onLoad', (form) => {
 	} as IFieldsFilter);
 });
 
-clientOn('_nodes.onSave', (form) => {
+clientOn(E._nodes.onSave, (form) => {
 	if (form.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
 		const name = form.fieldValue('name');
 		form.setFieldValue('singleName', name);
@@ -217,7 +217,7 @@ clientOn('_nodes.onSave', (form) => {
 
 let _fieldsNameIsBad: boolean;
 
-clientOn('_fields.onLoad', async (form) => {
+clientOn(E._fields.onLoad, async (form) => {
 	makeIconSelectionField(form, 'icon');
 
 	const parentNodeVal = form.fieldValue('nodeFieldsLinker');
@@ -296,11 +296,11 @@ const checkFieldExists = async (form:FormFields) => {
 	}
 };
 
-clientOn('_fields,fieldName.onChange', async (form) => {
+clientOn(E._fields.fieldName.onChange, async (form) => {
 	await checkFieldExists(form);
 });
 
-clientOn('_fields.onSave', (form) => {
+clientOn(E._fields.onSave, (form) => {
 	const fieldType = form.fieldValue('fieldType');
 
 	if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_N_TO_M || fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
@@ -354,7 +354,7 @@ clientOn('_fields.onSave', (form) => {
 });
 /// #endif
 
-clientOn('_languages.onLoad', (form) => {
+clientOn(E._languages.onLoad, (form) => {
 	if (form.recId === LANGUAGE_ID_DEFAULT) {
 		form.disableField('isUILanguage');
 	}
@@ -365,13 +365,13 @@ clientOn('_languages.onLoad', (form) => {
 	}
 });
 
-clientOn('_languages.onSave', (form) => {
+clientOn(E._languages.onSave, (form) => {
 	if (form.isNewRecord && !form.fieldValue('code')) {
 		form.fieldAlert('code', L('REQUIRED_FLD'));
 	}
 });
 
-clientOn('_enums.onSave', (form) => {
+clientOn(E._enums.onSave, (form) => {
 	let ret;
 	const exists = {};
 	const valuesForms = (form.getField('values').fieldRef as LookupOneToManyFiled).inlineListRef.getSubForms();
@@ -386,7 +386,7 @@ clientOn('_enums.onSave', (form) => {
 	return ret;
 });
 
-clientOn('_filters.onLoad', (form) => {
+clientOn(E._filters.onLoad, (form) => {
 
 	form.addLookupFilters('nodeFiltersLinker', {
 		filterId: 8,
@@ -394,18 +394,18 @@ clientOn('_filters.onLoad', (form) => {
 	});
 });
 
-clientOn('_login.afterSave', (_form, result) => {
+clientOn(E._login.afterSave, (_form, result) => {
 	User.setUserData(result.handlerResult);
 	if (window.onCurdJSLogin) {
 		window.onCurdJSLogin(result.handlerResult);
 	}
 });
 
-clientOn('_registration.onSave', (form) => {
+clientOn(E._registration.onSave, (form) => {
 	checkPasswordConfirmation(form);
 });
 
-clientOn('_registration.afterSave', (form) => {
+clientOn(E._registration.afterSave, (form) => {
 	showMessageAboutEmailSent(L('REGISTRATION_EMAIL_SENT'), form);
 	form.isPreventCloseFormAfterSave = true;
 });
@@ -423,17 +423,17 @@ const showMessageAboutEmailSent = (txt, form: FormFull<TRegistrationFieldsList> 
 	);
 };
 
-clientOn('_resetPassword.afterSave', (form) => {
+clientOn(E._resetPassword.afterSave, (form) => {
 	showMessageAboutEmailSent(L('RESET_EMAIL_SENT'), form);
 	form.isPreventCloseFormAfterSave = true;
 });
 
-clientOn('_registration.onLoad', (form) => {
+clientOn(E._registration.onLoad, (form) => {
 	form.setSaveButtonTitle(L('REGISTER'));
 	form.hideCancelButton();
 });
 
-clientOn('_login.onLoad', (form) => {
+clientOn(E._login.onLoad, (form) => {
 	form.hideFooter();
 	if (form.hasField('socialLoginButtons') && ENV.clientOptions.googleSigninClientId) {
 		/// #if DEBUG
@@ -451,7 +451,7 @@ clientOn('_login.onLoad', (form) => {
 	}
 });
 
-clientOn('_resetPassword.onLoad', (form) => {
+clientOn(E._resetPassword.onLoad, (form) => {
 	form.hideCancelButton();
 	const activationKey = (form.filters as ResetPasswordData).activationKey;
 	const resetCode = (form.filters as ResetPasswordData).resetCode;
@@ -476,7 +476,7 @@ clientOn('_resetPassword.onLoad', (form) => {
 	}
 });
 
-clientOn('_enumValues.onLoad', (form) => {
+clientOn(E._enumValues.onLoad, (form) => {
 	if (form.isNewRecord && form.props.parentForm) {
 		let maxEnumVal = 0;
 		for (const item of form.props.parentForm.getBackupData()) {
@@ -523,7 +523,7 @@ const removeWrongCharactersInField = (form: FormFull<string>, fieldName: string)
 	}
 };
 
-clientOn('_html,title.onChange', (form) => {
+clientOn(E._html.title.onChange, (form) => {
 	removeWrongCharactersInField(form, 'title');
 	const href =
 		location.protocol +
@@ -539,7 +539,7 @@ clientOn('_html,title.onChange', (form) => {
 	(e.querySelector('.clickable-link-text') as HTMLAnchorElement).innerText = href;
 });
 
-clientOn('_users,passwordConfirm.onChange', (form) => {
+clientOn(E._users.passwordConfirm.onChange, (form) => {
 	checkPasswordConfirmation(form);
 });
 
@@ -594,20 +594,20 @@ const nodeTypeOnChange = (form: FormNodes) => {
 	_nodes_recalculateFieldsVisibility(form);
 };
 
-clientOn('_nodes,nodeType.onChange', nodeTypeOnChange);
+clientOn(E._nodes.nodeType.onChange, nodeTypeOnChange);
 
-clientOn('_nodes,storeForms.onChange', nodeTypeOnChange);
+clientOn(E._nodes.storeForms.onChange, nodeTypeOnChange);
 
-clientOn('_fields,name.onChange', (form) => {
+clientOn(E._fields.name.onChange, (form) => {
 	removeWrongCharactersInField(form, 'fieldName');
 	check12nFieldName(form);
 });
 
-clientOn('_fields,fieldType.onChange', (form) => {
+clientOn(E._fields.fieldType.onChange, (form) => {
 	_fields_recalculateFieldsVisibility(form);
 });
 
-clientOn('_fields,storeInDb.onChange', (form) => {
+clientOn(E._fields.storeInDb.onChange, (form) => {
 	if (form.isFieldVisible('storeInDb')) {
 		if (!form.fieldValue('storeInDb') || form.fieldValue('sendToServer')) {
 			form.hideField('forSearch', 'unique');
@@ -617,7 +617,7 @@ clientOn('_fields,storeInDb.onChange', (form) => {
 	}
 });
 
-clientOn('_fields,visibilityCreate.onChange', (form) => {
+clientOn(E._fields.visibilityCreate.onChange, (form) => {
 	let shv = form.fieldValue('show');
 
 	if (form.fieldValue('visibilityCreate')) shv |= VIEW_MASK.EDITABLE;
@@ -626,7 +626,7 @@ clientOn('_fields,visibilityCreate.onChange', (form) => {
 	form.setFieldValue('show', shv);
 });
 
-clientOn('_fields,visibilityList.onChange', (form) => {
+clientOn(E._fields.visibilityList.onChange, (form) => {
 	let shv = form.fieldValue('show');
 
 	if (form.fieldValue('visibilityList')) shv |= VIEW_MASK.LIST;
@@ -635,7 +635,7 @@ clientOn('_fields,visibilityList.onChange', (form) => {
 	form.setFieldValue('show', shv);
 });
 
-clientOn('_fields,visibilityCustomList.onChange', (form) => {
+clientOn(E._fields.visibilityCustomList.onChange, (form) => {
 	let shv = form.fieldValue('show');
 
 	if (form.fieldValue('visibilityCustomList')) shv |= VIEW_MASK.CUSTOM_LIST;
@@ -644,7 +644,7 @@ clientOn('_fields,visibilityCustomList.onChange', (form) => {
 	form.setFieldValue('show', shv);
 });
 
-clientOn('_fields,visibilityView.onChange', (form) => {
+clientOn(E._fields.visibilityView.onChange, (form) => {
 	let shv = form.fieldValue('show');
 	if (form.fieldValue('visibilityView')) {
 		shv |= VIEW_MASK.READONLY;
@@ -655,7 +655,7 @@ clientOn('_fields,visibilityView.onChange', (form) => {
 	form.setFieldValue('show', shv);
 });
 
-clientOn('_fields,visibilityDropdownList.onChange', (form) => {
+clientOn(E._fields.visibilityDropdownList.onChange, (form) => {
 	let shv = form.fieldValue('show');
 	if (form.fieldValue('visibilityDropdownList')) {
 		shv |= VIEW_MASK.DROPDOWN_LIST;
@@ -666,7 +666,7 @@ clientOn('_fields,visibilityDropdownList.onChange', (form) => {
 	form.setFieldValue('show', shv);
 });
 
-clientOn('_fields,visibilitySubFormList.onChange', (form) => {
+clientOn(E._fields.visibilitySubFormList.onChange, (form) => {
 	let shv = form.fieldValue('show');
 	if (form.fieldValue('visibilitySubFormList')) {
 		shv |= VIEW_MASK.SUB_FORM;
@@ -677,32 +677,32 @@ clientOn('_fields,visibilitySubFormList.onChange', (form) => {
 	form.setFieldValue('show', shv);
 });
 
-clientOn('_fields,nodeRef.onChange', (form) => {
+clientOn(E._fields.nodeRef.onChange, (form) => {
 	check12nFieldName(form);
 });
 
-clientOn('_nodes,tableName.onChange', (form) => {
+clientOn(E._nodes.tableName.onChange, (form) => {
 	removeWrongCharactersInField(form, 'tableName');
 });
 /// #endif
 
-clientOn('_registration,passwordConfirm.onChange', (form) => {
+clientOn(E._registration.passwordConfirm.onChange, (form) => {
 	checkPasswordConfirmation(form);
 });
 
-clientOn('_registration,alreadyHaveAccountBtn.onClick', (_form) => {
+clientOn(E._registration.alreadyHaveAccountBtn.onClick, (_form) => {
 	globals.Stage.showForm(NODE_ID.LOGIN);
 });
 
-clientOn('_login,signUpLinkBtn.onClick', (_form) => {
+clientOn(E._login.signUpLinkBtn.onClick, (_form) => {
 	globals.Stage.showForm(NODE_ID.REGISTRATION, 'new', undefined, true);
 });
 
-clientOn('_login,forgotPasswordButton.onClick', (_form) => {
+clientOn(E._login.forgotPasswordButton.onClick, (_form) => {
 	globals.Stage.showForm(NODE_ID.RESET_PASSWORD, 'new', undefined, true);
 });
 
-clientOn('_resetPassword,backToLogin.onClick', (_form) => {
+clientOn(E._resetPassword.backToLogin.onClick, (_form) => {
 	globals.Stage.showForm(NODE_ID.LOGIN);
 });
 
@@ -839,18 +839,18 @@ const _fields_recalculateFieldsVisibility = (form:FormFields) => {
 	form.makeFieldRequired('maxLength', form.isFieldVisible('maxLength'));
 };
 
-clientOn('_fields,storeInDb.onChange', (form) => {
+clientOn(E._fields.storeInDb.onChange, (form) => {
 	_fields_recalculateFieldsVisibility(form);
 });
 
-clientOn('_fields,sendToServer.onChange', (form) => {
+clientOn(E._fields.sendToServer.onChange, (form) => {
 	_fields_recalculateFieldsVisibility(form);
 });
 
-clientOn('_fields,forSearch.onChange', (form) => {
+clientOn(E._fields.forSearch.onChange, (form) => {
 	_fields_recalculateFieldsVisibility(form);
 });
 
-clientOn('_login,signInBtn.onClick', (form) => {
+clientOn(E._login.signInBtn.onClick, (form) => {
 	form.save();
 });

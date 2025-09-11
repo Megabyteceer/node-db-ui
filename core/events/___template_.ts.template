@@ -1,26 +1,27 @@
-import { serverOn } from '../server';
+import { E } from '../../types/generated';
+import { serverOn } from '../../www/client-core/src/events-handle';
 
-serverOn('%node_name%.beforeCreate', async (data, userSession) => {
-
-});
-
-serverOn('%node_name%.afterCreate', async (data, userSession) => {
+serverOn(E.%node_name%.beforeCreate, async (data, userSession) => {
 
 });
 
-serverOn('%node_name%.beforeUpdate', async (data, userSession) => {
+serverOn(E.%node_name%.afterCreate, async (data, userSession) => {
 
 });
 
-serverOn('%node_name%.afterUpdate', async (data, userSession) => {
+serverOn(E.%node_name%.beforeUpdate, async (data, userSession) => {
 
 });
 
-serverOn('%node_name%.beforeDelete', async (data, userSession) => {
+serverOn(E.%node_name%.afterUpdate, async (data, userSession) => {
 
 });
 
-serverOn('%node_name%.afterDelete', async (data, userSession) => {
+serverOn(E.%node_name%.beforeDelete, async (data, userSession) => {
+
+});
+
+serverOn(E.%node_name%.afterDelete, async (data, userSession) => {
 
 });
 

@@ -456,6 +456,27 @@ function getLangs(): UserLangEntry[] {
 }
 
 /// #if DEBUG
+type EventType = number;
+
+type EventMap = { [Key: string]: EventMap | EventType }
+
+let eventsEnum: EventMap = {};
+let eventCounter = 0;
+
+const eventName = (event: string): EventType => {
+	eventCounter++;
+	const path = event.split('.');
+	let node = eventsEnum;
+	while (path.length > 1) {
+		const nodeName = path.shift();
+		if (!node[nodeName]) {
+			node[nodeName] = {};
+		}
+		node = node[nodeName] as EventMap;
+	}
+	node[path[0]] = eventCounter;
+	return eventCounter;
+};
 
 const generateTypings = async () => {
 	const srcAdd = [''];
@@ -554,16 +575,16 @@ export class TypeGenerationHelper {`);
 			const name = snakeToCamel(nodeData.tableName);
 			if (nodeData.storeForms) {
 				src.push(`
-	async eventsServer(eventName: '${nodeData.tableName}.beforeCreate', handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-	async eventsServer(eventName: '${nodeData.tableName}.afterCreate', handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-	async eventsServer(eventName: '${nodeData.tableName}.beforeUpdate', handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-	async eventsServer(eventName: '${nodeData.tableName}.afterUpdate', handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
-	async eventsServer(eventName: '${nodeData.tableName}.beforeDelete', handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET});
-	async eventsServer(eventName: '${nodeData.tableName}.afterDelete', handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeCreate')}, handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: ${eventName(nodeData.tableName + '.afterCreate')}, handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeUpdate')}, handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: ${eventName(nodeData.tableName + '.afterUpdate')}, handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeDelete')}, handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: ${eventName(nodeData.tableName + '.afterDelete')}, handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET});
 `);
 			} else {
 				src.push(`
-	async eventsServer(eventName: '${nodeData.tableName}.onSubmit', handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
+	async eventsServer(eventName: ${eventName(nodeData.tableName + '.onSubmit')}, handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET});
 `);
 			}
 		}
@@ -599,17 +620,17 @@ export class TypeGenerationHelper {`);
 				`form: ${formInterfaceName}`;
 
 			src.push(`
-	async eventsClient(eventName: '${nodeData.tableName}.onLoad', handler: (${formArg}) => ${CLIENT_HANDLER_RET});
-	async eventsClient(eventName: '${nodeData.tableName}.onSave', handler: (${formArg}) => ${CLIENT_HANDLER_RET});
-	async eventsClient(eventName: '${nodeData.tableName}.afterSave', handler: (${formArg}, result?: KeyedMap<any>) => ${CLIENT_HANDLER_RET});
+	async eventsClient(eventName: ${eventName(nodeData.tableName + '.onLoad')}, handler: (${formArg}) => ${CLIENT_HANDLER_RET});
+	async eventsClient(eventName: ${eventName(nodeData.tableName + '.onSave')}, handler: (${formArg}) => ${CLIENT_HANDLER_RET});
+	async eventsClient(eventName: ${eventName(nodeData.tableName + '.afterSave')}, handler: (${formArg}, result?: KeyedMap<any>) => ${CLIENT_HANDLER_RET});
 `);
 			for (const field of nodeData.fields) {
 				const isClickable = (field.fieldType === FIELD_TYPE.BUTTON) || (field.fieldType === FIELD_TYPE.TAB);
 				if (isClickable || (field.show && VIEW_MASK.EDITABLE)) {
 					if (isClickable) {
-						src.push(`	async eventsClient(eventName: '${nodeData.tableName},${field.fieldName}.onClick', handler: (${formArg}) => void);`);
+						src.push(`	async eventsClient(eventName: ${eventName(nodeData.tableName + '.' + field.fieldName + '.onClick')}, handler: (${formArg}) => void);`);
 					} else {
-						src.push(`	async eventsClient(eventName: '${nodeData.tableName},${field.fieldName}.onChange', handler: (${formArg}, value: ${getFieldTypeSrc(field)}, isUserAction: boolean, prevValue: any) => void);`);
+						src.push(`	async eventsClient(eventName: ${eventName(nodeData.tableName + '.' + field.fieldName + '.onChange')}, handler: (${formArg}, value: ${getFieldTypeSrc(field)}, isUserAction: boolean, prevValue: any) => void);`);
 					}
 				}
 			}
@@ -695,6 +716,8 @@ export class TypeGenerationHelper {`);
 		return 1 as any;
 	}
 }`);
+
+	src.push('export const E = ' + JSON.stringify(eventsEnum, undefined, '\t').replaceAll('"', '') + ' as const;');
 
 	src.push(...srcAdd);
 

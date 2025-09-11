@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 
-import { NODE_ID, type IResetPasswordFilter } from '../../types/generated';
+import { E, NODE_ID, type IResetPasswordFilter } from '../../types/generated';
 import { serverOn } from '../../www/client-core/src/events-handle';
 import { getServerHref, mail_utf8 } from '../auth';
 import { L } from '../locale';
@@ -11,7 +11,7 @@ export interface ResetPasswordData extends IResetPasswordFilter { // TODO remove
 	resetCode: string;
 }
 
-serverOn('_resetPassword.onSubmit', async (data, userSession) => {
+serverOn(E._resetPassword.onSubmit, async (data, userSession) => {
 	const email = data.email;
 	if (email) {
 		const pgs = await mysqlExec(
