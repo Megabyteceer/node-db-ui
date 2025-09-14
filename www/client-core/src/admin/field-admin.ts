@@ -3,8 +3,8 @@ import type { FieldDesc, NodeDesc } from '../bs-utils';
 import { Component, type ComponentChild } from 'preact';
 import { NODE_ID, type FIELD_ID, type IFieldsRecord } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
-import type { FormFull } from '../forms/form-full';
-import { List } from '../forms/list';
+import type { FormFull__olf } from '../forms/form-full';
+import { List__olf } from '../forms/list';
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getRecordClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
@@ -25,7 +25,7 @@ interface FieldAdminState {
 
 interface FieldAdminProps {
 	field: FieldDesc;
-	form?: FormFull | List;
+	form?: FormFull__olf | List__olf;
 }
 
 class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
@@ -69,7 +69,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		let body;
 		let border;
 
-		if (((form as FormFull)._getFieldEventHandlers) && (form as FormFull)._getFieldEventHandlers(field)) {
+		if (((form as FormFull__olf)._getFieldEventHandlers) && (form as FormFull__olf)._getFieldEventHandlers(field)) {
 			border = ' admin-button-highlighted';
 		} else {
 			border = '';
@@ -80,17 +80,17 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		if (bodyVisible) {
 			let extendedInfo: ComponentChild;
 			if (
-				(form as FormFull).getField && (form as FormFull).getField(field.fieldName)?.fieldRef?.state?.filters
+				(form as FormFull__olf).getField && (form as FormFull__olf).getField(field.fieldName)?.fieldRef?.state?.filters
 			) {
 				extendedInfo = R.div(
 					null,
 					'filters:',
 					R.input({
-						defaultValue: JSON.stringify((form as FormFull).getField(field.fieldName).fieldRef.state.filters)
+						defaultValue: JSON.stringify((form as FormFull__olf).getField(field.fieldName).fieldRef.state.filters)
 					})
 				);
 			}
-			const isList = this.props.form instanceof List;
+			const isList = this.props.form instanceof List__olf;
 
 			body = R.div(
 				{

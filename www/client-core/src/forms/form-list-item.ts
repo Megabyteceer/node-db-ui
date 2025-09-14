@@ -3,10 +3,10 @@ import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { NodeDesc, RecordData, RecordDataWriteDraftable } from '../bs-utils';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
-import { FieldWrap } from '../fields/field-wrap';
+import { FieldWrap__olf } from '../fields/field-wrap';
 import { R, type ComponentProps } from '../r';
 import { deleteRecord, draftRecord, isRecordRestrictedForDeletion, L, publishRecord, renderIcon, sp } from '../utils';
-import { BaseForm } from './base-form';
+import { BaseForm__olf } from './base-form';
 
 const publishClick = (draft: boolean, node: NodeDesc, data: RecordData) => {
 	if (draft) {
@@ -20,7 +20,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 	node: NodeDesc,
 	data: RecordData,
 	refreshFunction?: () => void,
-	formItem?: FormListItem
+	formItem?: FormListItem__olf
 ): Component[] | undefined => {
 	let buttons;
 	if (formItem && formItem.props.isLookup) {
@@ -149,7 +149,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 	return buttons;
 };
 
-class FormListItem extends BaseForm {
+class FormListItem__olf extends BaseForm__olf {
 	constructor(props: any) {
 		super(props);
 	}
@@ -178,7 +178,7 @@ class FormListItem extends BaseForm {
 				fields.push(
 					R.td(
 						{ key: field.id, className },
-						h(FieldWrap, {
+						h(FieldWrap__olf, {
 							key: field.fieldName,
 							field,
 							initialValue: (data as KeyedMap<any>)[field.fieldName],
@@ -231,4 +231,4 @@ class FormListItem extends BaseForm {
 	}
 }
 
-export { FormListItem, renderItemsButtons };
+export { FormListItem__olf, renderItemsButtons };

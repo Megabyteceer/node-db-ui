@@ -3,7 +3,7 @@ import { attachGoogleLoginAPI, getData, getNode, goToHome, isAdmin, L, myAlert, 
 import { E, FIELD_TYPE, NODE_ID, NODE_TYPE, type FormFields, type FormNodes, type IRegistrationFilter, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField } from '../admin/admin-utils';
-import type { FormFull } from '../forms/form-full';
+import type { FormFull__olf } from '../forms/form-full';
 /// #endif
 
 import { VIEW_MASK } from '../bs-utils';
@@ -19,7 +19,7 @@ import { iAdmin, User } from '../user';
 
 let uiLanguageIsChanged = false;
 
-const checkPasswordConfirmation = (form: FormFull<TUsersFieldsList> | FormFull<TRegistrationFieldsList>) => {
+const checkPasswordConfirmation = (form: FormFull__olf<TUsersFieldsList> | FormFull__olf<TRegistrationFieldsList>) => {
 	const p = form.fieldValue('password');
 	const p2 = form.fieldValue('passwordConfirm');
 	if (p && p !== p2) {
@@ -405,7 +405,7 @@ clientOn(E._registration.afterSave, (form) => {
 	form.isPreventCloseFormAfterSave = true;
 });
 
-const showMessageAboutEmailSent = (txt: string, form: FormFull<TRegistrationFieldsList> | FormFull<TResetPasswordFieldsList>) => {
+const showMessageAboutEmailSent = (txt: string, form: FormFull__olf<TRegistrationFieldsList> | FormFull__olf<TResetPasswordFieldsList>) => {
 	myAlert(
 		R.span(null, txt, R.div({ className: 'email-highlight' }, form.fieldValue('email'))),
 		true,
@@ -507,7 +507,7 @@ const check12nFieldName = (form: FormFields) => {
 	}
 };
 
-const removeWrongCharactersInField = (form: FormFull, fieldName: string) => {
+const removeWrongCharactersInField = (form: FormFull__olf, fieldName: string) => {
 	const oldValue = form.fieldValue(fieldName);
 	if (oldValue) {
 		const newValue = oldValue.toLowerCase().replace(/[^a-z0-9]/gm, '_');

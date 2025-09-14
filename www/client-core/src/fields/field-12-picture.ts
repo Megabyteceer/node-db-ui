@@ -1,17 +1,17 @@
 import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
-import type { FormFull } from '../forms/form-full';
+import type { FormFull__olf } from '../forms/form-full';
 import { Modal } from '../modal';
 import { R } from '../r';
 import { checkFileSize, idToImgURL, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
-import type { FieldProps, FieldState, RefToInput } from './base-field';
-import { BaseField } from './base-field';
-import type { FieldWrap } from './field-wrap';
+import type { FieldProps__olf, FieldState__olf, RefToInput } from './base-field';
+import { BaseField__old } from './base-field';
+import type { FieldWrap__olf } from './field-wrap';
 
 registerFieldClass(
 	FIELD_TYPE.IMAGE,
-	class PictureField extends BaseField {
+	class PictureField extends BaseField__old {
 		cropperBody!: CropperFieldBody;
 
 		setValue(value: string) {
@@ -57,11 +57,11 @@ registerFieldClass(
 	}
 );
 
-interface CropperFieldBodyProps extends FieldProps {
+interface CropperFieldBodyProps extends FieldProps__olf {
 	currentPicUrl?: string;
 }
 
-interface CropperFieldBodyState extends FieldState {
+interface CropperFieldBodyState extends FieldState__olf {
 	cleared?: boolean;
 	waiting?: boolean;
 	src?: string | null;
@@ -138,14 +138,14 @@ class CropperFieldBody extends Component<CropperFieldBodyProps, CropperFieldBody
 		this.references.fileInput.value = '';
 	}
 
-	async save(fieldWrap: FieldWrap) {
+	async save(fieldWrap: FieldWrap__olf) {
 		if (this.waitingForUpload) {
 			const form = this.references.form as HTMLFormElement;
 			const imageId = await submitData('api/uploadImage', serializeForm(form), true).catch(
 				(_er) => {}
 			);
 			if (!imageId) {
-				(fieldWrap.props.form as FormFull).fieldAlert(fieldWrap.props.field!.fieldName, L('IMAGE_UPLOAD_ERROR'));
+				(fieldWrap.props.form as FormFull__olf).fieldAlert(fieldWrap.props.field!.fieldName, L('IMAGE_UPLOAD_ERROR'));
 			}
 			return imageId;
 		} else if (this.state.cleared) {

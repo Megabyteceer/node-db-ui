@@ -1,6 +1,7 @@
 import type { DebugInfo } from '../../../core/mysql-connection';
-import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord, NODE_ID } from '../../../types/generated';
+import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord, NODE_ID, NODE_TYPE } from '../../../types/generated';
 import type { SelectItem } from './components/select';
+import type { BaseForm__olf } from './forms/base-form';
 
 export const normalizeName = (txt: string) => {
 	return snakeToCamel(txt).replace(/[`']/g, '').replace(/[^\w]/gm, '_').toUpperCase();
@@ -261,6 +262,19 @@ interface UserLangEntry extends ILanguagesRecord {
 export type RecordDataWrite = {
 
 };
+
+export interface TreeItem {
+	children: TreeItem[];
+	icon: string;
+	id: NODE_ID;
+	name: string;
+	nodeType: NODE_TYPE;
+	parent: NODE_ID;
+	privileges: number;
+	field?: FieldDesc;
+	form?: BaseForm__olf;
+	staticLink: string;
+}
 
 export type RecordDataWriteDraftable = RecordDataWrite & {
 	status?: STATUS;

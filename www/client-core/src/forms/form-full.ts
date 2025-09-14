@@ -1,7 +1,7 @@
-import { FieldWrap } from '../fields/field-wrap';
+import { FieldWrap__olf } from '../fields/field-wrap';
 import { CLIENT_SIDE_FORM_EVENTS, deleteRecord, getItem, goBack, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, submitRecord } from '../utils';
-import { FormEventProcessingMixins } from './event-processing-mixins';
-import { FormTab } from './form-tab';
+import { FormEventProcessingMixins__olf } from './event-processing-mixins';
+import { FormTab__olf } from './form-tab';
 /// #if DEBUG
 import { NodeAdmin } from '../admin/admin-control';
 import { FieldAdmin } from '../admin/field-admin';
@@ -30,10 +30,10 @@ const entryToKey = (entry: [string, any]) => {
 	return entry[0] + '=' + val.id;
 };
 
-async function callForEachField(fieldRefs: KeyedMap<FieldWrap>, data: KeyedMap<any>, functionName: string) {
+async function callForEachField(fieldRefs: KeyedMap<FieldWrap__olf>, data: KeyedMap<any>, functionName: string) {
 	for (const k of Object.keys(fieldRefs)) {
 		const f = fieldRefs[k];
-		if (!(f instanceof FieldWrap)) {
+		if (!(f instanceof FieldWrap__olf)) {
 			continue;
 		}
 		const field = f.fieldRef as KeyedMap<any>;
@@ -47,7 +47,7 @@ async function callForEachField(fieldRefs: KeyedMap<FieldWrap>, data: KeyedMap<a
 	}
 }
 
-class FormFull<FieldsNames extends string = string> extends FormEventProcessingMixins<FieldsNames> {
+class FormFull__olf<FieldsNames extends string = string> extends FormEventProcessingMixins__olf<FieldsNames> {
 	backupInterval = 0;
 
 	constructor(props: any) {
@@ -129,7 +129,7 @@ class FormFull<FieldsNames extends string = string> extends FormEventProcessingM
 	forceBouncingTimeout() {
 		for (const k in this.fieldsRefs) {
 			const f = this.fieldsRefs[k];
-			if (!(f instanceof FieldWrap)) {
+			if (!(f instanceof FieldWrap__olf)) {
 				continue;
 			}
 			if (f.forceBouncingTimeout) {
@@ -153,7 +153,7 @@ class FormFull<FieldsNames extends string = string> extends FormEventProcessingM
 
 		for (const k in this.fieldsRefs) {
 			const fieldWrapperRef = this.fieldsRefs[k];
-			if (!(fieldWrapperRef instanceof FieldWrap)) {
+			if (!(fieldWrapperRef instanceof FieldWrap__olf)) {
 				continue;
 			}
 			const field = fieldWrapperRef.props.field!;
@@ -220,7 +220,7 @@ class FormFull<FieldsNames extends string = string> extends FormEventProcessingM
 
 		for (const k in this.fieldsRefs) {
 			const fieldRef = this.fieldsRefs[k];
-			if (!(fieldRef instanceof FieldWrap)) {
+			if (!(fieldRef instanceof FieldWrap__olf)) {
 				continue;
 			}
 			const field = fieldRef.props.field!;
@@ -326,8 +326,8 @@ class FormFull<FieldsNames extends string = string> extends FormEventProcessingM
 			return R.div({ className: 'field-lookup-loading-icon-container' }, renderIcon('cog fa-spin fa-2x'));
 		}
 
-		let tabs: FormTab[];
-		let fields = [] as FieldWrap[];
+		let tabs: FormTab__olf[];
+		let fields = [] as FieldWrap__olf[];
 		const data = this.currentData;
 		const nodeFields = node.fields;
 
@@ -341,12 +341,12 @@ class FormFull<FieldsNames extends string = string> extends FormEventProcessingM
 		}
 
 		const forcedValues = this.props.filters!;
-		let currentTab: FormTab;
+		let currentTab: FormTab__olf;
 		let currentTabName!: string;
 
 		for (const field of nodeFields!) {
 			if (this.isFieldVisibleByFormViewMask(field)) {
-				const ref = (ref: FieldWrap) => {
+				const ref = (ref: FieldWrap__olf) => {
 					if (ref) {
 						this.fieldsRefs[field.fieldName] = ref;
 					} else {
@@ -373,7 +373,7 @@ class FormFull<FieldsNames extends string = string> extends FormEventProcessingM
 					}
 
 					currentTabName = field.fieldName;
-					currentTab = h(FormTab, {
+					currentTab = h(FormTab__olf, {
 						key: field.id,
 						ref,
 						title: field.name,
@@ -387,7 +387,7 @@ class FormFull<FieldsNames extends string = string> extends FormEventProcessingM
 					});
 					tabs.push(currentTab);
 				} else if (this.props.editable || data[field.fieldName] || !field.storeInDb || field.fieldType === FIELD_TYPE.LOOKUP_1_TO_N || field.fieldType >= 100) {
-					const tf = h(FieldWrap, {
+					const tf = h(FieldWrap__olf, {
 						ref,
 						key: field.id,
 						field,
@@ -613,4 +613,4 @@ class FormFull<FieldsNames extends string = string> extends FormEventProcessingM
 	}
 }
 
-export { FormFull };
+export { FormFull__olf };

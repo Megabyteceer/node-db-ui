@@ -8,7 +8,7 @@ import { NODE_TYPE } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { assert } from './assert';
 import type { RecId } from './bs-utils';
-import type { FormFull } from './forms/form-full';
+import type { FormFull__olf } from './forms/form-full';
 import { Modal } from './modal';
 import { R } from './r';
 import { Stage } from './stage';
@@ -180,7 +180,7 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 			if (item.field) {
 				adminControl = R.div(
 					{ className: 'left-bar-admin-button' },
-					h(FieldAdmin, { field: item.field, form: item.form as FormFull })
+					h(FieldAdmin, { field: item.field, form: item.form as FormFull__olf })
 				);
 			} else {
 				adminControl = R.div(

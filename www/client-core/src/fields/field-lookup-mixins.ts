@@ -1,19 +1,19 @@
 import type { Component } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import type { GetRecordsFilter, RecordData } from '../bs-utils';
-import type { FormListItem } from '../forms/form-list-item';
+import type { FormListItem__olf } from '../forms/form-list-item';
 import { assignFilters } from '../utils';
-import type { FieldProps, FieldState } from './base-field';
-import { BaseField } from './base-field';
+import type { FieldProps__olf, FieldState__olf } from './base-field';
+import { BaseField__old } from './base-field';
 
 type AdditionalButtonsRenderer = (
 	field: NodeDesc,
 	data: RecordData,
 	refreshFunction?: () => void,
-	formItem?: FormListItem
+	formItem?: FormListItem__olf
 ) => Component[] | undefined;
 
-interface LookupFieldState extends FieldState {
+interface LookupFieldState extends FieldState__olf {
 	filters?: GetRecordsFilter;
 	expanded?: boolean;
 	preventCreateButton?: boolean;
@@ -26,7 +26,7 @@ interface LookupFieldState extends FieldState {
 	additionalButtonsN2MRenderer?: AdditionalButtonsRenderer;
 }
 
-export interface LookupFieldProps extends FieldProps {
+export interface LookupFieldProps extends FieldProps__olf {
 	filters?: GetRecordsFilter;
 	expanded?: boolean;
 	hideIcon?: boolean;
@@ -38,7 +38,7 @@ export interface LookupFieldProps extends FieldProps {
 	additionalButtons?: AdditionalButtonsRenderer;
 }
 
-class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
+class fieldLookupMixins extends BaseField__old<LookupFieldProps, LookupFieldState> {
 	componentDidUpdate() {
 		if (!this.state.filters) {
 			this.setState({ filters: this.generateDefaultFiltersByProps(this.props) });

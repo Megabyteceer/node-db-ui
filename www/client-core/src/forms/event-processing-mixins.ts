@@ -3,11 +3,11 @@ import { E, FIELD_TYPE } from '../../../../types/generated';
 import { assert, throwError, validateFieldName } from '../assert';
 import type { BoolNum, FieldDesc, GetRecordsFilter, RecordData } from '../bs-utils';
 import { clientHandlers, type Handler } from '../events-handle';
-import type { FieldWrap } from '../fields/field-wrap';
+import type { FieldWrap__olf } from '../fields/field-wrap';
 import { CLIENT_SIDE_FORM_EVENTS, consoleLog, getData, L } from '../utils';
-import { BaseForm } from './base-form';
+import { BaseForm__olf } from './base-form';
 
-class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
+class FormEventProcessingMixins__olf<FieldsNames extends string> extends BaseForm__olf {
 	/** true if form opened for new record creation */
 	isNewRecord?: boolean;
 	/** true if form opened for editing existing form */
@@ -97,7 +97,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		return this.fieldsRefs.hasOwnProperty(fieldName);
 	}
 
-	getField(fieldName: FieldsNames): FieldWrap {
+	getField(fieldName: FieldsNames): FieldWrap__olf {
 		validateFieldName(fieldName);
 		if (!this.hasField(fieldName)) {
 			throwError('Unknown field: ' + fieldName);
@@ -395,4 +395,4 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 	}
 }
 
-export { FormEventProcessingMixins };
+export { FormEventProcessingMixins__olf };

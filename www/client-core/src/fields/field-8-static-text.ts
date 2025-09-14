@@ -4,9 +4,9 @@ import { globals } from '../../../../types/globals';
 import { throwError } from '../assert';
 import { R } from '../r';
 import { registerFieldClass } from '../utils';
-import { BaseField } from './base-field';
+import { BaseField__old } from './base-field';
 
-registerFieldClass(FIELD_TYPE.STATIC_HTML_BLOCK, class StaticTextField extends BaseField {
+registerFieldClass(FIELD_TYPE.STATIC_HTML_BLOCK, class StaticTextField extends BaseField__old {
 
 	setValue(_val: any) {
 		throwError('Cant set value for STATIC_HTML_BLOCK');

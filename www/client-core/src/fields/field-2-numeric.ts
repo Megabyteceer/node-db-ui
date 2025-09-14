@@ -1,11 +1,11 @@
 import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
 import { registerFieldClass } from '../utils';
-import { BaseField } from './base-field';
+import { BaseField__old } from './base-field';
 
 registerFieldClass(
 	FIELD_TYPE.NUMBER,
-	class NumericField extends BaseField {
+	class NumericField extends BaseField__old {
 
 		setValue(value: number) {
 			this.refToInput!.value = value;

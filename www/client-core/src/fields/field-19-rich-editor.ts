@@ -2,7 +2,7 @@ import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
 import { User } from '../user';
 import { L, registerFieldClass, renderIcon } from '../utils';
-import { BaseField, type FieldProps } from './base-field';
+import { BaseField__old, type FieldProps__olf } from './base-field';
 
 let idCounter = 0;
 
@@ -16,8 +16,8 @@ window.addEventListener('message', (e) => {
 
 registerFieldClass(
 	FIELD_TYPE.HTML_EDITOR,
-	class RichEditorField extends BaseField {
-		constructor(props: FieldProps) {
+	class RichEditorField extends BaseField__old {
+		constructor(props: FieldProps__olf) {
 			super(props);
 			this.iframeId = idCounter++;
 		}

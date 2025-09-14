@@ -2,33 +2,33 @@ import { Component, type ComponentChild } from 'preact';
 import { assert } from '../assert';
 import type { FieldDesc, GetRecordsFilter } from '../bs-utils';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
-import type { FormFull } from '../forms/form-full';
-import type { FormListItem } from '../forms/form-list-item';
-import type { FieldWrap } from './field-wrap';
+import type { FormFull__olf } from '../forms/form-full';
+import type { FormListItem__olf } from '../forms/form-list-item';
+import type { FieldWrap__olf } from './field-wrap';
 
 let autoFocusNow = true;
 const resetAutofocus = () => {
 	autoFocusNow = true;
 };
 
-export interface FieldProps {
+export interface FieldProps__olf {
 	field: FieldDesc;
-	form: FormFull | FormListItem;
+	form: FormFull__olf | FormListItem__olf;
 	hidden?: boolean;
-	parent?: BaseField;
+	parent?: BaseField__old;
 	isEdit?: boolean;
 	disabled?: boolean;
 	isCompact?: boolean;
 	maxLen?: number;
 	fieldDisabled?: boolean;
-	wrapper: FieldWrap;
+	wrapper: FieldWrap__olf;
 	initialValue: any;
 	parentTabName?: string;
 	additionalButtons?: AdditionalButtonsRenderer;
 	isTable?: boolean;
 }
 
-interface FieldState {
+interface FieldState__olf {
 	focused?: boolean;
 	value?: any;
 	requirement?: boolean;
@@ -41,7 +41,7 @@ interface RefToInput extends Component {
 	click(): void;
 }
 
-class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = FieldState> extends Component<T, T2> {
+class BaseField__old<T extends FieldProps__olf = FieldProps__olf, T2 extends FieldState__olf = FieldState__olf> extends Component<T, T2> {
 	refToInput: RefToInput | undefined;
 	forceBouncingTimeout?(): void;
 
@@ -52,7 +52,7 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 		if (Array.isArray(value)) {
 			value = value.slice();
 		}
-		(this as any).state = { value } as FieldState;
+		(this as any).state = { value } as FieldState__olf;
 		this.refGetter = this.refGetter.bind(this);
 	}
 
@@ -76,7 +76,7 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 	}
 
 	isEmpty(): boolean {
-		const val = (this.props.wrapper!.props.form as FormFull).currentData[this.props.field.fieldName];
+		const val = (this.props.wrapper!.props.form as FormFull__olf).currentData[this.props.field.fieldName];
 		return !val;
 	}
 
@@ -134,7 +134,7 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 	}
 
 	render(): ComponentChild {
-		return 'BaseField has no view.';
+		return 'BaseField__old has no view.';
 	}
 }
-export { BaseField, FieldState, RefToInput };
+export { BaseField__old, FieldState__olf, RefToInput };

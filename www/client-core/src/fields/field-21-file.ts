@@ -1,24 +1,24 @@
 import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
-import type { FormFull } from '../forms/form-full';
+import type { FormFull__olf } from '../forms/form-full';
 import { ENV } from '../main-frame';
 import { Modal } from '../modal';
 import { R } from '../r';
 import { checkFileSize, getReadableUploadSize, idToFileUrl, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
-import type { FieldProps, FieldState, RefToInput } from './base-field';
-import { BaseField } from './base-field';
-import type { FieldWrap } from './field-wrap';
+import type { FieldProps__olf, FieldState__olf, RefToInput } from './base-field';
+import { BaseField__old } from './base-field';
+import type { FieldWrap__olf } from './field-wrap';
 
 registerFieldClass(
 	FIELD_TYPE.FILE,
-	class FileField extends BaseField {
+	class FileField extends BaseField__old {
 		fileFormBodyRef!: FileFormBody;
 
 		setValue(val?: string) {
 			if (typeof val === 'string') {
 				this.setState({ value: val });
 			} else {
-				(this.props.form as FormFull).currentData[this.props.field.fieldName] = undefined;
+				(this.props.form as FormFull__olf).currentData[this.props.field.fieldName] = undefined;
 			}
 		}
 
@@ -66,14 +66,14 @@ registerFieldClass(
 	}
 );
 
-interface FileFormBodyProps extends FieldProps {
+interface FileFormBodyProps extends FieldProps__olf {
 	/** image/*,.pdf */
 	accept: string;
 	currentFileName?: string;
 
 }
 
-interface FileFormBodyState extends FieldState {
+interface FileFormBodyState extends FieldState__olf {
 	file?: File | null;
 }
 
@@ -98,12 +98,12 @@ class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
 		this.props.parent!.props.wrapper.hideTooltip();
 	}
 
-	async save(fieldWrap: FieldWrap) {
+	async save(fieldWrap: FieldWrap__olf) {
 		if (this.waitingForUpload) {
 			const n = this.formRef.base as HTMLFormElement;
 			const fileId = await submitData('api/uploadFile', serializeForm(n), true);
 			if (!fileId) {
-				(fieldWrap.props.form as FormFull).fieldAlert(fieldWrap.props.field!.fieldName, L('UPLOAD_ERROR'));
+				(fieldWrap.props.form as FormFull__olf).fieldAlert(fieldWrap.props.field!.fieldName, L('UPLOAD_ERROR'));
 			}
 			return fileId;
 		}
@@ -172,11 +172,11 @@ class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
 		);
 
 		let recIdField, nodeIdField;
-		if ((this.props.form as FormFull).currentData && (this.props.form as FormFull).currentData.id) {
+		if ((this.props.form as FormFull__olf).currentData && (this.props.form as FormFull__olf).currentData.id) {
 			recIdField = R.input({
 				name: 'recId',
 				className: 'hidden',
-				defaultValue: (this.props.form as FormFull).currentData.id
+				defaultValue: (this.props.form as FormFull__olf).currentData.id
 			});
 			nodeIdField = R.input({
 				name: 'nodeId',

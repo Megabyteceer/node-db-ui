@@ -3,7 +3,7 @@ import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { LookupValue, RecId, RecordData } from '../bs-utils';
 import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
-import { List } from '../forms/list';
+import { List__olf } from '../forms/list';
 import { R } from '../r';
 import { getNode, idToImgURL, L, registerFieldClass, renderIcon, scrollToVisible, sp } from '../utils';
 import { fieldLookupMixins, type LookupFieldProps } from './field-lookup-mixins';
@@ -179,7 +179,7 @@ class LookupManyToOneFiled extends fieldLookupMixins {
 			let list;
 			let clearBtn;
 			if (this.state.expanded) {
-				list = h(List, {
+				list = h(List__olf, {
 					preventCreateButton: this.state.preventCreateButton || this.props.preventCreateButton,
 					node: this.node,
 					nodeId: field.nodeRef!.id,

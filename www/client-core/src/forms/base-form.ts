@@ -1,16 +1,16 @@
 import type { FormFilters, NodeDesc, RecId, RecordData, RecordsData, VIEW_MASK } from '../bs-utils';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
-import type { FieldWrap } from '../fields/field-wrap';
+import type { FieldWrap__olf } from '../fields/field-wrap';
 import { goBack, L, showPrompt, updateHashLocation } from '../utils';
 
 import { Component, type ComponentChildren, type ComponentProps, type ComponentType } from 'preact';
 import { assert } from '../assert';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
-import type { List } from './list';
+import type { List__olf } from './list';
 
-interface FormProps extends ComponentProps<ComponentType<any>> {
+interface FormProps__olf extends ComponentProps<ComponentType<any>> {
 	initialData?: RecordData | RecordsData;
-	list?: List;
+	list?: List__olf;
 	parentForm?: LookupOneToManyFiled;
 	filters?: FormFilters;
 	node: NodeDesc;
@@ -32,7 +32,7 @@ interface FormProps extends ComponentProps<ComponentType<any>> {
 	overrideOrderData?: number;
 }
 
-interface FormState {
+interface FormState__olf {
 	data?: RecordData | RecordsData;
 	node: NodeDesc;
 	preventCreateButton?: boolean;
@@ -41,7 +41,7 @@ interface FormState {
 	hideControls?: boolean;
 }
 
-class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState> extends Component<T, T2> {
+class BaseForm__olf<T extends FormProps__olf = FormProps__olf, T2 extends FormState__olf = FormState__olf> extends Component<T, T2> {
 
 	nodeId: RecId;
 	/** id of current edited/shown record. 'new' - if record is not saved yet. */
@@ -49,11 +49,11 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 	/** true if form is editable or read only */
 	editable?: boolean;
 
-	/** *List* - uses *filters* as filters values for records fetch request;
+	/** *List__olf* - uses *filters* as filters values for records fetch request;
 	 * *FullForm* - uses *filters* as initialData and current tab store;  */
 	filters: FormFilters;
 
-	fieldsRefs: { [key: string]: FieldWrap };
+	fieldsRefs: { [key: string]: FieldWrap__olf };
 	/** set content of form header */
 	header: string | preact.Component;
 
@@ -73,7 +73,7 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		this.isDataModified = false;
 	}
 
-	componentWillReceiveProps(newProps: FormProps) {
+	componentWillReceiveProps(newProps: FormProps__olf) {
 		assert(((this.recId || 'new') === ((newProps.initialData ? (newProps.initialData as RecordData)?.id : newProps.recId) || 'new')) && (this.nodeId === (newProps.nodeId || newProps.node.id)), 'Form should be recreated, and not receive new props. Add \'key\' to parent element contains nodeId and recId.');
 	}
 
@@ -115,4 +115,4 @@ class BaseForm<T extends FormProps = FormProps, T2 extends FormState = FormState
 		return 'base form has no default render';
 	}
 }
-export { BaseForm, FormProps, FormState };
+export { BaseForm__olf, FormProps__olf, FormState__olf };

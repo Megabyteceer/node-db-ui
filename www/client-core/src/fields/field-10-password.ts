@@ -1,11 +1,11 @@
 import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
 import { registerFieldClass } from '../utils';
-import { BaseField } from './base-field';
+import { BaseField__old } from './base-field';
 
 registerFieldClass(
 	FIELD_TYPE.PASSWORD,
-	class PasswordField extends BaseField {
+	class PasswordField extends BaseField__old {
 
 		setValue(value: string) {
 			this.refToInput!.value = value;

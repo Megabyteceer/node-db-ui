@@ -3,9 +3,9 @@ import type { TreeItem } from '../../../../core/describe-node';
 import { NODE_ID, NODE_TYPE, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { NodeDesc } from '../bs-utils';
-import type { BaseForm } from '../forms/base-form';
-import type { FormEventProcessingMixins } from '../forms/event-processing-mixins';
-import type { FormFull } from '../forms/form-full';
+import type { BaseForm__olf } from '../forms/base-form';
+import type { FormEventProcessingMixins__olf } from '../forms/event-processing-mixins';
+import type { FormFull__olf } from '../forms/form-full';
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getNode, getRecordClient, getRecordsClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
@@ -21,7 +21,7 @@ throw new Error("admin-control imported in release build.");
 // */
 
 interface NodeAdminProps {
-	form?: BaseForm;
+	form?: BaseForm__olf;
 	menuItem?: TreeItem;
 }
 
@@ -97,12 +97,12 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 
 	render() {
 		let node: NodeDesc;
-		let form: FormFull | undefined;
+		let form: FormFull__olf | undefined;
 		let item: TreeItem | undefined;
 
 		if (this.props.form) {
 			node = this.props.form.props.node || this.node;
-			form = this.props.form as FormFull;
+			form = this.props.form as FormFull__olf;
 			if (!node) {
 				return R.div();
 			}
@@ -119,8 +119,8 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 
 		if (
 			form &&
-			(form as FormEventProcessingMixins<string>)._getFormEventHandler &&
-			(form as FormEventProcessingMixins<string>)._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE)
+			(form as FormEventProcessingMixins__olf<string>)._getFormEventHandler &&
+			(form as FormEventProcessingMixins__olf<string>)._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE)
 		) {
 			borderOnSave = ' admin-button-highlighted';
 		} else {
@@ -129,8 +129,8 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 
 		if (
 			form &&
-			(form as FormEventProcessingMixins<string>)._getFormEventHandler &&
-			(form as FormEventProcessingMixins<string>)._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE)
+			(form as FormEventProcessingMixins__olf<string>)._getFormEventHandler &&
+			(form as FormEventProcessingMixins__olf<string>)._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE)
 		) {
 			borderOnAfterSave = ' admin-button-highlighted';
 		} else {
@@ -139,8 +139,8 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 
 		if (
 			form &&
-			(form as FormEventProcessingMixins<string>)._getFormEventHandler &&
-			(form as FormEventProcessingMixins<string>)._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD)
+			(form as FormEventProcessingMixins__olf<string>)._getFormEventHandler &&
+			(form as FormEventProcessingMixins__olf<string>)._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD)
 		) {
 			borderOnLoad = ' admin-button-highlighted';
 		} else {

@@ -3,7 +3,7 @@ import type { NodePrivileges, NodePrivilegesRequest, NodePrivilegesRes } from '.
 import { NODE_TYPE } from '../../../../types/generated';
 import type { NodeDesc } from '../bs-utils';
 import { PRIVILEGES_MASK } from '../bs-utils';
-import { BaseForm, type FormProps, type FormState } from '../forms/base-form';
+import { BaseForm__olf, type FormProps__olf, type FormState__olf } from '../forms/base-form';
 import { R } from '../r';
 import { FormLoaderCog } from '../stage';
 import { iAdmin } from '../user';
@@ -133,13 +133,13 @@ class PrivilegesEditor extends Component<PrivilegesEditorProps> {
 	}
 }
 
-class AdminRolePrivilegesForm extends BaseForm<FormProps, FormState & {
+class AdminRolePrivilegesForm extends BaseForm__olf<FormProps__olf, FormState__olf & {
 	privilegesData: NodePrivilegesRes;
 	node: NodeDesc;
 }> {
 	initData!: NodePrivileges[];
 
-	constructor(props: FormProps) {
+	constructor(props: FormProps__olf) {
 		super(props);
 		this.saveClick = this.saveClick.bind(this);
 	}

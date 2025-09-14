@@ -3,7 +3,7 @@ import { FIELD_TYPE } from '../../../../types/generated';
 import type { BoolNum } from '../bs-utils';
 import { R } from '../r';
 import { L, registerFieldClass, renderIcon } from '../utils';
-import { BaseField } from './base-field';
+import { BaseField__old } from './base-field';
 
 interface CheckBoxProps {
 	defaultValue?: boolean;
@@ -46,7 +46,7 @@ class CheckBox extends Component<CheckBoxProps, {
 	}
 }
 
-registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField {
+registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField__old {
 
 	setValue(val: boolean | BoolNum) {
 		val = (val !== 0) && Boolean(val);

@@ -10,9 +10,8 @@ import { D, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 
 import { ENUM_ID, FIELD_TYPE, NODE_ID, NODE_TYPE, type IFiltersRecord } from '../types/generated';
 import { assert, throwError } from '../www/client-core/src/assert';
-import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, UserLangEntry } from '../www/client-core/src/bs-utils';
+import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, TreeItem, UserLangEntry } from '../www/client-core/src/bs-utils';
 import { FIELD_DATA_TYPE, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
-import type { BaseForm } from '../www/client-core/src/forms/base-form';
 import type { UserSession /* , usersSessionsStartedCount */ } from './auth';
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode /* , usersSessionsStartedCount */ } from './auth';
 import { ENV, type ENV_TYPE } from './ENV';
@@ -21,19 +20,6 @@ const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
 interface FilterRecord extends IFiltersRecord {
 	roles: number[];
-}
-
-export interface TreeItem {
-	children: TreeItem[];
-	icon: string;
-	id: NODE_ID;
-	name: string;
-	nodeType: NODE_TYPE;
-	parent: NODE_ID;
-	privileges: number;
-	field?: FieldDesc;
-	form?: BaseForm;
-	staticLink: string;
 }
 
 let fieldsById: Map<number, FieldDesc>;
@@ -563,7 +549,7 @@ import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordD
 
 	src.push(`
 import type { RecId, UserSession, VIEW_MASK } from '../www/client-core/src/bs-utils';
-import type { FormFull } from '../www/client-core/src/forms/form-full';
+import type { FormFull__olf } from '../www/client-core/src/forms/form-full';
 export class TypeGenerationHelper {`);
 
 	nodesData.forEach((nodeData) => {
@@ -601,7 +587,7 @@ export class TypeGenerationHelper {`);
 			const fieldsWithData = nodeData.fields!.filter(f => f.dataType !== FIELD_DATA_TYPE.NODATA);
 			const formInterfaceName = 'Form' + nodeName;
 
-			srcAdd.push(`export interface ${formInterfaceName} extends FormFull<T${nodeName}FieldsList> {`);
+			srcAdd.push(`export interface ${formInterfaceName} extends FormFull__olf<T${nodeName}FieldsList> {`);
 			for (const field of fieldsWithData) {
 				let type = getFieldTypeSrc(field);
 				srcAdd.push(`	${methodNameSet}(fieldName: '${field.fieldName}'): ${type};`);

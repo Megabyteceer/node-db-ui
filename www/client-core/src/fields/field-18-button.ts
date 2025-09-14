@@ -1,12 +1,12 @@
 import { FIELD_TYPE } from '../../../../types/generated';
-import type { FormFull } from '../forms/form-full';
+import type { FormFull__olf } from '../forms/form-full';
 import { R } from '../r';
 import { registerFieldClass, renderIcon } from '../utils';
-import { BaseField, type FieldProps } from './base-field';
+import { BaseField__old, type FieldProps__olf } from './base-field';
 
-registerFieldClass(FIELD_TYPE.BUTTON, class ButtonField extends BaseField {
+registerFieldClass(FIELD_TYPE.BUTTON, class ButtonField extends BaseField__old {
 
-	constructor(props: FieldProps) {
+	constructor(props: FieldProps__olf) {
 		super(props);
 		this.onClick = this.onClick.bind(this);
 	}
@@ -16,7 +16,7 @@ registerFieldClass(FIELD_TYPE.BUTTON, class ButtonField extends BaseField {
 	}
 
 	onClick() {
-		(this.props.form as FormFull).processFieldEvent(this.props.field, true);
+		(this.props.form as FormFull__olf).processFieldEvent(this.props.field, true);
 	}
 
 	render() {

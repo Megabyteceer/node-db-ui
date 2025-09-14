@@ -2,8 +2,8 @@
 import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
 import { registerFieldClass } from '../utils';
-import type { FieldProps, FieldState } from './base-field';
-import { BaseField } from './base-field';
+import type { FieldProps__olf, FieldState__olf } from './base-field';
+import { BaseField__old } from './base-field';
 
 const intToColor = (color: number, alpha: number) => {
 	const ret = 'rgba(' + ((color >> 16) & 255) + ',' + ((color >> 8) & 255) + ',' + (color & 255) + ',' + (alpha / 255.0).toFixed(2) + ')';
@@ -14,14 +14,14 @@ const validateValue = (val: any) => {
 	return (typeof val !== 'number' || isNaN(val)) ? 0xffffffff : val;
 };
 
-interface ColorFieldState extends FieldState {
+interface ColorFieldState extends FieldState__olf {
 	color: number;
 	alpha: number;
 }
 
-registerFieldClass(FIELD_TYPE.COLOR, class ColorField extends BaseField<FieldProps, ColorFieldState> {
+registerFieldClass(FIELD_TYPE.COLOR, class ColorField extends BaseField__old<FieldProps__olf, ColorFieldState> {
 
-	constructor(props: FieldProps) {
+	constructor(props: FieldProps__olf) {
 		super(props);
 		const val = validateValue(props.initialValue);
 		this.state = { value: val, color: val % 0x1000000, alpha: Math.floor(val / 0x1000000) };

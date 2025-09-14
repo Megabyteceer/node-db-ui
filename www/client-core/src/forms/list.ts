@@ -17,16 +17,16 @@ import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import { LeftBar } from '../left-bar';
 import { iAdmin } from '../user';
 import { deleteRecord, getListRenderer, getNode, getRecordsClient, isPresentListRenderer, isRecordRestrictedForDeletion, L, renderIcon, scrollToVisible, sp, UID, updateHashLocation } from '../utils';
-import type { FormProps, FormState } from './base-form';
-import { BaseForm } from './base-form';
-import { FormFull } from './form-full';
-import { FormListItem } from './form-list-item';
+import type { FormProps__olf, FormState__olf } from './base-form';
+import { BaseForm__olf } from './base-form';
+import { FormFull__olf } from './form-full';
+import { FormListItem__olf } from './form-list-item';
 
 const sortByOrder = (a: { order: number }, b: { order: number }) => {
 	return a.order - b.order;
 };
 
-function createPageButton(self: List, page: number, isActive: boolean) {
+function createPageButton(self: List__olf, page: number, isActive: boolean) {
 	if (isActive) {
 		return R.button({ key: page, className: 'page-btn page-btn-active' }, page + 1);
 	}
@@ -42,7 +42,7 @@ function createPageButton(self: List, page: number, isActive: boolean) {
 	);
 }
 
-interface ListProps extends FormProps {
+interface ListProps__olf extends FormProps__olf {
 	omitHeader?: boolean;
 	preventCreateButton?: boolean;
 	askToSaveParentBeforeCreation?: boolean;
@@ -50,7 +50,7 @@ interface ListProps extends FormProps {
 	additionalButtons?: AdditionalButtonsRenderer;
 }
 
-interface ListState extends Omit<FormState, 'data'> {
+interface ListState__olf extends Omit<FormState__olf, 'data'> {
 	noEditButton?: boolean;
 	hideSearch?: boolean;
 	additionalButtons?: AdditionalButtonsRenderer;
@@ -61,14 +61,14 @@ interface ListState extends Omit<FormState, 'data'> {
 	viewMask: VIEW_MASK;
 }
 
-class List extends BaseForm<ListProps, ListState> {
+class List__olf extends BaseForm__olf<ListProps__olf, ListState__olf> {
 	private searchInput!: RefToInput;
-	private subFormsRefs: { [key: number]: FormFull } = {};
+	private subFormsRefs: { [key: number]: FormFull__olf } = {};
 	private currentFetchingNodeId = -1;
 	private unmounted = false;
 	private searchTimeout = 0;
 
-	constructor(props: ListProps) {
+	constructor(props: ListProps__olf) {
 		assert(props.node || typeof props.nodeId === 'number', 'number expected');
 		super(props);
 		this.filters = Object.assign({}, props.filters);
@@ -228,11 +228,11 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 	}
 
-	subFormRef(ref: FormFull | undefined, itemNum: number) {
-		this.subFormsRefs[itemNum] = ref as FormFull;
+	subFormRef(ref: FormFull__olf | undefined, itemNum: number) {
+		this.subFormsRefs[itemNum] = ref as FormFull__olf;
 	}
 
-	getSubForms(): FormFull[] {
+	getSubForms(): FormFull__olf[] {
 		const ret = [];
 		for (const k in this.subFormsRefs) {
 			if (this.subFormsRefs.hasOwnProperty(k)) {
@@ -357,8 +357,8 @@ class List extends BaseForm<ListProps, ListState> {
 								key: UID(item),
 								className: 'inline-editable-item inline-editable-item-rec-id-' + item.id
 							},
-							h(FormFull, {
-								ref: (ref: FormFull | undefined) => {
+							h(FormFull__olf, {
+								ref: (ref: FormFull__olf | undefined) => {
 									this.subFormRef(ref, itemNum);
 								},
 								nodeId: node.id,
@@ -599,7 +599,7 @@ class List extends BaseForm<ListProps, ListState> {
 					this.state.hideControls;
 
 				const lines = data.items.map((item) => {
-					return h(FormListItem, {
+					return h(FormListItem__olf, {
 						nodeId: this.props.nodeId,
 						key: Math.random() + '_' + item.id,
 						disableDrafting: this.props.disableDrafting,
@@ -719,4 +719,4 @@ class List extends BaseForm<ListProps, ListState> {
 		);
 	}
 }
-export { List };
+export { List__olf };

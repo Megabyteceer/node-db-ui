@@ -4,9 +4,9 @@ import { NODE_TYPE } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { assert, throwError } from './assert';
 import { normalizeEnumName, type FormFilters, type RecId, type RecordData } from './bs-utils';
-import type { BaseForm } from './forms/base-form';
-import { FormFull } from './forms/form-full';
-import { List } from './forms/list';
+import type { BaseForm__olf } from './forms/base-form';
+import { FormFull__olf } from './forms/form-full';
+import { List__olf } from './forms/list';
 import { LeftBar } from './left-bar';
 import { R } from './r';
 import { getNode, getNodeIfPresentOnClient, getRecordClient, getRecordsClient, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from './utils';
@@ -30,7 +30,7 @@ class FormLoaderCog extends Component {
 }
 
 interface FormEntry {
-	form?: BaseForm;
+	form?: BaseForm__olf;
 	formContainer?: HTMLDivElement;
 	container: HTMLDivElement;
 	onModified?: (dataToSend?: RecordData) => void;
@@ -41,7 +41,7 @@ const allForms: FormEntry[] = [];
 class Stage extends Component<{}, {}> {
 	static allForms: FormEntry[];
 
-	static get currentForm(): BaseForm | undefined {
+	static get currentForm(): BaseForm__olf | undefined {
 		const e = Stage.currentFormEntry;
 		return e && e.form;
 	}
@@ -50,7 +50,7 @@ class Stage extends Component<{}, {}> {
 		return allForms[allForms.length - 1];
 	}
 
-	static get rootForm(): BaseForm | undefined {
+	static get rootForm(): BaseForm__olf | undefined {
 		return allForms[0] && allForms[0].form;
 	}
 
@@ -149,7 +149,7 @@ class Stage extends Component<{}, {}> {
 			return;
 		}
 
-		const ref = (form: BaseForm) => {
+		const ref = (form: BaseForm__olf) => {
 			if (form) {
 				formEntry.form = form;
 			}
@@ -168,10 +168,10 @@ class Stage extends Component<{}, {}> {
 		case NODE_TYPE.DOCUMENT:
 		case NODE_TYPE.SECTION:
 			if (recId || recId === 0) {
-				formType = FormFull;
+				formType = FormFull__olf;
 			} else {
-				formType = List;
-				assert(!modal, 'List could not be show at modal level.');
+				formType = List__olf;
+				assert(!modal, 'List__olf could not be show at modal level.');
 			}
 			break;
 		case NODE_TYPE.REACT_CLASS:

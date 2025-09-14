@@ -1,15 +1,5 @@
 
 
-
-переписать все компоненты на типизацию.  У класса геттеры .parent который укорачивает .props.parent
-каждый файл пролистать на предмет типизации каждого метода и свойства.
-
-
-
-
-
-
-
 FormNode от которого унаследовать Form и BaseField
 Все типизованые поля наследовать от BaseField и там методы renderField renerFielsEditable focusElementи encode decode Wrapper убрать.
 

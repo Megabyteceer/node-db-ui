@@ -5,15 +5,15 @@ import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 import { Component, h } from 'preact';
 import { FIELD_DISPLAY, FIELD_TYPE } from '../../../../types/generated';
-import type { FormFull } from '../forms/form-full';
+import type { FormFull__olf } from '../forms/form-full';
 import { iAdmin } from '../user';
 import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible } from '../utils';
-import type { BaseField, FieldProps, FieldState } from './base-field';
+import type { BaseField__old, FieldProps__olf, FieldState__olf } from './base-field';
 import type { LookupManyToManyFiled } from './field-14-many-to-many';
 import type { LookupOneToManyFiled } from './field-15-one-to-many';
 import type { AdditionalButtonsRenderer } from './field-lookup-mixins';
 
-class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
+class FieldWrap__olf extends Component<Partial<FieldProps__olf>, FieldState__olf & {
 	showToolTip?: boolean;
 	fieldAlert?: string;
 	isSuccessAlert?: boolean;
@@ -21,21 +21,21 @@ class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
 }> {
 
 	afterSave!: () => Promise<any>;
-	fieldRef!: BaseField;
+	fieldRef!: BaseField__old;
 	hidden?: boolean;
 	fieldDisabled = false;
 	private labelOverride?: string;
 	private currentValue: any;
 	private onChangeTimeout = 0;
 
-	constructor(props: Partial<FieldProps>) {
+	constructor(props: Partial<FieldProps__olf>) {
 		super(props);
 		this.state = {};
 		this.hidden = props.hidden;
 		this.componentWillReceiveProps(this.props);
 	}
 
-	componentWillReceiveProps(nextProps: Partial<FieldProps>) {
+	componentWillReceiveProps(nextProps: Partial<FieldProps__olf>) {
 		this.hidden = nextProps.hidden;
 		// this.currentValue = nextProps.initialValue;
 		if (nextProps.fieldDisabled) {
@@ -62,7 +62,7 @@ class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
 			const childrenFields = this.props.field!.childrenFields;
 			if (childrenFields) {
 				for (const childField of childrenFields) {
-					(this.props.form as FormFull).getField(childField.fieldName).hide();
+					(this.props.form as FormFull__olf).getField(childField.fieldName).hide();
 				}
 			}
 		}
@@ -105,7 +105,7 @@ class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
 			const childrenFields = this.props.field!.childrenFields;
 			if (childrenFields) {
 				for (const childField of childrenFields) {
-					(this.props.form as FormFull).getField(childField.fieldName).show();
+					(this.props.form as FormFull__olf).getField(childField.fieldName).show();
 				}
 			}
 		}
@@ -118,7 +118,7 @@ class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
 			const childrenFields = this.props.field!.childrenFields;
 			if (childrenFields) {
 				for (const childField of childrenFields) {
-					(this.props.form as FormFull).getField(childField.fieldName).disable();
+					(this.props.form as FormFull__olf).getField(childField.fieldName).disable();
 				}
 			}
 		}
@@ -131,7 +131,7 @@ class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
 			const childrenFields = this.props.field!.childrenFields;
 			if (childrenFields) {
 				for (const childField of childrenFields) {
-					(this.props.form as FormFull).getField(childField.fieldName).enable();
+					(this.props.form as FormFull__olf).getField(childField.fieldName).enable();
 				}
 			}
 		}
@@ -145,8 +145,8 @@ class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
 	}
 
 	sendCurrentValueToForm() {
-		if ((this.props.form as FormFull).setFieldValue) {
-			(this.props.form as FormFull).setFieldValue(this.props.field!.fieldName, this.currentValue, true);
+		if ((this.props.form as FormFull__olf).setFieldValue) {
+			(this.props.form as FormFull__olf).setFieldValue(this.props.field!.fieldName, this.currentValue, true);
 		}
 	}
 
@@ -187,7 +187,7 @@ class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
 		consoleLog('focus set ' + this.props.field!.fieldName);
 		/// #endif
 		if (this.props.parentTabName) {
-			(this.props.form as FormFull).setFormFilter('tab', this.props.parentTabName);
+			(this.props.form as FormFull__olf).setFormFilter('tab', this.props.parentTabName);
 		}
 		setTimeout(() => {
 			scrollToVisible(this);
@@ -227,9 +227,9 @@ class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
 		}
 	}
 
-	valueListener(newVal: any, withBounceDelay = false, _sender?: BaseField) {
+	valueListener(newVal: any, withBounceDelay = false, _sender?: BaseField__old) {
 		this.currentValue = newVal;
-		(this.props.form as FormFull).fieldAlert(this.props.field!.fieldName);
+		(this.props.form as FormFull__olf).fieldAlert(this.props.field!.fieldName);
 		if (withBounceDelay) {
 			this.clearChangeTimeout();
 			this.onChangeTimeout = window.setTimeout(() => {
@@ -255,10 +255,10 @@ class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
 			isEdit: this.props.isEdit,
 			fieldDisabled: this.fieldDisabled,
 			additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
-			ref: (fieldRef: BaseField) => {
+			ref: (fieldRef: BaseField__old) => {
 				this.fieldRef = fieldRef;
 			}
-		} as FieldProps;
+		} as FieldProps__olf;
 
 		const fieldTypedBody = h(getClassForField(field.fieldType), fieldProps);
 		let fieldCustomBody;
@@ -274,7 +274,7 @@ class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
 		/// #if DEBUG
 		let fieldAdmin;
 		if (iAdmin() && !field.lang && !this.props.isCompact) {
-			fieldAdmin = h(FieldAdmin, { field, form: this.props.form as FormFull });
+			fieldAdmin = h(FieldAdmin, { field, form: this.props.form as FormFull__olf });
 		}
 		/// #endif
 		let className =
@@ -286,7 +286,7 @@ class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
 		if (
 			this.hidden &&
 			/// #if DEBUG
-			!(this.props.form as FormFull).showAllDebug
+			!(this.props.form as FormFull__olf).showAllDebug
 			/// #endif
 		) {
 			className += ' hidden';
@@ -446,4 +446,4 @@ class FieldLabel extends Component<any, any> {
 	}
 }
 
-export { FieldHelp, FieldLabel, FieldWrap };
+export { FieldHelp, FieldLabel, FieldWrap__olf };

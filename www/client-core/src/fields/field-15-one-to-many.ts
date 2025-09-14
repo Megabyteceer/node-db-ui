@@ -3,14 +3,14 @@ import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../bs-utils';
 import { VIEW_MASK } from '../bs-utils';
-import type { FormFull } from '../forms/form-full';
-import { List } from '../forms/list';
+import type { FormFull__olf } from '../forms/form-full';
+import { List__olf } from '../forms/list';
 import { R } from '../r';
 import { assignFilters, deleteRecord, L, registerFieldClass } from '../utils';
 import { fieldLookupMixins, type LookupFieldProps } from './field-lookup-mixins';
 
 class LookupOneToManyFiled extends fieldLookupMixins {
-	inlineListRef!: List;
+	inlineListRef!: List__olf;
 
 	constructor(props: LookupFieldProps) {
 		super(props);
@@ -89,7 +89,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 				const initialData = form.props.initialData!;
 				const linkerName = this.getLinkerFieldName();
 				if (!initialData.hasOwnProperty(linkerName) || (initialData as KeyedMap<any>)[linkerName] === 'new') {
-					form.currentData[linkerName] = { id: (this.props.form as FormFull).currentData.id };
+					form.currentData[linkerName] = { id: (this.props.form as FormFull__olf).currentData.id };
 				}
 				await form.saveForm();
 			}
@@ -97,9 +97,9 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 	}
 
 	async saveParentFormBeforeCreation() {
-		await (this.props.form as FormFull).saveForm();
+		await (this.props.form as FormFull__olf).saveForm();
 		const linkerFieldName = this.getLinkerFieldName();
-		(this.state.filters as KeyedMap<any>)[linkerFieldName] = (this.props.form as FormFull).currentData.id;
+		(this.state.filters as KeyedMap<any>)[linkerFieldName] = (this.props.form as FormFull__olf).currentData.id;
 	}
 
 	setLookupFilter(filtersObjOrName: string | GetRecordsFilter, val?: any) {
@@ -129,8 +129,8 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 				};
 		return R.div(
 			null,
-			h(List, {
-				ref: (r: List) => {
+			h(List__olf, {
+				ref: (r: List__olf) => {
 					this.inlineListRef = r;
 				},
 				hideControls: this.state.hideControls,

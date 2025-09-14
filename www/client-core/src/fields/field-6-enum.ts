@@ -4,9 +4,9 @@ import { normalizeEnumName, type EnumList } from '../bs-utils';
 import { Select } from '../components/select';
 import { R } from '../r';
 import { registerFieldClass } from '../utils';
-import { BaseField } from './base-field';
+import { BaseField__old } from './base-field';
 
-class EnumField extends BaseField {
+class EnumField extends BaseField__old {
 
 	enum?: EnumList;
 

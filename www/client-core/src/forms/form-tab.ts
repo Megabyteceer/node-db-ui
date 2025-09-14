@@ -5,17 +5,17 @@ import { FieldAdmin } from '../admin/field-admin';
 
 import type { FieldDesc } from '../bs-utils';
 import { R } from '../r';
-import type { FormFull } from './form-full';
+import type { FormFull__olf } from './form-full';
 
 interface FormTabProps {
 	visible: boolean;
 	highlightFrame?: boolean;
 	field: FieldDesc;
 	fields: ComponentChild;
-	form?: FormFull;
+	form?: FormFull__olf;
 };
 
-class FormTab extends Component<FormTabProps, {
+class FormTab__olf extends Component<FormTabProps, {
 	visible: boolean;
 }> {
 
@@ -58,4 +58,4 @@ class FormTab extends Component<FormTabProps, {
 	}
 }
 
-export { FormTab };
+export { FormTab__olf };

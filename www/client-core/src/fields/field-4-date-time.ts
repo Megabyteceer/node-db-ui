@@ -4,10 +4,10 @@ import { FIELD_TYPE } from '../../../../types/generated';
 import { EMPTY_DATE } from '../consts';
 import { R } from '../r';
 import { innerDateTimeFormat, L, registerFieldClass, toReadableDateTime } from '../utils';
-import type { FieldProps, FieldState, RefToInput } from './base-field';
-import { BaseField } from './base-field';
+import type { FieldProps__olf, FieldState__olf, RefToInput } from './base-field';
+import { BaseField__old } from './base-field';
 
-interface DateTimeFieldState extends FieldState {
+interface DateTimeFieldState extends FieldState__olf {
 	value: moment.Moment;
 	minDate?: moment.Moment;
 	maxDate?: moment.Moment;
@@ -17,7 +17,7 @@ const momentToInputValue = (val: moment.Moment): string => {
 	return (val as moment.Moment).toDate().toISOString().slice(0, 16);
 };
 
-class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
+class dateFieldMixins extends BaseField__old<FieldProps__olf, DateTimeFieldState> {
 
 	setValue(val: moment.Moment | string) {
 		if (val) {

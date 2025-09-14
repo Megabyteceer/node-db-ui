@@ -3,8 +3,8 @@ import { FIELD_TYPE, NODE_ID, type IFieldsRecord, type INodesRecord } from '../.
 import { globals } from '../../../../types/globals';
 import type { FieldDesc } from '../bs-utils';
 import { Select, type SelectItem } from '../components/select';
-import type { FormFull } from '../forms/form-full';
-import type { List } from '../forms/list';
+import type { FormFull__olf } from '../forms/form-full';
+import type { List__olf } from '../forms/list';
 import { MainFrame } from '../main-frame';
 import { R } from '../r';
 import { consoleDir, getItem, getNode, getRecordClient, isLitePage, renderIcon, setItem, submitRecord } from '../utils';
@@ -39,7 +39,7 @@ setTimeout(() => {
 let iconsList: SelectItem[];
 
 class admin {
-	static async moveField(fIndex: number, form: FormFull | List, node: NodeDesc, direction = 0) {
+	static async moveField(fIndex: number, form: FormFull__olf | List__olf, node: NodeDesc, direction = 0) {
 		let fieldIndex;
 		let j = 0;
 		const fields = node.fields!.filter((f, i) => {
@@ -209,7 +209,7 @@ function initIconsList() {
 	}
 }
 
-function makeIconSelectionField(form: FormFull, fieldName: string) {
+function makeIconSelectionField(form: FormFull__olf, fieldName: string) {
 	if (!iconsList) {
 		initIconsList();
 	}
@@ -231,7 +231,7 @@ function makeIconSelectionField(form: FormFull, fieldName: string) {
 	);
 }
 
-function makeReactClassSelectionField(form: FormFull, fieldName: string) {
+function makeReactClassSelectionField(form: FormFull__olf, fieldName: string) {
 	const options = Object.keys(globals.customClasses).map((k) => {
 		return { name: k, value: k };
 	});
@@ -252,7 +252,7 @@ function makeReactClassSelectionField(form: FormFull, fieldName: string) {
 	);
 }
 
-function removeReactClassSelectionField(form: FormFull, fieldName: string) {
+function removeReactClassSelectionField(form: FormFull__olf, fieldName: string) {
 	const input = form.getFieldDomElement(fieldName).querySelector('input') as HTMLInputElement;
 	input.style.display = '';
 	form.renderToField(fieldName, 'classes-selector', null);

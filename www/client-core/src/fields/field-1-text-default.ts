@@ -1,11 +1,11 @@
 import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
 import { consoleDir, registerFieldClass } from '../utils';
-import { BaseField } from './base-field';
+import { BaseField__old } from './base-field';
 
 registerFieldClass(
 	FIELD_TYPE.TEXT,
-	class TextField extends BaseField {
+	class TextField extends BaseField__old {
 
 		setValue(value: string) {
 			this.refToInput!.value = value;

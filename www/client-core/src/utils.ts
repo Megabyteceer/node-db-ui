@@ -21,7 +21,7 @@ import { FIELD_TYPE, NODE_ID, type TypeGenerationHelper } from '../../../types/g
 import { globals } from '../../../types/globals';
 import { assert } from './assert';
 import { HotkeyButton } from './components/hotkey-button';
-import type { BaseField, FieldProps, FieldState } from './fields/base-field';
+import type { BaseField__old, FieldProps__olf, FieldState__olf } from './fields/base-field';
 import { ENV } from './main-frame';
 
 enum CLIENT_SIDE_FORM_EVENTS {
@@ -702,7 +702,7 @@ const _getRecordsClient = async (
 
 };
 
-const _fieldClasses = {} as KeyedMap<typeof BaseField<FieldProps, FieldState>>;
+const _fieldClasses = {} as KeyedMap<typeof BaseField__old<FieldProps__olf, FieldState__olf>>;
 const fieldsEncoders = {} as KeyedMap<(val: any) => any>;
 const fieldsDecoders = {} as KeyedMap<(val: any) => any>;
 
@@ -713,7 +713,7 @@ function getClassForField(type: FIELD_TYPE) {
 	return _fieldClasses[FIELD_TYPE.TEXT];
 }
 
-function registerFieldClass(type: FIELD_TYPE, class_: typeof BaseField<FieldProps, FieldState>) {
+function registerFieldClass(type: FIELD_TYPE, class_: typeof BaseField__old<FieldProps__olf, FieldState__olf>) {
 	if (_fieldClasses.hasOwnProperty(type)) {
 		throw new Error('Class for field type ' + type + ' is registered already');
 	}
@@ -1253,7 +1253,7 @@ const listRenderers = {} as KeyedMap<ListRenderer>;
 
 function registerListRenderer(nodeId: RecId, renderFunction: ListRenderer) {
 	if (listRenderers.hasOwnProperty(nodeId)) {
-		throw 'List renderer for node ' + nodeId + ' is already registered.';
+		throw 'List__olf renderer for node ' + nodeId + ' is already registered.';
 	}
 	listRenderers[nodeId] = renderFunction;
 }
