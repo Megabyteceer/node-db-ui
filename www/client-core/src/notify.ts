@@ -1,9 +1,9 @@
 import { Component } from 'preact';
 import { R } from './r';
 
-let instance;
+let instance!: Notify;
 
-let stack = [];
+let stack = [] as { content: string; id: number }[];
 let idCounter = 0;
 
 class Notify extends Component<{
@@ -16,11 +16,11 @@ class Notify extends Component<{
 		instance = this;
 	}
 
-	static add(content) {
+	static add(content: string) {
 		instance.add(content);
 	}
 
-	add(content) {
+	add(content: string) {
 		const id = idCounter++;
 		if (content) {
 			stack.push({ content: content, id: id });
@@ -31,7 +31,7 @@ class Notify extends Component<{
 		this.forceUpdate();
 	}
 
-	hideById(id) {
+	hideById(id: number) {
 		stack = stack.filter((i) => {
 			return i.id !== id;
 		});

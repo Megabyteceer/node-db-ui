@@ -13,14 +13,16 @@ const debugInfo = [] as DebugInfo[];
 throw new Error("debug-panel imported in release build.");
 // */
 
-class DebugPanel extends Component<{
-	// props
-}, {
+interface DebugPanelProps {
+
+}
+
+class DebugPanel extends Component<DebugPanelProps, {
 	expanded?: boolean;
 }> {
-	static instance: DebugPanel;
+	static instance?: DebugPanel;
 
-	constructor(props) {
+	constructor(props: DebugPanelProps) {
 		super(props);
 		this.state = { expanded: false };
 		DebugPanel.instance = this;
@@ -65,7 +67,7 @@ class DebugPanel extends Component<{
 		this.forceUpdate();
 	}
 
-	async deployClick(ev) {
+	async deployClick(ev: MouseEvent) {
 		sp(ev);
 		alert('TODO');
 
@@ -115,7 +117,7 @@ class DebugPanel extends Component<{
 					let entryBody;
 
 					if (i.hasOwnProperty('SQLs')) {
-						entryBody = i.SQLs.map((SQL, key) => {
+						entryBody = i.SQLs?.map((SQL, key) => {
 							return R.div({ key: key },
 
 								R.div({ className: 'debug-panel-header' },
@@ -165,7 +167,7 @@ class DebugPanel extends Component<{
 							R.br(),
 							'SQL ' + debugInfo.reduce((pc, i) => {
 								if (i.hasOwnProperty('SQLs')) {
-									pc += i.SQLs.length;
+									pc += i.SQLs!.length;
 								}
 								return pc;
 							}, 0)
@@ -180,7 +182,7 @@ class DebugPanel extends Component<{
 
 	}
 }
-/** @type DebugPanel */
-DebugPanel.instance = null;
+
+DebugPanel.instance = undefined;
 
 export { DebugPanel };

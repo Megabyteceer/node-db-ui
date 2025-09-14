@@ -60,8 +60,8 @@ export interface DebugInfo {
 }
 
 export const mysqlDebug = {
-	debugOutPut: undefined as DebugInfo
-};
+	debugOutPut: undefined
+} as { debugOutPut?: DebugInfo };
 
 /// #endif
 
@@ -75,7 +75,7 @@ const mysqlExec = (query: string): Promise<QueryResultRow[]> => {
 		timeElapsed_ms: performance.now(),
 		SQL: query,
 		stack: getCurrentStack()
-	};
+	} as SQLDebugInfo;
 	if (mysqlDebug.debugOutPut) {
 		if (!mysqlDebug.debugOutPut.SQLs) {
 			mysqlDebug.debugOutPut.SQLs = [];
@@ -87,7 +87,7 @@ const mysqlExec = (query: string): Promise<QueryResultRow[]> => {
 		return pool
 			.query(query)
 			.then((res) => {
-				SQL.timeElapsed_ms = performance.now() - SQL.timeElapsed_ms;
+				SQL.timeElapsed_ms = performance.now() - SQL.timeElapsed_ms!;
 				resolve(res.rows);
 			})
 			.catch((er) => {
@@ -102,7 +102,7 @@ const mysqlExec = (query: string): Promise<QueryResultRow[]> => {
 };
 
 let mysqlTransactStarted = false;
-const transactionsQue = [];
+const transactionsQue = [] as ((value: void) => void)[];
 
 function waitPrevTransactionFinish() {
 	return new Promise((resolve) => {
@@ -125,7 +125,7 @@ async function mysqlStartTransaction() {
 
 function nextTransaction() {
 	if (transactionsQue.length) {
-		transactionsQue.shift()();
+		(transactionsQue.shift()!)();
 	}
 }
 

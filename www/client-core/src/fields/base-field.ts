@@ -3,6 +3,7 @@ import { assert } from '../assert';
 import type { FieldDesc, GetRecordsFilter } from '../bs-utils';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import type { FormFull } from '../forms/form-full';
+import type { FormListItem } from '../forms/form-list-item';
 import type { FieldWrap } from './field-wrap';
 
 let autoFocusNow = true;
@@ -10,13 +11,14 @@ const resetAutofocus = () => {
 	autoFocusNow = true;
 };
 
-interface FieldProps {
+export interface FieldProps {
 	field: FieldDesc;
-	form: FormFull<string>;
-	parent: BaseField;
-	isEdit: boolean;
-	disabled: boolean;
-	isCompact: boolean;
+	form: FormFull | FormListItem;
+	hidden?: boolean;
+	parent?: BaseField;
+	isEdit?: boolean;
+	disabled?: boolean;
+	isCompact?: boolean;
 	maxLen?: number;
 	fieldDisabled?: boolean;
 	wrapper: FieldWrap;
@@ -35,15 +37,15 @@ interface FieldState {
 
 interface RefToInput extends Component {
 	value: any;
-	focus();
-	click();
+	focus(): void;
+	click(): void;
 }
 
 class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = FieldState> extends Component<T, T2> {
-	refToInput: RefToInput;
+	refToInput: RefToInput | undefined;
 	forceBouncingTimeout?(): void;
 
-	constructor(props) {
+	constructor(props: T) {
 		assert(props.field, '"field" property  expected.');
 		super(props);
 		let value = props.initialValue;
@@ -58,11 +60,14 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 	isAutoFocus() {
 		const ret = autoFocusNow;
 		if (autoFocusNow) {
-			autoFocusNow = undefined;
+			autoFocusNow = false;
 			setTimeout(resetAutofocus, 10);
 		}
 		return ret;
 	}
+
+	declare static decodeValue?: (val: any) => any;
+	declare static encodeValue?: (val: any) => any;
 
 	isRequired() {
 		return this.state.hasOwnProperty('requirement')
@@ -71,7 +76,7 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 	}
 
 	isEmpty(): boolean {
-		const val = this.props.wrapper.props.form.currentData[this.props.field.fieldName];
+		const val = (this.props.wrapper!.props.form as FormFull).currentData[this.props.field.fieldName];
 		return !val;
 	}
 
@@ -79,15 +84,15 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 		throw 'class ' + this.constructor.name + ' has no getBackupData() method.';
 	}
 
-	setMin(_val: number) {
+	setMin(_val: any) {
 		throw 'class ' + this.constructor.name + ' has no setMin() method.';
 	}
 
-	setMax(_val: number) {
+	setMax(_val: any) {
 		throw 'class ' + this.constructor.name + ' has no setMax() method.';
 	}
 
-	setLookupFilter(_name: string, _value: any) {
+	setLookupFilter(_name: string | GetRecordsFilter, _value: any) {
 		throw 'class ' + this.constructor.name + ' has no setLookupFilter() method.';
 	}
 
@@ -95,13 +100,13 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 		throw 'class ' + this.constructor.name + ' has no setValue() method.';
 	}
 
-	async getMessageIfInvalid?(): Promise<string | false | true>;
+	async getMessageIfInvalid?(): Promise<string | undefined>;
 	async beforeSave?(): Promise<unknown>;
 	async afterSave?(): Promise<unknown>;
 	inlineEditable?(): void;
 	extendEditor?(): void;
 
-	renderTextValue(txt) {
+	renderTextValue(txt: string) {
 		/* if (this.props.field.forSearch) { // TODO: searching highlighting
 			const list = this.props.form.props.list;
 			if (list && list.filters && list.filters.s) {
@@ -124,7 +129,7 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 		}
 	}
 
-	refGetter(refToInput) {
+	refGetter(refToInput: RefToInput) {
 		this.refToInput = refToInput;
 	}
 
@@ -132,4 +137,4 @@ class BaseField<T extends FieldProps = FieldProps, T2 extends FieldState = Field
 		return 'BaseField has no view.';
 	}
 }
-export { BaseField, FieldProps, FieldState, RefToInput };
+export { BaseField, FieldState, RefToInput };

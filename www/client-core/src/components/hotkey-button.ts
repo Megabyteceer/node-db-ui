@@ -2,7 +2,7 @@ import { Component } from 'preact';
 import { R } from '../r';
 import { sp } from '../utils';
 
-const allHotKeyedButtons = [];
+const allHotKeyedButtons = [] as HotkeyButton[];
 window.addEventListener('keydown', (ev) => {
 	for (const b of allHotKeyedButtons) {
 		if (b.onKeyDown(ev)) { // call only first button with this hotkey
@@ -26,7 +26,7 @@ const hotkeysBlockedWhenInputFocused = {
 	1088: true,
 	1086: true
 };
-function isHotkeyBlockedOnInput(btn) {
+function isHotkeyBlockedOnInput(btn: HotkeyButton) {
 	return btn.props.hotkey && hotkeysBlockedWhenInputFocused.hasOwnProperty(btn.props.hotkey);
 }
 
@@ -36,21 +36,23 @@ interface HotkeyButtonProps {
 	className?: string;
 	title?: string;
 	label?: any;
-	onClick: (ev) => void;
+	onClick: (ev: MouseEvent | KeyboardEvent) => void;
 }
 
-const isEventFocusOnInputElement = (ev) => {
-	const tag = ev.target.tagName.toLowerCase();
-	return (((tag === 'input') && (ev.target.type !== 'checkbox')) || tag === 'textarea' || tag === 'select');
+const isEventFocusOnInputElement = (ev: KeyboardEvent) => {
+	const tag = (ev.target as HTMLInputElement)?.tagName?.toLowerCase();
+	return (((tag === 'input') && (ev.target as HTMLInputElement).type !== 'checkbox')) || tag === 'textarea' || tag === 'select';
 };
 
-const isUIBlockedByModal = (_element) => {
-	// TODO:
+const isUIBlockedByModal = (_element: HTMLDivElement) => {
+	const rect = _element.getBoundingClientRect();
+	const element = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+	return _element !== element;
 };
 
 class HotkeyButton extends Component<HotkeyButtonProps> {
 
-	onKeyDown(e) {
+	onKeyDown(e: KeyboardEvent) {
 		if (!this.props.hotkey) {
 			return;
 		}
@@ -58,9 +60,9 @@ class HotkeyButton extends Component<HotkeyButtonProps> {
 
 		if (
 			this.props.disabled ||
-			((this.props.hotkey === 1067) && window.getSelection().toString()) ||
+			((this.props.hotkey === 1067) && window.getSelection()?.toString()) ||
 			(isEventFocusOnInputElement(e) && (isHotkeyBlockedOnInput(this))) ||
-			isUIBlockedByModal(this.base)
+			isUIBlockedByModal(this.base as HTMLDivElement)
 		) {
 			return;
 		}
@@ -72,13 +74,13 @@ class HotkeyButton extends Component<HotkeyButtonProps> {
 		}
 	}
 
-	constructor(props) {
+	constructor(props: HotkeyButtonProps) {
 		super(props);
 		this.state = {};
 		this.onClick = this.onClick.bind(this);
 	}
 
-	componentWillReceiveProps(props) {
+	componentWillReceiveProps(props: HotkeyButtonProps) {
 		if (this.props.hotkey !== props.hotkey) {
 			if (!props.hotkey && this.props.hotkey) {
 				this.unregisterHotkey();
@@ -111,11 +113,11 @@ class HotkeyButton extends Component<HotkeyButtonProps> {
 		this.unregisterHotkey();
 	}
 
-	onClick(ev) {
-		if ((ev.type === 'keydown') || (ev.button === 0)) {
+	onClick(ev: MouseEvent | KeyboardEvent) {
+		if ((ev.type === 'keydown') || ((ev as MouseEvent).button === 0)) {
 			if (this.props.disabled) return;
 			this.props.onClick(ev);
-			ev.target.blur();
+			(ev.target as HTMLDivElement).blur();
 		}
 		sp(ev);
 	}

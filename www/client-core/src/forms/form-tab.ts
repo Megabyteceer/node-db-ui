@@ -7,32 +7,34 @@ import type { FieldDesc } from '../bs-utils';
 import { R } from '../r';
 import type { FormFull } from './form-full';
 
-class FormTab extends Component<{
+interface FormTabProps {
 	visible: boolean;
-	highlightFrame: boolean;
+	highlightFrame?: boolean;
 	field: FieldDesc;
 	fields: ComponentChild;
-	form?: FormFull<string>;
-}, {
+	form?: FormFull;
+};
+
+class FormTab extends Component<FormTabProps, {
 	visible: boolean;
 }> {
 
-	constructor(props) {
+	constructor(props: FormTabProps) {
 		super(props);
 		this.state = { visible: this.props.visible };
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps(nextProps: any) {
 		this.setState({ visible: nextProps.visible });
 	}
 
-	show(_val) {
+	show(_val: any) {
 		if (!this.state.visible) {
 			this.setState({ visible: true });
 		}
 	}
 
-	hide(_val) {
+	hide(_val: any) {
 		if (this.state.visible) {
 			this.setState({ visible: false });
 		}
@@ -43,10 +45,11 @@ class FormTab extends Component<{
 		if (!this.state.visible) {
 			className += ' hidden';
 		}
+		/// #if DEBUG
 		if (this.props.highlightFrame) {
 			className += ' form-tab-highlight';
 		}
-
+		/// #endif
 		return R.div({ className },
 			/// #if DEBUG
 			(this.props.highlightFrame ? h(FieldAdmin, { field: this.props.field, form: this.props.form }) : ''),

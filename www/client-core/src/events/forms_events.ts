@@ -1,6 +1,6 @@
 import { attachGoogleLoginAPI, getData, getNode, goToHome, isAdmin, L, myAlert, showPrompt, submitData } from '../utils';
 /// #if DEBUG
-import { E, FIELD_TYPE, NODE_ID, NODE_TYPE, type FormFields, type FormNodes, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList } from '../../../../types/generated';
+import { E, FIELD_TYPE, NODE_ID, NODE_TYPE, type FormFields, type FormNodes, type IRegistrationFilter, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField } from '../admin/admin-utils';
 import type { FormFull } from '../forms/form-full';
@@ -8,9 +8,8 @@ import type { FormFull } from '../forms/form-full';
 
 import { VIEW_MASK } from '../bs-utils';
 
-import type { ResetPasswordData } from '../../../../core/events/_resetPassword';
 import { type IFieldsFilter, type IFiltersFilter, type ILanguagesFilter, type INodesFilter, type IUsersRecord } from '../../../../types/generated';
-import type { NodeDesc } from '../bs-utils';
+import type { NodeDesc, UserSession } from '../bs-utils';
 import { LANGUAGE_ID_DEFAULT } from '../bs-utils';
 import { clientOn } from '../events-handle';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
@@ -18,7 +17,7 @@ import { ENV } from '../main-frame';
 import { R } from '../r';
 import { iAdmin, User } from '../user';
 
-let uiLanguageIsChanged;
+let uiLanguageIsChanged = false;
 
 const checkPasswordConfirmation = (form: FormFull<TUsersFieldsList> | FormFull<TRegistrationFieldsList>) => {
 	const p = form.fieldValue('password');
@@ -99,9 +98,9 @@ clientOn(E._users.onSave, (form) => {
 		form.fieldAlert('password', L('PASS_LEN', 6));
 	}
 
-	if (User.currentUserData.id === form.recId) {
-		let pLang = (form.props.initialData as IUsersRecord).language;
-		let nLang = (form.props.initialData as IUsersRecord).language;
+	if (User.currentUserData?.id === form.recId) {
+		let pLang = (form.props.initialData as IUsersRecord).language!;
+		let nLang = (form.props.initialData as IUsersRecord).language!;
 
 		uiLanguageIsChanged = nLang.id != pLang.id;
 	}
@@ -115,9 +114,9 @@ clientOn(E._users.afterSave, (form) => {
 			}
 		});
 	}
-	if (form.recId === User.currentUserData.id) {
-		User.currentUserData.avatar = form.fieldValue('avatar');
-		User.instance.forceUpdate();
+	if (form.recId === User.currentUserData?.id) {
+		User.currentUserData!.avatar = form.fieldValue('avatar');
+		User.instance!.forceUpdate();
 	}
 });
 
@@ -369,7 +368,7 @@ clientOn(E._languages.onSave, (form) => {
 
 clientOn(E._enums.onSave, (form) => {
 	let ret;
-	const exists = {};
+	const exists = {} as KeyedMap<true>;
 	const valuesForms = (form.getField('values').fieldRef as LookupOneToManyFiled).inlineListRef.getSubForms();
 	for (const form of valuesForms) {
 		const val = form.fieldValue('value');
@@ -391,9 +390,9 @@ clientOn(E._filters.onLoad, (form) => {
 });
 
 clientOn(E._login.afterSave, (_form, result) => {
-	User.setUserData(result.handlerResult);
+	User.setUserData(result.handlerResult as UserSession);
 	if (window.onCurdJSLogin) {
-		window.onCurdJSLogin(result.handlerResult);
+		window.onCurdJSLogin(result.handlerResult as UserSession);
 	}
 });
 
@@ -406,7 +405,7 @@ clientOn(E._registration.afterSave, (form) => {
 	form.isPreventCloseFormAfterSave = true;
 });
 
-const showMessageAboutEmailSent = (txt, form: FormFull<TRegistrationFieldsList> | FormFull<TResetPasswordFieldsList>) => {
+const showMessageAboutEmailSent = (txt: string, form: FormFull<TRegistrationFieldsList> | FormFull<TResetPasswordFieldsList>) => {
 	myAlert(
 		R.span(null, txt, R.div({ className: 'email-highlight' }, form.fieldValue('email'))),
 		true,
@@ -449,8 +448,8 @@ clientOn(E._login.onLoad, (form) => {
 
 clientOn(E._resetPassword.onLoad, (form) => {
 	form.hideCancelButton();
-	const activationKey = (form.filters as ResetPasswordData).activationKey;
-	const resetCode = (form.filters as ResetPasswordData).resetCode;
+	const activationKey = (form.filters as IRegistrationFilter).activationKey;
+	const resetCode = (form.filters as any as KeyedMap<string>).resetCode; // resetCode taken from activation link url
 	if (activationKey || resetCode) {
 		form.hideField('email');
 		form.hideFooter();
@@ -508,7 +507,7 @@ const check12nFieldName = (form: FormFields) => {
 	}
 };
 
-const removeWrongCharactersInField = (form: FormFull<string>, fieldName: string) => {
+const removeWrongCharactersInField = (form: FormFull, fieldName: string) => {
 	const oldValue = form.fieldValue(fieldName);
 	if (oldValue) {
 		const newValue = oldValue.toLowerCase().replace(/[^a-z0-9]/gm, '_');

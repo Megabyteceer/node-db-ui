@@ -8,16 +8,16 @@ import { BaseField } from './base-field';
 
 class EnumField extends BaseField {
 
-	enum: EnumList;
+	enum?: EnumList;
 
-	setValue(value) {
+	setValue(value: number) {
 		this.setState({ value });
 	}
 
-	setFilterValues(filter) {
-		if (filter) {
+	setFilterValues(namesToFilter: string[]) {
+		if (namesToFilter) {
 			const en = Object.assign({}, this.props.field.enumList);
-			en.items = en.items.filter(v => filter.indexOf(v) < 0);
+			en.items = en.items.filter(v => !namesToFilter.includes(v.name));
 			this.enum = en;
 		} else {
 			delete this.enum;
@@ -40,16 +40,16 @@ class EnumField extends BaseField {
 				defaultValue: value,
 				title: field.name,
 				readOnly: this.props.fieldDisabled,
-				onInput: (val) => {
+				onInput: (val: string) => {
 					this.props.wrapper.valueListener(parseInt(val), false, this);
 				},
-				options: this.enum ? this.enum.items : field.enumList.items
+				options: this.enum ? this.enum.items : field.enumList!.items
 			};
 			return h(Select, inputsProps);
 		} else {
 			return R.span({
-				className: 'enum-type-' + normalizeEnumName(field.enumList.name).toLowerCase().replaceAll('_', '-') + ' enum-val-' + normalizeEnumName(field.enumList.namesByValue[value]).toLowerCase().replaceAll('_', '-')
-			}, field.enumList.namesByValue[value]);
+				className: 'enum-type-' + normalizeEnumName(field.enumList!.name).toLowerCase().replaceAll('_', '-') + (value ? ' enum-val-' + normalizeEnumName(field.enumList!.namesByValue[value]).toLowerCase().replaceAll('_', '-') : '')
+			}, field.enumList!.namesByValue[value]);
 		}
 	}
 }

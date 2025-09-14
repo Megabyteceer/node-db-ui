@@ -104,5 +104,8 @@ initDictionary({
 	'REGISTER': 'Зарегистрироваться',
 	'CLASS_NAME': 'Имя класса',
 	'FORM_IS_MODIFIED': 'Данные в форме отредактированы!',
-	'LEAVE_WITHOUT_SAVING': 'Покинуть форму без сохранения'
+	'LEAVE_WITHOUT_SAVING': 'Покинуть форму без сохранения',
+	'KEEP_EDITING': 'Остаться на форме',
+	'DATA_NOT_SAVED': 'Данные формы отредактировны.',
+	'NO_FILTER': 'Все'
 });

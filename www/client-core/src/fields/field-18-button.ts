@@ -1,21 +1,22 @@
 import { FIELD_TYPE } from '../../../../types/generated';
+import type { FormFull } from '../forms/form-full';
 import { R } from '../r';
 import { registerFieldClass, renderIcon } from '../utils';
-import { BaseField } from './base-field';
+import { BaseField, type FieldProps } from './base-field';
 
 registerFieldClass(FIELD_TYPE.BUTTON, class ButtonField extends BaseField {
 
-	constructor(props) {
+	constructor(props: FieldProps) {
 		super(props);
 		this.onClick = this.onClick.bind(this);
 	}
 
-	setValue(_val) {
+	setValue(_val: any) {
 		throw new Error('Cant set value for button');
 	}
 
 	onClick() {
-		this.props.form.processFieldEvent(this.props.field, true);
+		(this.props.form as FormFull).processFieldEvent(this.props.field, true);
 	}
 
 	render() {

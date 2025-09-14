@@ -2,7 +2,7 @@ import type { LANG_KEYS_CUSTOM } from '../../src/locales/en/lang';
 import { LITE_UI_PREFIX } from './consts';
 import type { LANG_KEYS } from './locales/en/lang';
 
-import type { FieldDesc, GetRecordsFilter, GetRecordsParams, IFormParameters, NodeDesc, RecId, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordsData, RecordSubmitResult, RecordSubmitResultNewRecord, UserSession } from './bs-utils';
+import type { ApiResponse, FieldDesc, GetRecordsFilter, GetRecordsParams, IFormParameters, LookupValue, NodeDesc, RecId, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordsData, RecordSubmitResult, RecordSubmitResultNewRecord, UserSession } from './bs-utils';
 import { HASH_DIVIDER, ROLE_ID, STATUS, USER_ID, VIEW_MASK } from './bs-utils';
 import { LoadingIndicator } from './loading-indicator';
 import { Modal } from './modal';
@@ -14,12 +14,14 @@ import { User } from './user';
 import { DebugPanel } from './debug-panel';
 /// #endif
 
+import type moment from 'moment';
 import type { Component, ComponentChild } from 'preact';
 import { h } from 'preact';
 import { FIELD_TYPE, NODE_ID, type TypeGenerationHelper } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { assert } from './assert';
 import { HotkeyButton } from './components/hotkey-button';
+import type { BaseField, FieldProps, FieldState } from './fields/base-field';
 import { ENV } from './main-frame';
 
 enum CLIENT_SIDE_FORM_EVENTS {
@@ -76,7 +78,7 @@ restrictRecordsDeletion({
 	[NODE_ID.ENUM_VALUES]: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 30, 43] /* disable field type enum deletion */
 });
 
-function isRecordRestrictedForDeletion(nodeId, recordId) {
+function isRecordRestrictedForDeletion(nodeId: NODE_ID, recordId: RecId) {
 	if (restrictedRecords.has(nodeId)) {
 		return restrictedRecords.get(nodeId).has(recordId);
 	}
@@ -169,25 +171,21 @@ async function showPrompt(txt: string | Component, yesLabel?: string, noLabel?: 
 	});
 }
 
-function debugError(txt) {
+function debugError(txt: string) {
 	/// #if DEBUG
 	debugger;
-	DebugPanel.instance.addEntry('ERROR: ' + txt, true);
+	DebugPanel.instance!.addEntry('ERROR: ' + txt, true);
 	/// #endif
 	console.error(txt);
 }
 
-let _oneFormShowed;
+let _oneFormShowed = false;
 const onOneFormShowed = () => {
 	_oneFormShowed = true;
 };
 
-function handleError(error, url, callStack) {
+function handleError(error: any, url: string, callStack = '') {
 	error = error.error || error;
-
-	if (!callStack) {
-		callStack = '';
-	}
 
 	/// #if DEBUG
 	if (error.debug) {
@@ -223,19 +221,19 @@ function handleError(error, url, callStack) {
 	}
 }
 
-function consoleLog(txt) {
+function consoleLog(txt: string) {
 	/// #if DEBUG
 	console.log(txt);
 	/// #endif
 }
 
-function consoleDir(o) {
+function consoleDir(o: any) {
 	/// #if DEBUG
 	console.dir(o);
 	/// #endif
 }
 
-function sp(event) {
+function sp(event: Event) {
 	event.stopPropagation();
 	if (event.cancelable) {
 		event.preventDefault();
@@ -243,7 +241,7 @@ function sp(event) {
 }
 
 /** SQL debug and server events notifications (notificationOut) */
-function handleAdditionalData(data, url) {
+function handleAdditionalData(data: ApiResponse, url: string) {
 	if (data.hasOwnProperty('debug') && data.debug) {
 		/// #if DEBUG
 		data.debug.request = url;
@@ -253,7 +251,7 @@ function handleAdditionalData(data, url) {
 		/// #endif
 		delete data.debug;
 	}
-	if (data.hasOwnProperty('notifications')) {
+	if (data.notifications) {
 		data.notifications.some((n) => {
 			Notify.add(n);
 		});
@@ -264,29 +262,32 @@ const INNER_DATE_TIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 const readableDateFormat = 'D MMMM YYYY';
 const readableTimeFormat = 'H:mm';
 
-function toReadableDate(d) {
+function toReadableDate(d: moment.Moment) {
 	if (d) {
-		d = d.format(readableDateFormat);
-		if (d === 'Invalid date') return '';
-		return d;
+		const txt = d.format(readableDateFormat);
+		if (txt !== 'Invalid date') {
+			return txt;
+		}
 	}
 	return '';
 }
 
-function toReadableDateTime(d) {
+function toReadableDateTime(d: moment.Moment | undefined) {
 	if (d) {
-		d = d.format(readableDateFormat + ' ' + readableTimeFormat);
-		if (d === 'Invalid date') return '';
-		return d;
+		const txt = d.format(readableDateFormat + ' ' + readableTimeFormat);
+		if (txt !== 'Invalid date') {
+			return txt;
+		}
 	}
 	return '';
 }
 
-function toReadableTime(d) {
+function toReadableTime(d: moment.Moment) {
 	if (d) {
-		d = d.format(readableTimeFormat);
-		if (d === 'Invalid date') return '';
-		return d;
+		const txt = d.format(readableTimeFormat);
+		if (txt !== 'Invalid date') {
+			return txt;
+		}
 	}
 	return '';
 }
@@ -313,7 +314,7 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: GetRecord
 	if (filters && Object.keys(filters).length > 0) {
 		let complicatedFilters = false;
 		for (const k in filters) {
-			const v = filters[k];
+			const v = (filters as KeyedMap<any>)[k];
 			if (typeof v === 'object') {
 				complicatedFilters = true;
 				break;
@@ -326,10 +327,10 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: GetRecord
 		} else {
 			const filtersHash = [];
 			for (const k in filters) {
-				if (filters.hasOwnProperty(k) && (filters[k] || filters[k] === 0)) {
+				if (filters.hasOwnProperty(k) && ((filters as KeyedMap<any>)[k] || (filters as KeyedMap<any>)[k] === 0)) {
 					if (k !== 'p' || filters[k] !== 0) {
 						filtersHash.push(k);
-						filtersHash.push(encodeURIComponent(filters[k] as string));
+						filtersHash.push(encodeURIComponent((filters as KeyedMap<any>)[k] as string));
 					}
 				}
 			}
@@ -348,23 +349,12 @@ function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: GetRecord
 	return retHash;
 }
 
-function isCurrentlyShowedLeftBarItem(item) {
-	const currentFormParameters = globals.Stage.currentForm;
-	if (item.id === false) {
-		if (!currentFormParameters.filters || Object.keys(currentFormParameters.filters).length === 0) {
-			return item.isDefault;
-		}
-		return item.tab === currentFormParameters.filters.tab;
-	}
-	return currentFormParameters.nodeId === item.id && currentFormParameters.recId === item.recId && currentFormParameters.editable === item.editable;
-}
-
 function hashToFormParams(hashTxt: string): IFormParameters {
 	if (!hashTxt) {
 		return { nodeId: getHomeNode(), filters: {} };
 	}
-	let nodeId;
-	let recId;
+	let nodeId!: NODE_ID;
+	let recId!: RecId | 'new' | string;
 	let editable;
 	let filters = {} as GetRecordsFilter;
 	const hash = hashTxt.split('/');
@@ -373,26 +363,26 @@ function hashToFormParams(hashTxt: string): IFormParameters {
 		i = hash.shift();
 		switch (i) {
 		case 'n':
-			nodeId = parseInt(hash.shift());
+			nodeId = parseInt(hash.shift()!);
 			break;
 		case 'r':
-			recId = hash.shift();
+			recId = hash.shift()!;
 			break;
 		case 'e':
 			editable = true;
 			break;
 		case 'j':
-			filters = JSON.parse(decodeURIComponent(hash.shift()));
+			filters = JSON.parse(decodeURIComponent(hash.shift()!));
 			break;
 		case 'f':
 			while (hash.length) {
-				const key = hash.shift();
-				let val = decodeURIComponent(hash.shift());
+				const key = hash.shift()!;
+				let val = decodeURIComponent(hash.shift()!);
 				const numVal = parseInt(val); // return numeric values to filter
 				if (val == numVal.toString()) {
-					filters[key] = numVal;
+					(filters as KeyedMap<any>)[key] = numVal;
 				} else {
-					filters[key] = val;
+					(filters as KeyedMap<any>)[key] = val;
 				}
 			}
 			break;
@@ -403,15 +393,15 @@ function hashToFormParams(hashTxt: string): IFormParameters {
 	}
 	if (recId !== 'new') {
 		if (recId) {
-			recId = parseInt(recId);
+			recId = parseInt(recId as string);
 		}
 	}
-	return { recId, nodeId, editable, filters };
+	return { recId: recId as RecId, nodeId, editable, filters };
 }
 
 function getTopHashNodeId() {
 	const hash = window.location.hash.substr(1);
-	return hashToFormParams(hash.split(HASH_DIVIDER).pop()).nodeId;
+	return hashToFormParams(hash.split(HASH_DIVIDER).pop()!).nodeId;
 }
 
 async function goToPageByHash() {
@@ -425,7 +415,7 @@ async function goToPageByHash() {
 
 	for (level = 0; level < formParamsByLevels.length && level < Stage.allForms.length; level++) {
 		const formParams = formParamsByLevels[level];
-		const form = Stage.allForms[level].form;
+		const form = Stage.allForms[level].form!;
 
 		let isTheSame = form && formParams.nodeId === form.nodeId && formParams.recId === form.recId && Boolean(formParams.editable) === Boolean(form.editable);
 		if (isTheSame) {
@@ -459,10 +449,11 @@ async function goToPageByHash() {
 	}
 }
 
-const SKIP_HISTORY_NODES = {};
-SKIP_HISTORY_NODES[NODE_ID.LOGIN] = true;
-SKIP_HISTORY_NODES[NODE_ID.REGISTRATION] = true;
-SKIP_HISTORY_NODES[NODE_ID.RESET_PASSWORD] = true;
+const SKIP_HISTORY_NODES = {
+	[NODE_ID.LOGIN]: true,
+	[NODE_ID.REGISTRATION]: true,
+	[NODE_ID.RESET_PASSWORD]: true
+} as KeyedMap<boolean>;
 
 async function goBack(isAfterDelete?: boolean) {
 	const currentFormParameters = globals.Stage.currentForm;
@@ -485,8 +476,8 @@ async function goBack(isAfterDelete?: boolean) {
 	}
 }
 
-function assignFilters(src, desc): boolean {
-	let leastOneUpdated;
+function assignFilters(src: KeyedMap<any>, desc: KeyedMap<any>): boolean {
+	let leastOneUpdated = false;
 	const keys = Object.keys(src);
 	for (let i = keys.length; i > 0;) {
 		i--;
@@ -511,17 +502,17 @@ function updateHashLocation(replaceState = false) {
 		'#' +
 		globals.Stage.allForms
 			.map((formEntry) => {
-				const formParameters = formEntry.form;
+				const formParameters = formEntry.form!;
 				const filters = formParameters.filters;
-				return locationToHash(formParameters.nodeId, formParameters.recId, filters, formParameters.editable);
+				return locationToHash(formParameters.nodeId, formParameters.recId!, filters, formParameters.editable);
 			})
 			.join(HASH_DIVIDER);
 
 	if (location.hash != newHash && location.hash != newHash.substr(1)) {
 		if (replaceState) {
-			history.replaceState(null, null, newHash);
+			history.replaceState(null, '', newHash);
 		} else {
-			history.pushState(null, null, newHash);
+			history.pushState(null, '', newHash);
 		}
 	}
 }
@@ -550,7 +541,7 @@ onNewUser();
 
 function waitForNodeInner(nodeId: NODE_ID, callback: (node: NodeDesc) => void) {
 	if (nodes.has(nodeId)) {
-		callback(nodes.get(nodeId));
+		callback(nodes.get(nodeId)!);
 	} else {
 		setTimeout(() => {
 			waitForNodeInner(nodeId, callback);
@@ -558,9 +549,9 @@ function waitForNodeInner(nodeId: NODE_ID, callback: (node: NodeDesc) => void) {
 	}
 }
 
-async function waitForNode(nodeId): Promise<NodeDesc> {
+async function waitForNode(nodeId: NODE_ID): Promise<NodeDesc> {
 	if (nodes.has(nodeId)) {
-		return nodes.get(nodeId);
+		return nodes.get(nodeId)!;
 	}
 	return new Promise((resolve) => {
 		waitForNodeInner(nodeId, resolve);
@@ -568,7 +559,7 @@ async function waitForNode(nodeId): Promise<NodeDesc> {
 }
 
 function getNodeIfPresentOnClient(nodeId: RecId): NodeDesc {
-	return nodes.get(nodeId);
+	return nodes.get(nodeId)!;
 }
 
 async function getNode(nodeId: NODE_ID, forceRefresh = false, callStack?: string): Promise<NodeDesc> {
@@ -582,20 +573,16 @@ async function getNode(nodeId: NODE_ID, forceRefresh = false, callStack?: string
 	}
 
 	if (nodes.hasOwnProperty(nodeId)) {
-		return nodes.get(nodeId);
+		return nodes.get(nodeId)!;
 	} else {
 		if (nodesRequested.has(nodeId)) {
 			return waitForNode(nodeId);
 		} else {
-			try {
-				nodesRequested.add(nodeId);
-				const data = await getData('api/descNode', { nodeId });
-				normalizeNode(data);
-				nodes.set(nodeId, data);
-				return data;
-			} catch (_er) {
-				nodesRequested.delete(nodeId);
-			}
+			nodesRequested.add(nodeId);
+			const data = (await getData('api/descNode', { nodeId })) as NodeDesc;
+			normalizeNode(data);
+			nodes.set(nodeId, data);
+			return data;
 		}
 	}
 }
@@ -607,11 +594,11 @@ function normalizeNode(node: NodeDesc) {
 		node.fields.forEach((f: FieldDesc, i) => {
 			f.index = i;
 			f.node = node;
-			node.fieldsById[f.id] = f;
-			node.fieldsByName[f.fieldName] = f;
+			node.fieldsById![f.id] = f;
+			node.fieldsByName![f.fieldName] = f;
 			if (f.lang) {
 				const fieldId = f.id as unknown as string; // language data fields have string ids of format: "77$ru"
-				const parentField: FieldDesc = node.fieldsById[fieldId.substr(0, fieldId.indexOf('$'))];
+				const parentField: FieldDesc = node.fieldsById![fieldId.split('$')[0] as any];
 				if (!parentField.childrenFields) {
 					parentField.childrenFields = [];
 				}
@@ -625,16 +612,16 @@ function normalizeNode(node: NodeDesc) {
 	if (node.filters) {
 		node.filtersList = Object.keys(node.filters)
 			.sort((a, b) => {
-				return node.filters[a].order - node.filters[b].order;
+				return node.filters![a].order! - node.filters![b].order!;
 			})
 			.map((k) => {
-				return { value: k, name: node.filters[k].name };
+				return { value: k, name: node.filters![k].name };
 			});
 		if (node.defaultFilterId && !node.filters[node.defaultFilterId.id]) {
 			node.defaultFilterId = node.filtersList.length ? node.filtersList[0].value : 0;
 		}
 		if (!node.defaultFilterId) {
-			node.filtersList.unshift({ value: undefined, name: '-' });
+			node.filtersList.unshift({ value: undefined, name: L('NO_FILTER') });
 		}
 	}
 }
@@ -683,61 +670,59 @@ const _getRecordsClient = async (
 		params.descNode = true;
 		nodesRequested.add(nodeId);
 	}
-	try {
-		if (filters) {
-			Object.assign(params, filters);
-		}
 
-		let data = await getData('api/', params, callStack, noLoadingIndicator);
-
-		if (data.hasOwnProperty('node')) {
-			if (nodes.has(nodeId)) {
-				debugError('Node description overriding.');
-			}
-			normalizeNode(data.node);
-			nodes.set(nodeId, data.node);
-			delete data.node;
-		}
-
-		const node = await waitForNode(nodeId);
-
-		data = data.data;
-		if (data) {
-			if (data.hasOwnProperty('items')) {
-				for (const k in data.items) {
-					decodeData(data.items[k], node);
-				}
-			} else {
-				decodeData(data, node);
-			}
-		}
-		return data;
-	} catch (_err) {
-		nodesRequested.delete(nodeId);
+	if (filters) {
+		Object.assign(params, filters);
 	}
+
+	let data = await getData('api/', params, callStack, noLoadingIndicator);
+
+	if (data.hasOwnProperty('node')) {
+		if (nodes.has(nodeId)) {
+			debugError('Node description overriding.');
+		}
+		normalizeNode(data.node);
+		nodes.set(nodeId, data.node);
+		delete data.node;
+	}
+
+	const node = await waitForNode(nodeId);
+
+	data = data.data;
+	if (data) {
+		if (data.hasOwnProperty('items')) {
+			for (const k in data.items) {
+				decodeRecoreData(data.items[k], node);
+			}
+		} else {
+			decodeRecoreData(data, node);
+		}
+	}
+	return data;
+
 };
 
-const _fieldClasses = {};
-const fieldsEncoders = [];
-const fieldsDecoders = [];
+const _fieldClasses = {} as KeyedMap<typeof BaseField<FieldProps, FieldState>>;
+const fieldsEncoders = {} as KeyedMap<(val: any) => any>;
+const fieldsDecoders = {} as KeyedMap<(val: any) => any>;
 
-function getClassForField(type) {
+function getClassForField(type: FIELD_TYPE) {
 	if (_fieldClasses.hasOwnProperty(type)) {
 		return _fieldClasses[type];
 	}
 	return _fieldClasses[FIELD_TYPE.TEXT];
 }
 
-function registerFieldClass(type, class_) {
+function registerFieldClass(type: FIELD_TYPE, class_: typeof BaseField<FieldProps, FieldState>) {
 	if (_fieldClasses.hasOwnProperty(type)) {
 		throw new Error('Class for field type ' + type + ' is registered already');
 	}
 
-	if (class_.hasOwnProperty('decodeValue')) {
+	if (class_.decodeValue) {
 		fieldsDecoders[type] = class_.decodeValue;
 		delete class_.decodeValue;
 	}
-	if (class_.hasOwnProperty('encodeValue')) {
+	if (class_.encodeValue) {
 		fieldsEncoders[type] = class_.encodeValue;
 		delete class_.encodeValue;
 	}
@@ -745,9 +730,8 @@ function registerFieldClass(type, class_) {
 	_fieldClasses[type] = class_;
 }
 
-function decodeData(data, node) {
-	for (const k in node.fields) {
-		const f = node.fields[k];
+function decodeRecoreData(data: KeyedMap<any>, node: NodeDesc) {
+	for (const f of node.fields!) {
 		if (data.hasOwnProperty(f.fieldName)) {
 			if (fieldsDecoders.hasOwnProperty(f.fieldType)) {
 				data[f.fieldName] = fieldsDecoders[f.fieldType](data[f.fieldName]);
@@ -755,40 +739,35 @@ function decodeData(data, node) {
 		}
 	}
 }
-function encodeData(data, node): RecordData {
+function encodeData(data: KeyedMap<any>, node: NodeDesc): RecordData {
 	const ret = Object.assign({}, data);
-	for (const k in node.fields) {
-		const f = node.fields[k];
+	for (const f of node.fields!) {
 		if (ret.hasOwnProperty(f.fieldName)) {
 			if (fieldsEncoders.hasOwnProperty(f.fieldType)) {
 				ret[f.fieldName] = fieldsEncoders[f.fieldType](ret[f.fieldName]);
 			}
 		}
 	}
-	return ret;
+	return ret as RecordData;
 }
 
-function addMixins(Class, mixins) {
-	Object.assign(Class.prototype, mixins);
-}
-
-const submitRecord: TypeGenerationHelper['s'] = (async (nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId?: RecId): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
+const submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId?: RecId): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	if (Object.keys(data).length === 0) {
 		throw 'Tried to submit empty object';
 	}
 	const node = await getNode(nodeId);
 	return submitData('api/submit', { nodeId, recId, data: encodeData(data, node) });
-}) as unknown as TypeGenerationHelper['s'];
+};
 
 let UID_counter = 1;
-function UID(obj): number {
+function UID(obj: KeyedMap<any>): number {
 	if (!obj.hasOwnProperty('__uid109Hd')) {
 		obj.__uid109Hd = UID_counter++;
 	}
 	return obj.__uid109Hd;
 }
 
-function idToImgURL(imgId, holder) {
+function idToImgURL(imgId: string | undefined, holder: string) {
 	if (imgId) {
 		if (imgId.indexOf('//') >= 0) {
 			return imgId;
@@ -798,12 +777,12 @@ function idToImgURL(imgId, holder) {
 	return 'images/placeholder_' + holder + '.png';
 }
 
-function idToFileUrl(fileId) {
+function idToFileUrl(fileId: string) {
 	return 'uploads/file/' + fileId;
 }
 
-const __requestsOrder = [];
-function releaseQuiresOrder(requestRecord) {
+const __requestsOrder = [] as RequestRecord[];
+function releaseQuiresOrder(requestRecord: RequestRecord) {
 	const roi = __requestsOrder.indexOf(requestRecord);
 	/// #if DEBUG
 	if (roi < 0) {
@@ -814,16 +793,18 @@ function releaseQuiresOrder(requestRecord) {
 	__requestsOrder.splice(roi, 1);
 }
 
+interface RequestRecord {
+	url: string;
+	resolve: (value: unknown) => void;
+	reject: (value: unknown) => void;
+	result?: any;
+}
+
 async function getData(url: string, params?: { [key: string]: any }, callStack?: string, noLoadingIndicator?: boolean): Promise<any> {
 	return new Promise((resolve, reject) => {
 		assert(url.indexOf('?') < 0, 'More parameters to data');
 
-		const requestRecord: {
-			url: string;
-			resolve: (value: unknown) => void;
-			reject: (value: unknown) => void;
-			result?: any;
-		} = {
+		const requestRecord: RequestRecord = {
 			/// #if DEBUG
 			url: url,
 			/// #endif
@@ -883,11 +864,11 @@ async function getData(url: string, params?: { [key: string]: any }, callStack?:
 					releaseQuiresOrder(requestRecord);
 				}
 				while (__requestsOrder.length > 0 && __requestsOrder[0].hasOwnProperty('result')) {
-					const rr = __requestsOrder.shift();
+					const rr = __requestsOrder.shift()!;
 					rr.resolve(rr.result);
 				}
 				if (!noLoadingIndicator) {
-					LoadingIndicator.instance.hide();
+					LoadingIndicator.instance!.hide();
 				}
 			});
 	});
@@ -909,7 +890,7 @@ async function draftRecord(nodeId: NODE_ID, recId: RecId): Promise<RecordSubmitR
 	return submitRecord(nodeId, { status: STATUS.DRAFT }, recId);
 }
 
-function isAuthNeed(data) {
+function isAuthNeed(data: ApiResponse) {
 	const token = getSessionToken();
 	if (token && token !== 'guest-session' && data.error && (data.error.startsWith('Error: <auth>') || data.error.startsWith('<auth>'))) {
 		clearSessionToken();
@@ -925,7 +906,7 @@ function isAuthNeed(data) {
 
 function serializeForm(form: HTMLFormElement): FormData {
 	const ret = new FormData(form);
-	ret.set('sessionToken', User.currentUserData.sessionToken);
+	ret.set('sessionToken', User.currentUserData!.sessionToken);
 	return ret;
 }
 
@@ -939,10 +920,10 @@ window.addEventListener('beforeunload', function (e) {
 	}
 });
 
-function submitData(url: string, dataToSend: FormData, noProcessData): Promise<any>;
+function submitData(url: string, dataToSend: FormData, noProcessData?: boolean): Promise<any>;
 function submitData(url: string, dataToSend: any): Promise<any>;
 function submitData(url: string, dataToSend: any, noProcessData?: boolean): Promise<any> {
-	LoadingIndicator.instance.show();
+	LoadingIndicator.instance!.show();
 
 	let body: FormData;
 	if (!noProcessData) {
@@ -988,18 +969,18 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 		// */
 			.finally(() => {
 				requestsInProgress--;
-				LoadingIndicator.instance.hide();
+				LoadingIndicator.instance!.hide();
 			})
 	);
 }
 
-async function deleteRecord(name, nodeId: RecId, recId: RecId, noPrompt?: boolean, onYes?: () => void) {
+async function deleteRecord(name: string | null, nodeId: RecId, recId: RecId, noPrompt?: boolean, onYes?: () => void) {
 	if (noPrompt) {
 		if (onYes) {
 			onYes();
 		} else {
 			await submitData('api/delete', { nodeId, recId });
-			globals.Stage.dataDidModified(null);
+			globals.Stage.dataDidModified(undefined);
 			return true;
 		}
 	} else {
@@ -1010,7 +991,7 @@ async function deleteRecord(name, nodeId: RecId, recId: RecId, noPrompt?: boolea
 	}
 }
 
-function n2mValuesEqual(v1, v2) {
+function n2mValuesEqual(v1: LookupValue[] | undefined, v2: LookupValue[] | undefined) {
 	if (!v1 && !v2) {
 		return true;
 	}
@@ -1019,12 +1000,12 @@ function n2mValuesEqual(v1, v2) {
 		return false;
 	}
 
-	if (v1.length != v2.length) {
+	if (v1?.length !== v2?.length) {
 		return false;
 	} else {
 		for (const i in v1) {
-			const i1 = v1[i];
-			const i2 = v2[i];
+			const i1 = v1![i as any];
+			const i2 = v2![i as any];
 
 			if (Boolean(i1) !== Boolean(i2)) {
 				return false;
@@ -1040,7 +1021,7 @@ function n2mValuesEqual(v1, v2) {
 	return true;
 }
 
-function renderIcon(name) {
+function renderIcon(name: string) {
 	if (!name) {
 		return undefined;
 	}
@@ -1055,9 +1036,9 @@ if (isLitePage()) {
 	document.body.classList.add('lite-ui');
 }
 
-function scrollToVisible(elem, doNotShake = false) {
+function scrollToVisible(elem: Component | HTMLDivElement, doNotShake = false) {
 	if (elem) {
-		const element = elem.base as HTMLDivElement;
+		const element = (elem as Component).base as HTMLDivElement || elem;
 		if ((element as any).scrollIntoViewIfNeeded) {
 			(element as any).scrollIntoViewIfNeeded(false);
 		} else {
@@ -1069,7 +1050,7 @@ function scrollToVisible(elem, doNotShake = false) {
 	}
 }
 
-function shakeDomElement(e) {
+function shakeDomElement(e: HTMLDivElement) {
 	if (e) {
 		e.classList.remove('shake');
 		// access to property to apply class animation hack
@@ -1090,14 +1071,14 @@ function getItem(name: string, def?: any) {
 	return def;
 }
 
-function setItem(name, val) {
+function setItem(name: string, val: any) {
 	if (typeof Storage !== 'undefined') {
 		assert(typeof val !== 'undefined', 'setItem() got an invalid value.');
 		localStorage.setItem(name, JSON.stringify(val));
 	}
 }
 
-function removeItem(name) {
+function removeItem(name: string) {
 	if (typeof Storage !== 'undefined') {
 		localStorage.removeItem(name);
 	}
@@ -1114,31 +1095,29 @@ function openIndexedDB() {
 	return openDB;
 }
 
+interface DBRef {
+	result: IDBDatabase;
+	tx: IDBTransaction;
+	store: IDBObjectStore;
+}
+
 function getStoreIndexedDB(openDB: IDBOpenDBRequest) {
-	const db: any = {};
+	const db = {} as DBRef;
 	db.result = openDB.result;
 	db.tx = db.result.transaction('MyObjectStore', 'readwrite');
 	db.store = db.tx.objectStore('MyObjectStore');
 	return db;
 }
 
-let dbWriteInProgress;
-
 function saveIndexedDB(filename: string, fileData: any) {
 	return new Promise((resolve) => {
-		dbWriteInProgress = true;
 		const openDB = openIndexedDB();
 		openDB.onsuccess = function () {
-			dbWriteInProgress = false;
 			const db = getStoreIndexedDB(openDB);
 			db.store.put({ id: filename, data: fileData });
 			resolve(true);
 		};
 	});
-}
-
-function isDBWriteInProgress() {
-	return dbWriteInProgress;
 }
 
 async function loadIndexedDB(filename: string): Promise<any> {
@@ -1147,7 +1126,8 @@ async function loadIndexedDB(filename: string): Promise<any> {
 		openDB.onsuccess = function () {
 			const db = getStoreIndexedDB(openDB);
 
-			let getData;
+			let getData: IDBRequest<any>
+;
 			if (filename) {
 				getData = db.store.get(filename);
 				getData.onsuccess = function () {
@@ -1198,20 +1178,21 @@ function keepInWindow(bodyComponent: HTMLDivElement) {
 	}
 }
 
-function addTranslateX(element, x) {
+function addTranslateX(element: HTMLDivElement, x: number) {
 	x = Math.round(x);
 	let curMatrix = element.style.transform;
+	let ret: string[];
 	if (curMatrix && curMatrix !== 'none') {
-		curMatrix = curMatrix.split(',');
-		curMatrix[4] = parseInt(curMatrix[4]) + x;
+		ret = curMatrix.split(',');
+		ret[4] = (parseInt(ret[4]) + x).toString();
 	} else {
-		curMatrix = ['matrix(1', 0, 0, 1, x, '0)'];
+		ret = ['matrix(1, 0, 0, 1', x.toString(), '0)'];
 	}
 
-	element.style.transform = curMatrix.join(',');
+	element.style.transform = ret.join(',');
 }
 
-function strip_tags(input) {
+function strip_tags(input: any) {
 	if (typeof input !== 'string') return input;
 	let allowed = '<p><a><img><b><i><div><span>';
 	allowed = (((allowed || '') + '').toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join('');
@@ -1223,7 +1204,7 @@ function strip_tags(input) {
 	});
 }
 
-function checkFileSize(file) {
+function checkFileSize(file: File) {
 	const regex = new RegExp('.(' + ENV.ALLOWED_UPLOADS.join('|') + ')$', 'gi');
 
 	if (!regex.exec(file.name)) {
@@ -1247,9 +1228,9 @@ function reloadLocation() {
 	}, 10);
 }
 
-let dictionary = {};
+let dictionary = {} as KeyedMap<string>;
 
-function initDictionary(o) {
+function initDictionary(o: KeyedMap<string>) {
 	dictionary = Object.assign(dictionary, o);
 }
 
@@ -1309,7 +1290,7 @@ async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
 			backdrop.remove();
 		});
 		return new Promise((resolve) => {
-			iframe.contentWindow.onCurdJSLogin = (userData) => {
+			iframe.contentWindow!.onCurdJSLogin = (userData) => {
 				User.currentUserData = userData;
 				resolve(userData);
 				backdrop.remove();
@@ -1318,7 +1299,7 @@ async function loginIfNotLoggedIn(enforced = false): Promise<UserSession> {
 	}
 }
 
-let googleLoginAPIattached;
+let googleLoginAPIattached = false;
 async function attachGoogleLoginAPI(enforces = false) {
 	if (ENV.clientOptions.googleSigninClientId && !googleLoginAPIattached) {
 		const meta = document.createElement('meta');
@@ -1348,7 +1329,6 @@ const getRecordClient: TypeGenerationHelper['gc'] = _getRecordsClient as any;
 
 export {
 	__corePath,
-	addMixins,
 	assignFilters,
 	attachGoogleLoginAPI,
 	checkFileSize,
@@ -1374,8 +1354,6 @@ export {
 	initDictionary,
 	INNER_DATE_TIME_FORMAT as innerDateTimeFormat,
 	isAdmin,
-	isCurrentlyShowedLeftBarItem,
-	isDBWriteInProgress,
 	isLitePage,
 	isPresentListRenderer,
 	isRecordRestrictedForDeletion,

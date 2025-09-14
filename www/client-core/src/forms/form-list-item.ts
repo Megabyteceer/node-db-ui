@@ -1,18 +1,18 @@
 import { h, type Component } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
-import type { NodeDesc, RecordData } from '../bs-utils';
+import type { NodeDesc, RecordData, RecordDataWriteDraftable } from '../bs-utils';
 import type { AdditionalButtonsRenderer } from '../fields/field-lookup-mixins';
 import { FieldWrap } from '../fields/field-wrap';
 import { R, type ComponentProps } from '../r';
 import { deleteRecord, draftRecord, isRecordRestrictedForDeletion, L, publishRecord, renderIcon, sp } from '../utils';
 import { BaseForm } from './base-form';
 
-const publishClick = (draft, node, data) => {
+const publishClick = (draft: boolean, node: NodeDesc, data: RecordData) => {
 	if (draft) {
-		return draftRecord(node.id, data.id);
+		return draftRecord(node.id, data.id!);
 	} else {
-		return publishRecord(node.id, data.id);
+		return publishRecord(node.id, data.id!);
 	}
 };
 
@@ -21,7 +21,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 	data: RecordData,
 	refreshFunction?: () => void,
 	formItem?: FormListItem
-): Component[] => {
+): Component[] | undefined => {
 	let buttons;
 	if (formItem && formItem.props.isLookup) {
 		if (data.hasOwnProperty('isE')) {
@@ -31,9 +31,9 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 						key: 2,
 						className: 'clickable tool-btn edit-btn',
 						title: L('EDIT'),
-						onMouseDown: (e) => {
+						onMouseDown: (e: MouseEvent) => {
 							sp(e);
-							formItem.props.parentForm.toggleCreateDialogue(data.id);
+							formItem.props.parentForm!.toggleCreateDialogue(data.id);
 						}
 					},
 					renderIcon('pencil')
@@ -47,7 +47,7 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 		} else {
 			itemName = '';
 		}
-		const isRestricted = isRecordRestrictedForDeletion(node.id, data.id);
+		const isRestricted = isRecordRestrictedForDeletion(node.id, data.id!);
 		buttons = [];
 		if (data.hasOwnProperty('isP') && (!formItem || !formItem.props.disableDrafting)) {
 			if (data.status === 1) {
@@ -133,11 +133,11 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 							: 'clickable tool-btn danger-btn',
 						title: L('DELETE') + itemName,
 						onClick: async () => {
-							await deleteRecord(data.name, node.id, data.id);
+							await deleteRecord(data.name, node.id, data.id!);
 							if (formItem && formItem.isSubForm()) {
-								formItem.props.parentForm.valueSelected();
+								formItem.props.parentForm!.valueSelected();
 							} else {
-								refreshFunction();
+								refreshFunction!();
 							}
 						}
 					},
@@ -150,20 +150,19 @@ const renderItemsButtons: AdditionalButtonsRenderer = (
 };
 
 class FormListItem extends BaseForm {
-	constructor(props) {
+	constructor(props: any) {
 		super(props);
 	}
 
-	isFieldVisibleByFormViewMask(field) {
-		return (field.show & this.props.viewMask) > 0;
+	isFieldVisibleByFormViewMask(field: FieldDesc) {
+		return (field.show & this.props.viewMask!) > 0;
 	}
 
 	render() {
 		const fields = [];
-		const data = this.props.initialData;
+		const data = this.props.initialData as RecordData;
 		const nodeFields = this.props.node.fields;
-		for (const k in nodeFields) {
-			const field = nodeFields[k];
+		for (const field of nodeFields!) {
 			if (this.isFieldVisibleByFormViewMask(field)) {
 				let className = 'form-item-row';
 				if (field.fieldType === FIELD_TYPE.NUMBER) {
@@ -180,9 +179,9 @@ class FormListItem extends BaseForm {
 					R.td(
 						{ key: field.id, className },
 						h(FieldWrap, {
-							key: k,
+							key: field.fieldName,
 							field,
-							initialValue: data[field.fieldName],
+							initialValue: (data as KeyedMap<any>)[field.fieldName],
 							form: this,
 							isCompact: true,
 							isTable: true
@@ -192,10 +191,9 @@ class FormListItem extends BaseForm {
 			}
 		}
 
-		/** @type any */
 		const itemProps: ComponentProps = {};
 		itemProps.className = 'list-item list-item-id-' + data.id;
-		if (this.props.node.draftable && data.status !== 1) {
+		if (this.props.node.draftable && (data as RecordDataWriteDraftable).status !== 1) {
 			itemProps.className += ' list-item-draft';
 		}
 
@@ -203,13 +201,13 @@ class FormListItem extends BaseForm {
 			itemProps.title = L('SELECT');
 			itemProps.className += ' clickable';
 			itemProps.onClick = () => {
-				this.props.parentForm.valueSelected(data);
+				this.props.parentForm!.valueSelected(data);
 			};
 		}
 
 		let buttons;
 		if (!this.props.hideControls && !this.state.hideControls) {
-			buttons = renderItemsButtons(this.props.node, data, this.props.list.refreshData, this);
+			buttons = renderItemsButtons(this.props.node, data, this.props.list!.refreshData, this);
 		}
 
 		let additionalButtons;
@@ -217,7 +215,7 @@ class FormListItem extends BaseForm {
 			additionalButtons = this.props.additionalButtons(
 				this.props.node,
 				data,
-				this.props.list.refreshData,
+				this.props.list!.refreshData,
 				this
 			);
 		}

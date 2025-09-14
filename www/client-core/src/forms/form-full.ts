@@ -7,8 +7,8 @@ import { NodeAdmin } from '../admin/admin-control';
 import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 
-import type { FieldDesc, RecId, RecordData, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../bs-utils';
-import { PRIVILEGES_MASK } from '../bs-utils';
+import type { FieldDesc, LookupValue, RecId, RecordData, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../bs-utils';
+import { PRIVILEGES_MASK, STATUS } from '../bs-utils';
 import { HotkeyButton } from '../components/hotkey-button';
 import { LoadingIndicator } from '../loading-indicator';
 import { R } from '../r';
@@ -19,26 +19,27 @@ import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { LeftBar } from '../left-bar';
 
-const sortEntries = (a, b) => {
+const sortEntries = (a: [string, any], b: [string, any]) => {
 	return a[0] > b[0] ? 1 : -1;
 };
-const linkerEntriesFilter = (entry) => {
+const linkerEntriesFilter = (entry: [string, any]) => {
 	return typeof entry[1] === 'object';
 };
-const entryToKey = (entry) => {
+const entryToKey = (entry: [string, any]) => {
 	const val = entry[1];
 	return entry[0] + '=' + val.id;
 };
 
-async function callForEachField(fieldRefs, data, functionName) {
+async function callForEachField(fieldRefs: KeyedMap<FieldWrap>, data: KeyedMap<any>, functionName: string) {
 	for (const k of Object.keys(fieldRefs)) {
 		const f = fieldRefs[k];
 		if (!(f instanceof FieldWrap)) {
 			continue;
 		}
-		if (f.fieldRef[functionName]) {
-			const fieldName = f.props.field.fieldName;
-			const newValue = await f.fieldRef[functionName]();
+		const field = f.fieldRef as KeyedMap<any>;
+		if (field[functionName]) {
+			const fieldName = f.props.field!.fieldName;
+			const newValue = await field[functionName]();
 			if (typeof newValue !== 'undefined' && f.props.initialValue !== newValue) {
 				data[fieldName] = newValue;
 			}
@@ -46,17 +47,13 @@ async function callForEachField(fieldRefs, data, functionName) {
 	}
 }
 
-class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<FieldsNames> {
-	backupInterval: NodeJS.Timeout;
+class FormFull<FieldsNames extends string = string> extends FormEventProcessingMixins<FieldsNames> {
+	backupInterval = 0;
 
-	constructor(props) {
+	constructor(props: any) {
 		super(props);
 		this.currentData = Object.assign({}, props.filters, props.initialData);
 		this.saveClick = this.saveClick.bind(this);
-
-		this.showAllDebug = false;
-		this.disableDrafting = false;
-
 		this.tryBackupData = this.tryBackupData.bind(this);
 	}
 
@@ -68,7 +65,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 	}
 
 	_getBackupKey() {
-		return 'backup_for_node:' + User.currentUserData.id + ':' + this.props.node.id + ':' + Object.entries(this.props.filters).filter(linkerEntriesFilter).sort(sortEntries).map(entryToKey).join();
+		return 'backup_for_node:' + User.currentUserData!.id + ':' + this.props.node.id + ':' + Object.entries(this.props.filters!).filter(linkerEntriesFilter).sort(sortEntries).map(entryToKey).join();
 	}
 
 	componentDidMount() {
@@ -76,14 +73,14 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 		this.recoveryBackupIfNeed();
 		this.onShow();
 
-		if (this.props.overrideOrderData >= 0) {
+		if (this.props.overrideOrderData! >= 0) {
 			if (this.hasField('order' as any)) {
 				this.hideField('order' as any);
 			}
 		}
 
 		window.addEventListener('unload', this.tryBackupData);
-		this.backupInterval = setInterval(this.tryBackupData, 15000);
+		this.backupInterval = window.setInterval(this.tryBackupData, 15000);
 		if (this.props.isRootForm) {
 			LeftBar.refreshLeftBarActive();
 		}
@@ -100,11 +97,10 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 	}
 
 	prepareToBackup() {
-		const fields = this.props.node.fields;
-		for (const k in fields) {
-			const f = fields[k];
-			if (f.fieldType === FIELD_TYPE.LOOKUP_1_TO_N && this.isFieldVisibleByFormViewMask(f)) {
-				this.currentData[f.fieldName] = this.getField(f.fieldName as FieldsNames).getBackupData();
+		const fields = this.props.node.fields!;
+		for (const field of fields!) {
+			if (field.fieldType === FIELD_TYPE.LOOKUP_1_TO_N && this.isFieldVisibleByFormViewMask(field)) {
+				this.currentData[field.fieldName] = this.getField(field.fieldName as FieldsNames).getBackupData();
 			}
 		}
 	}
@@ -142,7 +138,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 		}
 	}
 
-	async saveForm(): Promise<boolean> {
+	async saveForm(): Promise<boolean | undefined> {
 		if (this.props.editable) {
 			return this.saveClick('keepStatus');
 		}
@@ -160,9 +156,9 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 			if (!(fieldWrapperRef instanceof FieldWrap)) {
 				continue;
 			}
-			const field = fieldWrapperRef.props.field;
+			const field = fieldWrapperRef.props.field!;
 
-			if (this.props.overrideOrderData >= 0 && field.fieldName === 'order') {
+			if (this.props.overrideOrderData! >= 0 && field.fieldName === 'order') {
 				this.currentData[field.fieldName] = this.props.overrideOrderData;
 			}
 
@@ -181,8 +177,8 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 		return this.formIsValid;
 	}
 
-	async saveClick(isDraft): Promise<boolean> {
-		LoadingIndicator.instance.show();
+	async saveClick(isDraft?: boolean | 'keepStatus'): Promise<boolean | undefined> {
+		LoadingIndicator.instance!.show();
 
 		const ret = this.saveClickInner(isDraft)
 		/// #if DEBUG
@@ -194,25 +190,25 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 			})
 			// */
 			.finally(() => {
-				LoadingIndicator.instance.hide();
+				LoadingIndicator.instance!.hide();
 			});
 		return ret;
 	}
 
-	async saveClickInner(isDraft): Promise<boolean> {
+	async saveClickInner(isDraft?: boolean | 'keepStatus'): Promise<boolean | undefined> {
 		this.isPreventCloseFormAfterSave = false;
 		this.forceBouncingTimeout();
 		const data: RecordDataWriteDraftable = {};
 
 		if (isDraft !== 'keepStatus') {
-			if (this.props.initialData.isP || !this.props.initialData.id) {
+			if ((this.props.initialData as RecordData).isP || !(this.props.initialData as RecordData).id) {
 				if (isDraft === true) {
-					if (this.props.initialData.status !== 2) {
-						data.status = 2; // TODO: add RECORD_STATUS enum
+					if ((this.props.initialData as RecordData).status !== 2) {
+						data.status = STATUS.DRAFT;
 					}
 				} else {
-					if (this.props.initialData.status !== 1) {
-						data.status = 1;
+					if ((this.props.initialData as RecordData).status !== 1) {
+						data.status = STATUS.PUBLIC;
 					}
 				}
 			}
@@ -227,18 +223,18 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 			if (!(fieldRef instanceof FieldWrap)) {
 				continue;
 			}
-			const field = fieldRef.props.field;
+			const field = fieldRef.props.field!;
 
 			const val = this.currentData[field.fieldName];
 
 			if (field.sendToServer) {
 				if (field.fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
-					if (!n2mValuesEqual(this.props.initialData[field.fieldName], val)) {
-						data[field.fieldName] = val.map(v => v.id);
+					if (!n2mValuesEqual((this.props.initialData as KeyedMap<any>)[field.fieldName], val)) {
+						(data as KeyedMap<any>)[field.fieldName] = (val as LookupValue[]).map(v => v.id);
 					}
 				} else if (field.fieldType === FIELD_TYPE.LOOKUP) {
 					let cVal = val;
-					let iVal = this.props.initialData[field.fieldName];
+					let iVal = (this.props.initialData as KeyedMap<any>)[field.fieldName];
 
 					if (cVal && cVal.id) {
 						cVal = cVal.id;
@@ -249,15 +245,15 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 					}
 
 					if (cVal !== iVal) {
-						data[field.fieldName] = val;
+						(data as KeyedMap<any>)[field.fieldName] = val;
 					}
 				} else if (val && val._isAMomentObject) {
-					if (!val.isSame(this.props.initialData[field.fieldName])) {
-						data[field.fieldName] = val;
+					if (!val.isSame((this.props.initialData as KeyedMap<any>)[field.fieldName])) {
+						(data as KeyedMap<any>)[field.fieldName] = val;
 					}
 				} else {
-					if (this.props.initialData[field.fieldName] != val) {
-						data[field.fieldName] = val;
+					if ((this.props.initialData as KeyedMap<any>)[field.fieldName] != val) {
+						(data as KeyedMap<any>)[field.fieldName] = val;
 					}
 				}
 			}
@@ -269,7 +265,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 		}
 
 		if (Object.keys(data).length > 0) {
-			const submitResult: RecordSubmitResult | RecordSubmitResultNewRecord = await submitRecord(this.props.node.id, data, this.props.initialData ? this.props.initialData.id : undefined);
+			const submitResult: RecordSubmitResult | RecordSubmitResultNewRecord = await submitRecord(this.props.node.id, data, this.props.initialData ? (this.props.initialData as RecordData).id : undefined);
 			const recId: RecId | undefined = (submitResult as RecordSubmitResultNewRecord).recId;
 			if (!recId) {
 				// save error
@@ -279,28 +275,28 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 			this.recId = recId;
 			if (!this.currentData.hasOwnProperty('id')) {
 				this.currentData.id = recId;
-				this.props.initialData.id = recId;
+				(this.props.initialData as RecordData).id = recId;
 			}
 			this.deleteBackup();
 			// renew current data
 			this.currentData = Object.assign(this.currentData, data);
 			// renew initial data;
-			globals.Stage.dataDidModified(this.currentData);
+			globals.Stage.dataDidModified(this.currentData as RecordData);
 
 			for (const k in data) {
-				const val = data[k];
+				const val = (data as KeyedMap<any>)[k];
 				if (typeof val === 'object') {
 					if (!Object.keys(val).length) {
-						this.props.initialData[k] = undefined;
+						(this.props.initialData as KeyedMap<any>)[k] = undefined;
 					} else if (val._isAMomentObject) {
-						this.props.initialData[k] = val.clone();
+						(this.props.initialData as KeyedMap<any>)[k] = val.clone();
 					} else if (Array.isArray(val)) {
-						this.props.initialData[k] = val.concat();
+						(this.props.initialData as KeyedMap<any>)[k] = val.concat();
 					} else {
-						this.props.initialData[k] = Object.assign({}, val);
+						(this.props.initialData as KeyedMap<any>)[k] = Object.assign({}, val);
 					}
 				} else {
-					this.props.initialData[k] = val;
+					(this.props.initialData as KeyedMap<any>)[k] = val;
 				}
 			}
 			await callForEachField(this.fieldsRefs, data, 'afterSave');
@@ -313,14 +309,14 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 
 		if (!this.isPreventCloseFormAfterSave) {
 			if (this.isSubForm()) {
-				this.props.parentForm.valueSelected(this.currentData, true);
+				this.props.parentForm!.valueSelected(this.currentData as RecordData, true);
 			} else {
 				this.cancelClick();
 			}
 		}
 	}
 
-	isFieldVisibleByFormViewMask(field) {
+	isFieldVisibleByFormViewMask(field: FieldDesc) {
 		return (this.props.editable ? field.show & 1 : field.show & 4) > 0;
 	}
 
@@ -330,8 +326,8 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 			return R.div({ className: 'field-lookup-loading-icon-container' }, renderIcon('cog fa-spin fa-2x'));
 		}
 
-		let tabs;
-		let fields = [];
+		let tabs: FormTab[];
+		let fields = [] as FieldWrap[];
 		const data = this.currentData;
 		const nodeFields = node.fields;
 
@@ -344,14 +340,13 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 			className += ' form-edit';
 		}
 
-		const forcedValues = this.props.filters;
-		let currentTab;
-		let currentTabName;
+		const forcedValues = this.props.filters!;
+		let currentTab: FormTab;
+		let currentTabName!: string;
 
-		for (const k in nodeFields) {
-			const field = nodeFields[k];
+		for (const field of nodeFields!) {
 			if (this.isFieldVisibleByFormViewMask(field)) {
-				const ref = (ref) => {
+				const ref = (ref: FieldWrap) => {
 					if (ref) {
 						this.fieldsRefs[field.fieldName] = ref;
 					} else {
@@ -362,7 +357,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 				if (field.fieldType === FIELD_TYPE.TAB && field.maxLength === 0 && !this.isSubForm()) {
 					// tab
 					let isDefaultTab;
-					if (!tabs) {
+					if (!tabs!) {
 						tabs = [];
 						isDefaultTab = true;
 					} else {
@@ -383,7 +378,9 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 						ref,
 						title: field.name,
 						visible: tabVisible || this.showAllDebug || this.showAllTabs,
+						/// #if DEBUG
 						highlightFrame: this.showAllDebug,
+						/// #endif
 						field,
 						form: this,
 						fields
@@ -399,8 +396,8 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 						parentTabName: currentTabName,
 						isEdit: this.props.editable,
 						isCompact: this.props.isCompact,
-						hidden: this.hiddenFields.hasOwnProperty(field.fieldNamePure) || forcedValues.hasOwnProperty(field.fieldNamePure),
-						fieldDisabled: this.isFieldDisabled(field.fieldNamePure as FieldsNames) || forcedValues.hasOwnProperty(field.fieldNamePure)
+						hidden: this.hiddenFields.hasOwnProperty(field.fieldNamePure!) || forcedValues.hasOwnProperty(field.fieldNamePure!),
+						fieldDisabled: this.isFieldDisabled(field.fieldNamePure as FieldsNames) || forcedValues.hasOwnProperty(field.fieldNamePure!)
 					});
 
 					fields.push(tf);
@@ -408,12 +405,12 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 			}
 		}
 
-		const isMainTab = !this.filters.tab || tabs[0].props.field.fieldName === this.filters.tab;
+		const isMainTab = !this.filters.tab || tabs![0].props.field.fieldName === this.filters.tab;
 
 		if (this.props.isCompact) {
 			fields.sort((a, b) => {
-				const alow = a.props.field.fieldType === FIELD_TYPE.LOOKUP_1_TO_N || a.props.field.fieldType === FIELD_TYPE.LOOKUP_N_TO_M || a.props.field.fieldType === FIELD_TYPE.BOOL;
-				const blow = b.props.field.fieldType === FIELD_TYPE.LOOKUP_1_TO_N || b.props.field.fieldType === FIELD_TYPE.LOOKUP_N_TO_M || b.props.field.fieldType === FIELD_TYPE.BOOL;
+				const alow = a.props.field!.fieldType === FIELD_TYPE.LOOKUP_1_TO_N || a.props.field!.fieldType === FIELD_TYPE.LOOKUP_N_TO_M || a.props.field!.fieldType === FIELD_TYPE.BOOL;
+				const blow = b.props.field!.fieldType === FIELD_TYPE.LOOKUP_1_TO_N || b.props.field!.fieldType === FIELD_TYPE.LOOKUP_N_TO_M || b.props.field!.fieldType === FIELD_TYPE.BOOL;
 				if (alow !== blow) {
 					if (alow) {
 						return 1;
@@ -421,8 +418,8 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 						return -1;
 					}
 				}
-				const pa = a.props.field.lang;
-				const pb = b.props.field.lang;
+				const pa = a.props.field!.lang;
+				const pb = b.props.field!.lang;
 
 				if (pa !== pb) {
 					if (!pa) return -1;
@@ -430,7 +427,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 					if (pa && pa > pb) return 1;
 					if (pa && pa < pb) return -1;
 				}
-				return a.props.field.index - b.props.field.index;
+				return a.props.field!.index! - b.props.field!.index!;
 			});
 		}
 
@@ -453,7 +450,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 						onClick: async () => {
 							if (await deleteRecord(data.name, node.id, data.id)) {
 								if (this.isSubForm()) {
-									this.props.parentForm.valueSelected();
+									this.props.parentForm!.valueSelected();
 								} else {
 									goBack(true);
 								}
@@ -476,7 +473,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 							onClick: this.saveClick,
 							title: saveButtonLabel
 						},
-						this.isSubForm() ? renderIcon('check') : renderIcon(node.storeForms ? 'floppy-o' : node.icon),
+						this.isSubForm() ? renderIcon('check') : renderIcon(node.storeForms ? 'floppy-o' : node.icon!),
 						saveButtonLabel
 					);
 				} else {
@@ -530,7 +527,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 							? (node.storeForms ? L('CREATE') + ' ' : undefined, node.creationName || node.singleName)
 							: this.state.data
 								? (this.state.data as RecordData).name
-								: this.props.initialData.name
+								: (this.props.initialData as RecordData).name
 					);
 				header = R.h4({ className: 'form-header' }, headerContent);
 			}
@@ -565,7 +562,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 		}
 
 		let tabsHeader;
-		if (tabs && tabs.length > 1) {
+		if (tabs! && tabs.length > 1) {
 			tabsHeader = R.div(
 				{ className: 'header-tabs' },
 				tabs.map((tab) => {
@@ -602,7 +599,7 @@ class FormFull<FieldsNames extends string> extends FormEventProcessingMixins<Fie
 			closeSubFormButton,
 			header,
 			tabsHeader,
-			tabs || fields,
+			tabs! || fields,
 			R.div(
 				{
 					className: this.state.footerHidden || this.props.inlineEditable ? 'form-footer hidden' : 'form-footer'

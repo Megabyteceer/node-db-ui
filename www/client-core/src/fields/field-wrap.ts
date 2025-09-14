@@ -1,37 +1,41 @@
-import type { FieldDesc } from '../bs-utils';
+import type { FieldDesc, GetRecordsFilter } from '../bs-utils';
 import { R } from '../r';
 /// #if DEBUG
 import { FieldAdmin } from '../admin/field-admin';
 /// #endif
 import { Component, h } from 'preact';
 import { FIELD_DISPLAY, FIELD_TYPE } from '../../../../types/generated';
+import type { FormFull } from '../forms/form-full';
 import { iAdmin } from '../user';
 import { consoleLog, debugError, getClassForField, renderIcon, scrollToVisible } from '../utils';
 import type { BaseField, FieldProps, FieldState } from './base-field';
+import type { LookupManyToManyFiled } from './field-14-many-to-many';
+import type { LookupOneToManyFiled } from './field-15-one-to-many';
 import type { AdditionalButtonsRenderer } from './field-lookup-mixins';
 
-class FieldWrap extends Component<FieldProps, FieldState & {
+class FieldWrap extends Component<Partial<FieldProps>, FieldState & {
 	showToolTip?: boolean;
 	fieldAlert?: string;
 	isSuccessAlert?: boolean;
 	additionalButtons?: AdditionalButtonsRenderer;
 }> {
-	afterSave: () => Promise<any>;
-	fieldRef: BaseField;
-	hidden: boolean;
-	fieldDisabled: boolean;
-	private labelOverride: string;
-	private currentValue: any;
-	private onChangeTimeout: NodeJS.Timeout;
 
-	constructor(props) {
+	afterSave!: () => Promise<any>;
+	fieldRef!: BaseField;
+	hidden?: boolean;
+	fieldDisabled = false;
+	private labelOverride?: string;
+	private currentValue: any;
+	private onChangeTimeout = 0;
+
+	constructor(props: Partial<FieldProps>) {
 		super(props);
 		this.state = {};
 		this.hidden = props.hidden;
 		this.componentWillReceiveProps(this.props);
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps(nextProps: Partial<FieldProps>) {
 		this.hidden = nextProps.hidden;
 		// this.currentValue = nextProps.initialValue;
 		if (nextProps.fieldDisabled) {
@@ -55,16 +59,16 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 		if (!this.hidden) {
 			this.hidden = true;
 			this.forceUpdate();
-			const childrenFields = this.props.field.childrenFields;
+			const childrenFields = this.props.field!.childrenFields;
 			if (childrenFields) {
 				for (const childField of childrenFields) {
-					this.props.form.getField(childField.fieldName).hide();
+					(this.props.form as FormFull).getField(childField.fieldName).hide();
 				}
 			}
 		}
 	}
 
-	makeFieldRequired(requirement) {
+	makeFieldRequired(requirement: boolean) {
 		this.fieldRef.setState({ requirement });
 		this.forceUpdate();
 	}
@@ -81,27 +85,27 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 		this.fieldRef.setMax(val);
 	}
 
-	setLookupFilter(filtersObjOrName, val) {
+	setLookupFilter(filterName: string | GetRecordsFilter, val: any) {
 		/// #if DEBUG
 		if (
-			this.props.field.fieldType !== FIELD_TYPE.LOOKUP &&
-			this.props.field.fieldType !== FIELD_TYPE.LOOKUP_N_TO_M &&
-			this.props.field.fieldType !== FIELD_TYPE.LOOKUP_1_TO_N
+			this.props.field!.fieldType !== FIELD_TYPE.LOOKUP &&
+			this.props.field!.fieldType !== FIELD_TYPE.LOOKUP_N_TO_M &&
+			this.props.field!.fieldType !== FIELD_TYPE.LOOKUP_1_TO_N
 		) {
-			debugError('setLookupFilter applied to not lookUp field: ' + this.props.field.fieldName);
+			debugError('setLookupFilter applied to not lookUp field: ' + this.props.field!.fieldName);
 		}
 		/// #endif
-		this.fieldRef.setLookupFilter(filtersObjOrName, val);
+		this.fieldRef.setLookupFilter(filterName, val);
 	}
 
 	show() {
 		if (this.hidden) {
 			this.hidden = false;
 			this.forceUpdate();
-			const childrenFields = this.props.field.childrenFields;
+			const childrenFields = this.props.field!.childrenFields;
 			if (childrenFields) {
 				for (const childField of childrenFields) {
-					this.props.form.getField(childField.fieldName).show();
+					(this.props.form as FormFull).getField(childField.fieldName).show();
 				}
 			}
 		}
@@ -111,10 +115,10 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 		if (!this.fieldDisabled) {
 			this.fieldDisabled = true;
 			this.forceUpdate();
-			const childrenFields = this.props.field.childrenFields;
+			const childrenFields = this.props.field!.childrenFields;
 			if (childrenFields) {
 				for (const childField of childrenFields) {
-					this.props.form.getField(childField.fieldName).disable();
+					(this.props.form as FormFull).getField(childField.fieldName).disable();
 				}
 			}
 		}
@@ -124,16 +128,16 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 		if (this.fieldDisabled) {
 			this.fieldDisabled = false;
 			this.forceUpdate();
-			const childrenFields = this.props.field.childrenFields;
+			const childrenFields = this.props.field!.childrenFields;
 			if (childrenFields) {
 				for (const childField of childrenFields) {
-					this.props.form.getField(childField.fieldName).enable();
+					(this.props.form as FormFull).getField(childField.fieldName).enable();
 				}
 			}
 		}
 	}
 
-	setLabel(label: string) {
+	setLabel(label = '') {
 		if (this.labelOverride !== label) {
 			this.labelOverride = label;
 			this.forceUpdate();
@@ -141,12 +145,12 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 	}
 
 	sendCurrentValueToForm() {
-		if (this.props.form.setFieldValue) {
-			this.props.form.setFieldValue(this.props.field.fieldName, this.currentValue, true);
+		if ((this.props.form as FormFull).setFieldValue) {
+			(this.props.form as FormFull).setFieldValue(this.props.field!.fieldName, this.currentValue, true);
 		}
 	}
 
-	async checkValidityBeforeSave(focusIfInvalid) {
+	async checkValidityBeforeSave(focusIfInvalid = false) {
 		if (!this.fieldRef || !this.fieldRef.getMessageIfInvalid) {
 			return true;
 		} else {
@@ -180,10 +184,10 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 
 	focus() {
 		/// #if DEBUG
-		consoleLog('focus set ' + this.props.field.fieldName);
+		consoleLog('focus set ' + this.props.field!.fieldName);
 		/// #endif
 		if (this.props.parentTabName) {
-			this.props.form.setFormFilter('tab', this.props.parentTabName);
+			(this.props.form as FormFull).setFormFilter('tab', this.props.parentTabName);
 		}
 		setTimeout(() => {
 			scrollToVisible(this);
@@ -191,7 +195,7 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 		}, 1);
 	}
 
-	setValue(val) {
+	setValue(val: any) {
 		this.clearChangeTimeout();
 		if (this.fieldRef) {
 			this.fieldRef.setValue(val);
@@ -199,17 +203,17 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 	}
 
 	inlineEditable() {
-		this.fieldRef.inlineEditable();
+		(this.fieldRef as LookupOneToManyFiled).inlineEditable();
 	}
 
 	extendEditor() {
-		this.fieldRef.extendEditor();
+		(this.fieldRef as LookupManyToManyFiled).extendEditor();
 	}
 
 	clearChangeTimeout() {
 		if (this.onChangeTimeout) {
 			clearTimeout(this.onChangeTimeout);
-			delete this.onChangeTimeout;
+			this.onChangeTimeout = 0;
 		}
 	}
 
@@ -223,13 +227,13 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 		}
 	}
 
-	valueListener(newVal, withBounceDelay, _sender) {
+	valueListener(newVal: any, withBounceDelay = false, _sender?: BaseField) {
 		this.currentValue = newVal;
-		this.props.form.fieldAlert(this.props.field.fieldName);
+		(this.props.form as FormFull).fieldAlert(this.props.field!.fieldName);
 		if (withBounceDelay) {
 			this.clearChangeTimeout();
-			this.onChangeTimeout = setTimeout(() => {
-				delete this.onChangeTimeout;
+			this.onChangeTimeout = window.setTimeout(() => {
+				this.onChangeTimeout = 0;
 				this.sendCurrentValueToForm();
 			}, 200);
 		} else {
@@ -238,7 +242,7 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 	}
 
 	render() {
-		const field = this.props.field;
+		const field = this.props.field!;
 
 		const domId = 'field-container-id-' + field.id;
 
@@ -251,10 +255,10 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 			isEdit: this.props.isEdit,
 			fieldDisabled: this.fieldDisabled,
 			additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
-			ref: (fieldRef) => {
+			ref: (fieldRef: BaseField) => {
 				this.fieldRef = fieldRef;
 			}
-		};
+		} as FieldProps;
 
 		const fieldTypedBody = h(getClassForField(field.fieldType), fieldProps);
 		let fieldCustomBody;
@@ -270,7 +274,7 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 		/// #if DEBUG
 		let fieldAdmin;
 		if (iAdmin() && !field.lang && !this.props.isCompact) {
-			fieldAdmin = h(FieldAdmin, { field, form: this.props.form });
+			fieldAdmin = h(FieldAdmin, { field, form: this.props.form as FormFull });
 		}
 		/// #endif
 		let className =
@@ -282,7 +286,7 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 		if (
 			this.hidden &&
 			/// #if DEBUG
-			!this.props.form.showAllDebug
+			!(this.props.form as FormFull).showAllDebug
 			/// #endif
 		) {
 			className += ' hidden';
@@ -371,7 +375,7 @@ class FieldWrap extends Component<FieldProps, FieldState & {
 }
 
 class FieldHelp extends Component<any, any> {
-	constructor(props) {
+	constructor(props: any) {
 		super(props);
 		this.mouseOut = this.mouseOut.bind(this);
 		this.mouseOver = this.mouseOver.bind(this);

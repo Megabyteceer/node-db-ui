@@ -2,11 +2,13 @@
 import { createNodeForMenuItem, NodeAdmin } from './admin/admin-control';
 import { FieldAdmin } from './admin/field-admin';
 /// #endif
-import { Component, h, type ComponentChildren } from 'preact';
+import { Component, h } from 'preact';
 import type { TreeItem } from '../../../core/describe-node';
 import { NODE_TYPE } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { assert } from './assert';
+import type { RecId } from './bs-utils';
+import type { FormFull } from './forms/form-full';
 import { Modal } from './modal';
 import { R } from './r';
 import { Stage } from './stage';
@@ -18,7 +20,7 @@ const isNeedCollapse = () => {
 };
 let collapsed = isNeedCollapse();
 
-function isMustBeExpanded(i): boolean {
+function isMustBeExpanded(i: TreeItem): boolean {
 	if (i.children) {
 		for (const k in i.children) {
 			const j = i.children[k];
@@ -36,9 +38,9 @@ const allGroups: BarItem[] = [];
 
 const SELECTED_LIST = 'selected_list';
 
-let activeItem;
+let activeItem: BarItem | null;
 
-function isCurrentlyShowedLeftBarItem(item): boolean | typeof SELECTED_LIST {
+function isCurrentlyShowedLeftBarItem(item: TreeItem): boolean | typeof SELECTED_LIST | undefined {
 	const currentFormParameters = Stage.currentForm;
 	if (!currentFormParameters) {
 		return;
@@ -56,7 +58,7 @@ function isCurrentlyShowedLeftBarItem(item): boolean | typeof SELECTED_LIST {
 	}
 }
 
-function isStrictlySelected(item) {
+function isStrictlySelected(item: TreeItem) {
 	if (item) {
 		if (item.hasOwnProperty('children')) {
 			return item.children.some(isStrictlySelected);
@@ -78,9 +80,9 @@ interface BarItemProps {
 }
 
 class BarItem extends Component<BarItemProps, BarItemState> {
-	constructor(props) {
+	constructor(props: BarItemProps) {
 		super(props);
-		itemsById[props.item.id] = this;
+		itemsById.set(props.item.id, this);
 		this.state = {};
 	}
 
@@ -108,7 +110,7 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 		element.style.maxHeight = 'unset';
 		element.style.transform = 'scaleY(0)';
 		element.style.transformOrigin = 'top left';
-		let height;
+		let height: number;
 		let timer = setInterval(() => {
 			height = element.clientHeight;
 			if (height > 0) {
@@ -149,13 +151,13 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 	}
 
 	_findGroupContainer(): HTMLElement {
-		return (this.base as HTMLDivElement).querySelector('.left-bar-children');
+		return (this.base as HTMLDivElement).querySelector('.left-bar-children') as HTMLElement;
 	}
 
-	toggle(ev) {
-		const group: HTMLDivElement = ev.target
-			.closest('.left-bar-group-container')
-			.querySelector('.left-bar-children');
+	toggle(ev: MouseEvent) {
+		const group: HTMLDivElement = ((ev.target as HTMLDivElement)
+			.closest('.left-bar-group-container') as HTMLDivElement)
+			.querySelector('.left-bar-children') as HTMLDivElement;
 		if (group.classList.contains('hidden')) {
 			this.expand();
 		} else {
@@ -165,7 +167,7 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 
 	closeMenuIfNeed() {
 		if (!collapsed && isNeedCollapse()) {
-			LeftBar.instance.toggleCollapse();
+			LeftBar.instance!.toggleCollapse();
 		}
 	}
 
@@ -178,7 +180,7 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 			if (item.field) {
 				adminControl = R.div(
 					{ className: 'left-bar-admin-button' },
-					h(FieldAdmin, { field: item.field, form: item.form })
+					h(FieldAdmin, { field: item.field, form: item.form as FormFull })
 				);
 			} else {
 				adminControl = R.div(
@@ -274,8 +276,8 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 		if (item.nodeType !== NODE_TYPE.SECTION && item.id) {
 			const props = {
 				className: 'left-bar-item-container',
-				onClick: undefined,
-				href: undefined
+				onClick: undefined as (() => void) | undefined,
+				href: undefined as string | undefined
 			};
 			if (item.nodeType === NODE_TYPE.STATIC_LINK) {
 				props.href = item.staticLink;
@@ -308,9 +310,9 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 	}
 }
 
-const itemsById = {};
+const itemsById = new Map() as Map<RecId, BarItem>;
 
-function renderItemsArray(itemsArray, level, item?) {
+function renderItemsArray(itemsArray: TreeItem[], level: number, item?: TreeItem) {
 	/// #if DEBUG
 	if ((!itemsArray || itemsArray.length === 0) && level > 0) {
 		return [
@@ -319,7 +321,7 @@ function renderItemsArray(itemsArray, level, item?) {
 					key: 'empty-section',
 					className: 'clickable left-bar-empty-section',
 					onClick: () => {
-						createNodeForMenuItem(item);
+						createNodeForMenuItem(item!);
 					}
 				},
 				L('EMPTY_SECTION')
@@ -343,15 +345,17 @@ function renderItemsArray(itemsArray, level, item?) {
 	return ret;
 }
 
-class LeftBar extends Component<{
-	menuItems: ComponentChildren[];
-},
-{
+interface LeftBarProps {
+	menuItems: TreeItem[];
+}
+
+class LeftBar extends Component<LeftBarProps,
+	{
 	// state
-}> {
+	}> {
 	static instance?: LeftBar;
 
-	constructor(props) {
+	constructor(props: LeftBarProps) {
 		super(props);
 		this.state = {};
 		LeftBar.instance = this;
@@ -373,7 +377,7 @@ class LeftBar extends Component<{
 			if (!activeItem) return;
 			let item = activeItem.props.item;
 			while (item.parent) {
-				const itemElement: BarItem = itemsById[item.parent];
+				const itemElement: BarItem = itemsById.get(item.parent)!;
 				if (!itemElement) {
 					break;
 				}
@@ -423,7 +427,6 @@ class LeftBar extends Component<{
 	}
 }
 
-/** @type LeftBar */
-LeftBar.instance = null;
+LeftBar.instance = undefined;
 
 export { LeftBar };

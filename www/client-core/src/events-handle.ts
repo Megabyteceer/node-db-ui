@@ -1,6 +1,5 @@
 import type { TypeGenerationHelper } from '../../../types/generated';
 import { assert } from './assert';
-import type { RecordData } from './bs-utils';
 
 export const enum ServerEventName {
 	beforeCreate = 'beforeCreate',
@@ -12,7 +11,9 @@ export const enum ServerEventName {
 	onSubmit = 'onSubmit'
 }
 
-const handlers = new Map() as Map<string, ((...args: any[]) => any)[]>;
+export type Handler = ((...args: any[]) => any);
+
+const handlers = new Map() as Map<string, Handler[]>;
 
 const dispatch = async (nodeTableName: string, eventName: ServerEventName, ...args: any[]): Promise<KeyedMap<any> | undefined> => {
 	const eventFullName = nodeTableName + '.' + eventName;
@@ -55,11 +56,11 @@ export const clientHandlers = handlers;
 
 const errorText = 'Record processing is finished. Read only access.';
 
-export const __destroyRecordToPreventAccess = (record: RecordData) => {
+export const __destroyRecordToPreventAccess = (record: KeyedMap<any>) => {
 	const a = Object.keys(record);
 	a.map((key: string) => {
-		const val = a[key];
-		delete a[key];
+		const val = record[key];
+		delete record[key];
 		Object.defineProperty(record, key, {
 			get: () => val,
 			set: () => {
@@ -68,9 +69,6 @@ export const __destroyRecordToPreventAccess = (record: RecordData) => {
 			configurable: false
 		});
 	});
-	for (const key of a) {
-		delete (record[key]);
-	}
 	(record as any).__recordIsDestroyed = errorText;
 	Object.freeze(record);
 };

@@ -3,7 +3,7 @@ import { ADMIN_USER_SESSION, getFieldDesc, getNodeDesc, reloadMetadataSchedule }
 import * as fs from 'fs';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import type { NODE_ID } from '../../types/generated';
+import type { FIELD_ID, NODE_ID } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import { USER_ID, type PRIVILEGES_MASK, type RecId } from '../../www/client-core/src/bs-utils';
 import { isAdmin, type UserSession } from '../auth.js';
@@ -27,7 +27,7 @@ export interface NodePrivilegesRes {
 	privileges: NodePrivileges[];
 }
 
-async function nodePrivileges(reqData: NodePrivilegesRequest, userSession) {
+async function nodePrivileges(reqData: NodePrivilegesRequest, userSession: UserSession) {
 	shouldBeAdmin(userSession);
 	const nodeId = reqData.nodeId;
 	if (reqData.privileges) {
@@ -44,7 +44,7 @@ async function nodePrivileges(reqData: NodePrivilegesRequest, userSession) {
 	} else {
 		// get node privileges
 		const privileges = await mysqlExec(
-			'SELECT id, name, (SELECT privileges FROM "rolePrivileges" WHERE ("nodeId"='
+			'SELECT id, name, (SELECT privileges FROM "_rolePrivileges" WHERE ("nodeId"='
 			+ D(nodeId)
 			+ ') AND (_roles.id="roleId") LIMIT ' + NUM_1 + ') AS privileges FROM _roles WHERE id != '
 			+ D(USER_ID.SUPER_ADMIN)
@@ -67,8 +67,8 @@ const shouldBeAdmin = (userSession = ADMIN_USER_SESSION) => {
 async function setRolePrivilegesForNode(
 	nodeId: RecId,
 	rolePrivileges: NodePrivileges[],
-	toChild: boolean,
-	userSession: UserSession
+	toChild?: boolean,
+	userSession?: UserSession
 ) {
 	shouldBeAdmin(userSession);
 	await mysqlExec(
@@ -105,7 +105,7 @@ async function setRolePrivilegesForNode(
 	}
 }
 
-function editFunction(fileName, functionName, args = '') {
+function editFunction(fileName: string, functionName: string, args = '') {
 	fileName = join(__dirname, fileName);
 
 	let text = readFileSync(fileName, 'utf8').replace(/\r\n/g, '\n');
@@ -157,21 +157,20 @@ function editFunction(fileName, functionName, args = '') {
 }
 
 async function getClientEventHandler(
-	{ handler, nodeId, fieldId, args },
-	userSession
+	request: { handler: string; nodeId: NODE_ID; fieldId: FIELD_ID; args: string },	userSession: UserSession
 ) {
 	shouldBeAdmin(userSession);
 
-	const node = getNodeDesc(nodeId);
-	if (fieldId) {
-		const field = getFieldDesc(fieldId);
+	const node = getNodeDesc(request.nodeId);
+	if (request.fieldId) {
+		const field = getFieldDesc(request.fieldId);
 		const customPath = '../../../www/src/events/fields_events_custom.ts';
 		return editFunction(
 			fs.existsSync(join(__dirname, customPath))
 				? customPath
 				: '../../../www/client-core/src/events/fields_events.ts',
-			node.tableName + '_' + field.fieldName + '_' + handler,
-			args
+			node.tableName + '_' + field.fieldName + '_' + request.handler,
+			request.args
 		);
 	} else {
 		const customPath = '../../../www/src/events/forms_events_custom.ts';
@@ -179,8 +178,8 @@ async function getClientEventHandler(
 			fs.existsSync(join(__dirname, customPath))
 				? customPath
 				: '../../../www/client-core/src/events/forms_events.ts',
-			node.tableName + '_' + handler,
-			args
+			node.tableName + '_' + request.handler,
+			request.args
 		);
 	}
 }

@@ -14,13 +14,13 @@ interface SelectState {
 	curVal?: any;
 }
 
-interface SelectProps {
+export interface SelectProps {
 	disabled?: boolean;
 	isCompact?: boolean;
 	defaultValue?: any;
 	title?: string;
 	readOnly?: boolean;
-	onInput: (val: string) => void;
+	onInput: (val: any) => void;
 	options: SelectItem[];
 }
 
@@ -98,7 +98,7 @@ class Select extends Component<SelectProps, SelectState> {
 
 			if (this.state.search) {
 				options = options.filter((i) => {
-					return (i.search || i.name as string).toLowerCase().indexOf(this.state.search) >= 0;
+					return (i.search || i.name as string).toLowerCase().indexOf(this.state.search!) >= 0;
 				});
 			}
 

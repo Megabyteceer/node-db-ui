@@ -1,24 +1,27 @@
 import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
+import type { BoolNum } from '../bs-utils';
 import { R } from '../r';
 import { L, registerFieldClass, renderIcon } from '../utils';
 import { BaseField } from './base-field';
 
-class CheckBox extends Component<{
+interface CheckBoxProps {
 	defaultValue?: boolean;
 	title?: string;
-	onClick: (val: boolean) => void;
-}, {
-	value: boolean;
+	onClick?: (val: boolean) => void;
+}
+
+class CheckBox extends Component<CheckBoxProps, {
+	value?: boolean;
 }> {
-	constructor(props) {
+	constructor(props: CheckBoxProps) {
 		super(props);
 		this.state = {
 			value: this.props.defaultValue
 		};
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentWillReceiveProps(nextProps: CheckBoxProps) {
 		this.setState({
 			value: nextProps.defaultValue
 		});
@@ -35,7 +38,7 @@ class CheckBox extends Component<{
 			className: 'field-boolean clickable',
 			title: this.props.title,
 			onClick: () => {
-				this.props.onClick(!this.state.value);
+				this.props.onClick!(!this.state.value);
 			}
 		},
 		check
@@ -45,7 +48,7 @@ class CheckBox extends Component<{
 
 registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField {
 
-	setValue(val) {
+	setValue(val: boolean | BoolNum) {
 		val = (val !== 0) && Boolean(val);
 		if (this.state.value !== val) {
 			this.setState({
@@ -54,11 +57,11 @@ registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField {
 		}
 	}
 
-	static decodeValue(val) {
+	static decodeValue(val: string) {
 		return Boolean(val);
 	}
 
-	static encodeValue(val) {
+	static encodeValue(val: BoolNum) {
 		return val ? 1 : 0;
 	}
 

@@ -8,7 +8,7 @@ registerFieldClass(
 	class TextField extends BaseField {
 
 		setValue(value: string) {
-			this.refToInput.value = value;
+			this.refToInput!.value = value;
 			this.setState({ value });
 		}
 
@@ -35,13 +35,13 @@ registerFieldClass(
 			if (this.props.isEdit) {
 				let className;
 				if (this.props.isCompact) {
-					if (field.maxLength > 600) {
+					if (field.maxLength! > 600) {
 						className = 'middle-size-input';
 					}
 				} else {
-					if (field.maxLength > 600) {
+					if (field.maxLength! > 600) {
 						className = 'large-input';
-					} else if (field.maxLength > 200) {
+					} else if (field.maxLength! > 200) {
 						className = 'middle-size-input';
 					}
 				}
@@ -61,11 +61,11 @@ registerFieldClass(
 					readOnly: this.props.fieldDisabled,
 					ref: this.refGetter,
 					onInput: () => {
-						this.props.wrapper.valueListener(this.refToInput.value, true, this);
+						this.props.wrapper!.valueListener(this.refToInput!.value, true, this);
 					}
 				};
 
-				if (field.maxLength > 200) {
+				if (field.maxLength! > 200) {
 					return R.textarea(inputsProps);
 				} else {
 					return R.input(inputsProps);

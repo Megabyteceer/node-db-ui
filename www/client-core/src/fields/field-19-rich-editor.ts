@@ -2,11 +2,11 @@ import { FIELD_TYPE } from '../../../../types/generated';
 import { R } from '../r';
 import { User } from '../user';
 import { L, registerFieldClass, renderIcon } from '../utils';
-import { BaseField } from './base-field';
+import { BaseField, type FieldProps } from './base-field';
 
 let idCounter = 0;
 
-const listeners = {};
+const listeners = {} as KeyedMap<(val: any) => void>;
 window.addEventListener('message', (e) => {
 	const data = e.data;
 	if (listeners.hasOwnProperty(data.id)) {
@@ -17,15 +17,15 @@ window.addEventListener('message', (e) => {
 registerFieldClass(
 	FIELD_TYPE.HTML_EDITOR,
 	class RichEditorField extends BaseField {
-		constructor(props) {
+		constructor(props: FieldProps) {
 			super(props);
 			this.iframeId = idCounter++;
 		}
 
-		resolveValueAwaiting: () => void;
-		viewportRef: HTMLIFrameElement;
+		resolveValueAwaiting?: () => void;
+		viewportRef!: HTMLIFrameElement;
 		iframeId: number;
-		summerNoteIsInitialized: boolean;
+		summerNoteIsInitialized = false;
 
 		getSummerNote(): Window {
 			return this.viewportRef.contentWindow as Window;
@@ -34,12 +34,12 @@ registerFieldClass(
 		componentDidMount() {
 			if (this.props.isEdit) {
 				const field = this.props.field;
-				const w = Math.floor(field.maxLength / 10000);
-				const h = field.maxLength % 10000;
+				const w = Math.floor(field.maxLength! / 10000);
+				const h = field.maxLength! % 10000;
 				const options = {
 					width: w,
 					height: h,
-					lang: User.currentUserData.lang.code
+					lang: User.currentUserData!.lang.code
 				};
 
 				listeners[this.iframeId] = (data) => {
@@ -54,7 +54,7 @@ registerFieldClass(
 						this.props.wrapper.valueListener(this.state.value, true, this);
 						if (this.resolveValueAwaiting) {
 							this.resolveValueAwaiting();
-							this.resolveValueAwaiting = null;
+							this.resolveValueAwaiting = undefined;
 						}
 					} else {
 						s.postMessage({ options: options, value: this.state.value }, '*');
@@ -67,17 +67,16 @@ registerFieldClass(
 			delete listeners[this.iframeId];
 		}
 
-		async getMessageIfInvalid(): Promise<string | false | true> {
+		async getMessageIfInvalid(): Promise<string | undefined> {
 			if (this.state.value) {
 				const val = this.state.value;
 				if (val.length > 4000000) {
 					return L('RICH_ED_SIZE', this.props.field.name);
 				}
 			}
-			return false;
 		}
 
-		setValue(val, sendToEditor?: boolean) {
+		setValue(val: string, sendToEditor?: boolean) {
 			const element = window.document.createElement('div');
 			element.innerHTML = val;
 			if (!element.innerText) {

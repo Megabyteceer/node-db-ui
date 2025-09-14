@@ -1,6 +1,6 @@
 import { assert, throwError } from '../www/client-core/src/assert';
 import type { LookupValue, RecId, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
-import { PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import { PRIVILEGES_MASK, STATUS, VIEW_MASK } from '../www/client-core/src/bs-utils';
 
 import { unlink } from 'fs';
 import { join } from 'path';
@@ -16,7 +16,7 @@ import { L } from './locale';
 import {mysqlRollback} } from './mysql-connection';
 // */
 
-import { FIELD_TYPE, type NODE_ID, type TypeGenerationHelper } from '../types/generated';
+import { FIELD_TYPE, type FIELD_ID, type NODE_ID, type TypeGenerationHelper } from '../types/generated';
 import {
 	/// #if DEBUG
 	__destroyRecordToPreventAccess,
@@ -26,7 +26,7 @@ import {
 import { D, escapeString, mysqlCommit, mysqlExec, mysqlStartTransaction, NUM_1 } from './mysql-connection';
 import { idToImgURLServer, UPLOADS_FILES_PATH } from './upload';
 
-const blockTags = [];
+const blockTags = [] as { exp: RegExp; val: string }[];
 for (const tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 	blockTags.push(
 		{
@@ -40,7 +40,7 @@ for (const tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 	);
 }
 
-let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWriteDraftable, recId: RecId | null = null, userSession?: UserSession): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
+let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWriteDraftable, recId?: RecId, userSession?: UserSession): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	const node = getNodeDesc(nodeId);
 
 	let currentData: RecordData;
@@ -48,31 +48,31 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 		currentData = await getRecord(nodeId, VIEW_MASK.ALL, recId, userSession);
 	}
 
-	const tableName = node.tableName;
-	const privileges = node.privileges;
+	const tableName = node.tableName!;
+	const privileges = node.privileges!;
 	let filesToDelete;
 
 	if (node.draftable) {
 		if ((privileges & PRIVILEGES_MASK.PUBLISH) === 0) {
 			if (recId) {
-				if (currentData.status !== 1) {
-					data.status = 2;
+				if (currentData!.status !== 1) {
+					data.status = STATUS.DRAFT;
 				}
 			} else {
-				data.status = 2;
+				data.status = STATUS.DRAFT;
 			}
 		}
 		if (!data.status) {
 			if (!recId) {
-				data.status = 1;
+				data.status = STATUS.PUBLIC;
 			}
 		}
 	} else {
-		data.status = 1;
+		data.status = STATUS.PUBLIC;
 	}
 
 	if (recId) {
-		if (!currentData.isE) {
+		if (!currentData!.isE) {
 			throwError('Update access denied.');
 		}
 	} else {
@@ -82,7 +82,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 	}
 
 	// check if required fields is filled, and hidden fields is unfilled
-	for (const f of node.fields) {
+	for (const f of node.fields!) {
 		const fieldName = f.fieldName;
 
 		if (!(f.show & 1)) {
@@ -91,20 +91,20 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 			}
 		} else if (f.storeInDb) {
 			if (f.requirement) {
-				if ((!data.hasOwnProperty(fieldName) || !data[fieldName]) && (!currentData || !currentData[fieldName])) {
+				if ((!data.hasOwnProperty(fieldName) || !(data as KeyedMap<any>)[fieldName]) && (!currentData! || !(currentData as KeyedMap<any>)[fieldName])) {
 					throwError('Required field \'' + fieldName + '\' is empty.');
 				}
 			}
 			if (data.hasOwnProperty(fieldName)) {
 				if (f.fieldType === FIELD_TYPE.HTML_EDITOR) {
 					for (const replacer of blockTags) {
-						data[fieldName] = data[fieldName].replace(replacer.exp, replacer.val);
+						(data as KeyedMap<any>)[fieldName] = (data as KeyedMap<any>)[fieldName].replace(replacer.exp, replacer.val);
 					}
 				}
 
-				if (f.unique && data[fieldName]) {
-					if (!(await uniqueCheckInner(tableName, fieldName, data[fieldName], recId))) {
-						throwError('Record with "' + f.fieldName + '" equal to value "' + data[fieldName] + '" is already exist.');
+				if (f.unique && (data as KeyedMap<any>)[fieldName]) {
+					if (!(await uniqueCheckInner(tableName, fieldName, (data as KeyedMap<any>)[fieldName], recId!))) {
+						throwError('Record with "' + f.fieldName + '" equal to value "' + (data as KeyedMap<any>)[fieldName] + '" is already exist.');
 					}
 				}
 			}
@@ -114,8 +114,8 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 	if (userSession && node.storeForms) {
 		await mysqlStartTransaction();
 	}
-	let handlerResult1;
-	let handlerResult2;
+	let handlerResult1: KeyedMap<any> | undefined;
+	let handlerResult2: KeyedMap<any> | undefined;
 	/// #if DEBUG
 	/*
 	/// #endif
@@ -142,7 +142,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 			assert(userSession, 'submitRecord without userSession requires _usersId to be defined.');
 
 			fieldsNames.push('"_usersId"');
-			values.push(D(userSession.id));
+			values.push(D(userSession!.id));
 
 			leastOneTablesFieldUpdated = true;
 		}
@@ -155,52 +155,52 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 			assert(userSession, 'submitRecord without userSession requires _organizationId to be defined.');
 
 			fieldsNames.push('"_organizationId"');
-			values.push(D(userSession.orgId));
+			values.push(D(userSession!.orgId));
 
 			leastOneTablesFieldUpdated = true;
 		}
 	}
 
 	let realDataBefore;
-	if (currentData) {
-		for (const f of node.fields) {
+	if (currentData!) {
+		for (const f of node.fields!) {
 			// save filenames to delete updated files later
 			const fieldName = f.fieldName;
-			if (f.storeInDb && data.hasOwnProperty(fieldName) && currentData[fieldName]) {
+			if (f.storeInDb && data.hasOwnProperty(fieldName) && (currentData as KeyedMap<any>)[fieldName]) {
 				const fieldType = f.fieldType;
 				if (fieldType === FIELD_TYPE.IMAGE || fieldType === FIELD_TYPE.FILE) {
 					if (!realDataBefore) {
 						realDataBefore = {};
 					}
-					realDataBefore[fieldName] = currentData[fieldName];
+					(realDataBefore as KeyedMap<any>)[fieldName] = (currentData as KeyedMap<any>)[fieldName];
 				}
 			}
 
 			/// #if DEBUG
 			if (!f.sendToServer && data.hasOwnProperty('fieldName')) {
-				notificationOut(userSession, L('CLIENT_ONLY_ON_SERVER', userSession, fieldName));
+				notificationOut(userSession!, L('CLIENT_ONLY_ON_SERVER', userSession, fieldName));
 			}
 			/// #endif
 		}
 	}
 
 	if (recId) {
-		handlerResult1 = await eventDispatch(node.tableName, ServerEventName.beforeUpdate, currentData, data, userSession);
+		handlerResult1 = await eventDispatch(node.tableName!, ServerEventName.beforeUpdate, currentData!, data, userSession);
 	} else {
-		handlerResult1 = await eventDispatch(node.tableName, node.storeForms ? ServerEventName.beforeCreate : ServerEventName.onSubmit, data, userSession);
+		handlerResult1 = await eventDispatch(node.tableName!, node.storeForms ? ServerEventName.beforeCreate : ServerEventName.onSubmit, data, userSession);
 		if (!node.storeForms) {
 			recId = 1;
 		}
 	}
 	if (node.storeForms) {
 		let needProcess_n2m;
-		for (const f of node.fields) {
+		for (const f of node.fields!) {
 			const fieldName = f.fieldName;
 
 			if (f.storeInDb && data.hasOwnProperty(fieldName)) {
 				const fieldType = f.fieldType;
 
-				const fieldVal = data[fieldName];
+				const fieldVal = (data as KeyedMap<any>)[fieldName];
 
 				if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 					// will process later
@@ -222,8 +222,8 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 						// continue to process as uploaded image
 					case FIELD_TYPE.IMAGE:
 						if (fieldVal) {
-							if (userSession.uploaded && userSession.uploaded[f.id] === fieldVal) {
-								delete userSession.uploaded[fieldVal];
+							if (userSession!.uploaded && userSession!.uploaded[f.id!] === fieldVal) {
+								delete userSession!.uploaded[fieldVal];
 							} else {
 								throwError('Error. Couldn\'t link uploaded file to the record.');
 							}
@@ -261,7 +261,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 
 					case FIELD_TYPE.LOOKUP:
 						if (!isAdmin(userSession) && fieldVal) {
-							await getRecord(f.nodeRef.id, VIEW_MASK.DROPDOWN_LIST, (fieldVal as LookupValue).id, userSession); // check if you have read access to referenced item
+							await getRecord(f.nodeRef!.id, VIEW_MASK.DROPDOWN_LIST, (fieldVal as LookupValue).id, userSession); // check if you have read access to referenced item
 						}
 						values.push(D((fieldVal as LookupValue).id));
 						break;
@@ -286,7 +286,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 		if (data.hasOwnProperty('status')) {
 			leastOneTablesFieldUpdated = true;
 			fieldsNames.push('status');
-			values.push(D(data.status));
+			values.push(D(data.status!));
 		}
 
 		if (recId) {
@@ -301,14 +301,14 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 			for (const key in data) {
 				if (key !== 'status' && key !== '_organizationId' && key !== '_usersId') {
 					assert(
-						node.fields.find(f => f.fieldName === key && f.sendToServer),
+						node.fields!.find(f => f.fieldName === key && f.sendToServer),
 						'Unknown field \'' + key + '\' in data set detected.'
 					);
 				}
 			}
 			/// #endif
 			qResult = await mysqlExec(insQ.join(''));
-		}
+		} // eslint-disable-line @stylistic/brace-style
 		/// #if DEBUG
 		else if (!needProcess_n2m) {
 			throwError('No fields updated in submitRecord.');
@@ -316,26 +316,26 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 		/// #endif
 
 		if (!recId) {
-			recId = qResult[0].id;
-			data.id = recId;
-			handlerResult2 = await eventDispatch(node.tableName, ServerEventName.afterCreate, data, userSession);
+			recId = qResult![0].id;
+			data.id = recId!;
+			handlerResult2 = await eventDispatch(node.tableName!, ServerEventName.afterCreate, data, userSession);
 		} else {
-			handlerResult2 = await eventDispatch(node.tableName, ServerEventName.afterUpdate, Object.assign(currentData, data), userSession);
+			handlerResult2 = await eventDispatch(node.tableName!, ServerEventName.afterUpdate, Object.assign(currentData!, data), userSession);
 		}
 
 		/// #if DEBUG
 		__destroyRecordToPreventAccess(data);
-		__destroyRecordToPreventAccess(currentData);
+		__destroyRecordToPreventAccess(currentData!);
 		/// #endif
 
 		if (needProcess_n2m) {
-			for (const f of node.fields) {
+			for (const f of node.fields!) {
 				if (f.fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 					const fieldName = f.fieldName;
 					if (data.hasOwnProperty(fieldName)) {
 						// clear all n2m links
 						await mysqlExec('DELETE FROM "' + fieldName + '" WHERE "' + tableName + 'Id" = ' + recId);
-						const fieldVal = data[fieldName];
+						const fieldVal = (data as KeyedMap<any>)[fieldName];
 
 						if (fieldVal.length) {
 							// add new n2m links
@@ -348,7 +348,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 								}
 
 								if (!isAdmin(userSession) && id) {
-									await getRecords(f.nodeRef.id, 8, id, userSession); // check if you have read access to referenced item
+									await getRecords(f.nodeRef!.id, 8, id, userSession); // check if you have read access to referenced item
 								}
 
 								n2miQ.push('(', recId as unknown as string, ',', id, ')');
@@ -390,7 +390,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 const submitRecord: TypeGenerationHelper['s'] = _submitRecord as unknown as TypeGenerationHelper['s'];
 
 const LIMIT_SQL_PART = ' LIMIT ' + NUM_1;
-async function uniqueCheckInner(tableName, fieldName, val, recId) {
+async function uniqueCheckInner(tableName: string, fieldName: string, val: string, recId: RecId) {
 	const query = ['SELECT id FROM "', tableName, '" WHERE "', fieldName, '" =', escapeString(val)];
 	if (typeof recId === 'number') {
 		query.push(' AND id != ', D(recId));
@@ -401,8 +401,8 @@ async function uniqueCheckInner(tableName, fieldName, val, recId) {
 	return !exists.length;
 }
 
-function uniqueCheck(fieldId, nodeId, val, recId, userSession) {
-	return uniqueCheckInner(getNodeDesc(nodeId, userSession).tableName, getFieldDesc(fieldId).fieldName, val, recId);
+function uniqueCheck(fieldId: FIELD_ID, nodeId: NODE_ID, val: string, recId: RecId, userSession: UserSession) {
+	return uniqueCheckInner(getNodeDesc(nodeId, userSession).tableName!, getFieldDesc(fieldId).fieldName, val, recId);
 }
 
 export { submitRecord, uniqueCheck };

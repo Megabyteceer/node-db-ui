@@ -1,4 +1,4 @@
-﻿import { Component, h, render } from 'preact';
+﻿import { Component, h, render, type ComponentType } from 'preact';
 
 import { NODE_TYPE } from '../../../types/generated';
 import { globals } from '../../../types/globals';
@@ -31,17 +31,17 @@ class FormLoaderCog extends Component {
 
 interface FormEntry {
 	form?: BaseForm;
-	formContainer: HTMLDivElement;
+	formContainer?: HTMLDivElement;
 	container: HTMLDivElement;
-	onModified?: (dataToSend: RecordData | null) => void;
+	onModified?: (dataToSend?: RecordData) => void;
 }
 
 const allForms: FormEntry[] = [];
 
-class Stage extends Component<any, any> {
+class Stage extends Component<{}, {}> {
 	static allForms: FormEntry[];
 
-	static get currentForm(): BaseForm | null {
+	static get currentForm(): BaseForm | undefined {
 		const e = Stage.currentFormEntry;
 		return e && e.form;
 	}
@@ -50,7 +50,7 @@ class Stage extends Component<any, any> {
 		return allForms[allForms.length - 1];
 	}
 
-	static get rootForm(): BaseForm {
+	static get rootForm(): BaseForm | undefined {
 		return allForms[0] && allForms[0].form;
 	}
 
@@ -71,10 +71,10 @@ class Stage extends Component<any, any> {
 
 	static goBackIfModal() {
 		if (allForms.length > 1) {
-			const e = allForms.pop();
+			const e = allForms.pop()!;
 			allForms[allForms.length - 1].container.classList.remove('blocked-layer');
-			const formContainer = e.formContainer;
-			e.formContainer = null;
+			const formContainer = e.formContainer!;
+			e.formContainer = undefined;
 
 			formContainer.style.transform = 'scale(0.01)';
 			e.container.style.backgroundColor = '#00112200';
@@ -97,8 +97,7 @@ class Stage extends Component<any, any> {
 		}
 	}
 
-	/** @param newRecordData null - if record was deleted. */
-	static dataDidModified(newRecordData: RecordData | null) {
+	static dataDidModified(newRecordData?: RecordData) {
 		if (Stage.currentFormEntry.onModified) {
 			Stage.currentFormEntry.onModified(newRecordData);
 		}
@@ -110,7 +109,7 @@ class Stage extends Component<any, any> {
 		filters: FormFilters = {},
 		editable?: boolean,
 		modal?: boolean,
-		onModified?: (dataToSend: RecordData) => void,
+		onModified?: (dataToSend?: RecordData) => void,
 		noAnimation = false
 	) {
 		if (!allForms.length || modal) {
@@ -164,11 +163,11 @@ class Stage extends Component<any, any> {
 			editable = true;
 		}
 
-		let formType;
+		let formType!: (ComponentType<any>) | 'div';
 		switch (node.nodeType) {
 		case NODE_TYPE.DOCUMENT:
 		case NODE_TYPE.SECTION:
-			if (recId || recId === 0 || recId === 'new') {
+			if (recId || recId === 0) {
 				formType = FormFull;
 			} else {
 				formType = List;
@@ -176,15 +175,15 @@ class Stage extends Component<any, any> {
 			}
 			break;
 		case NODE_TYPE.REACT_CLASS:
-			if (typeof globals.customClasses[node.tableName] === 'undefined') {
+			if (typeof globals.customClasses[node.tableName!] === 'undefined') {
 				myAlert('Unknown react class: ' + node.tableName);
 				formType = 'div';
 			} else {
-				formType = globals.customClasses[node.tableName];
+				formType = globals.customClasses[node.tableName!];
 			}
 			break;
 		case NODE_TYPE.STATIC_LINK:
-			location.href = node.staticLink;
+			location.href = node.staticLink!;
 			break;
 		default:
 			throwError('Unknown nodeType ' + node.nodeType);
@@ -192,7 +191,7 @@ class Stage extends Component<any, any> {
 
 		let className =
 			'form-container-node-' +
-			normalizeEnumName(node.tableName).toLowerCase().replaceAll('_', '-') || nodeId +
+			normalizeEnumName(node.tableName!).toLowerCase().replaceAll('_', '-') || nodeId +
 			(isRootForm ? ' form-root-container' : ' form-modal-container');
 		if (node.cssClass) {
 			className += ' ' + node.cssClass;
@@ -228,7 +227,7 @@ class Stage extends Component<any, any> {
 		updateHashLocation();
 	}
 
-	constructor(props) {
+	constructor(props: {}) {
 		super(props);
 	}
 
@@ -243,7 +242,7 @@ function addFormEntry(noAnimation = false) {
 	const isRoot = allForms.length === 0;
 	const container = document.createElement('div');
 	container.className = isRoot ? 'form-layer' : 'form-layer form-layer-modal';
-	let formContainer;
+	let formContainer: HTMLDivElement;
 
 	if (!isRoot) {
 		formContainer = document.createElement('div');
@@ -268,7 +267,7 @@ function addFormEntry(noAnimation = false) {
 	} else {
 		formContainer = container;
 	}
-	document.querySelector('#stage').appendChild(container);
+	(document.querySelector('#stage') as HTMLDivElement).appendChild(container);
 	const entry: FormEntry = {
 		container,
 		formContainer

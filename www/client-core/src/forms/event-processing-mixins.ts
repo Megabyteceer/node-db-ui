@@ -1,57 +1,61 @@
 import { render, type ComponentChild } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
+import { E, FIELD_TYPE } from '../../../../types/generated';
 import { assert, throwError, validateFieldName } from '../assert';
-import type { FieldDesc, GetRecordsFilter, RecordDataBaseFields } from '../bs-utils';
-import { clientHandlers } from '../events-handle';
+import type { BoolNum, FieldDesc, GetRecordsFilter, RecordData } from '../bs-utils';
+import { clientHandlers, type Handler } from '../events-handle';
 import type { FieldWrap } from '../fields/field-wrap';
 import { CLIENT_SIDE_FORM_EVENTS, consoleLog, getData, L } from '../utils';
 import { BaseForm } from './base-form';
 
 class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 	/** true if form opened for new record creation */
-	isNewRecord: boolean;
+	isNewRecord?: boolean;
 	/** true if form opened for editing existing form */
-	isUpdateRecord: boolean;
+	isUpdateRecord?: boolean;
 
-	saveButtonTitle: string;
-	isCancelButtonHidden: boolean;
+	saveButtonTitle?: string;
+	isCancelButtonHidden?: boolean;
 
-	currentData: { [key in (FieldsNames | RecordDataBaseFields)]: any };
+	currentData!: KeyedMap<any>;
 
+	/// #if DEBUG
 	/** show all fields for debug purposes (hidden and field of another tabs) */
-	showAllDebug: boolean;
+	showAllDebug = false;
+	/// #endif
 
-	showAllTabs: boolean;
+	showAllTabs = false;
 
 	/** set *true* - to make drafting buttons invisible. It is still possible do draft/publish records via api. */
-	disableDrafting: boolean;
+	disableDrafting = false;
 
 	/** contains validate() result */
-	formIsValid: boolean;
+	formIsValid = false;
 
-	currentTabName: string;
+	currentTabName: string | null;
 
-	invalidAlertInOnSaveHandler: boolean;
+	invalidAlertInOnSaveHandler = false;
 
 	private disabledFields: { [key: string]: 1 | null };
 
 	/** dont close form after it is saved */
 	isPreventCloseFormAfterSave?: boolean;
 
-	constructor(props) {
+	hiddenFields: { [key: string]: BoolNum };
+
+	constructor(props: any) {
 		super(props);
-		this.recId = this.props.initialData.id || 'new';
-		this.currentData = null;
+		this.recId = (this.props.initialData as RecordData).id || 'new';
+		this.currentData = null!;
 		this.hiddenFields = {};
 		this.disabledFields = {};
 		this.currentTabName = null;
 	}
 
 	componentDidMount() {
-		this.callOnTabShowEvent(this.props.filters.tab);
+		this.callOnTabShowEvent(this.props.filters!.tab!);
 	}
 
-	isFieldVisibleByFormViewMask(_field) {
+	isFieldVisibleByFormViewMask(_field: FieldDesc) {
 		return true;
 	}
 
@@ -69,9 +73,8 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		if (this.currentTabName !== tabNameToShow) {
 			this.currentTabName = tabNameToShow;
 			let field;
-			const nodeFields = this.props.node.fields;
-			for (const k in nodeFields) {
-				const f = nodeFields[k];
+			const nodeFields = this.props.node.fields!;
+			for (const f of nodeFields) {
 				if (this.isFieldVisibleByFormViewMask(f)) {
 					if (f.fieldType === FIELD_TYPE.TAB && f.maxLength === 0) {
 						// tab
@@ -84,7 +87,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 			}
 
 			if (field) {
-				this.processFieldEvent(field.id, false, false);
+				this.processFieldEvent(field, false, false);
 			}
 		}
 	}
@@ -96,14 +99,13 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 
 	getField(fieldName: FieldsNames): FieldWrap {
 		validateFieldName(fieldName);
-		if (this.hasField(fieldName)) {
-			return this.fieldsRefs[fieldName];
-		} else {
+		if (!this.hasField(fieldName)) {
 			throwError('Unknown field: ' + fieldName);
 		}
+		return this.fieldsRefs[fieldName];
 	}
 
-	setFieldLabel(fieldName: FieldsNames, label?) {
+	setFieldLabel(fieldName: FieldsNames, label?: string) {
 		validateFieldName(fieldName);
 		this.getField(fieldName).setLabel(label);
 	}
@@ -117,7 +119,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 				if (f) {
 					f.hide();
 				}
-				if (f.props.field.fieldType === FIELD_TYPE.TAB) {
+				if (f.props.field!.fieldType === FIELD_TYPE.TAB) {
 					this.forceUpdate();
 				}
 			}
@@ -182,9 +184,9 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		return this.disabledFields[fieldName] === 1;
 	}
 
-	addLookupFilters(fieldName: FieldsNames, filtersObjOrName: GetRecordsFilter);
-	addLookupFilters(fieldName: FieldsNames, filtersObjOrName: string, val: any);
-	addLookupFilters(fieldName: FieldsNames, filtersObjOrName: string | GetRecordsFilter, val?: any) {
+	addLookupFilters(fieldName: FieldsNames, filtersObjOrName: GetRecordsFilter): void;
+	addLookupFilters(fieldName: FieldsNames, filtersObjOrName: string, val: any): void;
+	addLookupFilters(fieldName: FieldsNames, filtersObjOrName: string | GetRecordsFilter, val?: any): void {
 		this.getField(fieldName).setLookupFilter(filtersObjOrName, val);
 	}
 
@@ -193,7 +195,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		if (!f) {
 			return; // prevent crash on unmount values debouncing
 		}
-		const field = f.props.field;
+		const field = f.props.field!;
 
 		if (this.currentData[fieldName as string] !== val) {
 			if (!isUserAction) {
@@ -202,7 +204,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 			if (isUserAction) {
 				this.isDataModified = true;
 				if (this.isSubForm()) {
-					this.props.parentForm.props.form.isDataModified = true;
+					this.props.parentForm!.props.form.isDataModified = true;
 				}
 			}
 			const prev_value = this.currentData[fieldName as string];
@@ -234,10 +236,10 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		for (const k in this.fieldsRefs) {
 			const f = this.fieldsRefs[k];
 			if (
-				f.props.field.fieldType !== FIELD_TYPE.BUTTON &&
-				f.props.field.fieldType !== FIELD_TYPE.TAB
+				f.props.field!.fieldType !== FIELD_TYPE.BUTTON &&
+				f.props.field!.fieldType !== FIELD_TYPE.TAB
 			) {
-				await this.processFieldEvent(f.props.field, (this.fieldValue as any)(f.props.field.fieldName), false);
+				await this.processFieldEvent(f.props.field!, (this.fieldValue as any)(f.props.field!.fieldName), false);
 			}
 		}
 
@@ -254,7 +256,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 	getFieldDomElement(fieldName: FieldsNames): HTMLDivElement {
 		const formElement = this.base as HTMLDialogElement;
 		return formElement.querySelector(
-			'.field-container-id-' + this.getField(fieldName).props.field.id
+			'.field-container-id-' + this.getField(fieldName).props.field!.id
 		) as HTMLDivElement;
 	}
 
@@ -269,7 +271,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		render(reactContent, container);
 	}
 
-	saveClick(_isDraft?: boolean): Promise<boolean> {
+	saveClick(_isDraft?: boolean | 'keepStatus'): Promise<boolean | undefined> {
 		throw new Error('should be implemented in child class');
 	}
 
@@ -281,13 +283,13 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		this.forceUpdate();
 	}
 
-	async checkUniqueValue(field, val) {
+	async checkUniqueValue(field: FieldDesc, val: any) {
 		if (field.unique && val) {
 			const data = await getData(
 				'api/uniqueCheck',
 				{
 					fieldId: field.id,
-					nodeId: field.node.id,
+					nodeId: field.node!.id,
 					recId: this.recId !== 'new' && this.recId,
 					val
 				},
@@ -295,10 +297,10 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 				true
 			);
 			if (!data) {
-				this.fieldAlert(field.fieldName, L('VALUE_EXISTS'), false, true);
+				this.fieldAlert(field.fieldName as FieldsNames, L('VALUE_EXISTS'), false, true);
 				return false;
 			} else {
-				this.fieldAlert(field.fieldName, undefined, true);
+				this.fieldAlert(field.fieldName as FieldsNames, undefined, true);
 			}
 		}
 		return true;
@@ -317,7 +319,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 
 	async onSave() {
 		/// #if DEBUG
-		consoleLog('onSave ' + this.props.node.tableName + ': ' + this.props.initialData.id);
+		consoleLog('onSave ' + this.props.node.tableName + ': ' + (this.props.initialData as RecordData).id);
 		/// #endif
 
 		for (const fieldName in this.fieldsRefs) {
@@ -346,7 +348,7 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 	}
 
 	_getFormEventHandler(eventName: CLIENT_SIDE_FORM_EVENTS) {
-		const name = this.props.node.tableName + '.' + eventName;
+		const name = (E as KeyedMap<any>)[this.props.node.tableName!][eventName];
 		return this._getEventHandlers(name);
 	}
 
@@ -362,11 +364,11 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		return this._getEventHandlers(name);
 	}
 
-	_getEventHandlers(name: string) {
+	_getEventHandlers(name: string): Handler[] | undefined {
 		return clientHandlers.get(name);
 	}
 
-	processFieldEvent(field: FieldDesc, value: any, isUserAction?: boolean, prev_val?) {
+	processFieldEvent(field: FieldDesc, value: any, isUserAction?: boolean, prev_val?: any) {
 		return this.processEvent(this._getFieldEventHandlers(field), value, isUserAction, prev_val);
 	}
 
@@ -374,13 +376,13 @@ class FormEventProcessingMixins<FieldsNames extends string> extends BaseForm {
 		return this.processEvent(this._getFormEventHandler(eventName), ...args);
 	}
 
-	async processEvent(handlers, ...args) {
+	async processEvent(handlers: Handler[] | undefined, ...args: any[]) {
 		if (handlers) {
 			for (const handler of handlers) {
-				this.recId = this.props.initialData.id || 'new';
+				this.recId = (this.props.initialData as RecordData).id || 'new';
 				this.isUpdateRecord = this.props.editable;
 				if (this.isUpdateRecord) {
-					this.isNewRecord = !this.props.initialData.hasOwnProperty('id');
+					this.isNewRecord = !(this.props.initialData as RecordData).hasOwnProperty('id');
 					if (this.isNewRecord) {
 						this.isUpdateRecord = false;
 					}

@@ -1,10 +1,10 @@
-import { E, NODE_ID } from '../../types/generated';
+import { E, NODE_ID, type IUsersRecord, type IUsersRecordWrite } from '../../types/generated';
 import { serverOn } from '../../www/client-core/src/events-handle';
-import { generateSalt, getPasswordHash, isAdmin } from '../auth';
+import { generateSalt, getPasswordHash, isAdmin, type UserSession } from '../auth';
 import { D, escapeString, mysqlExec } from '../mysql-connection';
 import { submitRecord } from '../submit';
 
-async function clearUserParams(data, currentData, userSession) {
+async function clearUserParams(data: IUsersRecordWrite, currentData: IUsersRecord, userSession: UserSession) {
 	if (!isAdmin(userSession)) {
 		delete data._organizationId;
 		delete data._userRoles;
@@ -14,8 +14,8 @@ async function clearUserParams(data, currentData, userSession) {
 		const p = data.password;
 		if (p !== 'nc_l4DFn76ds5yhg') {
 			const salt = generateSalt();
-			await mysqlExec('UPDATE _users SET salt=' + escapeString(salt) + ' WHERE id=' + D(currentData.id));
-			data.password = await getPasswordHash(data.password, salt);
+			await mysqlExec('UPDATE _users SET salt=' + escapeString(salt) + ' WHERE id=' + D(currentData.id!));
+			data.password = await getPasswordHash(data.password!, salt);
 		} else {
 			delete data.password;
 		}
@@ -37,8 +37,8 @@ serverOn(E._users.beforeUpdate, async (currentData, newData, userSession) => {
 	}
 
 	if (newData.hasOwnProperty('company')) {
-		if (currentData._organizationId.id) {
-			await submitRecord(NODE_ID.ORGANIZATION, { name: newData.company }, currentData._organizationId.id);
+		if (currentData._organizationId!.id) {
+			await submitRecord(NODE_ID.ORGANIZATION, { name: newData.company }, currentData._organizationId!.id);
 		}
 	}
 	return clearUserParams(newData, currentData, userSession);

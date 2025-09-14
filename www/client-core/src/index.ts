@@ -49,4 +49,4 @@ import { h, render } from 'preact';
 import './events/forms_events';
 import { MainFrame } from './main-frame';
 
-render(h(MainFrame, null), document.getElementById('container'));
+render(h(MainFrame, null), document.getElementById('container') as HTMLDivElement);

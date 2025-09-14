@@ -26,7 +26,7 @@ async function saveDoc(data: IHtmlRecordWrite): Promise<void> {
 				rejects(err);
 			} else {
 				for (const name in data) {
-					txt = txt.replaceAll('\\$\\{' + name + '\\}', data[name]);
+					txt = txt.replaceAll('\\$\\{' + name + '\\}', (data as KeyedMap<string>)[name]);
 				}
 				txt = txt.replaceAll('\\$\\{name\\}', data.name);
 				writeFile(getDocFilename(data), txt, (err) => {
@@ -41,6 +41,6 @@ async function saveDoc(data: IHtmlRecordWrite): Promise<void> {
 	});
 }
 
-function getDocFilename(data) {
+function getDocFilename(data: IHtmlRecordWrite) {
 	return join(__dirname, '../../www/custom/html/', data.title + '.html');
 }

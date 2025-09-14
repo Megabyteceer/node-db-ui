@@ -3,15 +3,16 @@ import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../bs-utils';
 import { VIEW_MASK } from '../bs-utils';
+import type { FormFull } from '../forms/form-full';
 import { List } from '../forms/list';
 import { R } from '../r';
 import { assignFilters, deleteRecord, L, registerFieldClass } from '../utils';
-import { fieldLookupMixins } from './field-lookup-mixins';
+import { fieldLookupMixins, type LookupFieldProps } from './field-lookup-mixins';
 
 class LookupOneToManyFiled extends fieldLookupMixins {
-	inlineListRef: List;
+	inlineListRef!: List;
 
-	constructor(props) {
+	constructor(props: LookupFieldProps) {
 		super(props);
 		const filters = this.generateDefaultFiltersByProps(props);
 		this.state = { filters };
@@ -42,14 +43,14 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 		return subForms.length < 1;
 	}
 
-	valueSelected(recordData?: RecordData, isNewCreated?: boolean, noToggleList?: boolean);
+	valueSelected(recordData?: RecordData, isNewCreated?: boolean, noToggleList?: boolean): void;
 	valueSelected() {}
 
 	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
 		const filters = {
 			[this.getLinkerFieldName()]: { id: this.props.form.recId }
 		};
-		globals.Stage.showForm(this.props.field.nodeRef.id, recIdToEdit, filters, true, true, () => {
+		globals.Stage.showForm(this.props.field.nodeRef!.id, recIdToEdit, filters, true, true, () => {
 			this.inlineListRef.refreshData();
 		});
 	}
@@ -58,7 +59,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 		this.setState({ inlineEditing: true });
 	}
 
-	async getMessageIfInvalid(): Promise<string | false | true> {
+	async getMessageIfInvalid(): Promise<string | undefined> {
 		if (this.state.inlineEditing) {
 			let ret;
 			const forms = this.inlineListRef.getSubForms();
@@ -79,16 +80,16 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 			for (const item of listData.items) {
 				if (item.hasOwnProperty('__deleted_901d123f')) {
 					if (item.hasOwnProperty('id')) {
-						await deleteRecord('', field.nodeRef.id, item.id, true);
+						await deleteRecord('', field.nodeRef!.id, item.id!, true);
 					}
 				}
 			}
 			const subForms = this.inlineListRef.getSubForms();
 			for (const form of subForms) {
-				const initialData = form.props.initialData;
+				const initialData = form.props.initialData!;
 				const linkerName = this.getLinkerFieldName();
-				if (!initialData.hasOwnProperty(linkerName) || initialData[linkerName] === 'new') {
-					form.currentData[linkerName] = { id: this.props.form.currentData.id };
+				if (!initialData.hasOwnProperty(linkerName) || (initialData as KeyedMap<any>)[linkerName] === 'new') {
+					form.currentData[linkerName] = { id: (this.props.form as FormFull).currentData.id };
 				}
 				await form.saveForm();
 			}
@@ -96,20 +97,20 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 	}
 
 	async saveParentFormBeforeCreation() {
-		await this.props.form.saveForm();
+		await (this.props.form as FormFull).saveForm();
 		const linkerFieldName = this.getLinkerFieldName();
-		this.state.filters[linkerFieldName] = this.props.form.currentData.id;
+		(this.state.filters as KeyedMap<any>)[linkerFieldName] = (this.props.form as FormFull).currentData.id;
 	}
 
 	setLookupFilter(filtersObjOrName: string | GetRecordsFilter, val?: any) {
 		super.setLookupFilter(filtersObjOrName, val);
 		if (this.inlineListRef) {
-			assignFilters(this.state.filters, this.inlineListRef.filters);
+			assignFilters(this.state.filters!, this.inlineListRef.filters);
 		}
 	}
 
 	forceBouncingTimeout() {
-		if (this.inlineEditable) {
+		if (this.state.inlineEditing) {
 			for (const subForm of this.inlineListRef.getSubForms()) {
 				subForm.forceBouncingTimeout();
 			}
@@ -118,8 +119,8 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 
 	render() {
 		const field = this.props.field;
-		const askToSaveParentBeforeCreation = !this.props.form.props.initialData.hasOwnProperty('id');
-		const initialData: RecordsData =
+		const askToSaveParentBeforeCreation = !(this.props.form.props.initialData as RecordData).hasOwnProperty('id');
+		const initialData: RecordsData | undefined =
 			typeof this.props.form.recId === 'number'
 				? undefined
 				: {
@@ -129,7 +130,7 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 		return R.div(
 			null,
 			h(List, {
-				ref: (r) => {
+				ref: (r: List) => {
 					this.inlineListRef = r;
 				},
 				hideControls: this.state.hideControls,
@@ -137,11 +138,12 @@ class LookupOneToManyFiled extends fieldLookupMixins {
 				disableDrafting: this.state.disableDrafting,
 				additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
 				initialData,
+				node: field.node!,
 				viewMask: VIEW_MASK.SUB_FORM,
 				preventCreateButton: this.state.preventCreateButton,
 				askToSaveParentBeforeCreation,
 				editable: this.state.inlineEditing,
-				nodeId: field.nodeRef.id,
+				nodeId: field.nodeRef!.id,
 				parentForm: this,
 				filters: this.state.filters
 			})

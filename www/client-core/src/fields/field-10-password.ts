@@ -8,7 +8,7 @@ registerFieldClass(
 	class PasswordField extends BaseField {
 
 		setValue(value: string) {
-			this.refToInput.value = value;
+			this.refToInput!.value = value;
 			this.setState({ value });
 		}
 
@@ -28,7 +28,7 @@ registerFieldClass(
 					readOnly: this.props.fieldDisabled,
 					ref: this.refGetter,
 					onInput: () => {
-						this.props.wrapper.valueListener(this.refToInput.value, true, this);
+						this.props.wrapper.valueListener(this.refToInput!.value, true, this);
 					}
 				};
 

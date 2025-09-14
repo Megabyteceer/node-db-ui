@@ -96,7 +96,7 @@ serverOn(E._nodes.afterCreate, async (data, userSession) => {
 	nodes.items.forEach(async (node) => {
 		prior += 10;
 		if (node.prior !== prior) {
-			await submitRecord(NODE_ID.NODES, { prior }, node.id, userSession);
+			await submitRecord(NODE_ID.NODES, { prior }, node.id!, userSession);
 		}
 	});
 

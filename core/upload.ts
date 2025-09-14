@@ -6,8 +6,20 @@ import * as fs from 'fs';
 import { join } from 'path';
 import sharp from 'sharp';
 
+import type { FIELD_ID, NODE_ID } from '../types/generated';
 import { ENV, getFieldDesc, getNodeDesc } from './describe-node';
 import { L } from './locale';
+
+interface UploadRequest {
+	w?: number;
+	h?: number;
+	x?: number;
+	y?: number;
+	filename: string;
+	fileContent: string;
+	fid: FIELD_ID;
+	nid: NODE_ID;
+}
 
 /// #if DEBUG
 let UPLOADS_IMAGES_PATH = join(__dirname, '../../html/images/uploads');
@@ -56,11 +68,11 @@ const getNewFileDir = () => {
 	});
 };
 
-const getNewImageID = (isTransparency): Promise<string> => {
+const getNewImageID = (isTransparency: boolean): Promise<string> => {
 	return new Promise((resolve, reject) => {
 		const folder = Math.floor(Math.random() * 256).toString(16);
 
-		const generateId = (err?: NodeJS.ErrnoException) => {
+		const generateId = (err?: NodeJS.ErrnoException | null) => {
 			if (err) {
 				reject(err);
 			}
@@ -84,9 +96,9 @@ const getNewImageID = (isTransparency): Promise<string> => {
 	});
 };
 
-let allowedUpload;
+let allowedUpload: RegExp;
 
-async function uploadFile(reqData, userSession) {
+async function uploadFile(reqData: UploadRequest, userSession: UserSession) {
 	if (reqData.filename.indexOf('..') >= 0) {
 		throwError(L('UPL_ERROR_WFN', userSession));
 	}
@@ -113,16 +125,17 @@ async function uploadFile(reqData, userSession) {
 	});
 }
 
-const getFieldForUpload = (reqData, userSession) => {
-	getNodeDesc(parseInt(reqData.nid), userSession);
-	const field = getFieldDesc(parseInt(reqData.fid));
+const getFieldForUpload = (reqData: UploadRequest, userSession: UserSession) => {
+	getNodeDesc(reqData.nid, userSession);
+	const field = getFieldDesc(reqData.fid);
 	if (!field) {
 		throwError('field ' + reqData.fid + ' access denied');
 	}
+
 	return field;
 };
 
-async function uploadImage(reqData, userSession: UserSession) {
+async function uploadImage(reqData: UploadRequest, userSession: UserSession) {
 	if (userSession.isGuest) {
 		throwError('unauthorized');
 	}
@@ -132,8 +145,8 @@ async function uploadImage(reqData, userSession: UserSession) {
 	let img = await sharp(reqData.fileContent);
 	const meta = await img.metadata();
 
-	const targetW = Math.floor(field.maxLength / 10000);
-	const targetH = field.maxLength % 10000;
+	const targetW = field.width!;
+	const targetH = field.height!;
 
 	const srcW = meta.width;
 	const srcH = meta.height;
@@ -154,10 +167,10 @@ async function uploadImage(reqData, userSession: UserSession) {
 		let resizeTargetW = targetW;
 		let resizeTargetH = targetH;
 
-		let W = parseFloat(reqData.w) || srcW;
-		let H = parseFloat(reqData.h) || srcH;
-		let X = parseFloat(reqData.x) || 0;
-		let Y = parseFloat(reqData.y) || 0;
+		let W = reqData.w || srcW;
+		let H = reqData.h || srcH;
+		let X = reqData.x || 0;
+		let Y = reqData.y || 0;
 
 		const Q = targetW / W;
 
@@ -249,7 +262,7 @@ async function uploadImage(reqData, userSession: UserSession) {
 	return newFileNameID;
 }
 
-const idToImgURLServer = (imgId) => {
+const idToImgURLServer = (imgId: string) => {
 	assert(imgId, 'idToImgURLServer called for empty imageId');
 	return join(UPLOADS_IMAGES_PATH, imgId);
 };

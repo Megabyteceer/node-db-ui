@@ -7,14 +7,14 @@ import { dateFieldMixins /* , ReactDateTimeClassHolder */ } from './field-4-date
 
 registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 
-	static decodeValue(val) {
+	static decodeValue(val: string) {
 		if (val === EMPTY_DATE) {
 			return null;
 		}
 		return moment(val, innerDateTimeFormat);
 	}
 
-	static encodeValue(val) {
+	static encodeValue(val: moment.Moment) {
 		if (!val) {
 			return (EMPTY_DATE);
 		}
@@ -22,7 +22,7 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 	}
 
 	focus() {
-		(this.refToInput.base as HTMLDivElement).querySelector('input').focus();
+		((this.refToInput!.base as HTMLDivElement).querySelector('input') as HTMLInputElement).focus();
 	}
 
 	render() {

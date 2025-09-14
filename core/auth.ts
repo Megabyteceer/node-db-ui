@@ -1,7 +1,7 @@
 import { pbkdf2, randomBytes } from 'crypto';
 import { NODE_ID } from '../types/generated';
 import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
-import type { RecId, UserLangEntry, UserRoles, UserSession } from '../www/client-core/src/bs-utils';
+import type { BoolNum, RecId, UserLangEntry, UserRoles, UserSession } from '../www/client-core/src/bs-utils';
 import { ROLE_ID, USER_ID } from '../www/client-core/src/bs-utils';
 import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from './describe-node';
 import { ENV, SERVER_ENV } from './ENV';
@@ -9,10 +9,10 @@ import { L } from './locale';
 import { D, escapeString, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 import { submitRecord } from './submit';
 
-const sessions = new Map();
-const sessionsByUserId = new Map();
+const sessions = new Map() as Map<string, UserSession>;
+const sessionsByUserId = new Map() as Map<RecId, UserSession>;
 
-function createSession(userSession, sessionToken) {
+function createSession(userSession: UserSession, sessionToken?: string) {
 	assert(
 		!sessionsByUserId.has(userSession.id),
 		'session already exists' + userSession.id
@@ -47,7 +47,7 @@ const usersSessionsStartedCount = () => {
 	return startedSessionsCount;
 };
 
-function setMaintenanceMode(val) {
+function setMaintenanceMode(val: boolean) {
 	/// #if DEBUG
 	console.log('setMaintenanceMode ' + val);
 	// console.log((new Error('')).stack.replace('Error', '').trim());
@@ -64,11 +64,11 @@ function setMaintenanceMode(val) {
 	}
 }
 
-async function startSession(sessionToken, browserLanguageId: string) {
+async function startSession(sessionToken: string, browserLanguageId?: string) {
 	if (!sessionToken) {
 		return getGuestUserForBrowserLanguage(browserLanguageId);
 	}
-	let userSession;
+	let userSession!: UserSession;
 	if (!sessions.has(sessionToken)) {
 		if (sessionToken !== 'guest-session') {
 			throwError('<auth> session expired');
@@ -76,7 +76,7 @@ async function startSession(sessionToken, browserLanguageId: string) {
 			return getGuestUserForBrowserLanguage(browserLanguageId);
 		}
 	} else {
-		userSession = sessions.get(sessionToken);
+		userSession = sessions.get(sessionToken)!;
 	}
 
 	if (!userSession._isStarted && !maintenanceMode) {
@@ -104,7 +104,7 @@ async function startSession(sessionToken, browserLanguageId: string) {
 	});
 }
 
-function finishSession(sessionToken) {
+function finishSession(sessionToken: string) {
 	const userSession = sessions.get(sessionToken);
 	if (userSession) {
 		userSession._isStarted = false;
@@ -113,7 +113,7 @@ function finishSession(sessionToken) {
 	}
 }
 
-function killSession(userSession) {
+function killSession(userSession: UserSession) {
 	sessions.delete(userSession.sessionToken);
 	sessionsByUserId.delete(userSession.id);
 	userSession.id = 0;
@@ -127,12 +127,15 @@ function generateSalt() {
 	return randomBytes(16).toString('hex');
 }
 
-async function activateUser(key, userSession: UserSession) {
+const ACTIVATE_SQL_PART = 'SELECT * FROM _registration WHERE status = ' + NUM_1 + ' AND "activationKey"=';
+const ACTIVATE_SQL_PART2 = ' AND "_createdOn" > DATE_ADD(CURDATE(), INTERVAL -' + NUM_1 + ' DAY) LIMIT ' + NUM_1;
+
+async function activateUser(key: string, userSession: UserSession) {
 	if (key) {
 		const registrations = await mysqlExec(
-			'SELECT * FROM _registration WHERE status = 1 AND "activationKey"=\''
-			+ key
-			+ '\' AND "_createdOn" > DATE_ADD(CURDATE(), INTERVAL -1 DAY) LIMIT 1'
+			ACTIVATE_SQL_PART
+			+ escapeString(key)
+			+ ACTIVATE_SQL_PART2
 		);
 		const registration = registrations[0];
 		if (registration) {
@@ -206,7 +209,7 @@ async function createUser(
 	return userID;
 }
 
-async function resetPassword(key, userId, userSession) {
+async function resetPassword(key: string, userId: RecId, userSession: UserSession) {
 	if (key && userId) {
 		const users = await mysqlExec(
 			'SELECT id FROM _users WHERE id= '
@@ -239,7 +242,7 @@ async function resetPassword(key, userId, userSession) {
 	throwError(L('RECOVERY_EXPIRED', userSession));
 }
 
-function getPasswordHash(password, salt): Promise<string> {
+function getPasswordHash(password: string, salt: string): Promise<string> {
 	return new Promise((resolve, rejects) => {
 		pbkdf2(password, salt, 1000, 64, 'sha512', (err, key) => {
 			if (err) {
@@ -252,12 +255,12 @@ function getPasswordHash(password, salt): Promise<string> {
 }
 
 async function authorizeUserByID(
-	userID,
+	userID: RecId,
 	isItServerSideSession: boolean = false,
-	sessionToken: string | null = null
+	sessionToken?: string
 ): Promise<UserSession> {
 	if (sessionsByUserId.has(userID)) {
-		return sessionsByUserId.get(userID);
+		return sessionsByUserId.get(userID)!;
 	}
 
 	const query
@@ -349,6 +352,7 @@ async function authorizeUserByID(
 		email: user.email,
 		userRoles,
 		organizations,
+		sessionToken: '',
 		lang,
 		cacheKey: cacheKeyGenerator.join()
 	};
@@ -382,7 +386,7 @@ function getLang(langId: RecId): UserLangEntry {
 			return l;
 		}
 	}
-	return DEFAULT_LANGUAGE.lang;
+	return DEFAULT_LANGUAGE.lang!;
 }
 
 async function setCurrentOrg(
@@ -404,7 +408,7 @@ async function setCurrentOrg(
 	return 0;
 }
 
-async function setMultilingual(enable: boolean, userSession: UserSession) {
+async function setMultilingual(enable: BoolNum | boolean, userSession: UserSession) {
 	shouldBeAuthorized(userSession);
 	if (ENV.ENABLE_MULTILINGUAL) {
 		userSession.multilingualEnabled = enable;
@@ -480,7 +484,7 @@ const shouldBeAuthorized = (userSession: UserSession) => {
 	}
 };
 
-const isAdmin = (userSession: UserSession) => {
+const isAdmin = (userSession?: UserSession) => {
 	return !userSession || isUserHaveRole(ROLE_ID.ADMIN, userSession);
 };
 

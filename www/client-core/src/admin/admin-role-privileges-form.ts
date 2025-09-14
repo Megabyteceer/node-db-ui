@@ -134,44 +134,44 @@ class PrivilegesEditor extends Component<PrivilegesEditorProps> {
 }
 
 class AdminRolePrivilegesForm extends BaseForm<FormProps, FormState & {
-	data: NodePrivilegesRes;
+	privilegesData: NodePrivilegesRes;
 	node: NodeDesc;
 }> {
-	initData: NodePrivileges[];
+	initData!: NodePrivileges[];
 
-	constructor(props) {
+	constructor(props: FormProps) {
 		super(props);
 		this.saveClick = this.saveClick.bind(this);
 	}
 
 	async componentDidMount() {
-		const node = await getNode(this.props.recId);
+		const node = await getNode(this.props.recId!);
 
-		const data: NodePrivilegesRes = await getData('admin/nodePrivileges', {
+		const privilegesData: NodePrivilegesRes = await getData('admin/nodePrivileges', {
 			nodeId: this.props.recId
 		});
 
-		for (const i of data.privileges) {
+		for (const i of privilegesData.privileges) {
 			if (!i.privileges) {
 				i.privileges = PRIVILEGES_MASK.NONE;
 			}
 		}
 
-		this.initData = data.privileges;
+		this.initData = privilegesData.privileges;
 		this.setState({
 			node,
-			data
+			privilegesData
 		});
 	}
 
 	async saveClick() {
-		if (JSON.stringify(this.initData) !== JSON.stringify(this.state.data.privileges)) {
+		if (JSON.stringify(this.initData) !== JSON.stringify(this.state.privilegesData.privileges)) {
 			const submit = (toChild?: boolean) => {
 				const data = {} as NodePrivilegesRequest;
 
-				data.nodeId = this.props.recId;
+				data.nodeId = this.props.recId!;
 				data.toChild = toChild;
-				data.privileges = this.state.data.privileges;
+				data.privileges = this.state.privilegesData.privileges;
 
 				submitData('admin/nodePrivileges', data).then(() => {
 					this.cancelClick();
@@ -189,8 +189,8 @@ class AdminRolePrivilegesForm extends BaseForm<FormProps, FormState & {
 	}
 
 	render() {
-		if (this.state && this.state.data) {
-			const data = this.state.data;
+		if (this.state && this.state.privilegesData) {
+			const data = this.state.privilegesData;
 			const node = this.state.node;
 
 			const lines = data.privileges.map((i) => { // TODO: data type is from admin/nodePrivileges url
@@ -287,9 +287,7 @@ class AdminRolePrivilegesForm extends BaseForm<FormProps, FormState & {
 			let nodeAdmin;
 			if (iAdmin()) {
 				nodeAdmin = h(NodeAdmin, {
-					form: this,
-					x: 320,
-					y: -40
+					form: this
 				});
 			}
 			/// #endif

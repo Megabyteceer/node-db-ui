@@ -15,7 +15,6 @@ interface Globals {
 	customClasses: {
 		[key: string]: ComponentType<any>;
 	};
-	registerEventHandler: (classInstance) => void;
 	Stage: typeof Stage;
 }
 

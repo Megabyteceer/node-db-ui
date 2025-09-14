@@ -1,37 +1,35 @@
 import { Component } from 'preact';
 import { R } from './r';
-import { isLitePage, renderIcon } from './utils';
+import { renderIcon } from './utils';
 
-class LoadingIndicator extends Component<{
-	// props
-},
-{
+interface LoadingIndicatorProps {
+}
+
+class LoadingIndicator extends Component<LoadingIndicatorProps,
+	{
 	// state
-	showCount: number;
-}> {
-	static instance: LoadingIndicator;
+		showCount: number;
+	}> {
+	static instance?: LoadingIndicator;
 
-	constructor(props) {
+	constructor(props: LoadingIndicatorProps) {
 		super(props);
 		this.state = { showCount: 0 };
 		LoadingIndicator.instance = this;
 	}
 
 	hide() {
-		if (isLitePage()) return;
 		this.setState({ showCount: this.state.showCount - 1 });
 	}
 
 	show() {
-		if (isLitePage()) return;
-
 		this.setState({ showCount: this.state.showCount + 1 });
 	}
 
 	render() {
 		const active = this.state.showCount > 0;
 
-		return R.div({ className: active ? 'loader-back-drop' : null },
+		return R.div({ className: active ? 'loader-back-drop' : undefined },
 			R.div({ className: active ? 'loading-spinner-container' : 'loading-spinner-container loading-spinner-container-inactive' },
 				active ? R.div({ className: 'loading-spinner' },
 					renderIcon('cog fa-spin')
@@ -40,7 +38,6 @@ class LoadingIndicator extends Component<{
 		);
 	}
 }
-/** @type LoadingIndicator */
-LoadingIndicator.instance = null;
+LoadingIndicator.instance = undefined;
 
 export { LoadingIndicator };

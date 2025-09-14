@@ -1,5 +1,6 @@
 import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
+import type { FormFull } from '../forms/form-full';
 import { ENV } from '../main-frame';
 import { Modal } from '../modal';
 import { R } from '../r';
@@ -11,13 +12,13 @@ import type { FieldWrap } from './field-wrap';
 registerFieldClass(
 	FIELD_TYPE.FILE,
 	class FileField extends BaseField {
-		fileFormBodyRef: FileFormBody;
+		fileFormBodyRef!: FileFormBody;
 
-		setValue(val) {
+		setValue(val?: string) {
 			if (typeof val === 'string') {
 				this.setState({ value: val });
 			} else {
-				this.props.form.currentData[this.props.field.fieldName] = undefined;
+				(this.props.form as FormFull).currentData[this.props.field.fieldName] = undefined;
 			}
 		}
 
@@ -46,7 +47,7 @@ registerFieldClass(
 				const accept = ENV.ALLOWED_UPLOADS.map(i => '.' + i).join(', ');
 				return h(FileFormBody, {
 					field,
-					ref: (r) => {
+					ref: (r: FileFormBody) => {
 						this.fileFormBodyRef = r;
 					},
 					accept,
@@ -65,20 +66,24 @@ registerFieldClass(
 	}
 );
 
-class FileFormBody extends Component<FieldProps & {
+interface FileFormBodyProps extends FieldProps {
 	/** image/*,.pdf */
 	accept: string;
 	currentFileName?: string;
 
-}, FieldState & {
-	file?: File;
-}> {
-	fileInputRef: RefToInput;
-	formRef: RefToInput;
-	selectButtonRef: RefToInput;
-	waitingForUpload: boolean;
+}
 
-	constructor(props) {
+interface FileFormBodyState extends FieldState {
+	file?: File | null;
+}
+
+class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
+	fileInputRef!: RefToInput;
+	formRef!: RefToInput;
+	selectButtonRef!: RefToInput;
+	waitingForUpload = false;
+
+	constructor(props: FileFormBodyProps) {
 		super(props);
 		this.state = {};
 		this._onChange = this._onChange.bind(this);
@@ -90,7 +95,7 @@ class FileFormBody extends Component<FieldProps & {
 		});
 		this.fileInputRef.value = '';
 		Modal.instance.hide();
-		this.props.parent.props.wrapper.hideTooltip();
+		this.props.parent!.props.wrapper.hideTooltip();
 	}
 
 	async save(fieldWrap: FieldWrap) {
@@ -98,7 +103,7 @@ class FileFormBody extends Component<FieldProps & {
 			const n = this.formRef.base as HTMLFormElement;
 			const fileId = await submitData('api/uploadFile', serializeForm(n), true);
 			if (!fileId) {
-				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.fieldName, L('UPLOAD_ERROR'));
+				(fieldWrap.props.form as FormFull).fieldAlert(fieldWrap.props.field!.fieldName, L('UPLOAD_ERROR'));
 			}
 			return fileId;
 		}
@@ -108,21 +113,21 @@ class FileFormBody extends Component<FieldProps & {
 		this.waitingForUpload = false;
 	}
 
-	_onChange(e) {
-		e.preventDefault();
+	_onChange(ev: InputEvent) {
+		ev.preventDefault();
 		let files = undefined;
-		if (e.dataTransfer) {
-			files = e.dataTransfer.files;
-		} else if (e.target) {
-			files = e.target.files;
+		if (ev.dataTransfer) {
+			files = ev.dataTransfer.files;
+		} else if (ev.target) {
+			files = (ev.target as HTMLInputElement).files;
 		}
-		if (checkFileSize(files[0])) {
+		if (checkFileSize(files![0])) {
 			return;
 		}
-		this.setState({ file: files[0] });
+		this.setState({ file: files![0] });
 		this.waitingForUpload = true;
 
-		this.props.wrapper.valueListener(files[0], true, this);
+		this.props.wrapper.valueListener(files![0], true);
 	}
 
 	render() {
@@ -167,11 +172,11 @@ class FileFormBody extends Component<FieldProps & {
 		);
 
 		let recIdField, nodeIdField;
-		if (this.props.form.currentData && this.props.form.currentData.id) {
+		if ((this.props.form as FormFull).currentData && (this.props.form as FormFull).currentData.id) {
 			recIdField = R.input({
 				name: 'recId',
 				className: 'hidden',
-				defaultValue: this.props.form.currentData.id
+				defaultValue: (this.props.form as FormFull).currentData.id
 			});
 			nodeIdField = R.input({
 				name: 'nodeId',
@@ -199,7 +204,7 @@ class FileFormBody extends Component<FieldProps & {
 			}),
 			R.input({ name: 'MAX_FILE_SIZE', defaultValue: 30000000 }),
 			R.input({ name: 'fid', defaultValue: field.id }),
-			R.input({ name: 'nid', defaultValue: field.node.id }),
+			R.input({ name: 'nid', defaultValue: field.node!.id }),
 			recIdField,
 			nodeIdField
 		);

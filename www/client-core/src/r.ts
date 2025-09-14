@@ -47,7 +47,7 @@ for (let factoryType of ['div', 'input', 'form', 'span', 'p', 'img', 'button', '
 	'b', 'a', 'br', 'hr', 'svg', 'td', 'tr', 'th', 'tbody', 'thead', 'table', 'polyline',
 	'textarea', 'iframe', 'h2', 'h3', 'h4', 'h5', 'script', 'meta', 'space', 'smallSpace']) {
 
-	(R)[factoryType] = (...theArgs: any[]) => {
+	(R as any)[factoryType] = (...theArgs: any[]) => {
 		return h(factoryType, ...theArgs as [any]);
 	};
 }

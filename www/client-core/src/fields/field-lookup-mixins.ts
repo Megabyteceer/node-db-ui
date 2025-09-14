@@ -1,18 +1,17 @@
 import type { Component } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
-import type { GetRecordsFilter, NodeDesc, RecordData } from '../bs-utils';
+import type { GetRecordsFilter, RecordData } from '../bs-utils';
 import type { FormListItem } from '../forms/form-list-item';
 import { assignFilters } from '../utils';
 import type { FieldProps, FieldState } from './base-field';
 import { BaseField } from './base-field';
-import type { LookupManyToManyFiled } from './field-14-many-to-many';
 
 type AdditionalButtonsRenderer = (
-	node: NodeDesc,
+	field: NodeDesc,
 	data: RecordData,
 	refreshFunction?: () => void,
-	formItem?: FormListItem | LookupManyToManyFiled
-) => Component[];
+	formItem?: FormListItem
+) => Component[] | undefined;
 
 interface LookupFieldState extends FieldState {
 	filters?: GetRecordsFilter;
@@ -27,7 +26,7 @@ interface LookupFieldState extends FieldState {
 	additionalButtonsN2MRenderer?: AdditionalButtonsRenderer;
 }
 
-interface LookupFieldProps extends FieldProps {
+export interface LookupFieldProps extends FieldProps {
 	filters?: GetRecordsFilter;
 	expanded?: boolean;
 	hideIcon?: boolean;
@@ -50,12 +49,12 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 		return this.props.field.fieldName + 'Linker';
 	}
 
-	generateDefaultFiltersByProps(props) {
-		const ret = Object.assign({}, props.filters);
+	generateDefaultFiltersByProps(props: LookupFieldProps) {
+		const ret = Object.assign({}, props.filters) as KeyedMap<number | 'new'>;
 
 		const parentId =
-			props.wrapper.props.form.props.initialData.id ||
-			props.wrapper.props.form.filters[props.field.fieldName] ||
+			(props.wrapper.props.form!.props.initialData as RecordData).id ||
+			(props.wrapper.props.form!.filters as KeyedMap<number>)[props.field.fieldName] ||
 			'new';
 
 		if (props.field.fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
@@ -69,12 +68,12 @@ class fieldLookupMixins extends BaseField<LookupFieldProps, LookupFieldState> {
 
 	setLookupFilter(filtersObjOrName: string | GetRecordsFilter, val?: any) {
 		if (typeof filtersObjOrName === 'string') {
-			if (this.state.filters[filtersObjOrName] !== val) {
-				this.state.filters[filtersObjOrName] = val;
+			if ((this.state.filters as KeyedMap<any>)[filtersObjOrName] !== val) {
+				(this.state.filters as KeyedMap<any>)[filtersObjOrName] = val;
 				this.forceUpdate();
 			}
 		} else {
-			if (assignFilters(filtersObjOrName, this.state.filters)) {
+			if (assignFilters(filtersObjOrName, this.state.filters as KeyedMap<any>)) {
 				this.forceUpdate();
 			}
 		}

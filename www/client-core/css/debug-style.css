@@ -9,6 +9,8 @@
 
 .admin-role-privileges-body {
 	text-align: center;
+	background: var(--BG_COLOR);
+	padding: 30px;
 }
 
 .admin-role-privileges-block {
@@ -296,6 +298,7 @@
 
 .icons-selector .select-control-list {
 	white-space: normal;
+	background: var(--BG_COLOR);
 }
 
 .icons-selector .select-control-item {
@@ -307,4 +310,11 @@
 .form-item-row-num .field-container-name-id {
 	color: #ccc;
 	font-size: 80%;
+}
+
+.field-container-id-9,
+.field-container-id-54,
+.field-container-id-54 {
+	font-size: 120%;
+	font-family: monospace;
 }

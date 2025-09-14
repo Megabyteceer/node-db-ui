@@ -58,7 +58,7 @@ serverOn(E._fields.afterCreate, async (data, userSession) => {
 	}
 
 	// update priority
-	const fields = await getRecords(NODE_ID.FIELDS, VIEW_MASK.ALL, null, userSession, {
+	const fields = await getRecords(NODE_ID.FIELDS, VIEW_MASK.ALL, undefined, userSession, {
 		nodeFieldsLinker: data.nodeFieldsLinker.id
 	});
 	fields.items.sort((a, b) => {
@@ -69,7 +69,7 @@ serverOn(E._fields.afterCreate, async (data, userSession) => {
 		fields.items.map((i) => {
 			prior += 10;
 			if (i.prior !== prior) {
-				return submitRecord(NODE_ID.FIELDS, { prior }, i.id, userSession);
+				return submitRecord(NODE_ID.FIELDS, { prior }, i.id!, userSession);
 			}
 		})
 	);
@@ -108,7 +108,7 @@ serverOn(E._fields.beforeUpdate, async (currentData, newData, userSession) => {
 
 			if (realFieldName !== '_organizationId' && realFieldName !== '_usersId' && realFieldName !== '_createdOn' && realFieldName !== 'id') {
 				if (currentData.storeInDb && fieldType !== FIELD_TYPE.STATIC_HTML_BLOCK && fieldType !== FIELD_TYPE.LOOKUP_N_TO_M && fieldType !== FIELD_TYPE.LOOKUP_1_TO_N) {
-					const typeQ = getFieldTypeSQL(currentData);
+					const typeQ = getFieldTypeSQL(currentData as FieldDesc);
 					if (typeQ) {
 						const langs = getLangs();
 
@@ -150,26 +150,26 @@ serverOn(E._fields.beforeDelete, async (_data, _userSession) => {
 
 export { createFieldInTable };
 
-function getFieldTypeSQL(data) {
+function getFieldTypeSQL(data: FieldDesc) {
 	switch (data.fieldType) {
 	case FIELD_TYPE.PASSWORD:
 	case FIELD_TYPE.TEXT:
-		if (data.maxLength <= 255) {
-			return 'VARCHAR(' + D(data.maxLength) + ') NOT NULL DEFAULT ' + ESCAPED_LITERAL;
+		if (data.maxLength! <= 255) {
+			return 'VARCHAR(' + D(data.maxLength!) + ') NOT NULL DEFAULT ' + ESCAPED_LITERAL;
 		} else {
 			return 'text NOT NULL DEFAULT ' + ESCAPED_LITERAL;
 		}
 	case FIELD_TYPE.COLOR:
 		return 'int8 NOT NULL DEFAULT ' + D(4294967295);
 	case FIELD_TYPE.NUMBER:
-		if (data.maxLength <= 5) {
+		if (data.maxLength! <= 5) {
 			return 'int2 NOT NULL DEFAULT ' + NUM_0;
-		} else if (data.maxLength <= 9) {
+		} else if (data.maxLength! <= 9) {
 			return 'int4 NOT NULL DEFAULT ' + NUM_0;
-		} else if (data.maxLength <= 19) {
+		} else if (data.maxLength! <= 19) {
 			return 'int8 NOT NULL DEFAULT ' + NUM_0;
 		} else {
-			return 'NUMERIC(' + D(data.maxLength) + ', ' + NUM_0 + ') NOT NULL DEFAULT ' + NUM_0;
+			return 'NUMERIC(' + D(data.maxLength!) + ', ' + NUM_0 + ') NOT NULL DEFAULT ' + NUM_0;
 		}
 	case FIELD_TYPE.DATE_TIME:
 	case FIELD_TYPE.DATE:
@@ -205,7 +205,7 @@ async function createFieldInTable(data: IFieldsRecordWrite) {
 	let linkedNodeName;
 
 	if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_N_TO_M || fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
-		const linkedNode = data.nodeRef;
+		const linkedNode = data.nodeRef!;
 		linkedNodeName = getNodeDesc(linkedNode.id).tableName;
 
 		if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
@@ -247,7 +247,7 @@ async function createFieldInTable(data: IFieldsRecordWrite) {
 			data.selectFieldName = linkedNodeName;
 		}
 
-		const typeQ = getFieldTypeSQL(data);
+		const typeQ = getFieldTypeSQL(data as FieldDesc);
 		if (typeQ) {
 			const altQ = ['ALTER TABLE "', nodeName, '" ADD COLUMN "', fieldName, '" ', typeQ];
 

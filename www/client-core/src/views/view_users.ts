@@ -29,9 +29,9 @@ registerListRenderer(NODE_ID.USERS, (node: NodeDesc, items: IUsersRecord[], refr
 		const additionalFields = [];
 		const keys = Object.keys(item);
 		for (const key of keys) {
-			if (key.length > 3 && !RENDERED_FIELDS.hasOwnProperty(key) && item[key]) {
+			if (key.length > 3 && !RENDERED_FIELDS.hasOwnProperty(key) && (item as any as KeyedMap<string>)[key]) {
 				additionalFields.push(R.div({ key, className: 'user-item-info user-item-info-' + key },
-					node.fieldsByName[key].name, ': ', item[key]
+					node.fieldsByName![key].name, ': ', (item as any as KeyedMap<string>)[key]
 				));
 			}
 		}

@@ -1,27 +1,27 @@
 import { h, type Component } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
-import type { RecId } from '../bs-utils';
+import type { LookupValue, RecId, RecordData } from '../bs-utils';
 import { R } from '../r';
 import { getClassForField, L, n2mValuesEqual, registerFieldClass, renderIcon, sp, UID } from '../utils';
-import { fieldLookupMixins } from './field-lookup-mixins';
+import { fieldLookupMixins, type LookupFieldProps } from './field-lookup-mixins';
 
 let keyCounter = 0;
-let dragItem;
-let dragList: LookupManyToManyFiled;
-let dragListenersInitialized;
+let dragItem: LookupValue | undefined;
+let dragList: LookupManyToManyFiled | undefined;
+let dragListenersInitialized = false;
 
 const refs = [] as Component[];
 
 class LookupManyToManyFiled extends fieldLookupMixins {
-	excludeIDs: RecId[];
+	excludeIDs?: RecId[];
 
-	constructor(props) {
+	constructor(props: LookupFieldProps) {
 		super(props);
 		this.state = { filters: this.generateDefaultFiltersByProps(this.props) };
 	}
 
-	setValue(val) {
+	setValue(val: LookupValue[]) {
 		if (!val) {
 			val = [];
 		}
@@ -34,7 +34,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 		this.setState({ extendedEditor: true });
 	}
 
-	valueListener(newVal, _withBounceDelay, sender) {
+	valueListener(newVal: any, _withBounceDelay = false, sender: LookupManyToManyFiled) {
 		if (sender.props.isNew) {
 			this.state.value.splice(sender.props.pos, 0, newVal);
 			this.forceUpdate();
@@ -48,12 +48,12 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 		}
 	}
 
-	dragStart(item) {
+	dragStart(item: LookupValue) {
 		if (!dragListenersInitialized) {
 			window.document.addEventListener('mouseup', () => {
 				if (dragItem) {
 					dragItem = undefined;
-					dragList.forceUpdate();
+					dragList!.forceUpdate();
 					dragList = undefined;
 				}
 			});
@@ -67,9 +67,9 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 						document.body.scrollTop += 10;
 					}
 					let closestD = 1000000;
-					let closestItem = undefined;
+					let closestItem = undefined as LookupValue | undefined;
 
-					dragList.state.value.some((i) => {
+					dragList.state.value.some((i: LookupValue) => {
 						const el = refs[UID(i)].base as HTMLDivElement;
 
 						const bounds = el.getBoundingClientRect();
@@ -97,13 +97,13 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 		this.forceUpdate();
 	}
 
-	deleteItemByIndex(i) {
+	deleteItemByIndex(i: number) {
 		this.state.value.splice(i, 1);
 		this.props.wrapper.valueListener(this.state.value, false, this);
 		this.forceUpdate();
 	}
 
-	renderItem(field, value, i, isEdit) {
+	renderItem(field: FieldDesc, value: LookupValue | undefined, i: number, isEdit = false) {
 		const isDrag = dragItem === value;
 		let buttons;
 		let isNew = '';
@@ -111,10 +111,10 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 			isNew = 'n';
 		}
 		let additionalButtonsN2M;
-		const additionalButtonsN2MRenderer =
+		const addButtonsN2MRenderer =
 			this.state.additionalButtonsN2MRenderer || this.props.additionalButtonsN2MRenderer;
-		if (additionalButtonsN2MRenderer) {
-			additionalButtonsN2M = additionalButtonsN2MRenderer(field, value, i, this);
+		if (addButtonsN2MRenderer) {
+			additionalButtonsN2M = addButtonsN2MRenderer(field.node!, value as any as RecordData);
 		}
 
 		if (isEdit) {
@@ -127,7 +127,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 							className: isDrag
 								? 'tool-btn drag draggable default-btn'
 								: 'tool-btn drag default-btn',
-							onMouseDown: (e) => {
+							onMouseDown: (e: MouseEvent) => {
 								sp(e);
 								this.dragStart(value);
 							}
@@ -149,19 +149,19 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 									[this.getLinkerFieldName()]: { id: recId }
 								};
 								globals.Stage.showForm(
-									this.props.field.nodeRef.id,
+									this.props.field.nodeRef!.id,
 									recId,
 									filters,
 									true,
 									true,
-									(newData: object) => {
+									(newData?: RecordData) => {
 										if (!newData) {
 											// deleted
 											this.deleteItemByIndex(i);
 										} else {
 											for (const fName in value) {
 												if (newData.hasOwnProperty(fName)) {
-													value[fName] = newData[fName];
+													(value as KeyedMap<any>)[fName] = (newData as KeyedMap<any>)[fName];
 												}
 											}
 										}
@@ -224,7 +224,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 						ref: (ref: fieldLookupMixins) => {
 							if (ref) {
 								ref.setLookupFilter({
-									excludeIDs: this.excludeIDs || this.state.filters.excludeIDs
+									excludeIDs: this.excludeIDs || this.state.filters!.excludeIDs
 								});
 							}
 						},
@@ -248,7 +248,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 			this.setState({ value: [] });
 			return R.fragment();
 		}
-		const value = this.state.value;
+		const value = this.state.value as LookupValue[];
 		const field = this.props.field;
 
 		let excludeIDs =

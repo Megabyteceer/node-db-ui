@@ -1,6 +1,6 @@
 import { FIELD_TYPE, type IFiltersRecord, type NODE_ID, type TypeGenerationHelper } from '../types/generated';
 import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
-import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
+import type { GetRecordsFilter, LookupValue, LookupValueIconic, RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
 import { FIELD_DATA_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { UserSession } from './auth';
 import { ADMIN_USER_SESSION, filtersById, getNodeDesc } from './describe-node';
@@ -31,28 +31,28 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 	recId: null | RecId | RecId[] = null,
 	userSession: UserSession = ADMIN_USER_SESSION,
 	filterFields: GetRecordsFilter = EMPTY_FILTERS
-): Promise<RecordData | RecordsData> => {
+): Promise<RecordData | RecordsData | undefined> => {
 	const node = getNodeDesc(nodeId, userSession);
 
 	if (!node.storeForms) {
-		return null;
+		throwError('No store form.');
 	}
 
 	const singleSelectionById = typeof recId === 'number';
 
 	const selQ = ['SELECT '];
 
-	const tableName = node.tableName;
+	const tableName = node.tableName!;
 	let tables = tableName;
 
 	// =========================================================
 	// ===== fields list =======================================
 	// =========================================================
-	for (const f of node.fields) {
+	for (const f of node.fields!) {
 		if (f.storeInDb && f.show & viewMask) {
-			const fieldType = f.fieldType;
-			const fieldName = f.fieldName;
-			const selectFieldName = f.selectFieldName;
+			const fieldType = f.fieldType!;
+			const fieldName = f.fieldName!;
+			const selectFieldName = f.selectFieldName!;
 
 			if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 				// n2m
@@ -172,7 +172,7 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 				}
 			} else if (selectFieldName) {
 				selQ.push('(', ESCAPE_BEGIN, selectFieldName.replaceAll('@userId', userSession.id.toString()), ESCAPE_END, ')AS "', fieldName, '"');
-			} else if ((viewMask === VIEW_MASK.LIST || viewMask === VIEW_MASK.CUSTOM_LIST) && (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.HTML_EDITOR) && f.maxLength > 500) {
+			} else if ((viewMask === VIEW_MASK.LIST || viewMask === VIEW_MASK.CUSTOM_LIST) && (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.HTML_EDITOR) && f.maxLength! > 500) {
 				selQ.push('SUBSTRING("', tableName, '"."', fieldName, FILTERS_LIMIT_SQL_PART, fieldName, '"');
 			} else {
 				selQ.push('"', tableName, '"."', fieldName, '"');
@@ -193,7 +193,7 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 	// =========================================================
 
 	const filterId = filterFields.filterId;
-	let filter: IFiltersRecord;
+	let filter: IFiltersRecord | undefined;
 
 	if (node.filters) {
 		/// #if DEBUG
@@ -205,20 +205,20 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 		/// #endif
 		if (filterId && node.filters[filterId]) {
 			// user selected filter
-			filter = filtersById.get(filterId);
+			filter = filtersById.get(filterId)!;
 		} else if (node.defaultFilterId) {
-			filter = filtersById.get(node.defaultFilterId.id);
+			filter = filtersById.get(node.defaultFilterId.id)!;
 		}
 	}
 
 	let hiPriorityFilter;
-	let wheres;
-	let ordering;
+	let wheres: string[];
+	let ordering: string[];
 
 	const search = filterFields.s;
 	const isNumericSearch = search ? !/\D/.test(search) : undefined;
 	const searchSQL = search ? '" LIKE ' + escapeString('%' + search + '%') + ' ' : undefined;
-	const searchSQLNumeric = isNumericSearch ? '"=' + D(parseInt(search)) + ' ' : undefined;
+	const searchSQLNumeric = isNumericSearch ? '"=' + D(parseInt(search!)) + ' ' : undefined;
 
 	if (singleSelectionById) {
 		wheres = [' AND "', tableName, '".id=', D(recId as number)];
@@ -232,11 +232,11 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 
 		// search ----------------------------
 
-		let searchWHERE;
+		let searchWHERE!: string[];
 		let sortFieldName: string | undefined;
-		let fieldName;
+		let fieldName!: string;
 
-		for (const f of node.fields) {
+		for (const f of node.fields!) {
 			fieldName = f.fieldName;
 
 			if (f.id === filterFields.o) {
@@ -257,13 +257,13 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 					} else {
 						searchWHERE.push(' OR ');
 					}
-					searchWHERE.push('"', tableName, '"."', fieldName, isNumericField ? searchSQLNumeric : searchSQL);
+					searchWHERE.push('"', tableName, '"."', fieldName, isNumericField ? searchSQLNumeric! : searchSQL!);
 				}
 			}
 
 			if (filterFields.hasOwnProperty(fieldName)) {
 				if (f.forSearch) {
-					const fltVal = filterFields[fieldName];
+					const fltVal = (filterFields as KeyedMap<any>)[fieldName];
 					if (f.fieldType === FIELD_TYPE.TEXT) {
 						wheres.push(' AND(LOWER("', tableName, '"."', fieldName, '")=LOWER(', escapeString(fltVal), '))');
 					} else {
@@ -297,7 +297,7 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 					fw = fw.replaceAll('@orgId', userSession.orgId.toString());
 					if (fw.indexOf('@') >= 0) {
 						for (const k in filterFields) {
-							fw.replaceAll('@' + k, D(filterFields[k]));
+							fw.replaceAll('@' + k, D((filterFields as KeyedMap<number>)[k]));
 						}
 					}
 				}
@@ -317,15 +317,15 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 			}
 		}
 
-		ordering = [' ORDER BY "', tableName, '"."', sortFieldName || node.sortFieldName, '"'];
+		ordering = [' ORDER BY "', tableName, '"."', sortFieldName || node.sortFieldName!, '"'];
 		if (Boolean(filterFields.r) !== Boolean(node.reverse)) {
 			ordering.push(' DESC');
 		}
-		let recPerPage;
+		let recPerPage!: number;
 		if (filterFields.n) {
 			recPerPage = filterFields.n;
 		} else {
-			recPerPage = node.recPerPage;
+			recPerPage = node.recPerPage!;
 		}
 
 		if (filterFields.p) {
@@ -393,14 +393,14 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 				}
 			}
 
-			for (const f of node.fields) {
+			for (const f of node.fields!) {
 				if (f.storeInDb && f.show & viewMask) {
 					const fieldType = f.fieldType;
 					const fieldName = f.fieldName;
 					if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M || fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 						// n2m,12n
-						if (pag[fieldName]) {
-							pag[fieldName] = pag[fieldName].map((src: string) => {
+						if ((pag as any as KeyedMap<string[]>)[fieldName]) {
+							(pag as any as KeyedMap<LookupValueIconic[]>)[fieldName] = (pag as any as KeyedMap<string[]>)[fieldName].map((src) => {
 								const a = src.split(GROUP_SPLITTER);
 								return {
 									id: parseInt(a[0]),
@@ -411,22 +411,22 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 						}
 					} else if (fieldType === FIELD_TYPE.LOOKUP) {
 						// n21
-						if (pag[fieldName]) {
-							const a = pag[fieldName].split(GROUP_SPLITTER);
+						if ((pag as any as KeyedMap<string>)[fieldName]) {
+							const a = (pag as any as KeyedMap<string>)[fieldName].split(GROUP_SPLITTER);
 							if (f.lookupIcon) {
-								pag[fieldName] = {
+								(pag as any as KeyedMap<LookupValueIconic>)[fieldName] = {
 									id: parseInt(a[0]),
 									name: a[1],
 									icon: a[2]
 								};
 							} else {
-								pag[fieldName] = {
+								(pag as any as KeyedMap<LookupValue>)[fieldName] = {
 									id: parseInt(a[0]),
 									name: a[1]
 								};
 							}
 						} else {
-							pag[fieldName] = EMPTY_LOOKUP_VALUE;
+							(pag as any as KeyedMap<LookupValue>)[fieldName] = EMPTY_LOOKUP_VALUE;
 						}
 					}
 				}
@@ -461,11 +461,11 @@ export async function deleteRecord(nodeId: NODE_ID, recId: RecId, userSession = 
 		throwError('Deletion access is denied');
 	}
 
-	const ret1 = await eventDispatch(node.tableName, ServerEventName.beforeDelete, recordData, userSession);
+	const ret1 = await eventDispatch(node.tableName!, ServerEventName.beforeDelete, recordData, userSession);
 
 	await mysqlExec('UPDATE "' + node.tableName + DELETE_RECORD_SQL_PART + D(recId));
 
-	const ret2 = await eventDispatch(node.tableName, ServerEventName.afterDelete, recordData, userSession);
+	const ret2 = await eventDispatch(node.tableName!, ServerEventName.afterDelete, recordData, userSession);
 
 	/// #if DEBUG
 	__destroyRecordToPreventAccess(recordData);

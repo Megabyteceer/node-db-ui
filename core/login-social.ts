@@ -9,32 +9,32 @@ import { escapeString, mysqlExec } from './mysql-connection';
 
 const client = new OAuth2Client(ENV.clientOptions.googleSigninClientId);
 
-async function loginWithGoogle(token, userSession: UserSession) {
+async function loginWithGoogle(token: string, userSession: UserSession) {
 	const ticket = await client.verifyIdToken({
 		idToken: token,
 		audience: ENV.clientOptions.googleSigninClientId
 	});
 	const payload = ticket.getPayload();
-	if (!payload.email_verified) {
+	if (!payload?.email_verified) {
 		throwError(L('WRONG_PASS', userSession));
 	}
-	const email = payload.email;
+	const email = payload!.email!;
 	const users = await mysqlExec('SELECT id FROM _users WHERE status = 1 AND email=\'' + email + '\'');
 	if (users.length > 0) {
 		return authorizeUserByID(users[0].id);
 	} else {
 		const userId = await createUser(
 			{
-				name: payload.name,
+				name: payload!.name!,
 				email
 			},
 			userSession
 		);
 
 		const ret = await authorizeUserByID(userId);
-		if (payload.picture) {
-			ret.avatar = payload.picture;
-			await mysqlExec('UPDATE _users SET avatar = ' + escapeString(payload.picture) + ' WHERE id = ' + userId);
+		if (payload!.picture) {
+			ret.avatar = payload!.picture;
+			await mysqlExec('UPDATE _users SET avatar = ' + escapeString(payload!.picture) + ' WHERE id = ' + userId);
 		}
 		return ret;
 	}

@@ -1,5 +1,5 @@
 import type { DebugInfo } from '../../../core/mysql-connection';
-import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord } from '../../../types/generated';
+import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord, NODE_ID } from '../../../types/generated';
 import type { SelectItem } from './components/select';
 
 export const normalizeName = (txt: string) => {
@@ -70,10 +70,10 @@ export interface FormControlFilters {
 	formTitle?: string;
 }
 
-export type FormFilters = FormControlFilters & RecordData & GetRecordsFilter;
+export type FormFilters = Partial<FormControlFilters & RecordData & GetRecordsFilter>;
 
 interface RecordSubmitResult {
-	handlerResult: any;
+	handlerResult: KeyedMap<any> | undefined;
 }
 
 interface RecordSubmitResultNewRecord extends RecordSubmitResult {
@@ -103,10 +103,12 @@ type UserOrganizations = { [key: number]: string };
 export type APIResult = any;
 
 export interface ApiResponse {
+	error?: string;
 	result: APIResult;
 	isGuest?: boolean;
 	/// #if DEBUG
-	debug: DebugInfo;
+	notifications?: string[];
+	debug?: DebugInfo;
 	/// #endif
 }
 
@@ -125,9 +127,10 @@ interface UserSession {
 	__temporaryServerSideSession?: boolean;
 	notifications?: string[];
 	/** not empty if user have multilingualEnabled */
-	multilingualEnabled?: BoolNum;
-	sessionToken?: string;
+	multilingualEnabled?: BoolNum | boolean;
+	sessionToken: string;
 	isGuest?: boolean;
+	_isStarted?: boolean;
 }
 
 interface EnumListItem {
@@ -168,6 +171,8 @@ declare global {
 
 	interface FieldDesc extends IFieldsRecord {
 
+		id: FIELD_ID;
+
 		dataType: FIELD_DATA_TYPE;
 
 		show: VIEW_MASK;
@@ -206,7 +211,7 @@ declare global {
 		prior: number;
 
 		/** field tip. or html content for FIELD_TYPE.STATIC_HTML_BLOCK fields */
-		description: string;
+		description?: string;
 
 		/** content for static HTML field */
 		htmlContent?: string;
@@ -230,6 +235,9 @@ declare global {
 	}
 
 	interface NodeDesc extends INodesRecord {
+
+		id: NODE_ID;
+
 		rolesToAccess: { roleId: RecId; privileges: number }[];
 		privileges: PRIVILEGES_MASK;
 		matchName: string;
@@ -288,7 +296,7 @@ interface RecordData {
 	/** item deleted from list in lookup field */
 	__deleted_901d123f?: true;
 
-	name?: string;
+	name: string;
 }
 
 interface RecordsData {
@@ -297,7 +305,7 @@ interface RecordsData {
 }
 
 interface RecordsDataResponse {
-	data: RecordsData;
+	data?: RecordsData;
 	node?: NodeDesc;
 }
 

@@ -22,15 +22,17 @@ let isFirstCall = true;
 let nodesTree: TreeItem[];
 let rootItem: TreeItem;
 
-class MainFrame extends Component<{
-	// props
-},
-{
-	// state
-}> {
-	static instance: MainFrame;
+interface MainFrameProps {
 
-	constructor(props) {
+};
+
+class MainFrame extends Component<MainFrameProps,
+	{
+	// state
+	}> {
+	static instance?: MainFrame;
+
+	constructor(props: MainFrameProps) {
 		super(props);
 		MainFrame.instance = this;
 	}
@@ -45,7 +47,7 @@ class MainFrame extends Component<{
 		const data = await getData('api/getOptions') as ITreeAndOptions;
 
 		nodesTree = data.nodesTree;
-		const items = {};
+		const items = {} as KeyedMap<TreeItem>;
 		Object.assign(ENV, data.options);
 
 		for (const treeItem of nodesTree) {
@@ -91,7 +93,7 @@ class MainFrame extends Component<{
 		);
 	}
 }
-/** @type MainFrame */
-MainFrame.instance = null;
+
+MainFrame.instance = undefined;
 
 export { ENV, MainFrame };

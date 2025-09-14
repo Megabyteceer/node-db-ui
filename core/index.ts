@@ -1,8 +1,8 @@
-import api from './api';
-import { finishSession, isUserHaveRole, startSession } from './auth';
+import api, { type APIHandler } from './api';
+import { finishSession, isUserHaveRole, startSession, type UserSession } from './auth';
 import { initNodesData } from './describe-node';
 
-import { ROLE_ID, type ApiResponse } from '../www/client-core/src/bs-utils';
+import { ROLE_ID, type ApiResponse, type APIResult } from '../www/client-core/src/bs-utils';
 import './locale';
 import { mysqlDebug } from './mysql-connection';
 
@@ -38,21 +38,21 @@ function addDebugDataToResponse(ret: ApiResponse, startTime: number) {
 }
 /// #endif
 
-const handleRequest = (req, res) => {
+const handleRequest = (req: express.Request, res: express.Response) => {
 	/// #if DEBUG
 	const startTime = performance.now();
 	/// #endif
 
-	let handlerName = req.url.substr(6);
+	let handlerName = req.url.substring(6);
 	if (api.hasOwnProperty(handlerName)) {
-		const handler = api[handlerName];
+		const handler = api[handlerName as keyof typeof api] as APIHandler;
 		const body = req.body;
 		/// #if DEBUG
 		// console.log(req.url);
 		// console.dir(body);
 		/// #endif
 
-		let userSession;
+		let userSession: UserSession;
 		/// #if DEBUG
 		mysqlDebug.debugOutPut = {};
 		/// #endif
@@ -77,11 +77,11 @@ const handleRequest = (req, res) => {
 		startSession(body.sessionToken, req.headers['accept-language'])
 			.then((session) => {
 				userSession = session;
-				handler(body, session).then((result) => {
-					const ret: any = {
+				handler(body, session).then((result: APIResult) => {
+					const ret = {
 						result,
 						/// #if DEBUG
-						debug: null
+						debug: undefined
 						/// #endif
 					} as ApiResponse;
 					/// #if DEBUG
@@ -120,10 +120,10 @@ const handleRequest = (req, res) => {
 	}
 };
 
-const handleUpload = (req, res) => {
+const handleUpload = (req: express.Request, res: express.Response) => {
 	upload2(req, res, () => {
-		req.body.filename = req.file.originalname;
-		req.body.fileContent = req.file.buffer;
+		req.body.filename = req.file!.originalname;
+		req.body.fileContent = req.file!.buffer;
 		handleRequest(req, res);
 	});
 };

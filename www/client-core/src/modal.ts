@@ -1,20 +1,25 @@
-import { Component } from 'preact';
+import { Component, type ComponentChild } from 'preact';
 import { LeftBar } from './left-bar';
 import { R } from './r';
 import { debugError, sp } from './utils';
 
-let modalStack = [];
+let modalStack = [] as {
+	content: ComponentChild; noDiscardByBackdrop: boolean; id: number;
+}[];
 let idCounter = 0;
 
-class Modal extends Component<{
-	// props
-},
-{
+interface ModalProps {
+
+}
+
+class Modal extends Component<ModalProps,
+	{
 	// state
-}> {
+	}> {
+
 	static instance: Modal;
 
-	constructor(props) {
+	constructor(props: ModalProps) {
 		super(props);
 		this.show = this.show.bind(this);
 		this.hide = this.hide.bind(this);
@@ -24,7 +29,7 @@ class Modal extends Component<{
 		Modal.instance = this;
 	}
 
-	show(content, noDiscardByBackdrop) {
+	show(content: ComponentChild, noDiscardByBackdrop = false) {
 		if (document.activeElement) {
 			(document.activeElement as HTMLInputElement).blur();
 		}
@@ -41,7 +46,7 @@ class Modal extends Component<{
 		return modalStack.length > 0;
 	}
 
-	hide(idToHide?) {
+	hide(idToHide?: number) {
 		if (typeof (idToHide) !== 'number') {
 			/// #if DEBUG
 			if (modalStack.length < 1) {
@@ -84,10 +89,5 @@ class Modal extends Component<{
 		}
 	}
 }
-
-// TODO: block scroll body under modals
-
-/* @type = {Modal} */// #if DEBUG
-Modal.instance = null;
 
 export { Modal };

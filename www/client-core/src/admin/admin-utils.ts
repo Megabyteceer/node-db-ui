@@ -4,6 +4,7 @@ import { globals } from '../../../../types/globals';
 import type { FieldDesc } from '../bs-utils';
 import { Select, type SelectItem } from '../components/select';
 import type { FormFull } from '../forms/form-full';
+import type { List } from '../forms/list';
 import { MainFrame } from '../main-frame';
 import { R } from '../r';
 import { consoleDir, getItem, getNode, getRecordClient, isLitePage, renderIcon, setItem, submitRecord } from '../utils';
@@ -14,14 +15,10 @@ import { consoleDir, getItem, getNode, getRecordClient, isLitePage, renderIcon, 
 throw new Error("admin-utils imported in release build.");
 // */
 
-function debugInfoGetter() {
-	consoleDir(this);
-}
-
-const styleEl = document.createElement('style');
+const styleEl = document.createElement('style') as HTMLStyleElement;
 document.head.appendChild(styleEl);
-const styleSheet = styleEl.sheet;
-let adminOn;
+const styleSheet = styleEl.sheet!;
+let adminOn = false;
 
 /// #if DEBUG
 
@@ -33,7 +30,7 @@ setTimeout(() => {
 		adminOn +
 		'" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>'
 	);
-	window.document.querySelector('#admin-disable').addEventListener('click', admin.toggleAdminUI);
+	(window.document.querySelector('#admin-disable') as HTMLDivElement).addEventListener('click', admin.toggleAdminUI);
 	if (getItem('__admin-ui-enables', true)) {
 		admin.toggleAdminUI();
 	}
@@ -42,10 +39,10 @@ setTimeout(() => {
 let iconsList: SelectItem[];
 
 class admin {
-	static async moveField(fIndex, form, node, direction = 0) {
+	static async moveField(fIndex: number, form: FormFull | List, node: NodeDesc, direction = 0) {
 		let fieldIndex;
 		let j = 0;
-		const fields = node.fields.filter((f, i) => {
+		const fields = node.fields!.filter((f, i) => {
 			if (i === fIndex) {
 				fieldIndex = j;
 			}
@@ -120,8 +117,8 @@ class admin {
 				return;
 			}
 
-			const field1 = await getRecordClient(6, group1[0].id);
-			const field2 = await getRecordClient(6, group2[0].id);
+			const field1 = await getRecordClient(NODE_ID.FIELDS, group1[0].id);
+			const field2 = await getRecordClient(NODE_ID.FIELDS, group2[0].id);
 
 			let prior = Math.min(field1.prior, field2.prior);
 			if (direction < 0) {
@@ -143,7 +140,7 @@ class admin {
 		}
 	}
 
-	static async exchangeNodes(node1, node2) {
+	static async exchangeNodes(node1: INodesRecord, node2: INodesRecord) {
 		if (node1 && node2) {
 			await Promise.all([
 				submitRecord(
@@ -151,7 +148,7 @@ class admin {
 					{
 						prior: node1.prior
 					} as INodesRecord,
-					node2.id
+					node2.id!
 				).then(() => {
 					console.log(1);
 				}),
@@ -160,17 +157,17 @@ class admin {
 					{
 						prior: node2.prior
 					} as INodesRecord,
-					node1.id
+					node1.id!
 				).then(() => {
 					console.log(2);
 				})
 			]);
-			MainFrame.instance.reloadOptions();
+			MainFrame.instance!.reloadOptions();
 		}
 	}
 
-	static debug(obj) {
-		debugInfoGetter.call(obj);
+	static debug(obj: any) {
+		consoleDir(obj);
 	}
 
 	static toggleAdminUI() {
@@ -212,7 +209,7 @@ function initIconsList() {
 	}
 }
 
-function makeIconSelectionField(form: FormFull<string>, fieldName) {
+function makeIconSelectionField(form: FormFull, fieldName: string) {
 	if (!iconsList) {
 		initIconsList();
 	}
@@ -234,7 +231,7 @@ function makeIconSelectionField(form: FormFull<string>, fieldName) {
 	);
 }
 
-function makeReactClassSelectionField(form: FormFull<string>, fieldName) {
+function makeReactClassSelectionField(form: FormFull, fieldName: string) {
 	const options = Object.keys(globals.customClasses).map((k) => {
 		return { name: k, value: k };
 	});
@@ -255,7 +252,7 @@ function makeReactClassSelectionField(form: FormFull<string>, fieldName) {
 	);
 }
 
-function removeReactClassSelectionField(form: FormFull<string>, fieldName) {
+function removeReactClassSelectionField(form: FormFull, fieldName: string) {
 	const input = form.getFieldDomElement(fieldName).querySelector('input') as HTMLInputElement;
 	input.style.display = '';
 	form.renderToField(fieldName, 'classes-selector', null);

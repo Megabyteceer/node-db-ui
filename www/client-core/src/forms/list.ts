@@ -22,11 +22,11 @@ import { BaseForm } from './base-form';
 import { FormFull } from './form-full';
 import { FormListItem } from './form-list-item';
 
-const sortByOrder = (a, b) => {
+const sortByOrder = (a: { order: number }, b: { order: number }) => {
 	return a.order - b.order;
 };
 
-function createPageButton(self, page, isActive) {
+function createPageButton(self: List, page: number, isActive: boolean) {
 	if (isActive) {
 		return R.button({ key: page, className: 'page-btn page-btn-active' }, page + 1);
 	}
@@ -48,7 +48,6 @@ interface ListProps extends FormProps {
 	askToSaveParentBeforeCreation?: boolean;
 	hideSearch?: boolean;
 	additionalButtons?: AdditionalButtonsRenderer;
-	noPreviewButton?: boolean;
 }
 
 interface ListState extends Omit<FormState, 'data'> {
@@ -63,20 +62,20 @@ interface ListState extends Omit<FormState, 'data'> {
 }
 
 class List extends BaseForm<ListProps, ListState> {
-	private searchInput: RefToInput;
-	private subFormsRefs: { [key: number]: FormFull<string> };
-	private currentFetchingNodeId: number;
-	private unmounted: boolean;
-	private searchTimeout: NodeJS.Timeout;
+	private searchInput!: RefToInput;
+	private subFormsRefs: { [key: number]: FormFull } = {};
+	private currentFetchingNodeId = -1;
+	private unmounted = false;
+	private searchTimeout = 0;
 
-	constructor(props) {
+	constructor(props: ListProps) {
 		assert(props.node || typeof props.nodeId === 'number', 'number expected');
 		super(props);
 		this.filters = Object.assign({}, props.filters);
 
 		this.state = {
 			node: props.node,
-			data: props.initialData,
+			data: props.initialData as RecordsData,
 			viewMask: this.props.viewMask || (this.props.isLookup ? VIEW_MASK.DROPDOWN_LIST : VIEW_MASK.LIST)
 		};
 		this.refreshData = this.refreshData.bind(this);
@@ -89,24 +88,22 @@ class List extends BaseForm<ListProps, ListState> {
 		this.onShow();
 	}
 
-	changeFilter(name: string, v?: any, refresh?: boolean) {
+	changeFilter(name: string, value?: any, refresh?: boolean) {
 		if (name === 'tab') {
-			this.callOnTabShowEvent(v);
+			this.callOnTabShowEvent(value);
 		}
 
-		const p = this.filters[name];
+		const oldValue = (this.filters as KeyedMap<any>)[name];
 
-		if (p !== 0 && v !== 0) {
-			if (!p && !v) return;
+		if (oldValue !== 0 && value !== 0) {
+			if (!oldValue && !value) return;
 		}
 
-		if (p !== v) {
-			if (typeof v === 'undefined') {
-				delete this.filters[name];
-				delete this.filters[name];
+		if (oldValue !== value) {
+			if (typeof value === 'undefined') {
+				delete (this.filters as KeyedMap<any>)[name];
 			} else {
-				this.filters[name] = v;
-				this.filters[name] = v;
+				(this.filters as KeyedMap<any>)[name] = value;
 			}
 			if (refresh) {
 				this.refreshData();
@@ -130,7 +127,7 @@ class List extends BaseForm<ListProps, ListState> {
 		LeftBar.refreshLeftBarActive();
 	}
 
-	isFieldVisibleByFormViewMask(field) {
+	isFieldVisibleByFormViewMask(field: FieldDesc) {
 		return field.show & this.state.viewMask;
 	}
 
@@ -168,7 +165,7 @@ class List extends BaseForm<ListProps, ListState> {
 			this.currentFetchingNodeId = -1;
 			const sorting = data.items.length && data.items[0].hasOwnProperty('order');
 			if (sorting) {
-				data.items.sort(sortByOrder);
+				data.items.sort(sortByOrder as any);
 			}
 
 			let node = this.props.node;
@@ -180,16 +177,16 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	scrollIfNeed() {
-		if (this.isSubForm() && this.props.parentForm.props.field.fieldType === FIELD_TYPE.LOOKUP) {
+		if (this.isSubForm() && this.props.parentForm!.props.field.fieldType === FIELD_TYPE.LOOKUP) {
 			scrollToVisible(this, true);
 		}
 	}
 
-	changeSearch(event) {
-		const val = event.target.value;
+	changeSearch(event: InputEvent) {
+		const val = (event.target as HTMLInputElement).value;
 		this.clearSearchInterval();
-		this.searchTimeout = setTimeout(() => {
-			delete this.searchTimeout;
+		this.searchTimeout = window.setTimeout(() => {
+			this.searchTimeout = 0;
 			if (this.changeFilter('s', val)) {
 				if (this.filters.p !== '*') {
 					this.changeFilter('p');
@@ -200,8 +197,9 @@ class List extends BaseForm<ListProps, ListState> {
 	}
 
 	clearSearchInterval() {
-		if (this.hasOwnProperty('searchTimeout')) {
+		if (this.searchTimeout) {
 			clearTimeout(this.searchTimeout);
+			this.searchTimeout = 0;
 		}
 	}
 
@@ -230,11 +228,11 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 	}
 
-	subFormRef(ref, itemNum) {
-		this.subFormsRefs[itemNum] = ref;
+	subFormRef(ref: FormFull | undefined, itemNum: number) {
+		this.subFormsRefs[itemNum] = ref as FormFull;
 	}
 
-	getSubForms(): FormFull<string>[] {
+	getSubForms(): FormFull[] {
 		const ret = [];
 		for (const k in this.subFormsRefs) {
 			if (this.subFormsRefs.hasOwnProperty(k)) {
@@ -249,7 +247,7 @@ class List extends BaseForm<ListProps, ListState> {
 
 	isCustomListRendering() {
 		return (
-			!this.props.filters.noCustomList &&
+			!this.props.filters?.noCustomList &&
 			!this.props.isLookup &&
 			isPresentListRenderer(this.props.nodeId || this.props.node.id)
 		);
@@ -263,130 +261,123 @@ class List extends BaseForm<ListProps, ListState> {
 		if (data.items.length > 0) {
 			const sorting = data.items[0].hasOwnProperty('order');
 			for (let i = 0; i < data.items.length; i++) {
-				(() => {
-					const itemNum = i;
-					const item = data.items[i];
-					const isRestricted = isRecordRestrictedForDeletion(node.id, item.id);
-					if (!item.__deleted_901d123f) {
-						const buttons = [];
 
-						buttons.push(
-							R.button(
-								{
-									className: isRestricted
-										? 'clickable tool-btn danger-btn restricted'
-										: 'clickable tool-btn danger-btn',
-									title: L('DELETE'),
-									key: 'b' + UID(item),
-									onClick: async () => {
-										await deleteRecord(item.name, node.id, 0, false, () => {
-											item.__deleted_901d123f = true;
-											this.forceUpdate();
-										});
-									}
-								},
-								renderIcon('times')
-							)
-						);
+				const itemNum = i;
+				const item = data.items[i];
+				const isRestricted = isRecordRestrictedForDeletion(node.id, item.id!);
+				if (!item.__deleted_901d123f) {
+					const buttons = [];
 
-						if (sorting) {
-							let uidM1: number;
-							let uidP1: number;
-							let itemNumM1;
-							let itemNumP1;
-							for (let j = itemNum - 1; j >= 0; j--) {
-								if (!data.items[j].__deleted_901d123f) {
-									itemNumM1 = j;
-									uidM1 = j;
-									break;
+					buttons.push(
+						R.button(
+							{
+								className: isRestricted
+									? 'clickable tool-btn danger-btn restricted'
+									: 'clickable tool-btn danger-btn',
+								title: L('DELETE'),
+								key: 'b' + UID(item),
+								onClick: async () => {
+									await deleteRecord(item.name, node.id, 0, false, () => {
+										item.__deleted_901d123f = true;
+										this.forceUpdate();
+									});
 								}
-							}
+							},
+							renderIcon('times')
+						)
+					);
 
-							for (let j = itemNum + 1; j < data.items.length; j++) {
-								if (!data.items[j].__deleted_901d123f) {
-									itemNumP1 = j;
-									uidP1 = j;
-									break;
-								}
-							}
-
-							if (typeof uidM1 === 'number') {
-								(() => {
-									buttons.push(
-										R.button(
-											{
-												className: 'clickable tool-btn edit-btn',
-												title: L('MOVE_UP'),
-												key: 'bu' + UID(item),
-												onClick: () => {
-													const t = data.items[itemNum];
-													data.items[itemNum] = data.items[itemNumM1];
-													data.items[itemNumM1] = t;
-													this.subFormsRefs[itemNum].setFieldValue('order', itemNumM1);
-													this.subFormsRefs[itemNum].saveForm();
-													this.subFormsRefs[uidM1].setFieldValue('order', itemNum);
-													this.subFormsRefs[uidM1].saveForm();
-													this.forceUpdate();
-												}
-											},
-											renderIcon('arrow-up')
-										)
-									);
-								})();
-							}
-							if (uidP1) {
-								(() => {
-									buttons.push(
-										R.button(
-											{
-												className: 'clickable tool-btn edit-btn',
-												title: L('MOVE_DOWN'),
-												key: 'bd' + UID(item),
-												onClick: () => {
-													const t = data.items[itemNum];
-													data.items[itemNum] = data.items[itemNumP1];
-													data.items[itemNumP1] = t;
-
-													this.subFormsRefs[itemNum].setFieldValue('order', itemNumP1);
-													this.subFormsRefs[itemNum].saveForm();
-													this.subFormsRefs[uidP1].setFieldValue('order', itemNum);
-													this.subFormsRefs[uidP1].saveForm();
-													this.forceUpdate();
-												}
-											},
-											renderIcon('arrow-down')
-										)
-									);
-								})();
+					if (sorting) {
+						let prevItemNum!: number;
+						let nexItemNum!: number;
+						for (let j = itemNum - 1; j >= 0; j--) {
+							if (!data.items[j].__deleted_901d123f) {
+								prevItemNum = j;
+								break;
 							}
 						}
 
-						lines.push(
-							R.div(
-								{
-									key: UID(item),
-									className: 'inline-editable-item inline-editable-item-rec-id-' + item.id
-								},
-								h(FormFull, {
-									ref: (ref) => {
-										this.subFormRef(ref, itemNum);
+						for (let j = itemNum + 1; j < data.items.length; j++) {
+							if (!data.items[j].__deleted_901d123f) {
+								nexItemNum = j;
+								break;
+							}
+						}
+
+						if (typeof prevItemNum === 'number') {
+							buttons.push(
+								R.button(
+									{
+										className: 'clickable tool-btn edit-btn',
+										title: L('MOVE_UP'),
+										key: 'bu' + UID(item),
+										onClick: () => {
+											const t = data.items[itemNum];
+											data.items[itemNum] = data.items[prevItemNum];
+											data.items[prevItemNum] = t;
+											this.subFormsRefs[itemNum].setFieldValue('order', prevItemNum);
+											this.subFormsRefs[itemNum].saveForm();
+											this.subFormsRefs[prevItemNum].setFieldValue('order', itemNum);
+											this.subFormsRefs[prevItemNum].saveForm();
+											this.forceUpdate();
+										}
 									},
-									inlineEditable: true,
-									editable: true,
-									isCompact: true,
-									filters: filters,
-									parentForm: this.props.parentForm,
-									isLookup: this.props.isLookup,
-									list: this,
-									node,
-									initialData: item,
-									overrideOrderData: sorting ? itemNum : -1
-								}),
-								R.span({ key: UID(item) + 'buttons', className: 'buttons' }, buttons)
-							)
-						);
+									renderIcon('arrow-up')
+								)
+							);
+						}
+						if (nexItemNum) {
+							buttons.push(
+								R.button(
+									{
+										className: 'clickable tool-btn edit-btn',
+										title: L('MOVE_DOWN'),
+										key: 'bd' + UID(item),
+										onClick: () => {
+											const t = data.items[itemNum];
+											data.items[itemNum] = data.items[nexItemNum];
+											data.items[nexItemNum] = t;
+
+											this.subFormsRefs[itemNum].setFieldValue('order', nexItemNum);
+											this.subFormsRefs[itemNum].saveForm();
+											this.subFormsRefs[nexItemNum].setFieldValue('order', itemNum);
+											this.subFormsRefs[nexItemNum].saveForm();
+											this.forceUpdate();
+										}
+									},
+									renderIcon('arrow-down')
+								)
+							);
+						}
 					}
-				})();
+
+					lines.push(
+						R.div(
+							{
+								key: UID(item),
+								className: 'inline-editable-item inline-editable-item-rec-id-' + item.id
+							},
+							h(FormFull, {
+								ref: (ref: FormFull | undefined) => {
+									this.subFormRef(ref, itemNum);
+								},
+								nodeId: node.id,
+								inlineEditable: true,
+								editable: true,
+								isCompact: true,
+								filters: filters,
+								parentForm: this.props.parentForm,
+								isLookup: this.props.isLookup,
+								list: this,
+								node,
+								initialData: item,
+								overrideOrderData: sorting ? itemNum : -1
+							}),
+							R.span({ key: UID(item) + 'buttons', className: 'buttons' }, buttons)
+						)
+					);
+				}
+
 			}
 		}
 		/// #if DEBUG
@@ -405,7 +396,7 @@ class List extends BaseForm<ListProps, ListState> {
 						title: L('ADD', node.creationName || node.singleName),
 						className: 'clickable tool-btn create-btn',
 						onClick: () => {
-							data.items.push({});
+							data.items.push({ name: '' });
 							this.forceUpdate();
 						}
 					},
@@ -462,9 +453,9 @@ class List extends BaseForm<ListProps, ListState> {
 							className: 'clickable create-button',
 							onClick: async () => {
 								if (this.props.askToSaveParentBeforeCreation) {
-									await this.props.parentForm.saveParentFormBeforeCreation();
+									await this.props.parentForm!.saveParentFormBeforeCreation();
 								}
-								this.props.parentForm.toggleCreateDialogue('new');
+								this.props.parentForm!.toggleCreateDialogue('new');
 							}
 						},
 						renderIcon('plus'),
@@ -494,7 +485,7 @@ class List extends BaseForm<ListProps, ListState> {
 				searchPanel = R.div(
 					{ className: 'list-search' },
 					R.input({
-						ref: (input) => {
+						ref: (input: RefToInput) => {
 							this.searchInput = input;
 						},
 						className: 'list-search-input',
@@ -525,7 +516,7 @@ class List extends BaseForm<ListProps, ListState> {
 					h(Select, {
 						options,
 						defaultValue: node.defaultFilterId
-							? node.filters[this.filters.filterId || node.defaultFilterId.id].name
+							? node.filters![this.filters.filterId || node.defaultFilterId.id].name
 							: undefined,
 						onInput: (val) => {
 							this.changeFilter('filterId', parseInt(val), true);
@@ -550,7 +541,7 @@ class List extends BaseForm<ListProps, ListState> {
 			}
 			if (!body) {
 				const tableHeader = [];
-				node.fields.some((field) => {
+				node.fields!.some((field) => {
 					/// #if DEBUG
 					let fieldAdmin;
 					if (iAdmin()) {
@@ -609,6 +600,7 @@ class List extends BaseForm<ListProps, ListState> {
 
 				const lines = data.items.map((item) => {
 					return h(FormListItem, {
+						nodeId: this.props.nodeId,
 						key: Math.random() + '_' + item.id,
 						disableDrafting: this.props.disableDrafting,
 						noPreviewButton: this.props.noPreviewButton,
@@ -657,10 +649,10 @@ class List extends BaseForm<ListProps, ListState> {
 			recPerPage = this.filters.n;
 		}
 
-		const totalPages = Math.ceil(data.total / (recPerPage || node.recPerPage));
+		const totalPages = Math.ceil(data.total / (recPerPage || node.recPerPage!));
 		const curPage = parseInt(filters.p as string) || 0;
 
-		const pageNumbers = { 0: 1, 1: 1, 2: 1 };
+		const pageNumbers = { 0: 1, 1: 1, 2: 1 } as KeyedMap<number>;
 
 		let p;
 		for (p = 0; p <= 2; p++) {
@@ -686,7 +678,7 @@ class List extends BaseForm<ListProps, ListState> {
 		}
 
 		let footer;
-		let paginatorText = L('SHOWED_LIST', data.items.length).replace('%', data.total);
+		let paginatorText = L('SHOWED_LIST', data.items.length).replace('%', data.total.toString());
 
 		if (this.filters.s) {
 			paginatorText += L('SEARCH_RESULTS', this.filters.s);

@@ -5,12 +5,12 @@ import { registerFieldClass } from '../utils';
 import type { FieldProps, FieldState } from './base-field';
 import { BaseField } from './base-field';
 
-const intToColor = (color, alpha) => {
+const intToColor = (color: number, alpha: number) => {
 	const ret = 'rgba(' + ((color >> 16) & 255) + ',' + ((color >> 8) & 255) + ',' + (color & 255) + ',' + (alpha / 255.0).toFixed(2) + ')';
 	return ret;
 };
 
-const validateValue = (val) => {
+const validateValue = (val: any) => {
 	return (typeof val !== 'number' || isNaN(val)) ? 0xffffffff : val;
 };
 
@@ -21,7 +21,7 @@ interface ColorFieldState extends FieldState {
 
 registerFieldClass(FIELD_TYPE.COLOR, class ColorField extends BaseField<FieldProps, ColorFieldState> {
 
-	constructor(props) {
+	constructor(props: FieldProps) {
 		super(props);
 		const val = validateValue(props.initialValue);
 		this.state = { value: val, color: val % 0x1000000, alpha: Math.floor(val / 0x1000000) };
@@ -29,8 +29,8 @@ registerFieldClass(FIELD_TYPE.COLOR, class ColorField extends BaseField<FieldPro
 		this.onChangeAlpha = this.onChangeAlpha.bind(this);
 	}
 
-	onChangeAlpha(ev) {
-		this.setState({ alpha: ev.target.value });
+	onChangeAlpha(ev: MouseEvent) {
+		this.setState({ alpha: parseInt((ev.target as HTMLInputElement).value) || 0xffffffff });
 		this._onChange();
 	}
 
@@ -40,12 +40,12 @@ registerFieldClass(FIELD_TYPE.COLOR, class ColorField extends BaseField<FieldPro
 		this.props.wrapper.valueListener(value, true, this);
 	}
 
-	onChangeColor(ev) {
-		this.setState({ color: parseInt(ev.target.value.substr(1), 16) });
+	onChangeColor(ev: InputEvent) {
+		this.setState({ color: parseInt((ev.target as HTMLInputElement).value.substr(1), 16) });
 		this._onChange();
 	}
 
-	setValue(value) {
+	setValue(value: number) {
 		value = validateValue(value);
 		this.setState({ color: value % 0x1000000, alpha: Math.floor(value / 0x1000000) });
 	}

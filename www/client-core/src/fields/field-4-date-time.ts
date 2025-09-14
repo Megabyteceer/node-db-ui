@@ -4,7 +4,7 @@ import { FIELD_TYPE } from '../../../../types/generated';
 import { EMPTY_DATE } from '../consts';
 import { R } from '../r';
 import { innerDateTimeFormat, L, registerFieldClass, toReadableDateTime } from '../utils';
-import type { FieldProps, FieldState } from './base-field';
+import type { FieldProps, FieldState, RefToInput } from './base-field';
 import { BaseField } from './base-field';
 
 interface DateTimeFieldState extends FieldState {
@@ -19,10 +19,6 @@ const momentToInputValue = (val: moment.Moment): string => {
 
 class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 
-	constructor(props) {
-		super(props);
-	}
-
 	setValue(val: moment.Moment | string) {
 		if (val) {
 			if (typeof val === 'string') {
@@ -32,13 +28,13 @@ class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 			}
 		}
 
-		this.refToInput.value = momentToInputValue(val as moment.Moment);
+		this.refToInput!.value = momentToInputValue(val as moment.Moment);
 
 		this.setState({ value: val as moment.Moment });
 		this.props.wrapper.valueListener(val, false, this);
 	}
 
-	setMin(moment) {
+	setMin(moment: moment.Moment) {
 		this.setState({ minDate: moment });
 		if (moment && (this.state.focused)) {
 			if (!this.state.value) {
@@ -50,7 +46,7 @@ class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 		}
 	}
 
-	setMax(moment) {
+	setMax(moment: moment.Moment) {
 		this.setState({ maxDate: moment });
 		if (moment && (this.state.focused)) {
 			if (!this.state.value) {
@@ -66,7 +62,7 @@ class dateFieldMixins extends BaseField<FieldProps, DateTimeFieldState> {
 		this.validateDate(this.state.value, true);
 	}
 
-	validateDate(val, doFix?: boolean) {
+	validateDate(val: moment.Moment, doFix?: boolean) {
 
 		if (this.state.minDate) {
 			if (!val || !val.clone().startOf('day').isSameOrAfter(this.state.minDate.clone().startOf('day'))) {
@@ -127,7 +123,7 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 		return null;
 	}
 
-	static encodeValue(val) {
+	static encodeValue(val: moment.Moment) {
 		if (!val) {
 			return (EMPTY_DATE);
 		}
@@ -135,7 +131,7 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 	}
 
 	clearValue() {
-		this.setValue(null);
+		this.setValue(EMPTY_DATE);
 		this.props.wrapper.valueListener(null, true, this);
 	}
 
@@ -143,7 +139,7 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 
 		// const field = this.props.field;
 
-		let value = this.state.value;
+		let value = this.state.value as moment.Moment | undefined;
 
 		if (value && isNaN(value.year())) {
 			value = undefined;
@@ -158,7 +154,7 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 				max: this.state.maxDate && momentToInputValue(this.state.maxDate),
 				disable: this.props.fieldDisabled,
 				title: L('N_TIME', this.props.field.name),
-				ref: (ref) => {
+				ref: (ref: RefToInput) => {
 					this.refGetter(ref);
 				},
 				onInput: (ev: InputEvent) => {

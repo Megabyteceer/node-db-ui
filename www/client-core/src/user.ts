@@ -6,17 +6,17 @@ import moment from 'moment';
 import { Component, h } from 'preact';
 import { NODE_ID } from '../../../types/generated';
 import { globals } from '../../../types/globals';
-import type { UserSession } from './bs-utils';
+import type { RecId, UserSession } from './bs-utils';
 import { USER_ID } from './bs-utils';
-import { Select } from './components/select';
+import { Select, type SelectProps } from './components/select';
 import { LITE_UI_PREFIX } from './consts';
 import { LoadingIndicator } from './loading-indicator';
 import { ENV, MainFrame } from './main-frame';
 import { R } from './r';
 import { attachGoogleLoginAPI, getData, getItem, idToImgURL, isAdmin, L, removeItem, renderIcon, setItem } from './utils';
 
-function setUserOrg(orgId) {
-	if (User.currentUserData.orgId !== orgId) {
+function setUserOrg(orgId: RecId) {
+	if (User.currentUserData!.orgId !== orgId) {
 		getData('api/setCurrentOrg', { orgId }).then(() => {
 			User.refreshUser();
 		});
@@ -29,9 +29,9 @@ function iAdmin() {
 
 class User extends Component<{}, {}> {
 
-	static instance: User;
-	static currentUserData: UserSession;
-	static additionalUserDataRenderer: () => preact.Component;
+	static instance?: User;
+	static currentUserData?: UserSession;
+	static additionalUserDataRenderer?: () => preact.Component;
 
 	componentDidMount() {
 		User.instance = this;
@@ -70,7 +70,7 @@ class User extends Component<{}, {}> {
 		}
 	}
 
-	changeOrg(value) {
+	changeOrg(value: RecId) {
 		setTimeout(() => {
 			setUserOrg(value);
 			// Stage.showForm(14, undefined, undefined, undefined, true);
@@ -118,7 +118,7 @@ class User extends Component<{}, {}> {
 					options.push({ value: k, name });
 				};
 
-				org = h(Select, { key: '2', options, className: 'top-bar-user-org-select', isCompact: true, defaultValue: userData.orgId, onInput: this.changeOrg });
+				org = h(Select, { key: '2', options, className: 'top-bar-user-org-select', isCompact: true, defaultValue: userData.orgId, onInput: this.changeOrg } as SelectProps);
 			}
 
 			let btn1, btn2;
@@ -142,7 +142,7 @@ class User extends Component<{}, {}> {
 				btn2 = R.a({
 					key: 'b2',
 					title: L('LOGOUT'), className: 'clickable top-bar-user-btn', onClick: async () => {
-						LoadingIndicator.instance.show();
+						LoadingIndicator.instance!.show();
 						removeItem('go-to-after-login');
 						await attachGoogleLoginAPI();
 
@@ -151,7 +151,7 @@ class User extends Component<{}, {}> {
 							const auth2 = window.gapi.auth2.getAuthInstance();
 							await auth2.signOut();
 						}
-						LoadingIndicator.instance.hide();
+						LoadingIndicator.instance!.hide();
 						const guestUserSession = await getData('api/logout');
 						User.setUserData(guestUserSession);
 						document.location.href = loginURL;
@@ -176,8 +176,8 @@ class User extends Component<{}, {}> {
 		);
 	}
 }
-/** @type User */
-User.instance = null;
-User.currentUserData = null;
+
+User.instance = undefined;
+User.currentUserData = undefined;
 
 export { iAdmin, User };

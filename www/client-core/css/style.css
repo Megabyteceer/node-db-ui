@@ -220,7 +220,7 @@ img {
 
 .tool-btn {
 	padding: 3px 2px;
-	box-shadow: none;
+	background: transparent;
 }
 
 .half-visible {
@@ -347,8 +347,7 @@ input[readonly] {
 }
 
 .danger-btn {
-	background: var(--DELETE_COLOR);
-	color: #fee;
+	color: var(--DELETE_COLOR);
 }
 
 .close-popup-wrap {
@@ -366,23 +365,23 @@ input[readonly] {
 }
 
 .edit-btn {
-	color: #fff;
-	background: var(--EDIT_COLOR);
+	color: var(--EDIT_COLOR);
+	background: transparent;
 }
 
 .publish-btn {
-	color: #fff;
-	background: var(--PUBLISH_COLOR);
+	color: var(--PUBLISH_COLOR);
+	background: transparent;
 }
 
 .unpublish-btn {
-	color: #fff;
-	background: var(--UNPUBLISH_COLOR);
+	color: var(--UNPUBLISH_COLOR);
+	background: transparent;
 }
 
 .view-btn {
-	color: #fff;
-	background: var(--VIEW_COLOR);
+	color: var(--VIEW_COLOR);
+	background: transparent;
 }
 
 .button-small {
@@ -710,11 +709,10 @@ input[readonly] {
 }
 
 .prompt-body {
+	border-radius: 100px;
 	min-width: 700px;
 	display: inline-block;
-	background: #F7F7F7;
-	color: #000;
-	border: 3px solid #F7F7F7;
+	background: var(--BG_COLOR);
 	padding: 30px;
 }
 
@@ -861,8 +859,6 @@ input[readonly] {
 .select-control-wrapper {
 	display: inline-block;
 	width: 100%;
-	background: #fff;
-	border-radius: 4px;
 	vertical-align: middle;
 	text-align: left;
 	white-space: nowrap;
@@ -876,9 +872,8 @@ input[readonly] {
 .select-control {
 	position: relative;
 	padding: 8px 14px;
-	color: #333;
+	background-color: var(--INPUT_COLOR);
 	min-width: 130px;
-	border: 1px solid #a8a8a8;
 	border-radius: 30px;
 }
 
@@ -886,19 +881,14 @@ input[readonly] {
 	position: absolute;
 	margin-top: -2px;
 	z-index: 4;
-	background: #fff;
-	color: #333;
-	border: 1px solid #ddd;
-	box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.26);
-}
 
-.disabled .select-control-list {
-	background: unset,
 }
 
 .select-control-item {
+	border-radius: 20px;
 	padding: 6px 20px;
-	border-top: 1px solid #ddd;
+	background: var(--INPUT_COLOR);
+	margin-bottom: 1px;
 }
 
 .select-control-caret {
@@ -985,24 +975,26 @@ input[readonly] {
 .field-lookup-drop-list {
 	position: absolute;
 	z-index: 8;
-	background: #F7F7F7;
 	min-width: 550px;
+	background-color: var(--INPUT_COLOR);
 	width: 100%;
-	border: 1px solid #BBBBBB;
 	padding: 6px 5px;
 	font-size: 80%;
-	box-shadow: 0px 4px 12px 0px #777;
 	border-bottom-right-radius: 6px;
 	border-bottom-left-radius: 6px;
 	margin-bottom: 400px;
 	box-sizing: border-box;
 }
 
+.field-lookup-drop-list .form {
+	padding: 10px;
+}
+
 .clear-btn {
 	display: inline-block;
 	border-radius: 30px;
-	background-color: var(--DELETE_COLOR);
-	color: #fff;
+	background-color: transparent;
+	color: var(--DELETE_COLOR);
 }
 
 .field-lookup-value-label {
@@ -1269,8 +1261,7 @@ input[readonly] {
 }
 
 .list-item-draft {
-	background: #eee;
-	opacity: 0.5;
+	opacity: 0.3;
 }
 
 .field-container-type-splitter {
@@ -1383,7 +1374,7 @@ input[readonly] {
 }
 
 .list-empty {
-	color: #ccc;
+	color: var(--BRAND_COLOR_LIGHT);
 	text-align: center;
 	font-size: 140%;
 }
@@ -1435,19 +1426,6 @@ input[readonly] {
 .sign-in-button .field-button {
 	padding: 15px 30px;
 }
-
-.form-item-row .field-container-id-54,
-.field-container-id-54 textarea {
-	/* filters SQL text*/
-	font-size: 120%;
-	font-family: monospace;
-}
-
-
-
-
-
-
 
 .shake {
 	animation: shake-animation linear 0.3s;

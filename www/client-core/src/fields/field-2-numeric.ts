@@ -8,11 +8,11 @@ registerFieldClass(
 	class NumericField extends BaseField {
 
 		setValue(value: number) {
-			this.refToInput.value = value;
+			this.refToInput!.value = value;
 			this.setState({ value });
 		}
 
-		static decodeValue(val) {
+		static decodeValue(val?: string) {
 			if (val) {
 				return parseInt(val);
 			}
@@ -38,7 +38,7 @@ registerFieldClass(
 					readOnly: this.props.fieldDisabled,
 					ref: this.refGetter,
 					onInput: () => {
-						const value = parseInt(this.refToInput.value.substr(0, field.maxLength));
+						const value = parseInt(this.refToInput!.value.substr(0, field.maxLength));
 						this.setState({ value });
 						this.props.wrapper.valueListener(value, true, this);
 					}

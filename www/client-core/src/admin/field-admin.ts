@@ -1,7 +1,7 @@
 import type { FieldDesc, NodeDesc } from '../bs-utils';
 
 import { Component, type ComponentChild } from 'preact';
-import { NODE_ID, type IFieldsRecord } from '../../../../types/generated';
+import { NODE_ID, type FIELD_ID, type IFieldsRecord } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { FormFull } from '../forms/form-full';
 import { List } from '../forms/list';
@@ -10,7 +10,7 @@ import { CLIENT_SIDE_FORM_EVENTS, getRecordClient, keepInWindow, L, reloadLocati
 import { admin_editSource } from './admin-event-editor';
 import { admin } from './admin-utils';
 
-let showedFieldId;
+let showedFieldId: FIELD_ID;
 
 /// #if DEBUG
 /*
@@ -25,13 +25,12 @@ interface FieldAdminState {
 
 interface FieldAdminProps {
 	field: FieldDesc;
-	form?: FormFull<string>;
+	form?: FormFull | List;
 }
 
 class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
-	private timeout: NodeJS.Timeout;
 
-	constructor(props) {
+	constructor(props: FieldAdminProps) {
 		super(props);
 		this.state = {
 			show: showedFieldId === this.props.field.id
@@ -39,14 +38,9 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		this.onShow = this.onShow.bind(this);
 		this.hide = this.hide.bind(this);
 		this.toggleLock = this.toggleLock.bind(this);
-		this.timeout = null;
 	}
 
 	onShow() {
-		if (this.timeout) {
-			clearTimeout(this.timeout);
-			delete this.timeout;
-		}
 		if (!this.state.show) {
 			this.setState({
 				show: true
@@ -70,12 +64,12 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 
 	render() {
 		const field: FieldDesc = this.props.field;
-		const node: NodeDesc = field.node;
-		const form = this.props.form;
+		const node: NodeDesc = field.node!;
+		const form = this.props.form!;
 		let body;
 		let border;
 
-		if (form._getFieldEventHandlers && form._getFieldEventHandlers(field)) {
+		if (((form as FormFull)._getFieldEventHandlers) && (form as FormFull)._getFieldEventHandlers(field)) {
 			border = ' admin-button-highlighted';
 		} else {
 			border = '';
@@ -86,13 +80,13 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		if (bodyVisible) {
 			let extendedInfo: ComponentChild;
 			if (
-				form.getField && form.getField(field.fieldName)?.fieldRef?.state?.filters
+				(form as FormFull).getField && (form as FormFull).getField(field.fieldName)?.fieldRef?.state?.filters
 			) {
 				extendedInfo = R.div(
 					null,
 					'filters:',
 					R.input({
-						defaultValue: JSON.stringify(form.getField(field.fieldName).fieldRef.state.filters)
+						defaultValue: JSON.stringify((form as FormFull).getField(field.fieldName).fieldRef.state.filters)
 					})
 				);
 			}
@@ -103,8 +97,6 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 					ref: keepInWindow,
 					className: 'admin-form-body',
 					onClick: () => {
-						clearTimeout(this.timeout);
-						delete this.timeout;
 						showedFieldId = field.id;
 					},
 					onMouseLeave: () => {
@@ -132,7 +124,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 						{
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
-								const i = field.index;
+								const i = field.index!;
 								if (i > 0) {
 									admin.moveField(i, form, node, -1).then(reloadLocation);
 								}
@@ -145,8 +137,8 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 						{
 							className: 'clickable tool-btn admin-form-btn',
 							onClick: () => {
-								const i = field.index;
-								if (i < node.fields.length - 1) {
+								const i = field.index!;
+								if (i < node.fields!.length - 1) {
 									admin.moveField(i, form, node, +1).then(reloadLocation);
 								}
 							},

@@ -1,4 +1,4 @@
-import type { NODE_ID } from '../types/generated';
+import { NODE_TYPE, type NODE_ID } from '../types/generated';
 import type { APIResult, GetRecordsFilter, GetRecordsParams, RecId, RecordDataWriteDraftable, RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
 /// #if DEBUG
 import { getClientEventHandler, nodePrivileges } from './admin/admin';
@@ -11,19 +11,22 @@ import { deleteRecord, getRecords } from './get-records';
 import { submitRecord, uniqueCheck } from './submit';
 import { uploadFile, uploadImage } from './upload';
 
+export type APIHandler = (any: any, UserSession: UserSession) => APIResult;
+
 const api: object = {
 	'api/': async (reqData: GetRecordsParams & GetRecordsFilter, userSession: UserSession) => {
-		const data = await getRecords(
+		const node = getNodeDesc(reqData.nodeId, userSession);
+		const data = (node.nodeType === NODE_TYPE.DOCUMENT && node.storeForms) ? await getRecords(
 			reqData.nodeId,
-			reqData.viewFields,
+			reqData.viewFields!,
 			reqData.recId as RecId[],
 			userSession,
 			reqData,
 			reqData.s
-		);
+		) : undefined;
 		const ret: RecordsDataResponse = { data };
 		if (reqData.descNode) {
-			ret.node = getNodeDesc(reqData.nodeId, userSession);
+			ret.node = node;
 		}
 		return ret;
 	},
@@ -50,7 +53,7 @@ const api: object = {
 		return Promise.resolve(getNodeDesc(reqData.nodeId, userSession));
 	},
 	'api/submit': (reqData: { recId?: RecId; data: RecordDataWriteDraftable; nodeId: NODE_ID }, userSession: UserSession) => {
-		return submitRecord(reqData.nodeId, reqData.data, reqData.recId, userSession);
+		return submitRecord(reqData.nodeId, reqData.data, reqData.recId!, userSession);
 	},
 	'api/uploadImage': (reqData, userSession: UserSession) => {
 		return uploadImage(reqData, userSession);
@@ -81,6 +84,6 @@ const api: object = {
 		return isFiledExists(reqData, userSession);
 	}
 	/// #endif
-} as KeyedMap<(any, UserSession) => APIResult>;
+} as KeyedMap<APIHandler>;
 
 export default api;

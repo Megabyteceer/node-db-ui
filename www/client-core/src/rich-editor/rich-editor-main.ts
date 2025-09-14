@@ -4,7 +4,7 @@
 		import('bootstrap/dist/css/bootstrap.min.css'),
 		// @ts-ignore
 		import('summernote/dist/summernote.min.css'),
-		import('summernote/dist/summernote.min.js')
+		import('summernote')
 	]);
 
 	window.Bootstrap = await import('bootstrap');
@@ -19,7 +19,7 @@
 		if (data.hasOwnProperty('options')) {
 
 			data.options.callbacks = {
-				onInput: function (_contents, _$editable) {
+				onInput: function () {
 					sendValueToParent();
 				}
 			};

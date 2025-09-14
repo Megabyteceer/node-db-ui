@@ -1,6 +1,7 @@
 import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
+import type { FormFull } from '../forms/form-full';
 import { Modal } from '../modal';
 import { R } from '../r';
 import { checkFileSize, idToImgURL, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
@@ -11,9 +12,9 @@ import type { FieldWrap } from './field-wrap';
 registerFieldClass(
 	FIELD_TYPE.IMAGE,
 	class PictureField extends BaseField {
-		cropperBody: CropperFieldBody;
+		cropperBody!: CropperFieldBody;
 
-		setValue(value) {
+		setValue(value: string) {
 			this.setState({ value });
 		}
 
@@ -56,20 +57,24 @@ registerFieldClass(
 	}
 );
 
-class CropperFieldBody extends Component<FieldProps & {
+interface CropperFieldBodyProps extends FieldProps {
 	currentPicUrl?: string;
-}, FieldState & {
+}
+
+interface CropperFieldBodyState extends FieldState {
 	cleared?: boolean;
 	waiting?: boolean;
-	src?: string;
+	src?: string | null;
 	cropResult?: string | null;
-}> {
+}
+
+class CropperFieldBody extends Component<CropperFieldBodyProps, CropperFieldBodyState> {
 
 	references: { [key: string]: RefToInput | HTMLFormElement };
 	cropper: any;
-	waitingForUpload: boolean;
+	waitingForUpload = false;
 
-	constructor(props) {
+	constructor(props: CropperFieldBodyProps) {
 		super(props);
 		this.state = {
 			src: '',
@@ -89,7 +94,7 @@ class CropperFieldBody extends Component<FieldProps & {
 		});
 		this.references.fileInput.value = '';
 		Modal.instance.hide();
-		this.props.parent.props.wrapper.hideTooltip();
+		this.props.parent!.props.wrapper.hideTooltip();
 	}
 
 	_cropImage(exactlySize: boolean | MouseEvent, imgData?: string) {
@@ -117,7 +122,7 @@ class CropperFieldBody extends Component<FieldProps & {
 				src: null
 			});
 			Modal.instance.hide();
-			this.props.parent.props.wrapper.hideTooltip();
+			this.props.parent!.props.wrapper.hideTooltip();
 		}
 		this.waitingForUpload = true;
 	}
@@ -129,7 +134,7 @@ class CropperFieldBody extends Component<FieldProps & {
 			src: ''
 		});
 		this.waitingForUpload = false;
-		this.props.parent.setValue('');
+		this.props.parent!.setValue('');
 		this.references.fileInput.value = '';
 	}
 
@@ -140,7 +145,7 @@ class CropperFieldBody extends Component<FieldProps & {
 				(_er) => {}
 			);
 			if (!imageId) {
-				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.fieldName, L('IMAGE_UPLOAD_ERROR'));
+				(fieldWrap.props.form as FormFull).fieldAlert(fieldWrap.props.field!.fieldName, L('IMAGE_UPLOAD_ERROR'));
 			}
 			return imageId;
 		} else if (this.state.cleared) {
@@ -152,16 +157,16 @@ class CropperFieldBody extends Component<FieldProps & {
 		this.waitingForUpload = false;
 	}
 
-	_onChange(e) {
+	_onChange(e: InputEvent) {
 		e.preventDefault();
 		let files = undefined;
 		if (e.dataTransfer) {
 			files = e.dataTransfer.files;
 		} else if (e.target) {
-			files = e.target.files;
+			files = (e.target as HTMLInputElement).files;
 		}
-		if (files.length > 0) {
-			if (checkFileSize(files[0])) {
+		if (files!.length > 0) {
+			if (checkFileSize(files![0])) {
 				return;
 			}
 			const reader = new FileReader();
@@ -234,7 +239,7 @@ class CropperFieldBody extends Component<FieldProps & {
 				selectedImage.src = reader.result as string;
 			};
 			this.setState({ waiting: true });
-			reader.readAsDataURL(files[0]);
+			reader.readAsDataURL(files![0]);
 		}
 	}
 
@@ -274,7 +279,7 @@ class CropperFieldBody extends Component<FieldProps & {
 			} else {
 				let imgSrc = this.state.cropResult || this.props.currentPicUrl;
 				if (this.state.cleared) {
-					imgSrc = idToImgURL(0, field.fieldName);
+					imgSrc = idToImgURL(undefined, field.fieldName);
 				}
 
 				preview = R.img({
@@ -327,7 +332,7 @@ class CropperFieldBody extends Component<FieldProps & {
 			}),
 			R.input({ name: 'MAX_FILE_SIZE', defaultValue: 3000000 }),
 			R.input({ name: 'fid', defaultValue: field.id }),
-			R.input({ name: 'nid', defaultValue: field.node.id }),
+			R.input({ name: 'nid', defaultValue: field.node!.id }),
 			R.input({
 				name: 'w',
 				ref: (r) => {
@@ -360,7 +365,7 @@ class CropperFieldBody extends Component<FieldProps & {
 				null,
 				preview,
 				body,
-				R.div({ className: 'small-text' }, L('RECOMMEND_SIZE', recW).replace('%', recH)),
+				R.div({ className: 'small-text' }, L('RECOMMEND_SIZE', recW).replace('%', recH.toString())),
 				form
 			),
 			select

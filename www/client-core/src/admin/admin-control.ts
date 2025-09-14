@@ -4,13 +4,15 @@ import { NODE_ID, NODE_TYPE, type IFieldsRecord, type INodesFilter, type INodesR
 import { globals } from '../../../../types/globals';
 import type { NodeDesc } from '../bs-utils';
 import type { BaseForm } from '../forms/base-form';
+import type { FormEventProcessingMixins } from '../forms/event-processing-mixins';
+import type { FormFull } from '../forms/form-full';
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getNode, getRecordClient, getRecordsClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
 import { admin } from './admin-utils';
 import { FieldAdmin } from './field-admin';
 
-let showedNodeId;
+let showedNodeId: NODE_ID | -1;
 
 /// #if DEBUG
 /*
@@ -19,7 +21,7 @@ throw new Error("admin-control imported in release build.");
 // */
 
 interface NodeAdminProps {
-	form: BaseForm;
+	form?: BaseForm;
 	menuItem?: TreeItem;
 }
 
@@ -30,10 +32,10 @@ interface NodeAdminState {
 }
 
 class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
-	private timeout: NodeJS.Timeout;
-	node: NodeDesc;
 
-	constructor(props) {
+	node!: NodeDesc;
+
+	constructor(props: NodeAdminProps) {
 		super(props);
 
 		if (this.props.form) {
@@ -42,10 +44,9 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 			};
 		} else {
 			this.state = {
-				show: showedNodeId === this.props.menuItem.id
+				show: showedNodeId === this.props.menuItem!.id
 			};
 		}
-		this.timeout = null;
 
 		this.show = this.show.bind(this);
 		this.hide = this.hide.bind(this);
@@ -67,10 +68,6 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 	}
 
 	show() {
-		if (this.timeout) {
-			clearTimeout(this.timeout);
-			delete this.timeout;
-		}
 		if (!this.state.show) {
 			this.setState({
 				show: true
@@ -100,21 +97,21 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 
 	render() {
 		let node: NodeDesc;
-		let form;
-		let item;
+		let form: FormFull | undefined;
+		let item: TreeItem | undefined;
 
 		if (this.props.form) {
 			node = this.props.form.props.node || this.node;
-			form = this.props.form;
+			form = this.props.form as FormFull;
 			if (!node) {
 				return R.div();
 			}
 		} else {
 			node = {} as any;
-			item = this.props.menuItem; // left-bar-item
+			item = this.props.menuItem!; // left-bar-item
 		}
 
-		const nodeId = node && (node.id || item.id);
+		const nodeId = node && (node.id || item!.id);
 
 		let borderOnSave;
 		let borderOnAfterSave;
@@ -122,8 +119,8 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 
 		if (
 			form &&
-			form._getFormEventHandler &&
-			form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE)
+			(form as FormEventProcessingMixins<string>)._getFormEventHandler &&
+			(form as FormEventProcessingMixins<string>)._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE)
 		) {
 			borderOnSave = ' admin-button-highlighted';
 		} else {
@@ -132,8 +129,8 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 
 		if (
 			form &&
-			form._getFormEventHandler &&
-			form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE)
+			(form as FormEventProcessingMixins<string>)._getFormEventHandler &&
+			(form as FormEventProcessingMixins<string>)._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE)
 		) {
 			borderOnAfterSave = ' admin-button-highlighted';
 		} else {
@@ -142,8 +139,8 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 
 		if (
 			form &&
-			form._getFormEventHandler &&
-			form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD)
+			(form as FormEventProcessingMixins<string>)._getFormEventHandler &&
+			(form as FormEventProcessingMixins<string>)._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD)
 		) {
 			borderOnLoad = ' admin-button-highlighted';
 		} else {
@@ -160,7 +157,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 			if (!item) {
 				if (this.state.allFieldsVisible) {
 					allFields = [];
-					for (const f of node.fields) {
+					for (const f of node.fields!) {
 						if (f.lang) continue;
 
 						allFields.push(
@@ -190,9 +187,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 								renderIcon(f.forSearch ? 'search-plus' : 'search half-visible'),
 								h(FieldAdmin, {
 									field: f,
-									form: form,
-									x: 370,
-									zIndex: 10
+									form: form
 								})
 							)
 						);
@@ -340,8 +335,6 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 					ref: keepInWindow,
 					className: 'admin-form-body',
 					onClick: () => {
-						clearTimeout(this.timeout);
-						delete this.timeout;
 						showedNodeId = nodeId;
 					},
 					onMouseLeave: () => {
@@ -350,7 +343,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 				},
 				L('NODE_SETTINGS'),
 				R.b({ className: 'admin-form-header' }, node.tableName),
-				R.span(null, '; (' + (node.matchName || item.name) + '); id: ' + nodeId),
+				R.span(null, '; (' + (node.matchName || item!.name) + '); id: ' + nodeId),
 				R.div(
 					{
 						className: 'admin-form-content'
@@ -372,7 +365,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 							title: L('EDIT_ACCESS'),
 							onClick: () => {
 								globals.Stage.showForm(
-									NODE_ID.RIGHT_ACCESS_FORM,
+									NODE_ID.ADMIN_ROLE_PRIVILEGES_FORM,
 									nodeId,
 									undefined,
 									true,
@@ -413,7 +406,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 	}
 }
 
-function createNodeForMenuItem(item) {
+function createNodeForMenuItem(item: TreeItem) {
 	const isBasedOnDocument = item.nodeType === NODE_TYPE.DOCUMENT;
 	getRecordClient(NODE_ID.NODES, (isBasedOnDocument ? item.parent : item.id) as number).then((data) => {
 		globals.Stage.showForm(
