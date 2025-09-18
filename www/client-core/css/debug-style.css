@@ -1,4 +1,4 @@
-.admin-events-editor-body {
+.left-bar:co .admin-events-editor-body {
 	margin: 30px;
 }
 
@@ -72,6 +72,7 @@
 }
 
 .admin-tools-enable-btn {
+	white-space: nowrap;
 	position: fixed;
 	width: 200px;
 	pointer-events: none;
@@ -123,8 +124,6 @@
 	position: absolute;
 	text-align: left;
 	z-index: 4;
-
-	font-size: 70%;
 	display: inline-block;
 	vertical-align: top;
 	margin-top: -5px;
@@ -298,7 +297,6 @@
 
 .icons-selector .select-control-list {
 	white-space: normal;
-	background: var(--BG_COLOR);
 }
 
 .icons-selector .select-control-item {
@@ -308,8 +306,7 @@
 }
 
 .form-item-row-num .field-container-name-id {
-	color: #ccc;
-	font-size: 80%;
+	font-family: monospace;
 }
 
 .field-container-id-9,
@@ -317,4 +314,18 @@
 .field-container-id-54 {
 	font-size: 120%;
 	font-family: monospace;
+}
+
+.field-container-id-314 .field-container-id-311 input {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	text-align: right;
+	width: 400px;
+
+}
+
+.field-container-id-314 .field-container-id-312 input {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	width: 100px;
 }

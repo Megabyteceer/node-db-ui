@@ -1,32 +1,23 @@
-import { h } from 'preact';
+import { h, type ComponentChild } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
-import type { LookupValue, RecId, RecordData } from '../bs-utils';
+import type { LookupValue, LookupValueIconic, RecId, RecordData } from '../bs-utils';
 import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
-import { List__olf } from '../forms/list';
+import Form, { type FormProps } from '../form';
 import { R } from '../r';
-import { getNode, idToImgURL, L, registerFieldClass, renderIcon, scrollToVisible, sp } from '../utils';
-import { fieldLookupMixins, type LookupFieldProps } from './field-lookup-mixins';
+import { scrollToVisible } from '../scroll-to-visible';
+import { getNode, idToImgURL, L, registerFieldClass, renderIcon, sp } from '../utils';
+import BaseLookupField, { type BaseLookupFieldProps } from './base-lookup-field';
 
-class LookupManyToOneFiled extends fieldLookupMixins {
+export default class LookupManyToOneFiled extends BaseLookupField {
 	isEnterCreateThroughList = false;
 	node?: NodeDesc;
 
-	constructor(props: LookupFieldProps) {
+	declare currentValue: LookupValueIconic;
+
+	constructor(props: BaseLookupFieldProps) {
 		super(props);
 
-		let val = props.initialValue;
-		if (typeof val === 'string') {
-			val = {
-				id: val,
-				name: 'selected'
-			};
-			this.props.wrapper.valueListener(val, false, this);
-		}
-		this.state = {
-			filters: this.generateDefaultFiltersByProps(this.props),
-			value: val
-		};
 		this.toggleList = this.toggleList.bind(this);
 		this.valueSelected = this.valueSelected.bind(this);
 		this.toggleCreateDialogue = this.toggleCreateDialogue.bind(this);
@@ -50,68 +41,45 @@ class LookupManyToOneFiled extends fieldLookupMixins {
 		}
 	}
 
-	componentWillReceiveProps(_nextProps: LookupFieldProps) {
-		if (this.props.filters) {
-			if (!this.state.filters) {
-				this.setState({ filters: {} });
-			}
-			Object.assign(this.state.filters!, this.props.filters);
-		}
-	}
-
-	toggleList() {
-		if (!this.props.fieldDisabled || this.state.expanded) {
-			this.setState({
-				expanded: !this.state.expanded
-			});
-		}
-	}
-
 	valueSelected(recordData?: RecordData, _isNewCreated?: boolean, noToggleList?: boolean) {
 		if (recordData) {
 			if (!noToggleList) {
 				this.toggleList();
 			}
 			if (
-				!this.state.value ||
-				this.state.value.id !== recordData.id ||
-				this.state.value.name !== recordData.name ||
-				this.state.value.icon !== (recordData as any as KeyedMap<string>)[this.props.field.lookupIcon]
+				!this.currentValue ||
+				this.currentValue.id !== recordData.id ||
+				this.currentValue.name !== recordData.name ||
+				this.currentValue.icon !== (recordData as any as KeyedMap<string>)[this.props.fieldDesc.lookupIcon]
 			) {
 				const newVal: any = {
 					id: recordData.id,
 					name: recordData.name
 				};
-				if (this.props.field.lookupIcon) {
-					newVal.icon = (recordData as any as KeyedMap<string>)[this.props.field.lookupIcon];
+				if (this.props.fieldDesc.lookupIcon) {
+					newVal.icon = (recordData as any as KeyedMap<string>)[this.props.fieldDesc.lookupIcon];
 				}
 				this.setValue(newVal);
-				this.props.wrapper.valueListener(newVal, false, this);
+				this.valueListener(newVal);
 			}
-		}
-	}
-
-	collapseList() {
-		if (this.state.expanded) {
-			this.toggleList();
 		}
 	}
 
 	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
 		this.collapseList();
-		const filters = this.props.form
+		const filters = this.parentForm
 			? {
-				[this.getLinkerFieldName()]: { id: this.props.form.recId }
+				[this.getLinkerFieldName()]: { id: this.parentForm.recId }
 			}
 			: undefined;
 		globals.Stage.showForm(
-			this.props.field.nodeRef!.id,
+			this.props.fieldDesc.nodeRef!.id,
 			recIdToEdit,
 			filters,
 			true,
 			true,
-			(newData: RecordData | null) => {
-				const value = this.state.value;
+			(newData?: RecordData) => {
+				const value = this.currentValue;
 				if (recIdToEdit === value.id) {
 					if (!newData) {
 						this.clearValue();
@@ -134,136 +102,124 @@ class LookupManyToOneFiled extends fieldLookupMixins {
 		return val;
 	}
 
-	setValue(value: RecordData | null) {
-		this.setState({ value });
+	setValue(value?: RecordData) {
+		this.currentValue = value as any;
+
 	}
 
-	clearValue() {
-		this.valueSelected(
-			{
-				id: 0,
-				name: ''
-			},
-			false,
-			true
-		);
-		this.collapseList();
+	renderField(): ComponentChild {
+		return R.span(null, this.renderLookupIcon(this.currentValue), (this.currentValue as LookupValue)?.name);
 	}
 
-	render() {
+	renderLookupIcon(value: LookupValueIconic) {
+		if (value) {
+			if (this.props.fieldDesc.lookupIcon && value.icon) {
+				return R.img({
+					className: 'field-lookup-icon-pic',
+					src: idToImgURL(value.icon, this.props.fieldDesc.lookupIcon) + IMAGE_THUMBNAIL_PREFIX
+				});
+			} else {
+				return R.div({
+					className: 'field-lookup-icon-pic field-lookup-icon-pic-empty'
+				});
+			}
+		}
+	}
+
+	renderFieldEditable() {
 
 		if (!this.node) {
-			getNode(this.props.field.nodeRef!.id).then((nodeDesc) => {
+			getNode(this.props.fieldDesc.nodeRef!.id).then((nodeDesc) => {
 				this.node = nodeDesc;
 				this.forceUpdate();
 			});
 			return renderIcon('cog fa-spin');
 		}
 
-		const field = this.props.field;
-		const value = this.state.value;
-		let iconPic;
-		if (value) {
-			if (field.lookupIcon && !this.props.hideIcon && value.icon) {
-				iconPic = R.img({
-					className: 'field-lookup-icon-pic',
-					src: idToImgURL(value.icon, field.lookupIcon) + IMAGE_THUMBNAIL_PREFIX
-				});
-			} else {
-				iconPic = R.div({
-					className: 'field-lookup-icon-pic field-lookup-icon-pic-empty'
-				});
-			}
+		const field = this.props.fieldDesc;
+		const value = this.currentValue;
+
+		let list;
+		let clearBtn;
+		if (this.state.expanded) {
+			list = h(Form, {
+				nodeDesc: this.parentForm.nodeDesc,
+				nodeId: field.nodeRef!.id,
+				isLookup: true,
+				parentForm: this.parentForm,
+				parent: this,
+				filters: this.fieldFilters
+			} as FormProps);
 		}
-		if (this.props.isEdit) {
-			let list;
-			let clearBtn;
-			if (this.state.expanded) {
-				list = h(List__olf, {
-					preventCreateButton: this.state.preventCreateButton || this.props.preventCreateButton,
-					node: this.node,
-					nodeId: field.nodeRef!.id,
-					isLookup: true,
-					parentForm: this,
-					filters: this.state.filters
-				});
-			}
 
-			if (list) {
-				list = R.div(
-					{
-						className: 'field-lookup-drop-list'
-					},
-					list
-				);
-			}
-
-			if (!this.isRequired() && !this.props.isN2M && value?.id) {
-				clearBtn = R.div(
-					{
-						title: L('CLEAR'),
-						className: 'clickable clear-btn',
-						onClick: (e) => {
-							sp(e);
-							this.clearValue();
-						}
-					},
-					renderIcon('times')
-				);
-			}
-
-			let valLabel;
-			if (value?.name) {
-				valLabel = R.span(null, value.name);
-			} else {
-				valLabel = R.span(
-					{
-						className: 'field-lookup-value-label'
-					},
-					this.props.isN2M ? L('+ADD') : L('SELECT')
-				);
-			}
-
-			return R.div(
+		if (list) {
+			list = R.div(
 				{
-					className: 'field-lookup-wrapper'
+					className: 'field-lookup-drop-list'
 				},
-				R.div(
-					{
-						className: this.props.fieldDisabled
-							? 'field-lookup-chooser not-clickable disabled'
-							: 'field-lookup-chooser clickable',
-						title: this.props.isCompact ? field.name : L('SELECT'),
-						onClick: this.toggleList
-					},
-					R.span(
-						{
-							className: 'field-lookup-value'
-						},
-						iconPic,
-						valLabel
-					),
-					R.span(
-						{ className: 'field-lookup-right-block' },
-						R.span(
-							{
-								className: 'field-lookup-caret'
-							},
-							renderIcon('caret-down')
-						),
-						clearBtn
-					)
-				),
 				list
 			);
-		} else {
-			return R.span(null, iconPic, value && value.name);
 		}
+
+		if (!this.required && !this.props.isN2M && value?.id) {
+			clearBtn = R.div(
+				{
+					title: L('CLEAR'),
+					className: 'clickable clear-btn',
+					onClick: (e) => {
+						sp(e);
+						this.clearValue();
+					}
+				},
+				renderIcon('times')
+			);
+		}
+
+		let valLabel;
+		if (value?.name) {
+			valLabel = R.span(null, value.name);
+		} else {
+			valLabel = R.span(
+				{
+					className: 'field-lookup-value-label'
+				},
+				this.props.isN2M ? L('+ADD') : L('SELECT')
+			);
+		}
+
+		return R.div(
+			{
+				className: 'field-lookup-wrapper'
+			},
+			R.div(
+				{
+					className: this.props.fieldDisabled
+						? 'field-lookup-chooser not-clickable disabled'
+						: 'field-lookup-chooser clickable',
+					title: this.props.isCompact ? field.name : L('SELECT'),
+					onClick: this.toggleList
+				},
+				R.span(
+					{
+						className: 'field-lookup-value'
+					},
+					this.renderLookupIcon(value),
+					valLabel
+				),
+				R.span(
+					{ className: 'field-lookup-right-block' },
+					R.span(
+						{
+							className: 'field-lookup-caret'
+						},
+						renderIcon('caret-down')
+					),
+					clearBtn
+				)
+			),
+			list
+		);
+
 	}
 }
-registerFieldClass(
-	FIELD_TYPE.LOOKUP,
-	LookupManyToOneFiled
-);
-
-export type { LookupManyToOneFiled };
+registerFieldClass(FIELD_TYPE.LOOKUP, LookupManyToOneFiled);

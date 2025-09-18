@@ -1,10 +1,10 @@
 import type { FieldDesc, NodeDesc } from '../bs-utils';
 
 import { Component, type ComponentChild } from 'preact';
-import { NODE_ID, type FIELD_ID, type IFieldsRecord } from '../../../../types/generated';
+import { FIELD_TYPE, NODE_ID, type FIELD_ID, type IFieldsRecord } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
-import type { FormFull__olf } from '../forms/form-full';
-import { List__olf } from '../forms/list';
+import type Form from '../form';
+
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getRecordClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
@@ -25,7 +25,7 @@ interface FieldAdminState {
 
 interface FieldAdminProps {
 	field: FieldDesc;
-	form?: FormFull__olf | List__olf;
+	form?: Form;
 }
 
 class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
@@ -69,7 +69,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		let body;
 		let border;
 
-		if (((form as FormFull__olf)._getFieldEventHandlers) && (form as FormFull__olf)._getFieldEventHandlers(field)) {
+		if (form._getFieldEventHandlers(field)) {
 			border = ' admin-button-highlighted';
 		} else {
 			border = '';
@@ -80,17 +80,17 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		if (bodyVisible) {
 			let extendedInfo: ComponentChild;
 			if (
-				(form as FormFull__olf).getField && (form as FormFull__olf).getField(field.fieldName)?.fieldRef?.state?.filters
+				form.getField(field.fieldName).fieldFilters
 			) {
 				extendedInfo = R.div(
 					null,
 					'filters:',
 					R.input({
-						defaultValue: JSON.stringify((form as FormFull__olf).getField(field.fieldName).fieldRef.state.filters)
+						defaultValue: JSON.stringify(form.getField(field.fieldName).fieldFilters)
 					})
 				);
 			}
-			const isList = this.props.form instanceof List__olf;
+			const isList = this.props.form?.isList;
 
 			body = R.div(
 				{
@@ -105,7 +105,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 				},
 				L('FLD_SETTINGS'),
 				R.b({ className: 'admin-form-header' }, field.fieldName),
-				R.div(null, 'type: ' + field.fieldType + '; id: ' + field.id + '; len:' + field.maxLength),
+				R.div(null, 'type: ' + FIELD_TYPE[field.fieldType] + '; id: ' + field.id + '; len:' + field.maxLength),
 				R.div(
 					{
 						className: 'admin-form-content'

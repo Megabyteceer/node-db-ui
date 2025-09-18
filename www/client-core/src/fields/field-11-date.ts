@@ -5,7 +5,7 @@ import { R } from '../r';
 import { innerDateTimeFormat, registerFieldClass, renderIcon, toReadableDate } from '../utils';
 import { dateFieldMixins /* , ReactDateTimeClassHolder */ } from './field-4-date-time';
 
-registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
+export default class DateField extends dateFieldMixins {
 
 	static decodeValue(val: string) {
 		if (val === EMPTY_DATE) {
@@ -21,14 +21,10 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 		return val.format(innerDateTimeFormat);
 	}
 
-	focus() {
-		((this.refToInput!.base as HTMLDivElement).querySelector('input') as HTMLInputElement).focus();
-	}
-
-	render() {
+	renderFieldEditable() {
 
 		// const field = this.props.field;
-		const value = toReadableDate(this.state.value);
+		const value = toReadableDate(this.currentValue);
 		if (this.props.isEdit) {
 			/* if (!ReactDateTimeClassHolder.ReactDateTimeClass) {
 				ReactDateTimeClassHolder.importReactDateTime(); */
@@ -63,4 +59,6 @@ registerFieldClass(FIELD_TYPE.DATE, class DateField extends dateFieldMixins {
 			return R.span(null, value);
 		}
 	}
-});
+}
+
+registerFieldClass(FIELD_TYPE.DATE, DateField);

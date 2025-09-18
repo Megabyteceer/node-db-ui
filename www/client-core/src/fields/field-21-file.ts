@@ -1,79 +1,72 @@
 import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
-import type { FormFull__olf } from '../forms/form-full';
+import BaseField, { type BaseFieldProps, type BaseFieldState } from '../base-field';
 import { ENV } from '../main-frame';
 import { Modal } from '../modal';
 import { R } from '../r';
 import { checkFileSize, getReadableUploadSize, idToFileUrl, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
-import type { FieldProps__olf, FieldState__olf, RefToInput } from './base-field';
-import { BaseField__old } from './base-field';
-import type { FieldWrap__olf } from './field-wrap';
+import type { RefToInput } from './base-field-old';
 
-registerFieldClass(
-	FIELD_TYPE.FILE,
-	class FileField extends BaseField__old {
-		fileFormBodyRef!: FileFormBody;
+class FileField extends BaseField {
+	fileFormBodyRef!: FileFormBody;
 
-		setValue(val?: string) {
-			if (typeof val === 'string') {
-				this.setState({ value: val });
-			} else {
-				(this.props.form as FormFull__olf).currentData[this.props.field.fieldName] = undefined;
-			}
-		}
-
-		isEmpty() {
-			return !this.fileFormBodyRef.fileInputRef.value && !this.state.value;
-		}
-
-		focus() {
-			this.fileFormBodyRef.fileInputRef.focus();
-		}
-
-		async beforeSave() {
-			return this.fileFormBodyRef.save(this.props.wrapper);
-		}
-
-		render() {
-			const field = this.props.field;
-
-			let fileName = this.props.initialValue;
-
-			if (fileName && fileName.name) {
-				fileName = fileName.name;
-			}
-
-			if (this.props.isEdit) {
-				const accept = ENV.ALLOWED_UPLOADS.map(i => '.' + i).join(', ');
-				return h(FileFormBody, {
-					field,
-					ref: (r: FileFormBody) => {
-						this.fileFormBodyRef = r;
-					},
-					accept,
-					wrapper: this.props.wrapper,
-					parent: this,
-					form: this.props.form,
-					currentFileName: fileName,
-					isCompact: this.props.isCompact
-				});
-			}
-			return R.a(
-				{ className: 'field-file-link', href: idToFileUrl(fileName), download: true },
-				fileName ? fileName.split('/').pop() : undefined
-			);
+	setValue(val?: string) {
+		if (typeof val === 'string') {
+			this.currentValue = val;
+			this.forceUpdate();
+		} else {
+			this.props.parentForm.formData![this.props.fieldDesc.fieldName] = undefined;
 		}
 	}
-);
 
-interface FileFormBodyProps extends FieldProps__olf {
+	isEmpty() {
+		return !this.fileFormBodyRef.fileInputRef.value && !this.currentValue;
+	}
+
+	async beforeSave() {
+		return this.fileFormBodyRef.save(this);
+	}
+
+	renderFieldEditable() {
+		const field = this.props.fieldDesc;
+
+		let fileName = this.props.initialValue;
+
+		if (fileName && fileName.name) {
+			fileName = fileName.name;
+		}
+
+		if (this.props.isEdit) {
+			const accept = ENV.ALLOWED_UPLOADS.map(i => '.' + i).join(', ');
+			return h(FileFormBody, {
+				fieldDesc: field,
+				ref: (r: FileFormBody) => {
+					this.fileFormBodyRef = r;
+				},
+				accept,
+				parent: this,
+				currentFileName: fileName,
+				isCompact: this.props.isCompact,
+				initialValue: this.currentValue,
+				parentForm: this.parentForm,
+				hideControls: this.props.hideControls
+			} as FileFormBodyProps);
+		}
+		return R.a(
+			{ className: 'field-file-link', href: idToFileUrl(fileName), download: true },
+			fileName ? fileName.split('/').pop() : undefined
+		);
+	}
+}
+
+interface FileFormBodyProps extends BaseFieldProps {
 	/** image/*,.pdf */
 	accept: string;
 	currentFileName?: string;
 
 }
 
-interface FileFormBodyState extends FieldState__olf {
+interface FileFormBodyState extends BaseFieldState {
 	file?: File | null;
 }
 
@@ -95,15 +88,15 @@ class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
 		});
 		this.fileInputRef.value = '';
 		Modal.instance.hide();
-		this.props.parent!.props.wrapper.hideTooltip();
+		(this.props.parent as BaseField).hideTooltip();
 	}
 
-	async save(fieldWrap: FieldWrap__olf) {
+	async save(field: BaseField) {
 		if (this.waitingForUpload) {
 			const n = this.formRef.base as HTMLFormElement;
 			const fileId = await submitData('api/uploadFile', serializeForm(n), true);
 			if (!fileId) {
-				(fieldWrap.props.form as FormFull__olf).fieldAlert(fieldWrap.props.field!.fieldName, L('UPLOAD_ERROR'));
+				field.props.parentForm.fieldAlert(field.props.fieldDesc.fieldName, L('UPLOAD_ERROR'));
 			}
 			return fileId;
 		}
@@ -127,11 +120,11 @@ class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
 		this.setState({ file: files![0] });
 		this.waitingForUpload = true;
 
-		this.props.wrapper.valueListener(files![0], true);
+		(this.props.parent as BaseField)!.valueListener(files![0], true);
 	}
 
 	render() {
-		const field = this.props.field;
+		const field = this.props.fieldDesc;
 
 		let curFile;
 		let selFile;
@@ -172,22 +165,22 @@ class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
 		);
 
 		let recIdField, nodeIdField;
-		if ((this.props.form as FormFull__olf).currentData && (this.props.form as FormFull__olf).currentData.id) {
+		if (this.props.parentForm.formData?.id) {
 			recIdField = R.input({
 				name: 'recId',
 				className: 'hidden',
-				defaultValue: (this.props.form as FormFull__olf).currentData.id
+				defaultValue: this.props.parentForm.formData.id
 			});
 			nodeIdField = R.input({
 				name: 'nodeId',
 				className: 'hidden',
-				defaultValue: this.props.form.props.node.id
+				defaultValue: this.props.parentForm.nodeDesc.id
 			});
 		}
 
 		const form = R.form(
 			{
-				ref: (r) => {
+				ref: (r: RefToInput) => {
 					this.formRef = r;
 				},
 				encType: 'multipart/form-data',
@@ -195,7 +188,7 @@ class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
 			},
 			R.input({
 				name: 'file',
-				ref: (r) => {
+				ref: (r: RefToInput) => {
 					this.fileInputRef = r;
 				},
 				type: 'file',
@@ -212,5 +205,4 @@ class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
 		return R.div(null, curFile, selFile, form, select);
 	}
 }
-
-export { FileFormBody };
+registerFieldClass(FIELD_TYPE.FILE, FileField);

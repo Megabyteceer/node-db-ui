@@ -1,9 +1,9 @@
 'use strict';
 import { FIELD_TYPE } from '../../../../types/generated';
+import type { BaseFieldProps, BaseFieldState } from '../base-field';
+import BaseField from '../base-field';
 import { R } from '../r';
 import { registerFieldClass } from '../utils';
-import type { FieldProps__olf, FieldState__olf } from './base-field';
-import { BaseField__old } from './base-field';
 
 const intToColor = (color: number, alpha: number) => {
 	const ret = 'rgba(' + ((color >> 16) & 255) + ',' + ((color >> 8) & 255) + ',' + (color & 255) + ',' + (alpha / 255.0).toFixed(2) + ')';
@@ -14,17 +14,18 @@ const validateValue = (val: any) => {
 	return (typeof val !== 'number' || isNaN(val)) ? 0xffffffff : val;
 };
 
-interface ColorFieldState extends FieldState__olf {
+interface ColorFieldState extends BaseFieldState {
 	color: number;
 	alpha: number;
 }
 
-registerFieldClass(FIELD_TYPE.COLOR, class ColorField extends BaseField__old<FieldProps__olf, ColorFieldState> {
+class ColorField extends BaseField<BaseFieldProps, ColorFieldState> {
 
-	constructor(props: FieldProps__olf) {
+	constructor(props: BaseFieldProps) {
 		super(props);
 		const val = validateValue(props.initialValue);
-		this.state = { value: val, color: val % 0x1000000, alpha: Math.floor(val / 0x1000000) };
+		this.currentValue = val;
+		this.state = { color: val % 0x1000000, alpha: Math.floor(val / 0x1000000) };
 		this.onChangeColor = this.onChangeColor.bind(this);
 		this.onChangeAlpha = this.onChangeAlpha.bind(this);
 	}
@@ -36,8 +37,9 @@ registerFieldClass(FIELD_TYPE.COLOR, class ColorField extends BaseField__old<Fie
 
 	_onChange() {
 		const value = Math.floor(Math.floor(this.state.alpha) * 0x1000000) + this.state.color;
-		this.setState({ value });
-		this.props.wrapper.valueListener(value, true, this);
+		this.currentValue = value;
+		this.valueListener(value, true);
+		this.forceUpdate();
 	}
 
 	onChangeColor(ev: InputEvent) {
@@ -50,7 +52,7 @@ registerFieldClass(FIELD_TYPE.COLOR, class ColorField extends BaseField__old<Fie
 		this.setState({ color: value % 0x1000000, alpha: Math.floor(value / 0x1000000) });
 	}
 
-	render() {
+	renderFieldEditable() {
 		const background = intToColor(this.state.color, this.state.alpha);
 		const preview = R.div({ className: 'field-color-input field-color-preview-bg' },
 			R.div({ className: 'field-color-preview', style: { background } })
@@ -67,4 +69,6 @@ registerFieldClass(FIELD_TYPE.COLOR, class ColorField extends BaseField__old<Fie
 		}
 
 	}
-});
+}
+
+registerFieldClass(FIELD_TYPE.COLOR, ColorField);

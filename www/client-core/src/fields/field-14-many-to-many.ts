@@ -1,49 +1,57 @@
-import { h, type Component } from 'preact';
+import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
-import type { LookupValue, RecId, RecordData } from '../bs-utils';
+import type { LookupValue, LookupValueIconic, RecordData } from '../bs-utils';
+import type FormNode from '../form-node';
 import { R } from '../r';
 import { getClassForField, L, n2mValuesEqual, registerFieldClass, renderIcon, sp, UID } from '../utils';
-import { fieldLookupMixins, type LookupFieldProps } from './field-lookup-mixins';
+import BaseLookupField, { type BaseLookupFieldProps } from './base-lookup-field';
+import type { AdditionalButtonsRenderer } from './field-lookup-mixins';
 
 let keyCounter = 0;
 let dragItem: LookupValue | undefined;
 let dragList: LookupManyToManyFiled | undefined;
 let dragListenersInitialized = false;
 
-const refs = [] as Component[];
+export default class LookupManyToManyFiled extends BaseLookupField {
 
-class LookupManyToManyFiled extends fieldLookupMixins {
-	excludeIDs?: RecId[];
+	declare currentValue: LookupValueIconic[];
 
-	constructor(props: LookupFieldProps) {
-		super(props);
-		this.state = { filters: this.generateDefaultFiltersByProps(this.props) };
-	}
+	extendedEditor = false;
+	additionalButtonsN2MRenderer?: AdditionalButtonsRenderer;
 
 	setValue(val: LookupValue[]) {
 		if (!val) {
 			val = [];
 		}
-		if (!n2mValuesEqual(val, this.state.value)) {
-			this.setState({ value: val });
+		if (!n2mValuesEqual(val, this.currentValue)) {
+			this.currentValue = val;
 		}
 	}
 
 	extendEditor() {
-		this.setState({ extendedEditor: true });
+		this.extendedEditor = true;
+		this.forceUpdate();
 	}
 
-	valueListener(newVal: any, _withBounceDelay = false, sender: LookupManyToManyFiled) {
-		if (sender.props.isNew) {
-			this.state.value.splice(sender.props.pos, 0, newVal);
+	setAdditionalButtonsN2MRenderer(renderer?: AdditionalButtonsRenderer) {
+		if (this.additionalButtonsN2MRenderer !== renderer) {
+			this.additionalButtonsN2MRenderer = renderer;
 			this.forceUpdate();
-			this.props.wrapper.valueListener(this.state.value, false, this);
+		}
+	}
+
+	valueListener(newVal: any) {
+		debugger;
+		if (sender.props.isNew) {
+			this.currentValue.splice(sender.props.pos, 0, newVal);
+			this.forceUpdate();
+			super.valueListener(this.currentValue);
 		} else {
-			if (this.state.value[sender.props.pos].id !== newVal.id) {
-				this.state.value[sender.props.pos] = newVal;
+			if (this.currentValue[sender.props.pos].id !== newVal.id) {
+				this.currentValue[sender.props.pos] = newVal;
 				this.forceUpdate();
-				this.props.wrapper.valueListener(this.state.value, false, this);
+				this.props.wrapper.valueListener(this.currentValue, false, this);
 			}
 		}
 	}
@@ -59,6 +67,7 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 			});
 			window.document.addEventListener('mousemove', (event) => {
 				if (dragList) {
+					debugger;
 					const y = event.clientY;
 					if (y < 100) {
 						document.body.scrollTop -= 10;
@@ -67,11 +76,10 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 						document.body.scrollTop += 10;
 					}
 					let closestD = 1000000;
-					let closestItem = undefined as LookupValue | undefined;
+					let closestItem = undefined as FormNode | undefined;
 
-					dragList.state.value.some((i: LookupValue) => {
-						const el = refs[UID(i)].base as HTMLDivElement;
-
+					this.children.some((i) => {
+						const el = i.getDomElement();
 						const bounds = el.getBoundingClientRect();
 						const elementY = (bounds.top + bounds.bottom) / 2;
 
@@ -82,10 +90,10 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 						}
 					});
 					if (closestItem !== dragItem) {
-						const toPos = dragList.state.value.indexOf(closestItem);
-						const curPos = dragList.state.value.indexOf(dragItem);
-						dragList.state.value.splice(curPos, 1);
-						dragList.state.value.splice(toPos, 0, dragItem);
+						const toPos = dragList.currentValue.indexOf(closestItem);
+						const curPos = dragList.currentValue.indexOf(dragItem);
+						dragList.currentValue.splice(curPos, 1);
+						dragList.currentValue.splice(toPos, 0, dragItem);
 						dragList.forceUpdate();
 					}
 				}
@@ -98,29 +106,23 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 	}
 
 	deleteItemByIndex(i: number) {
-		this.state.value.splice(i, 1);
-		this.props.wrapper.valueListener(this.state.value, false, this);
+		this.currentValue.splice(i, 1);
+		this.valueListener(this.currentValue);
 		this.forceUpdate();
 	}
 
 	renderItem(field: FieldDesc, value: LookupValue | undefined, i: number, isEdit = false) {
 		const isDrag = dragItem === value;
 		let buttons;
-		let isNew = '';
-		if (!value) {
-			isNew = 'n';
-		}
-		let additionalButtonsN2M;
-		const addButtonsN2MRenderer =
-			this.state.additionalButtonsN2MRenderer || this.props.additionalButtonsN2MRenderer;
-		if (addButtonsN2MRenderer) {
-			additionalButtonsN2M = addButtonsN2MRenderer(field.node!, value as any as RecordData);
-		}
+		let isNew = !value;
+
+		const additionalButtonsN2M = this.additionalButtonsN2MRenderer ?
+			this.additionalButtonsN2MRenderer(field.node!, value as any as RecordData) : undefined;
 
 		if (isEdit) {
 			if (value) {
 				let reorderButton;
-				if (this.state.extendedEditor) {
+				if (this.extendedEditor) {
 					reorderButton = R.button(
 						{
 							title: L('FRAG_TO_REORDER'),
@@ -144,12 +146,12 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 							title: L('EDIT'),
 							className: 'clickable tool-btn edit-btn',
 							onClick: () => {
-								const recId = this.props.form.recId;
+								const recId = this.props.parentForm.recId;
 								const filters = {
 									[this.getLinkerFieldName()]: { id: recId }
 								};
 								globals.Stage.showForm(
-									this.props.field.nodeRef!.id,
+									this.props.fieldDesc.nodeRef!.id,
 									recId,
 									filters,
 									true,
@@ -206,34 +208,24 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 				const body = R.div(
 					{
 						key: key,
-						ref: value
-							? (ref) => {
-								refs[UID(value)] = ref;
-							}
-							: undefined,
 						className
 					},
 
 					h(getClassForField(FIELD_TYPE.LOOKUP), {
-						field,
-						preventCreateButton: this.state.preventCreateButton,
-						pos: i,
+						hideControls: this.props.hideControls || this.state.hideControls,
+						parentForm: this.parentForm,
+						fieldDesc: field,
+						preventCreateButton: this.preventCreateButton,
 						isEdit,
 						isN2M: true,
-						filters: this.state.filters,
-						ref: (ref: fieldLookupMixins) => {
-							if (ref) {
-								ref.setLookupFilter({
-									excludeIDs: this.excludeIDs || this.state.filters!.excludeIDs
-								});
-							}
-						},
+						filters: this.fieldFilters,
+						excludeIDs: this.excludeIDs,
 						isNew: isNew,
-						wrapper: this,
+						parent: this,
 						initialValue: value,
 						isCompact: this.props.isCompact,
 						fieldDisabled: this.props.fieldDisabled
-					}),
+					} as BaseLookupFieldProps),
 					buttons
 				);
 				return body;
@@ -243,17 +235,15 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 		}
 	}
 
-	render() {
-		if (!this.state.value) {
-			this.setState({ value: [] });
+	renderFieldEditable() {
+		if (!this.currentValue) {
+			this.currentValue = [];
 			return R.fragment();
 		}
-		const value = this.state.value as LookupValue[];
-		const field = this.props.field;
+		const value = this.currentValue as LookupValue[];
+		const field = this.props.fieldDesc;
 
-		let excludeIDs =
-			this.state.filters &&
-			(this.state.filters.excludeIDs ? this.state.filters.excludeIDs.slice() : undefined);
+		let excludeIDs = this.excludeIDs?.slice();
 
 		for (const v of value) {
 			if (v && v.id) {
@@ -271,12 +261,10 @@ class LookupManyToManyFiled extends fieldLookupMixins {
 			lines.push(this.renderItem(field, value, i, this.props.isEdit));
 		});
 
-		lines.push(this.renderItem(field, null, lines.length, this.props.isEdit));
+		lines.push(this.renderItem(field, {}, lines.length, this.props.isEdit));
 
 		return R.div(null, lines);
 	}
 }
 
 registerFieldClass(FIELD_TYPE.LOOKUP_N_TO_M, LookupManyToManyFiled);
-
-export { LookupManyToManyFiled };

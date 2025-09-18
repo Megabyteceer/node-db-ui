@@ -20,8 +20,9 @@ import { h } from 'preact';
 import { FIELD_TYPE, NODE_ID, type TypeGenerationHelper } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { assert } from './assert';
+import type BaseField from './base-field';
+import type { BaseFieldProps } from './base-field';
 import { HotkeyButton } from './components/hotkey-button';
-import type { BaseField__old, FieldProps__olf, FieldState__olf } from './fields/base-field';
 import { ENV } from './main-frame';
 
 enum CLIENT_SIDE_FORM_EVENTS {
@@ -74,12 +75,12 @@ restrictRecordsDeletion({
 	[NODE_ID.ORGANIZATION]: [1, 2, 3] /* disable critical organizations deletion */,
 	[NODE_ID.ROLES]: [1, 2, 3] /* disable critical roles deletion */,
 	[NODE_ID.LANGUAGES]: [1] /* disable default language deletion */,
-	[NODE_ID.ENUMS]: [1] /* disable field type enum deletion */,
-	[NODE_ID.ENUM_VALUES]: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 30, 43] /* disable field type enum deletion */
+	[NODE_ID.ENUMS]: [1, 2, 3] /* disable field type enum deletion */,
+	[NODE_ID.ENUM_VALUES]: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 22, 30, 43, 50] /* disable field type enum deletion */
 });
 
-function isRecordRestrictedForDeletion(nodeId: NODE_ID, recordId: RecId) {
-	if (restrictedRecords.has(nodeId)) {
+function isRecordRestrictedForDeletion(nodeId: NODE_ID, recordId?: RecId) {
+	if (recordId && restrictedRecords.has(nodeId)) {
 		return restrictedRecords.get(nodeId).has(recordId);
 	}
 }
@@ -123,7 +124,7 @@ function myAlert(txt: string | preact.Component, isSuccess?: boolean, autoHide?:
 	}
 }
 
-async function showPrompt(txt: string | Component, yesLabel?: string, noLabel?: string, yesIcon?: string, noIcon?: string, discardByOutsideClick?: boolean) {
+async function showPrompt(txt: string | Component, yesLabel?: string, noLabel?: string, yesIcon?: string, noIcon?: string, discardByOutsideClick = true, greenButton = false) {
 	return new Promise((resolve) => {
 		if (!yesLabel) {
 			yesLabel = L('OK');
@@ -162,7 +163,7 @@ async function showPrompt(txt: string | Component, yesLabel?: string, noLabel?: 
 						Modal.instance.hide();
 						resolve(true);
 					},
-					className: 'clickable prompt-yes-button',
+					className: greenButton ? 'clickable success-button' : 'clickable prompt-yes-button',
 					label: R.span(null, renderIcon(yesIcon), ' ', yesLabel)
 				})
 			)
@@ -417,9 +418,9 @@ async function goToPageByHash() {
 		const formParams = formParamsByLevels[level];
 		const form = Stage.allForms[level].form!;
 
-		let isTheSame = form && formParams.nodeId === form.nodeId && formParams.recId === form.recId && Boolean(formParams.editable) === Boolean(form.editable);
+		let isTheSame = form && formParams.nodeId === form.nodeId && formParams.recId === form.recId && Boolean(formParams.editable) === Boolean(form.props.editable);
 		if (isTheSame) {
-			if (JSON.stringify(form.filters) !== JSON.stringify(formParams.filters)) {
+			if (JSON.stringify(form.formFilters) !== JSON.stringify(formParams.filters)) {
 				isTheSame = false;
 			}
 		}
@@ -456,7 +457,7 @@ const SKIP_HISTORY_NODES = {
 } as KeyedMap<boolean>;
 
 async function goBack(isAfterDelete?: boolean) {
-	const currentFormParameters = globals.Stage.currentForm;
+	const currentForm = globals.Stage.currentForm;
 
 	if (isLitePage() && window.history.length < 2) {
 		window.close();
@@ -469,14 +470,14 @@ async function goBack(isAfterDelete?: boolean) {
 		} else {
 			globals.Stage.showForm(getHomeNode());
 		}
-	} else if (currentFormParameters && currentFormParameters.recId) {
-		globals.Stage.showForm(currentFormParameters.nodeId, undefined, currentFormParameters.filters);
+	} else if (currentForm && currentForm.recId) {
+		globals.Stage.showForm(currentForm.nodeId, undefined, currentForm.formFilters);
 	} else if (isAfterDelete) {
 		globals.Stage.refreshForm();
 	}
 }
 
-function assignFilters(src: KeyedMap<any>, desc: KeyedMap<any>): boolean {
+function assignFilters(desc: KeyedMap<any>, src: KeyedMap<any>): boolean {
 	let leastOneUpdated = false;
 	const keys = Object.keys(src);
 	for (let i = keys.length; i > 0;) {
@@ -502,9 +503,9 @@ function updateHashLocation(replaceState = false) {
 		'#' +
 		globals.Stage.allForms
 			.map((formEntry) => {
-				const formParameters = formEntry.form!;
-				const filters = formParameters.filters;
-				return locationToHash(formParameters.nodeId, formParameters.recId!, filters, formParameters.editable);
+				const form = formEntry.form!;
+				const filters = form.formFilters;
+				return locationToHash(form.nodeId, form.recId!, filters, form.props.editable);
 			})
 			.join(HASH_DIVIDER);
 
@@ -558,8 +559,8 @@ async function waitForNode(nodeId: NODE_ID): Promise<NodeDesc> {
 	});
 }
 
-function getNodeIfPresentOnClient(nodeId: RecId): NodeDesc {
-	return nodes.get(nodeId)!;
+function getNodeIfPresentOnClient(nodeId: RecId) {
+	return nodes.get(nodeId);
 }
 
 async function getNode(nodeId: NODE_ID, forceRefresh = false, callStack?: string): Promise<NodeDesc> {
@@ -608,6 +609,8 @@ function normalizeNode(node: NodeDesc) {
 				f.fieldNamePure = f.fieldName;
 			}
 		});
+		node.rootFields = node.fields; // TODO remove
+		// node.rootFields = node.fields.filter(f => !f.tab);
 	}
 	if (node.filters) {
 		node.filtersList = Object.keys(node.filters)
@@ -622,6 +625,29 @@ function normalizeNode(node: NodeDesc) {
 		}
 		if (!node.defaultFilterId) {
 			node.filtersList.unshift({ value: undefined, name: L('NO_FILTER') });
+		}
+	}
+
+	const tabs = node.fields?.filter((f) => {
+		if (f.fieldType === FIELD_TYPE.TAB) {
+			f.tabFields = [];
+			return true;
+		}
+	});
+	if (tabs?.length) {
+		if (tabs.length > 1) {
+			node.tabs = tabs;
+			let currentTab = tabs[0];
+			for (let field of node.fields!) {
+				if (field.fieldType === FIELD_TYPE.TAB) {
+					currentTab = field;
+				} else {
+					currentTab.tabFields!.push(field);
+					field.parenTab = currentTab;
+				}
+			}
+		} else {
+			node.fields = node.fields!.filter(t => t.fieldType !== FIELD_TYPE.TAB);
 		}
 	}
 }
@@ -702,32 +728,33 @@ const _getRecordsClient = async (
 
 };
 
-const _fieldClasses = {} as KeyedMap<typeof BaseField__old<FieldProps__olf, FieldState__olf>>;
+const _fieldClasses = {} as KeyedMap<typeof BaseField>;
 const fieldsEncoders = {} as KeyedMap<(val: any) => any>;
 const fieldsDecoders = {} as KeyedMap<(val: any) => any>;
 
-function getClassForField(type: FIELD_TYPE) {
+function getClassForField(type: FIELD_TYPE): typeof BaseField {
 	if (_fieldClasses.hasOwnProperty(type)) {
 		return _fieldClasses[type];
 	}
 	return _fieldClasses[FIELD_TYPE.TEXT];
 }
 
-function registerFieldClass(type: FIELD_TYPE, class_: typeof BaseField__old<FieldProps__olf, FieldState__olf>) {
+function registerFieldClass(type: FIELD_TYPE, class_: new(props: BaseFieldProps) => BaseField) {
 	if (_fieldClasses.hasOwnProperty(type)) {
 		throw new Error('Class for field type ' + type + ' is registered already');
 	}
 
-	if (class_.decodeValue) {
-		fieldsDecoders[type] = class_.decodeValue;
-		delete class_.decodeValue;
+	const c: typeof BaseField = class_ as any;
+
+	if (c.decodeValue) {
+		fieldsDecoders[type] = c.decodeValue;
+		delete c.decodeValue;
 	}
-	if (class_.encodeValue) {
-		fieldsEncoders[type] = class_.encodeValue;
-		delete class_.encodeValue;
+	if (c.encodeValue) {
+		fieldsEncoders[type] = c.encodeValue;
 	}
 
-	_fieldClasses[type] = class_;
+	_fieldClasses[type] = c;
 }
 
 function decodeRecoreData(data: KeyedMap<any>, node: NodeDesc) {
@@ -897,7 +924,7 @@ function isAuthNeed(data: ApiResponse) {
 		globals.Stage.showForm(NODE_ID.LOGIN, 'new', undefined, true);
 		return true;
 	} else if (data.error && (data.error.startsWith('Error: <access>') || data.error.startsWith('<access>'))) {
-		if (globals.Stage?.currentForm?.props?.node?.id !== NODE_ID.LOGIN) {
+		if (globals.Stage.currentForm?.nodeId !== NODE_ID.LOGIN) {
 			goToHome();
 		}
 		return true;
@@ -974,7 +1001,7 @@ function submitData(url: string, dataToSend: any, noProcessData?: boolean): Prom
 	);
 }
 
-async function deleteRecord(name: string | null, nodeId: RecId, recId: RecId, noPrompt?: boolean, onYes?: () => void) {
+async function deleteRecordClient(name: string | null, nodeId: RecId, recId: RecId, noPrompt?: boolean, onYes?: () => void) {
 	if (noPrompt) {
 		if (onYes) {
 			onYes();
@@ -986,7 +1013,7 @@ async function deleteRecord(name: string | null, nodeId: RecId, recId: RecId, no
 	} else {
 		const node = await getNode(nodeId);
 		if (await showPrompt(L('SURE_DELETE', node.creationName || node.singleName) + ' "' + name + '"?', L('DELETE'), L('CANCEL'), 'times', 'caret-left', true)) {
-			return deleteRecord(null, nodeId, recId, true, onYes);
+			return deleteRecordClient(null, nodeId, recId, true, onYes);
 		}
 	}
 }
@@ -1034,32 +1061,6 @@ function isLitePage() {
 
 if (isLitePage()) {
 	document.body.classList.add('lite-ui');
-}
-
-function scrollToVisible(elem: Component | HTMLDivElement, doNotShake = false) {
-	if (elem) {
-		const element = (elem as Component).base as HTMLDivElement || elem;
-		if ((element as any).scrollIntoViewIfNeeded) {
-			(element as any).scrollIntoViewIfNeeded(false);
-		} else {
-			element.scrollIntoView();
-		}
-		if (!doNotShake) {
-			shakeDomElement(element);
-		}
-	}
-}
-
-function shakeDomElement(e: HTMLDivElement) {
-	if (e) {
-		e.classList.remove('shake');
-		// access to property to apply class animation hack
-		e.offsetWidth; // eslint-disable-line @typescript-eslint/no-unused-expressions
-		e.classList.add('shake');
-		window.setTimeout(() => {
-			e.classList.remove('shake');
-		}, 600);
-	}
 }
 
 function getItem(name: string, def?: any) {
@@ -1253,7 +1254,7 @@ const listRenderers = {} as KeyedMap<ListRenderer>;
 
 function registerListRenderer(nodeId: RecId, renderFunction: ListRenderer) {
 	if (listRenderers.hasOwnProperty(nodeId)) {
-		throw 'List__olf renderer for node ' + nodeId + ' is already registered.';
+		throw 'List renderer for node ' + nodeId + ' is already registered.';
 	}
 	listRenderers[nodeId] = renderFunction;
 }
@@ -1327,6 +1328,19 @@ async function attachGoogleLoginAPI(enforces = false) {
 const getRecordsClient: TypeGenerationHelper['gcm'] = _getRecordsClient as any;
 const getRecordClient: TypeGenerationHelper['gc'] = _getRecordsClient as any;
 
+const resetAutofocus = () => {
+	autoFocusNow = true;
+};
+let autoFocusNow = true;
+export const isAutoFocus = () => {
+	const ret = autoFocusNow;
+	if (autoFocusNow) {
+		autoFocusNow = false;
+		setTimeout(resetAutofocus, 10);
+	}
+	return ret;
+};
+
 export {
 	__corePath,
 	assignFilters,
@@ -1338,7 +1352,7 @@ export {
 	consoleLog,
 	debugError,
 	deleteIndexedDB,
-	deleteRecord,
+	deleteRecordClient,
 	draftRecord,
 	getClassForField,
 	getData,
@@ -1375,10 +1389,8 @@ export {
 	removeItem,
 	renderIcon,
 	saveIndexedDB,
-	scrollToVisible,
 	serializeForm,
 	setItem,
-	shakeDomElement,
 	showPrompt,
 	sp,
 	strip_tags,

@@ -1,9 +1,9 @@
-import { Component, h } from 'preact';
+import { Component, h, type ComponentChild } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
+import BaseField from '../base-field';
 import type { BoolNum } from '../bs-utils';
 import { R } from '../r';
 import { L, registerFieldClass, renderIcon } from '../utils';
-import { BaseField__old } from './base-field';
 
 interface CheckBoxProps {
 	defaultValue?: boolean;
@@ -11,9 +11,10 @@ interface CheckBoxProps {
 	onClick?: (val: boolean) => void;
 }
 
-class CheckBox extends Component<CheckBoxProps, {
-	value?: boolean;
-}> {
+class CheckBox extends Component<CheckBoxProps> {
+
+	declare currentValue: boolean;
+
 	constructor(props: CheckBoxProps) {
 		super(props);
 		this.state = {
@@ -29,7 +30,7 @@ class CheckBox extends Component<CheckBoxProps, {
 
 	render() {
 		let check;
-		if (this.state.value) {
+		if (this.currentValue) {
 			check = R.span({
 				className: 'field-boolean-check'
 			}, renderIcon('check'));
@@ -38,7 +39,7 @@ class CheckBox extends Component<CheckBoxProps, {
 			className: 'field-boolean clickable',
 			title: this.props.title,
 			onClick: () => {
-				this.props.onClick!(!this.state.value);
+				this.props.onClick!(!this.currentValue);
 			}
 		},
 		check
@@ -46,14 +47,13 @@ class CheckBox extends Component<CheckBoxProps, {
 	}
 }
 
-registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField__old {
+class BooleanField extends BaseField {
 
 	setValue(val: boolean | BoolNum) {
 		val = (val !== 0) && Boolean(val);
-		if (this.state.value !== val) {
-			this.setState({
-				value: val
-			});
+		if (this.currentValue !== val) {
+			this.currentValue = val;
+			this.forceUpdate();
 		}
 	}
 
@@ -65,40 +65,42 @@ registerFieldClass(FIELD_TYPE.BOOL, class BooleanField extends BaseField__old {
 		return val ? 1 : 0;
 	}
 
-	render() {
+	renderFieldEditable() {
 
-		const value = this.state.value;
-		const field = this.props.field;
+		const value = this.currentValue;
+		const field = this.props.fieldDesc;
 
-		if (this.props.isEdit) {
-
-			return h(CheckBox, {
-				title: this.props.isCompact ? field.name : '',
-				defaultValue: value,
-				onClick: this.props.fieldDisabled ? undefined : (val) => {
-					this.setValue(val);
-					this.props.wrapper.valueListener(val, false, this);
-				}
-			});
-
-		} else {
-			if (this.props.isCompact) {
-				if (value) {
-					return R.span({
-						className: 'field-boolean-read-only-compact'
-					},
-					renderIcon('check')
-					);
-				} else {
-					return R.span({ className: 'field-boolean-read-only-compact' });
-				}
-			} else {
-				return R.span({ className: 'field-boolean-read-only' },
-					value ? L('YES') : L('NO')
-				);
+		return h(CheckBox, {
+			title: this.props.isCompact ? field.name : '',
+			defaultValue: value,
+			onClick: this.props.fieldDisabled ? undefined : (val) => {
+				this.setValue(val);
+				this.valueListener(val);
 			}
+		});
+
+	}
+
+	renderField(): ComponentChild {
+		const value = this.currentValue;
+		if (this.props.isCompact) {
+			if (value) {
+				return R.span({
+					className: 'field-boolean-read-only-compact'
+				},
+				renderIcon('check')
+				);
+			} else {
+				return R.span({ className: 'field-boolean-read-only-compact' });
+			}
+		} else {
+			return R.span({ className: 'field-boolean-read-only' },
+				value ? L('YES') : L('NO')
+			);
 		}
 	}
-});
+}
+
+registerFieldClass(FIELD_TYPE.BOOL, BooleanField);
 
 export { CheckBox };

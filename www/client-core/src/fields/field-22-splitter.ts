@@ -1,10 +1,12 @@
 import { FIELD_TYPE } from '../../../../types/generated';
+import BaseField from '../base-field';
 import { R } from '../r';
 import { registerFieldClass } from '../utils';
-import { BaseField__old } from './base-field';
 
-registerFieldClass(FIELD_TYPE.SPLITTER, class StaticTextField extends BaseField__old {
+export default class SplitterField extends BaseField {
 	render() {
 		return R.span();
 	}
-});
+}
+
+registerFieldClass(FIELD_TYPE.SPLITTER, SplitterField);

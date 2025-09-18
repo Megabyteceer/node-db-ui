@@ -3,8 +3,8 @@ import { FIELD_TYPE, NODE_ID, type IFieldsRecord, type INodesRecord } from '../.
 import { globals } from '../../../../types/globals';
 import type { FieldDesc } from '../bs-utils';
 import { Select, type SelectItem } from '../components/select';
-import type { FormFull__olf } from '../forms/form-full';
-import type { List__olf } from '../forms/list';
+
+import type Form from '../form';
 import { MainFrame } from '../main-frame';
 import { R } from '../r';
 import { consoleDir, getItem, getNode, getRecordClient, isLitePage, renderIcon, setItem, submitRecord } from '../utils';
@@ -19,6 +19,7 @@ const styleEl = document.createElement('style') as HTMLStyleElement;
 document.head.appendChild(styleEl);
 const styleSheet = styleEl.sheet!;
 let adminOn = false;
+let showAll = false;
 
 /// #if DEBUG
 
@@ -26,20 +27,27 @@ setTimeout(() => {
 	adminOn = !isLitePage();
 	window.document.body.insertAdjacentHTML(
 		'beforeend',
-		'<span class="admin-tools-enable-btn"><span>Admin tools </span><input type="checkbox" checked="' +
-		adminOn +
-		'" id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/></span>'
+		'<span class="admin-tools-enable-btn"><span>Admin tools </span><input type="checkbox" ' +
+		(adminOn ? 'checked' : '') +
+		' id="admin-disable" class="admin-tools-enable-check" title="hide/show admin controls"/>' +
+		'<span>Show all </span><input type="checkbox" ' +
+		(showAll ? 'checked' : '') +
+		' id="admin-show-all" class="admin-tools-enable-check"/></span>'
 	);
 	(window.document.querySelector('#admin-disable') as HTMLDivElement).addEventListener('click', admin.toggleAdminUI);
+	(window.document.querySelector('#admin-show-all') as HTMLDivElement).addEventListener('click', admin.toggleShowAll);
 	if (getItem('__admin-ui-enables', true)) {
 		admin.toggleAdminUI();
+	}
+	if (getItem('__admin-show-all', false)) {
+		admin.toggleShowAll();
 	}
 }, 100);
 /// #endif
 let iconsList: SelectItem[];
 
 class admin {
-	static async moveField(fIndex: number, form: FormFull__olf | List__olf, node: NodeDesc, direction = 0) {
+	static async moveField(fIndex: number, form: Form, node: NodeDesc, direction = 0) {
 		let fieldIndex;
 		let j = 0;
 		const fields = node.fields!.filter((f, i) => {
@@ -166,8 +174,29 @@ class admin {
 		}
 	}
 
-	static debug(obj: any) {
+	static debugDir(obj: any) {
 		consoleDir(obj);
+	}
+
+	static toggleShowAll() {
+		Array.from(document.getElementsByTagName('style')).some((element: HTMLStyleElement) => {
+			if (element.sheet) {
+				return Array.from(element.sheet.cssRules).some((rule: CSSRule, i) => {
+					if ((rule as any).selectorText === '.hidden') {
+						element.sheet!.deleteRule(i);
+					}
+				});
+			}
+		});
+		if (showAll) {
+			(document.getElementsByTagName('style')[0] as HTMLStyleElement).sheet?.insertRule('.hidden{display:none !important;}', 0);
+		} else {
+			(document.getElementsByTagName('style')[0] as HTMLStyleElement).sheet?.insertRule('.hidden{outline: 1px solid #f00 !important;}', 0);
+
+		}
+		showAll = !showAll;
+		setItem('__admin-show-all', showAll);
+		(window.document.querySelector('#admin-show-all') as HTMLInputElement).checked = showAll;
 	}
 
 	static toggleAdminUI() {
@@ -209,12 +238,12 @@ function initIconsList() {
 	}
 }
 
-function makeIconSelectionField(form: FormFull__olf, fieldName: string) {
+function makeIconSelectionField(form: Form, fieldName: string) {
 	if (!iconsList) {
 		initIconsList();
 	}
 
-	const input = form.getFieldDomElement(fieldName).querySelector('input') as HTMLInputElement;
+	const input = form.getDomElement().querySelector('input') as HTMLInputElement;
 	input.style.display = 'none';
 	form.renderToField(
 		fieldName,
@@ -231,11 +260,11 @@ function makeIconSelectionField(form: FormFull__olf, fieldName: string) {
 	);
 }
 
-function makeReactClassSelectionField(form: FormFull__olf, fieldName: string) {
+function makeReactClassSelectionField(form: Form, fieldName: string) {
 	const options = Object.keys(globals.customClasses).map((k) => {
 		return { name: k, value: k };
 	});
-	const input = form.getFieldDomElement(fieldName).querySelector('input') as HTMLInputElement;
+	const input = form.getField(fieldName).getDomElement().querySelector('input') as HTMLInputElement;
 	input.style.display = 'none';
 	form.renderToField(
 		fieldName,
@@ -252,8 +281,8 @@ function makeReactClassSelectionField(form: FormFull__olf, fieldName: string) {
 	);
 }
 
-function removeReactClassSelectionField(form: FormFull__olf, fieldName: string) {
-	const input = form.getFieldDomElement(fieldName).querySelector('input') as HTMLInputElement;
+function removeReactClassSelectionField(form: Form, fieldName: string) {
+	const input = form.getField(fieldName).getDomElement().querySelector('input') as HTMLInputElement;
 	input.style.display = '';
 	form.renderToField(fieldName, 'classes-selector', null);
 }

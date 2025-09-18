@@ -19,6 +19,7 @@ export default tseslint.config(
       },
       "multilineDetection": "brackets"
     }],
+    "@stylistic/keyword-spacing": ["warn"],
     "@stylistic/key-spacing": ["warn"],
     "@stylistic/object-curly-spacing": ["warn"],
     "@stylistic/object-curly-spacing": ["warn"],

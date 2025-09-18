@@ -1,26 +1,26 @@
 import { FIELD_TYPE } from '../../../../types/generated';
+import BaseField from '../base-field';
 import { R } from '../r';
-import { registerFieldClass } from '../utils';
-import { BaseField__old } from './base-field';
+import { isAutoFocus, registerFieldClass } from '../utils';
 
 registerFieldClass(
 	FIELD_TYPE.PASSWORD,
-	class PasswordField extends BaseField__old {
+	class PasswordField extends BaseField {
 
 		setValue(value: string) {
 			this.refToInput!.value = value;
-			this.setState({ value });
+			this.currentValue = value;
 		}
 
-		render() {
-			const value = this.state.value;
-			const field = this.props.field;
+		renderFieldEditable() {
+			const value = this.currentValue;
+			const field = this.props.fieldDesc;
 
 			if (this.props.isEdit) {
 				const inputsProps = {
 					type: 'password',
 					name: field.fieldName,
-					autoFocus: this.isAutoFocus(),
+					autoFocus: isAutoFocus(),
 					defaultValue: value,
 					title: field.name,
 					maxLength: field.maxLength,
@@ -28,7 +28,7 @@ registerFieldClass(
 					readOnly: this.props.fieldDisabled,
 					ref: this.refGetter,
 					onInput: () => {
-						this.props.wrapper.valueListener(this.refToInput!.value, true, this);
+						this.valueListener(this.refToInput!.value, true);
 					}
 				};
 

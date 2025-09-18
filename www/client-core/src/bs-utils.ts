@@ -1,7 +1,11 @@
 import type { DebugInfo } from '../../../core/mysql-connection';
 import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord, NODE_ID, NODE_TYPE } from '../../../types/generated';
 import type { SelectItem } from './components/select';
-import type { BaseForm__olf } from './forms/base-form';
+import type Form from './form';
+
+export const normalizeCSSName = (name: string) => {
+	return camelToSnake(name!).toLowerCase().replaceAll('_', '-');
+};
 
 export const normalizeName = (txt: string) => {
 	return snakeToCamel(txt).replace(/[`']/g, '').replace(/[^\w]/gm, '_').toUpperCase();
@@ -63,9 +67,6 @@ export interface FormControlFilters {
 
 	/** render standard list view */
 	noCustomList?: BoolNum;
-
-	/** hide creation button */
-	preventCreateButton?: BoolNum;
 
 	/** override form title by string */
 	formTitle?: string;
@@ -233,6 +234,11 @@ declare global {
 
 		/** fields which contains other languages data for that field */
 		childrenFields?: FieldDesc[];
+
+		/** fields which rendered beyond form TAB (page) */
+		tabFields?: FieldDesc[];
+
+		parenTab?: FieldDesc;
 	}
 
 	interface NodeDesc extends INodesRecord {
@@ -244,6 +250,11 @@ declare global {
 		matchName: string;
 
 		fields?: FieldDesc[];
+
+		tabs?: FieldDesc[];
+
+		/** CLIENT SIDE ONLY */
+		rootFields?: FieldDesc[];
 
 		filters?: { [key: string]: IFiltersRecord | ClientSideFilterRecord };
 		filtersList?: SelectItem[];
@@ -272,7 +283,7 @@ export interface TreeItem {
 	parent: NODE_ID;
 	privileges: number;
 	field?: FieldDesc;
-	form?: BaseForm__olf;
+	form?: Form;
 	staticLink: string;
 }
 
@@ -313,9 +324,14 @@ interface RecordData {
 	name: string;
 }
 
-interface RecordsData {
+export interface RecordsData {
 	items: RecordData[];
 	total: number;
+}
+
+export interface RecordsDataOrdered extends RecordsData {
+	items: (RecordData & { order: number })[];
+	order: number;
 }
 
 interface RecordsDataResponse {
@@ -396,7 +412,6 @@ export {
 	PRIVILEGES_MASK,
 	RecId,
 	RecordData,
-	RecordsData,
 	RecordsDataResponse,
 	RecordSubmitResult,
 	RecordSubmitResultNewRecord,

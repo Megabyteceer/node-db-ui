@@ -549,7 +549,7 @@ import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordD
 
 	src.push(`
 import type { RecId, UserSession, VIEW_MASK } from '../www/client-core/src/bs-utils';
-import type { FormFull__olf } from '../www/client-core/src/forms/form-full';
+import type Form from '../www/client-core/src/form';
 export class TypeGenerationHelper {`);
 
 	nodesData.forEach((nodeData) => {
@@ -582,19 +582,19 @@ export class TypeGenerationHelper {`);
 
 		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
 			const nodeName = snakeToCamel(nodeData.tableName!);
-			const methodNameGet = 'getValue' + nodeName;
-			const methodNameSet = 'setValue' + nodeName;
+			const methodNameGet = 'fieldValue';
+			const methodNameSet = 'setFieldValue';
 			const fieldsWithData = nodeData.fields!.filter(f => f.dataType !== FIELD_DATA_TYPE.NODATA);
 			const formInterfaceName = 'Form' + nodeName;
 
-			srcAdd.push(`export interface ${formInterfaceName} extends FormFull__olf<T${nodeName}FieldsList> {`);
+			srcAdd.push(`export interface ${formInterfaceName} extends Form<T${nodeName}FieldsList> {`);
 			for (const field of fieldsWithData) {
 				let type = getFieldTypeSrc(field);
-				srcAdd.push(`	${methodNameSet}(fieldName: '${field.fieldName}'): ${type};`);
+				srcAdd.push(`	${methodNameGet}(fieldName: '${field.fieldName}'): ${type};`);
 			}
 			for (const field of fieldsWithData) {
 				let type = getFieldTypeSrc(field);
-				srcAdd.push(`	${methodNameGet}(fieldName: '${field.fieldName}', value: ${type}): Promise<void> | void;`);
+				srcAdd.push(`	${methodNameSet}(fieldName: '${field.fieldName}', value: ${type}): void;`);
 			}
 			srcAdd.push('}');
 			const formArg

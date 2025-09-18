@@ -16,7 +16,8 @@ interface FormTabProps {
 };
 
 class FormTab__olf extends Component<FormTabProps, {
-	visible: boolean;
+	body: ComponentChild;
+	isTabActive: boolean;
 }> {
 
 	constructor(props: FormTabProps) {
@@ -28,7 +29,7 @@ class FormTab__olf extends Component<FormTabProps, {
 		this.setState({ visible: nextProps.visible });
 	}
 
-	show(_val: any) {
+	acti(_val: any) {
 		if (!this.state.visible) {
 			this.setState({ visible: true });
 		}
@@ -45,11 +46,6 @@ class FormTab__olf extends Component<FormTabProps, {
 		if (!this.state.visible) {
 			className += ' hidden';
 		}
-		/// #if DEBUG
-		if (this.props.highlightFrame) {
-			className += ' form-tab-highlight';
-		}
-		/// #endif
 		return R.div({ className },
 			/// #if DEBUG
 			(this.props.highlightFrame ? h(FieldAdmin, { field: this.props.field, form: this.props.form }) : ''),

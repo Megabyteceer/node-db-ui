@@ -1,4 +1,10 @@
 /// #if DEBUG
+
+if (typeof window !== 'undefined') {
+
+	throwError('mysql-connection.ts imported on client side.');
+}
+
 import { performance } from 'perf_hooks';
 import { assert, ESCAPE_BEGIN, ESCAPE_END, SQLInjectionsCheck, throwError } from '../www/client-core/src/assert';
 import { getCurrentStack } from '../www/client-core/src/bs-utils';

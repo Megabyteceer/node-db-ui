@@ -1,13 +1,12 @@
 import { Component, h } from 'preact';
 import type { NodePrivileges, NodePrivilegesRequest, NodePrivilegesRes } from '../../../../core/admin/admin';
 import { NODE_TYPE } from '../../../../types/generated';
-import type { NodeDesc } from '../bs-utils';
 import { PRIVILEGES_MASK } from '../bs-utils';
-import { BaseForm__olf, type FormProps__olf, type FormState__olf } from '../forms/base-form';
+import Form, { type FormProps, type FormState } from '../form';
 import { R } from '../r';
 import { FormLoaderCog } from '../stage';
 import { iAdmin } from '../user';
-import { getData, getNode, L, renderIcon, showPrompt, submitData } from '../utils';
+import { getData, getNodeIfPresentOnClient, L, renderIcon, showPrompt, submitData } from '../utils';
 import { NodeAdmin } from './admin-control';
 
 /// #if DEBUG
@@ -133,22 +132,26 @@ class PrivilegesEditor extends Component<PrivilegesEditorProps> {
 	}
 }
 
-class AdminRolePrivilegesForm extends BaseForm__olf<FormProps__olf, FormState__olf & {
+interface AdminRolePrivilegesFormProps extends FormProps {
 	privilegesData: NodePrivilegesRes;
-	node: NodeDesc;
-}> {
+}
+
+interface AdminRolePrivilegesFormState extends FormState {
+	privilegesData: NodePrivilegesRes;
+}
+
+class AdminRolePrivilegesForm extends Form<string, AdminRolePrivilegesFormProps, AdminRolePrivilegesFormState> {
 	initData!: NodePrivileges[];
 
-	constructor(props: FormProps__olf) {
+	constructor(props: FormProps) {
 		super(props);
-		this.saveClick = this.saveClick.bind(this);
+		this.savePrivilegesClick = this.savePrivilegesClick.bind(this);
 	}
 
 	async componentDidMount() {
-		const node = await getNode(this.props.recId!);
 
 		const privilegesData: NodePrivilegesRes = await getData('admin/nodePrivileges', {
-			nodeId: this.props.recId
+			nodeId: this.nodeId
 		});
 
 		for (const i of privilegesData.privileges) {
@@ -159,17 +162,16 @@ class AdminRolePrivilegesForm extends BaseForm__olf<FormProps__olf, FormState__o
 
 		this.initData = privilegesData.privileges;
 		this.setState({
-			node,
 			privilegesData
 		});
 	}
 
-	async saveClick() {
+	async savePrivilegesClick() {
 		if (JSON.stringify(this.initData) !== JSON.stringify(this.state.privilegesData.privileges)) {
 			const submit = (toChild?: boolean) => {
 				const data = {} as NodePrivilegesRequest;
 
-				data.nodeId = this.props.recId!;
+				data.nodeId = this.nodeId;
 				data.toChild = toChild;
 				data.privileges = this.state.privilegesData.privileges;
 
@@ -178,7 +180,7 @@ class AdminRolePrivilegesForm extends BaseForm__olf<FormProps__olf, FormState__o
 				});
 			};
 
-			if (this.state.node.nodeType === NODE_TYPE.DOCUMENT) {
+			if (getNodeIfPresentOnClient(this.props.nodeId)!.nodeType === NODE_TYPE.DOCUMENT) {
 				submit();
 			} else {
 				submit(!(await showPrompt(L('APPLY_CHILD'), L('TO_THIS'), L('TO_ALL'), 'check', 'check')));
@@ -191,7 +193,7 @@ class AdminRolePrivilegesForm extends BaseForm__olf<FormProps__olf, FormState__o
 	render() {
 		if (this.state && this.state.privilegesData) {
 			const data = this.state.privilegesData;
-			const node = this.state.node;
+			const node = getNodeIfPresentOnClient(this.props.nodeId)!;
 
 			const lines = data.privileges.map((i) => { // TODO: data type is from admin/nodePrivileges url
 				return R.tr(
@@ -277,10 +279,10 @@ class AdminRolePrivilegesForm extends BaseForm__olf<FormProps__olf, FormState__o
 			const saveButton = R.button(
 				{
 					className: 'clickable success-button',
-					onClick: this.saveClick
+					onClick: this.savePrivilegesClick
 				},
-				this.isSubForm() ? renderIcon('check') : renderIcon('floppy-o'),
-				this.isSubForm() ? '' : L('SAVE')
+				this.props.isCompact ? renderIcon('check') : renderIcon('floppy-o'),
+				this.props.isCompact ? '' : L('SAVE')
 			);
 
 			/// #if DEBUG
@@ -298,7 +300,7 @@ class AdminRolePrivilegesForm extends BaseForm__olf<FormProps__olf, FormState__o
 					onClick: this.cancelClick
 				},
 				renderIcon('times'),
-				this.isSubForm() ? '' : L('CANCEL')
+				this.props.isCompact ? '' : L('CANCEL')
 			);
 
 			return R.div(

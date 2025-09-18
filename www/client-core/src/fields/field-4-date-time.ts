@@ -4,11 +4,11 @@ import { FIELD_TYPE } from '../../../../types/generated';
 import { EMPTY_DATE } from '../consts';
 import { R } from '../r';
 import { innerDateTimeFormat, L, registerFieldClass, toReadableDateTime } from '../utils';
-import type { FieldProps__olf, FieldState__olf, RefToInput } from './base-field';
-import { BaseField__old } from './base-field';
 
-interface DateTimeFieldState extends FieldState__olf {
-	value: moment.Moment;
+import BaseField, { type BaseFieldProps, type BaseFieldState } from '../base-field';
+
+interface DateTimeFieldState extends BaseFieldState {
+
 	minDate?: moment.Moment;
 	maxDate?: moment.Moment;
 }
@@ -17,7 +17,9 @@ const momentToInputValue = (val: moment.Moment): string => {
 	return (val as moment.Moment).toDate().toISOString().slice(0, 16);
 };
 
-class dateFieldMixins extends BaseField__old<FieldProps__olf, DateTimeFieldState> {
+export class dateFieldMixins extends BaseField<BaseFieldProps, DateTimeFieldState> {
+
+	declare currentValue: moment.Moment;
 
 	setValue(val: moment.Moment | string) {
 		if (val) {
@@ -30,16 +32,17 @@ class dateFieldMixins extends BaseField__old<FieldProps__olf, DateTimeFieldState
 
 		this.refToInput!.value = momentToInputValue(val as moment.Moment);
 
-		this.setState({ value: val as moment.Moment });
-		this.props.wrapper.valueListener(val, false, this);
+		this.currentValue = val as moment.Moment;
+		this.forceUpdate();
+		this.valueListener(val);
 	}
 
 	setMin(moment: moment.Moment) {
 		this.setState({ minDate: moment });
-		if (moment && (this.state.focused)) {
-			if (!this.state.value) {
+		if (moment) {
+			if (!this.currentValue) {
 				this.setValue(moment);
-				this.props.wrapper.valueListener(moment, true, this);
+				this.valueListener(moment);
 			} else {
 				this.enforceToValid();
 			}
@@ -48,10 +51,10 @@ class dateFieldMixins extends BaseField__old<FieldProps__olf, DateTimeFieldState
 
 	setMax(moment: moment.Moment) {
 		this.setState({ maxDate: moment });
-		if (moment && (this.state.focused)) {
-			if (!this.state.value) {
+		if (moment) {
+			if (!this.currentValue) {
 				this.setValue(moment);
-				this.props.wrapper.valueListener(moment, true, this);
+				this.valueListener(moment);
 			} else {
 				this.enforceToValid();
 			}
@@ -59,7 +62,7 @@ class dateFieldMixins extends BaseField__old<FieldProps__olf, DateTimeFieldState
 	}
 
 	enforceToValid() {
-		this.validateDate(this.state.value, true);
+		this.validateDate(this.currentValue, true);
 	}
 
 	validateDate(val: moment.Moment, doFix?: boolean) {
@@ -68,7 +71,7 @@ class dateFieldMixins extends BaseField__old<FieldProps__olf, DateTimeFieldState
 			if (!val || !val.clone().startOf('day').isSameOrAfter(this.state.minDate.clone().startOf('day'))) {
 				if (doFix === true) {
 					this.setValue(this.state.minDate);
-					this.props.wrapper.valueListener(this.state.value, true, this);
+					this.valueListener(this.currentValue);
 					return true;
 				}
 				return false;
@@ -79,7 +82,7 @@ class dateFieldMixins extends BaseField__old<FieldProps__olf, DateTimeFieldState
 			if (!val || !val.clone().startOf('day').isSameOrBefore(this.state.maxDate.clone().startOf('day'))) {
 				if (doFix === true) {
 					this.setValue(this.state.maxDate);
-					this.props.wrapper.valueListener(this.state.value, true, this);
+					this.valueListener(this.currentValue);
 					return true;
 				}
 				return false;
@@ -97,22 +100,13 @@ class dateFieldMixins extends BaseField__old<FieldProps__olf, DateTimeFieldState
 
 		return true;
 	}
-
-	focused() {
-		this.setState({
-			focused: true
-		});
-		this.enforceToValid();
-	}
 }
 
-registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMixins {
+export default class FieldDateTime extends dateFieldMixins {
 
 	constructor(props: any) {
 		super(props);
-		this.state = {
-			value: props.initialValue || moment()
-		};
+		this.currentValue = props.initialValue || moment();
 	}
 
 	static decodeValue(val: string) {
@@ -132,39 +126,36 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 
 	clearValue() {
 		this.setValue(EMPTY_DATE);
-		this.props.wrapper.valueListener(null, true, this);
+		this.valueListener(null);
 	}
 
-	render(): ComponentChild {
+	renderFieldEditable(): ComponentChild {
 
 		// const field = this.props.field;
 
-		let value = this.state.value as moment.Moment | undefined;
+		let value = this.currentValue as moment.Moment | undefined;
 
 		if (value && isNaN(value.year())) {
 			value = undefined;
 		}
 
-		if (this.props.isEdit) {
-			return R.input({
-				defaultValue: momentToInputValue(value as moment.Moment),
-				type: 'datetime-local',
-				placeholder: L('TIME'),
-				min: this.state.minDate && momentToInputValue(this.state.minDate),
-				max: this.state.maxDate && momentToInputValue(this.state.maxDate),
-				disable: this.props.fieldDisabled,
-				title: L('N_TIME', this.props.field.name),
-				ref: (ref: RefToInput) => {
-					this.refGetter(ref);
-				},
-				onInput: (ev: InputEvent) => {
-					const val = moment.utc((ev.target as HTMLInputElement).value);
-					if (val.isValid()) {
-						this.setValue(val);
-					}
+		return R.input({
+			defaultValue: momentToInputValue(value as moment.Moment),
+			type: 'datetime-local',
+			placeholder: L('TIME'),
+			min: this.state.minDate && momentToInputValue(this.state.minDate),
+			max: this.state.maxDate && momentToInputValue(this.state.maxDate),
+			disable: this.props.fieldDisabled,
+			title: L('N_TIME', this.props.fieldDesc.name),
+			ref: this.refGetter,
+			onInput: (ev: InputEvent) => {
+				const val = moment.utc((ev.target as HTMLInputElement).value);
+				if (val.isValid()) {
+					this.setValue(val);
 				}
-			});
-			/* if (!ReactDateTimeClassHolder.ReactDateTimeClass) {
+			}
+		});
+		/* if (!ReactDateTimeClassHolder.ReactDateTimeClass) {
 				ReactDateTimeClassHolder.importReactDateTime();
 
 			const inputsProps1 = {
@@ -185,7 +176,7 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 				onInput: (val) => {
 					if (val._isAMomentObject) {
 						let mergedValue;
-						const value = this.state.value;
+						const value = this.currentValue;
 						if (value) {
 							mergedValue = value.clone();
 							mergedValue.hour(val.hour());
@@ -204,12 +195,11 @@ registerFieldClass(FIELD_TYPE.DATE_TIME, class FieldDateTime extends dateFieldMi
 			};
 */
 
-		} else {
-			return toReadableDateTime(value);
-		}
 	}
-});
 
-export {
-	dateFieldMixins /* , ReactDateTimeClassHolder */
-};
+	renderField(): ComponentChild {
+		return toReadableDateTime(this.currentValue);
+	}
+}
+
+registerFieldClass(FIELD_TYPE.DATE_TIME, FieldDateTime);

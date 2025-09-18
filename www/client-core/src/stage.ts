@@ -2,11 +2,9 @@
 
 import { NODE_TYPE } from '../../../types/generated';
 import { globals } from '../../../types/globals';
-import { assert, throwError } from './assert';
+import { throwError } from './assert';
 import { normalizeEnumName, type FormFilters, type RecId, type RecordData } from './bs-utils';
-import type { BaseForm__olf } from './forms/base-form';
-import { FormFull__olf } from './forms/form-full';
-import { List__olf } from './forms/list';
+import Form, { type FormProps } from './form';
 import { LeftBar } from './left-bar';
 import { R } from './r';
 import { getNode, getNodeIfPresentOnClient, getRecordClient, getRecordsClient, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from './utils';
@@ -30,7 +28,7 @@ class FormLoaderCog extends Component {
 }
 
 interface FormEntry {
-	form?: BaseForm__olf;
+	form?: Form;
 	formContainer?: HTMLDivElement;
 	container: HTMLDivElement;
 	onModified?: (dataToSend?: RecordData) => void;
@@ -41,7 +39,7 @@ const allForms: FormEntry[] = [];
 class Stage extends Component<{}, {}> {
 	static allForms: FormEntry[];
 
-	static get currentForm(): BaseForm__olf | undefined {
+	static get currentForm(): Form | undefined {
 		const e = Stage.currentFormEntry;
 		return e && e.form;
 	}
@@ -50,8 +48,8 @@ class Stage extends Component<{}, {}> {
 		return allForms[allForms.length - 1];
 	}
 
-	static get rootForm(): BaseForm__olf | undefined {
-		return allForms[0] && allForms[0].form;
+	static get rootForm(): Form | undefined {
+		return allForms[0]?.form;
 	}
 
 	static destroyForm() {
@@ -61,10 +59,10 @@ class Stage extends Component<{}, {}> {
 	static refreshForm() {
 		if (Stage.currentForm) {
 			Stage.showForm(
-				Stage.currentForm.nodeId,
-				Stage.currentForm.recId,
-				Stage.currentForm.filters,
-				Stage.currentForm.editable
+				Stage.currentForm!.nodeId,
+				Stage.currentForm!.recId,
+				Stage.currentForm!.formFilters,
+				Stage.currentForm!.props.editable
 			);
 		}
 	}
@@ -112,16 +110,13 @@ class Stage extends Component<{}, {}> {
 		onModified?: (dataToSend?: RecordData) => void,
 		noAnimation = false
 	) {
+
+		if (this.currentForm?.isAsyncInProgress()) {
+			await this.currentForm.waitForAsyncFinish();
+		}
+
 		if (!allForms.length || modal) {
 			addFormEntry(noAnimation);
-		} else {
-			if (Stage.currentForm) {
-				const formParameters = Stage.currentForm;
-				formParameters.nodeId = nodeId;
-				formParameters.recId = recId;
-				formParameters.filters = filters;
-				formParameters.editable = editable;
-			}
 		}
 
 		const formEntry = Stage.currentFormEntry;
@@ -130,12 +125,14 @@ class Stage extends Component<{}, {}> {
 		formEntry.onModified = onModified;
 
 		let data;
+		let isList = false;
 		let node = getNodeIfPresentOnClient(nodeId);
 		if (!node || node.nodeType === NODE_TYPE.DOCUMENT) {
 			if (recId !== 'new') {
 				if (typeof recId === 'number') {
 					data = await getRecordClient(nodeId, recId as RecId, undefined, editable, false, isPresentListRenderer(nodeId));
 				} else {
+					isList = true;
 					data = await getRecordsClient(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
 				}
 			}
@@ -149,7 +146,7 @@ class Stage extends Component<{}, {}> {
 			return;
 		}
 
-		const ref = (form: BaseForm__olf) => {
+		const ref = (form: Form) => {
 			if (form) {
 				formEntry.form = form;
 			}
@@ -167,12 +164,7 @@ class Stage extends Component<{}, {}> {
 		switch (node.nodeType) {
 		case NODE_TYPE.DOCUMENT:
 		case NODE_TYPE.SECTION:
-			if (recId || recId === 0) {
-				formType = FormFull__olf;
-			} else {
-				formType = List__olf;
-				assert(!modal, 'List__olf could not be show at modal level.');
-			}
+			formType = Form;
 			break;
 		case NODE_TYPE.REACT_CLASS:
 			if (typeof globals.customClasses[node.tableName!] === 'undefined') {
@@ -191,7 +183,7 @@ class Stage extends Component<{}, {}> {
 
 		let className =
 			'form-container-node-' +
-			normalizeEnumName(node.tableName!).toLowerCase().replaceAll('_', '-') || nodeId +
+			normalizeEnumName(node.tableName!).toLowerCase().replaceAll('_', '-') +
 			(isRootForm ? ' form-root-container' : ' form-modal-container');
 		if (node.cssClass) {
 			className += ' ' + node.cssClass;
@@ -203,22 +195,24 @@ class Stage extends Component<{}, {}> {
 				{ key: node.id + '_' + recId, className },
 				h(formType, {
 					ref,
-					node,
+					nodeId: node.id,
 					recId,
 					isRootForm,
-					initialData: data || {},
+					formData: isList ? undefined : data,
+					listData: isList ? data : undefined,
 					filters,
+					parentForm: undefined as any,
 					editable
-				})
+				} as FormProps)
 			),
 			formEntry.formContainer
 		);
 
 		if (isRootForm && Stage.rootForm) {
-			const formParameters = Stage.rootForm;
+			const rootForm = Stage.rootForm;
 			if (
-				formParameters.nodeId &&
-				(formParameters.nodeId !== nodeId || formParameters.recId !== recId)
+				rootForm.nodeId &&
+				(rootForm.nodeId !== nodeId || rootForm.recId !== recId)
 			) {
 				window.scrollTo(0, 0);
 			}

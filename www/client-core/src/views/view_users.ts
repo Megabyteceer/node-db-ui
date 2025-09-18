@@ -1,7 +1,7 @@
 import type { ComponentChild } from 'preact';
 import { NODE_ID, type IUsersRecord } from '../../../../types/generated';
-import { renderItemsButtons } from '../forms/form-list-item';
 import { R } from '../r';
+import { renderItemsButtons } from '../render-items-buttons';
 import { idToImgURL, registerListRenderer, renderIcon } from '../utils';
 import './view_users.css';
 

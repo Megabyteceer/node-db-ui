@@ -1,9 +1,9 @@
 import { attachGoogleLoginAPI, getData, getNode, goToHome, isAdmin, L, myAlert, showPrompt, submitData } from '../utils';
 /// #if DEBUG
-import { E, FIELD_TYPE, NODE_ID, NODE_TYPE, type FormFields, type FormNodes, type IRegistrationFilter, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList } from '../../../../types/generated';
+import { E, FIELD_TYPE, NODE_ID, NODE_TYPE, type FormEnumValues, type FormFields, type FormNodes, type IRegistrationFilter, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField } from '../admin/admin-utils';
-import type { FormFull__olf } from '../forms/form-full';
+
 /// #endif
 
 import { VIEW_MASK } from '../bs-utils';
@@ -13,13 +13,14 @@ import type { NodeDesc, UserSession } from '../bs-utils';
 import { LANGUAGE_ID_DEFAULT } from '../bs-utils';
 import { clientOn } from '../events-handle';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
+import type Form from '../form';
 import { ENV } from '../main-frame';
 import { R } from '../r';
 import { iAdmin, User } from '../user';
 
 let uiLanguageIsChanged = false;
 
-const checkPasswordConfirmation = (form: FormFull__olf<TUsersFieldsList> | FormFull__olf<TRegistrationFieldsList>) => {
+const checkPasswordConfirmation = (form: Form<TUsersFieldsList> | Form<TRegistrationFieldsList>) => {
 	const p = form.fieldValue('password');
 	const p2 = form.fieldValue('passwordConfirm');
 	if (p && p !== p2) {
@@ -76,10 +77,9 @@ clientOn(E._users.onLoad, (form) => {
 	}
 
 	if (form.isUpdateRecord) {
-		form.header = L('EDIT_USER_PROFILE', myName);
+		form.setHeader (L('EDIT_USER_PROFILE', myName));
 		form.setFieldValue('password', 'nc_l4DFn76ds5yhg');
 		form.setFieldValue('passwordConfirm', 'nc_l4DFn76ds5yhg');
-		(form.props.initialData as IUsersRecord).password = 'nc_l4DFn76ds5yhg';
 	}
 
 	if (form.isNewRecord) {
@@ -87,7 +87,6 @@ clientOn(E._users.onLoad, (form) => {
 		form.hideField('_organizationId');
 		form.setFieldValue('password', 'nc_l4DFn76ds5yhg');
 		form.setFieldValue('passwordConfirm', 'nc_l4DFn76ds5yhg');
-		(form.props.initialData as IUsersRecord).password = 'nc_l4DFn76ds5yhg';
 	}
 });
 
@@ -99,8 +98,8 @@ clientOn(E._users.onSave, (form) => {
 	}
 
 	if (User.currentUserData?.id === form.recId) {
-		let pLang = (form.props.initialData as IUsersRecord).language!;
-		let nLang = (form.props.initialData as IUsersRecord).language!;
+		let pLang = (form.initialRecordData as IUsersRecord).language!;
+		let nLang = (form.formData as IUsersRecord).language!;
 
 		uiLanguageIsChanged = nLang.id != pLang.id;
 	}
@@ -121,7 +120,7 @@ clientOn(E._users.afterSave, (form) => {
 });
 
 clientOn(E._roles.onLoad, (form) => {
-	form.getField('_userRoles').setLookupFilter('excludeIDs', [1, 2, 3]);
+	form.addLookupFilters('_userRoles', 'excludeIDs', [1, 2, 3]);
 	if (form.recId === 2 || form.recId === 3) {
 		form.hideField('_userRoles');
 	}
@@ -165,7 +164,7 @@ clientOn(E._nodes.onLoad, (form) => {
 			nodeFiltersLinker: form.recId
 		} as IFiltersFilter);
 	} else {
-		if (!form.currentData.hasOwnProperty('storeForms')) {
+		if (!form.fieldValue('storeForms')) {
 			form.setFieldValue('storeForms', 1);
 		}
 	}
@@ -319,7 +318,7 @@ clientOn(E._fields.onSave, (form) => {
 		if (!form.fieldValue('width')) {
 			form.fieldAlert('width', L('REQUIRED_FLD'));
 		}
-		const maxLength = Math.min(9999, form.fieldValue('height') || undefined) + (form.fieldValue('width') || undefined) * 10000;
+		const maxLength = Math.min(9999, form.fieldValue('height')) + (form.fieldValue('width')) * 10000;
 		if (!isNaN(maxLength)) {
 			form.setFieldValue('maxLength', maxLength);
 		}
@@ -355,8 +354,8 @@ clientOn(E._languages.onLoad, (form) => {
 	}
 	if (form.isUpdateRecord) {
 		form.disableField('code');
-	} else if (form.editable) {
-		form.header = R.span({ className: 'danger' }, L('NEW_LANGUAGE_WARNING'));
+	} else if (form.props.editable) {
+		form.setHeader(R.span({ className: 'danger' }, L('NEW_LANGUAGE_WARNING')));
 	}
 });
 
@@ -369,7 +368,7 @@ clientOn(E._languages.onSave, (form) => {
 clientOn(E._enums.onSave, (form) => {
 	let ret;
 	const exists = {} as KeyedMap<true>;
-	const valuesForms = (form.getField('values').fieldRef as LookupOneToManyFiled).inlineListRef.getSubForms();
+	const valuesForms = (form.getField('values') as LookupOneToManyFiled).getSubForms<FormEnumValues>();
 	for (const form of valuesForms) {
 		const val = form.fieldValue('value');
 		if (exists[val]) {
@@ -405,7 +404,7 @@ clientOn(E._registration.afterSave, (form) => {
 	form.isPreventCloseFormAfterSave = true;
 });
 
-const showMessageAboutEmailSent = (txt: string, form: FormFull__olf<TRegistrationFieldsList> | FormFull__olf<TResetPasswordFieldsList>) => {
+const showMessageAboutEmailSent = (txt: string, form: Form<TRegistrationFieldsList> | Form<TResetPasswordFieldsList>) => {
 	myAlert(
 		R.span(null, txt, R.div({ className: 'email-highlight' }, form.fieldValue('email'))),
 		true,
@@ -439,7 +438,7 @@ clientOn(E._login.onLoad, (form) => {
 			const id_token = googleUser.getAuthResponse().id_token;
 			form.setFieldValue('username', 'google-auth-sign-in');
 			form.setFieldValue('password', id_token);
-			form.save();
+			form.saveClick();
 		};
 		form.renderToField('socialLoginButtons', 'social-buttons', R.span(null, R.div({ 'className': 'g-signin2', 'data-onsuccess': 'onGoogleSignIn' })));
 		attachGoogleLoginAPI(true);
@@ -448,20 +447,20 @@ clientOn(E._login.onLoad, (form) => {
 
 clientOn(E._resetPassword.onLoad, (form) => {
 	form.hideCancelButton();
-	const activationKey = (form.filters as IRegistrationFilter).activationKey;
-	const resetCode = (form.filters as any as KeyedMap<string>).resetCode; // resetCode taken from activation link url
+	const activationKey = (form.formFilters as IRegistrationFilter).activationKey;
+	const resetCode = (form.formFilters as any as KeyedMap<string>).resetCode; // resetCode taken from activation link url
 	if (activationKey || resetCode) {
 		form.hideField('email');
 		form.hideFooter();
 		if (activationKey) {
-			getData('api/activate', form.filters)
+			getData('api/activate', form.formFilters)
 				.then((userSession) => {
 					User.setUserData(userSession);
 					goToHome();
 				})
 				.catch((_er) => {});
 		} else {
-			getData('api/reset', form.filters)
+			getData('api/reset', form.formFilters)
 				.then((userSession) => {
 					User.setUserData(userSession);
 					globals.Stage.showForm(NODE_ID.USERS, userSession.id, { tab: 'passwordTab' }, true);
@@ -472,11 +471,13 @@ clientOn(E._resetPassword.onLoad, (form) => {
 });
 
 clientOn(E._enumValues.onLoad, (form) => {
-	if (form.isNewRecord && form.props.parentForm) {
+	if (form.isNewRecord && form.parent) {
+
 		let maxEnumVal = 0;
-		for (const item of form.props.parentForm.getBackupData()) {
-			if (item.value > maxEnumVal) {
-				maxEnumVal = item.value;
+		for (const item of form.parent.children as FormEnumValues[]) {
+			const value = item.fieldValue('value');
+			if (value > maxEnumVal) {
+				maxEnumVal = value;
 			}
 		}
 		form.setFieldValue('value', maxEnumVal + 1);
@@ -488,14 +489,8 @@ const check12nFieldName = (form: FormFields) => {
 		_fieldsNameIsBad = false;
 
 		const fn = form.fieldValue('fieldName');
-		let nodeId = form.fieldValue('nodeFieldsLinker');
-		if (nodeId && nodeId.id) {
-			nodeId = nodeId.id;
-		}
-		let nodeRef = form.fieldValue('nodeRef');
-		if (nodeRef && nodeRef.id) {
-			nodeRef = nodeRef.id;
-		}
+		let nodeId = form.fieldValue('nodeFieldsLinker')?.id;
+		let nodeRef = form.fieldValue('nodeRef')?.id;
 
 		if (nodeId && fn && fn.length >= 3) {
 			if (form.fieldValue('fieldType') === FIELD_TYPE.LOOKUP_1_TO_N && nodeRef) {
@@ -507,7 +502,7 @@ const check12nFieldName = (form: FormFields) => {
 	}
 };
 
-const removeWrongCharactersInField = (form: FormFull__olf, fieldName: string) => {
+const removeWrongCharactersInField = (form: Form, fieldName: string) => {
 	const oldValue = form.fieldValue(fieldName);
 	if (oldValue) {
 		const newValue = oldValue.toLowerCase().replace(/[^a-z0-9]/gm, '_');
@@ -724,11 +719,11 @@ const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 	form.enableField('forSearch');
 
 	if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
-		form.getField('nodeRef').setLookupFilter('excludeIDs', [
+		form.addLookupFilters('nodeRef', 'excludeIDs', [
 			form.fieldValue('nodeFieldsLinker').id
 		]);
 	} else {
-		form.getField('nodeRef').setLookupFilter('excludeIDs', undefined);
+		form.addLookupFilters('nodeRef', 'excludeIDs', undefined);
 	}
 	switch (fieldType) {
 	case FIELD_TYPE.STATIC_HTML_BLOCK:
@@ -769,7 +764,7 @@ const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 		form.hideField('forSearch', 'requirement', 'unique');
 	case FIELD_TYPE.LOOKUP:
 		form.hideField('maxLength', 'unique');
-		form.setFieldValue('unique', false);
+		form.setFieldValue('unique', 0);
 		form.showField('nodeRef');
 		break;
 
@@ -809,7 +804,7 @@ const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 		form.showField('multilingual');
 	} else {
 		form.hideField('multilingual');
-		form.setFieldValue('multilingual', false);
+		form.setFieldValue('multilingual', 0);
 	}
 
 	check12nFieldName(form);
@@ -845,5 +840,5 @@ clientOn(E._fields.forSearch.onChange, (form) => {
 });
 
 clientOn(E._login.signInBtn.onClick, (form) => {
-	form.save();
+	form.saveClick();
 });

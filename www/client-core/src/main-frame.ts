@@ -3,8 +3,9 @@ import { DebugPanel } from './debug-panel';
 /// #endif
 
 import { Component, h } from 'preact';
-import type { ITreeAndOptions, TreeItem } from '../../../core/describe-node';
+import type { ITreeAndOptions } from '../../../core/describe-node';
 import type { ENV_TYPE } from '../../../core/ENV';
+import type { TreeItem } from './bs-utils';
 import { LeftBar } from './left-bar';
 import { LoadingIndicator } from './loading-indicator';
 import { Modal } from './modal';

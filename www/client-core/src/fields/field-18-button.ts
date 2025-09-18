@@ -1,12 +1,11 @@
 import { FIELD_TYPE } from '../../../../types/generated';
-import type { FormFull__olf } from '../forms/form-full';
+import BaseField, { type BaseFieldProps } from '../base-field';
 import { R } from '../r';
 import { registerFieldClass, renderIcon } from '../utils';
-import { BaseField__old, type FieldProps__olf } from './base-field';
 
-registerFieldClass(FIELD_TYPE.BUTTON, class ButtonField extends BaseField__old {
+export default class ButtonField extends BaseField {
 
-	constructor(props: FieldProps__olf) {
+	constructor(props: BaseFieldProps) {
 		super(props);
 		this.onClick = this.onClick.bind(this);
 	}
@@ -16,21 +15,23 @@ registerFieldClass(FIELD_TYPE.BUTTON, class ButtonField extends BaseField__old {
 	}
 
 	onClick() {
-		(this.props.form as FormFull__olf).processFieldEvent(this.props.field, true);
+		this.props.parentForm.processFieldEvent(this.props.fieldDesc, true);
 	}
 
 	render() {
 
-		const field = this.props.field;
+		const field = this.props.fieldDesc;
 
 		let bIcon;
 		if (field.icon) {
 			bIcon = renderIcon(field.icon);
 		}
 
-		return R.button({ className: (this.props.disabled ? 'not-clickable field-button' : 'clickable field-button'), onClick: this.onClick, title: field.name },
+		return R.button({ className: (this.props.fieldDisabled ? 'not-clickable field-button' : 'clickable field-button'), onClick: this.onClick, title: field.name },
 			R.span({ className: 'icon' }, bIcon),
 			R.span({ className: 'label' }, field.name)
 		);
 	}
-});
+}
+
+registerFieldClass(FIELD_TYPE.BUTTON, ButtonField);
