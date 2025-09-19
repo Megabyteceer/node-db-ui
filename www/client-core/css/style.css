@@ -1274,7 +1274,7 @@ img {
 
 .link-button-field .field-button {
 	background: transparent;
-	color: var(--BRAND_COLOR_DARK);
+	color: var(--BRAND_COLOR_SHINE);
 	text-decoration: underline;
 	font-weight: 600;
 }

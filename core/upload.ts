@@ -127,7 +127,7 @@ async function uploadFile(reqData: UploadRequest, userSession: UserSession) {
 
 const getFieldForUpload = (reqData: UploadRequest, userSession: UserSession) => {
 	getNodeDesc(reqData.nid, userSession);
-	const field = getFieldDesc(parseInt(reqData.fid));
+	const field = getFieldDesc(parseInt(reqData.fid as any));
 	if (!field) {
 		throwError('field ' + reqData.fid + ' access denied');
 	}

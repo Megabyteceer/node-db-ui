@@ -128,7 +128,7 @@ function generateSalt() {
 }
 
 const ACTIVATE_SQL_PART = 'SELECT * FROM _registration WHERE status = ' + NUM_1 + ' AND "activationKey"=';
-const ACTIVATE_SQL_PART2 = ' AND "_createdOn" > DATE_ADD(CURDATE(), INTERVAL -' + NUM_1 + ' DAY) LIMIT ' + NUM_1;
+const ACTIVATE_SQL_PART2 = ' AND "_createdOn" > (NOW() + INTERVAL ' + escapeString('-1 DAY') + ') LIMIT ' + NUM_1;
 
 async function activateUser(key: string, userSession: UserSession) {
 	if (key) {

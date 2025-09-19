@@ -4,10 +4,10 @@ import { serverOn } from '../../www/client-core/src/events-handle';
 import { authorizeUserByID, getPasswordHash } from '../auth';
 import { L } from '../locale';
 import { loginWithGoogle } from '../login-social';
-import { D, mysqlExec, NUM_1 } from '../mysql-connection';
+import { D, escapeString, mysqlExec, NUM_1 } from '../mysql-connection';
 
 const LOGIN_SQL_PART = '\' AND _users.status=' + NUM_1 + ' LIMIT ' + NUM_1;
-const LOGIN_SQL_UPDATE_PART = 'UPDATE _users SET blockedTo=DATE_ADD( NOW(),INTERVAL ' + NUM_1 + ' MINUTE), mistakes=' + D(3) + ' WHERE id=';
+const LOGIN_SQL_UPDATE_PART = 'UPDATE _users SET "blockedTo"=DATE_ADD( NOW() + INTERVAL ' + escapeString('1 MINUTE') + '), mistakes=' + D(3) + ' WHERE id=';
 const LOGIN_UPDATE_SQL_PART2 = 'UPDATE _users SET mistakes=(mistakes-' + NUM_1 + ') WHERE id=';
 
 serverOn(E._login.onSubmit, async (data, userSession): AsyncHandlerRet => {

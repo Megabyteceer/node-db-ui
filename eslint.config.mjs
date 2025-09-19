@@ -24,6 +24,7 @@ export default tseslint.config(
     "@stylistic/object-curly-spacing": ["warn"],
     "@stylistic/object-curly-spacing": ["warn"],
     "@stylistic/no-multiple-empty-lines": ["warn"],
+    "@stylistic/space-infix-ops": ["warn"],
     "@stylistic/spaced-comment": ["warn"],
     "@stylistic/brace-style": ["warn", "1tbs"],
     "@stylistic/comma-dangle": ["warn", "never"],

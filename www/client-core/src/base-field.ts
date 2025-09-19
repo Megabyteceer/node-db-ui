@@ -280,7 +280,7 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 		const fieldTypedBody = this.props.isEdit ? this.renderFieldEditable() : this.renderField();
 		let fieldCustomBody;
 
-		const noLabel = !field.name; // (field.fieldType===FIELD_TYPE.LOOKUP_N_TO_M)||(field.fieldType===FIELD_TYPE.LOOKUP_1_TO_N);
+		const noLabel = !field.name || field.fieldType === FIELD_TYPE.BUTTON; // (field.fieldType===FIELD_TYPE.LOOKUP_N_TO_M)||(field.fieldType===FIELD_TYPE.LOOKUP_1_TO_N);
 
 		let help;
 		if (field.description) {

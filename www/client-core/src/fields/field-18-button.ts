@@ -1,3 +1,4 @@
+import type { ComponentChild } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import BaseField, { type BaseFieldProps } from '../base-field';
 import { R } from '../r';
@@ -18,7 +19,11 @@ export default class ButtonField extends BaseField {
 		this.props.parentForm.processFieldEvent(this.props.fieldDesc, true);
 	}
 
-	render() {
+	renderFieldEditable(): ComponentChild {
+		return this.renderField();
+	}
+
+	renderField() {
 
 		const field = this.props.fieldDesc;
 

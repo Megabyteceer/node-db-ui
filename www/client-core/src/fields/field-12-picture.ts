@@ -24,8 +24,8 @@ class PictureField extends BaseField {
 		const newImageId = await this.cropperBody.save(this);
 		if (newImageId) {
 			this.valueListener(newImageId);
+			await waitForCondition(() => this.parentForm.formData![this.props.fieldDesc.fieldName] === newImageId);
 		}
-		await waitForCondition(() => this.parentForm.formData![this.props.fieldDesc.fieldName] === newImageId);
 	}
 
 	async afterSave() {
