@@ -296,10 +296,6 @@ img {
 	border-radius: 20px;
 }
 
-input[readonly] {
-	background-color: rgb(235, 235, 228);
-}
-
 .success-button {
 	background: var(--EDIT_COLOR);
 	color: #efe;
@@ -844,15 +840,15 @@ input[readonly] {
 }
 
 .field-lookup-drop-list {
+	box-shadow: 0px 7px 24px 10px rgba(66, 68, 90, 1);
 	position: absolute;
 	z-index: 8;
 	min-width: 550px;
-	background-color: var(--INPUT_COLOR);
+	background-color: var(--BG_COLOR);
 	width: 100%;
 	padding: 6px 5px;
 	font-size: 80%;
-	border-bottom-right-radius: 6px;
-	border-bottom-left-radius: 6px;
+	border-radius: 16px;
 	margin-bottom: 400px;
 	box-sizing: border-box;
 }
@@ -973,6 +969,11 @@ input[readonly] {
 	flex-grow: 2;
 }
 
+.lookup-n2m-item .field-container-type-lookup-n-to-m {
+	margin: 0;
+	flex-grow: 1;
+}
+
 .rating-star {
 	color: #f54223;
 	margin-left: 0;
@@ -1064,6 +1065,7 @@ input[readonly] {
 	max-height: calc(100% - 120px);
 	background-color: var(--BG_COLOR);
 	border-radius: 20px;
+	z-index: 8;
 }
 
 .form {
@@ -1307,7 +1309,7 @@ input[readonly] {
 }
 
 
-.field-wrap-disabled .field-boolean {
+.field-wrap-disabled {
 	opacity: 0.5;
 	pointer-events: none;
 }
@@ -1452,12 +1454,13 @@ input[readonly] {
 	}
 
 	25% {
-		outline: rgba(255, 0, 0, 0) solid 1px;
+		transform: translate(5px, 0px);
+		outline: rgba(255, 0, 0, 1) solid 1px;
 	}
 
 	77% {
 		transform: translate(-5px, 0px);
-		outline: rgba(255, 0, 0, 1) solid 1px;
+		outline: rgba(255, 0, 0, 0) solid 1px;
 	}
 
 	100% {

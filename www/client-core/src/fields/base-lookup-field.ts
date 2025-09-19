@@ -10,6 +10,7 @@ export interface BaseLookupFieldProps extends BaseFieldProps {
 	isNew?: boolean;
 	isN2M?: boolean;
 	excludeIDs?: RecId[];
+	pos?: number;
 	preventCreateButton?: boolean; // TODO
 }
 
@@ -104,9 +105,9 @@ export default class BaseLookupField extends BaseField<BaseLookupFieldProps, Bas
 
 	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
 		this.collapseList();
-		const filters = this.props.parentForm
+		const filters = this.parentForm
 			? {
-				[this.getLinkerFieldName()]: { id: this.props.parentForm.formData!.id }
+				[this.getLinkerFieldName()]: { id: this.parentForm.formData!.id }
 			}
 			: undefined;
 		globals.Stage.showForm(

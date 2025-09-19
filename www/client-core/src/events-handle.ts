@@ -1,4 +1,4 @@
-import type { TypeGenerationHelper } from '../../../types/generated';
+import { E, type TypeGenerationHelper } from '../../../types/generated';
 import { assert } from './assert';
 
 export const enum ServerEventName {
@@ -16,7 +16,7 @@ export type Handler = ((...args: any[]) => any);
 const handlers = new Map() as Map<string, Handler[]>;
 
 const dispatch = async (nodeTableName: string, eventName: ServerEventName, ...args: any[]): Promise<KeyedMap<any> | undefined> => {
-	const eventFullName = nodeTableName + '.' + eventName;
+	const eventFullName = (E as KeyedMap<any>)[nodeTableName!][eventName];
 	const h = handlers.get(eventFullName);
 
 	if (h) {

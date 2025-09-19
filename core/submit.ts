@@ -334,7 +334,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 					const fieldName = f.fieldName;
 					if (data.hasOwnProperty(fieldName)) {
 						// clear all n2m links
-						await mysqlExec('DELETE FROM "' + fieldName + '" WHERE "' + tableName + 'Id" = ' + recId);
+						await mysqlExec('DELETE FROM "' + fieldName + '" WHERE "' + tableName + 'Id" = ' + D(recId!));
 						const fieldVal = (data as KeyedMap<any>)[fieldName];
 
 						if (fieldVal.length) {
@@ -351,7 +351,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 									await getRecords(f.nodeRef!.id, 8, id, userSession); // check if you have read access to referenced item
 								}
 
-								n2miQ.push('(', recId as unknown as string, ',', id, ')');
+								n2miQ.push('(', D(recId!), ',', D(id), ')');
 								isNotFirst = true;
 							}
 							await mysqlExec(n2miQ.join(''));

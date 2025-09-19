@@ -28,11 +28,13 @@ export interface FormProps extends FormNodeProps {
 	nodeId: NODE_ID;
 	formData?: RecordData;
 	listData?: RecordsData;
+	isLookup?: boolean;
 	isCompact?: boolean;
 	isRootForm?: boolean;
 	isPreventCloseFormAfterSave?: boolean;
 	hideSearch?: boolean;
 	preventDeleteButton?: boolean;
+	preventCreateButton?: boolean;
 	hideControls?: boolean;
 	viewMask?: VIEW_MASK;
 	inlineEditable?: boolean;
@@ -48,6 +50,7 @@ export interface FormProps extends FormNodeProps {
 export interface FormState extends FormNodeState {
 	additionalButtons?: AdditionalButtonsRenderer;
 	header?: ComponentChild;
+	preventCreateButton?: ComponentChild;
 	hideControls?: ComponentChild;
 	hideSearch?: boolean;
 	isCancelButtonHidden?: boolean;
@@ -60,7 +63,7 @@ export default class Form<
 	T2 extends FormState = FormState>
 	extends FormNode<T1, T2> {
 
-	formFilters!: GetRecordsFilter;
+	formFilters!: FormFilters;
 	private disabledFields = {} as { [key: string]: boolean };
 	private hiddenFields = {} as { [key: string]: boolean };
 	initialRecordData?: RecordData & { [key in FieldsNames]: any };
@@ -114,7 +117,7 @@ export default class Form<
 			this.recoveryBackupIfNeed();
 		}
 
-		this.savedFormData = this.formData && Object.assign({}, this.formData);
+		this.savedFormData = this.formData && JSON.parse(JSON.stringify(this.formData));
 
 		this.cancelClick = this.cancelClick.bind(this);
 		this.saveClick = this.saveClick.bind(this);
@@ -123,6 +126,11 @@ export default class Form<
 	private applyNodeDesc(nodeDesc?: NodeDesc) {
 		if (nodeDesc) {
 			this.nodeDesc = nodeDesc;
+			/// #if DEBUG
+			// @ts-ignore
+			this.___NODE = nodeDesc;
+
+			/// #endif
 			this.className = 'form form-full form-node-' + normalizeCSSName(nodeDesc.tableName!);
 			if (this.props.overrideOrderData! >= 0) {
 				this.hiddenFields['order'] = true;
@@ -207,6 +215,61 @@ export default class Form<
 		}
 	}
 
+	getDataToSend(isDraft?: boolean | 'keepStatus') {
+		const dataToSend: RecordDataWriteDraftable = {};
+		if (isDraft !== 'keepStatus') {
+			if ((this.formData as RecordData).isP || !(this.formData as RecordData).id) {
+				if (isDraft === true) {
+					if ((this.formData as RecordData).status !== STATUS.DRAFT) {
+						dataToSend.status = STATUS.DRAFT;
+					}
+				} else {
+					if ((this.formData as RecordData).status !== STATUS.PUBLIC) {
+						dataToSend.status = STATUS.PUBLIC;
+					}
+				}
+			}
+		}
+		for (const fieldRef of this.allFields) {
+			const field = fieldRef.props.fieldDesc;
+
+			const val = (this.formData as KeyedMap<any>)[field.fieldName];
+			const savedVal = (this.savedFormData as KeyedMap<any>)[field.fieldName];
+
+			if (field.sendToServer && this.isFieldVisibleByFormViewMask(field, VIEW_MASK.EDITABLE)) {
+				if (field.fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
+					if (!n2mValuesEqual(savedVal, val)) {
+						(dataToSend as KeyedMap<any>)[field.fieldName] = (val as LookupValue[]).map(v => v.id);
+					}
+				} else if (field.fieldType === FIELD_TYPE.LOOKUP) {
+					let cVal = val;
+					let iVal = savedVal;
+
+					if (typeof cVal?.id === 'number') {
+						cVal = cVal.id;
+					}
+
+					if (typeof iVal?.id === 'number') {
+						iVal = iVal.id;
+					}
+
+					if (cVal !== iVal) {
+						(dataToSend as KeyedMap<any>)[field.fieldName] = val;
+					}
+				} else if (val && val._isAMomentObject) {
+					if (!val.isSame(savedVal)) {
+						(dataToSend as KeyedMap<any>)[field.fieldName] = val;
+					}
+				} else {
+					if (savedVal != val) {
+						(dataToSend as KeyedMap<any>)[field.fieldName] = val;
+					}
+				}
+			}
+		}
+		return dataToSend;
+	}
+
 	async saveClick(isDraft?: boolean | 'keepStatus'): Promise<typeof SAVE_REJECTED | undefined> {
 		LoadingIndicator.instance!.show();
 		await this.forceBouncingTimeout();
@@ -222,56 +285,7 @@ export default class Form<
 		}
 		const ret = this.isValid();
 		if (ret !== SAVE_REJECTED) {
-			const dataToSend: RecordDataWriteDraftable = {};
-			if (isDraft !== 'keepStatus') {
-				if ((this.formData as RecordData).isP || !(this.formData as RecordData).id) {
-					if (isDraft === true) {
-						if ((this.formData as RecordData).status !== STATUS.DRAFT) {
-							dataToSend.status = STATUS.DRAFT;
-						}
-					} else {
-						if ((this.formData as RecordData).status !== STATUS.PUBLIC) {
-							dataToSend.status = STATUS.PUBLIC;
-						}
-					}
-				}
-			}
-			for (const fieldRef of this.allFields) {
-				const field = fieldRef.props.fieldDesc;
-
-				const val = (this.formData as KeyedMap<any>)[field.fieldName];
-
-				if (field.sendToServer && this.isFieldVisibleByFormViewMask(field, VIEW_MASK.EDITABLE)) {
-					if (field.fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
-						if (!n2mValuesEqual((this.savedFormData as KeyedMap<any>)[field.fieldName], val)) {
-							(dataToSend as KeyedMap<any>)[field.fieldName] = (val as LookupValue[]).map(v => v.id);
-						}
-					} else if (field.fieldType === FIELD_TYPE.LOOKUP) {
-						let cVal = val;
-						let iVal = (this.savedFormData as KeyedMap<any>)[field.fieldName];
-
-						if (cVal && cVal.id) {
-							cVal = cVal.id;
-						}
-
-						if (iVal && iVal.id) {
-							iVal = iVal.id;
-						}
-
-						if (cVal !== iVal) {
-							(dataToSend as KeyedMap<any>)[field.fieldName] = val;
-						}
-					} else if (val && val._isAMomentObject) {
-						if (!val.isSame((this.savedFormData as KeyedMap<any>)[field.fieldName])) {
-							(dataToSend as KeyedMap<any>)[field.fieldName] = val;
-						}
-					} else {
-						if ((this.savedFormData as KeyedMap<any>)[field.fieldName] != val) {
-							(dataToSend as KeyedMap<any>)[field.fieldName] = val;
-						}
-					}
-				}
-			}
+			const dataToSend = this.getDataToSend(isDraft);
 			if (Object.keys(dataToSend).length > 0) {
 				const submitResult: RecordSubmitResult | RecordSubmitResultNewRecord = await submitRecord(this.nodeId, dataToSend, this.formData!.id);
 				const recId: RecId | undefined = (submitResult as RecordSubmitResultNewRecord).recId;
@@ -356,7 +370,7 @@ export default class Form<
 
 	getField(fieldName: FieldsNames): BaseField {
 		if (!this.hasField(fieldName)) {
-			throwError('Unknown field or field is not visible: ' + fieldName);
+			throwError('Unknown field: ' + fieldName);
 		}
 		return this.fieldsByName[fieldName];
 	}
@@ -551,11 +565,9 @@ export default class Form<
 					}
 				}
 				this.asyncOpsInProgress++;
-				console.log('3++');
 				const ret = await handler(this, ...args);
 				assert(!this._isUnmounted, 'Form unmounted before asyncFinish');
 				this.asyncOpsInProgress--;
-				console.log('3--');
 				if (ret) {
 					return true; // break on first true event
 				}
@@ -572,7 +584,7 @@ export default class Form<
 	}
 
 	getParentLookupField(): BaseLookupField | undefined {
-		return undefined;
+		return (this.parentForm?.parent || this.parent) as BaseLookupField;
 	}
 
 	private isCustomListRendering() {
@@ -712,9 +724,12 @@ export default class Form<
 		let createButton;
 
 		if (
-			node.privileges & PRIVILEGES_MASK.CREATE
+			node.privileges & PRIVILEGES_MASK.CREATE &&
+			!this.props.preventCreateButton &&
+			!this.formFilters.preventCreateButton &&
+			!this.state.preventCreateButton
 		) {
-			if (this.props.isCompact) {
+			if (this.props.isLookup) {
 				createButton = R.button(
 					{
 						className: 'clickable create-button',
@@ -838,7 +853,7 @@ export default class Form<
 						rowHeader = R.span(null, renderIcon(field.icon), field.name);
 					}
 
-					if (this.isFieldVisibleByFormViewMask(field, VIEW_MASK.LIST)) {
+					if (this.isFieldVisibleByFormViewMask(field, this.props.viewMask || VIEW_MASK.LIST)) {
 						tableHeader.push(
 							R.td(
 								{
@@ -871,6 +886,7 @@ export default class Form<
 						parentForm: this,
 						key: Math.random() + '_' + item.id,
 						parent: this,
+						viewMask: this.props.viewMask,
 						additionalButtons,
 						filters: {},
 						hideControls: hideControls,

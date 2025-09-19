@@ -243,7 +243,7 @@ function makeIconSelectionField(form: Form, fieldName: string) {
 		initIconsList();
 	}
 
-	const input = form.getDomElement().querySelector('input') as HTMLInputElement;
+	const input = form.getField(fieldName).getDomElement().querySelector('input') as HTMLInputElement;
 	input.style.display = 'none';
 	form.renderToField(
 		fieldName,

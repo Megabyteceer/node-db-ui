@@ -3,6 +3,7 @@ import { FIELD_DISPLAY, FIELD_TYPE } from '../../../types/generated';
 import { FieldAdmin } from './admin/field-admin';
 import type { GetRecordsFilter } from './bs-utils';
 import { SAVE_REJECTED } from './consts';
+import type { BaseLookupFieldProps } from './fields/base-lookup-field';
 import type Form from './form';
 import FormNode, { type FormNodeAccessor, type FormNodeProps, type FormNodeState } from './form-node';
 import { R } from './r';
@@ -10,7 +11,7 @@ import { scrollToVisible } from './scroll-to-visible';
 import { iAdmin } from './user';
 import { L, renderIcon } from './utils';
 
-const DEBOUNCING_DELAY = 5000;
+const DEBOUNCING_DELAY = 300;
 
 export interface FieldAlertInfo {
 	txt: string;
@@ -53,12 +54,18 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 
 	constructor(props: T1) {
 		super(props);
+		/// #if DEBUG
+		// @ts-ignore
+		this.___FIELD = props.fieldDesc;
+		/// #endif
 		this.fieldDisabled = !!props.fieldDisabled;
 		this.hidden = !!props.fieldHidden;
 
 		this.required = !!props.fieldDesc.requirement;
 		this.currentValue = props.initialValue;
-		this.parentForm._registerField(this);
+		if (!(this.props as BaseLookupFieldProps).isN2M) {
+			this.parentForm._registerField(this);
+		}
 		this.refGetter = this.refGetter.bind(this);
 	}
 
@@ -181,14 +188,12 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 			}
 		}
 		this.parentForm.asyncOpsInProgress++;
-		console.log('1++');
 		await (this.parent as any as FormNodeAccessor).beforeAlert(isSuccess);
 		this.setState({ alertText: txt, isSuccessAlert: isSuccess });
 		if (focus && txt && !isSuccess) {
 			this.focus();
 		}
 		this.parentForm.asyncOpsInProgress--;
-		console.log('1--');
 	}
 
 	inlineEditable() {
@@ -251,9 +256,8 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 			FIELD_TYPE[field.fieldType].toLowerCase().replaceAll('_', '-') +
 			' field-container-name-' +
 			field.fieldName;
-		if (
-			this.hidden
-		) {
+
+		if (this.hidden) {
 			className += ' hidden';
 		}
 
@@ -305,17 +309,16 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 					)
 				);
 			}
+			const hasCompactToolTip = field.fieldType !== FIELD_TYPE.BUTTON && field.fieldType !== FIELD_TYPE.LOOKUP_N_TO_M;
 			return R.span(
 				{
 					className,
-					onFocusIn: () => {
-						if (field.fieldType !== FIELD_TYPE.BUTTON) {
-							this.setState({ showToolTip: true });
-						}
-					},
-					onFocusOut: () => {
+					onFocusIn: hasCompactToolTip ? () => {
+						this.setState({ showToolTip: true });
+					} : undefined,
+					onFocusOut: hasCompactToolTip ? () => {
 						this.setState({ showToolTip: false });
-					}
+					} : undefined
 				},
 				fieldTypedBody,
 				fieldCustomBody,

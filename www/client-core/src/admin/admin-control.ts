@@ -1,7 +1,7 @@
 import { Component, h } from 'preact';
 import { NODE_ID, NODE_TYPE, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
-import type { NodeDesc, TreeItem } from '../bs-utils';
+import { VIEW_MASK, type NodeDesc, type TreeItem } from '../bs-utils';
 import type Form from '../form';
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getRecordClient, getRecordsClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
@@ -130,10 +130,29 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 		}
 
 		let body;
+		let info = [];
 
 		const bodyVisible = this.state.show || this.state.locked;
 
 		if (bodyVisible) {
+
+			if (form) {
+
+				const dataToSend = form.getDataToSend('keepStatus') as KeyedMap<any>;
+				const a = Object.keys(dataToSend);
+				if (a.length) {
+					info.push(R.div(null, 'DATA TO SEND:'));
+					for (let key of a) {
+						let val = dataToSend[key];
+						if (typeof val === 'string' && val.length > 100) {
+							val = val.substring(0, 100) + '...';
+						} else if (typeof val === 'object') {
+							val = JSON.stringify(val);
+						}
+						info.push(R.div(null, key + ': ' + val));
+					}
+				}
+			}
 			let buttons;
 			let allFields;
 			if (!item) {
@@ -160,11 +179,11 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 									},
 									f.fieldName + '; (' + f.id + ')'
 								),
-								renderIcon(f.show & 1 ? 'eye' : 'eye-slash half-visible'),
-								renderIcon(f.show & 2 ? 'eye' : 'eye-slash half-visible'),
-								renderIcon(f.show & 16 ? 'eye' : 'eye-slash half-visible'),
-								renderIcon(f.show & 4 ? 'eye' : 'eye-slash half-visible'),
-								renderIcon(f.show & 8 ? 'eye' : 'eye-slash half-visible'),
+								R.span({ title: 'EDITABLE' }, renderIcon(f.show & VIEW_MASK.EDITABLE ? 'eye' : 'eye-slash half-visible')),
+								R.span({ title: 'LIST' }, renderIcon(f.show & VIEW_MASK.LIST ? 'eye' : 'eye-slash half-visible')),
+								R.span({ title: 'CUSTOM_LIST' }, renderIcon(f.show & VIEW_MASK.CUSTOM_LIST ? 'eye' : 'eye-slash half-visible')),
+								R.span({ title: 'READONLY' }, renderIcon(f.show & VIEW_MASK.READONLY ? 'eye' : 'eye-slash half-visible')),
+								R.span({ title: 'DROPDOWN_LIST' }, renderIcon(f.show & VIEW_MASK.DROPDOWN_LIST ? 'eye' : 'eye-slash half-visible')),
 
 								renderIcon(f.forSearch ? 'search-plus' : 'search half-visible'),
 								h(FieldAdmin, {
@@ -353,7 +372,8 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 						renderIcon(this.state.locked ? 'lock' : 'unlock')
 					)
 				),
-				allFields
+				allFields,
+				info
 			);
 		}
 

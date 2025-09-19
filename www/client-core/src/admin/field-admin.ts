@@ -80,7 +80,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		if (bodyVisible) {
 			let extendedInfo: ComponentChild;
 			if (
-				form.getField(field.fieldName).fieldFilters
+				form.hasField(field.fieldName) && form.getField(field.fieldName).fieldFilters
 			) {
 				extendedInfo = R.div(
 					null,

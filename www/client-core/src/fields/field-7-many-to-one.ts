@@ -2,12 +2,13 @@ import { h, type ComponentChild } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { LookupValue, LookupValueIconic, RecId, RecordData } from '../bs-utils';
-import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
+import { IMAGE_THUMBNAIL_PREFIX, VIEW_MASK } from '../bs-utils';
 import Form, { type FormProps } from '../form';
 import { R } from '../r';
 import { scrollToVisible } from '../scroll-to-visible';
 import { getNode, idToImgURL, L, registerFieldClass, renderIcon, sp } from '../utils';
 import BaseLookupField, { type BaseLookupFieldProps } from './base-lookup-field';
+import type LookupManyToManyFiled from './field-14-many-to-many';
 
 export default class LookupManyToOneFiled extends BaseLookupField {
 	isEnterCreateThroughList = false;
@@ -60,7 +61,11 @@ export default class LookupManyToOneFiled extends BaseLookupField {
 					newVal.icon = (recordData as any as KeyedMap<string>)[this.props.fieldDesc.lookupIcon];
 				}
 				this.setValue(newVal);
-				this.valueListener(newVal);
+				if (this.props.isN2M) {
+					(this.parent as LookupManyToManyFiled).onSubItemSelect(newVal, this);
+				} else {
+					this.valueListener(newVal);
+				}
 			}
 		}
 	}
@@ -146,6 +151,9 @@ export default class LookupManyToOneFiled extends BaseLookupField {
 				nodeDesc: this.parentForm.nodeDesc,
 				nodeId: field.nodeRef!.id,
 				isLookup: true,
+				isCompact: true,
+				hideControls: true,
+				viewMask: VIEW_MASK.DROPDOWN_LIST,
 				parentForm: this.parentForm,
 				parent: this,
 				filters: this.fieldFilters

@@ -126,7 +126,8 @@
 	z-index: 4;
 	display: inline-block;
 	vertical-align: top;
-	margin-top: -5px;
+	margin-top: -15px;
+	margin-left: -40px;
 	color: rgb(218, 218, 218);
 	padding: 25px;
 	border-radius: 50px;
@@ -145,6 +146,8 @@
 	left: -20px;
 	vertical-align: top;
 	border-radius: 50px;
+	border: 1px solid #d6000099;
+	padding: 5px;
 	color: #d6000099;
 }
 
@@ -293,6 +296,10 @@
 
 .left-bar-empty-section {
 	padding: 15px 20px;
+}
+
+.left-bar:has(.admin-form-body) {
+	overflow: visible !important;
 }
 
 .icons-selector .select-control-list {

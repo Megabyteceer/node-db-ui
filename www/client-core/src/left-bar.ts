@@ -7,7 +7,6 @@ import { NODE_TYPE } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { assert } from './assert';
 import type { RecId, TreeItem } from './bs-utils';
-import { Modal } from './modal';
 import { R } from './r';
 import { Stage } from './stage';
 import { iAdmin, User } from './user';
@@ -412,10 +411,6 @@ class LeftBar extends Component<LeftBarProps,
 		);
 
 		let className = 'left-bar';
-
-		if ((Modal.instance && Modal.instance.isShowed()) || Stage.allForms.length > 1) {
-			className += ' hidden';
-		}
 
 		if (collapsed) {
 			className += ' left-bar-collapsed';

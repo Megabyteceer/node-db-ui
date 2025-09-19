@@ -1,4 +1,4 @@
-import { Component, h } from 'preact';
+import { Component, h, type ComponentChild } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import BaseField from '../base-field';
 import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
@@ -6,7 +6,7 @@ import type Form from '../form';
 import { Modal } from '../modal';
 import { R } from '../r';
 import { checkFileSize, idToImgURL, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
-import type { RefToInput } from './base-field-old';
+import type { RefToInput } from './base-field';
 
 class PictureField extends BaseField {
 	cropperBody!: CropperFieldBody;
@@ -26,6 +26,13 @@ class PictureField extends BaseField {
 
 	async afterSave() {
 		this.cropperBody.afterSave();
+	}
+
+	renderField(): ComponentChild {
+		return R.img({
+			className: 'field-lookup-icon-pic',
+			src: idToImgURL(this.currentValue, this.props.fieldDesc.fieldName) + ((this.props.isCompact && this.currentValue) ? IMAGE_THUMBNAIL_PREFIX : '')
+		});
 	}
 
 	renderFieldEditable() {

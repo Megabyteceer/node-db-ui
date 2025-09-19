@@ -68,6 +68,8 @@ export interface FormControlFilters {
 	/** render standard list view */
 	noCustomList?: BoolNum;
 
+	preventCreateButton?: BoolNum;
+
 	/** override form title by string */
 	formTitle?: string;
 }

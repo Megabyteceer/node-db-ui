@@ -238,7 +238,7 @@ let metadataReloadingInterval = 0;
 function reloadMetadataSchedule() {
 	if (!metadataReloadingInterval) {
 		setMaintenanceMode(true);
-		metadataReloadingInterval = window.setInterval(attemptToReloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl);
+		metadataReloadingInterval = setInterval(attemptToReloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl) as any;
 	}
 }
 

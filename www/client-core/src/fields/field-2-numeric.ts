@@ -39,7 +39,7 @@ export default class NumericField extends BaseField {
 	}
 
 	renderField() {
-		return this.renderTextValue(this.currentValue.toString());
+		return this.renderTextValue((typeof this.currentValue === 'number') ? this.currentValue.toString() : this.currentValue);
 	}
 
 }

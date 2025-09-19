@@ -12,25 +12,9 @@ interface CheckBoxProps {
 }
 
 class CheckBox extends Component<CheckBoxProps> {
-
-	declare currentValue: boolean;
-
-	constructor(props: CheckBoxProps) {
-		super(props);
-		this.state = {
-			value: this.props.defaultValue
-		};
-	}
-
-	componentWillReceiveProps(nextProps: CheckBoxProps) {
-		this.setState({
-			value: nextProps.defaultValue
-		});
-	}
-
 	render() {
 		let check;
-		if (this.currentValue) {
+		if (this.props.defaultValue) {
 			check = R.span({
 				className: 'field-boolean-check'
 			}, renderIcon('check'));
@@ -39,7 +23,7 @@ class CheckBox extends Component<CheckBoxProps> {
 			className: 'field-boolean clickable',
 			title: this.props.title,
 			onClick: () => {
-				this.props.onClick!(!this.currentValue);
+				this.props.onClick!(!this.props.defaultValue);
 			}
 		},
 		check

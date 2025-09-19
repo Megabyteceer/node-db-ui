@@ -2,16 +2,16 @@ import { h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { LookupValue, LookupValueIconic, RecordData } from '../bs-utils';
-import type FormNode from '../form-node';
 import { R } from '../r';
-import { getClassForField, L, n2mValuesEqual, registerFieldClass, renderIcon, sp, UID } from '../utils';
+import { L, n2mValuesEqual, registerFieldClass, renderIcon, sp, UID } from '../utils';
 import BaseLookupField, { type BaseLookupFieldProps } from './base-lookup-field';
+import LookupManyToOneFiled from './field-7-many-to-one';
 import type { AdditionalButtonsRenderer } from './field-lookup-mixins';
 
 let keyCounter = 0;
 let dragItem: LookupValue | undefined;
-let dragList: LookupManyToManyFiled | undefined;
-let dragListenersInitialized = false;
+/* let dragList: LookupManyToManyFiled | undefined;
+let dragListenersInitialized = false; */
 
 export default class LookupManyToManyFiled extends BaseLookupField {
 
@@ -41,22 +41,22 @@ export default class LookupManyToManyFiled extends BaseLookupField {
 		}
 	}
 
-	valueListener(newVal: any) {
-		debugger;
-		if (sender.props.isNew) {
-			this.currentValue.splice(sender.props.pos, 0, newVal);
+	onSubItemSelect(newVal: LookupValueIconic, sender: LookupManyToOneFiled) {
+		if (sender?.props.isNew) {
+			this.currentValue.splice(sender.props.pos!, 0, newVal);
 			this.forceUpdate();
-			super.valueListener(this.currentValue);
+			this.valueListener(this.currentValue);
 		} else {
-			if (this.currentValue[sender.props.pos].id !== newVal.id) {
-				this.currentValue[sender.props.pos] = newVal;
+			if (this.currentValue[sender.props.pos!].id !== newVal.id) {
+				this.currentValue[sender.props.pos!] = newVal;
 				this.forceUpdate();
-				this.props.wrapper.valueListener(this.currentValue, false, this);
+				this.valueListener(this.currentValue);
 			}
 		}
 	}
 
-	dragStart(item: LookupValue) {
+	dragStart(_item: LookupValue) {
+		/*
 		if (!dragListenersInitialized) {
 			window.document.addEventListener('mouseup', () => {
 				if (dragItem) {
@@ -102,7 +102,7 @@ export default class LookupManyToManyFiled extends BaseLookupField {
 		}
 		dragList = this;
 		dragItem = item;
-		this.forceUpdate();
+		this.forceUpdate(); */
 	}
 
 	deleteItemByIndex(i: number) {
@@ -111,7 +111,7 @@ export default class LookupManyToManyFiled extends BaseLookupField {
 		this.forceUpdate();
 	}
 
-	renderItem(field: FieldDesc, value: LookupValue | undefined, i: number, isEdit = false) {
+	renderItem(field: FieldDesc, value: LookupValue | null, i: number, isEdit = false) {
 		const isDrag = dragItem === value;
 		let buttons;
 		let isNew = !value;
@@ -211,10 +211,11 @@ export default class LookupManyToManyFiled extends BaseLookupField {
 						className
 					},
 
-					h(getClassForField(FIELD_TYPE.LOOKUP), {
+					h(LookupManyToOneFiled, {
 						hideControls: this.props.hideControls || this.state.hideControls,
 						parentForm: this.parentForm,
 						fieldDesc: field,
+						pos: i,
 						preventCreateButton: this.preventCreateButton,
 						isEdit,
 						isN2M: true,
@@ -223,7 +224,7 @@ export default class LookupManyToManyFiled extends BaseLookupField {
 						isNew: isNew,
 						parent: this,
 						initialValue: value,
-						isCompact: this.props.isCompact,
+						isCompact: true,
 						fieldDisabled: this.props.fieldDisabled
 					} as BaseLookupFieldProps),
 					buttons
@@ -261,7 +262,7 @@ export default class LookupManyToManyFiled extends BaseLookupField {
 			lines.push(this.renderItem(field, value, i, this.props.isEdit));
 		});
 
-		lines.push(this.renderItem(field, {}, lines.length, this.props.isEdit));
+		lines.push(this.renderItem(field, null, lines.length, this.props.isEdit));
 
 		return R.div(null, lines);
 	}
