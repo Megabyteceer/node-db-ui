@@ -6,7 +6,6 @@ import { R } from '../r';
 import { L, n2mValuesEqual, registerFieldClass, renderIcon, sp, UID } from '../utils';
 import BaseLookupField, { type BaseLookupFieldProps } from './base-lookup-field';
 import LookupManyToOneFiled from './field-7-many-to-one';
-import type { AdditionalButtonsRenderer } from './field-lookup-mixins';
 
 let keyCounter = 0;
 let dragItem: LookupValue | undefined;
@@ -18,7 +17,6 @@ export default class LookupManyToManyFiled extends BaseLookupField {
 	declare currentValue: LookupValueIconic[];
 
 	extendedEditor = false;
-	additionalButtonsN2MRenderer?: AdditionalButtonsRenderer;
 
 	setValue(val: LookupValue[]) {
 		if (!val) {
@@ -32,13 +30,6 @@ export default class LookupManyToManyFiled extends BaseLookupField {
 	extendEditor() {
 		this.extendedEditor = true;
 		this.forceUpdate();
-	}
-
-	setAdditionalButtonsN2MRenderer(renderer?: AdditionalButtonsRenderer) {
-		if (this.additionalButtonsN2MRenderer !== renderer) {
-			this.additionalButtonsN2MRenderer = renderer;
-			this.forceUpdate();
-		}
 	}
 
 	onSubItemSelect(newVal: LookupValueIconic, sender: LookupManyToOneFiled) {
@@ -116,9 +107,6 @@ export default class LookupManyToManyFiled extends BaseLookupField {
 		let buttons;
 		let isNew = !value;
 
-		const additionalButtonsN2M = this.additionalButtonsN2MRenderer ?
-			this.additionalButtonsN2MRenderer(field.node!, value as any as RecordData) : undefined;
-
 		if (isEdit) {
 			if (value) {
 				let reorderButton;
@@ -140,7 +128,6 @@ export default class LookupManyToManyFiled extends BaseLookupField {
 
 				buttons = R.span(
 					{ className: 'field-lookup-right-block' },
-					additionalButtonsN2M,
 					R.button(
 						{
 							title: L('EDIT'),
@@ -216,7 +203,6 @@ export default class LookupManyToManyFiled extends BaseLookupField {
 						parentForm: this.parentForm,
 						fieldDesc: field,
 						pos: i,
-						preventCreateButton: this.preventCreateButton,
 						isEdit,
 						isN2M: true,
 						filters: this.fieldFilters,

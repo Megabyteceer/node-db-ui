@@ -15,12 +15,11 @@ import { clientHandlers, type Handler } from './events-handle';
 import type BaseLookupField from './fields/base-lookup-field';
 import FormNode, { type FormNodeProps, type FormNodeState } from './form-node';
 
-import type { RefToInput } from './fields/base-field';
 import { type TabFieldProps } from './form-tab';
 import { LeftBar } from './left-bar';
 import { LoadingIndicator } from './loading-indicator';
 import { R } from './r';
-import { renderItemsButtons, type AdditionalButtonsRenderer } from './render-items-buttons';
+import { renderItemsButtons } from './render-items-buttons';
 import { iAdmin, User } from './user';
 import { CLIENT_SIDE_FORM_EVENTS, deleteRecordClient, getClassForField, getData, getItem, getListRenderer, getNodeIfPresentOnClient, getRecordsClient, goBack, isAutoFocus, isPresentListRenderer, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, showPrompt, sp, submitRecord, UID, updateHashLocation } from './utils';
 
@@ -35,7 +34,6 @@ export interface FormProps extends FormNodeProps {
 	isPreventCloseFormAfterSave?: boolean;
 	hideSearch?: boolean;
 	preventDeleteButton?: boolean;
-	preventCreateButton?: boolean;
 	hideControls?: boolean;
 	viewMask?: VIEW_MASK;
 	inlineEditable?: boolean;
@@ -43,15 +41,12 @@ export interface FormProps extends FormNodeProps {
 	editable?: boolean;
 	filters: FormFilters;
 	onDelete?: () => void;
-	additionalButtons?: AdditionalButtonsRenderer;
 	overrideOrderData?: number;
 	isListItemView?: boolean;
 }
 
 export interface FormState extends FormNodeState {
-	additionalButtons?: AdditionalButtonsRenderer;
 	header?: ComponentChild;
-	preventCreateButton?: ComponentChild;
 	hideControls?: ComponentChild;
 	hideSearch?: boolean;
 	isCancelButtonHidden?: boolean;
@@ -82,9 +77,6 @@ export default class Form<
 	get isList() {
 		return !this.formData;
 	}
-
-	/** set *true* - to make drafting buttons invisible. It is still possible do draft/publish records via api. */
-	disableDrafting?: boolean;
 
 	private fieldsByName = {} as KeyedMap<BaseField>;
 	private allFields: BaseField[] = [];
@@ -715,7 +707,7 @@ export default class Form<
 		}, 500);
 	}
 
-	private searchInput!: RefToInput;
+	private searchInput!: HTMLInputElement;
 
 	renderReadOnlyList(className: string) {
 		const node = this.nodeDesc;
@@ -725,10 +717,7 @@ export default class Form<
 		let createButton;
 
 		if (
-			node.privileges & PRIVILEGES_MASK.CREATE &&
-			!this.props.preventCreateButton &&
-			!this.formFilters.preventCreateButton &&
-			!this.state.preventCreateButton
+			node.privileges & PRIVILEGES_MASK.CREATE
 		) {
 			if (this.props.isLookup) {
 				createButton = R.button(
@@ -768,7 +757,7 @@ export default class Form<
 			searchPanel = R.div(
 				{ className: 'list-search' },
 				R.input({
-					ref: (input: RefToInput) => {
+					ref: (input: HTMLInputElement) => {
 						this.searchInput = input;
 					},
 					autoFocus: isAutoFocus(),
@@ -874,9 +863,6 @@ export default class Form<
 				});
 				tableHeader.push(R.td({ key: 'holder', className: 'list-row-header' }, ' '));
 
-				const additionalButtons =
-					this.state.additionalButtons || this.props.additionalButtons || undefined;
-
 				const hideControls =
 					this.props.hideControls ||
 					this.state.hideControls;
@@ -888,7 +874,6 @@ export default class Form<
 						key: Math.random() + '_' + item.id,
 						parent: this,
 						viewMask: this.props.viewMask,
-						additionalButtons,
 						filters: {},
 						hideControls: hideControls,
 						formData: item,
@@ -1244,20 +1229,10 @@ export default class Form<
 			buttons = renderItemsButtons(this.nodeDesc, data, (this.parent as Form).refreshData, this);
 		}
 
-		let additionalButtons;
-		if (this.props.additionalButtons) {
-			additionalButtons = this.props.additionalButtons(
-				this.nodeDesc,
-				data,
-				(this.props.parent as Form).refreshData,
-				this
-			);
-		}
 		fields.push(
 			R.td(
 				{ key: 'b', className: 'form-item-row form-item-row-buttons' },
-				buttons,
-				additionalButtons
+				buttons
 			)
 		);
 
@@ -1362,7 +1337,7 @@ export default class Form<
 			const saveButtonLabel = nodeDesc.storeForms ? (this.props.isCompact ? '' : this.saveButtonTitle || L('SAVE')) : nodeDesc.matchName;
 
 			if (this.props.editable) {
-				if (!nodeDesc.draftable || this.disableDrafting || (data.id && !data.isP) || !(nodeDesc.privileges & PRIVILEGES_MASK.PUBLISH)) {
+				if (!nodeDesc.draftable || (data.id && !data.isP) || !(nodeDesc.privileges & PRIVILEGES_MASK.PUBLISH)) {
 					saveButton = R.button(
 						{
 							className: 'clickable success-button save-btn',

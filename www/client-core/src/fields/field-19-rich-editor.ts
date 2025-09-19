@@ -1,5 +1,6 @@
 import { FIELD_TYPE } from '../../../../types/generated';
 import BaseField, { type BaseFieldProps } from '../base-field';
+import { SAVE_REJECTED } from '../consts';
 import { R } from '../r';
 import { User } from '../user';
 import { L, registerFieldClass, renderIcon } from '../utils';
@@ -65,13 +66,15 @@ class RichEditorField extends BaseField {
 		delete listeners[this.iframeId];
 	}
 
-	async getMessageIfInvalid(): Promise<string | undefined> {
+	isValid(): typeof SAVE_REJECTED | undefined {
 		if (this.currentValue) {
 			const val = this.currentValue;
 			if (val.length > 4000000) {
-				return L('RICH_ED_SIZE', this.props.fieldDesc.name);
+				this.alert(L('RICH_ED_SIZE', this.props.fieldDesc.name), false, false, 'rich-len');
 			}
+			return SAVE_REJECTED;
 		}
+		this.alert(undefined, false, false, 'rich-len');
 	}
 
 	setValue(val: string, sendToEditor?: boolean) {

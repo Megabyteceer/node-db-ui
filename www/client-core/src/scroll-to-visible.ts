@@ -1,5 +1,3 @@
-import type { Component } from 'preact';
-
 export const shakeDomElement = (e: HTMLDivElement) => {
 	if (e) {
 		e.classList.remove('shake');
@@ -12,9 +10,8 @@ export const shakeDomElement = (e: HTMLDivElement) => {
 	}
 };
 
-export const scrollToVisible = (elem: Component | HTMLDivElement, doNotShake = false) => {
-	if (elem) {
-		const element = (elem as Component).base as HTMLDivElement || elem;
+export const scrollToVisible = (element: HTMLDivElement, doNotShake = false) => {
+	if (element) {
 		if ((element as any).scrollIntoViewIfNeeded) {
 			(element as any).scrollIntoViewIfNeeded(false);
 		} else {

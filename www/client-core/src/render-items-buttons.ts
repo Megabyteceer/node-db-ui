@@ -29,7 +29,7 @@ export const renderItemsButtons: AdditionalButtonsRenderer = (
 	form?: Form
 ): Component[] | undefined => {
 	let buttons;
-	if (form?.props.isCompact) {
+	if (form?.props.isLookup) {
 		if (data.hasOwnProperty('isE')) {
 			buttons = [
 				R.button(
@@ -39,7 +39,7 @@ export const renderItemsButtons: AdditionalButtonsRenderer = (
 						title: L('EDIT'),
 						onMouseDown: (e: MouseEvent) => {
 							sp(e);
-							form.props.parent!.toggleCreateDialogue(data.id);
+							(form.props.parent as BaseLookupField)!.toggleCreateDialogue(data.id);
 						}
 					},
 					renderIcon('pencil')
@@ -55,7 +55,7 @@ export const renderItemsButtons: AdditionalButtonsRenderer = (
 		}
 		const isRestricted = isRecordRestrictedForDeletion(node.id, data.id!);
 		buttons = [];
-		if (data.hasOwnProperty('isP') && (!form || !form.props.disableDrafting)) {
+		if (data.hasOwnProperty('isP')) {
 			if (data.status === 1) {
 				buttons.push(
 					R.button(
@@ -90,28 +90,24 @@ export const renderItemsButtons: AdditionalButtonsRenderer = (
 		}
 
 		if (data.hasOwnProperty('isE')) {
-			if (!(form?.parent as BaseLookupField)?.state.noEditButton) {
-				buttons.push(
-					R.button(
-						{
-							className: 'clickable tool-btn edit-btn',
-							title: L('EDIT', itemName),
-							key: 2,
-							onClick: (_ev: PointerEvent) => {
-								if (form?.getParentLookupField()) {
-									(form?.parent as BaseLookupField).toggleCreateDialogue(data.id);
-								} else {
-									globals.Stage.showForm(node.id, data.id, undefined, true);
-								}
+			buttons.push(
+				R.button(
+					{
+						className: 'clickable tool-btn edit-btn',
+						title: L('EDIT', itemName),
+						key: 2,
+						onClick: (_ev: PointerEvent) => {
+							if (form?.getParentLookupField()) {
+								(form?.parent as BaseLookupField).toggleCreateDialogue(data.id);
+							} else {
+								globals.Stage.showForm(node.id, data.id, undefined, true);
 							}
-						},
-						renderIcon('pencil')
-					)
-				);
-			}
-		} else if (
-			!(form?.parent as BaseLookupField)?.state.noPreviewButton
-		) {
+						}
+					},
+					renderIcon('pencil')
+				)
+			);
+		} else {
 			buttons.push(
 				R.button(
 					{

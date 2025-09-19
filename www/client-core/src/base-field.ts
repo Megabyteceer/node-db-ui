@@ -160,7 +160,7 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 
 	async focus() {
 		await (this.parent as any as FormNodeAccessor).beforeFocus();
-		scrollToVisible(this);
+		scrollToVisible(this.getDomElement());
 		this.focusElement!();
 	}
 

@@ -6,7 +6,6 @@ import type Form from '../form';
 import { Modal } from '../modal';
 import { R } from '../r';
 import { checkFileSize, idToImgURL, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
-import type { RefToInput } from './base-field';
 
 class PictureField extends BaseField {
 	cropperBody!: CropperFieldBody;
@@ -73,7 +72,7 @@ interface CropperFieldBodyState {
 
 class CropperFieldBody extends Component<CropperFieldBodyProps, CropperFieldBodyState> {
 
-	references: { [key: string]: RefToInput | HTMLFormElement };
+	references: { [key: string]: HTMLInputElement | HTMLFormElement };
 	cropper: any;
 	waitingForUpload = false;
 
@@ -287,7 +286,7 @@ class CropperFieldBody extends Component<CropperFieldBodyProps, CropperFieldBody
 				}
 
 				preview = R.img({
-					ref: (r: RefToInput) => {
+					ref: (r: HTMLInputElement) => {
 						this.references.img = r;
 					},
 					style: { width: w / 2, height: h / 2 },
@@ -319,7 +318,7 @@ class CropperFieldBody extends Component<CropperFieldBodyProps, CropperFieldBody
 
 		const form = R.form(
 			{
-				ref: (r: RefToInput) => {
+				ref: (r: HTMLInputElement) => {
 					this.references.form = r;
 				},
 				encType: 'multipart/form-data',
@@ -327,7 +326,7 @@ class CropperFieldBody extends Component<CropperFieldBodyProps, CropperFieldBody
 			},
 			R.input({
 				name: 'file',
-				ref: (r: RefToInput) => {
+				ref: (r: HTMLInputElement) => {
 					this.references.fileInput = r;
 				},
 				type: 'file',
@@ -339,25 +338,25 @@ class CropperFieldBody extends Component<CropperFieldBodyProps, CropperFieldBody
 			R.input({ name: 'nid', defaultValue: field.node!.id }),
 			R.input({
 				name: 'w',
-				ref: (r: RefToInput) => {
+				ref: (r: HTMLInputElement) => {
 					this.references.w = r;
 				}
 			}),
 			R.input({
 				name: 'h',
-				ref: (r: RefToInput) => {
+				ref: (r: HTMLInputElement) => {
 					this.references.h = r;
 				}
 			}),
 			R.input({
 				name: 'x',
-				ref: (r: RefToInput) => {
+				ref: (r: HTMLInputElement) => {
 					this.references.x = r;
 				}
 			}),
 			R.input({
 				name: 'y',
-				ref: (r: RefToInput) => {
+				ref: (r: HTMLInputElement) => {
 					this.references.y = r;
 				}
 			})

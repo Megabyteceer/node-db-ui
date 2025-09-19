@@ -1,11 +1,11 @@
 import { Component, h } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import BaseField, { type BaseFieldProps, type BaseFieldState } from '../base-field';
+import type Form from '../form';
 import { ENV } from '../main-frame';
 import { Modal } from '../modal';
 import { R } from '../r';
 import { checkFileSize, getReadableUploadSize, idToFileUrl, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
-import type { RefToInput } from './base-field-old';
 
 class FileField extends BaseField {
 	fileFormBodyRef!: FileFormBody;
@@ -71,9 +71,9 @@ interface FileFormBodyState extends BaseFieldState {
 }
 
 class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
-	fileInputRef!: RefToInput;
-	formRef!: RefToInput;
-	selectButtonRef!: RefToInput;
+	fileInputRef!: HTMLInputElement;
+	formRef!: Form;
+	selectButtonRef!: HTMLInputElement;
 	waitingForUpload = false;
 
 	constructor(props: FileFormBodyProps) {
@@ -156,7 +156,7 @@ class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
 			{
 				className: 'clickable field-button',
 				onClick: () => {
-					this.fileInputRef.value = null;
+					this.fileInputRef.value = '';
 					this.fileInputRef.click();
 				}
 			},
@@ -180,7 +180,7 @@ class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
 
 		const form = R.form(
 			{
-				ref: (r: RefToInput) => {
+				ref: (r: Form) => {
 					this.formRef = r;
 				},
 				encType: 'multipart/form-data',
@@ -188,7 +188,7 @@ class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
 			},
 			R.input({
 				name: 'file',
-				ref: (r: RefToInput) => {
+				ref: (r: HTMLInputElement) => {
 					this.fileInputRef = r;
 				},
 				type: 'file',

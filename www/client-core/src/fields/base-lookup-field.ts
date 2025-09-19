@@ -12,7 +12,6 @@ export interface BaseLookupFieldProps extends BaseFieldProps {
 	isN2M?: boolean;
 	excludeIDs?: RecId[];
 	pos?: number;
-	preventCreateButton?: boolean; // TODO
 }
 
 export interface BaseLookupFieldState extends BaseFieldState {
@@ -22,7 +21,6 @@ export interface BaseLookupFieldState extends BaseFieldState {
 export default class BaseLookupField extends BaseField<BaseLookupFieldProps, BaseLookupFieldState> {
 
 	excludeIDs?: RecId[];
-	preventCreateButton = false;
 
 	constructor(props: BaseLookupFieldProps) {
 		super(props);
@@ -74,11 +72,6 @@ export default class BaseLookupField extends BaseField<BaseLookupFieldProps, Bas
 		return this.parent as BaseLookupField;
 	}
 
-	hideCreateButton() {
-		this.preventCreateButton = true;
-		this.forceUpdate();
-	}
-
 	generateDefaultFiltersByProps(props: BaseLookupFieldProps) {
 		const ret = {} as KeyedMap<number | typeof NEW_RECORD>;
 
@@ -117,10 +110,10 @@ export default class BaseLookupField extends BaseField<BaseLookupFieldProps, Bas
 					} else {
 						this.setValue(newData);
 					}
-					scrollToVisible(this);
+					scrollToVisible(this.getDomElement());
 				} else if (recIdToEdit === NEW_RECORD && newData) {
 					this.valueSelected(newData, true, true);
-					scrollToVisible(this);
+					scrollToVisible(this.getDomElement());
 				}
 			}
 		);

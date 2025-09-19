@@ -5,32 +5,16 @@ import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../bs-uti
 import { VIEW_MASK } from '../bs-utils';
 import { NEW_RECORD } from '../consts';
 import Form, { type FormProps } from '../form';
-import type { List__olf } from '../forms/list';
 import { R } from '../r';
-import { assignFilters, deleteRecordClient, L, registerFieldClass } from '../utils';
+import { assignFilters, deleteRecordClient, registerFieldClass } from '../utils';
 import BaseLookupField from './base-lookup-field';
 
 class LookupOneToManyFiled extends BaseLookupField {
-	inlineListRef!: List__olf;
 
 	setValue(_val: any) {
 		if (this.state.inlineEditing) {
 			this.forceUpdate();
 		}
-	}
-
-	getBackupData() {
-		const ret = [];
-		let i;
-		if (this.state.inlineEditing) {
-			const subForms = this.inlineListRef.getSubForms();
-			for (i = 0; i < subForms.length; i++) {
-				const form = subForms[i];
-				form.prepareToBackup();
-				ret.push(form.currentData);
-			}
-		}
-		return ret;
 	}
 
 	getSubForms<FormType extends Form>() {
@@ -49,7 +33,7 @@ class LookupOneToManyFiled extends BaseLookupField {
 			[this.getLinkerFieldName()]: { id: this.parentForm.recId }
 		};
 		globals.Stage.showForm(this.props.fieldDesc.nodeRef!.id, recIdToEdit, filters, true, true, () => {
-			(this.children[0] as Form).refreshData();
+			this.lookupListForm.refreshData();
 		});
 	}
 
@@ -57,23 +41,9 @@ class LookupOneToManyFiled extends BaseLookupField {
 		this.setState({ inlineEditing: true });
 	}
 
-	async getMessageIfInvalid(): Promise<string | undefined> {
-		if (this.state.inlineEditing) {
-			let ret;
-			const forms = this.inlineListRef.getSubForms();
-			for (const subForm of forms) {
-				const res = await subForm.validate();
-				if (!res) {
-					ret = L('INVALID_DATA_LIST');
-				}
-			}
-			return ret;
-		}
-	}
-
 	async afterSave() {
 		if (this.state.inlineEditing) {
-			const listData = (this.children[0] as Form).listData!;
+			const listData = this.lookupListForm.listData!;
 			const field = this.props.fieldDesc;
 			for (const item of listData.items) {
 				if (item.hasOwnProperty('__deleted_901d123f')) {
@@ -100,11 +70,13 @@ class LookupOneToManyFiled extends BaseLookupField {
 		(this.fieldFilters as KeyedMap<any>)[linkerFieldName] = this.parentForm.formData!.id;
 	}
 
+	get lookupListForm() {
+		return this.children[0] as Form;
+	}
+
 	setLookupFilter(filtersObjOrName: string | GetRecordsFilter, val?: any) {
 		super.setLookupFilter(filtersObjOrName, val);
-		if (this.inlineListRef) {
-			assignFilters(this.fieldFilters!, this.inlineListRef.filters);
-		}
+		assignFilters(this.lookupListForm.formFilters, this.fieldFilters!);
 	}
 
 	renderFieldEditable() {
@@ -121,14 +93,10 @@ class LookupOneToManyFiled extends BaseLookupField {
 			null,
 			h(Form, {
 				hideControls: this.props.hideControls || this.state.hideControls,
-				noPreviewButton: this.state.noPreviewButton || this.props.noPreviewButton,
-				disableDrafting: this.state.disableDrafting,
-				additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
 				listData,
 				isLookup: true,
 				nodeId: field.nodeRef!.id,
 				viewMask: VIEW_MASK.SUB_FORM,
-				preventCreateButton: this.state.preventCreateButton,
 				askToSaveParentBeforeCreation,
 				editable: this.state.inlineEditing,
 				parentForm: this.parentForm,
