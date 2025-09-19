@@ -11,14 +11,9 @@ async function clearUserParams(data: IUsersRecordWrite, currentData: IUsersRecor
 	}
 
 	if (data.hasOwnProperty('password')) {
-		const p = data.password;
-		if (p !== 'nc_l4DFn76ds5yhg') {
-			const salt = generateSalt();
-			await mysqlExec('UPDATE _users SET salt=' + escapeString(salt) + ' WHERE id=' + D(currentData.id!));
-			data.password = await getPasswordHash(data.password!, salt);
-		} else {
-			delete data.password;
-		}
+		const salt = generateSalt();
+		await mysqlExec('UPDATE _users SET salt=' + escapeString(salt) + ' WHERE id=' + D(currentData.id!));
+		data.password = await getPasswordHash(data.password!, salt);
 	}
 
 	if (currentData) {
@@ -34,6 +29,10 @@ async function clearUserParams(data: IUsersRecordWrite, currentData: IUsersRecor
 serverOn(E._users.beforeUpdate, async (currentData, newData, userSession) => {
 	if (!isAdmin(userSession)) {
 		delete newData.email;
+	}
+
+	if (newData.avatar && currentData.id === userSession.id) {
+		userSession.avatar = newData.avatar!;
 	}
 
 	if (newData.hasOwnProperty('company')) {

@@ -6,6 +6,7 @@ import type Form from '../form';
 import { Modal } from '../modal';
 import { R } from '../r';
 import { checkFileSize, idToImgURL, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
+import waitForCondition from '../wait-for-condition';
 
 class PictureField extends BaseField {
 	cropperBody!: CropperFieldBody;
@@ -20,7 +21,11 @@ class PictureField extends BaseField {
 	}
 
 	async beforeSave() {
-		return this.cropperBody.save(this);
+		const newImageId = await this.cropperBody.save(this);
+		if (newImageId) {
+			this.valueListener(newImageId);
+		}
+		await waitForCondition(() => this.parentForm.formData![this.props.fieldDesc.fieldName] === newImageId);
 	}
 
 	async afterSave() {
@@ -148,9 +153,11 @@ class CropperFieldBody extends Component<CropperFieldBodyProps, CropperFieldBody
 				(_er) => {}
 			);
 			if (!imageId) {
-				imageField.parentForm.fieldAlert(imageField.props.fieldDesc.fieldName, L('IMAGE_UPLOAD_ERROR'));
+				imageField.parentForm.fieldAlert(imageField.props.fieldDesc.fieldName, L('IMAGE_UPLOAD_ERROR'), false, false, 'image-upload');
+			} else {
+				imageField.parentForm.fieldAlert(imageField.props.fieldDesc.fieldName, undefined, false, false, 'image-upload');
+				return imageId;
 			}
-			return imageId;
 		} else if (this.state.cleared) {
 			return '';
 		}

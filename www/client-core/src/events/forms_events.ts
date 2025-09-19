@@ -31,6 +31,8 @@ const checkPasswordConfirmation = (form: Form<TUsersFieldsList> | Form<TRegistra
 	}
 };
 
+const PASSWORD_PLACE_HOLDER = 'nc_l4DFn76ds5yhg';
+
 clientOn(E._users.onLoad, (form) => {
 	if (!ENV.langs) {
 		form.hideField('language');
@@ -79,15 +81,17 @@ clientOn(E._users.onLoad, (form) => {
 
 	if (form.isUpdateRecord) {
 		form.setHeader (L('EDIT_USER_PROFILE', myName));
-		form.setFieldValue('password', 'nc_l4DFn76ds5yhg');
-		form.setFieldValue('passwordConfirm', 'nc_l4DFn76ds5yhg');
+		form.setFieldValue('password', PASSWORD_PLACE_HOLDER);
+		form.savedFormData!.password = PASSWORD_PLACE_HOLDER;
+		form.setFieldValue('passwordConfirm', PASSWORD_PLACE_HOLDER);
 	}
 
 	if (form.isNewRecord) {
 		form.hideField('mailing');
 		form.hideField('_organizationId');
-		form.setFieldValue('password', 'nc_l4DFn76ds5yhg');
-		form.setFieldValue('passwordConfirm', 'nc_l4DFn76ds5yhg');
+		form.savedFormData!.password = PASSWORD_PLACE_HOLDER;
+		form.setFieldValue('password', PASSWORD_PLACE_HOLDER);
+		form.setFieldValue('passwordConfirm', PASSWORD_PLACE_HOLDER);
 	}
 });
 

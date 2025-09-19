@@ -72,6 +72,7 @@
 }
 
 .admin-tools-enable-btn {
+	z-index: 100;
 	white-space: nowrap;
 	position: fixed;
 	width: 200px;

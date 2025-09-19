@@ -127,7 +127,7 @@ async function uploadFile(reqData: UploadRequest, userSession: UserSession) {
 
 const getFieldForUpload = (reqData: UploadRequest, userSession: UserSession) => {
 	getNodeDesc(reqData.nid, userSession);
-	const field = getFieldDesc(reqData.fid);
+	const field = getFieldDesc(parseInt(reqData.fid));
 	if (!field) {
 		throwError('field ' + reqData.fid + ' access denied');
 	}
@@ -145,8 +145,8 @@ async function uploadImage(reqData: UploadRequest, userSession: UserSession) {
 	let img = await sharp(reqData.fileContent);
 	const meta = await img.metadata();
 
-	const targetW = field.width!;
-	const targetH = field.height!;
+	const targetW = Math.floor(field.maxLength! / 10000);
+	const targetH = field.maxLength! % 10000;
 
 	const srcW = meta.width;
 	const srcH = meta.height;

@@ -1,3 +1,9 @@
+/// #if DEBUG
+/*
+/// #endif
+throw new Error('admin file imported to prod build');
+// */
+
 import { ADMIN_USER_SESSION, getFieldDesc, getNodeDesc, reloadMetadataSchedule } from '../describe-node';
 
 import * as fs from 'fs';
