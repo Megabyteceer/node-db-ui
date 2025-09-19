@@ -2,6 +2,7 @@ import { Component, h } from 'preact';
 import { NODE_ID, NODE_TYPE, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { VIEW_MASK, type NodeDesc, type TreeItem } from '../bs-utils';
+import { NEW_RECORD } from '../consts';
 import type Form from '../form';
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getRecordClient, getRecordsClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
@@ -250,7 +251,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 							onClick: () => {
 								globals.Stage.showForm(
 									NODE_ID.FIELDS,
-									'new',
+									NEW_RECORD,
 									{
 										nodeFieldsLinker: {
 											id: node.id,
@@ -400,7 +401,7 @@ function createNodeForMenuItem(item: TreeItem) {
 	getRecordClient(NODE_ID.NODES, (isBasedOnDocument ? item.parent : item.id) as number).then((data) => {
 		globals.Stage.showForm(
 			NODE_ID.NODES,
-			'new',
+			NEW_RECORD,
 			{
 				prior: 100000,
 				_nodesId: {

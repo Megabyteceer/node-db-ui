@@ -5,6 +5,7 @@ import { FIELD_TYPE, NODE_ID, type FIELD_ID, type IFieldsRecord } from '../../..
 import { globals } from '../../../../types/globals';
 import type Form from '../form';
 
+import { NEW_RECORD } from '../consts';
 import { R } from '../r';
 import { CLIENT_SIDE_FORM_EVENTS, getRecordClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
@@ -153,7 +154,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 								getRecordClient(NODE_ID.FIELDS, field.id).then((data) => {
 									globals.Stage.showForm(
 										NODE_ID.FIELDS,
-										'new',
+										NEW_RECORD,
 										{
 											prior: data.prior,
 											nodeFieldsLinker: {

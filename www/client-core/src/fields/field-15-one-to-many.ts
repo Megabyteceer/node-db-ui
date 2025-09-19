@@ -3,6 +3,7 @@ import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../bs-utils';
 import { VIEW_MASK } from '../bs-utils';
+import { NEW_RECORD } from '../consts';
 import Form, { type FormProps } from '../form';
 import type { List__olf } from '../forms/list';
 import { R } from '../r';
@@ -43,12 +44,12 @@ class LookupOneToManyFiled extends BaseLookupField {
 	valueSelected(recordData?: RecordData, isNewCreated?: boolean, noToggleList?: boolean): void;
 	valueSelected() {}
 
-	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
+	toggleCreateDialogue(recIdToEdit?: RecId | typeof NEW_RECORD) {
 		const filters = {
 			[this.getLinkerFieldName()]: { id: this.parentForm.recId }
 		};
-		globals.Stage.showForm(this.parentForm.nodeDesc.id, recIdToEdit, filters, true, true, () => {
-			this.inlineListRef.refreshData();
+		globals.Stage.showForm(this.props.fieldDesc.nodeRef!.id, recIdToEdit, filters, true, true, () => {
+			(this.children[0] as Form).refreshData();
 		});
 	}
 
@@ -85,7 +86,7 @@ class LookupOneToManyFiled extends BaseLookupField {
 			for (const form of subForms) {
 				const initialData = form.savedFormData!;
 				const linkerName = this.getLinkerFieldName();
-				if (!initialData.hasOwnProperty(linkerName) || (initialData as KeyedMap<any>)[linkerName] === 'new') {
+				if (!initialData.hasOwnProperty(linkerName) || (initialData as KeyedMap<any>)[linkerName] === NEW_RECORD) {
 					form.formData![linkerName] = { id: this.parentForm.formData!.id };
 				}
 				await form.saveForm();
@@ -108,7 +109,7 @@ class LookupOneToManyFiled extends BaseLookupField {
 
 	renderFieldEditable() {
 		const field = this.props.fieldDesc;
-		const askToSaveParentBeforeCreation = this.parentForm.recId === 'new';
+		const askToSaveParentBeforeCreation = this.parentForm.recId === NEW_RECORD;
 		const listData: RecordsData | undefined =
 			typeof this.parentForm.recId === 'number'
 				? undefined
@@ -124,6 +125,7 @@ class LookupOneToManyFiled extends BaseLookupField {
 				disableDrafting: this.state.disableDrafting,
 				additionalButtons: this.state.additionalButtons || this.props.additionalButtons,
 				listData,
+				isLookup: true,
 				nodeId: field.nodeRef!.id,
 				viewMask: VIEW_MASK.SUB_FORM,
 				preventCreateButton: this.state.preventCreateButton,

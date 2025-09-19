@@ -638,6 +638,7 @@ img {
 	bottom: 0;
 	left: 0;
 	right: 0;
+	z-index: 9;
 	display: flex;
 	justify-content: center;
 }
@@ -675,7 +676,7 @@ img {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	z-index: 9;
+	z-index: 10;
 }
 
 .notify-area {
@@ -1065,7 +1066,6 @@ img {
 	max-height: calc(100% - 120px);
 	background-color: var(--BG_COLOR);
 	border-radius: 20px;
-	z-index: 8;
 }
 
 .form {

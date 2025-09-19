@@ -3,6 +3,7 @@ import { globals } from '../../../../types/globals';
 import { throwError } from '../assert';
 import BaseField, { type BaseFieldProps, type BaseFieldState } from '../base-field';
 import type { GetRecordsFilter, RecId, RecordData } from '../bs-utils';
+import { NEW_RECORD } from '../consts';
 import { scrollToVisible } from '../scroll-to-visible';
 import { assignFilters } from '../utils';
 
@@ -79,12 +80,12 @@ export default class BaseLookupField extends BaseField<BaseLookupFieldProps, Bas
 	}
 
 	generateDefaultFiltersByProps(props: BaseLookupFieldProps) {
-		const ret = {} as KeyedMap<number | 'new'>;
+		const ret = {} as KeyedMap<number | typeof NEW_RECORD>;
 
 		const parentId =
 			props.parentForm.formData!.id ||
 			(props.parentForm!.formFilters as KeyedMap<number>)[props.fieldDesc.fieldName] ||
-			'new';
+			NEW_RECORD;
 
 		if (props.fieldDesc.fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 			ret[props.fieldDesc.fieldName + 'Linker'] = parentId;
@@ -95,19 +96,11 @@ export default class BaseLookupField extends BaseField<BaseLookupFieldProps, Bas
 		return ret;
 	}
 
-	async saveParentFormBeforeCreation() {
-		if (this.props.parentForm.props.editable) {
-			await this.props.parentForm.saveClick();
-		}
-		const linkerFieldName = this.getLinkerFieldName();
-		(this.fieldFilters as KeyedMap<any>)[linkerFieldName] = this.props.parentForm.formData!.id;
-	}
+	toggleCreateDialogue(recIdToEdit?: RecId | typeof NEW_RECORD) {
 
-	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
-		this.collapseList();
 		const filters = this.parentForm
 			? {
-				[this.getLinkerFieldName()]: { id: this.parentForm.formData!.id }
+				[this.getLinkerFieldName()]: { id: this.parentForm.recId }
 			}
 			: undefined;
 		globals.Stage.showForm(
@@ -125,7 +118,7 @@ export default class BaseLookupField extends BaseField<BaseLookupFieldProps, Bas
 						this.setValue(newData);
 					}
 					scrollToVisible(this);
-				} else if (recIdToEdit === 'new' && newData) {
+				} else if (recIdToEdit === NEW_RECORD && newData) {
 					this.valueSelected(newData, true, true);
 					scrollToVisible(this);
 				}
@@ -133,4 +126,11 @@ export default class BaseLookupField extends BaseField<BaseLookupFieldProps, Bas
 		);
 	}
 
+	async saveParentFormBeforeCreation() {
+		if (this.props.parentForm.props.editable) {
+			await this.props.parentForm.saveClick();
+		}
+		const linkerFieldName = this.getLinkerFieldName();
+		(this.fieldFilters as KeyedMap<any>)[linkerFieldName] = this.props.parentForm.formData!.id;
+	}
 }

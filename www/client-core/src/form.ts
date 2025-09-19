@@ -26,6 +26,7 @@ import { CLIENT_SIDE_FORM_EVENTS, deleteRecordClient, getClassForField, getData,
 
 export interface FormProps extends FormNodeProps {
 	nodeId: NODE_ID;
+	recId?: RecId | typeof NEW_RECORD;
 	formData?: RecordData;
 	listData?: RecordsData;
 	isLookup?: boolean;
@@ -66,7 +67,6 @@ export default class Form<
 	formFilters!: FormFilters;
 	private disabledFields = {} as { [key: string]: boolean };
 	private hiddenFields = {} as { [key: string]: boolean };
-	initialRecordData?: RecordData & { [key in FieldsNames]: any };
 	formData?: RecordData & { [key in FieldsNames]: any };
 	savedFormData?: RecordData & { [key in FieldsNames]: any };
 	listData?: RecordsData;
@@ -102,10 +102,9 @@ export default class Form<
 	constructor(props: FormProps) {
 		super(props as any);
 		this.isPreventCloseFormAfterSave = props.isPreventCloseFormAfterSave;
-		this.recId = this.props.formData?.id || (props.listData ? undefined : NEW_RECORD);
+		this.recId = this.props.formData?.id || props.recId;
 
 		this.formData = props.formData as any;
-		this.initialRecordData = props.formData ? JSON.parse(JSON.stringify(props.formData)) : undefined;
 		this.listData = props.listData;
 
 		this.formFilters = props.filters;
@@ -115,6 +114,9 @@ export default class Form<
 		this.viewMask = props.viewMask || (props.editable ? VIEW_MASK.EDITABLE : ((this.isList || props.isListItemView) ? VIEW_MASK.LIST : VIEW_MASK.READONLY));
 		if (!props.parentForm) {
 			this.recoveryBackupIfNeed();
+		}
+		if (!this.formData && this.recId === NEW_RECORD) {
+			this.formData = {} as any;
 		}
 
 		this.savedFormData = this.formData && JSON.parse(JSON.stringify(this.formData));
@@ -140,7 +142,7 @@ export default class Form<
 
 	backupInterval = 0;
 	tryBackupData() {
-		if (this.recId === 'new' && !this.isList && this.props.editable && !this.props.parentForm) {
+		if (this.recId === NEW_RECORD && !this.isList && this.props.editable && !this.props.parentForm) {
 			this.prepareToBackup();
 			setItem(this._getBackupKey(), this.formData!);
 		}
@@ -184,7 +186,7 @@ export default class Form<
 	}
 
 	recoveryBackupIfNeed() {
-		if (this.recId === 'new' && this.isList) {
+		if (this.recId === NEW_RECORD && this.isList) {
 			const backup = getItem(this._getBackupKey());
 			if (backup) {
 				this.formData = Object.assign(backup, this.formFilters);
@@ -498,7 +500,7 @@ export default class Form<
 				{
 					fieldId: field.id,
 					nodeId: field.node!.id,
-					recId: this.recId !== 'new' && this.recId,
+					recId: this.recId !== NEW_RECORD && this.recId,
 					val
 				},
 				undefined,
@@ -556,10 +558,9 @@ export default class Form<
 	async processEvent(handlers: Handler[] | undefined, ...args: any[]) {
 		if (handlers) {
 			for (const handler of handlers) {
-				this.recId = this.props.formData!.id || NEW_RECORD;
 				this.isUpdateRecord = !!this.props.editable;
 				if (this.isUpdateRecord) {
-					this.isNewRecord = !(this.props.formData as RecordData).hasOwnProperty('id');
+					this.isNewRecord = this.recId === NEW_RECORD;
 					if (this.isNewRecord) {
 						this.isUpdateRecord = false;
 					}
@@ -737,7 +738,7 @@ export default class Form<
 							if (this.props.askToSaveParentBeforeCreation) {
 								await this.getParentLookupField()!.saveParentFormBeforeCreation();
 							}
-							this.getParentLookupField()!.toggleCreateDialogue('new');
+							this.getParentLookupField()!.toggleCreateDialogue(NEW_RECORD);
 						}
 					},
 					renderIcon('plus'),
@@ -748,7 +749,7 @@ export default class Form<
 					{
 						className: 'clickable create-button',
 						onClick: () => {
-							globals.Stage.showForm(node.id, 'new', filters, true);
+							globals.Stage.showForm(node.id, NEW_RECORD, filters, true);
 						}
 					},
 					renderIcon('plus'),

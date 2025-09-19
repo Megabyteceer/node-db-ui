@@ -2,8 +2,9 @@
 
 import { NODE_TYPE } from '../../../types/generated';
 import { globals } from '../../../types/globals';
-import { throwError } from './assert';
+import { assert, throwError } from './assert';
 import { normalizeEnumName, type FormFilters, type RecId, type RecordData } from './bs-utils';
+import { NEW_RECORD } from './consts';
 import Form, { type FormProps } from './form';
 import { LeftBar } from './left-bar';
 import { R } from './r';
@@ -103,13 +104,15 @@ class Stage extends Component<{}, {}> {
 
 	static async showForm(
 		nodeId: RecId,
-		recId?: RecId | 'new',
+		recId?: RecId | typeof NEW_RECORD,
 		filters: FormFilters = {},
 		editable?: boolean,
 		modal?: boolean,
 		onModified?: (dataToSend?: RecordData) => void,
 		noAnimation = false
 	) {
+
+		assert(!isNaN(nodeId), 'Invalid NODE_ID');
 
 		if (this.currentForm?.isAsyncInProgress()) {
 			await this.currentForm.waitForAsyncFinish();
@@ -128,7 +131,7 @@ class Stage extends Component<{}, {}> {
 		let isList = false;
 		let node = getNodeIfPresentOnClient(nodeId);
 		if (!node || node.nodeType === NODE_TYPE.DOCUMENT) {
-			if (recId !== 'new') {
+			if (recId !== NEW_RECORD) {
 				if (typeof recId === 'number') {
 					data = await getRecordClient(nodeId, recId as RecId, undefined, editable, false, isPresentListRenderer(nodeId));
 				} else {
@@ -155,7 +158,7 @@ class Stage extends Component<{}, {}> {
 		if (!node.storeForms) {
 			// cant render forms without storage as a list. Submit form only
 			if (!recId) {
-				recId = 'new';
+				recId = NEW_RECORD;
 			}
 			editable = true;
 		}

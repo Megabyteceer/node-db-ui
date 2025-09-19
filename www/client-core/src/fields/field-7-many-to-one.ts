@@ -1,11 +1,9 @@
 import { h, type ComponentChild } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
-import { globals } from '../../../../types/globals';
-import type { LookupValue, LookupValueIconic, RecId, RecordData } from '../bs-utils';
+import type { LookupValue, LookupValueIconic, RecordData } from '../bs-utils';
 import { IMAGE_THUMBNAIL_PREFIX, VIEW_MASK } from '../bs-utils';
 import Form, { type FormProps } from '../form';
 import { R } from '../r';
-import { scrollToVisible } from '../scroll-to-visible';
 import { getNode, idToImgURL, L, registerFieldClass, renderIcon, sp } from '../utils';
 import BaseLookupField, { type BaseLookupFieldProps } from './base-lookup-field';
 import type LookupManyToManyFiled from './field-14-many-to-many';
@@ -68,36 +66,6 @@ export default class LookupManyToOneFiled extends BaseLookupField {
 				}
 			}
 		}
-	}
-
-	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
-		this.collapseList();
-		const filters = this.parentForm
-			? {
-				[this.getLinkerFieldName()]: { id: this.parentForm.recId }
-			}
-			: undefined;
-		globals.Stage.showForm(
-			this.props.fieldDesc.nodeRef!.id,
-			recIdToEdit,
-			filters,
-			true,
-			true,
-			(newData?: RecordData) => {
-				const value = this.currentValue;
-				if (recIdToEdit === value.id) {
-					if (!newData) {
-						this.clearValue();
-					} else {
-						this.setValue(newData);
-					}
-					scrollToVisible(this);
-				} else if (recIdToEdit === 'new' && newData) {
-					this.valueSelected(newData, true, true);
-					scrollToVisible(this);
-				}
-			}
-		);
 	}
 
 	static encodeValue(val: LookupValue) {

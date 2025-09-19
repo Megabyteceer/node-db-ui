@@ -1,6 +1,7 @@
 import type { DebugInfo } from '../../../core/mysql-connection';
 import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord, NODE_ID, NODE_TYPE } from '../../../types/generated';
 import type { SelectItem } from './components/select';
+import type { NEW_RECORD } from './consts';
 import type Form from './form';
 
 export const normalizeCSSName = (name: string) => {
@@ -395,7 +396,7 @@ const LANGUAGE_ID_DEFAULT: RecId = 1;
 interface IFormParameters {
 	nodeId: RecId;
 	/** id of current edited/shown record. 'new' - if record is not saved yet. */
-	recId?: RecId | 'new';
+	recId?: RecId | typeof NEW_RECORD;
 	/** true if form is editable or read only */
 	editable?: boolean;
 	filters?: GetRecordsFilter;

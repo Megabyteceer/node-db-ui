@@ -11,6 +11,7 @@ import { VIEW_MASK } from '../bs-utils';
 import { type IFieldsFilter, type IFiltersFilter, type ILanguagesFilter, type INodesFilter, type IUsersRecord } from '../../../../types/generated';
 import type { NodeDesc, UserSession } from '../bs-utils';
 import { LANGUAGE_ID_DEFAULT } from '../bs-utils';
+import { NEW_RECORD } from '../consts';
 import { clientOn } from '../events-handle';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
 import type Form from '../form';
@@ -98,7 +99,7 @@ clientOn(E._users.onSave, (form) => {
 	}
 
 	if (User.currentUserData?.id === form.recId) {
-		let pLang = (form.initialRecordData as IUsersRecord).language!;
+		let pLang = (form.savedFormData as IUsersRecord).language!;
 		let nLang = (form.formData as IUsersRecord).language!;
 
 		uiLanguageIsChanged = nLang.id != pLang.id;
@@ -683,11 +684,11 @@ clientOn(E._registration.alreadyHaveAccountBtn.onClick, (_form) => {
 });
 
 clientOn(E._login.signUpLinkBtn.onClick, (_form) => {
-	globals.Stage.showForm(NODE_ID.REGISTRATION, 'new', undefined, true);
+	globals.Stage.showForm(NODE_ID.REGISTRATION, NEW_RECORD, undefined, true);
 });
 
 clientOn(E._login.forgotPasswordButton.onClick, (_form) => {
-	globals.Stage.showForm(NODE_ID.RESET_PASSWORD, 'new', undefined, true);
+	globals.Stage.showForm(NODE_ID.RESET_PASSWORD, NEW_RECORD, undefined, true);
 });
 
 clientOn(E._resetPassword.backToLogin.onClick, (_form) => {

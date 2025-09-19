@@ -1,5 +1,5 @@
 import type { LANG_KEYS_CUSTOM } from '../../src/locales/en/lang';
-import { LITE_UI_PREFIX } from './consts';
+import { LITE_UI_PREFIX, NEW_RECORD } from './consts';
 import type { LANG_KEYS } from './locales/en/lang';
 
 import type { ApiResponse, FieldDesc, GetRecordsFilter, GetRecordsParams, IFormParameters, LookupValue, NodeDesc, RecId, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordsData, RecordSubmitResult, RecordSubmitResultNewRecord, UserSession } from './bs-utils';
@@ -301,7 +301,7 @@ function goToHome() {
 	}
 }
 
-function locationToHash(nodeId: RecId, recId: RecId | 'new', filters?: GetRecordsFilter, editable?: boolean) {
+function locationToHash(nodeId: RecId, recId: RecId | typeof NEW_RECORD, filters?: GetRecordsFilter, editable?: boolean) {
 	let newHash = ['n', encodeURIComponent(nodeId)];
 
 	if (recId || recId === 0) {
@@ -355,7 +355,7 @@ function hashToFormParams(hashTxt: string): IFormParameters {
 		return { nodeId: getHomeNode(), filters: {} };
 	}
 	let nodeId!: NODE_ID;
-	let recId!: RecId | 'new' | string;
+	let recId!: RecId | typeof NEW_RECORD | string;
 	let editable;
 	let filters = {} as GetRecordsFilter;
 	const hash = hashTxt.split('/');
@@ -392,7 +392,7 @@ function hashToFormParams(hashTxt: string): IFormParameters {
 			break;
 		}
 	}
-	if (recId !== 'new') {
+	if (recId !== NEW_RECORD) {
 		if (recId) {
 			recId = parseInt(recId as string);
 		}
@@ -564,6 +564,7 @@ function getNodeIfPresentOnClient(nodeId: RecId) {
 }
 
 async function getNode(nodeId: NODE_ID, forceRefresh = false, callStack?: string): Promise<NodeDesc> {
+	assert(!isNaN(nodeId), 'invalid NODE_ID');
 	if (!callStack) {
 		callStack = new Error('getNode called from: ').stack;
 	}
@@ -921,7 +922,7 @@ function isAuthNeed(data: ApiResponse) {
 	const token = getSessionToken();
 	if (token && token !== 'guest-session' && data.error && (data.error.startsWith('Error: <auth>') || data.error.startsWith('<auth>'))) {
 		clearSessionToken();
-		globals.Stage.showForm(NODE_ID.LOGIN, 'new', undefined, true);
+		globals.Stage.showForm(NODE_ID.LOGIN, NEW_RECORD, undefined, true);
 		return true;
 	} else if (data.error && (data.error.startsWith('Error: <access>') || data.error.startsWith('<access>'))) {
 		if (globals.Stage.currentForm?.nodeId !== NODE_ID.LOGIN) {
