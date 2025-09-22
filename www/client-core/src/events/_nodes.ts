@@ -2,13 +2,13 @@ import { E, NODE_TYPE, type FormNodes, type IFieldsFilter, type IFiltersFilter }
 import { clientOn } from '../../../../www/client-core/src/events-handle';
 import { makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField } from '../admin/admin-utils';
 import type Form from '../form';
-import { L } from '../utils';
+import { L, submitData } from '../utils';
 
 export const removeWrongCharactersInField = (form: Form, fieldName: string) => {
 	if (!form.isUpdateRecord) {
 		const oldValue = form.fieldValue(fieldName);
 		if (oldValue) {
-			const newValue = oldValue.toLowerCase().replace(/[^a-z0-9]/gm, '_');
+			const newValue = oldValue.replace(/[^a-zA-Z0-9]/gm, '_').replace(/^\d+/, '');
 			if (oldValue != newValue) {
 				form.setFieldValue(fieldName, newValue);
 			}
@@ -17,6 +17,18 @@ export const removeWrongCharactersInField = (form: Form, fieldName: string) => {
 };
 
 /// #if DEBUG
+
+const checkTableExists = async (form: FormNodes) => {
+	if (!form.isUpdateRecord) {
+		const tableName = form.fieldValue('tableName');
+		const ret = await submitData('admin/isTableExists', { tableName });
+		if (!ret) {
+			form.fieldAlert('tableName', 'Table with this name is already exist.', false, true, 'table-name-exists');
+		} else {
+			form.fieldAlert('tableName', undefined, false, false, 'table-name-exists');
+		}
+	}
+};
 
 const _nodes_recalculateFieldsVisibility = (form: FormNodes) => {
 	if (!form.isNewRecord && form.fieldValue('nodeType') === NODE_TYPE.DOCUMENT) {
@@ -150,5 +162,12 @@ clientOn(E._nodes.storeForms.onChange, nodeTypeOnChange);
 
 clientOn(E._nodes.tableName.onChange, (form) => {
 	removeWrongCharactersInField(form, 'tableName');
+	checkTableExists(form);
+	const name = form.fieldValue('tableName');
+	if (name.startsWith('_') || name.startsWith('pg_')) {
+		form.fieldAlert('tableName', 'Table name can not start with "_" or "pg_"', false, true, 'prohibited-system-name');
+	} else {
+		form.fieldAlert('tableName', undefined, false, false, 'prohibited-system-name');
+	}
 });
 /// #endif

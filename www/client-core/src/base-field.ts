@@ -191,7 +191,11 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 		await (this.parent as any as FormNodeAccessor).beforeAlert(isSuccess);
 		this.setState({ alertText: txt, isSuccessAlert: isSuccess });
 		if (focus && txt && !isSuccess) {
-			this.focus();
+			setTimeout(() => {
+				if (this.base && Object.keys(this._alerts).length) {
+					this.focus();
+				}
+			}, 10);
 		}
 		this.parentForm.asyncOpsInProgress--;
 	}
@@ -361,8 +365,13 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 	}
 
 	isValid(): typeof SAVE_REJECTED | undefined {
-		return super.isValid() ||
-			(this.state.alertText && !this.state.isSuccessAlert) ? SAVE_REJECTED : undefined;
+		if (super.isValid()) {
+			return SAVE_REJECTED;
+		}
+		if (this.state.alertText && !this.state.isSuccessAlert) {
+			this.focus();
+			return SAVE_REJECTED;
+		}
 	}
 
 	renderField(): ComponentChild {

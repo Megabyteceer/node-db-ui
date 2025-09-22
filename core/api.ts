@@ -2,7 +2,7 @@ import { NODE_TYPE, type NODE_ID } from '../types/generated';
 import type { APIResult, GetRecordsFilter, GetRecordsParams, RecId, RecordDataWriteDraftable, RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
 /// #if DEBUG
 import { dumpDB, editEventHandler, nodePrivileges, recoveryDB } from './admin/admin';
-import { getDeployPackage, isFiledExists } from './admin/deploy';
+import { getDeployPackage, isFiledExists, isTableExists } from './admin/deploy';
 /// #endif
 
 import { activateUser, getGuestUserForBrowserLanguage, killSession, resetPassword, setCurrentOrg, setMultilingual } from './auth';
@@ -82,6 +82,9 @@ const api: object = {
 	},
 	'admin/isFiledExists': (reqData, userSession: UserSession) => {
 		return isFiledExists(reqData, userSession);
+	},
+	'admin/isTableExists': (reqData, userSession: UserSession) => {
+		return isTableExists(reqData, userSession);
 	},
 	'admin/dumpDb': (_reqData, userSession: UserSession) => {
 		return dumpDB(userSession);

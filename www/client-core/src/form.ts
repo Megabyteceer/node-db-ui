@@ -116,6 +116,7 @@ export default class Form<
 		this.cancelClick = this.cancelClick.bind(this);
 		this.saveClick = this.saveClick.bind(this);
 		this.changeSearch = this.changeSearch.bind(this);
+		this.tryBackupData = this.tryBackupData.bind(this);
 	}
 
 	private applyNodeDesc(nodeDesc?: NodeDesc) {

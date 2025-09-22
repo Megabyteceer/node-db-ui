@@ -9,8 +9,6 @@ import { removeWrongCharactersInField } from './_nodes';
 
 const check12nFieldName = (form: FormFields) => {
 	if (form.isNewRecord) {
-		_fieldsNameIsBad = false;
-
 		const fn = form.fieldValue('fieldName');
 		let nodeId = form.fieldValue('nodeFieldsLinker')?.id;
 		let nodeRef = form.fieldValue('nodeRef')?.id;
@@ -32,15 +30,13 @@ const checkFieldExists = async (form: FormFields) => {
 		if (parentNode?.id) {
 			const ret = await submitData('admin/isFiledExists', { fieldName, nodeId: parentNode.id });
 			if (!ret) {
-				form.fieldAlert('fieldName', L('FLD_EXISTS'));
+				form.fieldAlert('fieldName', L('FLD_EXISTS'), false, true, 'filed-name-exists');
 			}
 		} else {
-			form.fieldAlert('fieldName');
+			form.fieldAlert('fieldName', undefined, false, false, 'filed-name-exists');
 		}
 	}
 };
-
-let _fieldsNameIsBad = false;
 
 clientOn(E._fields.onLoad, async (form) => {
 	makeIconSelectionField(form, 'icon');
@@ -157,9 +153,6 @@ clientOn(E._fields.onSave, (form) => {
 
 	if (fieldType === FIELD_TYPE.STATIC_HTML_BLOCK || fieldType === FIELD_TYPE.TAB || fieldType === FIELD_TYPE.BUTTON || fieldType === FIELD_TYPE.SPLITTER) {
 		form.setFieldValue('storeInDb', 0);
-	}
-	if (_fieldsNameIsBad) {
-		form.fieldAlert('fieldName', L('FLD_EXISTS'));
 	}
 });
 

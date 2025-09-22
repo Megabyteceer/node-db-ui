@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { escapeString, mysqlExec } from '../mysql-connection';
+import { escapeString, mysqlExec, NUM_1 } from '../mysql-connection';
 
 import { createHash } from 'crypto';
 import { SERVER_ENV } from '../../core/ENV';
@@ -296,7 +296,7 @@ async function deployToRemoteServer(_fileName: string) {
 
 export const isFiledExists = async (reqData: { fieldName: string; nodeId: NODE_ID }, userSession: UserSession) => {
 	shouldBeAdmin(userSession);
-	const tableName = getNodeDesc(reqData.nodeId, userSession).tableName;
+	const tableName = getNodeDesc(reqData.nodeId, userSession).tableName!;
 
 	const exists = await mysqlExec(`SELECT column_name 
 FROM information_schema.columns 
@@ -304,7 +304,19 @@ WHERE table_name=${escapeString(tableName)} and column_name=${escapeString(reqDa
 	return (await exists).length === 0;
 };
 
-const walkSync = (dir, fileList = []) => {
+export const isTableExists = async (reqData: { tableName: string }, userSession: UserSession) => {
+	shouldBeAdmin(userSession);
+
+	const exists = await mysqlExec(`
+    SELECT ${NUM_1}
+    FROM pg_tables
+    WHERE schemaname = ${escapeString('public')}
+    AND tablename = ${escapeString(reqData.tableName)}`);
+
+	return (await exists).length === 0;
+};
+
+const walkSync = (dir: string, fileList = []) => {
 	fs.readdirSync(dir).forEach((file) => {
 		const fullPath = path.join(dir, file);
 		const stats = fs.statSync(fullPath);

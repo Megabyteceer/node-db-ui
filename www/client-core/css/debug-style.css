@@ -235,8 +235,7 @@
 	padding: 2px;
 }
 
-.admin-form-open-btn.admin-button-highlighted,
-.admin-event-buttons-group .admin-button-highlighted {
+.admin-button-highlighted {
 	color: #00dd00;
 }
 
