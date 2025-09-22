@@ -1,3 +1,4 @@
+import type { ComponentChildren } from 'preact';
 import { FIELD_TYPE } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { throwError } from '../assert';
@@ -5,7 +6,7 @@ import BaseField, { type BaseFieldProps, type BaseFieldState } from '../base-fie
 import type { GetRecordsFilter, RecId, RecordData } from '../bs-utils';
 import { NEW_RECORD } from '../consts';
 import { scrollToVisible } from '../scroll-to-visible';
-import { assignFilters } from '../utils';
+import { assignFilters, getNode, renderIcon } from '../utils';
 
 export interface BaseLookupFieldProps extends BaseFieldProps {
 	isNew?: boolean;
@@ -19,6 +20,8 @@ export interface BaseLookupFieldState extends BaseFieldState {
 }
 
 export default class BaseLookupField extends BaseField<BaseLookupFieldProps, BaseLookupFieldState> {
+
+	node?: NodeDesc;
 
 	excludeIDs?: RecId[];
 
@@ -117,6 +120,17 @@ export default class BaseLookupField extends BaseField<BaseLookupFieldProps, Bas
 				}
 			}
 		);
+	}
+
+	render(): ComponentChildren {
+		if (!this.node) {
+			getNode(this.props.fieldDesc.nodeRef!.id).then((nodeDesc) => {
+				this.node = nodeDesc;
+				this.forceUpdate();
+			});
+			return renderIcon('cog fa-spin');
+		}
+		return super.render();
 	}
 
 	async saveParentFormBeforeCreation() {

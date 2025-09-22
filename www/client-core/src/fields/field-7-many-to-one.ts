@@ -4,13 +4,12 @@ import type { LookupValue, LookupValueIconic, RecordData } from '../bs-utils';
 import { IMAGE_THUMBNAIL_PREFIX, VIEW_MASK } from '../bs-utils';
 import Form, { type FormProps } from '../form';
 import { R } from '../r';
-import { getNode, idToImgURL, L, registerFieldClass, renderIcon, sp } from '../utils';
+import { idToImgURL, L, registerFieldClass, renderIcon, sp } from '../utils';
 import BaseLookupField, { type BaseLookupFieldProps } from './base-lookup-field';
 import type LookupManyToManyFiled from './field-14-many-to-many';
 
 export default class LookupManyToOneFiled extends BaseLookupField {
 	isEnterCreateThroughList = false;
-	node?: NodeDesc;
 
 	declare currentValue: LookupValueIconic;
 
@@ -101,14 +100,6 @@ export default class LookupManyToOneFiled extends BaseLookupField {
 
 	renderFieldEditable() {
 
-		if (!this.node) {
-			getNode(this.props.fieldDesc.nodeRef!.id).then((nodeDesc) => {
-				this.node = nodeDesc;
-				this.forceUpdate();
-			});
-			return renderIcon('cog fa-spin');
-		}
-
 		const field = this.props.fieldDesc;
 		const value = this.currentValue;
 
@@ -116,7 +107,6 @@ export default class LookupManyToOneFiled extends BaseLookupField {
 		let clearBtn;
 		if (this.state.expanded) {
 			list = h(Form, {
-				nodeDesc: this.parentForm.nodeDesc,
 				nodeId: field.nodeRef!.id,
 				isLookup: true,
 				isCompact: true,
