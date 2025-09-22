@@ -1,13 +1,6 @@
-/// #if DEBUG
-
-if (typeof window !== 'undefined') {
-
-	throwError('mysql-connection.ts imported on client side.');
-}
-
 import { performance } from 'perf_hooks';
 import { assert, ESCAPE_BEGIN, ESCAPE_END, SQLInjectionsCheck, throwError } from '../www/client-core/src/assert';
-import { getCurrentStack } from '../www/client-core/src/bs-utils';
+import { getCurrentStack, isServer } from '../www/client-core/src/bs-utils';
 /// #endif
 
 import type { QueryResultRow } from 'pg';
@@ -28,6 +21,13 @@ const D = (val: number): string => {
 		/// #endif
 	);
 };
+
+/// #if DEBUG
+
+if (!isServer()) {
+
+	throwError('mysql-connection.ts imported on client side.');
+}
 
 const escapeString = (str: string): string => {
 	return (

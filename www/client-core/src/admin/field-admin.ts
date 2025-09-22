@@ -1,4 +1,4 @@
-import type { FieldDesc, NodeDesc } from '../bs-utils';
+import { type FieldDesc, type NodeDesc } from '../bs-utils';
 
 import { Component, type ComponentChild } from 'preact';
 import { FIELD_TYPE, NODE_ID, type FIELD_ID, type IFieldsRecord } from '../../../../types/generated';
@@ -6,8 +6,9 @@ import { globals } from '../../../../types/globals';
 import type Form from '../form';
 
 import { NEW_RECORD } from '../consts';
+import { CLIENT_SIDE_FORM_EVENTS } from '../events-handle';
 import { R } from '../r';
-import { CLIENT_SIDE_FORM_EVENTS, getRecordClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
+import { getRecordClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
 import { admin } from './admin-utils';
 
@@ -21,7 +22,6 @@ throw new Error("field-admin imported in release build.");
 
 interface FieldAdminState {
 	show?: boolean;
-	locked?: boolean;
 }
 
 interface FieldAdminProps {
@@ -38,7 +38,6 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		};
 		this.onShow = this.onShow.bind(this);
 		this.hide = this.hide.bind(this);
-		this.toggleLock = this.toggleLock.bind(this);
 	}
 
 	onShow() {
@@ -57,12 +56,6 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		}
 	}
 
-	toggleLock() {
-		this.setState({
-			locked: !this.state.locked
-		});
-	}
-
 	render() {
 		const field: FieldDesc = this.props.field;
 		const node: NodeDesc = field.node!;
@@ -76,7 +69,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 			border = '';
 		}
 
-		const bodyVisible = this.state.show || this.state.locked;
+		const bodyVisible = this.state.show;
 
 		if (bodyVisible) {
 			let extendedInfo: ComponentChild;
@@ -99,9 +92,6 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 					className: 'admin-form-body',
 					onClick: () => {
 						showedFieldId = field.id;
-					},
-					onMouseLeave: () => {
-						this.hide();
 					}
 				},
 				L('FLD_SETTINGS'),
@@ -115,7 +105,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 						{
 							className: 'clickable tool-btn admin-form-btn' + border,
 							onClick: () => {
-								admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE, node, field);
+								admin_editSource(CLIENT_SIDE_FORM_EVENTS.onChange, node, field);
 							},
 							title: 'Edit client side script which execute on field value change.'
 						},
@@ -192,9 +182,9 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 					R.span(
 						{
 							className: 'clickable admin-form-lock-btn',
-							onClick: this.toggleLock
+							onClick: this.hide
 						},
-						renderIcon(this.state.locked ? 'lock' : 'unlock')
+						renderIcon('times')
 					)
 				),
 				extendedInfo

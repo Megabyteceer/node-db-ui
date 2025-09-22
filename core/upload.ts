@@ -160,7 +160,7 @@ async function uploadImage(reqData: UploadRequest, userSession: UserSession) {
 		left: 0,
 		right: 0,
 		bottom: 0,
-		background: { r: 255, g: 255, b: 255, alpha: isTransparency ? 0 : 1 }
+		background: { r: 0, g: 0, b: 0, alpha: isTransparency ? 0 : 1 }
 	};
 
 	if (!isPerfectSize) {
@@ -246,7 +246,7 @@ async function uploadImage(reqData: UploadRequest, userSession: UserSession) {
 		await img.resize({
 			width: Math.floor(thumbSizeQ * targetW),
 			height: LOOKUP_ICON_HEIGHT,
-			fit: 'contain',
+			fit: 'fill',
 			background: { r: 255, g: 255, b: 255, alpha: 1 }
 		});
 	}

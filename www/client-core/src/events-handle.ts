@@ -1,7 +1,9 @@
-import { E, type TypeGenerationHelper } from '../../../types/generated';
+import { getNodeByTableName } from '../../../core/get-node-by-table-name';
+import { E, FIELD_TYPE, type TypeGenerationHelper } from '../../../types/generated';
 import { assert } from './assert';
+import { isServer } from './bs-utils';
 
-export const enum ServerEventName {
+export enum SERVER_SIDE_FORM_EVENTS {
 	beforeCreate = 'beforeCreate',
 	afterCreate = 'afterCreate',
 	beforeUpdate = 'beforeUpdate',
@@ -11,11 +13,31 @@ export const enum ServerEventName {
 	onSubmit = 'onSubmit'
 }
 
+export enum CLIENT_SIDE_FORM_EVENTS {
+	onSave = 'onSave',
+	afterSave = 'afterSave',
+	onLoad = 'onLoad',
+	onChange = 'onChange',
+	onClick = 'onClick'
+}
+
 export type Handler = ((...args: any[]) => any);
 
-const handlers = new Map() as Map<string, Handler[]>;
+const handlers = new Map() as Map<number, Handler[]>;
 
-const dispatch = async (nodeTableName: string, eventName: ServerEventName, ...args: any[]): Promise<KeyedMap<any> | undefined> => {
+export const getEventsHandlers = (nodeTableName: string, eventName: SERVER_SIDE_FORM_EVENTS) => {
+	const eventFullName = (E as KeyedMap<any>)[nodeTableName!]?.[eventName];
+	return handlers.get(eventFullName);
+};
+
+export const getEventsHandlersField = (nodeTableName: string, fieldName: string, fieldType: FIELD_TYPE) => {
+	const eventFullName = (E as KeyedMap<any>)[nodeTableName!]?.[fieldName]?.[(fieldType === FIELD_TYPE.BUTTON || fieldType === FIELD_TYPE.TAB) ?
+		CLIENT_SIDE_FORM_EVENTS.onClick :
+		CLIENT_SIDE_FORM_EVENTS.onChange];
+	return handlers.get(eventFullName);
+};
+
+const dispatch = async (nodeTableName: string, eventName: SERVER_SIDE_FORM_EVENTS, ...args: any[]): Promise<KeyedMap<any> | undefined> => {
 	const eventFullName = (E as KeyedMap<any>)[nodeTableName!][eventName];
 	const h = handlers.get(eventFullName);
 
@@ -38,7 +60,44 @@ const dispatch = async (nodeTableName: string, eventName: ServerEventName, ...ar
 	}
 };
 
-const on = (eventName: string, handler: () => any) => {
+export interface SourceMappedEventHandler {
+	__sourceFile: string;
+}
+
+/// #if DEBUG
+let nodeDescByEventName: Map<number, { node: NodeDesc; eventName: string }>;
+/// #endif
+
+const on = (eventName: number, handler: () => any) => {
+	/// #if DEBUG
+	const fileName = new Error('stack getter').stack!.split('\n')[3];
+	(handler as any as SourceMappedEventHandler).__sourceFile = fileName;
+
+	if (isServer()) {
+		if (!nodeDescByEventName) {
+			nodeDescByEventName = new Map();
+			const enumNodes = (o: KeyedMap<any>, tableName?: string) => {
+				for (const key in o) {
+					const val = o[key];
+					if (typeof val === 'number') {
+						nodeDescByEventName.set(val, { node: getNodeByTableName(tableName!)!, eventName: key });
+					} else {
+						enumNodes(val, tableName || key);
+					}
+				}
+			};
+			enumNodes(E);
+		}
+		const nodeDesc = nodeDescByEventName.get(eventName)!;
+		if (!nodeDesc.node.__serverSideHandlers) {
+			nodeDesc.node.__serverSideHandlers = {};
+		}
+		if (!nodeDesc.node.__serverSideHandlers[nodeDesc.eventName]) {
+			nodeDesc.node.__serverSideHandlers[nodeDesc.eventName] = [];
+		}
+		nodeDesc.node.__serverSideHandlers[nodeDesc.eventName].push({ __sourceFile: fileName });
+	}
+	/// #endif
 	if (handlers.has(eventName)) {
 		handlers.get(eventName)!.push(handler);
 	} else {
@@ -48,8 +107,27 @@ const on = (eventName: string, handler: () => any) => {
 
 export const eventDispatch = dispatch;
 
-export const serverOn = on as any as TypeGenerationHelper['eventsServer'];
-export const clientOn = on as any as TypeGenerationHelper['eventsClient'];
+export const serverOn =
+/// #if DEBUG
+	((eventName: number, handler: () => any) => {
+		on(eventName, handler);
+		assert(!(handler as any as SourceMappedEventHandler).__sourceFile.includes('://'), 'serverOn invoked on client side. Please use clientOn() instead.');
+	}) as any as TypeGenerationHelper['eventsServer'];
+/*
+/// #endif
+on as any as TypeGenerationHelper['eventsServer'];
+// */
+
+export const clientOn =
+/// #if DEBUG
+	((eventName: number, handler: () => any) => {
+		on(eventName, handler);
+		assert((handler as any as SourceMappedEventHandler).__sourceFile.includes('://'), 'clientOn invoked on server side. Please use serverOn() instead.');
+	}) as any as TypeGenerationHelper['eventsClient'];
+/*
+/// #endif
+on as any as TypeGenerationHelper['eventsClient'];
+// */
 export const clientHandlers = handlers;
 
 /// #if DEBUG

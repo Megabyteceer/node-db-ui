@@ -244,7 +244,7 @@ async function resetPassword(key: string, userId: RecId, userSession: UserSessio
 
 function getPasswordHash(password: string, salt: string): Promise<string> {
 	return new Promise((resolve, rejects) => {
-		pbkdf2(password, salt, 1000, 64, 'sha512', (err, key) => {
+		pbkdf2(password, salt + SERVER_ENV.SALT, 1000, 64, 'sha512', (err, key) => {
 			if (err) {
 				rejects(err);
 			} else {

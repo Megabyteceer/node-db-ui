@@ -1,6 +1,7 @@
+import { E, FIELD_TYPE, NODE_ID, NODE_TYPE, type FormEnumValues, type FormFields, type FormNodes, type IRegistrationFilter, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList } from 'types/generated';
 import { attachGoogleLoginAPI, getData, getNode, goToHome, isAdmin, L, myAlert, showPrompt, submitData } from '../utils';
+
 /// #if DEBUG
-import { E, FIELD_TYPE, NODE_ID, NODE_TYPE, type FormEnumValues, type FormFields, type FormNodes, type IRegistrationFilter, type TRegistrationFieldsList, type TResetPasswordFieldsList, type TUsersFieldsList } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField } from '../admin/admin-utils';
 

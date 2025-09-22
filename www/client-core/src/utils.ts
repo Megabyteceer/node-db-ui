@@ -25,13 +25,6 @@ import type { BaseFieldProps } from './base-field';
 import { HotkeyButton } from './components/hotkey-button';
 import { ENV } from './main-frame';
 
-enum CLIENT_SIDE_FORM_EVENTS {
-	ON_FORM_SAVE = 'onSave',
-	ON_FORM_AFTER_SAVE = 'afterSave',
-	ON_FORM_LOAD = 'onLoad',
-	ON_FIELD_CHANGE = 'onChange',
-	ON_FIELD_CLICK = 'onClick'
-}
 /// #if DEBUG
 const __corePath = 'http://127.0.0.1:1443/core/';
 /*
@@ -1348,7 +1341,6 @@ export {
 	attachGoogleLoginAPI,
 	checkFileSize,
 	clearSessionToken,
-	CLIENT_SIDE_FORM_EVENTS,
 	consoleDir,
 	consoleLog,
 	debugError,

@@ -21,7 +21,7 @@ import {
 	/// #if DEBUG
 	__destroyRecordToPreventAccess,
 	/// #endif
-	eventDispatch, ServerEventName
+	eventDispatch, SERVER_SIDE_FORM_EVENTS
 } from '../www/client-core/src/events-handle';
 import { D, escapeString, mysqlCommit, mysqlExec, mysqlStartTransaction, NUM_1 } from './mysql-connection';
 import { idToImgURLServer, UPLOADS_FILES_PATH } from './upload';
@@ -43,7 +43,7 @@ for (const tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWriteDraftable, recId?: RecId, userSession?: UserSession): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	const node = getNodeDesc(nodeId);
 
-	let currentData: RecordData;
+	let currentData: RecordData | undefined;
 	if (recId) {
 		currentData = await getRecord(nodeId, VIEW_MASK.ALL, recId, userSession);
 	}
@@ -185,9 +185,9 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 	}
 
 	if (recId) {
-		handlerResult1 = await eventDispatch(node.tableName!, ServerEventName.beforeUpdate, currentData!, data, userSession);
+		handlerResult1 = await eventDispatch(node.tableName!, SERVER_SIDE_FORM_EVENTS.beforeUpdate, currentData!, data, userSession);
 	} else {
-		handlerResult1 = await eventDispatch(node.tableName!, node.storeForms ? ServerEventName.beforeCreate : ServerEventName.onSubmit, data, userSession);
+		handlerResult1 = await eventDispatch(node.tableName!, node.storeForms ? SERVER_SIDE_FORM_EVENTS.beforeCreate : SERVER_SIDE_FORM_EVENTS.onSubmit, data, userSession);
 		if (!node.storeForms) {
 			recId = 1;
 		}
@@ -223,7 +223,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 					case FIELD_TYPE.IMAGE:
 						if (fieldVal) {
 							if (userSession!.uploaded && userSession!.uploaded[f.id!] === fieldVal) {
-								delete userSession!.uploaded[fieldVal];
+								delete userSession!.uploaded[f.id];
 							} else {
 								throwError('Error. Couldn\'t link uploaded file to the record.');
 							}
@@ -318,14 +318,16 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 		if (!recId) {
 			recId = qResult![0].id;
 			data.id = recId!;
-			handlerResult2 = await eventDispatch(node.tableName!, ServerEventName.afterCreate, data, userSession);
+			handlerResult2 = await eventDispatch(node.tableName!, SERVER_SIDE_FORM_EVENTS.afterCreate, data, userSession);
 		} else {
-			handlerResult2 = await eventDispatch(node.tableName!, ServerEventName.afterUpdate, Object.assign(currentData!, data), userSession);
+			handlerResult2 = await eventDispatch(node.tableName!, SERVER_SIDE_FORM_EVENTS.afterUpdate, Object.assign(currentData!, data), userSession);
 		}
 
 		/// #if DEBUG
 		__destroyRecordToPreventAccess(data);
-		__destroyRecordToPreventAccess(currentData!);
+		if (currentData) {
+			__destroyRecordToPreventAccess(currentData!);
+		}
 		/// #endif
 
 		if (needProcess_n2m) {

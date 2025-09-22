@@ -6,13 +6,16 @@ throw new Error('admin file imported to prod build');
 
 import { ADMIN_USER_SESSION, getFieldDesc, getNodeDesc, reloadMetadataSchedule } from '../describe-node';
 
+import { execSync } from 'child_process';
 import * as fs from 'fs';
 import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import path from 'path';
 import type { FIELD_ID, NODE_ID } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import { USER_ID, type PRIVILEGES_MASK, type RecId } from '../../www/client-core/src/bs-utils';
+import { CLIENT_SIDE_FORM_EVENTS, SERVER_SIDE_FORM_EVENTS } from '../../www/client-core/src/events-handle';
 import { isAdmin, type UserSession } from '../auth.js';
+import { SERVER_ENV } from '../ENV';
 import { D, mysqlExec, NUM_1 } from '../mysql-connection';
 
 const { exec } = require('child_process'); // eslint-disable-line @typescript-eslint/no-require-imports
@@ -62,8 +65,6 @@ async function nodePrivileges(reqData: NodePrivilegesRequest, userSession: UserS
 	}
 }
 
-const NEW_FUNCTION_MARKER = '//_insertNewHandlersHere_';
-
 const shouldBeAdmin = (userSession = ADMIN_USER_SESSION) => {
 	if (!isAdmin(userSession)) {
 		throwError('Access denied');
@@ -111,13 +112,38 @@ async function setRolePrivilegesForNode(
 	}
 }
 
-function editFunction(fileName: string, functionName: string, args = '') {
-	fileName = join(__dirname, fileName);
+const handlersArgs = {
+	[SERVER_SIDE_FORM_EVENTS.beforeCreate]: 'data, userSession',
+	[SERVER_SIDE_FORM_EVENTS.afterCreate]: 'data, userSession',
+	[SERVER_SIDE_FORM_EVENTS.beforeUpdate]: 'currentData, newData, userSession',
+	[SERVER_SIDE_FORM_EVENTS.afterUpdate]: 'data, userSession',
+	[SERVER_SIDE_FORM_EVENTS.beforeDelete]: 'data, userSession',
+	[SERVER_SIDE_FORM_EVENTS.afterDelete]: 'data, userSession',
+	[SERVER_SIDE_FORM_EVENTS.onSubmit]: 'data, userSession',
+	[CLIENT_SIDE_FORM_EVENTS.onLoad]: 'form',
+	[CLIENT_SIDE_FORM_EVENTS.onSave]: 'form',
+	[CLIENT_SIDE_FORM_EVENTS.afterSave]: 'form, submitResult',
+	[CLIENT_SIDE_FORM_EVENTS.onChange]: 'form',
+	[CLIENT_SIDE_FORM_EVENTS.onClick]: 'form'
+};
+
+function escapeRegex(string: string) {
+	return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+
+function editFunction(fileName: string, eventName: string, nodeId: NODE_ID, fieldId: FIELD_ID, isServer?: boolean) {
+
+	let functionName = (isServer ? 'serverOn(' : 'clientOn(') + 'E.' + getNodeDesc(nodeId).tableName;
+
+	if (fieldId) {
+		functionName += '.' + getFieldDesc(fieldId).fieldName;
+	}
+	functionName += '.' + eventName + ',';
 
 	let text = readFileSync(fileName, 'utf8').replace(/\r\n/g, '\n');
 
 	const functionSearchPattern = new RegExp(
-		'\\s+' + functionName + '\\(',
+		escapeRegex(functionName),
 		'gi'
 	);
 	const c1 = (text.match(functionSearchPattern) || []).length;
@@ -130,23 +156,7 @@ function editFunction(fileName: string, functionName: string, args = '') {
 			+ fileName
 		);
 	} else if (!c1) {
-		// TODO: add function and got to source
-		const i = text.indexOf(NEW_FUNCTION_MARKER);
-		if (i < 0) {
-			throwError(
-				'marker ('
-				+ NEW_FUNCTION_MARKER
-				+ ') is not detected in file: '
-				+ fileName
-			);
-		}
-		text
-			= text.substr(0, i) + functionName + '(' + args + `) {
-		
-	}
-
-	`
-				+ text.substr(i);
+		text += '\n\n' + functionName + ' async (' + (handlersArgs as any)[eventName] + ') => {\n\n});';
 		writeFileSync(fileName, text);
 	}
 
@@ -162,32 +172,101 @@ function editFunction(fileName: string, functionName: string, args = '') {
 	return 1;
 }
 
-async function getClientEventHandler(
-	request: { handler: string; nodeId: NODE_ID; fieldId: FIELD_ID; args: string },	userSession: UserSession
+export interface EditSourceRequest {
+	eventName: string;
+	nodeId: NODE_ID;
+	fieldId: FIELD_ID;
+	fileName: string;
+}
+
+async function editEventHandler(
+	request: EditSourceRequest,	userSession: UserSession
 ) {
 	shouldBeAdmin(userSession);
 
-	const node = getNodeDesc(request.nodeId);
-	if (request.fieldId) {
-		const field = getFieldDesc(request.fieldId);
-		const customPath = '../../../www/src/events/fields_events_custom.ts';
-		return editFunction(
-			fs.existsSync(join(__dirname, customPath))
-				? customPath
-				: '../../../www/client-core/src/events/fields_events.ts',
-			node.tableName + '_' + field.fieldName + '_' + request.handler,
-			request.args
-		);
+	let fileName!: string;
+
+	let isServerFileName = (SERVER_SIDE_FORM_EVENTS as any)[request.eventName];
+
+	if (isServerFileName) {
+		fileName = request.fileName.split(path.join(__dirname, '../..')).pop()!.split(':')[0].replace(/\.js$/, '.ts').replace(/^(\\|\/)/, '');
 	} else {
-		const customPath = '../../../www/src/events/forms_events_custom.ts';
-		return editFunction(
-			fs.existsSync(join(__dirname, customPath))
-				? customPath
-				: '../../../www/client-core/src/events/forms_events.ts',
-			node.tableName + '_' + request.handler,
-			request.args
-		);
+		fileName = request.fileName.split(SERVER_ENV.SERVER_NAME).pop()!.split(':')[0];
 	}
+	// extract file name
+
+	if (!isServerFileName) {
+		fileName = 'www/' + fileName;
+	}
+	if (!fs.existsSync(fileName)) {
+		fs.writeFileSync(fileName, `import { E } from 'types/generated';
+		` + isServerFileName ? `import { clientOn } from '../events-handle';
+` : `import { serverOn } from '../../www/client-core/src/events-handle';
+`);
+	}
+
+	// edit handler
+	return editFunction(fileName, request.eventName, request.nodeId, request.fieldId, isServerFileName);
+
 }
 
-export { getClientEventHandler, nodePrivileges, shouldBeAdmin };
+export const dumpDB = async (userSession: UserSession) => {
+	shouldBeAdmin(userSession);
+
+	const dataDir = path.join(__dirname, '../../../data');
+	const files = fs.readdirSync(dataDir);
+	let next = 1;
+	for (const f of files) {
+		const v = parseInt(f);
+		if (v >= next) {
+			next = v + 1;
+		}
+	}
+	try {
+		execSync('pg_dump > "' + path.join(dataDir, next + '.sql') + '"');
+	} catch (er: any) {
+		return { error: er.message };
+	}
+
+	const readFile = (num: number) => {
+		return readFileSync(path.join(dataDir, num + '.sql'), 'utf8').replace(/\\restrict.+/gm, '').replace(/\\unrestrict.+/gm, '');
+	};
+
+	if ((next > 1) && (readFile(next) === readFile(next - 1))) {
+		fs.unlinkSync(path.join(dataDir, next + '.sql'));
+		return false;
+	}
+	return true;
+
+};
+
+export const recoveryDB = async (userSession: UserSession) => {
+	shouldBeAdmin(userSession);
+
+	const dataDir = path.join(__dirname, '../../../data');
+	const files = fs.readdirSync(dataDir);
+	let last = 0;
+	for (const f of files) {
+		const v = parseInt(f);
+		if (v >= last) {
+			last = v;
+		}
+	}
+
+	if (last > 0) {
+		await mysqlExec(
+			`DROP SCHEMA IF EXISTS public CASCADE;
+		CREATE SCHEMA public;`);
+		try {
+			execSync('psql < ' + path.join(dataDir, last + '.sql'));
+		} catch (er: any) {
+			return { error: er.message };
+		}
+
+	}
+	reloadMetadataSchedule();
+
+	return true;
+};
+
+export { editEventHandler, nodePrivileges, shouldBeAdmin };

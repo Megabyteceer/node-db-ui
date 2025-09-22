@@ -1,4 +1,4 @@
-import { E, FIELD_TYPE, NODE_ID, NODE_TYPE, type INodesRecord, type INodesRecordWrite } from '../../types/generated';
+import { E, FIELD_TYPE, NODE_ID, NODE_TYPE, type INodesRecord } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import type { UserSession } from '../../www/client-core/src/bs-utils';
 import { VIEW_MASK } from '../../www/client-core/src/bs-utils';
@@ -103,7 +103,7 @@ serverOn(E._nodes.afterCreate, async (data, userSession) => {
 	reloadMetadataSchedule();
 });
 
-serverOn(E._nodes.beforeUpdate, async (_currentData: INodesRecord, _newData: INodesRecordWrite, userSession: UserSession) => {
+serverOn(E._nodes.beforeUpdate, async (_currentData, _newData, userSession) => {
 	shouldBeAdmin(userSession);
 	reloadMetadataSchedule();
 });

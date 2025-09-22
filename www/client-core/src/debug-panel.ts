@@ -1,8 +1,9 @@
 import { Component } from 'preact';
 import type { DebugInfo } from '../../../core/mysql-connection';
+import { Notify } from './notify';
 import { R } from './r';
 import { iAdmin } from './user';
-import { isLitePage, L, renderIcon, sp, strip_tags } from './utils';
+import { debugError, getData, isLitePage, L, renderIcon, showPrompt, sp, strip_tags } from './utils';
 
 let currentId = 10;
 const debugInfo = [] as DebugInfo[];
@@ -67,6 +68,29 @@ class DebugPanel extends Component<DebugPanelProps, {
 		this.forceUpdate();
 	}
 
+	async dumpDbClick() {
+		const ret = await getData('admin/dumpDb');
+		if (ret?.error) {
+			debugError(ret.error);
+			Notify.add('error');
+		} else if (ret) {
+			Notify.add('dumped');
+		} else {
+			Notify.add('no changes');
+		}
+	}
+
+	async recoveryDbClick() {
+		await showPrompt('Are you sure? Current database will be lost');
+		const ret = await getData('admin/recoveryDb');
+		if (ret?.error) {
+			debugError(ret.error);
+			Notify.add('error');
+		} else if (ret) {
+			Notify.add('done');
+		}
+	}
+
 	async deployClick(ev: MouseEvent) {
 		sp(ev);
 		alert('TODO');
@@ -98,6 +122,8 @@ class DebugPanel extends Component<DebugPanelProps, {
 		let body;
 
 		let deployBtn;
+		let recoveryBtn;
+		let dumpBtn;
 		const clearBtn = R.a({ className: 'clickable admin-control', onClick: this.clear },
 			renderIcon('trash')
 		);
@@ -105,6 +131,13 @@ class DebugPanel extends Component<DebugPanelProps, {
 			/* deployBtn = R.a({ className: 'clickable admin-control', title: L('DEPLOY'), onClick: this.deployClick },
 				renderIcon('upload')
 			); */
+
+			dumpBtn = R.a({ className: 'clickable admin-control', title: 'Backup Database', onClick: this.dumpDbClick },
+				renderIcon('download')
+			);
+			recoveryBtn = R.a({ className: 'clickable admin-control', title: 'Recovery Database', onClick: this.recoveryDbClick },
+				renderIcon('repeat')
+			);
 		}
 
 		if (debugInfo.length === 0) {
@@ -160,6 +193,8 @@ class DebugPanel extends Component<DebugPanelProps, {
 				} else {
 					body = R.div({ className: 'admin-control debug-panel-panel' },
 						deployBtn,
+						dumpBtn,
+						recoveryBtn,
 						clearBtn,
 						R.br(),
 						R.span({ className: 'debug-panel-sql-btn admin-control clickable', onClick: this.show },

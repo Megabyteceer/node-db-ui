@@ -155,6 +155,10 @@ export const enum FIELD_DATA_TYPE {
 	BOOL = 4
 }
 
+export const isServer = () => {
+	return typeof window === 'undefined';
+};
+
 interface ClientSideFilterRecord {
 	name: string;
 	order: number;
@@ -264,6 +268,8 @@ declare global {
 		fieldsById?: { [key: number]: FieldDesc };
 		/** CLIENT SIDE ONLY */
 		fieldsByName?: { [key: string]: FieldDesc };
+
+		__serverSideHandlers?: KeyedMap<{ __sourceFile: string }[]>;
 	}
 }
 

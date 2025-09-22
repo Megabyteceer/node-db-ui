@@ -147,9 +147,9 @@
 	left: -20px;
 	vertical-align: top;
 	border-radius: 50px;
-	border: 1px solid #d6000099;
 	padding: 5px;
-	color: #d6000099;
+	color: var(--BG_COLOR);
+	background-color: #77303099;
 }
 
 .admin-field-open-btn {
@@ -163,10 +163,6 @@
 	color: #d6000099;
 }
 
-.admin-button-highlighted {
-	color: #007e00;
-}
-
 .admin-form-content {
 	margin-top: 5px;
 	text-align: center;
@@ -174,10 +170,10 @@
 }
 
 .admin-form-all-fields {
-	word-wrap: none;
+	white-space: nowrap;
 	text-align: right;
 	transform: scale(1.2);
-	width: 340px;
+	width: 540px;
 	margin-top: 3px;
 }
 
@@ -191,16 +187,57 @@
 
 .admin-form-all-fields-name {
 	display: inline-block;
+	width: 262px;
+	text-align: right;
+	position: relative;
+	font-family: 'Courier New', Courier, monospace;
 }
 
-.admin-form-header {
-	font-size: 130%;
+.admin-form-all-fields-name:hover {
+	background-color: #a00;
+}
+
+.admin-form-all-fields-id {
+	display: block;
+	position: absolute;
+	left: 0;
+	opacity: 0.5;
 }
 
 .admin-form-btn {
-	background: rgb(114, 114, 114);
-	color: rgb(255, 255, 255);
 	padding: 6px 15px;
+}
+
+.admin-form-all-fields-button {
+	vertical-align: bottom;
+}
+
+.admin-form-header {
+	font-family: monospace;
+}
+
+.admin-event-buttons-group {
+	vertical-align: top;
+	display: inline-block;
+}
+
+.admin-event-buttons-group button {
+	text-align: left;
+	width: 200px;
+	color: rgb(163, 124, 132);
+	border: 1px solid rgb(182, 88, 62);
+	font-family: monospace;
+	display: block;
+}
+
+.admin-event-buttons-group-server button {
+	border: 1px solid rgb(179, 36, 36);
+	padding: 2px;
+}
+
+.admin-form-open-btn.admin-button-highlighted,
+.admin-event-buttons-group .admin-button-highlighted {
+	color: #00dd00;
 }
 
 .admin-form-all-fields .admin-control-field .admin-form-open-btn {
@@ -208,8 +245,7 @@
 }
 
 .admin-control .clickable:hover {
-	color: #def !important;
-	background: #567 !important;
+	background: rgb(109, 30, 34) !important;
 }
 
 .blocked-layer .admin-control {

@@ -98,7 +98,7 @@ export const renderItemsButtons: AdditionalButtonsRenderer = (
 						key: 2,
 						onClick: (_ev: PointerEvent) => {
 							if (form?.getParentLookupField()) {
-								(form?.parent as BaseLookupField).toggleCreateDialogue(data.id);
+								form.getParentLookupField()!.toggleCreateDialogue(data.id);
 							} else {
 								globals.Stage.showForm(node.id, data.id, undefined, true);
 							}

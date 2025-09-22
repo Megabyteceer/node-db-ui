@@ -1,11 +1,12 @@
-import { Component, h } from 'preact';
+import { Component, h, type ComponentChild } from 'preact';
 import { NODE_ID, NODE_TYPE, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../../../../types/generated';
 import { globals } from '../../../../types/globals';
 import { VIEW_MASK, type NodeDesc, type TreeItem } from '../bs-utils';
 import { NEW_RECORD } from '../consts';
+import { CLIENT_SIDE_FORM_EVENTS, SERVER_SIDE_FORM_EVENTS } from '../events-handle';
 import type Form from '../form';
 import { R } from '../r';
-import { CLIENT_SIDE_FORM_EVENTS, getRecordClient, getRecordsClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
+import { getRecordClient, getRecordsClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
 import { admin } from './admin-utils';
 import { FieldAdmin } from './field-admin';
@@ -26,7 +27,6 @@ interface NodeAdminProps {
 interface NodeAdminState {
 	show?: boolean;
 	allFieldsVisible?: boolean;
-	locked?: boolean;
 }
 
 class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
@@ -48,7 +48,6 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 
 		this.show = this.show.bind(this);
 		this.hide = this.hide.bind(this);
-		this.toggleLock = this.toggleLock.bind(this);
 		this.toggleAllFields = this.toggleAllFields.bind(this);
 	}
 
@@ -78,12 +77,6 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 		});
 	}
 
-	toggleLock() {
-		this.setState({
-			locked: !this.state.locked
-		});
-	}
-
 	render() {
 		let node: NodeDesc;
 		let form: Form | undefined;
@@ -102,38 +95,58 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 
 		const nodeId = node && (node.id || item!.id);
 
-		let borderOnSave;
-		let borderOnAfterSave;
-		let borderOnLoad;
+		let anyHandlerExists = '';
 
-		if (
-			form?._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE)
-		) {
-			borderOnSave = ' admin-button-highlighted';
-		} else {
-			borderOnSave = '';
-		}
+		const clientEventsClassName = (ev: CLIENT_SIDE_FORM_EVENTS) => {
+			const ret = (node.__serverSideHandlers?.[ev] || form?._getFormEventHandler(ev)) ? ' admin-button-highlighted' : '';
+			if (ret) {
+				anyHandlerExists = ret;
+			}
+			return ret;
+		};
 
-		if (
-			form?._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE)
-		) {
-			borderOnAfterSave = ' admin-button-highlighted';
-		} else {
-			borderOnAfterSave = '';
-		}
+		const eventButtonsClient = [] as ComponentChild[];
+		const eventButtonsServer = [] as ComponentChild[];
 
-		if (
-			form?._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD)
-		) {
-			borderOnLoad = ' admin-button-highlighted';
+		const handlers =
+			[
+				CLIENT_SIDE_FORM_EVENTS.onLoad,
+				CLIENT_SIDE_FORM_EVENTS.onSave,
+				CLIENT_SIDE_FORM_EVENTS.afterSave
+			] as string[];
+		if (form?.nodeDesc.storeForms) {
+			handlers.push(...[
+				SERVER_SIDE_FORM_EVENTS.beforeCreate,
+				SERVER_SIDE_FORM_EVENTS.afterCreate,
+				SERVER_SIDE_FORM_EVENTS.beforeUpdate,
+				SERVER_SIDE_FORM_EVENTS.afterUpdate,
+				SERVER_SIDE_FORM_EVENTS.beforeDelete,
+				SERVER_SIDE_FORM_EVENTS.afterDelete
+
+			]);
 		} else {
-			borderOnLoad = '';
+			handlers.push(SERVER_SIDE_FORM_EVENTS.onSubmit);
 		}
+		handlers.forEach((eventName: string) => {
+			const a = (CLIENT_SIDE_FORM_EVENTS as any)[eventName] ? eventButtonsClient : eventButtonsServer;
+			const exists = clientEventsClassName(eventName as any);
+			a.push(
+				R.button(
+					{
+						className: 'clickable tool-btn admin-form-btn' + exists,
+						onClick: () => {
+							admin_editSource(eventName as any, node);
+						},
+						title: 'Edit event handler.'
+					},
+					renderIcon(exists ? 'pencil' : 'plus'), eventName, '...'
+				));
+		});
 
 		let body;
 		let info = [];
 
-		const bodyVisible = this.state.show || this.state.locked;
+		const bodyVisible = this.state.show;
 
 		if (bodyVisible) {
 
@@ -160,14 +173,11 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 				if (this.state.allFieldsVisible) {
 					allFields = [];
 					for (const f of node.fields!) {
+						if (!f.show) {
+							continue;
+						}
 						if (f.lang) continue;
 
-						allFields.push(
-							R.span({
-								key: f.id + 'a',
-								className: 'admin-form-header'
-							})
-						);
 						allFields.push(
 							R.div(
 								{
@@ -178,7 +188,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 									{
 										className: 'admin-form-all-fields-name'
 									},
-									f.fieldName + '; (' + f.id + ')'
+									R.span({ className: 'admin-form-all-fields-id' }, f.id), f.fieldName
 								),
 								R.span({ title: 'EDITABLE' }, renderIcon(f.show & VIEW_MASK.EDITABLE ? 'eye' : 'eye-slash half-visible')),
 								R.span({ title: 'LIST' }, renderIcon(f.show & VIEW_MASK.LIST ? 'eye' : 'eye-slash half-visible')),
@@ -200,7 +210,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 					null,
 					R.button(
 						{
-							className: 'clickable tool-btn admin-form-btn',
+							className: 'clickable tool-btn admin-form-btn admin-form-all-fields-button',
 							onClick: () => {
 								this.toggleAllFields();
 							},
@@ -209,40 +219,17 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 						'all fields ',
 						renderIcon('caret-down')
 					),
-					R.button(
-						{
-							className: 'clickable tool-btn admin-form-btn' + borderOnLoad,
-							onClick: () => {
-								admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD, node, undefined);
-							},
-							title: 'Edit client side script which execute on form open.'
-						},
-						'onLoad...'
+					R.span({
+						className: 'admin-event-buttons-group'
+					},
+					'Client',
+					eventButtonsClient
 					),
-					R.button(
-						{
-							className: 'clickable tool-btn admin-form-btn' + borderOnSave,
-							onClick: () => {
-								admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE, node, undefined);
-							},
-							title: 'Edit client side script which execute before form save.'
-						},
-						'onSave...'
-					),
-					R.button(
-						{
-							className: 'clickable tool-btn admin-form-btn' + borderOnAfterSave,
-							onClick: () => {
-								admin_editSource(
-									CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE,
-									node,
-									undefined,
-									'saveResult: RecordSubmitResult'
-								);
-							},
-							title: 'Edit client side script which execute after form save.'
-						},
-						'onAfterSave...'
+					R.span({
+						className: 'admin-event-buttons-group admin-event-buttons-group-server'
+					},
+					'Server',
+					eventButtonsServer
 					),
 					R.button(
 						{
@@ -325,14 +312,10 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 					className: 'admin-form-body',
 					onClick: () => {
 						showedNodeId = nodeId;
-					},
-					onMouseLeave: () => {
-						this.hide();
 					}
 				},
-				L('NODE_SETTINGS'),
 				R.b({ className: 'admin-form-header' }, node.tableName),
-				R.span(null, '; (' + (node.matchName || item!.name) + '); id: ' + nodeId),
+				' ', nodeId,
 				R.div(
 					{
 						className: 'admin-form-content'
@@ -368,9 +351,9 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 					R.span(
 						{
 							className: 'clickable admin-form-lock-btn',
-							onClick: this.toggleLock
+							onClick: this.hide
 						},
-						renderIcon(this.state.locked ? 'lock' : 'unlock')
+						renderIcon('times')
 					)
 				),
 				allFields,
@@ -386,7 +369,7 @@ class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
 			},
 			R.span(
 				{
-					className: 'half-visible admin-form-open-btn clickable' + (borderOnLoad || borderOnSave),
+					className: 'half-visible admin-form-open-btn clickable' + anyHandlerExists,
 					onClick: this.show
 				},
 				renderIcon('wrench')

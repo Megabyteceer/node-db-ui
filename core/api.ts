@@ -1,7 +1,7 @@
 import { NODE_TYPE, type NODE_ID } from '../types/generated';
 import type { APIResult, GetRecordsFilter, GetRecordsParams, RecId, RecordDataWriteDraftable, RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
 /// #if DEBUG
-import { getClientEventHandler, nodePrivileges } from './admin/admin';
+import { dumpDB, editEventHandler, nodePrivileges, recoveryDB } from './admin/admin';
 import { getDeployPackage, isFiledExists } from './admin/deploy';
 /// #endif
 
@@ -75,13 +75,19 @@ const api: object = {
 		return nodePrivileges(reqData, userSession);
 	},
 	'admin/editEventHandler': (reqData, userSession: UserSession) => {
-		return getClientEventHandler(reqData, userSession);
+		return editEventHandler(reqData, userSession);
 	},
 	'admin/getDeployPackage': (reqData, userSession: UserSession) => {
 		return getDeployPackage(reqData, userSession);
 	},
 	'admin/isFiledExists': (reqData, userSession: UserSession) => {
 		return isFiledExists(reqData, userSession);
+	},
+	'admin/dumpDb': (_reqData, userSession: UserSession) => {
+		return dumpDB(userSession);
+	},
+	'admin/recoveryDb': (_reqData, userSession: UserSession) => {
+		return recoveryDB(userSession);
 	}
 	/// #endif
 } as KeyedMap<APIHandler>;

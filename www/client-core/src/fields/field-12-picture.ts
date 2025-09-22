@@ -23,7 +23,7 @@ class PictureField extends BaseField {
 	async beforeSave() {
 		const newImageId = await this.cropperBody.save(this);
 		if (newImageId) {
-			this.valueListener(newImageId);
+			this.valueListener(newImageId); // just indicate field updated. Image path will be passed via userSession
 			await waitForCondition(() => this.parentForm.formData![this.props.fieldDesc.fieldName] === newImageId);
 		}
 	}

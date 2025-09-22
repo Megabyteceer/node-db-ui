@@ -9,7 +9,7 @@ import {
 	/// #if DEBUG
 	__destroyRecordToPreventAccess,
 	/// #endif
-	eventDispatch, ServerEventName
+	eventDispatch, SERVER_SIDE_FORM_EVENTS
 } from '../www/client-core/src/events-handle';
 import { A, D, escapeString, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 
@@ -461,11 +461,11 @@ export async function deleteRecord(nodeId: NODE_ID, recId: RecId, userSession = 
 		throwError('Deletion access is denied');
 	}
 
-	const ret1 = await eventDispatch(node.tableName!, ServerEventName.beforeDelete, recordData, userSession);
+	const ret1 = await eventDispatch(node.tableName!, SERVER_SIDE_FORM_EVENTS.beforeDelete, recordData, userSession);
 
 	await mysqlExec('UPDATE "' + node.tableName + DELETE_RECORD_SQL_PART + D(recId));
 
-	const ret2 = await eventDispatch(node.tableName!, ServerEventName.afterDelete, recordData, userSession);
+	const ret2 = await eventDispatch(node.tableName!, SERVER_SIDE_FORM_EVENTS.afterDelete, recordData, userSession);
 
 	/// #if DEBUG
 	__destroyRecordToPreventAccess(recordData);

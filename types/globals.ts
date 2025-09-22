@@ -13,6 +13,8 @@ declare global {
 }
 
 interface Globals {
+	/** SERVER SIDE */
+	nodesByTableName?: Map<string, NodeDesc>;
 	customClasses: {
 		[key: string]: ComponentType<any>;
 	};

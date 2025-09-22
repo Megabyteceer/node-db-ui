@@ -1,5 +1,5 @@
 import { h, render, type ComponentChild, type ComponentChildren, type ComponentProps } from 'preact';
-import { E, FIELD_TYPE, type NODE_ID } from '../../../types/generated';
+import { FIELD_TYPE, type NODE_ID } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { NodeAdmin } from './admin/admin-control';
 import { FieldAdmin } from './admin/field-admin';
@@ -10,7 +10,7 @@ import { normalizeCSSName, PRIVILEGES_MASK, STATUS, VIEW_MASK, type FormControlF
 import { HotkeyButton } from './components/hotkey-button';
 import { Select } from './components/select';
 import { NEW_RECORD, SAVE_REJECTED } from './consts';
-import { clientHandlers, type Handler } from './events-handle';
+import { CLIENT_SIDE_FORM_EVENTS, clientHandlers, getEventsHandlers, getEventsHandlersField, type Handler } from './events-handle';
 
 import type BaseLookupField from './fields/base-lookup-field';
 import FormNode, { type FormNodeProps, type FormNodeState } from './form-node';
@@ -21,7 +21,7 @@ import { LoadingIndicator } from './loading-indicator';
 import { R } from './r';
 import { renderItemsButtons } from './render-items-buttons';
 import { iAdmin, User } from './user';
-import { CLIENT_SIDE_FORM_EVENTS, deleteRecordClient, getClassForField, getData, getItem, getListRenderer, getNodeIfPresentOnClient, getRecordsClient, goBack, isAutoFocus, isPresentListRenderer, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, showPrompt, sp, submitRecord, UID, updateHashLocation } from './utils';
+import { deleteRecordClient, getClassForField, getData, getItem, getListRenderer, getNodeIfPresentOnClient, getRecordsClient, goBack, isAutoFocus, isPresentListRenderer, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, showPrompt, sp, submitRecord, UID, updateHashLocation } from './utils';
 
 export interface FormProps extends FormNodeProps {
 	nodeId: NODE_ID;
@@ -156,7 +156,7 @@ export default class Form<
 			return;
 		}
 		if (this.canProcessEvents()) {
-			await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD);
+			await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.onLoad);
 			for (const f of this.allFields) {
 				if (
 					f.props.fieldDesc!.fieldType !== FIELD_TYPE.BUTTON &&
@@ -272,7 +272,7 @@ export default class Form<
 		}
 		await this.beforeSave();
 		if (this.canProcessEvents()) {
-			await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE);
+			await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.onSave);
 		}
 		if (this.isAsyncInProgress()) {
 			await this.waitForAsyncFinish();
@@ -299,7 +299,7 @@ export default class Form<
 				await this.afterSave();
 
 				if (this.canProcessEvents()) {
-					await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE, submitResult);
+					await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.afterSave, submitResult);
 				}
 			} else {
 
@@ -510,18 +510,14 @@ export default class Form<
 	}
 
 	_getFormEventHandler(eventName: CLIENT_SIDE_FORM_EVENTS) {
-		const name = (E as KeyedMap<any>)[this.nodeDesc.tableName!][eventName];
-		return this._getEventHandlers(name);
+		return getEventsHandlers(this.nodeDesc.tableName!, eventName as any);
 	}
 
 	_getFieldEventHandlers(field: FieldDesc) {
-		const name = (E as KeyedMap<any>)[this.nodeDesc.tableName!][field.fieldName][((field.fieldType === FIELD_TYPE.BUTTON || field.fieldType === FIELD_TYPE.TAB) ?
-			CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CLICK :
-			CLIENT_SIDE_FORM_EVENTS.ON_FIELD_CHANGE)];
-		return this._getEventHandlers(name);
+		return getEventsHandlersField(this.nodeDesc.tableName!, field.fieldName, field.fieldType);
 	}
 
-	_getEventHandlers(name: string): Handler[] | undefined {
+	_getEventHandlers(name: number): Handler[] | undefined {
 		return clientHandlers.get(name);
 	}
 
@@ -577,7 +573,10 @@ export default class Form<
 	}
 
 	getParentLookupField(): BaseLookupField | undefined {
-		return (this.parentForm?.parent || this.parent) as BaseLookupField;
+		const ret = (this.parentForm?.parent || this.parent) as BaseLookupField;
+		if (ret?.props.fieldDesc) {
+			return ret;
+		}
 	}
 
 	private isCustomListRendering() {

@@ -77,6 +77,10 @@ h5 {
 	margin-right: 7px;
 }
 
+button .fa {
+	vertical-align: middle;
+}
+
 a {
 	background: inherit;
 	color: inherit;

@@ -1,6 +1,5 @@
+import {resolve} from "path";
 import {defineConfig} from 'vite';
-
-debugger;
 
 export default defineConfig({
 	mode: "development",
@@ -17,6 +16,11 @@ export default defineConfig({
 		hmr: false,
 		fs: {
 			strict: false
+		}
+	},
+	resolve: {
+		alias: {
+			"types": resolve(__dirname, '../types/')
 		}
 	},
 	esbuild: {

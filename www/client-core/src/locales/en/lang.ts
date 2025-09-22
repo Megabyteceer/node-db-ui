@@ -15,7 +15,6 @@ const LANGS = {
 	'FLD_SETTINGS': 'Field ',
 	'FLD_ADD': 'Add field',
 	'ADD_NODE': 'Add section',
-	'NODE_SETTINGS': 'Section ',
 	'EDIT_NODE': 'Edit section settings',
 	'EDIT_ACCESS': 'Edit access privileges for section',
 	'SEARCH': 'Search',

@@ -9,9 +9,10 @@ import { writeFileSync } from 'fs';
 import { D, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 
 import { ENUM_ID, FIELD_TYPE, NODE_ID, NODE_TYPE, type IFiltersRecord } from '../types/generated';
+import { globals } from '../types/globals';
 import { assert, throwError } from '../www/client-core/src/assert';
 import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, TreeItem, UserLangEntry } from '../www/client-core/src/bs-utils';
-import { FIELD_DATA_TYPE, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import { FIELD_DATA_TYPE, isServer, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import type { UserSession /* , usersSessionsStartedCount */ } from './auth';
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode /* , usersSessionsStartedCount */ } from './auth';
 import { ENV, type ENV_TYPE } from './ENV';
@@ -88,6 +89,9 @@ function getNodeDesc(nodeId: NODE_ID, userSession = ADMIN_USER_SESSION): NodeDes
 				ret.icon = srcNode.icon;
 				ret.recPerPage = srcNode.recPerPage;
 				ret.defaultFilterId = srcNode.defaultFilterId;
+				/// #if DEBUG
+				ret.__serverSideHandlers = srcNode.__serverSideHandlers;
+				/// #endif
 
 				for (const id in srcNode.filters) {
 					const filter = filtersById.get(parseInt(id))!;
@@ -260,7 +264,7 @@ async function initNodesData() {
 	fieldsById = new Map();
 	nodesById = new Map();
 	enumsById = new Map();
-	nodesByTableName = new Map();
+	globals.nodesByTableName = nodesByTableName = new Map();
 
 	/// #if DEBUG
 	await mysqlExec('-- ======== NODES RELOADING STARTED ===================================================================================================================== --');
@@ -436,7 +440,7 @@ type EventType = number;
 type EventMap = { [Key: string]: EventMap | EventType };
 
 let eventsEnum: EventMap = {};
-let eventCounter = 0;
+let eventCounter = isServer() ? 10000 : 0;
 
 const eventName = (event: string): EventType => {
 	eventCounter++;
@@ -561,8 +565,8 @@ export class TypeGenerationHelper {`);
 
 				src.push(`	eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeCreate')}, handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET}): void;
 	eventsServer(eventName: ${eventName(nodeData.tableName + '.afterCreate')}, handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET}): void;
-	eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeUpdate')}, handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET}): void;
-	eventsServer(eventName: ${eventName(nodeData.tableName + '.afterUpdate')}, handler: (currentData: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET}): void;
+	eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeUpdate')}, handler: (data: I${name}Record, newData: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET}): void;
+	eventsServer(eventName: ${eventName(nodeData.tableName + '.afterUpdate')}, handler: (data: I${name}RecordWrite, userSession: UserSession) => ${HANDLER_RET}): void;
 	eventsServer(eventName: ${eventName(nodeData.tableName + '.beforeDelete')}, handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET}): void;
 	eventsServer(eventName: ${eventName(nodeData.tableName + '.afterDelete')}, handler: (data: I${name}Record, userSession: UserSession) => ${HANDLER_RET}): void;`);
 			} else {
