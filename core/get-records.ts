@@ -217,7 +217,7 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 
 	const search = filterFields.s;
 	const isNumericSearch = search ? !/\D/.test(search) : undefined;
-	const searchSQL = search ? '" LIKE ' + escapeString('%' + search + '%') + ' ' : undefined;
+	const searchSQL = search ? '") LIKE ' + escapeString('%' + search + '%') + ' ' : undefined;
 	const searchSQLNumeric = isNumericSearch ? '"=' + D(parseInt(search!)) + ' ' : undefined;
 
 	if (singleSelectionById) {
@@ -257,7 +257,7 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 					} else {
 						searchWHERE.push(' OR ');
 					}
-					searchWHERE.push('"', tableName, '"."', fieldName, isNumericField ? searchSQLNumeric! : searchSQL!);
+					searchWHERE.push(' LOWER("', tableName, '"."', fieldName, isNumericField ? searchSQLNumeric! : searchSQL!);
 				}
 			}
 

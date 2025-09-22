@@ -456,10 +456,10 @@ async function goBack(isAfterDelete?: boolean) {
 		window.close();
 	} else if (!isAfterDelete && window.history.length) {
 		if (window.history.length > 0) {
-			isHistoryChanging = true;
+			isHistoryChanging++;
 			goBackUntilValidNode = true;
 			window.history.back();
-			isHistoryChanging = false;
+			isHistoryChanging--;
 		} else {
 			globals.Stage.showForm(getHomeNode());
 		}
@@ -485,7 +485,7 @@ function assignFilters(desc: KeyedMap<any>, src: KeyedMap<any>): boolean {
 	return leastOneUpdated;
 }
 
-let isHistoryChanging = false;
+let isHistoryChanging = 0;
 let goBackUntilValidNode = false;
 
 function updateHashLocation(replaceState = false) {
@@ -518,9 +518,9 @@ window.addEventListener('hashchange', () => {
 	} else {
 		goBackUntilValidNode = false;
 	}
-	isHistoryChanging = true;
+	isHistoryChanging++;
 	goToPageByHash();
-	isHistoryChanging = false;
+	isHistoryChanging--;
 });
 
 let nodes: Map<NODE_ID, NodeDesc>;

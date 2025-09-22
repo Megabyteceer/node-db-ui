@@ -135,8 +135,8 @@
 	background: rgb(83, 50, 50);
 }
 
-.admin-control-field .admin-form-body {
-	left: -30px;
+.admin-form-body .admin-form-field-body {
+	left: 50px;
 }
 
 .admin-form-open-btn {
@@ -156,8 +156,8 @@
 	display: inline-block;
 	position: absolute;
 	z-index: 2;
-	top: 8px;
-	left: -0;
+	top: 0;
+	left: 0;
 	vertical-align: top;
 	border-radius: 50px;
 	color: #d6000099;

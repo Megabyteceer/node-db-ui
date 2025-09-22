@@ -17,7 +17,6 @@ import { performance } from 'perf_hooks';
 
 import bodyParser from 'body-parser';
 import express from 'express';
-import { readdirSync } from 'fs';
 import multer from 'multer';
 import path from 'path';
 const app = express();
@@ -147,17 +146,9 @@ app.use('/dist/images/', express.static(path.join(__dirname, '../../www/images')
 app.use('/assets/', express.static(path.join(__dirname, '../../www/dist/assets')));
 app.use('/', express.static(path.join(__dirname, '../../www')));
 
-async function importAllEvents() {
-	const eventsFolder = path.join(__dirname, 'events');
-	const a = readdirSync(eventsFolder);
-	await Promise.all(a.filter(fileName => fileName.endsWith('.js')).map((fileName) => {
-		return import('./events/' + fileName);
-	}));
-}
-
 function crudJSServer() {
 	initNodesData().then(async function () {
-		await importAllEvents();
+		import('./events/index.js');
 		app.listen(SERVER_ENV.PORT);
 		console.log('HTTP listen ' + SERVER_ENV.PORT + '...');
 	});

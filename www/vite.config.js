@@ -1,4 +1,3 @@
-import {resolve} from "path";
 import {defineConfig} from 'vite';
 
 export default defineConfig({
@@ -16,11 +15,6 @@ export default defineConfig({
 		hmr: false,
 		fs: {
 			strict: false
-		}
-	},
-	resolve: {
-		alias: {
-			"types": resolve(__dirname, '../types/')
 		}
 	},
 	esbuild: {

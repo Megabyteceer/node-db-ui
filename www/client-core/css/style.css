@@ -456,7 +456,8 @@ img {
 	border-top: 1px solid var(--BRAND_COLOR);
 	padding: 12px 11px;
 	padding-right: 40px;
-	color: var(--BRAND_COLOR_SHINE);
+	font-weight: 700;
+	color: var(--BRAND_COLOR_LIGHT);
 	font-size: 80%;
 	margin-top: 1px;
 }

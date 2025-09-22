@@ -15,7 +15,6 @@ import { throwError } from '../../www/client-core/src/assert';
 import { USER_ID, type PRIVILEGES_MASK, type RecId } from '../../www/client-core/src/bs-utils';
 import { CLIENT_SIDE_FORM_EVENTS, SERVER_SIDE_FORM_EVENTS } from '../../www/client-core/src/events-handle';
 import { isAdmin, type UserSession } from '../auth.js';
-import { SERVER_ENV } from '../ENV';
 import { D, mysqlExec, NUM_1 } from '../mysql-connection';
 
 const { exec } = require('child_process'); // eslint-disable-line @typescript-eslint/no-require-imports
@@ -187,25 +186,30 @@ async function editEventHandler(
 	let fileName!: string;
 
 	let isServerFileName = (SERVER_SIDE_FORM_EVENTS as any)[request.eventName];
-
+	const nodeName = getNodeDesc(request.nodeId).tableName!;
 	if (isServerFileName) {
-		fileName = request.fileName.split(path.join(__dirname, '../..')).pop()!.split(':')[0].replace(/\.js$/, '.ts').replace(/^(\\|\/)/, '');
+		fileName = nodeName.startsWith('_') ? ('core/events/' + nodeName + '.ts') : ('events/' + nodeName + '.ts');
 	} else {
-		fileName = request.fileName.split(SERVER_ENV.SERVER_NAME).pop()!.split(':')[0];
+		fileName = nodeName.startsWith('_') ? ('www/client-core/src/events/' + nodeName + '.ts') : ('www/src/events/' + nodeName + '.ts');
 	}
-	// extract file name
 
-	if (!isServerFileName) {
-		fileName = 'www/' + fileName;
-	}
+	const dirName = path.dirname(fileName);
+
+	const importPath = dirName.split('/').map(_p => '..').join('/');
 	if (!fs.existsSync(fileName)) {
-		fs.writeFileSync(fileName, `import { E } from 'types/generated';
-		` + isServerFileName ? `import { clientOn } from '../events-handle';
-` : `import { serverOn } from '../../www/client-core/src/events-handle';
-`);
+		fs.writeFileSync(fileName,
+			`import { E } from '${importPath}/types/generated';
+import { clientOn } from '${importPath}/www/client-core/src/events-handle';`
+		);
+
+		const files = fs.readdirSync(dirName);
+		writeFileSync(path.join(dirName, 'index.ts'),
+			files.filter(f => f !== 'index.ts' && f.endsWith('.ts')).map((f) => {
+				return 'import \'./' + f + '\';';
+			}).join('\n'));
+
 	}
 
-	// edit handler
 	return editFunction(fileName, request.eventName, request.nodeId, request.fieldId, isServerFileName);
 
 }

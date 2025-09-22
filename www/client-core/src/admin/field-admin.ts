@@ -89,7 +89,7 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 			body = R.div(
 				{
 					ref: keepInWindow,
-					className: 'admin-form-body',
+					className: 'admin-form-body admin-form-field-body',
 					onClick: () => {
 						showedFieldId = field.id;
 					}

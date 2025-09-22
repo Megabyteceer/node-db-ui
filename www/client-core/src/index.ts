@@ -50,7 +50,7 @@ globals.customClasses.AdminRolePrivilegesForm = AdminRolePrivilegesForm;
 /// #endif
 
 import { h, render } from 'preact';
-import './events/forms_events';
+import './events/index';
 import './form-tab';
 import { MainFrame } from './main-frame';
 
