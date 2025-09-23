@@ -1,7 +1,7 @@
-import { FIELD_TYPE, type IFiltersRecord, type NODE_ID, type TypeGenerationHelper } from '../types/generated';
 import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
 import type { GetRecordsFilter, LookupValue, LookupValueIconic, RecId, RecordData, RecordsData } from '../www/client-core/src/bs-utils';
 import { FIELD_DATA_TYPE, PRIVILEGES_MASK, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import { FIELD_TYPE, type IFiltersRecord, type NODE_ID, type TypeGenerationHelper } from '../www/client-core/src/types/generated';
 import type { UserSession } from './auth';
 import { ADMIN_USER_SESSION, filtersById, getNodeDesc } from './describe-node';
 

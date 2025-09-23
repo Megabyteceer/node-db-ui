@@ -1,10 +1,10 @@
-import { E, NODE_ID } from '../../../../types/generated';
-import { globals } from '../../../../types/globals';
 import type { UserSession } from '../bs-utils';
 import { NEW_RECORD } from '../consts';
 import { clientOn } from '../events-handle';
 import { ENV } from '../main-frame';
 import { R } from '../r';
+import { E, NODE_ID } from '../types/generated';
+import { globals } from '../types/globals';
 import { User } from '../user';
 import { attachGoogleLoginAPI } from '../utils';
 

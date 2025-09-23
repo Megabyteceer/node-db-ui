@@ -1,9 +1,9 @@
 import { h } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
-import { globals } from '../../../../types/globals';
 import { throwError } from '../assert';
 import BaseField from '../base-field';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
+import { globals } from '../types/globals';
 import { registerFieldClass } from '../utils';
 
 export default class StaticTextField extends BaseField {

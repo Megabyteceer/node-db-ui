@@ -1,10 +1,10 @@
 import type { Component } from 'preact';
 
-import { globals } from '../../../types/globals';
 import type { RecordData } from './bs-utils';
 import type BaseLookupField from './fields/base-lookup-field';
 import type Form from './form';
 import { R } from './r';
+import { globals } from './types/globals';
 import { deleteRecordClient, draftRecord, isRecordRestrictedForDeletion, L, publishRecord, renderIcon, sp } from './utils';
 
 export type AdditionalButtonsRenderer = (

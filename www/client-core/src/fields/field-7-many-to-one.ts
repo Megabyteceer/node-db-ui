@@ -1,9 +1,9 @@
 import { h, type ComponentChild } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
 import type { LookupValue, LookupValueIconic, RecordData } from '../bs-utils';
 import { IMAGE_THUMBNAIL_PREFIX, VIEW_MASK } from '../bs-utils';
 import Form, { type FormProps } from '../form';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
 import { idToImgURL, L, registerFieldClass, renderIcon, sp } from '../utils';
 import BaseLookupField, { type BaseLookupFieldProps } from './base-lookup-field';
 import type LookupManyToManyFiled from './field-14-many-to-many';

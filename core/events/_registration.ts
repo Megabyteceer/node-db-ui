@@ -3,9 +3,9 @@ import { generateSalt, getPasswordHash, getServerHref, mail_utf8 } from '../auth
 
 import { ENV } from '../../core/ENV';
 
-import { E, NODE_ID } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import { serverOn } from '../../www/client-core/src/events-handle';
+import { E, NODE_ID } from '../../www/client-core/src/types/generated';
 import { L } from '../locale';
 import { mysqlExec } from '../mysql-connection';
 

@@ -1,8 +1,8 @@
 import { h } from 'preact';
-import { FIELD_TYPE, NODE_ID, type IFieldsRecord, type INodesRecord } from '../../../../types/generated';
-import { globals } from '../../../../types/globals';
 import type { FieldDesc } from '../bs-utils';
 import { Select, type SelectItem } from '../components/select';
+import { FIELD_TYPE, NODE_ID, type IFieldsRecord, type INodesRecord } from '../types/generated';
+import { globals } from '../types/globals';
 
 import type Form from '../form';
 import { MainFrame } from '../main-frame';

@@ -10,10 +10,10 @@ import { execSync } from 'child_process';
 import * as fs from 'fs';
 import { readFileSync, writeFileSync } from 'fs';
 import path from 'path';
-import type { FIELD_ID, NODE_ID } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import { USER_ID, type PRIVILEGES_MASK, type RecId } from '../../www/client-core/src/bs-utils';
 import { CLIENT_SIDE_FORM_EVENTS, SERVER_SIDE_FORM_EVENTS } from '../../www/client-core/src/events-handle';
+import type { FIELD_ID, NODE_ID } from '../../www/client-core/src/types/generated';
 import { isAdmin, type UserSession } from '../auth.js';
 import { D, mysqlExec, NUM_1 } from '../mysql-connection';
 

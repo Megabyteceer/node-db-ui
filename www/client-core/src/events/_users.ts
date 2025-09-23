@@ -1,7 +1,7 @@
-import { E, type ILanguagesFilter, type IUsersRecord, type TRegistrationFieldsList, type TUsersFieldsList } from '../../../../types/generated';
 import { clientOn } from '../events-handle';
 import type Form from '../form';
 import { ENV } from '../main-frame';
+import { E, type ILanguagesFilter, type IUsersRecord, type TRegistrationFieldsList, type TUsersFieldsList } from '../types/generated';
 import { iAdmin, User } from '../user';
 import { isAdmin, L, showPrompt } from '../utils';
 

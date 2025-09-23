@@ -1,7 +1,7 @@
 import type { ComponentChild } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
 import BaseField, { type BaseFieldProps } from '../base-field';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
 import { registerFieldClass, renderIcon } from '../utils';
 
 export default class ButtonField extends BaseField {

@@ -1,8 +1,8 @@
 'use strict';
-import { FIELD_TYPE } from '../../../../types/generated';
 import type { BaseFieldProps, BaseFieldState } from '../base-field';
 import BaseField from '../base-field';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
 import { registerFieldClass } from '../utils';
 
 const intToColor = (color: number, alpha: number) => {

@@ -1,5 +1,5 @@
-import { NODE_TYPE, type NODE_ID } from '../types/generated';
 import type { APIResult, GetRecordsFilter, GetRecordsParams, RecId, RecordDataWriteDraftable, RecordsDataResponse, UserSession } from '../www/client-core/src/bs-utils';
+import { NODE_TYPE, type NODE_ID } from '../www/client-core/src/types/generated';
 /// #if DEBUG
 import { dumpDB, editEventHandler, nodePrivileges, recoveryDB } from './admin/admin';
 import { getDeployPackage, isFiledExists, isTableExists } from './admin/deploy';

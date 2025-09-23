@@ -1,12 +1,12 @@
 import { Component, h } from 'preact';
 import type { NodePrivileges, NodePrivilegesRequest, NodePrivilegesRes } from '../../../../core/admin/admin';
-import { NODE_TYPE } from '../../../../types/generated';
 import { PRIVILEGES_MASK } from '../bs-utils';
 import Form, { type FormProps, type FormState } from '../form';
 import { R } from '../r';
 import { FormLoaderCog } from '../stage';
+import { NODE_TYPE, type NODE_ID } from '../types/generated';
 import { iAdmin } from '../user';
-import { getData, getNodeIfPresentOnClient, L, renderIcon, showPrompt, submitData } from '../utils';
+import { getData, getNode, getNodeIfPresentOnClient, L, renderIcon, showPrompt, submitData } from '../utils';
 import { NodeAdmin } from './admin-control';
 
 /// #if DEBUG
@@ -180,7 +180,7 @@ class AdminRolePrivilegesForm extends Form<string, AdminRolePrivilegesFormProps,
 				});
 			};
 
-			if (getNodeIfPresentOnClient(this.props.nodeId)!.nodeType === NODE_TYPE.DOCUMENT) {
+			if (getNodeIfPresentOnClient(this.props.recId as NODE_ID)!.nodeType === NODE_TYPE.DOCUMENT) {
 				submit();
 			} else {
 				submit(!(await showPrompt(L('APPLY_CHILD'), L('TO_THIS'), L('TO_ALL'), 'check', 'check')));
@@ -191,130 +191,134 @@ class AdminRolePrivilegesForm extends Form<string, AdminRolePrivilegesFormProps,
 	}
 
 	render() {
-		if (this.state && this.state.privilegesData) {
-			const data = this.state.privilegesData;
-			const node = getNodeIfPresentOnClient(this.props.nodeId)!;
-
-			const lines = data.privileges.map((i) => { // TODO: data type is from admin/nodePrivileges url
-				return R.tr(
-					{
-						key: i.id,
-						className: 'admin-role-privileges-line'
-					},
-					R.td(
-						{
-							className: 'admin-role-privileges-line-header'
-						},
-						i.name
-					),
-					h(PrivilegesEditor, {
-						bitsCount: 3,
-						baseBit: PRIVILEGES_MASK.VIEW_OWN,
-						item: i
-					}),
-					h(PrivilegesEditor, {
-						bitsCount: 1,
-						baseBit: PRIVILEGES_MASK.CREATE,
-						item: i
-					}),
-					h(PrivilegesEditor, {
-						bitsCount: 3,
-						baseBit: PRIVILEGES_MASK.EDIT_OWN,
-						item: i
-					}),
-					h(PrivilegesEditor, {
-						bitsCount: 1,
-						baseBit: PRIVILEGES_MASK.DELETE,
-						item: i
-					}),
-					node.draftable
-						? h(PrivilegesEditor, {
-							bitsCount: 1,
-							baseBit: PRIVILEGES_MASK.PUBLISH,
-							item: i
-						})
-						: undefined
-				);
+		const data = this.state.privilegesData;
+		const node = getNodeIfPresentOnClient(this.props.recId as NODE_ID)!;
+		if (!node) {
+			getNode(this.props.recId as NODE_ID).then(() => {
+				this.forceUpdate();
 			});
+		}
 
-			const body = R.div(
-				{
-					className: 'admin-role-privileges-block'
-				},
-				R.h3(
-					null,
-					R.span(
-						{
-							className: 'admin-role-privileges-header'
-						},
-						L('ADM_NODE_ACCESS')
-					),
-					node.matchName
-				),
-
-				R.table(
-					{
-						className: 'admin-role-privileges-table'
-					},
-					R.thead(
-						{
-							className: 'admin-role-privileges-row-header'
-						},
-						R.tr(
-							{
-								className: 'admin-role-privileges-line'
-							},
-							R.th(),
-							R.th(null, L('VIEW')),
-							R.th(null, L('CREATE')),
-							R.th(null, L('EDIT')),
-							R.th(null, L('DELETE')),
-							node.draftable ? R.th(null, L('PUBLISH')) : undefined
-						)
-					),
-					R.tbody(null, lines)
-				)
-			);
-
-			const saveButton = R.button(
-				{
-					className: 'clickable success-button',
-					onClick: this.savePrivilegesClick
-				},
-				this.props.isCompact ? renderIcon('check') : renderIcon('floppy-o'),
-				this.props.isCompact ? '' : L('SAVE')
-			);
-
-			/// #if DEBUG
-			let nodeAdmin;
-			if (iAdmin()) {
-				nodeAdmin = h(NodeAdmin, {
-					form: this
-				});
-			}
-			/// #endif
-
-			const closeButton = R.button(
-				{
-					className: 'clickable default-button',
-					onClick: this.cancelClick
-				},
-				renderIcon('times'),
-				this.props.isCompact ? '' : L('CANCEL')
-			);
-
-			return R.div(
-				{ className: 'admin-role-privileges-body' },
-				/// #if DEBUG
-				nodeAdmin,
-				/// #endif
-				body,
-
-				R.div(null, saveButton, closeButton)
-			);
-		} else {
+		if (!this.state?.privilegesData || !node) {
 			return h(FormLoaderCog, null);
 		}
+		const lines = data.privileges.map((i) => { // TODO: data type is from admin/nodePrivileges url
+			return R.tr(
+				{
+					key: i.id,
+					className: 'admin-role-privileges-line'
+				},
+				R.td(
+					{
+						className: 'admin-role-privileges-line-header'
+					},
+					i.name
+				),
+				h(PrivilegesEditor, {
+					bitsCount: 3,
+					baseBit: PRIVILEGES_MASK.VIEW_OWN,
+					item: i
+				}),
+				h(PrivilegesEditor, {
+					bitsCount: 1,
+					baseBit: PRIVILEGES_MASK.CREATE,
+					item: i
+				}),
+				h(PrivilegesEditor, {
+					bitsCount: 3,
+					baseBit: PRIVILEGES_MASK.EDIT_OWN,
+					item: i
+				}),
+				h(PrivilegesEditor, {
+					bitsCount: 1,
+					baseBit: PRIVILEGES_MASK.DELETE,
+					item: i
+				}),
+				node.draftable
+					? h(PrivilegesEditor, {
+						bitsCount: 1,
+						baseBit: PRIVILEGES_MASK.PUBLISH,
+						item: i
+					})
+					: undefined
+			);
+		});
+
+		const body = R.div(
+			{
+				className: 'admin-role-privileges-block'
+			},
+			R.h3(
+				null,
+				R.span(
+					{
+						className: 'admin-role-privileges-header'
+					},
+					L('ADM_NODE_ACCESS')
+				),
+				node.matchName
+			),
+
+			R.table(
+				{
+					className: 'admin-role-privileges-table'
+				},
+				R.thead(
+					{
+						className: 'admin-role-privileges-row-header'
+					},
+					R.tr(
+						{
+							className: 'admin-role-privileges-line'
+						},
+						R.th(),
+						R.th(null, L('VIEW')),
+						R.th(null, L('CREATE')),
+						R.th(null, L('EDIT')),
+						R.th(null, L('DELETE')),
+						node.draftable ? R.th(null, L('PUBLISH')) : undefined
+					)
+				),
+				R.tbody(null, lines)
+			)
+		);
+
+		const saveButton = R.button(
+			{
+				className: 'clickable success-button',
+				onClick: this.savePrivilegesClick
+			},
+			this.props.isCompact ? renderIcon('check') : renderIcon('floppy-o'),
+			this.props.isCompact ? '' : L('SAVE')
+		);
+
+		/// #if DEBUG
+		let nodeAdmin;
+		if (iAdmin()) {
+			nodeAdmin = h(NodeAdmin, {
+				form: this
+			});
+		}
+		/// #endif
+
+		const closeButton = R.button(
+			{
+				className: 'clickable default-button',
+				onClick: this.cancelClick
+			},
+			renderIcon('times'),
+			this.props.isCompact ? '' : L('CANCEL')
+		);
+
+		return R.div(
+			{ className: 'admin-role-privileges-body' },
+			/// #if DEBUG
+			nodeAdmin,
+			/// #endif
+			body,
+
+			R.div(null, saveButton, closeButton)
+		);
 	}
 }
 

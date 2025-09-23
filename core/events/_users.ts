@@ -1,5 +1,5 @@
-import { E, NODE_ID, type IUsersRecord, type IUsersRecordWrite } from '../../types/generated';
 import { serverOn } from '../../www/client-core/src/events-handle';
+import { E, NODE_ID, type IUsersRecord, type IUsersRecordWrite } from '../../www/client-core/src/types/generated';
 import { generateSalt, getPasswordHash, isAdmin, type UserSession } from '../auth';
 import { D, escapeString, mysqlExec } from '../mysql-connection';
 import { submitRecord } from '../submit';

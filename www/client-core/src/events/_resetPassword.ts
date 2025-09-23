@@ -1,6 +1,6 @@
-import { E, NODE_ID, type IRegistrationFilter } from '../../../../types/generated';
-import { globals } from '../../../../types/globals';
 import { clientOn } from '../events-handle';
+import { E, NODE_ID, type IRegistrationFilter } from '../types/generated';
+import { globals } from '../types/globals';
 import { User } from '../user';
 import { getData, goToHome, L } from '../utils';
 import { showMessageAboutEmailSent } from './_registration';

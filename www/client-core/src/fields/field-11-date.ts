@@ -1,7 +1,7 @@
 import moment from 'moment';
-import { FIELD_TYPE } from '../../../../types/generated';
 import { EMPTY_DATE } from '../consts';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
 import { innerDateTimeFormat, registerFieldClass, renderIcon, toReadableDate } from '../utils';
 import { dateFieldMixins /* , ReactDateTimeClassHolder */ } from './field-4-date-time';
 

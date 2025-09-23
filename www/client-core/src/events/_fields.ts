@@ -1,7 +1,7 @@
-import { E, FIELD_STORAGE_MODE, FIELD_TYPE, NODE_TYPE, type FormFields, type INodesFilter } from '../../../../types/generated';
 import { clientOn } from '../../../../www/client-core/src/events-handle';
 import { makeIconSelectionField } from '../admin/admin-utils';
 import { VIEW_MASK } from '../bs-utils';
+import { E, FIELD_STORAGE_MODE, FIELD_TYPE, NODE_TYPE, type FormFields, type INodesFilter } from '../types/generated';
 import { getNode, L, submitData } from '../utils';
 import { removeWrongCharactersInField } from './_nodes';
 

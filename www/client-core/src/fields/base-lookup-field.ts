@@ -1,12 +1,12 @@
 import type { ComponentChildren } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
-import { globals } from '../../../../types/globals';
 import { throwError } from '../assert';
 import BaseField, { type BaseFieldProps, type BaseFieldState } from '../base-field';
 import type { GetRecordsFilter, RecId, RecordData } from '../bs-utils';
 import { NEW_RECORD } from '../consts';
 import { scrollToVisible } from '../scroll-to-visible';
-import { assignFilters, getNode, renderIcon } from '../utils';
+import { FIELD_TYPE } from '../types/generated';
+import { globals } from '../types/globals';
+import { assignFilters, getNode, getNodeIfPresentOnClient, renderIcon } from '../utils';
 
 export interface BaseLookupFieldProps extends BaseFieldProps {
 	isNew?: boolean;
@@ -29,6 +29,7 @@ export default class BaseLookupField extends BaseField<BaseLookupFieldProps, Bas
 		super(props);
 		this.fieldFilters = this.generateDefaultFiltersByProps(props);
 		this.excludeIDs = props.excludeIDs;
+		this.node = getNodeIfPresentOnClient(this.props.fieldDesc.nodeRef!.id);
 	}
 
 	valueSelected(_recordData?: RecordData, _isNewCreated?: boolean, _noToggleList?: boolean): void {

@@ -4,8 +4,6 @@ import '../../../node_modules/@types/gapi/index.d.ts';
 import moment from 'moment';
 
 import { Component, h } from 'preact';
-import { NODE_ID } from '../../../types/generated';
-import { globals } from '../../../types/globals';
 import type { RecId, UserSession } from './bs-utils';
 import { USER_ID } from './bs-utils';
 import { Select, type SelectProps } from './components/select';
@@ -13,6 +11,8 @@ import { LITE_UI_PREFIX } from './consts';
 import { LoadingIndicator } from './loading-indicator';
 import { ENV, MainFrame } from './main-frame';
 import { R } from './r';
+import { NODE_ID } from './types/generated.js';
+import { globals } from './types/globals.js';
 import { attachGoogleLoginAPI, getData, getItem, idToImgURL, isAdmin, L, removeItem, renderIcon, setItem } from './utils';
 
 function setUserOrg(orgId: RecId) {

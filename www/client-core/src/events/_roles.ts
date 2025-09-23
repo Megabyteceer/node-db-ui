@@ -1,5 +1,5 @@
-import { E } from '../../../../types/generated';
 import { clientOn } from '../../../../www/client-core/src/events-handle';
+import { E } from '../types/generated';
 
 clientOn(E._roles.onLoad, (form) => {
 	form.addLookupFilters('_userRoles', 'excludeIDs', [1, 2, 3]);

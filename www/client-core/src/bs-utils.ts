@@ -1,8 +1,8 @@
 import type { DebugInfo } from '../../../core/mysql-connection';
-import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord, NODE_ID, NODE_TYPE } from '../../../types/generated';
 import type { SelectItem } from './components/select';
 import type { NEW_RECORD } from './consts';
 import type Form from './form';
+import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord, NODE_ID, NODE_TYPE } from './types/generated';
 
 export const normalizeCSSName = (name: string) => {
 	return camelToSnake(name!).toLowerCase().replaceAll('_', '-');

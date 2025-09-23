@@ -1,7 +1,7 @@
 import type { ComponentChild } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
 import BaseField from '../base-field';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
 import { consoleDir, isAutoFocus, registerFieldClass } from '../utils';
 
 export default class TextField extends BaseField {

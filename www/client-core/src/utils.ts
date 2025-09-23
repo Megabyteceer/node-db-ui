@@ -17,13 +17,13 @@ import { DebugPanel } from './debug-panel';
 import type moment from 'moment';
 import type { Component, ComponentChild } from 'preact';
 import { h } from 'preact';
-import { ENUM_ID, FIELD_TYPE, NODE_ID, type TypeGenerationHelper } from '../../../types/generated';
-import { globals } from '../../../types/globals';
 import { assert } from './assert';
 import type BaseField from './base-field';
 import type { BaseFieldProps } from './base-field';
 import { HotkeyButton } from './components/hotkey-button';
 import { ENV } from './main-frame';
+import { ENUM_ID, FIELD_TYPE, NODE_ID, type TypeGenerationHelper } from './types/generated';
+import { globals } from './types/globals';
 
 /// #if DEBUG
 const __corePath = 'http://127.0.0.1:1443/core/';
@@ -68,7 +68,7 @@ restrictRecordsDeletion({
 	[NODE_ID.ORGANIZATION]: [1, 2, 3] /* disable critical organizations deletion */,
 	[NODE_ID.ROLES]: [ROLE_ID.ADMIN, ROLE_ID.GUEST, ROLE_ID.USER] /* disable critical roles deletion */,
 	[NODE_ID.LANGUAGES]: [1] /* disable default language deletion */,
-	[NODE_ID.ENUMS]: [ENUM_ID.NODE_TYPE, ENUM_ID.FIELD_DISPLAY, ENUM_ID.FIELD_TYPE, ENUM_ID.FIELD_STORAGE_MODE, ENUM_ID.FIELD_PLACE] /* disable field type enum deletion */,
+	[NODE_ID.ENUMS]: [ENUM_ID.NODE_TYPE, ENUM_ID.FIELD_DISPLAY, ENUM_ID.FIELD_TYPE, ENUM_ID.FIELD_STORAGE_MODE] /* disable field type enum deletion */,
 	[NODE_ID.ENUM_VALUES]: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 22, 30, 43, 50] /* disable field type enum deletion */
 });
 

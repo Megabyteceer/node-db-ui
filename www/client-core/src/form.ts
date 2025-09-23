@@ -1,6 +1,4 @@
 import { h, render, type ComponentChild, type ComponentChildren, type ComponentProps } from 'preact';
-import { FIELD_TYPE, type NODE_ID } from '../../../types/generated';
-import { globals } from '../../../types/globals';
 import { NodeAdmin } from './admin/admin-control';
 import { FieldAdmin } from './admin/field-admin';
 import { assert, throwError } from './assert';
@@ -11,6 +9,8 @@ import { HotkeyButton } from './components/hotkey-button';
 import { Select } from './components/select';
 import { NEW_RECORD, SAVE_REJECTED } from './consts';
 import { CLIENT_SIDE_FORM_EVENTS, clientHandlers, getEventsHandlers, getEventsHandlersField, type Handler } from './events-handle';
+import { FIELD_TYPE, type NODE_ID } from './types/generated';
+import { globals } from './types/globals';
 
 import type BaseLookupField from './fields/base-lookup-field';
 import FormNode, { type FormNodeProps, type FormNodeState } from './form-node';
@@ -119,6 +119,7 @@ export default class Form<
 		this.saveClick = this.saveClick.bind(this);
 		this.changeSearch = this.changeSearch.bind(this);
 		this.tryBackupData = this.tryBackupData.bind(this);
+		this.refreshData = this.refreshData.bind(this);
 	}
 
 	private applyNodeDesc(nodeDesc?: NodeDesc) {
@@ -1235,7 +1236,7 @@ export default class Form<
 
 		let buttons;
 		if (!this.props.hideControls && !this.state.hideControls) {
-			buttons = renderItemsButtons(this.nodeDesc, data, (this.parent as Form).refreshData, this);
+			buttons = renderItemsButtons(this.nodeDesc, data, (this.parentForm as Form).refreshData, this);
 		}
 
 		fields.push(

@@ -1,8 +1,8 @@
 import moment from 'moment';
 import type { ComponentChild } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
 import { EMPTY_DATE } from '../consts';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
 import { innerDateTimeFormat, L, registerFieldClass, toReadableDateTime } from '../utils';
 
 import BaseField, { type BaseFieldProps, type BaseFieldState } from '../base-field';

@@ -1,13 +1,13 @@
 ﻿import { Component, h, render, type ComponentType } from 'preact';
 
-import { NODE_TYPE } from '../../../types/generated';
-import { globals } from '../../../types/globals';
 import { assert, throwError } from './assert';
 import { normalizeEnumName, type FormFilters, type RecId, type RecordData } from './bs-utils';
 import { NEW_RECORD } from './consts';
 import Form, { type FormProps } from './form';
 import { LeftBar } from './left-bar';
 import { R } from './r';
+import { NODE_TYPE } from './types/generated';
+import { globals } from './types/globals';
 import { getNode, getNodeIfPresentOnClient, getRecordClient, getRecordsClient, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from './utils';
 
 let mouseX: number;

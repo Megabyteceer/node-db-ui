@@ -1,6 +1,6 @@
-import { FIELD_TYPE } from '../../../../types/generated';
 import BaseField from '../base-field';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
 import { registerFieldClass } from '../utils';
 
 const splitterProps = { className: 'form-splitter' };

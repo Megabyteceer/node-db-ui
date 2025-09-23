@@ -1,5 +1,4 @@
 import { Component, h, type ComponentChild, type ComponentChildren } from 'preact';
-import { FIELD_DISPLAY, FIELD_TYPE } from '../../../types/generated';
 import { FieldAdmin } from './admin/field-admin';
 import type { GetRecordsFilter } from './bs-utils';
 import { SAVE_REJECTED } from './consts';
@@ -8,6 +7,7 @@ import type Form from './form';
 import FormNode, { type FormNodeAccessor, type FormNodeProps, type FormNodeState } from './form-node';
 import { R } from './r';
 import { scrollToVisible } from './scroll-to-visible';
+import { FIELD_DISPLAY, FIELD_TYPE } from './types/generated';
 import { iAdmin } from './user';
 import { L, renderIcon } from './utils';
 

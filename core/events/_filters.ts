@@ -1,5 +1,5 @@
-import type { IFiltersRecord, IFiltersRecordWrite } from '../../types/generated';
 import type { UserSession } from '../../www/client-core/src/bs-utils';
+import type { IFiltersRecord, IFiltersRecordWrite } from '../../www/client-core/src/types/generated';
 import { reloadMetadataSchedule } from '../describe-node';
 
 export default {

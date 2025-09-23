@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 
-import { E, NODE_ID, type IResetPasswordFilter } from '../../types/generated';
 import { serverOn } from '../../www/client-core/src/events-handle';
+import { E, NODE_ID, type IResetPasswordFilter } from '../../www/client-core/src/types/generated';
 import { getServerHref, mail_utf8 } from '../auth';
 import { L } from '../locale';
 import { D, escapeString, mysqlExec, NUM_1 } from '../mysql-connection';

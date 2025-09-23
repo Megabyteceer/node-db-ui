@@ -1,8 +1,8 @@
-import { E, NODE_ID, type TRegistrationFieldsList, type TResetPasswordFieldsList } from '../../../../types/generated';
-import { globals } from '../../../../types/globals';
 import { clientOn } from '../events-handle';
 import type Form from '../form';
 import { R } from '../r';
+import { E, NODE_ID, type TRegistrationFieldsList, type TResetPasswordFieldsList } from '../types/generated';
+import { globals } from '../types/globals';
 import { L, myAlert } from '../utils';
 import { checkPasswordConfirmation } from './_users';
 

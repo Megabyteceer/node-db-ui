@@ -39,7 +39,7 @@ import './views/view_users';
 import { AdminRolePrivilegesForm } from './admin/admin-role-privileges-form';
 /// #endif
 
-import { globals } from '../../../types/globals';
+import { globals } from './types/globals';
 
 globals.Stage = Stage;
 

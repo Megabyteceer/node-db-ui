@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import { join } from 'path';
 import sharp from 'sharp';
 
-import type { FIELD_ID, NODE_ID } from '../types/generated';
+import type { FIELD_ID, NODE_ID } from '../www/client-core/src/types/generated';
 import { ENV, getFieldDesc, getNodeDesc } from './describe-node';
 import { L } from './locale';
 

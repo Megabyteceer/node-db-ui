@@ -1,5 +1,5 @@
-import { E, type FormEnumValues } from '../../../../types/generated';
 import { clientOn } from '../../../../www/client-core/src/events-handle';
+import { E, type FormEnumValues } from '../types/generated';
 
 clientOn(E._enumValues.onLoad, (form) => {
 	if (form.isNewRecord && form.parent) {

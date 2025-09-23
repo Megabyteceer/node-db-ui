@@ -1,9 +1,9 @@
 import { type FieldDesc, type NodeDesc } from '../bs-utils';
 
 import { Component, type ComponentChild } from 'preact';
-import { FIELD_TYPE, NODE_ID, type FIELD_ID, type IFieldsRecord } from '../../../../types/generated';
-import { globals } from '../../../../types/globals';
 import type Form from '../form';
+import { FIELD_TYPE, NODE_ID, type FIELD_ID, type IFieldsRecord } from '../types/generated';
+import { globals } from '../types/globals';
 
 import { NEW_RECORD } from '../consts';
 import { CLIENT_SIDE_FORM_EVENTS } from '../events-handle';

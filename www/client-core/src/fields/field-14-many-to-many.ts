@@ -1,8 +1,8 @@
 import { h } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
-import { globals } from '../../../../types/globals';
 import type { LookupValue, LookupValueIconic, RecordData } from '../bs-utils';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
+import { globals } from '../types/globals';
 import { L, n2mValuesEqual, registerFieldClass, renderIcon, sp, UID } from '../utils';
 import BaseLookupField, { type BaseLookupFieldProps } from './base-lookup-field';
 import LookupManyToOneFiled from './field-7-many-to-one';

@@ -1,5 +1,5 @@
-import { E } from '../../../../types/generated';
 import { clientOn } from '../../../../www/client-core/src/events-handle';
+import { E } from '../types/generated';
 import { removeWrongCharactersInField } from './_nodes';
 
 clientOn(E._html.title.onChange, (form) => {

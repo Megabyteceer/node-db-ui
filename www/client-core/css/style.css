@@ -43,6 +43,16 @@ h4 {
 	background-color: var(--BRAND_COLOR_DARK);
 }
 
+.list-body tr:hover .form-item-row:first-child {
+	border-top-left-radius: 100px;
+	border-bottom-left-radius: 100px;
+}
+
+.list-body tr:hover .form-item-row:last-child {
+	border-top-right-radius: 100px;
+	border-bottom-right-radius: 100px;
+}
+
 h5 {
 	font-weight: bold;
 }
@@ -222,8 +232,13 @@ img {
 }
 
 .tool-btn {
-	padding: 3px 2px;
+	padding: 6px 5px;
+	margin: 0;
 	background: transparent;
+}
+
+.tool-btn:hover {
+	background-color: var(--INPUT_COLOR);
 }
 
 .half-visible {

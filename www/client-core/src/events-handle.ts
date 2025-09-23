@@ -1,7 +1,7 @@
 import { getNodeByTableName } from '../../../core/get-node-by-table-name';
-import { E, FIELD_TYPE, type TypeGenerationHelper } from '../../../types/generated';
 import { assert } from './assert';
 import { isServer } from './bs-utils';
+import { E, FIELD_TYPE, type TypeGenerationHelper } from './types/generated';
 
 export enum SERVER_SIDE_FORM_EVENTS {
 	beforeCreate = 'beforeCreate',

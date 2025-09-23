@@ -8,11 +8,11 @@ import { writeFileSync } from 'fs';
 
 import { D, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 
-import { ENUM_ID, FIELD_TYPE, NODE_ID, NODE_TYPE, type IFiltersRecord } from '../types/generated';
-import { globals } from '../types/globals';
 import { assert, throwError } from '../www/client-core/src/assert';
 import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, TreeItem, UserLangEntry } from '../www/client-core/src/bs-utils';
 import { FIELD_DATA_TYPE, isServer, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import { ENUM_ID, FIELD_TYPE, NODE_ID, NODE_TYPE, type IFiltersRecord } from '../www/client-core/src/types/generated';
+import { globals } from '../www/client-core/src/types/globals';
 import type { UserSession /* , usersSessionsStartedCount */ } from './auth';
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode /* , usersSessionsStartedCount */ } from './auth';
 import { ENV, type ENV_TYPE } from './ENV';
@@ -462,7 +462,7 @@ const generateTypings = async () => {
 
 	const srcAdd = [''];
 	const src = [`import type { Moment } from 'moment';
-import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
+import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../bs-utils';
 `] as string[];
 	for (const node of nodes) {
 		if (node.nodeType === NODE_TYPE.DOCUMENT) {
@@ -553,8 +553,8 @@ import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordD
 	const HANDLER_RET = 'HandlerRet';
 
 	src.push(`
-import type { RecId, UserSession, VIEW_MASK } from '../www/client-core/src/bs-utils';
-import type Form from '../www/client-core/src/form';
+import type { RecId, UserSession, VIEW_MASK } from '../bs-utils';
+import type Form from '../form';
 export class TypeGenerationHelper {`);
 
 	nodesData.forEach((nodeData) => {
@@ -706,7 +706,7 @@ export class TypeGenerationHelper {`);
 }`);
 	src.push('export const E = ' + JSON.stringify(eventsEnum, undefined, '\t').replaceAll('"', '') + ' as const;');
 	src.push(...srcAdd);
-	writeFileSync('types/generated.ts', src.join('\n'));
+	writeFileSync('www/client-core/src/types/generated.ts', src.join('\n'));
 };
 
 /// #endif

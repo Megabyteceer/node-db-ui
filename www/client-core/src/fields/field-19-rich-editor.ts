@@ -1,7 +1,7 @@
-import { FIELD_TYPE } from '../../../../types/generated';
 import BaseField, { type BaseFieldProps } from '../base-field';
 import { SAVE_REJECTED } from '../consts';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
 import { User } from '../user';
 import { L, registerFieldClass, renderIcon } from '../utils';
 

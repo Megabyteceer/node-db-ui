@@ -1,11 +1,11 @@
 import { h } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
-import { globals } from '../../../../types/globals';
 import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../bs-utils';
 import { VIEW_MASK } from '../bs-utils';
 import { NEW_RECORD } from '../consts';
 import Form, { type FormProps } from '../form';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
+import { globals } from '../types/globals';
 import { assignFilters, deleteRecordClient, registerFieldClass } from '../utils';
 import BaseLookupField from './base-lookup-field';
 

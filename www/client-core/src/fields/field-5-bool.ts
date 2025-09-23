@@ -1,8 +1,8 @@
 import { Component, h, type ComponentChild } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
 import BaseField from '../base-field';
 import type { BoolNum } from '../bs-utils';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
 import { L, registerFieldClass, renderIcon } from '../utils';
 
 interface CheckBoxProps {

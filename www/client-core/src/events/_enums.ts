@@ -1,6 +1,6 @@
-import { E, type FormEnumValues } from '../../../../types/generated';
 import { clientOn } from '../../../../www/client-core/src/events-handle';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
+import { E, type FormEnumValues } from '../types/generated';
 import { L } from '../utils';
 
 clientOn(E._enums.onLoad, (form) => {

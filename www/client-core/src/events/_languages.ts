@@ -1,7 +1,7 @@
-import { E } from '../../../../types/generated';
 import { clientOn } from '../../../../www/client-core/src/events-handle';
 import { LANGUAGE_ID_DEFAULT } from '../bs-utils';
 import { R } from '../r';
+import { E } from '../types/generated';
 import { L } from '../utils';
 
 clientOn(E._languages.onLoad, (form) => {

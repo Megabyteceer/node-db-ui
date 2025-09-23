@@ -1,7 +1,7 @@
 import type { ComponentType } from 'preact';
-import type { UserSession } from '../core/auth';
-import type { FormTabContent, TabField } from '../www/client-core/src/form-tab';
-import type { Stage } from '../www/client-core/src/stage';
+import type { UserSession } from '../../../../core/auth';
+import type { FormTabContent, TabField } from '../form-tab';
+import type { Stage } from '../stage';
 
 declare global {
 	interface Window {

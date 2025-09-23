@@ -1,3 +1,7 @@
+// @ts-nocheck
+
+// TODO: deploy is not implemented
+
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -6,9 +10,9 @@ import { escapeString, mysqlExec, NUM_1 } from '../mysql-connection';
 
 import { createHash } from 'crypto';
 import { SERVER_ENV } from '../../core/ENV';
-import type { NODE_ID } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import type { UserSession } from '../../www/client-core/src/bs-utils';
+import type { NODE_ID } from '../../www/client-core/src/types/generated';
 import { isAdmin } from '../auth';
 import { getNodeDesc } from '../describe-node';
 import { shouldBeAdmin } from './admin';

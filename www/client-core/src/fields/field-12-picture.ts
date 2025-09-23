@@ -1,10 +1,10 @@
 import { Component, h, type ComponentChild } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
 import BaseField from '../base-field';
 import { IMAGE_THUMBNAIL_PREFIX } from '../bs-utils';
 import type Form from '../form';
 import { Modal } from '../modal';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
 import { checkFileSize, idToImgURL, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
 import waitForCondition from '../wait-for-condition';
 

@@ -1,10 +1,10 @@
 import { Component, h } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
 import BaseField, { type BaseFieldProps, type BaseFieldState } from '../base-field';
 import type Form from '../form';
 import { ENV } from '../main-frame';
 import { Modal } from '../modal';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
 import { checkFileSize, getReadableUploadSize, idToFileUrl, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
 
 class FileField extends BaseField {

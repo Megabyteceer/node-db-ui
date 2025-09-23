@@ -1,6 +1,6 @@
-import { E, NODE_ID } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import { VIEW_MASK } from '../../www/client-core/src/bs-utils';
+import { E, NODE_ID } from '../../www/client-core/src/types/generated';
 
 import { serverOn } from '../../www/client-core/src/events-handle';
 import { shouldBeAdmin } from '../admin/admin';

@@ -3,12 +3,12 @@ import { createNodeForMenuItem, NodeAdmin } from './admin/admin-control';
 import { FieldAdmin } from './admin/field-admin';
 /// #endif
 import { Component, h } from 'preact';
-import { NODE_TYPE } from '../../../types/generated';
-import { globals } from '../../../types/globals';
 import { assert } from './assert';
 import type { RecId, TreeItem } from './bs-utils';
 import { R } from './r';
 import { Stage } from './stage';
+import { NODE_TYPE } from './types/generated';
+import { globals } from './types/globals';
 import { iAdmin, User } from './user';
 import { isLitePage, L, renderIcon } from './utils';
 

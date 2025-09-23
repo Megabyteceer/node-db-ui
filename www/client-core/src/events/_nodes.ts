@@ -1,7 +1,7 @@
-import { E, NODE_TYPE, type FormNodes, type IFieldsFilter, type IFiltersFilter } from '../../../../types/generated';
 import { clientOn } from '../../../../www/client-core/src/events-handle';
 import { makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField } from '../admin/admin-utils';
 import type Form from '../form';
+import { E, NODE_TYPE, type FormNodes, type IFieldsFilter, type IFiltersFilter } from '../types/generated';
 import { L, submitData } from '../utils';
 
 export const removeWrongCharactersInField = (form: Form, fieldName: string) => {
@@ -164,10 +164,12 @@ clientOn(E._nodes.tableName.onChange, (form) => {
 	removeWrongCharactersInField(form, 'tableName');
 	checkTableExists(form);
 	const name = form.fieldValue('tableName');
-	if (name.startsWith('_') || name.startsWith('pg_')) {
-		form.fieldAlert('tableName', 'Table name can not start with "_" or "pg_"', false, true, 'prohibited-system-name');
-	} else {
-		form.fieldHideAlert('tableName', 'prohibited-system-name');
+	if (!form.isUpdateRecord) {
+		if (name.startsWith('_') || name.startsWith('pg_')) {
+			form.fieldAlert('tableName', 'Table name can not start with "_" or "pg_"', false, true, 'prohibited-system-name');
+		} else {
+			form.fieldHideAlert('tableName', 'prohibited-system-name');
+		}
 	}
 });
 /// #endif

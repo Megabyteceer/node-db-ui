@@ -1,8 +1,8 @@
 import { pbkdf2, randomBytes } from 'crypto';
-import { NODE_ID } from '../types/generated';
 import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
 import type { BoolNum, RecId, UserLangEntry, UserRoles, UserSession } from '../www/client-core/src/bs-utils';
 import { ROLE_ID, USER_ID } from '../www/client-core/src/bs-utils';
+import { NODE_ID } from '../www/client-core/src/types/generated';
 import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from './describe-node';
 import { ENV, SERVER_ENV } from './ENV';
 import { L } from './locale';

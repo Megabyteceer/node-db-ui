@@ -1,5 +1,5 @@
-import { E } from '../../types/generated';
 import { serverOn } from '../../www/client-core/src/events-handle';
+import { E } from '../../www/client-core/src/types/generated';
 import { shouldBeAdmin } from '../admin/admin';
 import { reloadMetadataSchedule } from '../describe-node';
 

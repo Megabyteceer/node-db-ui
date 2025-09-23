@@ -1,9 +1,9 @@
 import { h, type ComponentChild } from 'preact';
-import { FIELD_TYPE } from '../../../../types/generated';
 import BaseField from '../base-field';
 import { normalizeEnumName, type EnumList } from '../bs-utils';
 import { Select } from '../components/select';
 import { R } from '../r';
+import { FIELD_TYPE } from '../types/generated';
 import { registerFieldClass } from '../utils';
 
 class EnumField extends BaseField {

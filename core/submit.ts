@@ -16,13 +16,13 @@ import { L } from './locale';
 import {mysqlRollback} } from './mysql-connection';
 // */
 
-import { FIELD_TYPE, type FIELD_ID, type NODE_ID, type TypeGenerationHelper } from '../types/generated';
 import {
 	/// #if DEBUG
 	__destroyRecordToPreventAccess,
 	/// #endif
 	eventDispatch, SERVER_SIDE_FORM_EVENTS
 } from '../www/client-core/src/events-handle';
+import { FIELD_TYPE, type FIELD_ID, type NODE_ID, type TypeGenerationHelper } from '../www/client-core/src/types/generated';
 import { D, escapeString, mysqlCommit, mysqlExec, mysqlStartTransaction, NUM_1 } from './mysql-connection';
 import { idToImgURLServer, UPLOADS_FILES_PATH } from './upload';
 

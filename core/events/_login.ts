@@ -1,6 +1,6 @@
-import { E } from '../../types/generated';
 import { throwError } from '../../www/client-core/src/assert';
 import { serverOn } from '../../www/client-core/src/events-handle';
+import { E } from '../../www/client-core/src/types/generated';
 import { authorizeUserByID, getPasswordHash } from '../auth';
 import { L } from '../locale';
 import { loginWithGoogle } from '../login-social';

@@ -1,11 +1,11 @@
 import { Component, h, type ComponentChild } from 'preact';
-import { NODE_ID, NODE_TYPE, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../../../../types/generated';
-import { globals } from '../../../../types/globals';
 import { VIEW_MASK, type NodeDesc, type TreeItem } from '../bs-utils';
 import { NEW_RECORD } from '../consts';
 import { CLIENT_SIDE_FORM_EVENTS, SERVER_SIDE_FORM_EVENTS } from '../events-handle';
 import type Form from '../form';
 import { R } from '../r';
+import { NODE_ID, NODE_TYPE, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../types/generated';
+import { globals } from '../types/globals';
 import { getRecordClient, getRecordsClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
 import { admin } from './admin-utils';

@@ -1,8 +1,8 @@
 import { h } from 'preact';
-import { globals } from '../../../types/globals';
 import { FieldAdmin } from './admin/field-admin';
 import BaseField, { type BaseFieldProps, type BaseFieldState } from './base-field';
 import { R } from './r';
+import { globals } from './types/globals';
 import { renderIcon } from './utils';
 
 const activeTabContentProps = {
