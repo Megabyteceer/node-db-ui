@@ -91,7 +91,6 @@
 }
 
 .admin-form-wrap {
-	pointer-events: all;
 	position: absolute;
 	z-index: 3;
 	height: 34px;
@@ -373,4 +372,23 @@
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 	width: 100px;
+}
+
+.field-container-_fields--storageMode .select-control-item-value-1 {
+	color: #3a3;
+	font-weight: 700;
+}
+
+.field-container-_fields--storageMode .select-control-item-value-2 {
+	color: rgb(47, 173, 110);
+	font-weight: 700;
+}
+
+.field-container-_fields--storageMode .select-control-item-value-3 {
+	color: rgb(28, 187, 153);
+	font-weight: 700;
+}
+
+.field-container-_fields--storageMode .select-control-item-value-5 {
+	opacity: 0.6;
 }

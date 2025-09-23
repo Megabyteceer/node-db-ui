@@ -1,4 +1,4 @@
-import { E, FIELD_TYPE, NODE_TYPE, type FormFields, type INodesFilter } from '../../../../types/generated';
+import { E, FIELD_STORAGE_MODE, FIELD_TYPE, NODE_TYPE, type FormFields, type INodesFilter } from '../../../../types/generated';
 import { clientOn } from '../../../../www/client-core/src/events-handle';
 import { makeIconSelectionField } from '../admin/admin-utils';
 import { VIEW_MASK } from '../bs-utils';
@@ -41,6 +41,22 @@ const checkFieldExists = async (form: FormFields) => {
 clientOn(E._fields.onLoad, async (form) => {
 	makeIconSelectionField(form, 'icon');
 
+	form.hideField('forSearch', 'unique', 'sendToServer', 'storeInDb');
+
+	if (form.isUpdateRecord) {
+		if (form.fieldValue('unique')) {
+			form.setFieldValue('storageMode', FIELD_STORAGE_MODE.STORED_INDEXED_UNIQUE);
+		} else if (form.fieldValue('forSearch')) {
+			form.setFieldValue('storageMode', FIELD_STORAGE_MODE.STORED_INDEXED);
+		} else if (form.fieldValue('storeInDb')) {
+			form.setFieldValue('storageMode', FIELD_STORAGE_MODE.STORED);
+		} else if (form.fieldValue('sendToServer')) {
+			form.setFieldValue('storageMode', FIELD_STORAGE_MODE.NOT_STORED);
+		}
+	}
+
+	_fields_recalculateFieldsVisibility(form);
+
 	const parentNodeVal = form.fieldValue('nodeFieldsLinker');
 	let parentNode: NodeDesc;
 	if (parentNodeVal) {
@@ -59,9 +75,6 @@ clientOn(E._fields.onLoad, async (form) => {
 			form.setFieldValue('visibilityList', 1);
 			form.setFieldValue('visibilityDropdownList', 0);
 			form.setFieldValue('visibilitySubFormList', 1);
-
-			form.setFieldValue('sendToServer', 1);
-			form.setFieldValue('storeInDb', 1);
 		}
 
 		if (!form.fieldValue('prior')) {
@@ -167,20 +180,6 @@ clientOn(E._fields.name.onChange, (form) => {
 	check12nFieldName(form);
 });
 
-clientOn(E._fields.fieldType.onChange, (form) => {
-	_fields_recalculateFieldsVisibility(form);
-});
-
-clientOn(E._fields.storeInDb.onChange, (form) => {
-	if (form.isFieldVisible('storeInDb')) {
-		if (!form.fieldValue('storeInDb') || form.fieldValue('sendToServer')) {
-			form.hideField('forSearch', 'unique');
-		} else {
-			form.showField('forSearch', 'unique');
-		}
-	}
-});
-
 clientOn(E._fields.visibilityCreate.onChange, (form) => {
 	let shv = form.fieldValue('show');
 
@@ -248,7 +247,8 @@ clientOn(E._fields.nodeRef.onChange, (form) => {
 const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 	const fieldType = form.fieldValue('fieldType');
 
-	form.showField('maxLength', 'requirement', 'storeInDb', 'sendToServer', 'unique', 'forSearch');
+	form.showField('maxLength', 'requirement');
+
 	form.hideField(
 		'multilingual',
 		'nodeRef',
@@ -264,10 +264,6 @@ const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 	form.enableField('visibilityCustomList');
 	form.enableField('visibilityDropdownList');
 	form.enableField('visibilitySubFormList');
-	form.enableField('storeInDb');
-	form.enableField('sendToServer');
-	form.enableField('unique');
-	form.enableField('forSearch');
 
 	if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 		form.addLookupFilters('nodeRef', 'excludeIDs', [
@@ -285,17 +281,10 @@ const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 		form.hideField(
 			'storageSettingSplitter',
 			'maxLength',
-			'sendToServer',
-			'storeInDb',
 			'requirement',
-			'unique',
-			'forSearch'
+			'storageMode'
 		);
-		form.setFieldValue('sendToServer', 0);
-		form.disableField('sendToServer');
-		form.setFieldValue('storeInDb', 0);
-		form.disableField('storeInDb');
-		form.disableField('requirement');
+		form.setFieldValue('storageMode', FIELD_STORAGE_MODE.CLIENT_SIDE_ONLY);
 		break;
 	case FIELD_TYPE.LOOKUP_N_TO_M:
 	case FIELD_TYPE.LOOKUP_1_TO_N:
@@ -308,14 +297,10 @@ const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 		form.disableField('visibilitySubFormList');
 		form.setFieldValue('visibilitySubFormList', 0);
 
-		form.disableField('sendToServer');
-		form.setFieldValue('sendToServer', 1);
-		form.disableField('storeInDb');
-		form.setFieldValue('storeInDb', 1);
-		form.hideField('forSearch', 'requirement', 'unique');
+		form.disableField('storageMode');
+		form.setFieldValue('storageMode', FIELD_STORAGE_MODE.STORED);
 	case FIELD_TYPE.LOOKUP:
 		form.hideField('maxLength', 'unique');
-		form.setFieldValue('unique', 0);
 		form.showField('nodeRef');
 		break;
 
@@ -342,13 +327,11 @@ const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 		form.disableField('fieldType');
 		form.disableField('nodeRef');
 		form.disableField('nodeFieldsLinker');
-		form.disableField('storeInDb');
-		form.disableField('sendToServer');
 	}
 
 	if (fieldType === FIELD_TYPE.LOOKUP) {
-		form.disableField('forSearch');
-		form.setFieldValue('forSearch', 1);
+		form.disableField('storageMode');
+		form.setFieldValue('storageMode', FIELD_STORAGE_MODE.STORED_INDEXED);
 	}
 
 	if (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.HTML_EDITOR) {
@@ -360,38 +343,44 @@ const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 
 	check12nFieldName(form);
 
-	if (!form.fieldValue('sendToServer')) {
-		form.disableField('storeInDb');
-		form.setFieldValue('storeInDb', 0);
-	}
-
-	if (!form.fieldValue('storeInDb')) {
-		form.disableField('forSearch');
-		form.setFieldValue('forSearch', 0);
-	}
-
-	if (!form.fieldValue('forSearch')) {
-		form.disableField('unique');
-		form.setFieldValue('unique', 0);
-	}
-
 	form.makeFieldRequired('maxLength', form.isFieldVisible('maxLength'));
 };
 
-clientOn(E._fields.storeInDb.onChange, (form) => {
+clientOn(E._fields.storageMode.onChange, async (form, value: FIELD_STORAGE_MODE) => {
+	const flags = {
+		[FIELD_STORAGE_MODE.CLIENT_SIDE_ONLY]: 0,
+		[FIELD_STORAGE_MODE.NOT_STORED]: 1,
+		[FIELD_STORAGE_MODE.STORED]: 2,
+		[FIELD_STORAGE_MODE.STORED_INDEXED]: 3,
+		[FIELD_STORAGE_MODE.STORED_INDEXED_UNIQUE]: 4
+	}[value];
+
+	if (flags > 1) {
+		const parentNode = (await getNode(form.fieldValue('nodeFieldsLinker').id));
+		if (!parentNode.storeForms) {
+			form.setFieldValue('storageMode', FIELD_STORAGE_MODE.NOT_STORED);
+			return;
+		}
+	}
+
+	form.setFieldValue('sendToServer', flags > 0);
+	form.setFieldValue('storeInDb', flags > 1);
+	form.setFieldValue('forSearch', flags > 2);
+	form.setFieldValue('unique', flags > 3);
+
+	form.fieldAlert('storageMode', {
+		[FIELD_STORAGE_MODE.CLIENT_SIDE_ONLY]: 'Field`s value will not be sent to the server and no related field will be created in the database table.',
+		[FIELD_STORAGE_MODE.NOT_STORED]: 'Field`s value will be sent to the server but no related field will be created in the database table.',
+		[FIELD_STORAGE_MODE.STORED]: 'Field`s value will be sent to the server and related field will be created in the database table.',
+		[FIELD_STORAGE_MODE.STORED_INDEXED]: 'Field`s value will be sent to the server and related field will be created in the database table. Field will be used in search and filter operations.',
+		[FIELD_STORAGE_MODE.STORED_INDEXED_UNIQUE]: 'Field`s value will be sent to the server and related field will be created in the database table. Field will be used in search and filter operations, and value of the field will be forced to be globally unique.'
+	}[value], true);
+
 	_fields_recalculateFieldsVisibility(form);
 });
 
-clientOn(E._fields.sendToServer.onChange, (form) => {
-	_fields_recalculateFieldsVisibility(form);
-});
-
-clientOn(E._fields.forSearch.onChange, (form) => {
+clientOn(E._fields.fieldType.onChange, async (form) => {
 	_fields_recalculateFieldsVisibility(form);
 });
 
 /// #endif
-
-clientOn(E._fields.storageMode.onChange, async (form) => {
-
-});

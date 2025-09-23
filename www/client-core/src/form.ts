@@ -1030,6 +1030,7 @@ export default class Form<
 									: 'clickable tool-btn danger-btn',
 								title: L('DELETE'),
 								key: 'b' + UID(itemData),
+								tabindex: -1,
 								onClick: async () => {
 									await deleteRecordClient(itemData.name, node.id, 0, !itemData.id, () => {
 										itemData.__deleted_901d123f = true;
@@ -1067,6 +1068,7 @@ export default class Form<
 									className: (typeof prevItemNum === 'number') ? 'clickable tool-btn edit-btn' : 'clickable tool-btn edit-btn disabled',
 									title: L('MOVE_UP'),
 									key: 'bu' + UID(itemData),
+									tabindex: -1,
 									onClick: (typeof prevItemNum === 'number') ? () => {
 										swapItems(itemNum, prevItemNum);
 									} : undefined
@@ -1081,6 +1083,7 @@ export default class Form<
 									className: (typeof nexItemNum === 'number') ? 'clickable tool-btn edit-btn' : 'clickable tool-btn edit-btn disabled',
 									title: L('MOVE_DOWN'),
 									key: 'bd' + UID(itemData),
+									tabindex: -1,
 									onClick: (typeof nexItemNum === 'number') ? () => {
 										swapItems(itemNum, nexItemNum);
 									} : undefined
@@ -1388,11 +1391,6 @@ export default class Form<
 					}
 				}
 			}
-			/// #if DEBUG
-			if (iAdmin()) {
-				nodeAdmin = h(NodeAdmin, { form: this });
-			}
-			/// #endif
 			if (!this.props.isCompact) {
 				const headerContent =
 					this.state.header ||
@@ -1434,6 +1432,12 @@ export default class Form<
 				));
 			}
 		}
+
+		/// #if DEBUG
+		if (iAdmin()) {
+			nodeAdmin = h(NodeAdmin, { form: this });
+		}
+		/// #endif
 
 		return R.div(
 			{ className },

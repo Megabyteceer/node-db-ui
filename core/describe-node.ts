@@ -730,7 +730,7 @@ function getFieldTypeSrc(field: FieldDesc) {
 	let type = 'any';
 	switch (field.fieldType) {
 	case FIELD_TYPE.BOOL:
-		type = 'BoolNum';
+		type = 'BoolNum | boolean';
 		break;
 	case FIELD_TYPE.COLOR:
 	case FIELD_TYPE.NUMBER:

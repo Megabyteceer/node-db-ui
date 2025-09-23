@@ -1,23 +1,5 @@
 
-home пункт меню крупнее.
 
-енум тип поля.  stored ,   stored + indexed,   stored + indexed + unoque,  not-stored,  client-side-only 
-
-проставить в полях режим в зависимости от флагов
-выпилить данные из бд
-выпилить галочки sendToServer storeInDb  forSearch unique
-
-
-полям форсить not-stored или client only если not-stored документ
-
-
-
-
-
-
-енум где рендерить поле. в форме, меню, футере, хеадере. социал кнопку переместить в футер
-
-вылез выбор организации
 
 делать казино проект. парвильно втянуть проект через node_modules?
 

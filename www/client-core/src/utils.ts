@@ -68,7 +68,7 @@ restrictRecordsDeletion({
 	[NODE_ID.ORGANIZATION]: [1, 2, 3] /* disable critical organizations deletion */,
 	[NODE_ID.ROLES]: [ROLE_ID.ADMIN, ROLE_ID.GUEST, ROLE_ID.USER] /* disable critical roles deletion */,
 	[NODE_ID.LANGUAGES]: [1] /* disable default language deletion */,
-	[NODE_ID.ENUMS]: [ENUM_ID.NODE_TYPE, ENUM_ID.FIELD_DISPLAY, ENUM_ID.FIELD_TYPE, ENUM_ID.FIELD_STORAGE_MODE] /* disable field type enum deletion */,
+	[NODE_ID.ENUMS]: [ENUM_ID.NODE_TYPE, ENUM_ID.FIELD_DISPLAY, ENUM_ID.FIELD_TYPE, ENUM_ID.FIELD_STORAGE_MODE, ENUM_ID.FIELD_PLACE] /* disable field type enum deletion */,
 	[NODE_ID.ENUM_VALUES]: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 22, 30, 43, 50] /* disable field type enum deletion */
 });
 

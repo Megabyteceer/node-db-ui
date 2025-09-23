@@ -122,7 +122,7 @@ const handlersArgs = {
 	[CLIENT_SIDE_FORM_EVENTS.onLoad]: 'form',
 	[CLIENT_SIDE_FORM_EVENTS.onSave]: 'form',
 	[CLIENT_SIDE_FORM_EVENTS.afterSave]: 'form, submitResult',
-	[CLIENT_SIDE_FORM_EVENTS.onChange]: 'form',
+	[CLIENT_SIDE_FORM_EVENTS.onChange]: 'form, value, isUserAction, prevValue',
 	[CLIENT_SIDE_FORM_EVENTS.onClick]: 'form'
 };
 

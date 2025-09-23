@@ -249,6 +249,10 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 		return txt;
 	}
 
+	getClassName() {
+
+	}
+
 	render(): ComponentChildren {
 		const field = this.props.fieldDesc;
 
@@ -278,7 +282,6 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 		}
 
 		const fieldTypedBody = this.props.isEdit ? this.renderFieldEditable() : this.renderField();
-		let fieldCustomBody;
 
 		const noLabel = !field.name || field.fieldType === FIELD_TYPE.BUTTON; // (field.fieldType===FIELD_TYPE.LOOKUP_N_TO_M)||(field.fieldType===FIELD_TYPE.LOOKUP_1_TO_N);
 
@@ -321,7 +324,6 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 					} : undefined
 				},
 				fieldTypedBody,
-				fieldCustomBody,
 				/// #if DEBUG
 				fieldAdmin,
 				/// #endif
@@ -331,6 +333,7 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 			if (field.lang) {
 				className += ' field-wrap-lang';
 			}
+			let alertBody;
 			let label;
 			if (!noLabel) {
 				label = h(FieldLabel, {
@@ -341,6 +344,17 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 					fieldAlert: this.state ? this.state.alertText : undefined,
 					isSuccessAlert: this.state ? this.state.isSuccessAlert : undefined
 				});
+
+				if (this.state.alertText) {
+					if (this.state.isSuccessAlert) {
+						alertBody = R.div(
+							{ className: 'fade-in field-wrap-alert field-wrap-alert-success' },
+							this.state.alertText
+						);
+					} else {
+						alertBody = R.div({ className: 'fade-in field-wrap-alert' }, this.state.alertText);
+					}
+				}
 			}
 			return R.div(
 				{ className },
@@ -350,10 +364,10 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 						className: noLabel ? 'field-wrap-value field-wrap-value-no-label' : 'field-wrap-value'
 					},
 					fieldTypedBody,
-					fieldCustomBody,
 					/// #if DEBUG
 					fieldAdmin,
 					/// #endif
+					alertBody,
 					help
 				)
 			);
@@ -439,18 +453,6 @@ class FieldLabel extends Component<FieldLabelProps, any> {
 			star = '';
 		}
 
-		let alertBody;
-		if (this.props.fieldAlert) {
-			if (this.props.isSuccessAlert) {
-				alertBody = R.div(
-					{ className: 'fade-in field-wrap-alert field-wrap-alert-success' },
-					this.props.fieldAlert
-				);
-			} else {
-				alertBody = R.div({ className: 'fade-in field-wrap-alert' }, this.props.fieldAlert);
-			}
-		}
-
 		let body;
 		if (field.lang) {
 			body = R.span({ className: 'field-wrap-label-lang' }, field.lang);
@@ -462,8 +464,7 @@ class FieldLabel extends Component<FieldLabelProps, any> {
 			{ className: 'field-wrap-label' },
 			field.fieldType !== FIELD_TYPE.BUTTON ? renderIcon(field.icon) : '',
 			body,
-			star,
-			alertBody
+			star
 		);
 	}
 }

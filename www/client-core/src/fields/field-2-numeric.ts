@@ -16,8 +16,9 @@ export default class NumericField extends BaseField {
 		let value = this.currentValue;
 		const field = this.props.fieldDesc;
 
-		if (!value) {
+		if (isNaN(value)) {
 			value = 0;
+			this.valueListener(0, false);
 		}
 
 		const inputsProps = {

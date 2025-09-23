@@ -71,9 +71,11 @@ class Select extends Component<SelectProps, SelectState> {
 	render() {
 
 		let curVal = ((this.state.curVal === 0) || this.state.curVal) ? this.state.curVal : this.props.defaultValue;
+		let curItem: SelectItem | undefined;
 		for (const o of this.props.options) {
 			if (o.value === curVal) {
 				curVal = o.name;
+				curItem = o;
 				break;
 			}
 		}
@@ -108,7 +110,7 @@ class Select extends Component<SelectProps, SelectState> {
 			searchInput,
 			options.map((o) => {
 				return R.div({
-					className: 'clickable select-control-item',
+					className: 'clickable select-control-item select-control-item-value-' + (o.search || o.value),
 					key: o.value,
 					title: o.name,
 					onClick: () => {
@@ -132,7 +134,9 @@ class Select extends Component<SelectProps, SelectState> {
 			className: (this.props.disabled || this.props.readOnly) ? 'not-clickable disabled select-control' : 'clickable select-control',
 			onClick: this.toggle
 		},
-		curVal || '\xa0',
+		R.span({ className: 'select-control-item-value-' + (curItem?.search || curItem?.value || 'unselected') },
+			curVal || '\xa0'
+		),
 		downCaret
 		), optionsList
 		);
