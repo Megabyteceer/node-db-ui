@@ -1,62 +1,59 @@
-
-import api from './api';
-import { startSession, finishSession, isUserHaveRole } from './auth';
+import api, { type APIHandler } from './api';
+import { finishSession, isUserHaveRole, startSession, type UserSession } from './auth';
 import { initNodesData } from './describe-node';
 
+import { ROLE_ID, type ApiResponse, type APIResult } from '../www/client-core/src/bs-utils';
 import './locale';
-import { mysqlDebug, mysql_real_escape_object } from "./mysql-connection";
-import { ROLE_ID } from "../www/client-core/src/bs-utils";
+import { mysqlDebug } from './mysql-connection';
 
-import "../www/client-core/src/locales/en/lang-server";
-import "../www/client-core/src/locales/ru/lang-server";
+import '../www/client-core/src/locales/en/lang-server';
+import '../www/client-core/src/locales/ru/lang-server';
 
-import ENV from './ENV';
+import { ENV, SERVER_ENV } from './ENV';
 
 /// #if DEBUG
 import { performance } from 'perf_hooks';
-import { DPromise } from "../www/client-core/src/debug-promise";
-//@ts-ignore
-global.Promise = DPromise;
 /// #endif
 
-const express = require('express');
-var bodyParser = require('body-parser');
+import bodyParser from 'body-parser';
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-const multer = require('multer')
-const upload = multer()
 
-const path = require('path')
+const upload = multer();
 
 const upload2 = upload.single('file');
 
-function addDebugDataToResponse(resHeaders, ret, startTime) {
-	if(mysqlDebug.debug) {
-		ret.debug = mysqlDebug.debug;
-		delete mysqlDebug.debug;
+/// #if DEBUG
+function addDebugDataToResponse(ret: ApiResponse, startTime: number) {
+	if (mysqlDebug.debugOutPut) {
+		ret.debug = mysqlDebug.debugOutPut;
+		delete mysqlDebug.debugOutPut;
 		ret.debug.timeElapsed_ms = performance.now() - startTime;
 	}
 }
+/// #endif
 
-const handleRequest = (req, res) => {
+const handleRequest = (req: express.Request, res: express.Response) => {
 	/// #if DEBUG
-	let startTime = performance.now();
+	const startTime = performance.now();
 	/// #endif
 
-	let handler = req.url.substr(6);
-	if(api.hasOwnProperty(handler)) {
-
-		handler = api[handler];
+	let handlerName = req.url.substring(6);
+	if (api.hasOwnProperty(handlerName)) {
+		const handler = api[handlerName as keyof typeof api] as APIHandler;
 		const body = req.body;
 		/// #if DEBUG
-		//console.log(req.url);
-		//console.dir(body);
+		// console.log(req.url);
+		// console.dir(body);
 		/// #endif
-		mysql_real_escape_object(body);
-		let userSession;
+
+		let userSession: UserSession;
 		/// #if DEBUG
-		mysqlDebug.debug = { requestTime: new Date(), stack: [] };
+		mysqlDebug.debugOutPut = {};
 		/// #endif
 
 		const resHeaders = {
@@ -65,67 +62,72 @@ const handleRequest = (req, res) => {
 			'Access-Control-Allow-Methods': 'POST'
 		};
 
+		/// #if DEBUG
+		/*
+		/// #endif
 		const onError = (error) => {
-			var ret;
-			/// #if DEBUG
-			ret = { error: error.stack };
-			addDebugDataToResponse(resHeaders, ret, startTime );
-			console.error(error.stack);
-			/*
-			/// #endif
+			let ret;
 			console.error(error.stack);
 			ret = { error: error.message };
-			//*/
 			res.set(resHeaders);
 			res.end(JSON.stringify(ret));
-		}
-		startSession(body.sessionToken, req.headers['accept-language']).then((session) => {
-			userSession = session;
-			handler(body, session).then((result) => {
-
-				
-				let ret: any = {
-					result, isGuest: false,
+		};
+		// */
+		startSession(body.sessionToken, req.headers['accept-language'])
+			.then((session) => {
+				userSession = session;
+				handler(body, session).then((result: APIResult) => {
+					const ret = {
+						result,
+						/// #if DEBUG
+						debug: undefined
+						/// #endif
+					} as ApiResponse;
 					/// #if DEBUG
-					debug: null
+					addDebugDataToResponse(ret, startTime);
 					/// #endif
-				};
+
+					if (isUserHaveRole(ROLE_ID.GUEST, userSession)) {
+						ret.isGuest = true;
+					}
+
+					res.set(resHeaders);
+
+					if (userSession.hasOwnProperty('notifications')) {
+						ret.notifications = userSession.notifications;
+						delete userSession.notifications;
+					}
+					res.end(JSON.stringify(ret));
+				});
 				/// #if DEBUG
-				addDebugDataToResponse(resHeaders, ret, startTime );
-				/// #endif
-
-				if(isUserHaveRole(ROLE_ID.GUEST, userSession)) {
-					ret.isGuest = true;
-				}
-
-				res.set(resHeaders);
-
-				if(userSession.hasOwnProperty('notifications')) {
-					ret.notifications = userSession.notifications;
-					delete userSession.notifications;
-				}
-				res.end(JSON.stringify(ret));
-			}).catch(onError);
-		})
-			.catch(onError)
+				/*
+					/// #endif
+					.catch(onError);
+					// */
+			})
+			/// #if DEBUG
+			/*
+					/// #endif
+					.catch(onError);
+					// */
 			.finally(() => {
 				finishSession(body.sessionToken);
 			});
 	} else {
 		res.writeHead(404);
-		res.end("wrong api request");
+		res.end('wrong api request: ' + handlerName);
 	}
 };
 
-const handleUpload = (req, res) => {
+const handleUpload = (req: express.Request, res: express.Response) => {
 	upload2(req, res, () => {
-		req.body.filename = req.file.originalname;
-		req.body.fileContent = req.file.buffer;
+		req.body.filename = req.file!.originalname;
+		req.body.fileContent = req.file!.buffer;
 		handleRequest(req, res);
 	});
 };
 
-app.options("/core/*", (req, res) => {
+app.options('/core/*', (_req, res) => {
 	res.set({
 		'Access-Control-Allow-Origin': ENV.ALLOW_ORIGIN,
 		'Access-Control-Allow-Credentials': true,
@@ -135,24 +137,24 @@ app.options("/core/*", (req, res) => {
 	res.end();
 });
 
-app.post("/core/api/uploadFile", handleUpload);
-app.post("/core/api/uploadImage", handleUpload);
+app.post('/core/api/uploadFile', handleUpload);
+app.post('/core/api/uploadImage', handleUpload);
 
-app.post("/core/*", handleRequest);
+app.post('/core/*', handleRequest);
 
 app.use('/dist/images/', express.static(path.join(__dirname, '../../www/images')));
 app.use('/assets/', express.static(path.join(__dirname, '../../www/dist/assets')));
 app.use('/', express.static(path.join(__dirname, '../../www')));
 
-
 function crudJSServer() {
-	initNodesData().then(async function() {
-		app.listen(ENV.PORT)
-		console.log('HTTP listen ' + ENV.PORT + '...');
+	initNodesData().then(async function () {
+		import('./events/index.js');
+		app.listen(SERVER_ENV.PORT);
+		console.log('HTTP listen ' + SERVER_ENV.PORT + '...');
 	});
 }
 
 export default crudJSServer;
-if(require.main === module) {
+if (require.main === module) {
 	crudJSServer();
 }

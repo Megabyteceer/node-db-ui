@@ -1,66 +1,82 @@
-import ReactDOM from "react-dom";
-import React from "react";
+import { Component, h } from 'preact';
+import { FIELD_TYPE } from '../../../../types/generated';
+import BaseField, { type BaseFieldProps, type BaseFieldState } from '../base-field';
+import type Form from '../form';
+import { ENV } from '../main-frame';
+import { Modal } from '../modal';
+import { R } from '../r';
+import { checkFileSize, getReadableUploadSize, idToFileUrl, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
 
-import { R } from "../r";
-import { Component } from "react";
-import { FIELD_TYPE } from "../bs-utils";
-import { ENV } from "../main-frame";
-import { Modal } from "../modal";
-import { checkFileSize, getReadableUploadSize, idToFileUrl, L, renderIcon, serializeForm, submitData } from "../utils";
-import { registerFieldClass } from "../utils";
-import { BaseField, RefToInput } from "./base-field";
-import { FieldWrap } from "./field-wrap";
+class FileField extends BaseField {
+	fileFormBodyRef!: FileFormBody;
 
-registerFieldClass(FIELD_TYPE.FILE, class FileField extends BaseField {
-
-	fileFormBodyRef: FileFormBody;
-
-	setValue(val) {
-		if(typeof val === 'string') {
-			//@ts-ignore
-			this.state.value = val;
+	setValue(val?: string) {
+		if (typeof val === 'string') {
+			this.currentValue = val;
+			this.forceUpdate();
 		} else {
-			this.props.form.currentData[this.props.field.fieldName] = undefined;
+			this.props.parentForm.formData![this.props.fieldDesc.fieldName] = undefined;
 		}
 	}
 
 	isEmpty() {
-		return !this.fileFormBodyRef.fileInputRef.value && !this.state.value;
-	}
-
-	focus() {
-		this.fileFormBodyRef.fileInputRef.focus();
+		return !this.fileFormBodyRef.fileInputRef.value && !this.currentValue;
 	}
 
 	async beforeSave() {
-		return this.fileFormBodyRef.save(this.props.wrapper);
+		return this.fileFormBodyRef.save(this);
 	}
 
-	render() {
-		var field = this.props.field;
+	renderFieldEditable() {
+		const field = this.props.fieldDesc;
 
-		var fileName = this.props.initialValue;
+		let fileName = this.props.initialValue;
 
-		if(fileName && fileName.name) {
+		if (fileName && fileName.name) {
 			fileName = fileName.name;
 		}
 
-		if(this.props.isEdit) {
-			let accept = ENV.ALLOWED_UPLOADS.map(i => '.' + i).join(', ');
-			return React.createElement(FileFormBody, { field, ref: (r) => { this.fileFormBodyRef = r; }, accept, wrapper: this.props.wrapper, parent: this, form: this.props.form, currentFileName: fileName, isCompact: this.props.isCompact });
+		if (this.props.isEdit) {
+			const accept = ENV.ALLOWED_UPLOADS.map(i => '.' + i).join(', ');
+			return h(FileFormBody, {
+				fieldDesc: field,
+				ref: (r: FileFormBody) => {
+					this.fileFormBodyRef = r;
+				},
+				accept,
+				parent: this,
+				currentFileName: fileName,
+				isCompact: this.props.isCompact,
+				initialValue: this.currentValue,
+				parentForm: this.parentForm,
+				hideControls: this.props.hideControls
+			} as FileFormBodyProps);
 		}
-		return R.a({ className: 'field-file-link', href: idToFileUrl(fileName), download: true }, fileName ? (fileName.split('/').pop()) : undefined);
-
+		return R.a(
+			{ className: 'field-file-link', href: idToFileUrl(fileName), download: true },
+			fileName ? fileName.split('/').pop() : undefined
+		);
 	}
-});
+}
 
-class FileFormBody extends Component<any, any> {
-	fileInputRef: RefToInput;
-	formRef: RefToInput;
-	selectButtonRef: RefToInput;
-	waitingForUpload: boolean;
+interface FileFormBodyProps extends BaseFieldProps {
+	/** image/*,.pdf */
+	accept: string;
+	currentFileName?: string;
 
-	constructor(props) {
+}
+
+interface FileFormBodyState extends BaseFieldState {
+	file?: File | null;
+}
+
+class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
+	fileInputRef!: HTMLInputElement;
+	formRef!: Form;
+	selectButtonRef!: HTMLInputElement;
+	waitingForUpload = false;
+
+	constructor(props: FileFormBodyProps) {
 		super(props);
 		this.state = {};
 		this._onChange = this._onChange.bind(this);
@@ -72,15 +88,15 @@ class FileFormBody extends Component<any, any> {
 		});
 		this.fileInputRef.value = '';
 		Modal.instance.hide();
-		this.props.parent.props.wrapper.hideTooltip();
+		(this.props.parent as BaseField).hideTooltip();
 	}
 
-	async save(fieldWrap: FieldWrap) {
-		if(this.waitingForUpload) {
-			let n = ReactDOM.findDOMNode(this.formRef);
-			let fileId = await submitData('api/uploadFile', serializeForm(n), true);
-			if(!fileId) {
-				fieldWrap.props.form.fieldAlert(fieldWrap.props.field.fieldName, L('UPLOAD_ERROR'));
+	async save(field: BaseField) {
+		if (this.waitingForUpload) {
+			const n = this.formRef.base as HTMLFormElement;
+			const fileId = await submitData('api/uploadFile', serializeForm(n), true);
+			if (!fileId) {
+				field.props.parentForm.fieldAlert(field.props.fieldDesc.fieldName, L('UPLOAD_ERROR'));
 			}
 			return fileId;
 		}
@@ -90,77 +106,103 @@ class FileFormBody extends Component<any, any> {
 		this.waitingForUpload = false;
 	}
 
-	_onChange(e) {
-		e.preventDefault();
-		var files = undefined;
-		if(e.dataTransfer) {
-			files = e.dataTransfer.files;
-		} else if(e.target) {
-			files = e.target.files;
+	_onChange(ev: InputEvent) {
+		ev.preventDefault();
+		let files = undefined;
+		if (ev.dataTransfer) {
+			files = ev.dataTransfer.files;
+		} else if (ev.target) {
+			files = (ev.target as HTMLInputElement).files;
 		}
-		if(checkFileSize(files[0])) {
+		if (checkFileSize(files![0])) {
 			return;
 		}
-		this.setState({ file: files[0] });
+		this.setState({ file: files![0] });
 		this.waitingForUpload = true;
 
-		this.props.wrapper.valueListener(files[0], true, this);
+		(this.props.parent as BaseField)!.valueListener(files![0], true);
 	}
 
 	render() {
+		const field = this.props.fieldDesc;
 
-		var field = this.props.field;
+		let curFile;
+		let selFile;
 
-		var curFile;
-		var selFile
-		var select;
-
-		if(this.props.currentFileName) {
-			curFile =
-				R.a({ href: idToFileUrl(this.props.currentFileName), download: true, target: '_blank', className: 'field-file-link' },
-					this.props.currentFileName.split('/').pop()
-				);
-		}
-
-		if(this.state.file) {
-			selFile = R.span({ className: 'small-text' },
-				L('FILE_SELECTED', this.state.file.name),
-				"(", (this.state.file.size / 1000).toFixed(2), L("KILO_BYTES_SHORT"), ")"
+		if (this.props.currentFileName) {
+			curFile = R.a(
+				{
+					href: idToFileUrl(this.props.currentFileName),
+					download: true,
+					target: '_blank',
+					className: 'field-file-link'
+				},
+				this.props.currentFileName.split('/').pop()
 			);
 		}
 
-		select = R.button({
-			className: 'clickable field-button', onClick: () => {
-				this.fileInputRef.value = null;
-				this.fileInputRef.click();
-			}
-		}, renderIcon('folder-open'),
+		if (this.state.file) {
+			selFile = R.span(
+				{ className: 'small-text' },
+				L('FILE_SELECTED', this.state.file.name),
+				'(',
+				(this.state.file.size / 1000).toFixed(2),
+				L('KILO_BYTES_SHORT'),
+				')'
+			);
+		}
+
+		const select = R.button(
+			{
+				className: 'clickable field-button',
+				onClick: () => {
+					this.fileInputRef.value = '';
+					this.fileInputRef.click();
+				}
+			},
+			renderIcon('folder-open'),
 			L('FILE_SELECT', getReadableUploadSize())
 		);
 
-		var recIdField, nodeIdField;
-		if(this.props.form.currentData && this.props.form.currentData.id) {
-			recIdField = R.input({ name: "recId", className: 'hidden', defaultValue: this.props.form.currentData.id });
-			nodeIdField = R.input({ name: "nodeId", className: 'hidden', defaultValue: this.props.form.props.node.id });
+		let recIdField, nodeIdField;
+		if (this.props.parentForm.formData?.id) {
+			recIdField = R.input({
+				name: 'recId',
+				className: 'hidden',
+				defaultValue: this.props.parentForm.formData.id
+			});
+			nodeIdField = R.input({
+				name: 'nodeId',
+				className: 'hidden',
+				defaultValue: this.props.parentForm.nodeDesc.id
+			});
 		}
 
-
-		var form = R.form({ ref: (r) => { this.formRef = r; }, encType: "multipart/form-data", className: 'hidden' },
-			R.input({ name: "file", ref: (r) => { this.fileInputRef = r; }, type: 'file', accept: this.props.accept, onChange: this._onChange }),
-			R.input({ name: "MAX_FILE_SIZE", defaultValue: 30000000 }),
-			R.input({ name: "fid", defaultValue: field.id }),
-			R.input({ name: "nid", defaultValue: field.node.id }),
+		const form = R.form(
+			{
+				ref: (r: Form) => {
+					this.formRef = r;
+				},
+				encType: 'multipart/form-data',
+				className: 'hidden'
+			},
+			R.input({
+				name: 'file',
+				ref: (r: HTMLInputElement) => {
+					this.fileInputRef = r;
+				},
+				type: 'file',
+				accept: this.props.accept,
+				onInput: this._onChange
+			}),
+			R.input({ name: 'MAX_FILE_SIZE', defaultValue: 30000000 }),
+			R.input({ name: 'fid', defaultValue: field.id }),
+			R.input({ name: 'nid', defaultValue: field.node!.id }),
 			recIdField,
 			nodeIdField
 		);
 
-		return R.div(null,
-			curFile,
-			selFile,
-			form,
-			select
-		);
+		return R.div(null, curFile, selFile, form, select);
 	}
 }
-
-export { FileFormBody };
+registerFieldClass(FIELD_TYPE.FILE, FileField);

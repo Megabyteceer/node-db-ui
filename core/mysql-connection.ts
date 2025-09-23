@@ -1,77 +1,114 @@
-
-/// #if DEBUG
-import { assert, getCurrentStack } from "../www/client-core/src/bs-utils";
 import { performance } from 'perf_hooks';
+import { assert, ESCAPE_BEGIN, ESCAPE_END, SQLInjectionsCheck, throwError } from '../www/client-core/src/assert';
+import { getCurrentStack, isServer } from '../www/client-core/src/bs-utils';
 /// #endif
 
-import ENV from "./ENV";
-import * as mysql from 'mysql2';
+import type { QueryResultRow } from 'pg';
+import { escapeLiteral, Pool } from 'pg';
 
-const pool = mysql.createPool({
-	user: ENV.DB_USER,
-	database: ENV.DB_NAME,
-	host: ENV.DB_HOST,
-	password: ENV.DB_PASS,
-	multipleStatements: true,
-	timezone: 'Z',
-	waitForConnections: true,
-	connectionLimit: ENV.DB_CONNECTIONS_COUNT,
-	queueLimit: 0
-});
-
-console.log('DB: ' + ENV.DB_NAME);
-
-const mysqlDebug = {
-	debug: null
+/** escape number */
+const D = (val: number): string => {
+	if (typeof val !== 'number') {
+		throwError('Number expected');
+	}
+	return (
+		/// #if DEBUG
+		ESCAPE_BEGIN +
+		/// #endif
+		val +
+		/// #if DEBUG
+		ESCAPE_END
+		/// #endif
+	);
 };
 
-const mysqlExec = (query: string): Promise<mysqlRowsResult | mysqlRowsResult[] | mysql.OkPacket | mysql.OkPacket[] | mysql.ResultSetHeader> => {
-	/// #if DEBUG
-	let preparedError = new Error();
+/// #if DEBUG
 
-	let SQL = { timeElapsed_ms: performance.now(), SQL: query, stack: getCurrentStack() };
-	if(mysqlDebug.debug) {
-		if(!mysqlDebug.debug.SQLs) {
-			mysqlDebug.debug.SQLs = [];
+if (!isServer()) {
+
+	throwError('mysql-connection.ts imported on client side.');
+}
+
+const escapeString = (str: string): string => {
+	return (
+		/// #if DEBUG
+		ESCAPE_BEGIN +
+		/// #endif
+		escapeLiteral(str) +
+		/// #if DEBUG
+		ESCAPE_END
+		/// #endif
+	);
+};
+
+/** escaped 0 for SQL */
+const NUM_0 = D(0);
+/** escaped 1 for SQL */
+const NUM_1 = D(1);
+/** escaped '' fro SQL */
+export const ESCAPED_LITERAL = escapeString('');
+
+const pool = new Pool();
+
+/// #if DEBUG
+export interface SQLDebugInfo {
+	SQL: string;
+	stack: string[];
+	timeElapsed_ms?: number;
+}
+
+export interface DebugInfo {
+	timeElapsed_ms?: number;
+	request?: string;
+	message?: string;
+	id?: number;
+	SQLs?: SQLDebugInfo[];
+}
+
+export const mysqlDebug = {
+	debugOutPut: undefined
+} as { debugOutPut?: DebugInfo };
+
+/// #endif
+
+const mysqlExec = (query: string): Promise<QueryResultRow[]> => {
+	/// #if DEBUG
+
+	SQLInjectionsCheck(query);
+	query = query.split(ESCAPE_BEGIN).join('').split(ESCAPE_END).join('');
+
+	const SQL = {
+		timeElapsed_ms: performance.now(),
+		SQL: query,
+		stack: getCurrentStack()
+	} as SQLDebugInfo;
+	if (mysqlDebug.debugOutPut) {
+		if (!mysqlDebug.debugOutPut.SQLs) {
+			mysqlDebug.debugOutPut.SQLs = [];
 		}
-		mysqlDebug.debug.SQLs.push(SQL)
+		mysqlDebug.debugOutPut.SQLs.push(SQL);
 	}
 	/// #endif
-
-	return new Promise((resolve, reject) => {
-		pool.query(query, (er, rows) => {
-			if(er) {
+	return new Promise((resolve) => {
+		return pool
+			.query(query)
+			.then((res) => {
+				SQL.timeElapsed_ms = performance.now() - SQL.timeElapsed_ms!;
+				resolve(res.rows);
+			})
+			.catch((er) => {
+				console.error(query);
+				console.error(er.message);
 				/// #if DEBUG
-				er.stack = preparedError.stack;
 				debugger;
-				console.dir(preparedError);
-				console.log(query);
+				// throw er;
 				/// #endif
-				reject(er);
-			}
-			/// #if DEBUG
-			SQL.timeElapsed_ms = performance.now() - SQL.timeElapsed_ms;
-			/// #endif
-			resolve(rows);
-		});
+			}) as any;
 	});
 };
 
-if(!String.prototype.replaceAll) {
-	const expCache = new Map();
-	String.prototype.replaceAll = function(str, newStr) {
-		/// #if DEBUG
-		assert(typeof str === 'string', "string expected")
-		/// #endif
-		if(!expCache.has(str)) {
-			expCache.set(str, new RegExp(str, 'g'))
-		}
-		return this.replace(expCache.get(str), newStr);
-	};
-}
-
 let mysqlTransactStarted = false;
-const transactionsQue = [];
+const transactionsQue = [] as ((value: void) => void)[];
 
 function waitPrevTransactionFinish() {
 	return new Promise((resolve) => {
@@ -80,84 +117,47 @@ function waitPrevTransactionFinish() {
 }
 
 async function mysqlStartTransaction() {
-	if(mysqlTransactStarted) {
+	if (mysqlTransactStarted) {
 		await waitPrevTransactionFinish();
 		/// #if DEBUG
-		//debugger;
+		// debugger;
 		/// #endif
 	}
-	//const ret = mysqlExec("START TRANSACTION;");
+	// const ret = mysqlExec("START TRANSACTION;");
 	mysqlTransactStarted = true;
-	//return ret;
+	// return ret;
 	return Promise.resolve();
 }
 
 function nextTransaction() {
-	if(transactionsQue.length) {
-		transactionsQue.shift()();
+	if (transactionsQue.length) {
+		(transactionsQue.shift()!)();
 	}
 }
 
 async function mysqlCommit() {
-	assert(mysqlTransactStarted, "transaction is not started");
-	//await mysqlExec("COMMIT;");
+	assert(mysqlTransactStarted, 'transaction is not started');
+	// await mysqlExec("COMMIT;");
 	mysqlTransactStarted = false;
 	nextTransaction();
 }
 
 async function mysqlRollback() {
-	if(mysqlTransactStarted) {
-		//await mysqlExec("ROLLBACK;");
+	if (mysqlTransactStarted) {
+		// await mysqlExec("ROLLBACK;");
 		mysqlTransactStarted = false;
 		nextTransaction();
 	}
 }
-type mysqlInsertResult = mysql.OkPacket;
-type mysqlRowResultSingle = mysql.RowDataPacket;
-type mysqlRowsResult = mysql.RowDataPacket[];
 
-
-
-const mysql_real_escape_object = (o) => {
-    for (let key in o) {
-        if (key !== '__UNSAFE_UNESCAPED') {
-            let val = o[key];
-            switch (typeof val) {
-                case 'string':
-                    o[key] = mysql_real_escape_string(val);
-                    break;
-                case 'object':
-                    if (val) {
-                        mysql_real_escape_object(val);
-                    }
-            }
-        }
-    }
-};
-const mysql_real_escape_string = (str) => {
-    return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
-        switch (char) {
-            case "\0":
-                return "\\0";
-            case "\x08":
-                return "\\b";
-            case "\x09":
-                return "\\t";
-            case "\x1a":
-                return "\\z";
-            case "\n":
-                return "\\n";
-            case "\r":
-                return "\\r";
-            case "\"":
-            case "'":
-            case "\\":
-                return "\\" + char; // prepends a backslash to backslash, percent,
-            // and double/single quotes
-            default:
-                return char;
-        }
-    });
+/** escape numbers array */
+const A = (val: number[]) => {
+	return val.map(D).join(',');
 };
 
-export {mysql_real_escape_object, mysql_real_escape_string, mysqlExec, mysqlStartTransaction, mysqlCommit, mysqlRollback, mysqlDebug, mysqlRowsResult, mysqlRowResultSingle, mysqlInsertResult };
+/** deprecated - use D() shortcut instead */
+const escapeNumber = D;
+/** deprecated - use A() shortcut instead */
+const escapeNumbersArray = A;
+
+export { A, D, escapeNumber, escapeNumbersArray, escapeString, mysqlCommit, mysqlExec, mysqlRollback, mysqlStartTransaction, NUM_0, NUM_1 };

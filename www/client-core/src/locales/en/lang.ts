@@ -1,4 +1,4 @@
-import { initDictionary } from "../../utils";
+import { initDictionary } from '../../utils';
 
 const LANGS = {
 	'NO_TRANSLATION': 'No translation for key "%"',
@@ -14,10 +14,7 @@ const LANGS = {
 	'MB': ' Mb',
 	'FLD_SETTINGS': 'Field ',
 	'FLD_ADD': 'Add field',
-	'FLD_SHOW_ALL': 'Show hidden fields',
-	'ADD_RATING_FLD': 'Add ratings for section',
 	'ADD_NODE': 'Add section',
-	'NODE_SETTINGS': 'Section ',
 	'EDIT_NODE': 'Edit section settings',
 	'EDIT_ACCESS': 'Edit access privileges for section',
 	'SEARCH': 'Search',
@@ -27,6 +24,7 @@ const LANGS = {
 	'EMPTY_SECTION': 'Empty section (click to add)',
 	/// #endif
 	'VALUE_EXISTS': 'Value already in use.',
+	'NAME_EXISTS': 'Name already in use.',
 	'FLD_EXISTS': 'Field with same name already exists in this document.',
 	'MULTILINGUAL': 'Multilingual',
 	'LOGIN': 'Login',
@@ -36,7 +34,6 @@ const LANGS = {
 	'DEPLOY_TO': 'Deploy changes to %?',
 	'TESTS_ERROR': 'Testing error.',
 	'DEPLOY': 'Deploy changes',
-	'CLEAR_CACHE': 'Clear servers cache',
 	'CLEAR_DEBUG': 'Clear debug output',
 	'VIEW': 'View',
 	'CREATE': 'Create',
@@ -59,7 +56,8 @@ const LANGS = {
 	'PUBLISH': 'Publish',
 	'DETAILS': 'Details',
 	'SELECT': 'Select',
-	'REQUIRED_FLD': 'Required field.',
+	'REQUIRED_FLD': 'Required.',
+	'CLOSE': 'Close.',
 	'SAVE': 'Save',
 	'SAVE_TEMPLATE': 'Save as template',
 	'BACK': 'Back',
@@ -103,13 +101,15 @@ const LANGS = {
 	'RESET_EMAIL_SENT': 'We sent link for reset password to E-mail: ',
 	'GO_TO_LOGIN': 'Go to login',
 	'REGISTER': 'Register',
-	'REACT_CLASS_NAME': 'React Class Name',
+	'CLASS_NAME': 'Class Name',
 	'FORM_IS_MODIFIED': 'Current data in the form is modified!',
 	'LEAVE_WITHOUT_SAVING': 'Leave form without saving.',
-	'DATA_NOT_SAVED': 'Page contains modified data.'
+	'KEEP_EDITING': 'Keep editing.',
+	'DATA_NOT_SAVED': 'Page contains modified data.',
+	'NO_FILTER': 'All'
 };
 
 initDictionary(LANGS);
 
 type LANG_KEYS = keyof typeof LANGS;
-export { LANG_KEYS }
+export { LANG_KEYS };

@@ -1,44 +1,47 @@
-import { authorizeUserByID, getPasswordHash } from "../auth";
-import { L } from "../locale";
-import { mysqlExec, mysqlRowResultSingle } from "../mysql-connection";
-import { NodeEventsHandlers } from "../describe-node"
-import { RecordDataWrite, throwError, UserSession } from "../../www/client-core/src/bs-utils";
-import { loginWithGoogle } from "../login-social";
+import { E } from '../../types/generated';
+import { throwError } from '../../www/client-core/src/assert';
+import { serverOn } from '../../www/client-core/src/events-handle';
+import { authorizeUserByID, getPasswordHash } from '../auth';
+import { L } from '../locale';
+import { loginWithGoogle } from '../login-social';
+import { D, escapeString, mysqlExec, NUM_1 } from '../mysql-connection';
 
-const handlers: NodeEventsHandlers = {
-	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession): Promise<any> {
-		const username = data.username;
-		const password = data.password;
-		if(username === 'google-auth-sign-in') {
-			return await loginWithGoogle(password, userSession);
-		}
+const LOGIN_SQL_PART = '\' AND _users.status=' + NUM_1 + ' LIMIT ' + NUM_1;
+const LOGIN_SQL_UPDATE_PART = 'UPDATE _users SET "blockedTo"=DATE_ADD( NOW() + INTERVAL ' + escapeString('1 MINUTE') + '), mistakes=' + D(3) + ' WHERE id=';
+const LOGIN_UPDATE_SQL_PART2 = 'UPDATE _users SET mistakes=(mistakes-' + NUM_1 + ') WHERE id=';
 
-		let user = await mysqlExec("SELECT id, salt, TIMESTAMPDIFF(SECOND, NOW(), blocked_to) AS blocked, password, mistakes FROM _users WHERE email='" + username + "' AND _users.status=1 LIMIT 1") as mysqlRowResultSingle;
-		user = user[0];
-		if(user) {
-
-			let userID = user.id;
-
-			let blocked = user.blocked;
-
-			if(blocked > 0) {
-				throwError(L('USER_BLOCKED', userSession, blocked));
-			} else {
-				let mistakes = user.mistakes;
-
-				let key = await getPasswordHash(password, user.salt);
-				if(key !== user.password) {
-					if(mistakes <= 1) {
-						await mysqlExec("UPDATE _users SET blocked_to=DATE_ADD( NOW(),INTERVAL 1 MINUTE), mistakes=3 WHERE id='" + userID + "'");
-					} else {
-						await mysqlExec("UPDATE _users SET mistakes=(mistakes-1) WHERE id='" + userID + "'");
-					}
-					throwError(L('WRONG_PASS', userSession));
-				}
-				return await authorizeUserByID(userID);
-			}
-		}
-		throwError(L('WRONG_PASS', userSession));
+serverOn(E._login.onSubmit, async (data, userSession): AsyncHandlerRet => {
+	const username = data.username;
+	const password = data.password;
+	if (username === 'google-auth-sign-in') {
+		return await loginWithGoogle(password, userSession);
 	}
-}
-export default handlers;
+
+	const users = await mysqlExec('SELECT id, salt, EXTRACT(SECOND FROM ("blockedTo" - NOW())) AS blocked, password, mistakes FROM _users WHERE email=\'' + username + LOGIN_SQL_PART);
+	const user = users[0];
+	if (user) {
+
+		const userID = user.id;
+
+		const blocked = user.blocked;
+
+		if (blocked > 0) {
+			throwError(L('USER_BLOCKED', userSession, blocked));
+		} else {
+			const mistakes = user.mistakes;
+
+			const key = await getPasswordHash(password, user.salt);
+			if (key !== user.password) {
+				if (mistakes <= 1) {
+					await mysqlExec(LOGIN_SQL_UPDATE_PART + D(userID));
+				} else {
+					await mysqlExec(LOGIN_UPDATE_SQL_PART2 + D(userID));
+				}
+				throwError(L('WRONG_PASS', userSession));
+			}
+
+			return await authorizeUserByID(userID);
+		}
+	}
+	throwError(L('WRONG_PASS', userSession));
+});

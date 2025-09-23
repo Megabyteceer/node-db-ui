@@ -1,36 +1,42 @@
-import { FIELD_TYPE } from "../bs-utils";
-import { R } from "../r";
-import { renderIcon } from "../utils";
-import { registerFieldClass } from "../utils";
-import { BaseField } from "./base-field";
+import type { ComponentChild } from 'preact';
+import { FIELD_TYPE } from '../../../../types/generated';
+import BaseField, { type BaseFieldProps } from '../base-field';
+import { R } from '../r';
+import { registerFieldClass, renderIcon } from '../utils';
 
-registerFieldClass(FIELD_TYPE.BUTTON, class ButtonField extends BaseField {
+export default class ButtonField extends BaseField {
 
-	constructor(props) {
+	constructor(props: BaseFieldProps) {
 		super(props);
 		this.onClick = this.onClick.bind(this);
 	}
 
-	setValue(val) {
+	setValue(_val: any) {
 		throw new Error('Cant set value for button');
 	}
 
 	onClick() {
-		this.props.form.processFieldEvent(this.props.field, true);
+		this.props.parentForm.processFieldEvent(this.props.fieldDesc, true);
 	}
 
-	render() {
+	renderFieldEditable(): ComponentChild {
+		return this.renderField();
+	}
 
-		var field = this.props.field;
+	renderField() {
 
-		var bIcon;
-		if(field.icon) {
+		const field = this.props.fieldDesc;
+
+		let bIcon;
+		if (field.icon) {
 			bIcon = renderIcon(field.icon);
 		}
 
-		return R.button({ className: (this.props.disabled ? 'not-clickable field-button' : 'clickable field-button'), onClick: this.onClick, title: field.name },
+		return R.button({ className: (this.props.fieldDisabled ? 'not-clickable field-button' : 'clickable field-button'), onClick: this.onClick, title: field.name },
 			R.span({ className: 'icon' }, bIcon),
 			R.span({ className: 'label' }, field.name)
 		);
 	}
-});
+}
+
+registerFieldClass(FIELD_TYPE.BUTTON, ButtonField);

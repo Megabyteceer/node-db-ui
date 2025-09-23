@@ -1,29 +1,27 @@
-import { FIELD_TYPE } from "../bs-utils";
-import { R } from "../r";
-import { consoleDir, registerFieldClass } from "../utils";
-import { BaseField } from "./base-field";
+import type { ComponentChild } from 'preact';
+import { FIELD_TYPE } from '../../../../types/generated';
+import BaseField from '../base-field';
+import { R } from '../r';
+import { consoleDir, isAutoFocus, registerFieldClass } from '../utils';
 
-registerFieldClass(FIELD_TYPE.TEXT, class TextField extends BaseField {
+export default class TextField extends BaseField {
 
-	setValue(val) {
-		this.refToInput.value = val;
-		//@ts-ignore
-		this.state.value = val;
+	setValue(value: any) {
+		this.refToInput!.value = value;
+		super.setValue(value);
 	}
 
-	render() {
+	renderFieldEditable() {
+		let value = this.currentValue;
+		const field = this.props.fieldDesc;
 
-		var value = this.state.value;
-		var field = this.props.field;
-
-		if(typeof (value) !== 'string') {
-			if(value === null || value === undefined) {
+		if (typeof value !== 'string') {
+			if (value === null || value === undefined) {
 				value = '';
 			} else {
-
 				setTimeout(() => {
 					console.error('non string value for field ' + field.name + ' with default type');
-					//debugError('non string value for field '+field.name+' with default type');
+					// debugError('non string value for field '+field.name+' with default type');
 				}, 1);
 				/// #if DEBUG
 				consoleDir(field);
@@ -33,46 +31,49 @@ registerFieldClass(FIELD_TYPE.TEXT, class TextField extends BaseField {
 			}
 		}
 
-		if(this.props.isEdit) {
-			let className;
-			if(this.props.isCompact) {
-				if(field.maxLength > 600) {
-					className = 'middle-size-input';
-				}
-			} else {
-				if(field.maxLength > 600) {
-					className = 'large-input';
-				} else if(field.maxLength > 200) {
-					className = 'middle-size-input';
-				}
-			}
-
-			if(this.props.fieldDisabled) {
-				className += ' not-clickable'
-			}
-
-			var inputsProps = {
-				className,
-				autoFocus: this.isAutoFocus(),
-				defaultValue: value,
-				maxLength: this.props.maxLen || field.maxLength,
-				title: field.name,
-				name: field.fieldName,
-				placeholder: field.name + (field.lang ? (' (' + field.lang + ')') : ''),
-				readOnly: this.props.fieldDisabled,
-				ref: this.refGetter,
-				onChange: () => {
-					this.props.wrapper.valueListener(this.refToInput.value, true, this);
-				}
-			};
-
-			if(field.maxLength > 200) {
-				return R.textarea(inputsProps);
-			} else {
-				return R.input(inputsProps);
+		let className;
+		if (this.props.isCompact) {
+			if (field.maxLength! > 600) {
+				className = 'middle-size-input';
 			}
 		} else {
-			return this.renderTextValue(value);
+			if (field.maxLength! > 600) {
+				className = 'large-input';
+			} else if (field.maxLength! > 200) {
+				className = 'middle-size-input';
+			}
+		}
+
+		if (this.props.fieldDisabled) {
+			className += ' not-clickable';
+		}
+
+		const inputsProps = {
+			className,
+			autoFocus: isAutoFocus(),
+			defaultValue: value,
+			maxLength: field.maxLength,
+			title: field.name,
+			name: field.fieldName,
+			placeholder: field.name + (field.lang ? ' (' + field.lang + ')' : ''),
+			readOnly: this.props.fieldDisabled,
+			ref: this.refGetter,
+			onInput: () => {
+				this.valueListener(this.refToInput!.value, true);
+			}
+		};
+
+		if (field.maxLength! > 200) {
+			return R.textarea(inputsProps);
+		} else {
+			return R.input(inputsProps);
 		}
 	}
-});
+
+	renderField(): ComponentChild {
+		return this.renderTextValue(this.currentValue);
+	}
+
+}
+
+registerFieldClass(FIELD_TYPE.TEXT, TextField);

@@ -1,53 +1,56 @@
-import { EnumList, FIELD_TYPE } from "../bs-utils";
-import { R } from "../r";
-import React from "react";
-import { Select } from "../components/select";
-import { registerFieldClass } from "../utils";
-import { BaseField } from "./base-field";
+import { h, type ComponentChild } from 'preact';
+import { FIELD_TYPE } from '../../../../types/generated';
+import BaseField from '../base-field';
+import { normalizeEnumName, type EnumList } from '../bs-utils';
+import { Select } from '../components/select';
+import { R } from '../r';
+import { registerFieldClass } from '../utils';
 
 class EnumField extends BaseField {
 
-	enum: EnumList;
+	enum?: EnumList;
 
-	setValue(value) {
-		this.setState({ value });
+	setValue(value: number) {
+		this.currentValue = value;
+		this.forceUpdate();
 	}
 
-	setFilterValues(filter) {
-		if(filter) {
-			this.enum = this.props.field.enum.filter(v => filter.indexOf(v) < 0);
+	setFilterValues(namesToFilter: string[]) {
+		if (namesToFilter) {
+			const en = Object.assign({}, this.props.fieldDesc.enumList);
+			en.items = en.items.filter(v => !namesToFilter.includes(v.name));
+			this.enum = en;
 		} else {
 			delete this.enum;
 		}
 	}
 
-	render() {
+	renderFieldEditable() {
+		let value = this.currentValue;
+		const field = this.props.fieldDesc;
 
-		var value = this.state.value;
-		var field = this.props.field;
-
-		if(!value) {
-			value = 0
+		if (!value) {
+			value = 0;
 		}
+		const inputsProps = {
+			isCompact: this.props.isCompact,
+			defaultValue: value,
+			title: field.name,
+			readOnly: this.props.fieldDisabled,
+			onInput: (val: string) => {
+				this.valueListener(parseInt(val));
+			},
+			options: this.enum ? this.enum.items : field.enumList!.items
+		};
+		return h(Select, inputsProps);
+	}
 
-		if(this.props.isEdit) {
-
-			var inputsProps = {
-				isCompact: this.props.isCompact,
-				defaultValue: value,
-				title: field.name,
-				readOnly: this.props.fieldDisabled,
-				onChange: (val) => {
-					this.props.wrapper.valueListener(parseInt(val), false, this);
-				},
-				options: this.enum || field.enum
-			};
-			return React.createElement(Select, inputsProps);
-		} else {
-			return R.span({
-				className: 'enum-type-' + field.enumId + ' enum-val-' + value,
-			}, field.enumNamesById[value]);
-		}
+	renderField(): ComponentChild {
+		let value = this.currentValue;
+		const field = this.props.fieldDesc;
+		return R.span({
+			className: 'enum-type-' + normalizeEnumName(field.enumList!.name).toLowerCase().replaceAll('_', '-') + (value ? ' enum-val-' + normalizeEnumName(field.enumList!.namesByValue[value]).toLowerCase().replaceAll('_', '-') : '')
+		}, field.enumList!.namesByValue[value]);
 	}
 }
 

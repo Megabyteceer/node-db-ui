@@ -1,25 +1,39 @@
-import React, { Component } from "react";
 /// #if DEBUG
-import { DebugPanel } from "./debug-panel";
+import { DebugPanel } from './debug-panel';
 /// #endif
 
-import { R } from "./r";
-import { LeftBar } from "./left-bar";
-import { LoadingIndicator } from "./loading-indicator";
-import { Modal } from "./modal";
-import { Notify } from "./notify";
-import { Stage } from "./stage";
-import { TopBar } from "./top-bar";
-import { getData, goToPageByHash, onNewUser } from "./utils";
-import { User } from "./user";
+import { Component, h } from 'preact';
+import type { ITreeAndOptions } from '../../../core/describe-node';
+import type { ENV_TYPE } from '../../../core/ENV';
+import type { TreeItem } from './bs-utils';
+import { LeftBar } from './left-bar';
+import { LoadingIndicator } from './loading-indicator';
+import { Modal } from './modal';
+import { Notify } from './notify';
+import { R } from './r';
+import { Stage } from './stage';
+import { TopBar } from './top-bar';
+import { User } from './user';
+import { getData, goToPageByHash, onNewUser } from './utils';
 
-const ENV: any = {};
-var isFirstCall = true;
+const ROOT_NODE_ID = 2;
+const ENV = {} as ENV_TYPE;
+let isFirstCall = true;
 
-class MainFrame extends Component<any, any> {
-	static instance: MainFrame;
+let nodesTree: TreeItem[];
+let rootItem: TreeItem;
 
-	constructor(props) {
+interface MainFrameProps {
+
+};
+
+class MainFrame extends Component<MainFrameProps,
+	{
+	// state
+	}> {
+	static instance?: MainFrame;
+
+	constructor(props: MainFrameProps) {
 		super(props);
 		MainFrame.instance = this;
 	}
@@ -31,32 +45,30 @@ class MainFrame extends Component<any, any> {
 	async reloadOptions() {
 		onNewUser();
 
-		let data = await getData('api/getOptions');
+		const data = await getData('api/getOptions') as ITreeAndOptions;
 
-		const nodesTree = data.nodesTree;
-		var items = {};
+		nodesTree = data.nodesTree;
+		const items = {} as KeyedMap<TreeItem>;
 		Object.assign(ENV, data.options);
-		ENV.nodesTree = nodesTree;
 
-		nodesTree.some((i) => {
-			items[i.id] = i;
-			if(i.id === 2) {
-				ENV.rootItem = i;
+		for (const treeItem of nodesTree) {
+			items[treeItem.id] = treeItem;
+			if (treeItem.id === ROOT_NODE_ID) {
+				rootItem = treeItem;
 			}
-		});
+		}
 
-		for(var k in nodesTree) {
-			var i = nodesTree[k];
-			if(items.hasOwnProperty(i.parent)) {
-				var parent = items[i.parent];
-				if(!parent.hasOwnProperty('children')) {
-					parent.children = [];
+		for (const treeItem of nodesTree) {
+			if (items.hasOwnProperty(treeItem.parent)) {
+				const parentItem = items[treeItem.parent];
+				if (!parentItem.hasOwnProperty('children')) {
+					parentItem.children = [];
 				}
-				parent.children.push(i);
+				parentItem.children.push(treeItem);
 			}
 		}
 		this.forceUpdate();
-		if(isFirstCall) {
+		if (isFirstCall) {
 			isFirstCall = false;
 			goToPageByHash();
 		}
@@ -64,25 +76,25 @@ class MainFrame extends Component<any, any> {
 
 	render() {
 		return R.div(null,
-			React.createElement(TopBar),
-			R.div({ className: "main-frame" },
-				ENV.nodesTree ? React.createElement(LeftBar, { menuItems: ENV.rootItem.children }) : undefined,
-				R.div({ className: "stage-container" },
-					React.createElement(Stage)
+			h(TopBar, null),
+			R.div({ className: 'main-frame' },
+				nodesTree ? h(LeftBar, { menuItems: rootItem.children }) : undefined,
+				R.div({ className: 'stage-container' },
+					h(Stage, null)
 				)
 			),
-			R.div({ className: "footer" }, ENV.APP_TITLE),
-			React.createElement(Modal),
-			React.createElement(Notify),
+			R.div({ className: 'footer' }, ENV.APP_TITLE),
+			h(Modal, null),
+			h(Notify, null),
 			/// #if DEBUG
-			React.createElement(DebugPanel),
+			h(DebugPanel, null),
 			/// #endif
-			React.createElement(LoadingIndicator)
+			h(LoadingIndicator, null)
 
 		);
 	}
 }
-/** @type MainFrame */
-MainFrame.instance = null;
+
+MainFrame.instance = undefined;
 
 export { ENV, MainFrame };

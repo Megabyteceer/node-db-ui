@@ -1,87 +1,91 @@
-﻿import React, { Component } from "react";
-import { R } from "./r";
-import { FormFull } from "./forms/form-full";
-import { List } from "./forms/list";
-import { Filters, getNode, getNodeData, getNodeIfPresentOnClient, isLitePage, isPresentListRenderer, L, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from "./utils";
-import { assert, NODE_TYPE, RecId, RecordData, throwError } from "./bs-utils";
-import { BaseForm } from "./forms/base-form";
-import ReactDOM from 'react-dom';
-import { LeftBar } from "./left-bar";
+﻿import { Component, h, render, type ComponentType } from 'preact';
+
+import { NODE_TYPE } from '../../../types/generated';
+import { globals } from '../../../types/globals';
+import { assert, throwError } from './assert';
+import { normalizeEnumName, type FormFilters, type RecId, type RecordData } from './bs-utils';
+import { NEW_RECORD } from './consts';
+import Form, { type FormProps } from './form';
+import { LeftBar } from './left-bar';
+import { R } from './r';
+import { getNode, getNodeIfPresentOnClient, getRecordClient, getRecordsClient, isPresentListRenderer, myAlert, onOneFormShowed, renderIcon, updateHashLocation } from './utils';
 
 let mouseX: number;
 let mouseY: number;
 
-window.document.addEventListener('pointerdown', (ev) => {
-	mouseX = ev.clientX;
-	mouseY = ev.clientY;
-}, true);
+window.document.addEventListener(
+	'pointerdown',
+	(ev) => {
+		mouseX = ev.clientX;
+		mouseY = ev.clientY;
+	},
+	true
+);
 
-class FormLoaderCog extends Component<any, any> {
+class FormLoaderCog extends Component {
 	render() {
-		return R.div({ className: "fade-in loading-icon" },
-			renderIcon('cog fa-spin fa-5x')
-		);
+		return R.div({ className: 'fade-in loading-icon' }, renderIcon('cog fa-spin fa-5x'));
 	}
 }
 
 interface FormEntry {
-	form?: BaseForm;
-	formContainer: HTMLDivElement;
+	form?: Form;
+	formContainer?: HTMLDivElement;
 	container: HTMLDivElement;
-	onModified?: (dataToSend: RecordData | null) => void;
+	onModified?: (dataToSend?: RecordData) => void;
 }
 
-let allForms: FormEntry[] = [];
+const allForms: FormEntry[] = [];
 
-class Stage extends Component<any, any> {
-
+class Stage extends Component<{}, {}> {
 	static allForms: FormEntry[];
 
-	static get currentForm(): BaseForm | null {
+	static get currentForm(): Form | undefined {
 		const e = Stage.currentFormEntry;
 		return e && e.form;
 	}
 
 	static get currentFormEntry(): FormEntry {
-		return allForms[allForms.length - 1]
-	};
+		return allForms[allForms.length - 1];
+	}
 
-	static get rootForm(): BaseForm {
-		return allForms[0] && allForms[0].form;
+	static get rootForm(): Form | undefined {
+		return allForms[0]?.form;
 	}
 
 	static destroyForm() {
-		ReactDOM.render(React.createElement(React.Fragment), Stage.currentFormEntry.container);
+		render(R.fragment(), Stage.currentFormEntry.container);
 	}
 
 	static refreshForm() {
-		if(Stage.currentForm) {
+		if (Stage.currentForm) {
 			Stage.showForm(
-				Stage.currentForm.nodeId,
-				Stage.currentForm.recId,
-				Stage.currentForm.filters,
-				Stage.currentForm.editable
+				Stage.currentForm!.nodeId,
+				Stage.currentForm!.recId,
+				Stage.currentForm!.formFilters,
+				Stage.currentForm!.props.editable
 			);
 		}
 	}
 
 	static goBackIfModal() {
-		if(allForms.length > 1) {
-			let e = allForms.pop();
+		if (allForms.length > 1) {
+			const e = allForms.pop()!;
 			allForms[allForms.length - 1].container.classList.remove('blocked-layer');
-			const formContainer = e.formContainer;
-			e.formContainer = null;
+			const formContainer = e.formContainer!;
+			e.formContainer = undefined;
 
 			formContainer.style.transform = 'scale(0.01)';
 			e.container.style.backgroundColor = '#00112200';
 			setTimeout(() => {
-				ReactDOM.render(React.createElement(React.Fragment), formContainer);
+				render(R.fragment(), formContainer);
 				formContainer.remove();
-				if(formContainer !== e.container) {
+				if (formContainer !== e.container) {
 					e.container.remove();
 				}
 			}, 300);
-			if(allForms.length === 1) { // enable scrolling
+			if (allForms.length === 1) {
+				// enable scrolling
 				document.body.style.overflowY = '';
 				document.body.style.paddingRight = '';
 				document.body.style.boxSizing = '';
@@ -92,24 +96,30 @@ class Stage extends Component<any, any> {
 		}
 	}
 
-	/** @param newRecordData null - if record was deleted. */
-	static dataDidModified(newRecordData: RecordData | null) {
-		if(Stage.currentFormEntry.onModified) {
+	static dataDidModified(newRecordData?: RecordData) {
+		if (Stage.currentFormEntry.onModified) {
 			Stage.currentFormEntry.onModified(newRecordData);
 		}
 	}
 
-	static async showForm(nodeId: RecId, recId?: RecId | 'new', filters: Filters = {}, editable?: boolean, modal?: boolean, onModified?: (dataToSend: RecordData) => void, noAnimation = false) {
-		if(!allForms.length || modal) {
+	static async showForm(
+		nodeId: RecId,
+		recId?: RecId | typeof NEW_RECORD,
+		filters: FormFilters = {},
+		editable?: boolean,
+		modal?: boolean,
+		onModified?: (dataToSend?: RecordData) => void,
+		noAnimation = false
+	) {
+
+		assert(!isNaN(nodeId), 'Invalid NODE_ID');
+
+		if (this.currentForm?.isAsyncInProgress()) {
+			await this.currentForm.waitForAsyncFinish();
+		}
+
+		if (!allForms.length || modal) {
 			addFormEntry(noAnimation);
-		} else {
-			if(Stage.currentForm) {
-				const formParameters = Stage.currentForm;
-				formParameters.nodeId = nodeId;
-				formParameters.recId = recId;
-				formParameters.filters = filters;
-				formParameters.editable = editable;
-			}
 		}
 
 		const formEntry = Stage.currentFormEntry;
@@ -118,79 +128,95 @@ class Stage extends Component<any, any> {
 		formEntry.onModified = onModified;
 
 		let data;
+		let isList = false;
 		let node = getNodeIfPresentOnClient(nodeId);
-		if(!node || node.nodeType === NODE_TYPE.DOCUMENT) {
-			if(recId !== 'new') {
-				if(typeof recId === 'number') {
-					data = await getNodeData(nodeId, recId, undefined, editable, false, isPresentListRenderer(nodeId));
+		if (!node || node.nodeType === NODE_TYPE.DOCUMENT) {
+			if (recId !== NEW_RECORD) {
+				if (typeof recId === 'number') {
+					data = await getRecordClient(nodeId, recId as RecId, undefined, editable, false, isPresentListRenderer(nodeId));
 				} else {
-					data = await getNodeData(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
+					isList = true;
+					data = await getRecordsClient(nodeId, undefined, filters, editable, false, isPresentListRenderer(nodeId));
 				}
 			}
 		}
-		if(!node) {
+		if (!node) {
 			node = await getNode(nodeId);
 		}
 
-		if(!formEntry.formContainer || !node) { // popup is hidden already
+		if (!formEntry.formContainer || !node) {
+			// popup is hidden already
 			return;
 		}
 
-		const ref = (form: BaseForm) => {
-			if(form) {
+		const ref = (form: Form) => {
+			if (form) {
 				formEntry.form = form;
 			}
 		};
 
-		if(!node.storeForms) { // cant render forms without storage as a list. Submit form only
-			if(!recId) {
-				recId = 'new';
+		if (!node.storeForms) {
+			// cant render forms without storage as a list. Submit form only
+			if (!recId) {
+				recId = NEW_RECORD;
 			}
 			editable = true;
 		}
 
-		let formType;
-		switch(node.nodeType) {
-			case NODE_TYPE.DOCUMENT:
-			case NODE_TYPE.SECTION:
-				if(recId || (recId === 0) || recId === 'new') {
-					formType = FormFull;
-				} else {
-					formType = List;
-					assert(!modal, "List could not be show at modal level.");
-				}
-				break;
-			case NODE_TYPE.REACT_CLASS:
-				if(typeof window.crudJs.customClasses[node.tableName] === 'undefined') {
-					myAlert('Unknown react class: ' + node.tableName);
-					formType = 'div';
-				} else {
-					formType = window.crudJs.customClasses[node.tableName];
-				}
-				break;
-			case NODE_TYPE.STATIC_LINK:
-				location.href = node.staticLink;
-				break;
-			default:
-				throwError('Unknown nodeType ' + node.nodeType);
+		let formType!: (ComponentType<any>) | 'div';
+		switch (node.nodeType) {
+		case NODE_TYPE.DOCUMENT:
+		case NODE_TYPE.SECTION:
+			formType = Form;
+			break;
+		case NODE_TYPE.REACT_CLASS:
+			if (typeof globals.customClasses[node.tableName!] === 'undefined') {
+				myAlert('Unknown react class: ' + node.tableName);
+				formType = 'div';
+			} else {
+				formType = globals.customClasses[node.tableName!];
+			}
+			break;
+		case NODE_TYPE.STATIC_LINK:
+			location.href = node.staticLink!;
+			break;
+		default:
+			throwError('Unknown nodeType ' + node.nodeType);
 		}
 
-		let className = 'form-container-node-' + nodeId +
+		let className =
+			'form-container-node-' +
+			normalizeEnumName(node.tableName!).toLowerCase().replaceAll('_', '-') +
 			(isRootForm ? ' form-root-container' : ' form-modal-container');
-		if(node.cssClass) {
+		if (node.cssClass) {
 			className += ' ' + node.cssClass;
 		}
 
-		ReactDOM.render(
-			React.createElement('div', { key: node.id + '_' + recId, className },
-				React.createElement(formType, { ref, node, recId, isRootForm, initialData: data || {}, filters, editable })
+		render(
+			h(
+				'div',
+				{ key: node.id + '_' + recId, className },
+				h(formType, {
+					ref,
+					nodeId: node.id,
+					recId,
+					isRootForm,
+					formData: isList ? undefined : data,
+					listData: isList ? data : undefined,
+					filters,
+					parentForm: undefined as any,
+					editable
+				} as FormProps)
 			),
 			formEntry.formContainer
 		);
 
-		if(isRootForm && Stage.rootForm) {
-			const formParameters = Stage.rootForm;
-			if(formParameters.nodeId && ((formParameters.nodeId !== nodeId) || (formParameters.recId !== recId))) {
+		if (isRootForm && Stage.rootForm) {
+			const rootForm = Stage.rootForm;
+			if (
+				rootForm.nodeId &&
+				(rootForm.nodeId !== nodeId || rootForm.recId !== recId)
+			) {
 				window.scrollTo(0, 0);
 			}
 		}
@@ -198,7 +224,7 @@ class Stage extends Component<any, any> {
 		updateHashLocation();
 	}
 
-	constructor(props) {
+	constructor(props: {}) {
 		super(props);
 	}
 
@@ -211,40 +237,41 @@ Stage.allForms = allForms;
 
 function addFormEntry(noAnimation = false) {
 	const isRoot = allForms.length === 0;
-	let container = document.createElement('div');
+	const container = document.createElement('div');
 	container.className = isRoot ? 'form-layer' : 'form-layer form-layer-modal';
-	let formContainer;
+	let formContainer: HTMLDivElement;
 
-	if(!isRoot) {
+	if (!isRoot) {
 		formContainer = document.createElement('div');
 		container.appendChild(formContainer);
 		allForms[allForms.length - 1].container.classList.add('blocked-layer');
-		container.style.backgroundColor = '#00112200'
+		container.style.backgroundColor = '#00112200';
 		formContainer.className = 'form-layer-modal';
 		container.style.transition = 'background-color 0.3s';
 		formContainer.style.transition = 'transform 0.3s';
 		formContainer.style.transitionTimingFunction = 'ease-in-out';
-		if(!noAnimation) {
+		if (!noAnimation) {
 			formContainer.style.transformOrigin = mouseX + 'px ' + mouseY + 'px';
 			formContainer.style.transform = 'scale(0.01)';
 			setTimeout(() => {
 				formContainer.style.transform = 'scale(1)';
-				container.style.backgroundColor = '#00112280'
+				container.style.backgroundColor = '#00112280';
 			}, 10);
 		} else {
 			formContainer.style.transform = 'scale(1)';
-			container.style.backgroundColor = '#00112280'
+			container.style.backgroundColor = '#00112280';
 		}
 	} else {
 		formContainer = container;
 	}
-	document.querySelector('#stage').appendChild(container);
-	let entry: FormEntry = {
+	(document.querySelector('#stage') as HTMLDivElement).appendChild(container);
+	const entry: FormEntry = {
 		container,
 		formContainer
-	}
-	if(allForms.length === 1) { // disable scrolling
-		if(document.body.scrollHeight > document.body.clientHeight) {
+	};
+	if (allForms.length === 1) {
+		// disable scrolling
+		if (document.body.scrollHeight > document.body.clientHeight) {
 			document.body.style.paddingRight = '10px';
 			document.body.style.boxSizing = 'border-box';
 		}
@@ -254,4 +281,4 @@ function addFormEntry(noAnimation = false) {
 	LeftBar.refreshLeftBarActive();
 }
 
-export { Stage, FormLoaderCog }
+export { FormLoaderCog, Stage };

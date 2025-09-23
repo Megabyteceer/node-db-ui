@@ -1,10 +1,18 @@
-import { FIELD_TYPE } from "../bs-utils";
-import { R } from "../r";
-import { registerFieldClass } from "../utils";
-import { BaseField } from "./base-field";
+import { FIELD_TYPE } from '../../../../types/generated';
+import BaseField from '../base-field';
+import { R } from '../r';
+import { registerFieldClass } from '../utils';
 
-registerFieldClass(FIELD_TYPE.SPLITTER, class StaticTextField extends BaseField {
-	render() {
-		return R.span();
+const splitterProps = { className: 'form-splitter' };
+
+export default class SplitterField extends BaseField {
+	renderFieldEditable() {
+		return R.div(splitterProps);
 	}
-});
+
+	renderField() {
+		return R.div(splitterProps);
+	}
+}
+
+registerFieldClass(FIELD_TYPE.SPLITTER, SplitterField);

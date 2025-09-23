@@ -1,63 +1,62 @@
-import { R } from "../r";
-import React, { Component } from "react";
-import { CLIENT_SIDE_FORM_EVENTS, getNode, getNodeData, keepInWindow, L, reloadLocation, renderIcon, sp } from "../utils";
-import { admin_editSource } from "./admin-event-editor";
-import { admin } from "./admin-utils";
-import { FieldAdmin } from "./field-admin";
-import { NodeDesc, NODE_ID, NODE_TYPE } from "../bs-utils";
+import { Component, h, type ComponentChild } from 'preact';
+import { NODE_ID, NODE_TYPE, type IFieldsRecord, type INodesFilter, type INodesRecord } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
+import { VIEW_MASK, type NodeDesc, type TreeItem } from '../bs-utils';
+import { NEW_RECORD } from '../consts';
+import { CLIENT_SIDE_FORM_EVENTS, SERVER_SIDE_FORM_EVENTS } from '../events-handle';
+import type Form from '../form';
+import { R } from '../r';
+import { getRecordClient, getRecordsClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
+import { admin_editSource } from './admin-event-editor';
+import { admin } from './admin-utils';
+import { FieldAdmin } from './field-admin';
 
-var showedNodeId;
+let showedNodeId: NODE_ID | -1;
 
 /// #if DEBUG
 /*
 /// #endif
 throw new Error("admin-control imported in release build.");
-//*/
-class NodeAdmin extends Component<any, any> {
+// */
 
-	private timeout: NodeJS.Timeout;
-	node: NodeDesc;
+interface NodeAdminProps {
+	form?: Form;
+	menuItem?: TreeItem;
+}
 
-	constructor(props) {
+interface NodeAdminState {
+	show?: boolean;
+	allFieldsVisible?: boolean;
+}
+
+class NodeAdmin extends Component<NodeAdminProps, NodeAdminState> {
+
+	node!: NodeDesc;
+
+	constructor(props: NodeAdminProps) {
 		super(props);
 
-		if(this.props.form) {
+		if (this.props.form) {
 			this.state = {
-				show: this.props.form.props.node && (showedNodeId === this.props.form.props.node.id)
+				show: showedNodeId === this.props.form.nodeId
 			};
 		} else {
 			this.state = {
-				show: showedNodeId === this.props.menuItem.id
+				show: showedNodeId === this.props.menuItem!.id
 			};
 		}
-		this.timeout = null;
 
 		this.show = this.show.bind(this);
 		this.hide = this.hide.bind(this);
-		this.toggleLock = this.toggleLock.bind(this);
 		this.toggleAllFields = this.toggleAllFields.bind(this);
 	}
 
-	componentDidMount() {
-		if(this.props.form && !this.props.form.props.node) {
-			getNode(this.props.form.props.nodeId).then((node) => {
-				this.node = node;
-				this.forceUpdate();
-			});
-		}
-	}
-
 	componentWillUnmount() {
-		showedNodeId = -1
+		showedNodeId = -1;
 	}
 
 	show() {
-		if(this.timeout) {
-			clearTimeout(this.timeout);
-			delete (this.timeout);
-		}
-		if(!this.state.show) {
-
+		if (!this.state.show) {
 			this.setState({
 				show: true
 			});
@@ -65,7 +64,7 @@ class NodeAdmin extends Component<any, any> {
 	}
 
 	hide() {
-		if(this.state.show) {
+		if (this.state.show) {
 			this.setState({
 				show: false
 			});
@@ -78,298 +77,325 @@ class NodeAdmin extends Component<any, any> {
 		});
 	}
 
-	toggleLock() {
-		this.setState({
-			locked: !this.state.locked
-		});
-	}
-
 	render() {
-		var node;
-		var form;
-		var item;
+		let node: NodeDesc;
+		let form: Form | undefined;
+		let item: TreeItem | undefined;
 
-		if(this.props.form) {
-			node = this.props.form.props.node || this.node;
-			form = this.props.form;
-			if(!node) {
+		if (this.props.form) {
+			node = this.props.form.nodeDesc;
+			form = this.props.form!;
+			if (!node) {
 				return R.div();
 			}
 		} else {
-			node = {};
-			item = this.props.menuItem; //left-bar-item
+			node = {} as any;
+			item = this.props.menuItem!; // left-bar-item
 		}
 
-		var nodeId = node && (node.id || item.id);
+		const nodeId = node && (node.id || item!.id);
 
-		var borderOnSave;
-		var borderOnAfterSave;
-		var borderOnLoad;
+		let anyHandlerExists = '';
 
-		if(form && form._getFormEventHandler && form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE)) {
-			borderOnSave = " admin-button-highlighted";
+		const clientEventsClassName = (ev: CLIENT_SIDE_FORM_EVENTS) => {
+			const ret = (node.__serverSideHandlers?.[ev] || form?._getFormEventHandler(ev)) ? ' admin-button-highlighted' : '';
+			if (ret) {
+				anyHandlerExists = ret;
+			}
+			return ret;
+		};
+
+		const eventButtonsClient = [] as ComponentChild[];
+		const eventButtonsServer = [] as ComponentChild[];
+
+		const handlers =
+			[
+				CLIENT_SIDE_FORM_EVENTS.onLoad,
+				CLIENT_SIDE_FORM_EVENTS.onSave,
+				CLIENT_SIDE_FORM_EVENTS.afterSave
+			] as string[];
+		if (form?.nodeDesc.storeForms) {
+			handlers.push(...[
+				SERVER_SIDE_FORM_EVENTS.beforeCreate,
+				SERVER_SIDE_FORM_EVENTS.afterCreate,
+				SERVER_SIDE_FORM_EVENTS.beforeUpdate,
+				SERVER_SIDE_FORM_EVENTS.afterUpdate,
+				SERVER_SIDE_FORM_EVENTS.beforeDelete,
+				SERVER_SIDE_FORM_EVENTS.afterDelete
+
+			]);
 		} else {
-			borderOnSave = '';
+			handlers.push(SERVER_SIDE_FORM_EVENTS.onSubmit);
 		}
+		handlers.forEach((eventName: string) => {
+			const a = (CLIENT_SIDE_FORM_EVENTS as any)[eventName] ? eventButtonsClient : eventButtonsServer;
+			const exists = clientEventsClassName(eventName as any);
+			a.push(
+				R.button(
+					{
+						className: 'clickable tool-btn admin-form-btn' + exists,
+						onClick: () => {
+							admin_editSource(eventName as any, node);
+						},
+						title: 'Edit event handler.'
+					},
+					renderIcon(exists ? 'pencil' : 'plus'), eventName, '...'
+				));
+		});
 
-		if(form && form._getFormEventHandler && form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE)) {
-			borderOnAfterSave = " admin-button-highlighted";
-		} else {
-			borderOnAfterSave = '';
-		}
+		let body;
+		let info = [];
 
-		if(form && form._getFormEventHandler && form._getFormEventHandler(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD)) {
-			borderOnLoad = " admin-button-highlighted";
-		} else {
-			borderOnLoad = '';
-		}
+		const bodyVisible = this.state.show;
 
-		var body;
+		if (bodyVisible) {
 
-		var bodyVisible = this.state.show || this.state.locked;
+			if (form) {
 
-		if(bodyVisible) {
-
-			var buttons;
-			var allFields;
-			if(!item) {
-				if(this.state.allFieldsVisible) {
+				const dataToSend = form.getDataToSend('keepStatus') as KeyedMap<any>;
+				const a = Object.keys(dataToSend);
+				if (a.length) {
+					info.push(R.div(null, 'DATA TO SEND:'));
+					for (let key of a) {
+						let val = dataToSend[key];
+						if (typeof val === 'string' && val.length > 100) {
+							val = val.substring(0, 100) + '...';
+						} else if (typeof val === 'object') {
+							val = JSON.stringify(val);
+						}
+						info.push(R.div(null, key + ': ' + val));
+					}
+				}
+			}
+			let buttons;
+			let allFields;
+			if (!item) {
+				if (this.state.allFieldsVisible) {
 					allFields = [];
-					for(let f of node.fields) {
-						if(f.lang) continue;
+					for (const f of node.fields!) {
+						if (!f.show) {
+							continue;
+						}
+						if (f.lang) continue;
 
-						allFields.push(R.span({
-							key: f.id + 'a',
-							className: 'admin-form-header'
-						})),
-							allFields.push(R.div({
-								key: f.id,
-								className: "admin-form-all-fields"
-							},
-								R.div({
-									className: "admin-form-all-fields-name"
-								}, f.fieldName + '; (' + f.id + ')'),
-								renderIcon((f.show & 1) ? 'eye' : 'eye-slash half-visible'),
-								renderIcon((f.show & 2) ? 'eye' : 'eye-slash half-visible'),
-								renderIcon((f.show & 16) ? 'eye' : 'eye-slash half-visible'),
-								renderIcon((f.show & 4) ? 'eye' : 'eye-slash half-visible'),
-								renderIcon((f.show & 8) ? 'eye' : 'eye-slash half-visible'),
+						allFields.push(
+							R.div(
+								{
+									key: f.id,
+									className: 'admin-form-all-fields'
+								},
+								R.div(
+									{
+										className: 'admin-form-all-fields-name'
+									},
+									R.span({ className: 'admin-form-all-fields-id' }, f.id), f.fieldName
+								),
+								R.span({ title: 'EDITABLE' }, renderIcon(f.show & VIEW_MASK.EDITABLE ? 'eye' : 'eye-slash half-visible')),
+								R.span({ title: 'LIST' }, renderIcon(f.show & VIEW_MASK.LIST ? 'eye' : 'eye-slash half-visible')),
+								R.span({ title: 'CUSTOM_LIST' }, renderIcon(f.show & VIEW_MASK.CUSTOM_LIST ? 'eye' : 'eye-slash half-visible')),
+								R.span({ title: 'READONLY' }, renderIcon(f.show & VIEW_MASK.READONLY ? 'eye' : 'eye-slash half-visible')),
+								R.span({ title: 'DROPDOWN_LIST' }, renderIcon(f.show & VIEW_MASK.DROPDOWN_LIST ? 'eye' : 'eye-slash half-visible')),
 
-								renderIcon((f.forSearch) ? 'search-plus' : 'search half-visible'),
-								React.createElement(FieldAdmin, {
+								renderIcon(f.forSearch ? 'search-plus' : 'search half-visible'),
+								h(FieldAdmin, {
 									field: f,
-									form: form,
-									x: 370,
-									zIndex: 10
+									form: form
 								})
-							))
+							)
+						);
 					}
 				}
 
-				buttons = R.span(null,
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						onClick: () => {
-							this.toggleAllFields();
+				buttons = R.span(
+					null,
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn admin-form-all-fields-button',
+							onClick: () => {
+								this.toggleAllFields();
+							},
+							title: 'Show full list of fields document contains.'
 						},
-						title: "Show full list of fields document contains."
-					},
-						'all fields ', renderIcon('caret-down')
-					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn' + borderOnLoad,
-						onClick: () => {
-							admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_LOAD, node, undefined);
-						},
-						title: "Edit client side script which execute on form open."
-					},
-						'onLoad...'
-					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn' + borderOnSave,
-						onClick: () => {
-							admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_SAVE, node, undefined);
-						},
-						title: "Edit client side script which execute before form save."
-					},
-						'onSave...'
-					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn' + borderOnAfterSave,
-						onClick: () => {
-							admin_editSource(CLIENT_SIDE_FORM_EVENTS.ON_FORM_AFTER_SAVE, node, undefined, 'saveResult: RecordSubmitResult');
-						},
-						title: "Edit client side script which execute after form save."
-					},
-						'onAfterSave...'
-					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						title: L('FLD_ADD'),
-						onClick: () => {
-							window.crudJs.Stage.showForm(NODE_ID.FIELDS, 'new', {
-								node_fields_linker: {
-									id: node.id,
-									name: node.singleName
-								}
-							}, true, true, reloadLocation);
-						}
-					},
-						renderIcon('plus')
-					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						title: L('FLD_SHOW_ALL'),
-						onClick: () => {
-							if(form) {
-								form.showAllDebug = !form.showAllDebug;
-								form.forceUpdate();
-							}
-						}
-					},
-						renderIcon('eye')
-					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						title: L('ADD_RATING_FLD'),
-						onClick: () => {
-							// TODO: implement ratings creation process
-
-						}
-					},
-						renderIcon('plus'),
-						renderIcon('bar-chart')
-					)
-				)
-
-			} else {
-				buttons = R.span(null,
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						title: L('ADD_NODE'),
-						onClick: () => {
-							createNodeForMenuItem(item);
-						}
-					},
-						renderIcon('plus')
-					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						onClick: () => {
-							getNodeData(4, undefined, {
-								_nodesID: item.parent
-							}).then((data) => {
-								data.items.sort((a, b) => {
-									return a.prior - b.prior;
-								});
-								let index = data.items.findIndex(i => i.id === item.id);
-								admin.exchangeNodes(data.items[index], data.items[index + 1]);
-
-							});
-						},
-						title: "Move node down"
-					},
-						renderIcon('arrow-down')
-					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						onClick: () => {
-							getNodeData(4, undefined, {
-								_nodesID: item.parent
-							}).then((data) => {
-								data.items.sort((a, b) => {
-									return a.prior - b.prior;
-								});
-								let index = data.items.findIndex(i => i.id === item.id);
-								admin.exchangeNodes(data.items[index], data.items[index - 1]);
-							});
-						},
-						title: "Move node up"
-					},
-						renderIcon('arrow-up')
-					)
-				)
-			}
-
-			body = R.div({
-				ref: keepInWindow,
-				className: "admin-form-body",
-				onClick: () => {
-					clearTimeout(this.timeout);
-					delete (this.timeout);
-					showedNodeId = nodeId;
-
-				},
-				onMouseLeave: () => {
-					this.hide()
-				}
-			},
-				L('NODE_SETTINGS'),
-				R.b({ className: "admin-form-header" },
-					node.tableName
-				),
-				R.span(null,
-					'; (' + (node.matchName || item.name) + '); id: ' + nodeId
-				),
-				R.div({
-					className: "admin-form-content"
-				},
-					buttons,
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						title: L('EDIT_NODE'),
-						onClick: () => {
-							window.crudJs.Stage.showForm(NODE_ID.NODES, nodeId, undefined, true, true, reloadLocation);
-
-						}
-					},
-						renderIcon('pencil')
-					),
-					R.button({
-						className: 'clickable tool-btn admin-form-btn',
-						title: L('EDIT_ACCESS'),
-						onClick: () => {
-							window.crudJs.Stage.showForm(NODE_ID.PRIVILEGES, nodeId, undefined, true, true, reloadLocation);
-						}
-					},
-						renderIcon('user')
+						'all fields ',
+						renderIcon('caret-down')
 					),
 					R.span({
-						className: 'clickable admin-form-lock-btn',
-						onClick: this.toggleLock
+						className: 'admin-event-buttons-group'
 					},
-						renderIcon(this.state.locked ? 'lock' : 'unlock')
+					'Client',
+					eventButtonsClient
+					),
+					R.span({
+						className: 'admin-event-buttons-group admin-event-buttons-group-server'
+					},
+					'Server',
+					eventButtonsServer
+					),
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							title: L('FLD_ADD'),
+							onClick: () => {
+								globals.Stage.showForm(
+									NODE_ID.FIELDS,
+									NEW_RECORD,
+									{
+										nodeFieldsLinker: {
+											id: node.id,
+											name: node.singleName
+										}
+									} as IFieldsRecord,
+									true,
+									true,
+									reloadLocation
+								);
+							}
+						},
+						renderIcon('plus')
+					)
+				);
+			} else {
+				buttons = R.span(
+					null,
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							title: L('ADD_NODE'),
+							onClick: () => {
+								createNodeForMenuItem(item);
+							}
+						},
+						renderIcon('plus')
+					),
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							onClick: () => {
+								getRecordsClient(NODE_ID.NODES, undefined, {
+									_nodesID: item.parent
+								} as INodesFilter).then((data) => {
+									(data.items as INodesRecord[]).sort((a, b) => {
+										return a.prior - b.prior;
+									});
+									const index = data.items.findIndex(i => i.id === item.id);
+									admin.exchangeNodes(data.items[index], data.items[index + 1]);
+								});
+							},
+							title: 'Move node down'
+						},
+						renderIcon('arrow-down')
+					),
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							onClick: () => {
+								getRecordsClient(NODE_ID.NODES, undefined, {
+									_nodesID: item.parent
+								} as INodesFilter).then((data) => {
+									(data.items as INodesRecord[]).sort((a, b) => {
+										return a.prior - b.prior;
+									});
+									const index = data.items.findIndex(i => i.id === item.id);
+									admin.exchangeNodes(data.items[index], data.items[index - 1]);
+								});
+							},
+							title: 'Move node up'
+						},
+						renderIcon('arrow-up')
+					)
+				);
+			}
+
+			body = R.div(
+				{
+					ref: keepInWindow,
+					className: 'admin-form-body',
+					onClick: () => {
+						showedNodeId = nodeId;
+					}
+				},
+				R.b({ className: 'admin-form-header' }, node.tableName),
+				' ', nodeId,
+				R.div(
+					{
+						className: 'admin-form-content'
+					},
+					buttons,
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							title: L('EDIT_NODE'),
+							onClick: () => {
+								globals.Stage.showForm(NODE_ID.NODES, nodeId, undefined, true, true, reloadLocation);
+							}
+						},
+						renderIcon('pencil')
+					),
+					R.button(
+						{
+							className: 'clickable tool-btn admin-form-btn',
+							title: L('EDIT_ACCESS'),
+							onClick: () => {
+								globals.Stage.showForm(
+									NODE_ID.ADMIN_ROLE_PRIVILEGES_FORM,
+									nodeId,
+									undefined,
+									true,
+									true,
+									reloadLocation
+								);
+							}
+						},
+						renderIcon('user')
+					),
+					R.span(
+						{
+							className: 'clickable admin-form-lock-btn',
+							onClick: this.hide
+						},
+						renderIcon('times')
 					)
 				),
-				allFields
+				allFields,
+				info
 			);
 		}
 
-		return R.div({
-			className: 'admin-control admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
-			onClick: sp
-		},
-			R.span({
-				className: 'half-visible admin-form-open-btn' + (borderOnLoad || borderOnSave),
-				onMouseEnter: this.show
+		return R.div(
+			{
+				className:
+					'admin-control admin-form-wrap' + (bodyVisible ? ' admin-form-wrap-visible' : ''),
+				onClick: sp
 			},
+			R.span(
+				{
+					className: 'half-visible admin-form-open-btn clickable' + anyHandlerExists,
+					onClick: this.show
+				},
 				renderIcon('wrench')
 			),
 			body
-		)
+		);
 	}
 }
 
-function createNodeForMenuItem(item) {
-	let isBasedOnDocument = item.nodeType === NODE_TYPE.DOCUMENT;
-	getNodeData(NODE_ID.NODES, (isBasedOnDocument ? item.parent : item.id) as number).then((data) => {
-		window.crudJs.Stage.showForm(NODE_ID.NODES, 'new', {
-			prior: 100000,
-			_nodesID: {
-				id: data.id,
-				name: data.name
-			}
-		}, true, true, reloadLocation);
+function createNodeForMenuItem(item: TreeItem) {
+	const isBasedOnDocument = item.nodeType === NODE_TYPE.DOCUMENT;
+	getRecordClient(NODE_ID.NODES, (isBasedOnDocument ? item.parent : item.id) as number).then((data) => {
+		globals.Stage.showForm(
+			NODE_ID.NODES,
+			NEW_RECORD,
+			{
+				prior: 100000,
+				_nodesId: {
+					id: data.id,
+					name: data.name
+				}
+			} as INodesRecord,
+			true,
+			true,
+			reloadLocation
+		);
 	});
 }
 

@@ -1,24 +1,29 @@
-import React from "react";
-import { FIELD_TYPE } from "../bs-utils";
-import { R } from "../r";
-import { registerFieldClass } from "../utils";
-import { BaseField } from "./base-field";
+import { h } from 'preact';
+import { FIELD_TYPE } from '../../../../types/generated';
+import { globals } from '../../../../types/globals';
+import { throwError } from '../assert';
+import BaseField from '../base-field';
+import { R } from '../r';
+import { registerFieldClass } from '../utils';
 
-registerFieldClass(FIELD_TYPE.STATIC_TEXT, class StaticTextField extends BaseField {
+export default class StaticTextField extends BaseField {
 
-	setValue(val) { }
+	setValue(_val: any) {
+		throwError('Cant set value for STATIC_HTML_BLOCK');
+	}
 
 	render() {
-		var field = this.props.field;
-		if(window.crudJs.customClasses[field.description]) {
-			//@ts-ignore
-			return React.createElement(window.crudJs.customClasses[field.description], this.props);
+		const field = this.props.fieldDesc;
+		if (globals.customClasses[field.htmlContent!]) {
+			return h(globals.customClasses[field.htmlContent!], this.props);
 		} else {
 			return R.span({
 				dangerouslySetInnerHTML: {
-					__html: field.description
+					__html: field.htmlContent
 				}
 			});
 		}
 	}
-});
+}
+
+registerFieldClass(FIELD_TYPE.STATIC_HTML_BLOCK, StaticTextField);

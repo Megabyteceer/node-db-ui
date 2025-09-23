@@ -1,55 +1,44 @@
+import { E, NODE_ID, type IUsersRecord, type IUsersRecordWrite } from '../../types/generated';
+import { serverOn } from '../../www/client-core/src/events-handle';
+import { generateSalt, getPasswordHash, isAdmin, type UserSession } from '../auth';
+import { D, escapeString, mysqlExec } from '../mysql-connection';
+import { submitRecord } from '../submit';
 
-import { mysqlExec } from "../mysql-connection";
-import { generateSalt, getPasswordHash, isAdmin } from "../auth";
-import { submitRecord } from "../submit";
-import { NODE_ID } from "../../www/client-core/src/bs-utils";
-
-async function clearUserParams(data, currentData, userSession) {
-	if(!isAdmin(userSession)) {
-		delete data._organizationID;
-		delete data._user_roles;
+async function clearUserParams(data: IUsersRecordWrite, currentData: IUsersRecord, userSession: UserSession) {
+	if (!isAdmin(userSession)) {
+		delete data._organizationId;
+		delete data._userRoles;
 	}
 
-	if(data.hasOwnProperty('password')) {
-		const p = data.password;
-		if(p !== 'nc_l4DFn76ds5yhg') {
-			const salt = generateSalt();
-			await mysqlExec("UPDATE _users SET salt='" + salt + "' WHERE id=" + currentData.id);
-			data.password = await getPasswordHash(data.password, salt);
-		} else {
-			delete data.password;
-		}
+	if (data.hasOwnProperty('password')) {
+		const salt = generateSalt();
+		await mysqlExec('UPDATE _users SET salt=' + escapeString(salt) + ' WHERE id=' + D(currentData.id!));
+		data.password = await getPasswordHash(data.password!, salt);
 	}
 
-	if(currentData) {
-		if(!isAdmin(userSession)) {
+	if (currentData) {
+		if (!isAdmin(userSession)) {
 			delete data.email;
 		}
 		currentData = Object.assign(currentData, data);
 	} else {
 		currentData = data;
 	}
-
-	data.public_email = currentData.show_email ? currentData.email : 'hidden_91d2g7';
-	data.public_phone = currentData.show_phone ? currentData.PHONE : 'hidden_91d2g7';
-	data.public_vk = currentData.show_vk ? currentData.soc_vk : 'hidden_91d2g7';
-	data.public_fb = currentData.show_facebook ? currentData.soc_fb : 'hidden_91d2g7';
-	data.public_google = currentData.show_google ? currentData.soc_google : 'hidden_91d2g7';
 }
 
-export default {
-	beforeUpdate: async function(currentData, newData, userSession) {
-		if(!isAdmin(userSession)) {
-			delete newData.email;
-			delete newData.balance;
-			delete newData.balance_to_spend;
-		}
-
-		if(newData.hasOwnProperty('company')) {
-			if(currentData._organizationID.id) {
-				await submitRecord(NODE_ID.ORGANIZATIONS, { name: newData.company }, currentData._organizationID.id);
-			}
-		}
-		return clearUserParams(newData, currentData, userSession);
+serverOn(E._users.beforeUpdate, async (currentData, newData, userSession) => {
+	if (!isAdmin(userSession)) {
+		delete newData.email;
 	}
-}
+
+	if (newData.avatar && currentData.id === userSession.id) {
+		userSession.avatar = newData.avatar!;
+	}
+
+	if (newData.hasOwnProperty('company')) {
+		if (currentData._organizationId!.id) {
+			await submitRecord(NODE_ID.ORGANIZATION, { name: newData.company }, currentData._organizationId!.id);
+		}
+	}
+	return clearUserParams(newData, currentData, userSession);
+});

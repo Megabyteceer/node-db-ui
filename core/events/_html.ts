@@ -1,45 +1,36 @@
+import { readFile, unlink, writeFile } from 'fs';
+import { join } from 'path';
+import { E, type IHtmlRecordWrite } from '../../types/generated';
+import { serverOn } from '../../www/client-core/src/events-handle';
 
-import { unlink, readFile, writeFile } from "fs";
-import { join } from "path";
-import { NodeEventsHandlers } from "../describe-node";
-import { RecordData, RecordDataWrite, UserSession } from "../../www/client-core/src/bs-utils";
+serverOn(E._html.beforeCreate, async (data, _userSession) => {
+	saveDoc(data);
+});
 
-const handlers: NodeEventsHandlers = {
-	beforeCreate: async function(data: RecordDataWrite, userSession: UserSession) {
-		saveDoc(data);
-	},
+serverOn(E._html.beforeUpdate, async (currentData, newData, _userSession) => {
+	currentData = Object.assign(currentData, newData);
+	saveDoc(currentData);
+});
 
-	afterCreate: async function(data: RecordDataWrite, userSession: UserSession) {
-
-	},
-
-	beforeUpdate: async function(currentData: RecordData, newData: RecordDataWrite, userSession: UserSession) {
-		currentData = Object.assign(currentData, newData);
-		saveDoc(currentData);
-	},
-
-	beforeDelete: async function(data: RecordData, userSession: UserSession) {
-		unlink(getDocFilename(data), emptyCallback);
-	}
-};
-export default handlers;
+serverOn(E._html.beforeDelete, async (data, _userSession) => {
+	unlink(getDocFilename(data), emptyCallback);
+});
 
 const emptyCallback = () => { };
 
-async function saveDoc(data): Promise<void> {
+async function saveDoc(data: IHtmlRecordWrite): Promise<void> {
 	return new Promise((resolve, rejects) => {
 		readFile(join(__dirname, '../../www/custom/html/_template.htmp'), 'utf8', (err, txt) => {
 
-			if(err) {
+			if (err) {
 				rejects(err);
 			} else {
-				for(let name in data) {
-					txt = txt.replaceAll('\\$\\{' + name + '\\}', data[name]);
+				for (const name in data) {
+					txt = txt.replaceAll('\\$\\{' + name + '\\}', (data as KeyedMap<string>)[name]);
 				}
-
 				txt = txt.replaceAll('\\$\\{name\\}', data.name);
 				writeFile(getDocFilename(data), txt, (err) => {
-					if(err) {
+					if (err) {
 						rejects(err);
 					} else {
 						resolve();
@@ -50,6 +41,6 @@ async function saveDoc(data): Promise<void> {
 	});
 }
 
-function getDocFilename(data) {
+function getDocFilename(data: IHtmlRecordWrite) {
 	return join(__dirname, '../../www/custom/html/', data.title + '.html');
 }

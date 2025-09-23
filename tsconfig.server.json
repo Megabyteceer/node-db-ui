@@ -1,0 +1,51 @@
+{
+	"compilerOptions": {
+		"noUnusedLocals": true,
+		"moduleResolution": "nodenext",
+		"lib": [
+			"ESNext"
+		],
+		"target": "esnext",
+		"rootDir": ".",
+		"baseUrl": ".",
+		"sourceMap": true,
+		"outDir": "build-debug",
+		"incremental": true,
+		"module": "nodenext",
+		"diagnostics": false,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"assumeChangesOnlyAffectDirectDependencies": true,
+	},
+	"include": [
+		"core/index.ts",
+		"core/events/*"
+	],
+	"exclude": [
+		"**/node_modules/**",
+		"**/build-prod/**",
+		"**/build-debug/**",
+		"**/uploads/**",
+	],
+	"watchOptions": {
+		// Use native file system events for files and directories
+		"watchFile": "useFsEvents",
+		"watchDirectory": "useFsEvents",
+		// Poll files for updates more frequently
+		// when they're updated a lot.
+		"fallbackPolling": "dynamicPriority",
+		// Don't coalesce watch notification
+		"synchronousWatchDirectory": true,
+		// Finally, two additional settings for reducing the amount of possible
+		// files to track  work from these directories
+		"excludeDirectories": [
+			"**/node_modules/**",
+			"**/build-prod/**",
+			"**/build-debug/**",
+			"**/uploads/**"
+		],
+		"excludeFiles": [
+			"build/fileWhichChangesOften.ts"
+		]
+	}
+}

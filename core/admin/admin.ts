@@ -1,114 +1,276 @@
+/// #if DEBUG
+/*
+/// #endif
+throw new Error('admin file imported to prod build');
+// */
 
-import { getNodeDesc, reloadMetadataSchedule, ADMIN_USER_SESSION, getFieldDesc } from "../describe-node";
-import { mysqlExec, mysqlRowsResult } from "../mysql-connection";
+import { ADMIN_USER_SESSION, getFieldDesc, getNodeDesc, reloadMetadataSchedule } from '../describe-node';
 
-import { USER_ID, throwError } from "../../www/client-core/src/bs-utils";
-import { join } from "path";
-import * as fs from "fs";
-import { readFileSync, writeFileSync } from "fs";
-import { isAdmin } from "../auth.js";
-const { exec } = require('child_process');
+import { execSync } from 'child_process';
+import * as fs from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
+import path from 'path';
+import type { FIELD_ID, NODE_ID } from '../../types/generated';
+import { throwError } from '../../www/client-core/src/assert';
+import { USER_ID, type PRIVILEGES_MASK, type RecId } from '../../www/client-core/src/bs-utils';
+import { CLIENT_SIDE_FORM_EVENTS, SERVER_SIDE_FORM_EVENTS } from '../../www/client-core/src/events-handle';
+import { isAdmin, type UserSession } from '../auth.js';
+import { D, mysqlExec, NUM_1 } from '../mysql-connection';
 
-async function nodePrivileges(reqData, userSession) {
-	shouldBeAdmin(userSession);
-	const nodeId = reqData.nodeId;
-	if(reqData.privileges) {//set node privileges
-		const privileges = reqData.privileges;
-		await setRolePrivilegesForNode(nodeId, privileges, reqData.toChild, userSession);
-		reloadMetadataSchedule();
-		return 1;
-	} else { //get node privileges
-		const privileges = await mysqlExec('SELECT id, name, (SELECT privileges FROM _role_privileges WHERE (nodeID=' + nodeId + ') AND (_roles.id=roleID) LIMIT 1) AS privileges FROM _roles WHERE id <> ' + USER_ID.SUPER_ADMIN + ' AND id <> ' + USER_ID.VIEW_ALL + ' AND status = 1');
-		return { privileges, nodeType: getNodeDesc(nodeId).nodeType }
-	}
+const { exec } = require('child_process'); // eslint-disable-line @typescript-eslint/no-require-imports
+
+export interface NodePrivileges {
+	id: RecId;
+	name: string;
+	privileges: PRIVILEGES_MASK;
 }
 
-const NEW_FUNCTION_MARKER = '//_insertNewHandlersHere_';
+export interface NodePrivilegesRequest {
+	nodeId: NODE_ID;
+	toChild?: boolean;
+	privileges: NodePrivileges[];
+}
 
-async function clearCache(userSession) {
+export interface NodePrivilegesRes {
+	privileges: NodePrivileges[];
+}
+
+async function nodePrivileges(reqData: NodePrivilegesRequest, userSession: UserSession) {
 	shouldBeAdmin(userSession);
-	reloadMetadataSchedule();
-	return 1;
+	const nodeId = reqData.nodeId;
+	if (reqData.privileges) {
+		// set node privileges
+		const privileges = reqData.privileges;
+		await setRolePrivilegesForNode(
+			nodeId,
+			privileges,
+			reqData.toChild,
+			userSession
+		);
+		reloadMetadataSchedule();
+		return 1;
+	} else {
+		// get node privileges
+		const privileges = await mysqlExec(
+			'SELECT id, name, (SELECT privileges FROM "_rolePrivileges" WHERE ("nodeId"='
+			+ D(nodeId)
+			+ ') AND (_roles.id="roleId") LIMIT ' + NUM_1 + ') AS privileges FROM _roles WHERE id != '
+			+ D(USER_ID.SUPER_ADMIN)
+			+ ' AND id != '
+			+ D(USER_ID.VIEW_ALL)
+			+ ' AND status = ' + NUM_1
+		) as NodePrivileges[];
+		return { privileges, nodeType: getNodeDesc(nodeId).nodeType } as NodePrivilegesRes;
+	}
 }
 
 const shouldBeAdmin = (userSession = ADMIN_USER_SESSION) => {
-	if(!isAdmin(userSession)) {
+	if (!isAdmin(userSession)) {
 		throwError('Access denied');
 	}
-}
+};
 
-async function setRolePrivilegesForNode(nodeID, rolePrivileges, toChild, userSession) {
+async function setRolePrivilegesForNode(
+	nodeId: RecId,
+	rolePrivileges: NodePrivileges[],
+	toChild?: boolean,
+	userSession?: UserSession
+) {
 	shouldBeAdmin(userSession);
-	await mysqlExec('DELETE FROM `_role_privileges` WHERE `nodeID`=' + nodeID + ';');
+	await mysqlExec(
+		'DELETE FROM "rolePrivileges" WHERE "nodeId"=' + D(nodeId) + ';'
+	);
 
-	for(let p of rolePrivileges) {
-		if(p.privileges) {
-			await mysqlExec('INSERT INTO _role_privileges SET nodeID=' + nodeID + ', roleID=' + p.id + ', privileges=' + p.privileges + ';');
+	for (const p of rolePrivileges) {
+		if (p.privileges) {
+			await mysqlExec(
+				'INSERT INTO rolePrivileges SET nodeId='
+				+ D(nodeId)
+				+ ', roleId='
+				+ D(p.id)
+				+ ', privileges='
+				+ D(p.privileges)
+				+ ';'
+			);
 		}
 	}
-	if(toChild) {
-		//apply to sub sections
-		const pgs = await mysqlExec("SELECT id FROM _nodes WHERE _nodesID =" + nodeID) as mysqlRowsResult;
-		for(let pg of pgs) {
-			await setRolePrivilegesForNode(pg.id, rolePrivileges, toChild, userSession);
+	if (toChild) {
+		// apply to sub sections
+		const pgs = await mysqlExec(
+			'SELECT id FROM _nodes WHERE _nodesId =' + nodeId
+		);
+
+		for (const pg of pgs) {
+			await setRolePrivilegesForNode(
+				pg.id,
+				rolePrivileges,
+				toChild,
+				userSession
+			);
 		}
 	}
 }
 
-function editFunction(fileName, functionName, args = '') {
+const handlersArgs = {
+	[SERVER_SIDE_FORM_EVENTS.beforeCreate]: 'data, userSession',
+	[SERVER_SIDE_FORM_EVENTS.afterCreate]: 'data, userSession',
+	[SERVER_SIDE_FORM_EVENTS.beforeUpdate]: 'currentData, newData, userSession',
+	[SERVER_SIDE_FORM_EVENTS.afterUpdate]: 'data, userSession',
+	[SERVER_SIDE_FORM_EVENTS.beforeDelete]: 'data, userSession',
+	[SERVER_SIDE_FORM_EVENTS.afterDelete]: 'data, userSession',
+	[SERVER_SIDE_FORM_EVENTS.onSubmit]: 'data, userSession',
+	[CLIENT_SIDE_FORM_EVENTS.onLoad]: 'form',
+	[CLIENT_SIDE_FORM_EVENTS.onSave]: 'form',
+	[CLIENT_SIDE_FORM_EVENTS.afterSave]: 'form, submitResult',
+	[CLIENT_SIDE_FORM_EVENTS.onChange]: 'form, value, isUserAction, prevValue',
+	[CLIENT_SIDE_FORM_EVENTS.onClick]: 'form'
+};
 
-	fileName = join(__dirname, fileName);
+function escapeRegex(string: string) {
+	return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+}
 
-	let text = readFileSync(fileName, 'utf8').replaceAll("\r\n", "\n");
+function editFunction(fileName: string, eventName: string, nodeId: NODE_ID, fieldId: FIELD_ID, isServer?: boolean) {
 
-	const functionSearchPattern = new RegExp('\\s+' + functionName + '\\(', 'gi');
+	let functionName = (isServer ? 'serverOn(' : 'clientOn(') + 'E.' + getNodeDesc(nodeId).tableName;
+
+	if (fieldId) {
+		functionName += '.' + getFieldDesc(fieldId).fieldName;
+	}
+	functionName += '.' + eventName + ',';
+
+	let text = readFileSync(fileName, 'utf8').replace(/\r\n/g, '\n');
+
+	const functionSearchPattern = new RegExp(
+		escapeRegex(functionName),
+		'gi'
+	);
 	const c1 = (text.match(functionSearchPattern) || []).length;
 
-	if(c1 > 1) {
-		throwError("function (" + functionName + ") present more that once in file: " + fileName);
-	} else if(!c1) {
-		// TODO: add function and got to source
-		let i = text.indexOf(NEW_FUNCTION_MARKER);
-		if(i < 0) {
-			throwError("marker (" + NEW_FUNCTION_MARKER + ") is not detected in file: " + fileName);
-		}
-		text = text.substr(0, i) + functionName + `(` + args + `) {
-		
-	}
-
-	` + text.substr(i);
+	if (c1 > 1) {
+		throwError(
+			'function ('
+			+ functionName
+			+ ') present more that once in file: '
+			+ fileName
+		);
+	} else if (!c1) {
+		text += '\n\n' + functionName + ' async (' + (handlersArgs as any)[eventName] + ') => {\n\n});';
 		writeFileSync(fileName, text);
 	}
 
-	let a = text.split('\n');
+	const a = text.split('\n');
 	let line = a.findIndex(s => s.match(functionSearchPattern));
 	line += 2;
 	try {
-		let arg = fileName + ':' + line + ':2';
+		const arg = fileName + ':' + line + ':2';
 		exec('code -r -g "' + arg + '"');
-	} catch(err) {
-		return 'Can not open file to edit: ' + fileName
-	};
+	} catch (_err) {
+		return 'Can not open file to edit: ' + fileName;
+	}
 	return 1;
 }
 
-async function getClientEventHandler({
-	handler,
-	nodeId,
-	fieldId,
-	args
-}, userSession) {
-	shouldBeAdmin(userSession);
-
-	let node = getNodeDesc(nodeId);
-	if(fieldId) {
-		let field = getFieldDesc(fieldId);
-		let customPath = '../../../www/src/events/fields_events_custom.ts';
-		return editFunction(fs.existsSync(join(__dirname, customPath)) ? customPath : '../../../www/client-core/src/events/fields_events.ts', node.tableName + '_' + field.fieldName + '_' + handler, args);
-	} else {
-		let customPath = '../../../www/src/events/forms_events_custom.ts';
-		return editFunction(fs.existsSync(join(__dirname, customPath)) ? customPath : '../../../www/client-core/src/events/forms_events.ts', node.tableName + '_' + handler, args);
-	}
+export interface EditSourceRequest {
+	eventName: string;
+	nodeId: NODE_ID;
+	fieldId: FIELD_ID;
+	fileName: string;
 }
 
-export { nodePrivileges, getClientEventHandler, shouldBeAdmin, clearCache };
+async function editEventHandler(
+	request: EditSourceRequest,	userSession: UserSession
+) {
+	shouldBeAdmin(userSession);
+
+	let fileName!: string;
+
+	let isServerFileName = (SERVER_SIDE_FORM_EVENTS as any)[request.eventName];
+	const nodeName = getNodeDesc(request.nodeId).tableName!;
+	if (isServerFileName) {
+		fileName = nodeName.startsWith('_') ? ('core/events/' + nodeName + '.ts') : ('events/' + nodeName + '.ts');
+	} else {
+		fileName = nodeName.startsWith('_') ? ('www/client-core/src/events/' + nodeName + '.ts') : ('www/src/events/' + nodeName + '.ts');
+	}
+
+	const dirName = path.dirname(fileName);
+
+	const importPath = dirName.split('/').map(_p => '..').join('/');
+	if (!fs.existsSync(fileName)) {
+		fs.writeFileSync(fileName,
+			`import { E } from '${importPath}/types/generated';
+import { clientOn } from '${importPath}/www/client-core/src/events-handle';`
+		);
+
+		const files = fs.readdirSync(dirName);
+		writeFileSync(path.join(dirName, 'index.ts'),
+			files.filter(f => f !== 'index.ts' && f.endsWith('.ts')).map((f) => {
+				return 'import \'./' + f + '\';';
+			}).join('\n'));
+
+	}
+
+	return editFunction(fileName, request.eventName, request.nodeId, request.fieldId, isServerFileName);
+
+}
+
+export const dumpDB = async (userSession: UserSession) => {
+	shouldBeAdmin(userSession);
+
+	const dataDir = path.join(__dirname, '../../../data');
+	const files = fs.readdirSync(dataDir);
+	let next = 1;
+	for (const f of files) {
+		const v = parseInt(f);
+		if (v >= next) {
+			next = v + 1;
+		}
+	}
+	try {
+		execSync('pg_dump > "' + path.join(dataDir, next + '.sql') + '"');
+	} catch (er: any) {
+		return { error: er.message };
+	}
+
+	const readFile = (num: number) => {
+		return readFileSync(path.join(dataDir, num + '.sql'), 'utf8').replace(/\\restrict.+/gm, '').replace(/\\unrestrict.+/gm, '');
+	};
+
+	if ((next > 1) && (readFile(next) === readFile(next - 1))) {
+		fs.unlinkSync(path.join(dataDir, next + '.sql'));
+		return false;
+	}
+	return true;
+
+};
+
+export const recoveryDB = async (userSession: UserSession) => {
+	shouldBeAdmin(userSession);
+
+	const dataDir = path.join(__dirname, '../../../data');
+	const files = fs.readdirSync(dataDir);
+	let last = 0;
+	for (const f of files) {
+		const v = parseInt(f);
+		if (v >= last) {
+			last = v;
+		}
+	}
+
+	if (last > 0) {
+		await mysqlExec(
+			`DROP SCHEMA IF EXISTS public CASCADE;
+		CREATE SCHEMA public;`);
+		try {
+			execSync('psql < ' + path.join(dataDir, last + '.sql'));
+		} catch (er: any) {
+			return { error: er.message };
+		}
+
+	}
+	reloadMetadataSchedule();
+
+	return true;
+};
+
+export { editEventHandler, nodePrivileges, shouldBeAdmin };

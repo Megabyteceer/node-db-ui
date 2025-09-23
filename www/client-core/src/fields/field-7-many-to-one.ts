@@ -1,30 +1,21 @@
-import { FIELD_TYPE, IMAGE_THUMBNAIL_PREFIX, RecId, RecordData } from "../bs-utils";
-import { R } from "../r";
-import React from "react";
-import ReactDOM from "react-dom";
-import { List } from "../forms/list";
-import { idToImgURL, L, renderIcon, scrollToVisible, sp } from "../utils";
-import { registerFieldClass } from "../utils";
-import { fieldLookupMixins } from "./field-lookup-mixins";
+import { h, type ComponentChild } from 'preact';
+import { FIELD_TYPE } from '../../../../types/generated';
+import type { LookupValue, LookupValueIconic, RecordData } from '../bs-utils';
+import { IMAGE_THUMBNAIL_PREFIX, VIEW_MASK } from '../bs-utils';
+import Form, { type FormProps } from '../form';
+import { R } from '../r';
+import { idToImgURL, L, registerFieldClass, renderIcon, sp } from '../utils';
+import BaseLookupField, { type BaseLookupFieldProps } from './base-lookup-field';
+import type LookupManyToManyFiled from './field-14-many-to-many';
 
-registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLookupMixins {
-	isEnterCreateThroughList: boolean;
+export default class LookupManyToOneFiled extends BaseLookupField {
+	isEnterCreateThroughList = false;
 
-	constructor(props) {
+	declare currentValue: LookupValueIconic;
+
+	constructor(props: BaseLookupFieldProps) {
 		super(props);
 
-		var val = props.initialValue;
-		if(typeof val === 'string') {
-			val = {
-				id: val,
-				name: 'selected'
-			};
-			this.props.wrapper.valueListener(val, false, this);
-		}
-		this.state = {
-			filters: this.generateDefaultFiltersByProps(this.props),
-			value: val
-		};
 		this.toggleList = this.toggleList.bind(this);
 		this.valueSelected = this.valueSelected.bind(this);
 		this.toggleCreateDialogue = this.toggleCreateDialogue.bind(this);
@@ -41,151 +32,104 @@ registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLo
 		document.removeEventListener('mousedown', this.handleClickOutside, true);
 	}
 
-	handleClickOutside(event) {
-		const domNode = ReactDOM.findDOMNode(this);
-		if(!domNode || !domNode.contains(event.target)) {
+	handleClickOutside(event: MouseEvent) {
+		const domNode = this.base;
+		if (!domNode || !domNode.contains(event.target as HTMLDivElement)) {
 			this.collapseList();
 		}
 	}
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		if(this.props.filters) {
-			if(!this.state.filters) {
-				//@ts-ignore
-				this.state.filters = {};
-			}
-			Object.assign(this.state.filters, this.props.filters);
-		}
-	}
-
-	toggleList() {
-		if(!this.props.fieldDisabled || this.state.expanded) {
-			if(this.state.expanded) {
-				scrollToVisible(this, true);
-			}
-			this.setState({
-				expanded: !this.state.expanded
-			});
-		}
-	}
-
-	valueSelected(recordData: RecordData, isNewCreated?: boolean, noToggleList?: boolean) {
-		if(recordData) {
-			if(!noToggleList) {
-
+	valueSelected(recordData?: RecordData, _isNewCreated?: boolean, noToggleList?: boolean) {
+		if (recordData) {
+			if (!noToggleList) {
 				this.toggleList();
 			}
-			if(!this.state.value || (this.state.value.id !== recordData.id) || (this.state.value.name !== recordData.name) || (this.state.value.icon !== recordData[this.props.field.lookupIcon])) {
-				var newVal: any = {
+			if (
+				!this.currentValue ||
+				this.currentValue.id !== recordData.id ||
+				this.currentValue.name !== recordData.name ||
+				this.currentValue.icon !== (recordData as any as KeyedMap<string>)[this.props.fieldDesc.lookupIcon]
+			) {
+				const newVal: any = {
 					id: recordData.id,
 					name: recordData.name
 				};
-				if(this.props.field.lookupIcon) {
-					newVal.icon = recordData[this.props.field.lookupIcon];
+				if (this.props.fieldDesc.lookupIcon) {
+					newVal.icon = (recordData as any as KeyedMap<string>)[this.props.fieldDesc.lookupIcon];
 				}
 				this.setValue(newVal);
-				this.props.wrapper.valueListener(newVal, false, this);
-			}
-		}
-	}
-
-	collapseList() {
-		if(this.state.expanded) {
-			this.toggleList();
-		}
-	}
-
-	toggleCreateDialogue(recIdToEdit?: RecId | 'new') {
-		this.collapseList();
-		const filters = this.props.form ? {
-			[this.getLinkerFieldName()]: { id: this.props.form.recId }
-		} : undefined;
-		window.crudJs.Stage.showForm(this.props.field.nodeRef, recIdToEdit, filters, true, true, (newData: RecordData) => {
-			const value = this.state.value;
-			if(recIdToEdit === value.id) {
-				if(!newData) {
-					this.clearValue();
+				if (this.props.isN2M) {
+					(this.parent as LookupManyToManyFiled).onSubItemSelect(newVal, this);
 				} else {
-					this.setValue(newData);
+					this.valueListener(newVal);
 				}
-				scrollToVisible(this);
-			} else if(recIdToEdit === 'new' && newData) {
-				this.valueSelected(newData, true, true);
-				scrollToVisible(this);
 			}
-		});
-	}
-
-
-
-	static encodeValue(val) {
-
-		if(val && val.hasOwnProperty('id')) {
-			return val.id;
-		} else {
-			return val;
 		}
 	}
 
-	setValue(val) {
-		//@ts-ignore
-		this.state.value = val;
-		this.forceUpdate();
+	static encodeValue(val: LookupValue) {
+		if (val) {
+			return { id: val.id };
+		}
+		return val;
 	}
 
-	clearValue() {
-		this.valueSelected({
-			id: 0,
-			name: ''
-		}, false, true);
-		this.collapseList();
+	setValue(value?: RecordData) {
+		this.currentValue = value as any;
+
 	}
 
-	render() {
+	renderField(): ComponentChild {
+		return R.span(null, this.renderLookupIcon(this.currentValue), (this.currentValue as LookupValue)?.name);
+	}
 
-		var field = this.props.field;
-		var value = this.state.value;
-		var iconPic;
-		if(value) {
-			if(field.lookupIcon && (!this.props.hideIcon) && value.icon) {
-				iconPic = R.img({
+	renderLookupIcon(value: LookupValueIconic) {
+		if (value) {
+			if (this.props.fieldDesc.lookupIcon && value.icon) {
+				return R.img({
 					className: 'field-lookup-icon-pic',
-					src: idToImgURL(value.icon, field.lookupIcon) + IMAGE_THUMBNAIL_PREFIX
+					src: idToImgURL(value.icon, this.props.fieldDesc.lookupIcon) + IMAGE_THUMBNAIL_PREFIX
 				});
 			} else {
-				iconPic = R.div({
+				return R.div({
 					className: 'field-lookup-icon-pic field-lookup-icon-pic-empty'
 				});
 			}
 		}
-		if(this.props.isEdit) {
-			var list;
-			var clearBtn;
-			if(this.state.expanded) {
+	}
 
-				list = React.createElement(List, {
-					preventCreateButton: this.state.preventCreateButton || this.props.preventCreateButton,
-					nodeId: field.nodeRef,
-					isLookup: true,
-					parentForm: this,
-					filters: this.state.filters
-				})
+	renderFieldEditable() {
 
-			}
+		const field = this.props.fieldDesc;
+		const value = this.currentValue;
 
-			if(list) {
-				list = R.div({
-					className: 'field-lookup-drop-list',
-					ref: (ref) => {
-						scrollToVisible(ref, true);
-					}
+		let list;
+		let clearBtn;
+		if (this.state.expanded) {
+			list = h(Form, {
+				nodeId: field.nodeRef!.id,
+				isLookup: true,
+				isCompact: true,
+				hideControls: true,
+				viewMask: VIEW_MASK.DROPDOWN_LIST,
+				parentForm: this.parentForm,
+				parent: this,
+				filters: this.fieldFilters
+			} as FormProps);
+		}
+
+		if (list) {
+			list = R.div(
+				{
+					className: 'field-lookup-drop-list'
 				},
-					list
-				);
-			}
+				list
+			);
+		}
 
-			if(!this.isRequired() && !this.props.isN2M) {
-				clearBtn = R.div({
+		if (!this.required && !this.props.isN2M && value?.id) {
+			clearBtn = R.div(
+				{
 					title: L('CLEAR'),
 					className: 'clickable clear-btn',
 					onClick: (e) => {
@@ -193,50 +137,55 @@ registerFieldClass(FIELD_TYPE.LOOKUP, class LookupManyToOneFiled extends fieldLo
 						this.clearValue();
 					}
 				},
-					renderIcon('times')
-				)
-			} else {
-			}
+				renderIcon('times')
+			);
+		}
 
-			var valLabel;
-			if(value && value.name) {
-				valLabel = R.span(null, value.name);
-			} else {
-				valLabel = R.span({
+		let valLabel;
+		if (value?.name) {
+			valLabel = R.span(null, value.name);
+		} else {
+			valLabel = R.span(
+				{
 					className: 'field-lookup-value-label'
-				}, this.props.isN2M ? L('+ADD') : L('SELECT'))
-			}
+				},
+				this.props.isN2M ? L('+ADD') : L('SELECT')
+			);
+		}
 
-			return R.div({
+		return R.div(
+			{
 				className: 'field-lookup-wrapper'
 			},
-				R.div({
-					className: this.props.fieldDisabled ? 'field-lookup-chooser not-clickable disabled' : 'field-lookup-chooser clickable',
+			R.div(
+				{
+					className: this.props.fieldDisabled
+						? 'field-lookup-chooser not-clickable disabled'
+						: 'field-lookup-chooser clickable',
 					title: this.props.isCompact ? field.name : L('SELECT'),
 					onClick: this.toggleList
 				},
-					R.span({
+				R.span(
+					{
 						className: 'field-lookup-value'
 					},
-						iconPic,
-						valLabel
-					),
-					R.span({ className: 'field-lookup-right-block' },
-						R.span({
+					this.renderLookupIcon(value),
+					valLabel
+				),
+				R.span(
+					{ className: 'field-lookup-right-block' },
+					R.span(
+						{
 							className: 'field-lookup-caret'
 						},
-							renderIcon('caret-down')
-						),
-						clearBtn
-					)
-				),
-				list
-			)
-		} else {
-			return R.span(null,
-				iconPic, value && value.name
-			)
-		}
+						renderIcon('caret-down')
+					),
+					clearBtn
+				)
+			),
+			list
+		);
 
 	}
-});
+}
+registerFieldClass(FIELD_TYPE.LOOKUP, LookupManyToOneFiled);

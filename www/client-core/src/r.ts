@@ -1,49 +1,55 @@
-import React from "react";
+import { Fragment, h, type ComponentChildren } from 'preact';
 
-
-interface ComponentProps {
+export interface ComponentProps {
 	className?: string;
-	onClick?: Function;
+	onClick?: ((ev: PointerEvent) => void) | (() => void);
 	[key: string]: any;
 }
 
 class R {
-	static div: (props?: ComponentProps, ...children) => React.ReactElement;
-	static form: (props?: ComponentProps, ...children) => React.ReactElement;
-	static span: (props?: ComponentProps, ...children) => React.ReactElement;
-	static p: (props?: ComponentProps, ...children) => React.ReactElement;
-	static img: (props?: ComponentProps, ...children) => React.ReactElement;
-	static button: (props?: ComponentProps, ...children) => React.ReactElement;
-	static input: (props?: ComponentProps, ...children) => React.ReactElement;
-	static label: (props?: ComponentProps, ...children) => React.ReactElement;
-	static b: (props?: ComponentProps, ...children) => React.ReactElement;
-	static a: (props?: ComponentProps, ...children) => React.ReactElement;
-	static br: (props?: ComponentProps, ...children) => React.ReactElement;
-	static hr: (props?: ComponentProps, ...children) => React.ReactElement;
-	static svg: (props?: ComponentProps, ...children) => React.ReactElement;
-	static td: (props?: ComponentProps, ...children) => React.ReactElement;
-	static tr: (props?: ComponentProps, ...children) => React.ReactElement;
-	static th: (props?: ComponentProps, ...children) => React.ReactElement;
-	static tbody: (props?: ComponentProps, ...children) => React.ReactElement;
-	static thead: (props?: ComponentProps, ...children) => React.ReactElement;
-	static table: (props?: ComponentProps, ...children) => React.ReactElement;
-	static polyline: (props?: ComponentProps, ...children) => React.ReactElement;
-	static textarea: (props?: ComponentProps, ...children) => React.ReactElement;
-	static iframe: (props?: ComponentProps, ...children) => React.ReactElement;
-	static h2: (props?: ComponentProps, ...children) => React.ReactElement;
-	static h3: (props?: ComponentProps, ...children) => React.ReactElement;
-	static h4: (props?: ComponentProps, ...children) => React.ReactElement;
-	static h5: (props?: ComponentProps, ...children) => React.ReactElement;
-	static script: (props?: ComponentProps, ...children) => React.ReactElement;
-	static meta: (props?: ComponentProps, ...children) => React.ReactElement;
+	static div: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static form: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static span: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static p: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static img: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static button: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static label: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static b: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static a: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static br: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static hr: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static svg: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static td: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static tr: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static th: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static tbody: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static thead: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static table: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static polyline: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static input: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static textarea: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static iframe: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static h2: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static h3: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static h4: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static h5: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static script: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static meta: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static space: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+	static smallSpace: (props?: ComponentProps | null, ...children: ComponentChildren[]) => preact.Component;
+
+	static fragment(...children: ComponentChildren[]) {
+		return h(Fragment, null, ...children);
+	}
 }
 
-for(let factoryType of ['div', 'form', 'span', 'p', 'img', 'button', 'input', 'label',
+for (let factoryType of ['div', 'input', 'form', 'span', 'p', 'img', 'button', 'label',
 	'b', 'a', 'br', 'hr', 'svg', 'td', 'tr', 'th', 'tbody', 'thead', 'table', 'polyline',
-	'textarea', 'iframe', 'h2', 'h3', 'h4', 'h5', 'script', 'meta']) {
-	R[factoryType] = (...theArgs) => {
-		return React.createElement.call(this, factoryType, ...theArgs);
+	'textarea', 'iframe', 'h2', 'h3', 'h4', 'h5', 'script', 'meta', 'space', 'smallSpace']) {
+
+	(R as any)[factoryType] = (...theArgs: any[]) => {
+		return h(factoryType, ...theArgs as [any]);
 	};
 }
 
-export { R, ComponentProps };
+export { R };

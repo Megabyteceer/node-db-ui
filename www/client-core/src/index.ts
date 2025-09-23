@@ -1,96 +1,57 @@
-import "reset-css/reset.css";
-import "font-awesome/css/font-awesome.min.css";
-import "react-datetime/css/react-datetime.css";
-import "cropperjs/dist/cropper.min.css";
-import "../css/consts.css";
-import "../css/style.css";
+// import 'cropperjs/dist/cropper.min.css'; TODO
+
+import 'font-awesome/css/font-awesome.min.css';
+// import 'react-datetime/css/react-datetime.css'; TODO
+import 'reset-css/reset.css';
+import '../css/consts.css';
+import '../css/style.css';
 /// #if DEBUG
-import "../css/debug-style.css";
+import '../css/debug-style.css';
 /// #endif
 
-import "../css/animations.css";
+import '../css/animations.css';
 
-import { MainFrame } from "./main-frame";
-import "./fields/field-1-text-default";
-import "./fields/field-2-numeric";
-import "./fields/field-4-date-time";
-import "./fields/field-5-bool";
-import "./fields/field-6-enum";
-import "./fields/field-7-many-to-one";
-import "./fields/field-8-static-text";
-import "./fields/field-10-password";
-import "./fields/field-11-date";
-import "./fields/field-12-picture";
-import "./fields/field-14-many-to-many";
-import "./fields/field-15-one-to-many";
-import "./fields/field-16-rating";
-import "./fields/field-18-button";
-import "./fields/field-19-rich-editor";
-import "./fields/field-20-color";
-import "./fields/field-21-file";
-import "./fields/field-22-splitter";
-import "./views/view_5_users";
-import { Stage } from "./stage";
+import './fields/field-1-text-default';
+import './fields/field-14-many-to-many';
+import './fields/field-15-one-to-many';
+import './fields/field-2-numeric';
+import './fields/field-4-date-time';
+import './fields/field-5-bool';
+import './fields/field-6-enum';
+import './fields/field-7-many-to-one';
 
-import ReactDOM from 'react-dom';
-import React from 'react';
+import './fields/field-10-password';
+import './fields/field-11-date';
+import './fields/field-12-picture';
 
+import './fields/field-18-button';
+import './fields/field-19-rich-editor';
 
-import { registerEventHandler } from './forms/event-processing-mixins';
+import './fields/field-20-color';
+import './fields/field-21-file';
+import './fields/field-22-splitter';
+import './fields/field-8-static-text';
+
+import { Stage } from './stage';
+import './views/view_users';
 
 /// #if DEBUG
-import { AdminRolePrivilegesForm } from "./admin/admin-role-privileges-form";
-import { DPromise } from "./debug-promise";
+import { AdminRolePrivilegesForm } from './admin/admin-role-privileges-form';
 /// #endif
 
-import { UserSession } from "./bs-utils";
-import { FormEvents } from "./events/forms_events";
-import { FieldsEvents } from "./events/fields_events";
+import { globals } from '../../../types/globals';
 
-declare global {
-	interface Window {
-		onCurdJSLogin: (userSession: UserSession) => void;
-		crudJs: { // helps to avoid circular imports
-			customClasses: {
-				[key: string]: typeof React.Component;
-			};
-			registerEventHandler: (classInstance) => void;
-			Stage: typeof Stage;
-		}
-	}
-}
+globals.Stage = Stage;
 
-window.crudJs = {
-	Stage,
-	registerEventHandler,
-	customClasses: {}
-}
+globals.customClasses = {};
 
 /// #if DEBUG
-
-//@ts-ignore
-window.Promise = DPromise;
-
-window.crudJs.customClasses.AdminRolePrivilegesForm = AdminRolePrivilegesForm;
-/*
+globals.customClasses.AdminRolePrivilegesForm = AdminRolePrivilegesForm;
 /// #endif
-window.onerror = (msg, url, line, col, error) => {
-		var stack;
-		try {
-			stack = error.stack;
-		} catch(e){};
-		submitErrorReport(msg, stack);
-	};
-//*/
 
+import { h, render } from 'preact';
+import './events/index';
+import './form-tab';
+import { MainFrame } from './main-frame';
 
-
-setTimeout(() => {
-	window.crudJs.registerEventHandler(FormEvents);
-	window.crudJs.registerEventHandler(FieldsEvents);
-	ReactDOM.render(
-		React.createElement(MainFrame),
-		document.getElementById('container')
-	);
-}, 10);
-
+render(h(MainFrame, null), document.getElementById('container') as HTMLDivElement);

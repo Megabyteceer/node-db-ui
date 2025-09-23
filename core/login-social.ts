@@ -1,40 +1,43 @@
-
 import { OAuth2Client } from 'google-auth-library';
-import ENV from "./ENV";
-import { throwError, UserSession } from "../www/client-core/src/bs-utils";
+
+import { throwError } from '../www/client-core/src/assert';
+import type { UserSession } from '../www/client-core/src/bs-utils';
 import { authorizeUserByID, createUser } from './auth';
-import { L } from "./locale";
-import { mysqlExec, mysqlRowsResult, mysql_real_escape_string } from './mysql-connection';
+import { ENV } from './ENV';
+import { L } from './locale';
+import { escapeString, mysqlExec } from './mysql-connection';
 
 const client = new OAuth2Client(ENV.clientOptions.googleSigninClientId);
 
-async function loginWithGoogle(token, userSession: UserSession) {
+async function loginWithGoogle(token: string, userSession: UserSession) {
 	const ticket = await client.verifyIdToken({
 		idToken: token,
-		audience: ENV.clientOptions.googleSigninClientId,
+		audience: ENV.clientOptions.googleSigninClientId
 	});
 	const payload = ticket.getPayload();
-	if(!payload.email_verified) {
-		throwError(L("WRONG_PASS", userSession));
+	if (!payload?.email_verified) {
+		throwError(L('WRONG_PASS', userSession));
 	}
-	const email = payload.email;
-	var users = await mysqlExec("SELECT id FROM _users WHERE status = 1 AND email='" + email + "'") as mysqlRowsResult;
-	if(users.length > 0) {
+	const email = payload!.email!;
+	const users = await mysqlExec('SELECT id FROM _users WHERE status = 1 AND email=\'' + email + '\'');
+	if (users.length > 0) {
 		return authorizeUserByID(users[0].id);
 	} else {
-		const userId = await createUser({
-			name: payload.name,
-			email
-		}, userSession);
+		const userId = await createUser(
+			{
+				name: payload!.name!,
+				email
+			},
+			userSession
+		);
 
-		let ret = await authorizeUserByID(userId);
-		if(payload.picture) {
-			ret.avatar = payload.picture;
-			await mysqlExec("UPDATE _users SET avatar = '" + mysql_real_escape_string(payload.picture) + "' WHERE id = " + userId);
+		const ret = await authorizeUserByID(userId);
+		if (payload!.picture) {
+			ret.avatar = payload!.picture;
+			await mysqlExec('UPDATE _users SET avatar = ' + escapeString(payload!.picture) + ' WHERE id = ' + userId);
 		}
 		return ret;
 	}
 }
-
 
 export { loginWithGoogle };

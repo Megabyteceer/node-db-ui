@@ -1,58 +1,101 @@
-interface Filters {
-	[key: string]: string | number | {};
+import type { DebugInfo } from '../../../core/mysql-connection';
+import type { FIELD_DISPLAY, FIELD_ID, FILTER_ID, IFieldsRecord, IFiltersRecord, ILanguagesRecord, INodesRecord, NODE_ID, NODE_TYPE } from '../../../types/generated';
+import type { SelectItem } from './components/select';
+import type { NEW_RECORD } from './consts';
+import type Form from './form';
 
-	excludeIDs?: RecId[];
+export const normalizeCSSName = (name: string) => {
+	return camelToSnake(name!).toLowerCase().replaceAll('_', '-');
+};
 
-	onlyIDs?: RecId[];
+export const normalizeName = (txt: string) => {
+	return snakeToCamel(txt).replace(/[`']/g, '').replace(/[^\w]/gm, '_').toUpperCase();
+};
 
-	/** filter id to apply to query */
-	filterId?: RecId;
+export const normalizeEnumName = (txt: string) => {
+	return camelToSnake(txt.replace(/^_/, '')).replace(/[`']/g, '').replace(/[^\w]/gm, '_').toUpperCase().replace(/__+/gm, '_');
+};
 
-	/** page number. '*' - to retrieve all */
+export const camelToSnake = (str: string) => {
+	str = str.replace(/([a-z][A-Z])/gm, (group) => {
+		return group[0].toUpperCase() + '_' + group[1];
+	});
+	return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const snakeToCamel = (str: string) => {
+	str = str.replace(/([_][a-z])/g, group => group.toUpperCase().replace('_', ''));
+	return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export interface LookupValue {
+	id: RecId;
+	name?: string;
+}
+
+export interface LookupValueIconic extends LookupValue {
+	icon?: string;
+}
+
+export interface GetRecordsFilter {
+
+	/** search text */
+	s?: string;
+
+	/** page number */
 	p?: number | '*';
 
 	/** items per page */
 	n?: number;
 
-	/** field name to order by */
-	o?: string;
+	excludeIDs?: number[];
 
-	/** reverse order */
-	r?: boolean;
+	onlyIDs?: number[];
+
+	/** order by field */
+	o?: FIELD_ID;
+
+	/** reversed order */
+	r?: 1;
+
+	/** filterId */
+	filterId?: FILTER_ID;
 }
+
+export interface FormControlFilters {
+	/** form tab to show */
+	tab?: string;
+
+	/** render standard list view */
+	noCustomList?: BoolNum;
+
+	/** override form title by string */
+	formTitle?: string;
+}
+
+export type FormFilters = Partial<FormControlFilters & RecordData & GetRecordsFilter>;
 
 interface RecordSubmitResult {
+	handlerResult: KeyedMap<any> | undefined;
+}
+
+interface RecordSubmitResultNewRecord extends RecordSubmitResult {
 	recId: RecId;
-	handlerResult: any;
-}
-
-const throwError = (message: string): never => {
-	/// #if DEBUG
-	debugger;
-	/// #endif
-	throw new Error(message);
-}
-
-/// #if DEBUG
-const assert = (condition: any, errorTxt: string) => {
-	if(!condition) {
-		throwError(errorTxt);
-	}
 }
 
 const getCurrentStack = () => {
-	let a = new Error().stack?.split('\n');
-	if(a) {
+	const a = new Error().stack?.split('\n');
+	if (a) {
 		a.splice(0, 3);
 	}
 	return a;
-}
+};
 
 /*
 /// #endif
 const assert = null;
 const getCurrentStack = null;
-//*/
+// */
 const IMAGE_THUMBNAIL_PREFIX = '_thumb.jpg';
 
 type RecId = number;
@@ -60,9 +103,22 @@ type RecId = number;
 type UserRoles = { [key: number]: 1 };
 type UserOrganizations = { [key: number]: string };
 
+export type APIResult = any;
+
+export interface ApiResponse {
+	error?: string;
+	result: APIResult;
+	isGuest?: boolean;
+	/// #if DEBUG
+	notifications?: string[];
+	debug?: DebugInfo;
+	/// #endif
+}
+
 interface UserSession {
 	id: RecId;
 	orgId: number;
+	home: number;
 	name: string;
 	avatar: string;
 	email: string;
@@ -75,143 +131,190 @@ interface UserSession {
 	__temporaryServerSideSession?: boolean;
 	notifications?: string[];
 	/** not empty if user have multilingualEnabled */
-	multilingualEnabled?: BoolNum;
-	sessionToken?: string;
+	multilingualEnabled?: BoolNum | boolean;
+	sessionToken: string;
 	isGuest?: boolean;
+	_isStarted?: boolean;
 }
 
 interface EnumListItem {
 	value: number;
-	name: string
-}
-
-type EnumList = EnumListItem[];
-
-interface FieldDesc {
-	/** readable name */
 	name: string;
-
-	/** could be string for multilingual fields */
-	id: RecId;
-
-	/** field's name in database table */
-	fieldName: string;
-	/** maximal data length in database */
-	maxLength: number;
-
-	show: VIEW_MASK;
-
-	/** value is required for form. */
-	requirement: BoolNum;
-
-	/** value of the field should be unique for whole database table. */
-	unique: BoolNum;
-
-	/** if true - field data do not go to the server on form save. */
-	sendToServer: BoolNum;
-
-	/** fields data go to the server, but has no store in database table. */
-	storeInDB: BoolNum;
-
-	/** fields will have index in database, and search will be processed in this field */
-	forSearch: BoolNum;
-
-	fieldType: FieldType;
-
-	icon: string;
-
-	/** name of picture field in relative table. Thin picture will be used as icon in Lookup fields. */
-	lookupIcon: string;
-
-	cssClass?: string;
-
-	display: FIELD_DISPLAY_TYPE;
-
-	/** owner node id */
-	nodeRef: RecId;
-
-	/** SERVER SIDE FIELD ONLY. If it not empty - content of this field goes in to fieldName in SQL query to retrieve data not from direct table's field */
-	selectFieldName?: string;
-
-	/** order of the field in the form */
-	prior: number;
-
-	/** field tip. or html content for FIELD_TYPE.STATIC_TEXT fields */
-	description: string;
-
-	/** client side only field */
-	node?: NodeDesc;
-
-	/** index in parent's node 'fields' list. Client side only field */
-	index?: number;
-
-	/** client side only field */
-	enum?: EnumList;
-	enumId?: RecId;
-
-	/** client side only field */
-	enumNamesById?: { [key: number]: string };
-
-	/** contains language id, if field is multilingual and refers to non default language */
-	lang?: string;
-
-	/** field name without language prefix */
-	fieldNamePure?: string;/** field name without language prefix */
-
-	/** fields which contains other languages data for that field */
-	childrenFields?: FieldDesc[];
 }
 
-interface FilterDesc {
-	order?: number;
+type EnumList = {
 	name: string;
-	hiPriority?: BoolNum;
-	view?: string;
-	fields?: string;
+	items: EnumListItem[];
+	namesByValue: { [key: number]: string };
+};
+
+export const enum FIELD_DATA_TYPE {
+	TEXT = 0,
+	NUMBER = 1,
+	TIMESTAMP = 2,
+	NODATA = 3,
+	BOOL = 4
 }
 
-interface NodeDesc {
-	id: RecId;
-	singleName: string;
-	privileges: PRIVILEGES_MASK;
-	matchName: string;
-	description: string;
-	nodeType: NODE_TYPE;
-	storeForms?: BoolNum;
-	reverse?: BoolNum;
-	creationName?: string;
-	staticLink?: string;
-	captcha?: BoolNum;
-	tableName?: string;
-	draftable?: BoolNum;
-	icon?: string;
-	recPerPage?: number;
-	defaultFilterId?: number;
-	fields?: FieldDesc[];
-	cssClass?: string;
-	filters?: { [key: string]: FilterDesc };
-	filtersList?: { name: string, value: any }[];
-	sortFieldName?: string;
-	/** CLIENT SIDE ONLY */
-	fieldsById?: { [key: number]: FieldDesc };
-	fieldsByName?: { [key: string]: FieldDesc };
-}
+export const isServer = () => {
+	return typeof window === 'undefined';
+};
 
-interface UserLangEntry {
-	id: RecId;
+interface ClientSideFilterRecord {
 	name: string;
-	code: string;
+	order: number;
+}
+
+declare global {
+
+	type KeyedMap<T> = {
+		[key: string]: T;
+	};
+
+	type HandlerRet = AsyncHandlerRet | SyncHandlerRet;
+
+	type AsyncHandlerRet = Promise<KeyedMap<any> | undefined>;
+
+	type SyncHandlerRet = KeyedMap<any> | undefined;
+
+	interface FieldDesc extends IFieldsRecord {
+
+		id: FIELD_ID;
+
+		dataType: FIELD_DATA_TYPE;
+
+		show: VIEW_MASK;
+
+		/** value is required for form. */
+		requirement: BoolNum;
+
+		/** value of the field should be unique for whole database table. */
+		unique: BoolNum;
+
+		/** if true - field data will go to the server on form save. */
+		sendToServer: BoolNum;
+
+		/** has multilingual input */
+		multilingual: BoolNum;
+
+		/** fields data go to the server, but has no store in database table. */
+		storeInDb: BoolNum;
+
+		/** fields will have index in database, and search will be processed in this field */
+		forSearch: BoolNum;
+
+		icon: string;
+
+		/** name of picture field in relative table. Thin picture will be used as icon in Lookup fields. */
+		lookupIcon: string;
+
+		cssClass?: string;
+
+		display: FIELD_DISPLAY;
+
+		/** SERVER SIDE FIELD ONLY. If it not empty - content of this field goes in to fieldName in SQL query to retrieve data not from direct table's field */
+		selectFieldName?: string;
+
+		/** order of the field in the form */
+		prior: number;
+
+		/** field tip. or html content for FIELD_TYPE.STATIC_HTML_BLOCK fields */
+		description?: string;
+
+		/** content for static HTML field */
+		htmlContent?: string;
+
+		/** client side only field */
+		node?: NodeDesc;
+
+		/** index in parent's node 'fields' list. Client side only field */
+		index?: number;
+
+		enumList?: EnumList;
+
+		/** contains language id, if field is multilingual and refers to non default language */
+		lang?: string;
+
+		/** field name without language prefix */
+		fieldNamePure?: string;
+
+		/** fields which contains other languages data for that field */
+		childrenFields?: FieldDesc[];
+
+		/** fields which rendered beyond form TAB (page) */
+		tabFields?: FieldDesc[];
+
+		parenTab?: FieldDesc;
+	}
+
+	interface NodeDesc extends INodesRecord {
+
+		id: NODE_ID;
+
+		rolesToAccess: { roleId: RecId; privileges: number }[];
+		privileges: PRIVILEGES_MASK;
+		matchName: string;
+
+		fields?: FieldDesc[];
+
+		tabs?: FieldDesc[];
+
+		/** CLIENT SIDE ONLY */
+		rootFields?: FieldDesc[];
+
+		filters?: { [key: string]: IFiltersRecord | ClientSideFilterRecord };
+		filtersList?: SelectItem[];
+		sortFieldName?: string;
+		/** CLIENT SIDE ONLY */
+		fieldsById?: { [key: number]: FieldDesc };
+		/** CLIENT SIDE ONLY */
+		fieldsByName?: { [key: string]: FieldDesc };
+
+		__serverSideHandlers?: KeyedMap<{ __sourceFile: string }[]>;
+	}
+}
+
+interface UserLangEntry extends ILanguagesRecord {
 	prefix: string;
-	isUILanguage: boolean;
 }
 
-interface RecordDataWrite {
-	[key: string]: any;
-	/** Recaptcha v3 token */
-	c?: string;
+export type RecordDataWrite = {
+
+};
+
+export interface TreeItem {
+	children: TreeItem[];
+	icon: string;
+	id: NODE_ID;
+	name: string;
+	nodeType: NODE_TYPE;
+	parent: NODE_ID;
+	privileges: number;
+	field?: FieldDesc;
+	form?: Form;
+	staticLink: string;
 }
 
-interface RecordData extends RecordDataWrite {
+export type RecordDataWriteDraftable = RecordDataWrite & {
+	status?: STATUS;
+	id?: RecId;
+};
+
+export const enum STATUS {
+	DELETED = 0,
+	PUBLIC = 1,
+	DRAFT = 2
+}
+
+export type RecordDataBaseFields = Extract<keyof RecordData, string>;
+
+interface RecordData {
+
+	/** owner org id */
+	co?: RecId;
+
+	/** owner by user id */
+	cu?: RecId;
 
 	/** **edit** access to the record */
 	isE?: BoolNum;
@@ -220,72 +323,51 @@ interface RecordData extends RecordDataWrite {
 	/** **delete** access to the record */
 	isD?: BoolNum;
 
+	status?: STATUS;
 	id?: RecId;
-	name?: string;
+
+	/** item deleted from list in lookup field */
+	__deleted_901d123f?: true;
+
+	name: string;
 }
 
-interface RecordsData {
+export interface RecordsData {
 	items: RecordData[];
 	total: number;
 }
 
+export interface RecordDataOrdered extends RecordData {
+	order: number;
+}
+
+export interface RecordsDataOrdered extends RecordsData {
+	items: RecordDataOrdered[];
+	order: number;
+}
+
 interface RecordsDataResponse {
-	data: RecordsData;
+	data?: RecordsData;
 	node?: NodeDesc;
 }
 
 interface GetRecordsParams {
 	nodeId: RecId;
 	viewFields?: VIEW_MASK;
-	recId?: RecId;
+	recId?: RecId | RecId[];
 	s?: string;
 	descNode?: boolean;
 }
 
 type BoolNum = 0 | 1;
-type FieldType = number;
 
-enum ROLE_ID {
+const enum ROLE_ID {
 	ADMIN = 1,
 	GUEST = 2,
 	USER = 3
 }
 
-enum FIELD_TYPE {
-	TEXT = 1,
-	NUMBER = 2,
-	DATE_TIME = 4,
-	BOOL = 5,
-	ENUM = 6,
-	LOOKUP = 7,
-	STATIC_TEXT = 8,
-	PASSWORD = 10,
-	DATE = 11,
-	PICTURE = 12,
-	LOOKUP_NtoM = 14,
-	LOOKUP_1toN = 15,
-	RATING = 16,
-	TAB = 17,
-	BUTTON = 18,
-	RICH_EDITOR = 19,
-	COLOR = 20,
-	FILE = 21,
-	SPLITTER = 22
-}
-
-enum FIELD_DISPLAY_TYPE {
-	BLOCK = 0,
-	INLINE = 1
-}
-
-enum NODE_TYPE {
-	SECTION = 1,
-	DOCUMENT = 2,
-	STATIC_LINK = 3,
-	REACT_CLASS = 4
-}
-
-enum VIEW_MASK {
+const enum VIEW_MASK {
 	EDITABLE = 1,
 	LIST = 2,
 	READONLY = 4,
@@ -295,7 +377,8 @@ enum VIEW_MASK {
 	ALL = 65535
 }
 
-enum PRIVILEGES_MASK {
+const enum PRIVILEGES_MASK {
+	NONE = 0,
 	VIEW_OWN = 1,
 	VIEW_ORG = 2,
 	VIEW_ALL = 4,
@@ -310,70 +393,44 @@ enum PRIVILEGES_MASK {
 
 const HASH_DIVIDER = '.';
 
-enum NODE_ID {
-	PRIVILEGES = 1,
-	NODES = 4,
-	USERS = 5,
-	FIELDS = 6,
-	ORGANIZATIONS = 7,
-	ROLES = 8,
-	FILTERS = 9,
-	MESSAGES = 11,
-	LANGUAGES = 12,
-	LOGIN = 20,
-	REGISTER = 21,
-	RESET = 22,
-	PAGES = 49,
-	ENUMERATIONS = 52,
-	ENUMERATION_VALUES = 53,
-	ERROR_REPORTS = 81,
-	FILES = 83
-}
-
-enum USER_ID {
+const enum USER_ID {
 	SUPER_ADMIN = 1,
 	GUEST = 2,
 	USER = 3,
 	VIEW_ALL = 7
 }
 
-enum FIELD_ID {
-	MAX_LENGTH = 9
-}
-
 const LANGUAGE_ID_DEFAULT: RecId = 1;
 
 interface IFormParameters {
 	nodeId: RecId;
-	/** id of current edited/shown record. 'new' - if record is not saved yet.*/
-	recId?: RecId | 'new';
+	/** id of current edited/shown record. 'new' - if record is not saved yet. */
+	recId?: RecId | typeof NEW_RECORD;
 	/** true if form is editable or read only */
 	editable?: boolean;
-	filters?: Filters;
+	filters?: GetRecordsFilter;
 }
 
 export {
-	throwError,
-	assert,
-	getCurrentStack,
-
-	IFormParameters,
-
+	BoolNum,
+	EnumList,
+	EnumListItem,
+	FieldDesc,
+	getCurrentStack, GetRecordsParams,
 	HASH_DIVIDER,
-
-	LANGUAGE_ID_DEFAULT,
-
+	IFormParameters,
 	IMAGE_THUMBNAIL_PREFIX,
-
-	FIELD_ID,
-	USER_ID,
-	NODE_ID,
-	ROLE_ID,
+	LANGUAGE_ID_DEFAULT, NodeDesc,
 	PRIVILEGES_MASK,
-	FIELD_TYPE,
-	NODE_TYPE, FIELD_DISPLAY_TYPE,
-	VIEW_MASK,
-
-	RecordSubmitResult, RecId, UserRoles, BoolNum, GetRecordsParams, Filters, EnumList, FilterDesc,
-	UserLangEntry, NodeDesc, FieldDesc, RecordsDataResponse, RecordData, RecordDataWrite, RecordsData, UserSession
+	RecId,
+	RecordData,
+	RecordsDataResponse,
+	RecordSubmitResult,
+	RecordSubmitResultNewRecord,
+	ROLE_ID,
+	USER_ID,
+	UserLangEntry,
+	UserRoles,
+	UserSession,
+	VIEW_MASK
 };

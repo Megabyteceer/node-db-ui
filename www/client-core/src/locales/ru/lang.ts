@@ -1,4 +1,4 @@
-import { initDictionary } from "../../utils";
+import { initDictionary } from '../../utils';
 
 initDictionary({
 	'NO_TRANSLATION': 'Не найден перевод для ключа "%"',
@@ -14,10 +14,7 @@ initDictionary({
 	'MB': ' Мб',
 	'FLD_SETTINGS': 'Настройка поля: ',
 	'FLD_ADD': 'Добавить поле',
-	'FLD_SHOW_ALL': 'Показать скрытые поля',
-	'ADD_RATING_FLD': 'Добавить оценку к разделу',
 	'ADD_NODE': 'Добавить раздел',
-	'NODE_SETTINGS': 'Настройка раздела: ',
 	'EDIT_NODE': 'Редактировать настройки раздела',
 	'EDIT_ACCESS': 'Настроить права доступа к разделу',
 	'SEARCH': 'Поиск',
@@ -27,6 +24,7 @@ initDictionary({
 	'EMPTY_SECTION': 'Пустой раздел (клик чтобы добавить)',
 	/// #endif
 	'VALUE_EXISTS': 'Значение уже существует.',
+	'NAME_EXISTS': 'Имя уже существует.',
 	'FLD_EXISTS': 'Поле с таким именем уже существует в этом документе.',
 	'MULTILINGUAL': 'Мультиязычность',
 	'LOGIN': 'Вход',
@@ -36,7 +34,6 @@ initDictionary({
 	'DEPLOY_TO': 'Загрузить изменения на %?',
 	'TESTS_ERROR': 'Ошибка тестирования.',
 	'DEPLOY': 'Применение изменений на удаленный сервер',
-	'CLEAR_CACHE': 'Очистить кеш сервера',
 	'CLEAR_DEBUG': 'Очистить отладочный вывод',
 	'VIEW': 'Просмотр',
 	'CREATE': 'Создать',
@@ -60,6 +57,7 @@ initDictionary({
 	'DETAILS': 'Подробнее',
 	'SELECT': 'Выбрать',
 	'REQUIRED_FLD': 'Поле обязательно к заполнению.',
+	'CLOSE': 'Закрыть',
 	'SAVE': 'Сохранить',
 	'SAVE_TEMPLATE': 'Сохранить черновик',
 	'BACK': 'Назад',
@@ -103,7 +101,10 @@ initDictionary({
 	'RESET_EMAIL_SENT': 'We sent link for reset password to E-mail: ',
 	'GO_TO_LOGIN': 'Go to login',
 	'REGISTER': 'Зарегистрироваться',
-	'REACT_CLASS_NAME': 'Имя React класса',
+	'CLASS_NAME': 'Имя класса',
 	'FORM_IS_MODIFIED': 'Данные в форме отредактированы!',
-	'LEAVE_WITHOUT_SAVING': 'Покинуть форму без сохранения'
+	'LEAVE_WITHOUT_SAVING': 'Покинуть форму без сохранения',
+	'KEEP_EDITING': 'Остаться на форме',
+	'DATA_NOT_SAVED': 'Данные формы отредактировны.',
+	'NO_FILTER': 'Все'
 });

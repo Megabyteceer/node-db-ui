@@ -1,12 +1,10 @@
-const ENV = {
+const SERVER_ENV = {
 	PORT: 1443,
-	SERVER_NAME: 'http://node-db-ui.com:1443/',
+	SERVER_NAME: 'http://node-db-ui.com:5173/',
 	ADMIN_ENABLED_DEFAULT: true,
 	ERROR_NOTIFY_EMAIL: '',
 
 	EMAIL_FROM: 'test@test.com',
-
-	APP_TITLE: 'CRUD-js',
 
 	DB_HOST: '127.0.0.1',
 	DB_USER: 'root',
@@ -18,9 +16,18 @@ const ENV = {
 	DEPLOYMENT_KEY_LOCAL: '',
 	DEPLOYMENT_KEY_REMOTE: '',
 
-	DEPLOYMENT_KEEP_DEBUG: true,
+	SALT: '',
 
-	HOME_NODE: 20,
+	DEPLOYMENT_KEEP_DEBUG: true
+};
+
+const ENV = {
+
+	langs: undefined as string[] | undefined,
+
+	APP_TITLE: 'CRUD-js',
+
+	MIN_PASS_LEN: 5,
 
 	ALLOW_ORIGIN: '*',
 
@@ -38,23 +45,24 @@ const ENV = {
 
 	BLOCK_RICH_EDITOR_TAGS: ['script'],
 
-	CAPTCHA_CLIENT_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
-	CAPTCHA_SERVER_SECRET: '', /** add recaptcha v3 keys to enable captcha forms */
-
 	clientOptions: {
-		"googleSigninClientId": ""
+		googleSigninClientId: ''
 	}
 };
 
-import * as fs from "fs";
+import * as fs from 'fs';
 
 const envPath = './ENV.json';
-if(fs.existsSync(envPath)) {
-	let env = JSON.parse(fs.readFileSync(envPath, 'utf8'));
-	if(env.clientOptions) {
+if (fs.existsSync(envPath)) {
+	const env = JSON.parse(fs.readFileSync(envPath, 'utf8'));
+	if (env.clientOptions) {
 		Object.assign(ENV.clientOptions, env.clientOptions);
 	}
 	Object.assign(ENV, env);
 }
 
-export default ENV;
+export { ENV, SERVER_ENV };
+
+type ENV_TYPE = typeof ENV;
+
+export type { ENV_TYPE };

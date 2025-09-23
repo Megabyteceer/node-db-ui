@@ -1,21 +1,23 @@
 import {defineConfig} from 'vite';
 
-debugger;
-
 export default defineConfig({
 	mode: "development",
+	base: '/',
+	root: './.',
 	build: {
 		minify: false,
 		sourcemap: 'inline',
-		watch: true,
+		watch: true
 	},
 	server: {
-		proxy: {
-			'/core': 'http://127.0.0.1:1443'
-		},
+		allowedHosts: ['node-db-ui.com'],
+		host: true,
 		hmr: false,
 		fs: {
 			strict: false
 		}
+	},
+	esbuild: {
+		keepNames: true
 	}
 })
