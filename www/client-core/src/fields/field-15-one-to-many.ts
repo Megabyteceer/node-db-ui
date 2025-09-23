@@ -56,6 +56,9 @@ class LookupOneToManyFiled extends BaseLookupField {
 			for (const form of subForms) {
 				const initialData = form.savedFormData!;
 				const linkerName = this.getLinkerFieldName();
+				if (form.formData!.order === Number.MAX_SAFE_INTEGER) {
+					form.formData!.order = subForms.indexOf(form);
+				}
 				if (!initialData.hasOwnProperty(linkerName) || (initialData as KeyedMap<any>)[linkerName] === NEW_RECORD) {
 					form.formData![linkerName] = { id: this.parentForm.formData!.id };
 				}
@@ -76,7 +79,9 @@ class LookupOneToManyFiled extends BaseLookupField {
 
 	setLookupFilter(filtersObjOrName: string | GetRecordsFilter, val?: any) {
 		super.setLookupFilter(filtersObjOrName, val);
-		assignFilters(this.lookupListForm.formFilters, this.fieldFilters!);
+		if (this.lookupListForm) {
+			assignFilters(this.lookupListForm.formFilters, this.fieldFilters!);
+		}
 	}
 
 	renderFieldEditable() {

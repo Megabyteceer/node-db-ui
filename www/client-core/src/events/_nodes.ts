@@ -25,7 +25,7 @@ const checkTableExists = async (form: FormNodes) => {
 		if (!ret) {
 			form.fieldAlert('tableName', 'Table with this name is already exist.', false, true, 'table-name-exists');
 		} else {
-			form.fieldAlert('tableName', undefined, false, false, 'table-name-exists');
+			form.fieldHideAlert('tableName', 'table-name-exists');
 		}
 	}
 };
@@ -167,7 +167,7 @@ clientOn(E._nodes.tableName.onChange, (form) => {
 	if (name.startsWith('_') || name.startsWith('pg_')) {
 		form.fieldAlert('tableName', 'Table name can not start with "_" or "pg_"', false, true, 'prohibited-system-name');
 	} else {
-		form.fieldAlert('tableName', undefined, false, false, 'prohibited-system-name');
+		form.fieldHideAlert('tableName', 'prohibited-system-name');
 	}
 });
 /// #endif

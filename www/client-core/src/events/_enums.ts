@@ -9,15 +9,29 @@ clientOn(E._enums.onLoad, (form) => {
 
 clientOn(E._enums.onSave, (form) => {
 	let ret;
-	const exists = {} as KeyedMap<true>;
 	const valuesForms = (form.getField('values') as LookupOneToManyFiled).getSubForms<FormEnumValues>();
+
+	const existsValue = {} as KeyedMap<true>;
 	for (const form of valuesForms) {
 		const val = form.fieldValue('value');
-		if (exists[val]) {
+		if (existsValue[val]) {
 			ret = true;
-			form.fieldAlert('value', L('VALUE_EXISTS'));
+			form.fieldAlert('value', L('VALUE_EXISTS'), false, true, 'enum-val-in-use');
+		} else {
+			form.fieldHideAlert('value', 'enum-val-in-use');
 		}
-		exists[val] = true;
+		existsValue[val] = true;
+	}
+	const existsName = {} as KeyedMap<true>;
+	for (const form of valuesForms) {
+		const name = form.fieldValue('name');
+		if (existsName[name]) {
+			ret = true;
+			form.fieldAlert('name', L('VALUE_EXISTS'), false, true, 'enum-name-in-use');
+		} else {
+			form.fieldHideAlert('name', 'enum-name-in-use');
+		}
+		existsName[name] = true;
 	}
 	return ret;
 });

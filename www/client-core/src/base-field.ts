@@ -252,14 +252,10 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 	render(): ComponentChildren {
 		const field = this.props.fieldDesc;
 
-		const domId = 'field-container-id-' + field.id;
-
 		let className =
-			domId +
-			' field-wrap field-container-type-' +
-			FIELD_TYPE[field.fieldType].toLowerCase().replaceAll('_', '-') +
-			' field-container-name-' +
-			field.fieldName;
+			'field-wrap field-container-' + this.parentForm.nodeDesc.tableName + '--' + field.fieldName +
+			' field-container-type-' + FIELD_TYPE[field.fieldType].toLowerCase().replaceAll('_', '-') +
+			' field-container-name-' + field.fieldName;
 
 		if (this.hidden) {
 			className += ' hidden';

@@ -91,6 +91,7 @@
 }
 
 .admin-form-wrap {
+	pointer-events: all;
 	position: absolute;
 	z-index: 3;
 	height: 34px;
@@ -213,7 +214,7 @@
 }
 
 .admin-form-header {
-	font-family: monospace;
+	font-family: 'Courier New', Courier, monospace;
 }
 
 .admin-event-buttons-group {
@@ -226,7 +227,7 @@
 	width: 200px;
 	color: rgb(163, 124, 132);
 	border: 1px solid rgb(182, 88, 62);
-	font-family: monospace;
+	font-family: 'Courier New', Courier, monospace;
 	display: block;
 }
 
@@ -236,7 +237,7 @@
 }
 
 .admin-button-highlighted {
-	color: #00dd00;
+	color: #00dd00 !important;
 }
 
 .admin-form-all-fields .admin-control-field .admin-form-open-btn {
@@ -349,17 +350,18 @@
 }
 
 .form-item-row-num .field-container-name-id {
-	font-family: monospace;
+	font-family: 'Courier New', Courier, monospace;
 }
 
-.field-container-id-9,
-.field-container-id-54,
-.field-container-id-54 {
+.field-container-name-id,
+.field-container-_nodes--tableName,
+.field-container-_fields--fieldName,
+.field-container-_filters--filter {
 	font-size: 120%;
-	font-family: monospace;
+	font-family: 'Courier New', Courier, monospace;
 }
 
-.field-container-id-314 .field-container-id-311 input {
+.form-node--enum-values .field-container-_enumValues--name input {
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
 	text-align: right;
@@ -367,7 +369,7 @@
 
 }
 
-.field-container-id-314 .field-container-id-312 input {
+.form-node--enum-values .field-container-_enumValues--value input {
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 	width: 100px;

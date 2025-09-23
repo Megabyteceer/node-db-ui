@@ -65,14 +65,14 @@ serverOn(E._fields.afterCreate, async (data, userSession) => {
 		return a.prior - b.prior;
 	});
 	let prior = 0;
-	await Promise.all(
-		fields.items.map((i) => {
-			prior += 10;
-			if (i.prior !== prior) {
-				return submitRecord(NODE_ID.FIELDS, { prior }, i.id!, userSession);
-			}
-		})
-	);
+
+	for (let i of fields.items) {
+		prior += 10;
+		if (i.prior !== prior) {
+			debugger;
+			await submitRecord(NODE_ID.FIELDS, { prior }, i.id!, userSession);
+		}
+	}
 
 	reloadMetadataSchedule();
 });
@@ -178,7 +178,7 @@ function getFieldTypeSQL(data: FieldDesc) {
 		return 'int2 NOT NULL DEFAULT ' + NUM_0;
 	case FIELD_TYPE.ENUM:
 	case FIELD_TYPE.LOOKUP:
-		return 'int4 UNSIGNED NOT NULL DEFAULT ' + NUM_0;
+		return 'int4 NOT NULL DEFAULT ' + NUM_0;
 	case FIELD_TYPE.IMAGE:
 		return 'VARCHAR(' + D(32) + ') NOT NULL DEFAULT ' + ESCAPED_LITERAL;
 	case FIELD_TYPE.HTML_EDITOR:
@@ -249,17 +249,16 @@ async function createFieldInTable(data: IFieldsRecordWrite) {
 
 		const typeQ = getFieldTypeSQL(data as FieldDesc);
 		if (typeQ) {
-			const altQ = ['ALTER TABLE "', nodeName, '" ADD COLUMN "', fieldName, '" ', typeQ];
+			const altQ = ['ALTER TABLE "', nodeName, '" ADD COLUMN "', fieldName, '" ', typeQ, ';'];
 
-			if (data.forSearch || data.unique) {
-				altQ.push(', ADD', data.unique ? ' UNIQUE' : '', 'ALTER TABLE "', nodeName, '" ADD INDEX ("', fieldName, '");');
+			if (data.forSearch || fieldType === FIELD_TYPE.LOOKUP) {
+				altQ.push(`CREATE INDEX "ind_${nodeName}_${fieldName}" ON "${nodeName}" USING hash ("${fieldName}");`);
 			}
 
+			if (data.unique) {
+				altQ.push('ALTER TABLE "${nodeName}" ADD CONSTRAINT "unique_${nodeName}_${fieldName}" UNIQUE ("${fieldName}");');
+			}
 			await mysqlExec(altQ.join(''));
-
-			if (fieldType === FIELD_TYPE.LOOKUP) {
-				await mysqlExec('ALTER TABLE "' + nodeName + '" ADD INDEX("' + fieldName + '");');
-			}
 		}
 	}
 }

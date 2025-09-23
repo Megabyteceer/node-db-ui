@@ -104,14 +104,16 @@ export default class Form<
 		this.applyNodeDesc(getNodeIfPresentOnClient(props.nodeId!));
 
 		this.viewMask = props.viewMask || (props.editable ? VIEW_MASK.EDITABLE : ((this.isList || props.isListItemView) ? VIEW_MASK.LIST : VIEW_MASK.READONLY));
-		if (!props.parentForm) {
-			this.recoveryBackupIfNeed();
-		}
+
 		if (!this.formData && this.recId === NEW_RECORD) {
 			this.formData = {} as any;
 		}
 
 		this.savedFormData = this.formData && JSON.parse(JSON.stringify(this.formData));
+
+		if (!props.parentForm) {
+			this.recoveryBackupIfNeed();
+		}
 
 		this.cancelClick = this.cancelClick.bind(this);
 		this.saveClick = this.saveClick.bind(this);
@@ -180,7 +182,7 @@ export default class Form<
 	}
 
 	recoveryBackupIfNeed() {
-		if (this.recId === NEW_RECORD && this.isList) {
+		if (this.recId === NEW_RECORD && !this.listData) {
 			const backup = getItem(this._getBackupKey());
 			if (backup) {
 				this.formData = Object.assign(backup, this.formFilters);
@@ -406,6 +408,11 @@ export default class Form<
 			isSuccess = !text;
 		}
 		f.alert(text, isSuccess, focus, source);
+	}
+
+	fieldHideAlert(fieldName: FieldsNames, source: string) {
+		const f = this.getField(fieldName);
+		f.alert(undefined, true, false, source);
 	}
 
 	hideField(...fieldsNames: FieldsNames[]) {
@@ -990,10 +997,8 @@ export default class Form<
 		const swapItems = (itemNum: number, prevItemNum: number) => {
 			(this.children[itemNum] as Form).setFieldValue('order', prevItemNum);
 			(data.items[itemNum] as KeyedMap<any>).order = prevItemNum;
-			(this.children[itemNum] as Form).saveClick();
 			(this.children[prevItemNum] as Form).setFieldValue('order', itemNum);
 			(data.items[prevItemNum] as KeyedMap<any>).order = itemNum;
-			(this.children[prevItemNum] as Form).saveClick();
 			const t = data.items[itemNum];
 			data.items[itemNum] = data.items[prevItemNum];
 			data.items[prevItemNum] = t;
@@ -1012,6 +1017,7 @@ export default class Form<
 
 				const itemNum = i;
 				const itemData = data.items[i];
+
 				const isRestricted = isRecordRestrictedForDeletion(node.id, itemData.id!);
 				if (!itemData.__deleted_901d123f) {
 					const buttons = [];
@@ -1107,7 +1113,6 @@ export default class Form<
 						)
 					);
 				}
-
 			}
 		}
 		/// #if DEBUG
@@ -1126,7 +1131,7 @@ export default class Form<
 						title: L('ADD', node.creationName || node.singleName),
 						className: 'clickable tool-btn create-btn',
 						onClick: () => {
-							(data as RecordsDataOrdered).items.push({ name: '', order: this.parent!.children[0].children.length });
+							(data as RecordsDataOrdered).items.push({ name: '', order: Number.MAX_SAFE_INTEGER });
 							this.forceUpdate();
 						}
 					},

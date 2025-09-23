@@ -210,6 +210,9 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 		let className =
 			'left-bar-item ' +
 			(item.nodeType === NODE_TYPE.DOCUMENT ? 'left-bar-item-doc' : 'left-bar-group');
+		if (item.id === User.currentUserData?.home) {
+			className += ' left-bar-item-home';
+		}
 
 		const isActive = isCurrentlyShowedLeftBarItem(item);
 

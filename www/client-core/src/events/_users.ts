@@ -28,18 +28,6 @@ clientOn(E._users.onLoad, (form) => {
 		} as ILanguagesFilter);
 	}
 
-	if (window.document.querySelector('#org-edit-link')!) {
-		(window.document.querySelector('.field-container-id-63 input') as HTMLDivElement).style.width = '50%';
-		if (form.fieldValue('_organizationId')) {
-			(window.document.querySelector('.field-container-id-63 input') as HTMLDivElement).insertAdjacentHTML(
-				'beforeend',
-				'<a id="org-edit-link" class="clickable" style="display:block; color:#777; font-size:80%; float:right;" title="additional organization settings" href="#n/7/r/' +
-				form.fieldValue('_organizationId').id +
-				'/e">additional organization settings <p class="fa fa-wrench"></p></a>'
-			);
-		}
-	}
-
 	if (!iAdmin()) {
 		form.hideField('_userRoles');
 	}
@@ -84,8 +72,8 @@ clientOn(E._users.onLoad, (form) => {
 clientOn(E._users.onSave, (form) => {
 	checkPasswordConfirmation(form);
 	const pass = form.fieldValue('password');
-	if (pass.length < 6) {
-		form.fieldAlert('password', L('PASS_LEN', 6));
+	if (pass.length < ENV.MIN_PASS_LEN) {
+		form.fieldAlert('password', L('PASS_LEN', ENV.MIN_PASS_LEN));
 	}
 
 	if (User.currentUserData?.id === form.recId) {

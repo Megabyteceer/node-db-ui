@@ -27,8 +27,7 @@ const ENV = {
 
 	APP_TITLE: 'CRUD-js',
 
-	HOME_NODE_GUEST: 20,
-	HOME_NODE: 5,
+	MIN_PASS_LEN: 5,
 
 	ALLOW_ORIGIN: '*',
 

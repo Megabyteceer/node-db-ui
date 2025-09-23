@@ -305,10 +305,12 @@ async function authorizeUserByID(
 	}
 
 	const organID_def = user.defaultOrg || organID;
-	const organName = user.organname;
+	const organName = user.organName;
+
+	let home = NODE_ID.LOGIN;
 
 	const roles = await mysqlExec(
-		'SELECT "_rolesId" FROM "_userRoles" WHERE "_usersId"='
+		'SELECT "_rolesId", (SELECT "defaultPage" FROM _roles WHERE _roles.id = "_userRoles"."_rolesId") as "defaultPage" FROM "_userRoles" WHERE "_usersId"='
 		+ D(userID)
 		+ ' ORDER BY "_rolesId"'
 	);
@@ -325,6 +327,9 @@ async function authorizeUserByID(
 	for (const role of roles) {
 		cacheKeyGenerator.push(role._rolesId);
 		userRoles[role._rolesId] = 1;
+		if (role.defaultPage) {
+			home = role.defaultPage;
+		}
 	}
 
 	const organizations = {
@@ -354,6 +359,7 @@ async function authorizeUserByID(
 		organizations,
 		sessionToken: '',
 		lang,
+		home,
 		cacheKey: cacheKeyGenerator.join()
 	};
 

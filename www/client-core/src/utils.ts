@@ -17,7 +17,7 @@ import { DebugPanel } from './debug-panel';
 import type moment from 'moment';
 import type { Component, ComponentChild } from 'preact';
 import { h } from 'preact';
-import { FIELD_TYPE, NODE_ID, type TypeGenerationHelper } from '../../../types/generated';
+import { ENUM_ID, FIELD_TYPE, NODE_ID, type TypeGenerationHelper } from '../../../types/generated';
 import { globals } from '../../../types/globals';
 import { assert } from './assert';
 import type BaseField from './base-field';
@@ -38,7 +38,7 @@ headersJSON.append('Content-Type', 'application/json');
 const restrictedRecords = new Map();
 
 const getHomeNode = () => {
-	return isUserHaveRole(ROLE_ID.GUEST) ? ENV.HOME_NODE_GUEST : ENV.HOME_NODE;
+	return User.currentUserData?.home || NODE_ID.LOGIN;
 };
 
 interface RestrictDeletionData {
@@ -64,11 +64,11 @@ function restrictRecordsDeletion(nodes: RestrictDeletionData) {
 
 restrictRecordsDeletion({
 	[NODE_ID.NODES]: [1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 20, 22, 50, 52, 53] /* disable critical sections  deletion/hiding */,
-	[NODE_ID.USERS]: [1, 2, 3] /* disable admin,user,guest deletion */,
+	[NODE_ID.USERS]: [USER_ID.GUEST, USER_ID.USER, USER_ID.SUPER_ADMIN] /* disable admin,user,guest deletion */,
 	[NODE_ID.ORGANIZATION]: [1, 2, 3] /* disable critical organizations deletion */,
-	[NODE_ID.ROLES]: [1, 2, 3] /* disable critical roles deletion */,
+	[NODE_ID.ROLES]: [ROLE_ID.ADMIN, ROLE_ID.GUEST, ROLE_ID.USER] /* disable critical roles deletion */,
 	[NODE_ID.LANGUAGES]: [1] /* disable default language deletion */,
-	[NODE_ID.ENUMS]: [1, 2, 3] /* disable field type enum deletion */,
+	[NODE_ID.ENUMS]: [ENUM_ID.NODE_TYPE, ENUM_ID.FIELD_DISPLAY, ENUM_ID.FIELD_TYPE, ENUM_ID.FIELD_STORAGE_MODE] /* disable field type enum deletion */,
 	[NODE_ID.ENUM_VALUES]: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 22, 30, 43, 50] /* disable field type enum deletion */
 });
 

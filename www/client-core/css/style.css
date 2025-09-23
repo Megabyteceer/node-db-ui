@@ -61,7 +61,7 @@ h5 {
 }
 
 .monospace {
-	font-family: monospace;
+	font-family: 'Courier New', Courier, monospace;
 }
 
 .centralize {
@@ -452,6 +452,11 @@ img {
 	font-size: 90%;
 }
 
+.left-bar-item-home {
+	border-left: none;
+	font-size: 140%;
+}
+
 .left-bar-group {
 	border-top: 1px solid var(--BRAND_COLOR);
 	padding: 12px 11px;
@@ -752,10 +757,14 @@ img {
 }
 
 .select-control-list {
+	margin-left: 10px;
 	position: absolute;
 	margin-top: -2px;
 	z-index: 4;
-	background: var(--BG_COLOR);
+	background: var(--INPUT_COLOR);
+	padding: 7px;
+	border-bottom-left-radius: 20px;
+	border-bottom-right-radius: 20px;
 }
 
 .select-control-item {
@@ -763,6 +772,10 @@ img {
 	padding: 6px 20px;
 	background: var(--INPUT_COLOR);
 	margin-bottom: 1px;
+}
+
+.select-control-item:hover {
+	background: var(--BRAND_COLOR_DARK);
 }
 
 .select-control-caret {
@@ -1306,11 +1319,12 @@ img {
 
 .form-item-row .field-container-name-name {
 	color: var(--MAIN_TEXT_COLOR);
+	font-size: 120%;
 }
 
 .field-wrap {
 	max-width: 900px;
-	margin: 20px 0 10px 0;
+	margin: 15px 0;
 }
 
 

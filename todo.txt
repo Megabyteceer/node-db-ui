@@ -1,30 +1,51 @@
 
-При вводе тейблнейм проверять существование таблицы в базе
+home пункт меню крупнее.
+
+енум тип поля.  stored ,   stored + indexed,   stored + indexed + unoque,  not-stored,  client-side-only 
+
+проставить в полях режим в зависимости от флагов
+выпилить данные из бд
+выпилить галочки sendToServer storeInDb  forSearch unique
+
+
+полям форсить not-stored или client only если not-stored документ
+
+
+
+
+
 
 енум где рендерить поле. в форме, меню, футере, хеадере. социал кнопку переместить в футер
 
-у роли свойсвто defaultSection куда роль смотрит. брать с наибольшим id роли у пользователя.
+вылез выбор организации
 
-у типа поля тип данных отдельно тип рендерера отдельно.
+делать казино проект. парвильно втянуть проект через node_modules?
+
+проверить создание раздела.
+проверить создание поля.
 
 
 
-SELECT EXISTS (
-    SELECT 1
-    FROM pg_tables
-    WHERE schemaname = 'public' -- or your specific schema name
-    AND tablename = 'your_table_name'
-);
 
-Запретить начало pg_ и _ так как это системные имена.
 
-редактирование enum - прверять в пределах парента уникальность на фронте
 
-енум типНоды   раздел. документ. noDBdoc
 
-енум тип поля.  stored  no-stored  client-side-only
 
-полям форсить not-stored или client only если not-stored документ
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -33,13 +54,10 @@ pg_dump --schema-only -t _users
 pg_dump -t _nodes
 
 
+
+
 field_roles_view, field_roles_create, field_roles_update  список ролей имеющих право на операции с полем
 
-бекапить базу и Сканануть https://sqlmap.org/
-
-
-проверить создание раздела.
-проверить создание поля.
 
 serverOn hiPriority
 

@@ -33,7 +33,7 @@ const checkFieldExists = async (form: FormFields) => {
 				form.fieldAlert('fieldName', L('FLD_EXISTS'), false, true, 'filed-name-exists');
 			}
 		} else {
-			form.fieldAlert('fieldName', undefined, false, false, 'filed-name-exists');
+			form.fieldHideAlert('fieldName', 'filed-name-exists');
 		}
 	}
 };
@@ -109,26 +109,32 @@ clientOn(E._fields.fieldName.onChange, async (form) => {
 clientOn(E._fields.onSave, (form) => {
 	const fieldType = form.fieldValue('fieldType');
 
+	form.fieldHideAlert('nodeRef', 'field-required');
+	form.fieldHideAlert('fieldName', 'field-required');
+	form.fieldHideAlert('height', 'field-required');
+	form.fieldHideAlert('width', 'field-required');
+	form.fieldHideAlert('maxLength', 'field-required');
+
 	if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_N_TO_M || fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 		if (form.isFieldEmpty('nodeRef')) {
-			form.fieldAlert('nodeRef', L('REQUIRED_FLD'));
+			form.fieldAlert('nodeRef', L('REQUIRED_FLD'), false, true, 'field-required');
 		}
 	}
 
 	if (/[^a-zA-Z_0-9]/.test(form.fieldValue('fieldName'))) {
-		form.fieldAlert('fieldName', L('LATIN_ONLY'));
+		form.fieldAlert('fieldName', L('LATIN_ONLY'), false, true, 'field-required');
 	}
 
 	if (form.fieldValue('fieldName') == parseInt(form.fieldValue('fieldName')).toString()) {
-		form.fieldAlert('fieldName', L('NO_NUMERIC_NAME'));
+		form.fieldAlert('fieldName', L('NO_NUMERIC_NAME'), false, true, 'field-required');
 	}
 
 	if (fieldType === FIELD_TYPE.IMAGE || fieldType === FIELD_TYPE.HTML_EDITOR) {
 		if (!form.fieldValue('height')) {
-			form.fieldAlert('height', L('REQUIRED_FLD'));
+			form.fieldAlert('height', L('REQUIRED_FLD'), false, true, 'field-required');
 		}
 		if (!form.fieldValue('width')) {
-			form.fieldAlert('width', L('REQUIRED_FLD'));
+			form.fieldAlert('width', L('REQUIRED_FLD'), false, true, 'field-required');
 		}
 		const maxLength = Math.min(9999, form.fieldValue('height')) + (form.fieldValue('width')) * 10000;
 		if (!isNaN(maxLength)) {
@@ -139,13 +145,13 @@ clientOn(E._fields.onSave, (form) => {
 	if (!form.fieldValue('maxLength')) {
 		form.setFieldValue('maxLength', 0);
 		if (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.NUMBER || fieldType === FIELD_TYPE.PASSWORD) {
-			form.fieldAlert('maxLength', L('REQUIRED_FLD'));
+			form.fieldAlert('maxLength', L('REQUIRED_FLD'), false, true, 'field-required');
 		}
 	}
 
 	if (form.isNewRecord) {
 		if (form.isNewRecord && (!form.fieldValue('fieldName') || form.fieldValue('fieldName').length < 3)) {
-			form.fieldAlert('fieldName', L('MIN_NAMES_LEN', 3));
+			form.fieldAlert('fieldName', L('MIN_NAMES_LEN', 3), false, true, 'field-required');
 		}
 	} else {
 		form.hideField('selectFieldName');
@@ -385,3 +391,7 @@ clientOn(E._fields.forSearch.onChange, (form) => {
 });
 
 /// #endif
+
+clientOn(E._fields.storageMode.onChange, async (form) => {
+
+});

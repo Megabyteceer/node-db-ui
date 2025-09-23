@@ -24,6 +24,7 @@ const LANGS = {
 	'EMPTY_SECTION': 'Empty section (click to add)',
 	/// #endif
 	'VALUE_EXISTS': 'Value already in use.',
+	'NAME_EXISTS': 'Name already in use.',
 	'FLD_EXISTS': 'Field with same name already exists in this document.',
 	'MULTILINGUAL': 'Multilingual',
 	'LOGIN': 'Login',

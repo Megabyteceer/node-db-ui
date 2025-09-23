@@ -118,6 +118,7 @@ export interface ApiResponse {
 interface UserSession {
 	id: RecId;
 	orgId: number;
+	home: number;
 	name: string;
 	avatar: string;
 	email: string;
@@ -336,8 +337,12 @@ export interface RecordsData {
 	total: number;
 }
 
+export interface RecordDataOrdered extends RecordData {
+	order: number;
+}
+
 export interface RecordsDataOrdered extends RecordsData {
-	items: (RecordData & { order: number })[];
+	items: RecordDataOrdered[];
 	order: number;
 }
 
