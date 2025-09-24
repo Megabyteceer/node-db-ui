@@ -2,7 +2,10 @@
   "name": "crud-js",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "exports": {
+    "./server": "./module.server.ts",
+    "./client": "./module.client.ts"
+  },
   "keywords": [
     "CRUD",
     "database UI"

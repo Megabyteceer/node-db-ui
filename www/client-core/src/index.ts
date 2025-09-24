@@ -54,4 +54,6 @@ import './events/index';
 import './form-tab';
 import { MainFrame } from './main-frame';
 
-render(h(MainFrame, null), document.getElementById('container') as HTMLDivElement);
+export const renderApp = () => {
+	render(h(MainFrame, null), document.getElementById('container') as HTMLDivElement);
+};

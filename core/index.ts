@@ -146,7 +146,7 @@ app.use('/dist/images/', express.static(path.join(__dirname, '../../www/images')
 app.use('/assets/', express.static(path.join(__dirname, '../../www/dist/assets')));
 app.use('/', express.static(path.join(__dirname, '../../www')));
 
-function crudJSServer() {
+function startServer() {
 	initNodesData().then(async function () {
 		import('./events/index.js');
 		app.listen(SERVER_ENV.PORT);
@@ -154,7 +154,7 @@ function crudJSServer() {
 	});
 }
 
-export default crudJSServer;
+export { app, startServer };
 if (require.main === module) {
-	crudJSServer();
+	startServer();
 }

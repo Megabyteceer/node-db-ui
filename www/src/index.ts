@@ -1,1 +1,3 @@
-import '../client-core/src/index';
+import { renderApp } from '../client-core/src/index';
+
+renderApp();
