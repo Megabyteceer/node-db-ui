@@ -180,6 +180,8 @@ export default class Form<
 		if (this.props.isRootForm) {
 			LeftBar.refreshLeftBarActive();
 		}
+		(this.getDomElement().querySelectorAll('[autofocus="true"]')[0] as HTMLInputElement)?.focus();
+
 	}
 
 	recoveryBackupIfNeed() {

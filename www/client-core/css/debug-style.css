@@ -78,7 +78,7 @@
 	width: 200px;
 	pointer-events: none;
 	top: 0;
-	right: 25%;
+	right: 600px;
 	color: #fcc;
 }
 
@@ -254,7 +254,7 @@
 .debug-panel-panel {
 	position: fixed;
 	top: 0;
-	right: 330px;
+	right: 430px;
 	background: rgb(145, 125, 112);
 	border-bottom-right-radius: 80px;
 	border-bottom-left-radius: 80px;
