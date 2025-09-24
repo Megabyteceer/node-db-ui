@@ -1251,7 +1251,8 @@ img {
 }
 
 .list-row-header-sorting {
-	color: #259;
+	color: var(--EDIT_COLOR);
+	text-decoration: underline;
 }
 
 .list-table {
