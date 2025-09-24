@@ -20,7 +20,7 @@
 		"types": [],
 		"esModuleInterop": true,
 		"skipLibCheck": true,
-		"assumeChangesOnlyAffectDirectDependencies": true,
+		"assumeChangesOnlyAffectDirectDependencies": true
 	},
 	"exclude": [
 		"node_modules",

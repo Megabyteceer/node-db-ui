@@ -173,9 +173,9 @@ declare global {
 
 	type HandlerRet = AsyncHandlerRet | SyncHandlerRet;
 
-	type AsyncHandlerRet = Promise<KeyedMap<any> | undefined>;
+	type AsyncHandlerRet = Promise<KeyedMap<any> | undefined | void>;
 
-	type SyncHandlerRet = KeyedMap<any> | undefined;
+	type SyncHandlerRet = KeyedMap<any> | undefined | void;
 
 	interface FieldDesc extends IFieldsRecord {
 
