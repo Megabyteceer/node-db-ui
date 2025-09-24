@@ -218,7 +218,7 @@ import { clientOn } from '${importPath}/www/client-core/src/events-handle';`
 export const dumpDB = async (userSession: UserSession) => {
 	shouldBeAdmin(userSession);
 
-	const dataDir = path.join(__dirname, '../../../data');
+	const dataDir = path.join(process.cwd(), 'data');
 	const files = fs.readdirSync(dataDir);
 	let next = 1;
 	for (const f of files) {
