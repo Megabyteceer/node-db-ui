@@ -1,6 +1,6 @@
 import { assert, throwError } from '../www/client-core/src/assert';
 import type { LookupValue, RecId, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
-import { PRIVILEGES_MASK, STATUS, VIEW_MASK } from '../www/client-core/src/bs-utils';
+import { IMAGE_THUMBNAIL_PREFIX, PRIVILEGES_MASK, STATUS, VIEW_MASK } from '../www/client-core/src/bs-utils';
 
 import { unlink } from 'fs';
 import { join } from 'path';
@@ -235,6 +235,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 								}
 								if (fieldType === FIELD_TYPE.IMAGE) {
 									filesToDelete.push(idToImgURLServer(realDataBefore[fieldName]));
+									filesToDelete.push(idToImgURLServer(realDataBefore[fieldName]) + IMAGE_THUMBNAIL_PREFIX);
 								} else {
 									filesToDelete.push(join(UPLOADS_FILES_PATH, realDataBefore[fieldName]));
 								}

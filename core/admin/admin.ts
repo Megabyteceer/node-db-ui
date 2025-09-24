@@ -3,8 +3,9 @@
 /// #endif
 throw new Error('admin file imported to prod build');
 // */
+import { SERVER_ENV } from '../ENV';
 
-import { ADMIN_USER_SESSION, getFieldDesc, getNodeDesc, reloadMetadataSchedule } from '../describe-node';
+import { getFieldDesc, getNodeDesc, reloadMetadataSchedule } from '../describe-node';
 
 import { execSync } from 'child_process';
 import * as fs from 'fs';
@@ -64,7 +65,7 @@ async function nodePrivileges(reqData: NodePrivilegesRequest, userSession: UserS
 	}
 }
 
-const shouldBeAdmin = (userSession = ADMIN_USER_SESSION) => {
+const shouldBeAdmin = (userSession?: UserSession) => {
 	if (!isAdmin(userSession)) {
 		throwError('Access denied');
 	}
@@ -227,7 +228,7 @@ export const dumpDB = async (userSession: UserSession) => {
 		}
 	}
 	try {
-		execSync('pg_dump > "' + path.join(dataDir, next + '.sql') + '"');
+		execSync('pg_dump ' + SERVER_ENV.DB_NAME + ' > "' + path.join(dataDir, next + '.sql') + '"');
 	} catch (er: any) {
 		return { error: er.message };
 	}
@@ -244,33 +245,40 @@ export const dumpDB = async (userSession: UserSession) => {
 
 };
 
-export const recoveryDB = async (userSession: UserSession) => {
+export const recoveryDB = async (userSession?: UserSession) => {
 	shouldBeAdmin(userSession);
 
-	const dataDir = path.join(__dirname, '../../../data');
-	const files = fs.readdirSync(dataDir);
-	let last = 0;
-	for (const f of files) {
-		const v = parseInt(f);
-		if (v >= last) {
-			last = v;
+	for (const dir of ['data', 'node_modules/crud-js/data']) {
+		const dataDir = path.join(process.cwd(), dir);
+		console.log('Recovery file search in: ' + dataDir);
+		if (fs.existsSync(dataDir)) {
+			const files = fs.readdirSync(dataDir);
+			let last = 0;
+			for (const f of files) {
+				const v = parseInt(f);
+				if (v >= last) {
+					last = v;
+				}
+			}
+
+			if (last > 0) {
+				await mysqlExec(
+					`DROP SCHEMA IF EXISTS public CASCADE;
+				CREATE SCHEMA public;`);
+				try {
+					const file = path.join(dataDir, last + '.sql');
+					console.log('Database recovery attempt with file: ' + file);
+					execSync('psql --dbname=' + SERVER_ENV.DB_NAME + ' < ' + file);
+					console.log('Database successfully recovered');
+					reloadMetadataSchedule();
+					return true;
+				} catch (er: any) {
+					return { error: er.message };
+				}
+			}
 		}
 	}
-
-	if (last > 0) {
-		await mysqlExec(
-			`DROP SCHEMA IF EXISTS public CASCADE;
-		CREATE SCHEMA public;`);
-		try {
-			execSync('psql < ' + path.join(dataDir, last + '.sql'));
-		} catch (er: any) {
-			return { error: er.message };
-		}
-
-	}
-	reloadMetadataSchedule();
-
-	return true;
+	console.error('no .sql file found to recovery database.');
 };
 
 export { editEventHandler, nodePrivileges, shouldBeAdmin };

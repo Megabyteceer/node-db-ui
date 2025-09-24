@@ -22,18 +22,18 @@ interface UploadRequest {
 }
 
 /// #if DEBUG
-let UPLOADS_IMAGES_PATH = join(__dirname, '../../html/images/uploads');
-let UPLOADS_FILES_PATH = join(__dirname, '../../html/uploads/file');
+let UPLOADS_IMAGES_PATH = join(process.cwd(), 'html/images/uploads');
+let UPLOADS_FILES_PATH = join(process.cwd(), 'html/uploads/file');
 
 if (!fs.existsSync(UPLOADS_IMAGES_PATH)) {
-	UPLOADS_IMAGES_PATH = join(__dirname, '../../www/images/uploads');
-	UPLOADS_FILES_PATH = join(__dirname, '../../www/uploads/file');
+	UPLOADS_IMAGES_PATH = join(process.cwd(), 'www/images/uploads');
+	UPLOADS_FILES_PATH = join(process.cwd(), 'www/uploads/file');
 }
 
 /*
 /// #endif
-const UPLOADS_IMAGES_PATH = join(__dirname, './html/images/uploads');
-const UPLOADS_FILES_PATH = join(__dirname, './html/uploads/file');
+const UPLOADS_IMAGES_PATH = join(process.cwd(), 'html/images/uploads');
+const UPLOADS_FILES_PATH = join(process.cwd(), 'html/uploads/file');
 // */
 
 const IMAGE_EXTENSION = '.jpg';

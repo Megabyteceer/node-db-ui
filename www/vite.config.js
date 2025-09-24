@@ -10,7 +10,7 @@ export default defineConfig({
 		watch: true
 	},
 	server: {
-		allowedHosts: ['node-db-ui.com'],
+		allowedHosts: true,
 		host: true,
 		hmr: false,
 		fs: {

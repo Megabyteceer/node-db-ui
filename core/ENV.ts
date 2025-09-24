@@ -1,3 +1,6 @@
+import { existsSync } from 'fs';
+import path from 'path';
+
 const SERVER_ENV = {
 	PORT: 1443,
 	SERVER_NAME: 'http://node-db-ui.com:5173/',
@@ -6,10 +9,10 @@ const SERVER_ENV = {
 
 	EMAIL_FROM: 'test@test.com',
 
-	DB_HOST: '127.0.0.1',
-	DB_USER: 'root',
+	DB_HOST: '',
+	DB_USER: '',
 	DB_PASS: '',
-	DB_NAME: 'crud_js_base',
+	DB_NAME: '',
 	DB_CONNECTIONS_COUNT: 10,
 
 	DEPLOY_TO: 'http: //test.server.org',
@@ -50,17 +53,18 @@ const ENV = {
 	}
 };
 
-import * as fs from 'fs';
-
-const envPath = './ENV.json';
-if (fs.existsSync(envPath)) {
-	const env = JSON.parse(fs.readFileSync(envPath, 'utf8'));
-	if (env.clientOptions) {
-		Object.assign(ENV.clientOptions, env.clientOptions);
+for (let fn of ['build-debug/ENV.js', 'ENV.js']) {
+	fn = path.join(process.cwd(), fn);
+	if (existsSync(fn)) {
+		const env = require(fn);
+		if(env.SERVER_ENV) {
+			Object.assign(SERVER_ENV, env.SERVER_ENV);
+		}
+		if(env.ENV) {
+			Object.assign(ENV, env.ENV);
+		}
 	}
-	Object.assign(ENV, env);
 }
-
 export { ENV, SERVER_ENV };
 
 type ENV_TYPE = typeof ENV;

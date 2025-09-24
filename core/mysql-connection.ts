@@ -5,6 +5,7 @@ import { getCurrentStack, isServer } from '../www/client-core/src/bs-utils';
 
 import type { QueryResultRow } from 'pg';
 import { escapeLiteral, Pool } from 'pg';
+import { SERVER_ENV } from './ENV';
 
 /** escape number */
 const D = (val: number): string => {
@@ -48,7 +49,13 @@ const NUM_1 = D(1);
 /** escaped '' fro SQL */
 export const ESCAPED_LITERAL = escapeString('');
 
-const pool = new Pool();
+const pool = new Pool({
+	host: SERVER_ENV.DB_HOST,
+	user: SERVER_ENV.DB_USER,
+	password: SERVER_ENV.DB_PASS,
+	database: SERVER_ENV.DB_NAME
+}
+);
 
 /// #if DEBUG
 export interface SQLDebugInfo {

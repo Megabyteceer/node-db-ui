@@ -1,3 +1,6 @@
+
+import { ENV, SERVER_ENV } from './ENV';
+
 import api, { type APIHandler } from './api';
 import { finishSession, isUserHaveRole, startSession, type UserSession } from './auth';
 import { initNodesData } from './describe-node';
@@ -9,8 +12,6 @@ import { mysqlDebug } from './mysql-connection';
 import '../www/client-core/src/locales/en/lang-server';
 import '../www/client-core/src/locales/ru/lang-server';
 
-import { ENV, SERVER_ENV } from './ENV';
-
 /// #if DEBUG
 import { performance } from 'perf_hooks';
 /// #endif
@@ -19,6 +20,8 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
+import { serverOn } from '../www/client-core/src/events-handle';
+import { E } from '../www/client-core/src/types/generated';
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -146,15 +149,15 @@ app.use('/dist/images/', express.static(path.join(__dirname, '../../www/images')
 app.use('/assets/', express.static(path.join(__dirname, '../../www/dist/assets')));
 app.use('/', express.static(path.join(__dirname, '../../www')));
 
-function startServer() {
-	initNodesData().then(async function () {
-		import('./events/index.js');
-		app.listen(SERVER_ENV.PORT);
-		console.log('HTTP listen ' + SERVER_ENV.PORT + '...');
-	});
+async function startServer() {
+
+	await initNodesData();
+	await import('./events/index.js');
+	app.listen(SERVER_ENV.PORT);
+	console.log('HTTP listen ' + SERVER_ENV.PORT + '...');
 }
 
-export { app, startServer };
+export { app, E, serverOn, startServer };
 if (require.main === module) {
 	startServer();
 }

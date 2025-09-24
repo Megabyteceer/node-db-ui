@@ -8,7 +8,7 @@ import { writeFileSync } from 'fs';
 
 import { D, mysqlExec, NUM_0, NUM_1 } from './mysql-connection';
 
-import { assert, throwError } from '../www/client-core/src/assert';
+import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core/src/assert';
 import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, TreeItem, UserLangEntry } from '../www/client-core/src/bs-utils';
 import { FIELD_DATA_TYPE, isServer, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import { ENUM_ID, FIELD_TYPE, NODE_ID, NODE_TYPE, type IFiltersRecord } from '../www/client-core/src/types/generated';
@@ -16,6 +16,8 @@ import { globals } from '../www/client-core/src/types/globals';
 import type { UserSession /* , usersSessionsStartedCount */ } from './auth';
 import { authorizeUserByID, isUserHaveRole, setMaintenanceMode /* , usersSessionsStartedCount */ } from './auth';
 import { ENV, type ENV_TYPE } from './ENV';
+import path from 'path';
+import { recoveryDB } from './admin/admin';
 
 const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
@@ -270,6 +272,21 @@ async function initNodesData() {
 	/// #if DEBUG
 	await mysqlExec('-- ======== NODES RELOADING STARTED ===================================================================================================================== --');
 	/// #endif
+
+	const tablesDetector = (await mysqlExec(ESCAPE_BEGIN +  `SELECT table_name
+  FROM information_schema.tables
+ WHERE table_schema='public'
+   AND table_type='BASE TABLE'` +ESCAPE_END));
+		if(['_nodes', '_fields', '_languages', '_enums'].some((tableName) => {
+			return !tablesDetector.some(r => r.table_name === tableName);
+		})) {
+			if(tablesDetector.length) {
+				throwError('Database is not empty to initialize for CRUD usage');
+			} else {
+				await recoveryDB();
+			}
+		}
+
 	langs = (await mysqlExec('SELECT "id", "name", "code", "isUILanguage" FROM "_languages"')) as UserLangEntry[];
 	for (const l of langs) {
 		l.prefix = l.code ? '$' + l.code : '';
@@ -706,7 +723,7 @@ export class TypeGenerationHelper {`);
 }`);
 	src.push('export const E = ' + JSON.stringify(eventsEnum, undefined, '\t').replaceAll('"', '') + ' as const;');
 	src.push(...srcAdd);
-	writeFileSync('www/client-core/src/types/generated.ts', src.join('\n'));
+	writeFileSync(path.join(__dirname, '../www/client-core/src/types/generated.ts'), src.join('\n'));
 };
 
 /// #endif
