@@ -9,7 +9,7 @@ clientOn(E._html.title.onChange, (form) => {
 		'//' +
 		location.host +
 		'/custom/html/' +
-		form.fieldValue('title') +
+		form.getFieldValue('title') +
 		'.html';
 	form.setFieldValue('link', href);
 

@@ -114,6 +114,9 @@ export default class Form<
 		if (!props.parentForm) {
 			this.recoveryBackupIfNeed();
 		}
+		if (this.formData) {
+			Object.assign(this.formData, this.formFilters);
+		}
 
 		this.cancelClick = this.cancelClick.bind(this);
 		this.saveClick = this.saveClick.bind(this);
@@ -167,7 +170,7 @@ export default class Form<
 					f.props.fieldDesc!.fieldType !== FIELD_TYPE.BUTTON &&
 					f.props.fieldDesc!.fieldType !== FIELD_TYPE.TAB
 				) {
-					await this.processFieldEvent(f.props.fieldDesc!, (this.fieldValue as any)(f.props.fieldDesc!.fieldName), false);
+					await this.processFieldEvent(f.props.fieldDesc!, (this.getFieldValue as any)(f.props.fieldDesc!.fieldName), false);
 				}
 			}
 		}
@@ -188,7 +191,7 @@ export default class Form<
 		if (this.recId === NEW_RECORD && !this.listData) {
 			const backup = getItem(this._getBackupKey());
 			if (backup) {
-				this.formData = Object.assign(backup, this.formFilters);
+				this.formData = backup;
 			}
 		}
 	}
@@ -376,7 +379,7 @@ export default class Form<
 		return this.fieldsByName[fieldName];
 	}
 
-	fieldValue(fieldName: FieldsNames) {
+	getFieldValue(fieldName: FieldsNames) {
 		return (this.formData as KeyedMap<any>)[fieldName];
 	};
 
@@ -391,7 +394,7 @@ export default class Form<
 			if (!isUserAction) {
 				f.setValue(val);
 			}
-			if (isUserAction) {
+			if (isUserAction && f.props.fieldDesc.sendToServer) {
 				this.invalidateData();
 			}
 			const prev_value = (this.formData as KeyedMap<any>)[fieldName];
@@ -486,7 +489,7 @@ export default class Form<
 	}
 
 	isFieldEmpty(fieldName: FieldsNames) {
-		const v = this.fieldValue(fieldName);
+		const v = this.getFieldValue(fieldName);
 		if (Array.isArray(v)) {
 			return v.length === 0;
 		}
@@ -577,6 +580,10 @@ export default class Form<
 	}
 
 	private renderList(className: string): ComponentChildren {
+		className += ' form-list';
+		if (!this.parentForm) {
+			className += ' form-list-root';
+		}
 		if (this.props.editable) {
 			return this.renderEditableList(className);
 		} else {

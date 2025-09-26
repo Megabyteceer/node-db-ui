@@ -69,8 +69,7 @@ serverOn(E._fields.afterCreate, async (data, userSession) => {
 	for (let i of fields.items) {
 		prior += 10;
 		if (i.prior !== prior) {
-			debugger;
-			await submitRecord(NODE_ID.FIELDS, { prior }, i.id!, userSession);
+			await submitRecord(NODE_ID.FIELDS, { prior }, i.id!);
 		}
 	}
 
@@ -151,6 +150,7 @@ serverOn(E._fields.beforeDelete, async (_data, _userSession) => {
 export { createFieldInTable };
 
 function getFieldTypeSQL(data: FieldDesc) {
+	const decimals = data.decimals! || 0;
 	switch (data.fieldType) {
 	case FIELD_TYPE.PASSWORD:
 	case FIELD_TYPE.TEXT:
@@ -162,14 +162,14 @@ function getFieldTypeSQL(data: FieldDesc) {
 	case FIELD_TYPE.COLOR:
 		return 'int8 NOT NULL DEFAULT ' + D(4294967295);
 	case FIELD_TYPE.NUMBER:
-		if (data.maxLength! <= 5) {
+		if ((data.maxLength! <= 5) && !decimals) {
 			return 'int2 NOT NULL DEFAULT ' + NUM_0;
-		} else if (data.maxLength! <= 9) {
+		} else if ((data.maxLength! <= 9) && !decimals) {
 			return 'int4 NOT NULL DEFAULT ' + NUM_0;
-		} else if (data.maxLength! <= 19) {
+		} else if ((data.maxLength! <= 19) && !decimals) {
 			return 'int8 NOT NULL DEFAULT ' + NUM_0;
 		} else {
-			return 'NUMERIC(' + D(data.maxLength!) + ', ' + NUM_0 + ') NOT NULL DEFAULT ' + NUM_0;
+			return 'NUMERIC(' + D(data.maxLength! + decimals) + ', ' + D(decimals) + ') NOT NULL DEFAULT ' + NUM_0;
 		}
 	case FIELD_TYPE.DATE_TIME:
 	case FIELD_TYPE.DATE:
@@ -256,7 +256,7 @@ async function createFieldInTable(data: IFieldsRecordWrite) {
 			}
 
 			if (data.unique) {
-				altQ.push('ALTER TABLE "${nodeName}" ADD CONSTRAINT "unique_${nodeName}_${fieldName}" UNIQUE ("${fieldName}");');
+				altQ.push(`ALTER TABLE "${nodeName}" ADD CONSTRAINT "unique_${nodeName}_${fieldName}" UNIQUE ("${fieldName}");`);
 			}
 			await mysqlExec(altQ.join(''));
 		}

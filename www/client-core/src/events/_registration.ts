@@ -8,7 +8,7 @@ import { checkPasswordConfirmation } from './_users';
 
 export const showMessageAboutEmailSent = (txt: string, form: Form<TRegistrationFieldsList> | Form<TResetPasswordFieldsList>) => {
 	myAlert(
-		R.span(null, txt, R.div({ className: 'email-highlight' }, form.fieldValue('email'))),
+		R.span(null, txt, R.div({ className: 'email-highlight' }, form.getFieldValue('email'))),
 		true,
 		false,
 		true,

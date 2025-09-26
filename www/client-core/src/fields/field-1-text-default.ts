@@ -15,7 +15,7 @@ export default class TextField extends BaseField {
 		let value = this.currentValue;
 
 		if (typeof value === 'undefined') {
-			value = 0;
+			value = '';
 			this.valueListener('', false);
 		}
 

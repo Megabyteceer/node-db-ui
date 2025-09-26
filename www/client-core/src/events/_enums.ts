@@ -13,7 +13,7 @@ clientOn(E._enums.onSave, (form) => {
 
 	const existsValue = {} as KeyedMap<true>;
 	for (const form of valuesForms) {
-		const val = form.fieldValue('value');
+		const val = form.getFieldValue('value');
 		if (existsValue[val]) {
 			ret = true;
 			form.fieldAlert('value', L('VALUE_EXISTS'), false, true, 'enum-val-in-use');
@@ -24,7 +24,7 @@ clientOn(E._enums.onSave, (form) => {
 	}
 	const existsName = {} as KeyedMap<true>;
 	for (const form of valuesForms) {
-		const name = form.fieldValue('name');
+		const name = form.getFieldValue('name');
 		if (existsName[name]) {
 			ret = true;
 			form.fieldAlert('name', L('VALUE_EXISTS'), false, true, 'enum-name-in-use');

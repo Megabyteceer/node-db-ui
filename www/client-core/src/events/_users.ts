@@ -8,8 +8,8 @@ import { isAdmin, L, showPrompt } from '../utils';
 let uiLanguageIsChanged = false;
 
 export const checkPasswordConfirmation = (form: Form<TUsersFieldsList> | Form<TRegistrationFieldsList>) => {
-	const p = form.fieldValue('password');
-	const p2 = form.fieldValue('passwordConfirm');
+	const p = form.getFieldValue('password');
+	const p2 = form.getFieldValue('passwordConfirm');
 	if (p && p !== p2) {
 		form.fieldAlert('passwordConfirm', L('PASS_NOT_MACH'));
 	} else {
@@ -41,7 +41,7 @@ clientOn(E._users.onLoad, (form) => {
 		form.hideField('_organizationId');
 	}
 
-	const myName = form.fieldValue('name');
+	const myName = form.getFieldValue('name');
 
 	if (!isAdmin()) {
 		form.disableField('email');
@@ -71,7 +71,7 @@ clientOn(E._users.onLoad, (form) => {
 
 clientOn(E._users.onSave, (form) => {
 	checkPasswordConfirmation(form);
-	const pass = form.fieldValue('password');
+	const pass = form.getFieldValue('password');
 	if (pass.length < ENV.MIN_PASS_LEN) {
 		form.fieldAlert('password', L('PASS_LEN', ENV.MIN_PASS_LEN));
 	}
@@ -93,7 +93,7 @@ clientOn(E._users.afterSave, (form) => {
 		});
 	}
 	if (form.recId === User.currentUserData?.id) {
-		User.currentUserData!.avatar = form.fieldValue('avatar');
+		User.currentUserData!.avatar = form.getFieldValue('avatar');
 		User.instance!.forceUpdate();
 	}
 });

@@ -6,10 +6,11 @@ import { isAutoFocus, registerFieldClass } from '../utils';
 export default class NumericField extends BaseField {
 
 	static decodeValue(val?: string) {
-		if (val) {
-			return parseInt(val);
-		}
 		return val;
+	}
+
+	isEmpty() {
+		return false;
 	}
 
 	renderFieldEditable() {
@@ -21,17 +22,27 @@ export default class NumericField extends BaseField {
 			this.valueListener(0, false);
 		}
 
+		let step = undefined as string | undefined;
+		if (field.decimals! > 0) {
+			step = '0.' + ('0'.repeat(field.decimals! - 1)) + '1';
+		}
+
 		const inputsProps = {
 			type: 'number',
 			value: value,
 			title: field.name,
 			autoFocus: isAutoFocus(),
+			step,
 			maxLength: field.maxLength,
 			placeholder: field.name,
 			readOnly: this.props.fieldDisabled,
 			ref: this.refGetter,
 			onInput: () => {
-				const value = parseInt(this.refToInput!.value.substr(0, field.maxLength));
+				const src = this.refToInput!.value as string;
+				let value = src;
+				if (!field.decimals) {
+					value = parseInt(src.substring(0, field.maxLength)) as any;
+				}
 				this.valueListener(value, true);
 			}
 		};

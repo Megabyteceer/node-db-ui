@@ -250,7 +250,7 @@ function makeIconSelectionField(form: Form, fieldName: string) {
 		'icons-selector',
 		h(Select, {
 			isCompact: form.props.isCompact,
-			defaultValue: form.fieldValue(fieldName),
+			defaultValue: form.getFieldValue(fieldName),
 			readOnly: form.isFieldDisabled(fieldName),
 			onInput: (value) => {
 				form.setFieldValue(fieldName, value);
@@ -271,7 +271,7 @@ function makeReactClassSelectionField(form: Form, fieldName: string) {
 		'classes-selector',
 		h(Select, {
 			isCompact: form.props.isCompact,
-			defaultValue: form.fieldValue(fieldName),
+			defaultValue: form.getFieldValue(fieldName),
 			readOnly: form.isFieldDisabled(fieldName),
 			onInput: (value) => {
 				form.setFieldValue(fieldName, value);

@@ -7,14 +7,27 @@ import { removeWrongCharactersInField } from './_nodes';
 
 /// #if DEBUG
 
+const showDecimalTips = (form: FormFields) => {
+	if (form.getFieldValue('fieldType') === FIELD_TYPE.NUMBER) {
+		form.showField('decimals');
+		const d = form.getFieldValue('decimals');
+		const l = form.getFieldValue('maxLength');
+		form.fieldAlert('decimals', '9'.repeat(l) + (d ? '.' + '9'.repeat(d) : ''),
+			true, false, 'num-example');
+	} else {
+		form.hideField('decimals');
+		form.fieldHideAlert('decimals', 'num-example');
+	}
+};
+
 const check12nFieldName = (form: FormFields) => {
 	if (form.isNewRecord) {
-		const fn = form.fieldValue('fieldName');
-		let nodeId = form.fieldValue('nodeFieldsLinker')?.id;
-		let nodeRef = form.fieldValue('nodeRef')?.id;
+		const fn = form.getFieldValue('fieldName');
+		let nodeId = form.getFieldValue('nodeFieldsLinker')?.id;
+		let nodeRef = form.getFieldValue('nodeRef')?.id;
 
 		if (nodeId && fn && fn.length >= 3) {
-			if (form.fieldValue('fieldType') === FIELD_TYPE.LOOKUP_1_TO_N && nodeRef) {
+			if (form.getFieldValue('fieldType') === FIELD_TYPE.LOOKUP_1_TO_N && nodeRef) {
 				checkFieldExists(form);
 			} else {
 				checkFieldExists(form);
@@ -25,8 +38,8 @@ const check12nFieldName = (form: FormFields) => {
 
 const checkFieldExists = async (form: FormFields) => {
 	if (!form.isUpdateRecord) {
-		const fieldName = form.fieldValue('fieldName');
-		const parentNode = form.fieldValue('nodeFieldsLinker');
+		const fieldName = form.getFieldValue('fieldName');
+		const parentNode = form.getFieldValue('nodeFieldsLinker');
 		if (parentNode?.id) {
 			const ret = await submitData('admin/isFiledExists', { fieldName, nodeId: parentNode.id });
 			if (!ret) {
@@ -44,20 +57,20 @@ clientOn(E._fields.onLoad, async (form) => {
 	form.hideField('forSearch', 'unique', 'sendToServer', 'storeInDb');
 
 	if (form.isUpdateRecord) {
-		if (form.fieldValue('unique')) {
+		if (form.getFieldValue('unique')) {
 			form.setFieldValue('storageMode', FIELD_STORAGE_MODE.STORED_INDEXED_UNIQUE);
-		} else if (form.fieldValue('forSearch')) {
+		} else if (form.getFieldValue('forSearch')) {
 			form.setFieldValue('storageMode', FIELD_STORAGE_MODE.STORED_INDEXED);
-		} else if (form.fieldValue('storeInDb')) {
+		} else if (form.getFieldValue('storeInDb')) {
 			form.setFieldValue('storageMode', FIELD_STORAGE_MODE.STORED);
-		} else if (form.fieldValue('sendToServer')) {
+		} else if (form.getFieldValue('sendToServer')) {
 			form.setFieldValue('storageMode', FIELD_STORAGE_MODE.NOT_STORED);
 		}
 	}
 
 	_fields_recalculateFieldsVisibility(form);
 
-	const parentNodeVal = form.fieldValue('nodeFieldsLinker');
+	const parentNodeVal = form.getFieldValue('nodeFieldsLinker');
 	let parentNode: NodeDesc;
 	if (parentNodeVal) {
 		parentNode = await getNode(parentNodeVal.id);
@@ -68,7 +81,7 @@ clientOn(E._fields.onLoad, async (form) => {
 	}
 
 	if (form.isNewRecord) {
-		if (isNaN(form.fieldValue('show'))) {
+		if (isNaN(form.getFieldValue('show'))) {
 			form.setFieldValue('show', 5);
 			form.setFieldValue('visibilityCreate', 1);
 			form.setFieldValue('visibilityView', 1);
@@ -77,31 +90,31 @@ clientOn(E._fields.onLoad, async (form) => {
 			form.setFieldValue('visibilitySubFormList', 1);
 		}
 
-		if (!form.fieldValue('prior')) {
+		if (!form.getFieldValue('prior')) {
 			form.setFieldValue('prior', 1);
 		}
 	} else {
-		if (form.fieldValue('show') & VIEW_MASK.EDITABLE) form.setFieldValue('visibilityCreate', 1);
+		if (form.getFieldValue('show') & VIEW_MASK.EDITABLE) form.setFieldValue('visibilityCreate', 1);
 		else form.setFieldValue('visibilityCreate', 0);
 
-		if (form.fieldValue('show') & VIEW_MASK.READONLY) form.setFieldValue('visibilityView', 1);
+		if (form.getFieldValue('show') & VIEW_MASK.READONLY) form.setFieldValue('visibilityView', 1);
 		else form.setFieldValue('visibilityView', 0);
 
-		if (form.fieldValue('show') & VIEW_MASK.LIST) form.setFieldValue('visibilityList', 1);
+		if (form.getFieldValue('show') & VIEW_MASK.LIST) form.setFieldValue('visibilityList', 1);
 		else form.setFieldValue('visibilityList', 0);
 
-		if (form.fieldValue('show') & VIEW_MASK.DROPDOWN_LIST) form.setFieldValue('visibilityDropdownList', 1);
+		if (form.getFieldValue('show') & VIEW_MASK.DROPDOWN_LIST) form.setFieldValue('visibilityDropdownList', 1);
 		else form.setFieldValue('visibilityDropdownList', 0);
 
-		if (form.fieldValue('show') & VIEW_MASK.SUB_FORM) form.setFieldValue('visibilitySubFormList', 1);
+		if (form.getFieldValue('show') & VIEW_MASK.SUB_FORM) form.setFieldValue('visibilitySubFormList', 1);
 		else form.setFieldValue('visibilitySubFormList', 0);
 
-		if (form.fieldValue('show') & VIEW_MASK.CUSTOM_LIST) form.setFieldValue('visibilityCustomList', 1);
+		if (form.getFieldValue('show') & VIEW_MASK.CUSTOM_LIST) form.setFieldValue('visibilityCustomList', 1);
 		else form.setFieldValue('visibilityCustomList', 0);
 
-		if (form.fieldValue('fieldType') === FIELD_TYPE.IMAGE || form.fieldValue('fieldType') === FIELD_TYPE.HTML_EDITOR) {
-			form.setFieldValue('height', form.fieldValue('maxLength') % 10000);
-			form.setFieldValue('width', Math.floor(form.fieldValue('maxLength') / 10000));
+		if (form.getFieldValue('fieldType') === FIELD_TYPE.IMAGE || form.getFieldValue('fieldType') === FIELD_TYPE.HTML_EDITOR) {
+			form.setFieldValue('height', form.getFieldValue('maxLength') % 10000);
+			form.setFieldValue('width', Math.floor(form.getFieldValue('maxLength') / 10000));
 		}
 	}
 
@@ -120,12 +133,13 @@ clientOn(E._fields.fieldName.onChange, async (form) => {
 });
 
 clientOn(E._fields.onSave, (form) => {
-	const fieldType = form.fieldValue('fieldType');
+	const fieldType = form.getFieldValue('fieldType');
 
 	form.fieldHideAlert('nodeRef', 'field-required');
 	form.fieldHideAlert('fieldName', 'field-required');
 	form.fieldHideAlert('height', 'field-required');
 	form.fieldHideAlert('width', 'field-required');
+	form.fieldHideAlert('maxLength', 'field-required');
 	form.fieldHideAlert('maxLength', 'field-required');
 
 	if (fieldType === FIELD_TYPE.LOOKUP || fieldType === FIELD_TYPE.LOOKUP_N_TO_M || fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
@@ -134,28 +148,28 @@ clientOn(E._fields.onSave, (form) => {
 		}
 	}
 
-	if (/[^a-zA-Z_0-9]/.test(form.fieldValue('fieldName'))) {
+	if (/[^a-zA-Z_0-9]/.test(form.getFieldValue('fieldName'))) {
 		form.fieldAlert('fieldName', L('LATIN_ONLY'), false, true, 'field-required');
 	}
 
-	if (form.fieldValue('fieldName') == parseInt(form.fieldValue('fieldName')).toString()) {
+	if (form.getFieldValue('fieldName') == parseInt(form.getFieldValue('fieldName')).toString()) {
 		form.fieldAlert('fieldName', L('NO_NUMERIC_NAME'), false, true, 'field-required');
 	}
 
 	if (fieldType === FIELD_TYPE.IMAGE || fieldType === FIELD_TYPE.HTML_EDITOR) {
-		if (!form.fieldValue('height')) {
+		if (!form.getFieldValue('height')) {
 			form.fieldAlert('height', L('REQUIRED_FLD'), false, true, 'field-required');
 		}
-		if (!form.fieldValue('width')) {
+		if (!form.getFieldValue('width')) {
 			form.fieldAlert('width', L('REQUIRED_FLD'), false, true, 'field-required');
 		}
-		const maxLength = Math.min(9999, form.fieldValue('height')) + (form.fieldValue('width')) * 10000;
+		const maxLength = Math.min(9999, form.getFieldValue('height')) + (form.getFieldValue('width')) * 10000;
 		if (!isNaN(maxLength)) {
 			form.setFieldValue('maxLength', maxLength);
 		}
 	}
 
-	if (!form.fieldValue('maxLength')) {
+	if (!form.getFieldValue('maxLength')) {
 		form.setFieldValue('maxLength', 0);
 		if (fieldType === FIELD_TYPE.TEXT || fieldType === FIELD_TYPE.NUMBER || fieldType === FIELD_TYPE.PASSWORD) {
 			form.fieldAlert('maxLength', L('REQUIRED_FLD'), false, true, 'field-required');
@@ -163,7 +177,7 @@ clientOn(E._fields.onSave, (form) => {
 	}
 
 	if (form.isNewRecord) {
-		if (form.isNewRecord && (!form.fieldValue('fieldName') || form.fieldValue('fieldName').length < 3)) {
+		if (form.isNewRecord && (!form.getFieldValue('fieldName') || form.getFieldValue('fieldName').length < 3)) {
 			form.fieldAlert('fieldName', L('MIN_NAMES_LEN', 3), false, true, 'field-required');
 		}
 	} else {
@@ -181,35 +195,35 @@ clientOn(E._fields.name.onChange, (form) => {
 });
 
 clientOn(E._fields.visibilityCreate.onChange, (form) => {
-	let shv = form.fieldValue('show');
+	let shv = form.getFieldValue('show');
 
-	if (form.fieldValue('visibilityCreate')) shv |= VIEW_MASK.EDITABLE;
+	if (form.getFieldValue('visibilityCreate')) shv |= VIEW_MASK.EDITABLE;
 	else shv &= VIEW_MASK.ALL - VIEW_MASK.EDITABLE;
 
 	form.setFieldValue('show', shv);
 });
 
 clientOn(E._fields.visibilityList.onChange, (form) => {
-	let shv = form.fieldValue('show');
+	let shv = form.getFieldValue('show');
 
-	if (form.fieldValue('visibilityList')) shv |= VIEW_MASK.LIST;
+	if (form.getFieldValue('visibilityList')) shv |= VIEW_MASK.LIST;
 	else shv &= VIEW_MASK.ALL - VIEW_MASK.LIST;
 
 	form.setFieldValue('show', shv);
 });
 
 clientOn(E._fields.visibilityCustomList.onChange, (form) => {
-	let shv = form.fieldValue('show');
+	let shv = form.getFieldValue('show');
 
-	if (form.fieldValue('visibilityCustomList')) shv |= VIEW_MASK.CUSTOM_LIST;
+	if (form.getFieldValue('visibilityCustomList')) shv |= VIEW_MASK.CUSTOM_LIST;
 	else shv &= VIEW_MASK.ALL - VIEW_MASK.CUSTOM_LIST;
 
 	form.setFieldValue('show', shv);
 });
 
 clientOn(E._fields.visibilityView.onChange, (form) => {
-	let shv = form.fieldValue('show');
-	if (form.fieldValue('visibilityView')) {
+	let shv = form.getFieldValue('show');
+	if (form.getFieldValue('visibilityView')) {
 		shv |= VIEW_MASK.READONLY;
 	} else {
 		shv &= VIEW_MASK.ALL - VIEW_MASK.READONLY;
@@ -219,8 +233,8 @@ clientOn(E._fields.visibilityView.onChange, (form) => {
 });
 
 clientOn(E._fields.visibilityDropdownList.onChange, (form) => {
-	let shv = form.fieldValue('show');
-	if (form.fieldValue('visibilityDropdownList')) {
+	let shv = form.getFieldValue('show');
+	if (form.getFieldValue('visibilityDropdownList')) {
 		shv |= VIEW_MASK.DROPDOWN_LIST;
 	} else {
 		shv &= VIEW_MASK.ALL - VIEW_MASK.DROPDOWN_LIST;
@@ -230,8 +244,8 @@ clientOn(E._fields.visibilityDropdownList.onChange, (form) => {
 });
 
 clientOn(E._fields.visibilitySubFormList.onChange, (form) => {
-	let shv = form.fieldValue('show');
-	if (form.fieldValue('visibilitySubFormList')) {
+	let shv = form.getFieldValue('show');
+	if (form.getFieldValue('visibilitySubFormList')) {
 		shv |= VIEW_MASK.SUB_FORM;
 	} else {
 		shv &= VIEW_MASK.ALL - VIEW_MASK.SUB_FORM;
@@ -245,7 +259,7 @@ clientOn(E._fields.nodeRef.onChange, (form) => {
 });
 
 const _fields_recalculateFieldsVisibility = (form: FormFields) => {
-	const fieldType = form.fieldValue('fieldType');
+	const fieldType = form.getFieldValue('fieldType');
 
 	form.showField('maxLength', 'requirement');
 
@@ -267,7 +281,7 @@ const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 
 	if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 		form.addLookupFilters('nodeRef', 'excludeIDs', [
-			form.fieldValue('nodeFieldsLinker').id
+			form.getFieldValue('nodeFieldsLinker').id
 		]);
 	} else {
 		form.addLookupFilters('nodeRef', 'excludeIDs', undefined);
@@ -356,7 +370,7 @@ clientOn(E._fields.storageMode.onChange, async (form, value: FIELD_STORAGE_MODE)
 	}[value];
 
 	if (flags > 1) {
-		const parentNode = (await getNode(form.fieldValue('nodeFieldsLinker').id));
+		const parentNode = (await getNode(form.getFieldValue('nodeFieldsLinker').id));
 		if (!parentNode.storeForms) {
 			form.setFieldValue('storageMode', FIELD_STORAGE_MODE.NOT_STORED);
 			return;
@@ -381,6 +395,15 @@ clientOn(E._fields.storageMode.onChange, async (form, value: FIELD_STORAGE_MODE)
 
 clientOn(E._fields.fieldType.onChange, async (form) => {
 	_fields_recalculateFieldsVisibility(form);
+	showDecimalTips(form);
+});
+
+clientOn(E._fields.decimals.onChange, async (form) => {
+	showDecimalTips(form);
+});
+
+clientOn(E._fields.maxLength.onChange, async (form) => {
+	showDecimalTips(form);
 });
 
 /// #endif

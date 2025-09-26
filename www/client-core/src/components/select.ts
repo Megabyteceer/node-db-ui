@@ -54,6 +54,11 @@ class Select extends Component<SelectProps, SelectState> {
 			this.setState({
 				expanded: !this.state.expanded
 			});
+			if (!this.state.expanded) {
+				setTimeout(() => {
+					(this.base as HTMLDivElement)?.querySelector('input')?.focus();
+				}, 10);
+			}
 		}
 	}
 

@@ -50,10 +50,14 @@ globals.customClasses.AdminRolePrivilegesForm = AdminRolePrivilegesForm;
 /// #endif
 
 import { h, render } from 'preact';
+import { clientOn } from './events-handle';
 import './events/index';
 import './form-tab';
 import { MainFrame } from './main-frame';
+import { E } from './types/generated';
 
 export const renderApp = () => {
 	render(h(MainFrame, null), document.getElementById('container') as HTMLDivElement);
 };
+
+export { clientOn, E };

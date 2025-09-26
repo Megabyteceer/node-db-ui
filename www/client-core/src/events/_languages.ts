@@ -16,7 +16,7 @@ clientOn(E._languages.onLoad, (form) => {
 });
 
 clientOn(E._languages.onSave, (form) => {
-	if (form.isNewRecord && !form.fieldValue('code')) {
+	if (form.isNewRecord && !form.getFieldValue('code')) {
 		form.fieldAlert('code', L('REQUIRED_FLD'));
 	}
 });

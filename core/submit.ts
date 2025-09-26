@@ -271,13 +271,17 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 						values.push(escapeString(fieldVal));
 						break;
 					default:
-						if (typeof fieldVal !== 'number' || isNaN(fieldVal)) {
-							throwError('Value for field ' + fieldName + ' (' + tableName + ') expected as numeric.');
+						if(f.decimals! > 0) {
+							values.push(escapeString(fieldVal));
+						} else {
+							if (typeof fieldVal !== 'number' || isNaN(fieldVal)) {
+								throwError('Value for field ' + fieldName + ' (' + tableName + ') expected as numeric.');
+							}
+							if (f.maxLength && fieldVal.toString().length > f.maxLength) {
+								throwError('Value -length for field \'' + fieldName + '\' (' + tableName + ') is longer that ' + f.maxLength);
+							}
+							values.push(D(fieldVal));
 						}
-						if (f.maxLength && fieldVal.toString().length > f.maxLength) {
-							throwError('Value -length for field \'' + fieldName + '\' (' + tableName + ') is longer that ' + f.maxLength);
-						}
-						values.push(D(fieldVal));
 						break;
 					}
 				}

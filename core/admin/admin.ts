@@ -133,7 +133,8 @@ function escapeRegex(string: string) {
 
 function editFunction(fileName: string, eventName: string, nodeId: NODE_ID, fieldId: FIELD_ID, isServer?: boolean) {
 
-	let functionName = (isServer ? 'serverOn(' : 'clientOn(') + 'E.' + getNodeDesc(nodeId).tableName;
+	const side = isServer ? 'server' : 'client';
+	let functionName = (IS_PROJECT_MODE ? (side + '.' + side + 'On(') : (side + 'On(')) + (IS_PROJECT_MODE ? (side + '.') : '') + 'E.' + getNodeDesc(nodeId).tableName;
 
 	if (fieldId) {
 		functionName += '.' + getFieldDesc(fieldId).fieldName;
@@ -179,6 +180,8 @@ export interface EditSourceRequest {
 	fileName: string;
 }
 
+export const IS_PROJECT_MODE = fs.existsSync('./node_modules/crud-js');
+
 async function editEventHandler(
 	request: EditSourceRequest,	userSession: UserSession
 ) {
@@ -189,7 +192,7 @@ async function editEventHandler(
 	let isServerFileName = (SERVER_SIDE_FORM_EVENTS as any)[request.eventName];
 	const nodeName = getNodeDesc(request.nodeId).tableName!;
 	if (isServerFileName) {
-		fileName = nodeName.startsWith('_') ? ('core/events/' + nodeName + '.ts') : ('events/' + nodeName + '.ts');
+		fileName = nodeName.startsWith('_') ? ('core/events/' + nodeName + '.ts') : ((IS_PROJECT_MODE ? 'server/' :'') + ('events/' + nodeName + '.ts'));
 	} else {
 		fileName = nodeName.startsWith('_') ? ('www/client-core/src/events/' + nodeName + '.ts') : ('www/src/events/' + nodeName + '.ts');
 	}
@@ -199,14 +202,15 @@ async function editEventHandler(
 	const importPath = dirName.split('/').map(_p => '..').join('/');
 	if (!fs.existsSync(fileName)) {
 		fs.writeFileSync(fileName,
-			`import { E } from '${importPath}/types/generated';
+			IS_PROJECT_MODE ? (isServerFileName ? 'import { server } from \'crud-js/server\';' : 'import { client } from \'crud-js/client\';') :
+				`import { E } from '${importPath}/types/generated';
 import { clientOn } from '${importPath}/www/client-core/src/events-handle';`
 		);
 
 		const files = fs.readdirSync(dirName);
 		writeFileSync(path.join(dirName, 'index.ts'),
 			files.filter(f => f !== 'index.ts' && f.endsWith('.ts')).map((f) => {
-				return 'import \'./' + f + '\';';
+				return 'import \'./' + (f.replace(/\.ts$/, '')) + '\';';
 			}).join('\n'));
 
 	}

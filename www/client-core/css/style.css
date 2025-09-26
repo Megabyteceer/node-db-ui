@@ -1240,7 +1240,7 @@ img {
 .list-row-header {
 	vertical-align: middle;
 	font-weight: bold;
-	border-bottom: 3px solid var(--BRAND_COLOR);
+	border-bottom: 1px solid var(--BRAND_COLOR);
 	color: var(--BRAND_COLOR_SHINE);
 	padding: 10px 15px;
 	white-space: nowrap;
@@ -1346,6 +1346,7 @@ img {
 }
 
 .form-full .field-wrap-inline {
+	vertical-align: top;
 	display: inline-block;
 	margin-right: 40px;
 	min-width: 70px;

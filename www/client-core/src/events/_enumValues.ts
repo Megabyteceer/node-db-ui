@@ -6,7 +6,7 @@ clientOn(E._enumValues.onLoad, (form) => {
 
 		let maxEnumVal = 0;
 		for (const item of form.parent.children as FormEnumValues[]) {
-			const value = item.fieldValue('value');
+			const value = item.getFieldValue('value');
 			if (value > maxEnumVal) {
 				maxEnumVal = value;
 			}

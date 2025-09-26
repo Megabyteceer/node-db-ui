@@ -38,7 +38,7 @@ export const getEventsHandlersField = (nodeTableName: string, fieldName: string,
 };
 
 const dispatch = async (nodeTableName: string, eventName: SERVER_SIDE_FORM_EVENTS, ...args: any[]): Promise<KeyedMap<any> | undefined> => {
-	const eventFullName = (E as KeyedMap<any>)[nodeTableName!][eventName];
+	const eventFullName = (E as KeyedMap<any>)[nodeTableName!]?.[eventName];
 	const h = handlers.get(eventFullName);
 
 	if (h) {

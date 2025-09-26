@@ -6,7 +6,7 @@ import { L, submitData } from '../utils';
 
 export const removeWrongCharactersInField = (form: Form, fieldName: string) => {
 	if (!form.isUpdateRecord) {
-		const oldValue = form.fieldValue(fieldName);
+		const oldValue = form.getFieldValue(fieldName);
 		if (oldValue) {
 			const newValue = oldValue.replace(/[^a-zA-Z0-9]/gm, '_').replace(/^\d+/, '');
 			if (oldValue != newValue) {
@@ -20,7 +20,7 @@ export const removeWrongCharactersInField = (form: Form, fieldName: string) => {
 
 const checkTableExists = async (form: FormNodes) => {
 	if (!form.isUpdateRecord) {
-		const tableName = form.fieldValue('tableName');
+		const tableName = form.getFieldValue('tableName');
 		const ret = await submitData('admin/isTableExists', { tableName });
 		if (!ret) {
 			form.fieldAlert('tableName', 'Table with this name is already exist.', false, true, 'table-name-exists');
@@ -31,7 +31,7 @@ const checkTableExists = async (form: FormNodes) => {
 };
 
 const _nodes_recalculateFieldsVisibility = (form: FormNodes) => {
-	if (!form.isNewRecord && form.fieldValue('nodeType') === NODE_TYPE.DOCUMENT) {
+	if (!form.isNewRecord && form.getFieldValue('nodeType') === NODE_TYPE.DOCUMENT) {
 		form.showField('_fieldsId');
 		form.showField('reverse');
 		form.showField('defaultFilterId');
@@ -41,7 +41,7 @@ const _nodes_recalculateFieldsVisibility = (form: FormNodes) => {
 		form.hideField('defaultFilterId');
 	}
 
-	if (form.fieldValue('nodeType') === NODE_TYPE.STATIC_LINK) {
+	if (form.getFieldValue('nodeType') === NODE_TYPE.STATIC_LINK) {
 		form.showField('staticLink');
 	} else {
 		form.hideField('staticLink');
@@ -49,21 +49,21 @@ const _nodes_recalculateFieldsVisibility = (form: FormNodes) => {
 };
 
 clientOn(E._nodes.onLoad, (form) => {
-	if (form.isNewRecord || form.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
+	if (form.isNewRecord || form.getFieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
 		form.hideField('fieldsTab');
 		form.hideField('filtersTab');
 	}
 
 	makeIconSelectionField(form, 'icon');
 
-	if (form.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
+	if (form.getFieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
 		form.hideField('defaultFilterId');
 	} else if (form.isUpdateRecord) {
 		form.addLookupFilters('defaultFilterId', {
 			nodeFiltersLinker: form.recId
 		} as IFiltersFilter);
 	} else {
-		if (!form.fieldValue('storeForms')) {
+		if (!form.getFieldValue('storeForms')) {
 			form.setFieldValue('storeForms', 1);
 		}
 	}
@@ -77,7 +77,7 @@ clientOn(E._nodes.onLoad, (form) => {
 	}
 
 	if (form.isNewRecord) {
-		if (!form.fieldValue('recPerPage')) {
+		if (!form.getFieldValue('recPerPage')) {
 			form.setFieldValue('recPerPage', 25);
 		}
 		form.hideField('_fieldsId');
@@ -93,23 +93,23 @@ clientOn(E._nodes.onLoad, (form) => {
 });
 
 clientOn(E._nodes.onSave, (form) => {
-	if (form.fieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
-		const name = form.fieldValue('name');
+	if (form.getFieldValue('nodeType') !== NODE_TYPE.DOCUMENT) {
+		const name = form.getFieldValue('name');
 		form.setFieldValue('singleName', name);
 		form.setFieldValue('storeForms', 0);
 	} else {
-		if (/[^a-zA-Z_0-9]/.test(form.fieldValue('tableName'))) {
+		if (/[^a-zA-Z_0-9]/.test(form.getFieldValue('tableName'))) {
 			form.fieldAlert('tableName', L('LATIN_ONLY'));
 		}
 
-		if (form.fieldValue('tableName') == parseInt(form.fieldValue('tableName')).toString()) {
+		if (form.getFieldValue('tableName') == parseInt(form.getFieldValue('tableName')).toString()) {
 			form.fieldAlert('tableName', L('NO_NUMERIC_NAME'));
 		}
 	}
 });
 
 const nodeTypeOnChange = (form: FormNodes) => {
-	const nodeType = form.fieldValue('nodeType');
+	const nodeType = form.getFieldValue('nodeType');
 
 	if (nodeType === NODE_TYPE.DOCUMENT) {
 		form.showField(
@@ -163,7 +163,7 @@ clientOn(E._nodes.storeForms.onChange, nodeTypeOnChange);
 clientOn(E._nodes.tableName.onChange, (form) => {
 	removeWrongCharactersInField(form, 'tableName');
 	checkTableExists(form);
-	const name = form.fieldValue('tableName');
+	const name = form.getFieldValue('tableName');
 	if (!form.isUpdateRecord) {
 		if (name.startsWith('_') || name.startsWith('pg_')) {
 			form.fieldAlert('tableName', 'Table name can not start with "_" or "pg_"', false, true, 'prohibited-system-name');
