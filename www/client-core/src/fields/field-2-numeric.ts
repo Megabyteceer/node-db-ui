@@ -19,7 +19,7 @@ export default class NumericField extends BaseField {
 
 		if (isNaN(value)) {
 			value = 0;
-			this.valueListener(0, false);
+			this.valueListener(0, 5);
 		}
 
 		let step = undefined as string | undefined;

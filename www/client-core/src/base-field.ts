@@ -126,7 +126,7 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 		if (this.state.showToolTip) this.setState({ showToolTip: false });
 	}
 
-	valueListener(newVal: any, withBounceDelay = false) {
+	valueListener(newVal: any, withBounceDelay?: boolean | number) {
 		this.currentValue = newVal;
 
 		if (withBounceDelay) {
@@ -134,7 +134,7 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 			this.onChangeTimeout = window.setTimeout(() => {
 				this.onChangeTimeout = 0;
 				this.sendCurrentValueToForm();
-			}, DEBOUNCING_DELAY);
+			}, (typeof withBounceDelay === 'number') ? withBounceDelay : DEBOUNCING_DELAY);
 		} else {
 			this.sendCurrentValueToForm();
 		}

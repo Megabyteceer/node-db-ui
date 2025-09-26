@@ -16,7 +16,7 @@ export default class TextField extends BaseField {
 
 		if (typeof value === 'undefined') {
 			value = '';
-			this.valueListener('', false);
+			this.valueListener('', 5);
 		}
 
 		const field = this.props.fieldDesc;

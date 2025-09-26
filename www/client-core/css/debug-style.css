@@ -104,6 +104,8 @@
 }
 
 .field-wrap .admin-form-wrap {
+	position: absolute;
+	top: 8px;
 	left: -26px;
 	font-size: 85%;
 }
