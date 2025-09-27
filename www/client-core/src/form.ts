@@ -144,7 +144,13 @@ export default class Form<
 	tryBackupData() {
 		if (this.recId === NEW_RECORD && !this.isList && this.props.editable && !this.props.parentForm) {
 			this.prepareToBackup();
-			setItem(this._getBackupKey(), this.formData!);
+			const backupData = Object.assign({}, this.formData!) as any;
+			for (const f of this.nodeDesc.fields!) {
+				if (f.fieldType === FIELD_TYPE.FILE || f.fieldType === FIELD_TYPE.IMAGE) {
+					delete backupData[f.fieldName];
+				}
+			}
+			setItem(this._getBackupKey(), backupData);
 		}
 	}
 
@@ -280,15 +286,16 @@ export default class Form<
 		if (this.isAsyncInProgress()) {
 			await this.waitForAsyncFinish();
 		}
-		await this.beforeSave();
-		if (this.canProcessEvents()) {
-			await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.onSave);
-		}
-		if (this.isAsyncInProgress()) {
-			await this.waitForAsyncFinish();
-		}
 		const ret = this.isValid();
 		if (ret !== SAVE_REJECTED) {
+			await this.beforeSave();
+			if (this.canProcessEvents()) {
+				await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.onSave);
+			}
+			if (this.isAsyncInProgress()) {
+				await this.waitForAsyncFinish();
+			}
+
 			const dataToSend = this.getDataToSend(isDraft);
 			if (Object.keys(dataToSend).length > 0) {
 				const submitResult: RecordSubmitResult | RecordSubmitResultNewRecord = await submitRecord(this.nodeId, dataToSend, this.formData!.id);

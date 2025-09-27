@@ -94,7 +94,6 @@ export default class BaseLookupField extends BaseField<BaseLookupFieldProps, Bas
 	}
 
 	toggleCreateDialogue(recIdToEdit?: RecId | typeof NEW_RECORD) {
-
 		const filters = this.parentForm
 			? {
 				[this.getLinkerFieldName()]: { id: this.parentForm.recId }

@@ -60,4 +60,4 @@ export const renderApp = () => {
 	render(h(MainFrame, null), document.getElementById('container') as HTMLDivElement);
 };
 
-export { clientOn, E };
+export { clientOn, E, Stage };

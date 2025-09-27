@@ -192,7 +192,7 @@ async function editEventHandler(
 	let isServerFileName = (SERVER_SIDE_FORM_EVENTS as any)[request.eventName];
 	const nodeName = getNodeDesc(request.nodeId).tableName!;
 	if (isServerFileName) {
-		fileName = nodeName.startsWith('_') ? ('core/events/' + nodeName + '.ts') : ((IS_PROJECT_MODE ? 'server/' :'') + ('events/' + nodeName + '.ts'));
+		fileName = nodeName.startsWith('_') ? ('core/events/' + nodeName + '.ts') : ((IS_PROJECT_MODE ? 'server/' : '') + ('events/' + nodeName + '.ts'));
 	} else {
 		fileName = nodeName.startsWith('_') ? ('www/client-core/src/events/' + nodeName + '.ts') : ('www/src/events/' + nodeName + '.ts');
 	}
@@ -200,7 +200,9 @@ async function editEventHandler(
 	const dirName = path.dirname(fileName);
 
 	const importPath = dirName.split('/').map(_p => '..').join('/');
+
 	if (!fs.existsSync(fileName)) {
+		debugger;
 		fs.writeFileSync(fileName,
 			IS_PROJECT_MODE ? (isServerFileName ? 'import { server } from \'crud-js/server\';' : 'import { client } from \'crud-js/client\';') :
 				`import { E } from '${importPath}/types/generated';

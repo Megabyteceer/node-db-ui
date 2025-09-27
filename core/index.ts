@@ -2,7 +2,7 @@ import { ENV, SERVER_ENV } from './ENV';
 
 import api, { type APIHandler } from './api';
 import { finishSession, isUserHaveRole, startSession, type UserSession } from './auth';
-import { initNodesData } from './describe-node';
+import { initNodesData, registerServerSideFieldTypeDescriber } from './describe-node';
 
 import { ROLE_ID, type ApiResponse, type APIResult } from '../www/client-core/src/bs-utils';
 import './locale';
@@ -20,7 +20,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import { serverOn } from '../www/client-core/src/events-handle';
-import { E } from '../www/client-core/src/types/generated';
+import { E, FIELD_TYPE } from '../www/client-core/src/types/generated';
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -160,3 +160,22 @@ export { app, E, serverOn, startServer };
 if (require.main === module) {
 	startServer();
 }
+
+registerServerSideFieldTypeDescriber(FIELD_TYPE.TAB, 'BaseField', '../base-field');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.TEXT, 'TextField', '../fields/field-1-text-default');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.LOOKUP_N_TO_M, 'LookupManyToManyFiled', '../fields/field-14-many-to-many');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.LOOKUP_1_TO_N, 'LookupOneToManyFiled', '../fields/field-15-one-to-many');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.NUMBER, 'NumericField', '../fields/field-2-numeric');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.DATE_TIME, 'FieldDateTime', '../fields/field-4-date-time');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.BOOL, 'BooleanField', '../fields/field-5-bool');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.ENUM, 'EnumField', '../fields/field-6-enum');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.LOOKUP, 'LookupManyToOneFiled', '../fields/field-7-many-to-one');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.PASSWORD, 'PasswordField', '../fields/field-10-password');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.DATE, 'DateField', '../fields/field-11-date');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.IMAGE, 'PictureField', '../fields/field-12-picture');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.BUTTON, 'ButtonField', '../fields/field-18-button');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.HTML_EDITOR, 'RichEditorField', '../fields/field-19-rich-editor');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.COLOR, 'ColorField', '../fields/field-20-color');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.FILE, 'FileField', '../fields/field-21-file');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.SPLITTER, 'SplitterField', '../fields/field-22-splitter');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.STATIC_HTML_BLOCK, 'StaticTextField', '../fields/field-8-static-text');

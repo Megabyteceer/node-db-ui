@@ -9,7 +9,7 @@ import { globals } from '../types/globals';
 import { assignFilters, deleteRecordClient, registerFieldClass } from '../utils';
 import BaseLookupField from './base-lookup-field';
 
-class LookupOneToManyFiled extends BaseLookupField {
+export default class LookupOneToManyFiled extends BaseLookupField {
 
 	setValue(_val: any) {
 		if (this.state.inlineEditing) {
@@ -28,7 +28,10 @@ class LookupOneToManyFiled extends BaseLookupField {
 	valueSelected(recordData?: RecordData, isNewCreated?: boolean, noToggleList?: boolean): void;
 	valueSelected() {}
 
+	currentEditItemNum?: number;
+
 	toggleCreateDialogue(recIdToEdit?: RecId | typeof NEW_RECORD) {
+		this.currentEditItemNum = (recIdToEdit === NEW_RECORD) ? (this.children.length - 1) : this.children.findIndex(f => (f as Form).formData?.id === recIdToEdit);
 		const filters = {
 			[this.getLinkerFieldName()]: { id: this.parentForm.recId }
 		};

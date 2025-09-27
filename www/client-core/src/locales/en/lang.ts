@@ -82,7 +82,6 @@ const LANGS = {
 	'N_TIME': '% (time)',
 	'DATE': 'Date',
 	'N_DATE': '% (date)',
-	'FILE_SELECTED': 'file selected: % ',
 	'KILO_BYTES_SHORT': 'Kb',
 	'FILE_SELECT': 'Select.. (% max.)',
 	'RICH_ED_SIZE': 'Total size of images in field "%" should be less that 2 megabytes.',

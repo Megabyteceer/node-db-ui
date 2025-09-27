@@ -31,7 +31,7 @@ class CheckBox extends Component<CheckBoxProps> {
 	}
 }
 
-class BooleanField extends BaseField {
+export default class BooleanField extends BaseField {
 
 	setValue(val: boolean | BoolNum) {
 		val = (val !== 0) && Boolean(val);

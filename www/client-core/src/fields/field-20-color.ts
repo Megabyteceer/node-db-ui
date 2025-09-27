@@ -19,7 +19,7 @@ interface ColorFieldState extends BaseFieldState {
 	alpha: number;
 }
 
-class ColorField extends BaseField<BaseFieldProps, ColorFieldState> {
+export default class ColorField extends BaseField<BaseFieldProps, ColorFieldState> {
 
 	constructor(props: BaseFieldProps) {
 		super(props);

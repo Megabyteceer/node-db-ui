@@ -13,13 +13,36 @@ export default class NumericField extends BaseField {
 		return false;
 	}
 
+	setMin(min?: number) {
+		this.refToInput.min = min as any;
+		this.min = min;
+	}
+
+	private min?: number;
+	private max?: number;
+
+	valueListener(val: string, withBounceDelay?: boolean | number) {
+		if (typeof this.min === 'number') {
+			val = Math.max(this.min, parseFloat(val)).toFixed(this.props.fieldDesc.decimals || 0);
+		}
+		if (typeof this.max === 'number') {
+			val = Math.min(this.max, parseFloat(val)).toFixed(this.props.fieldDesc.decimals || 0);
+		}
+		return super.valueListener(this.props.fieldDesc.decimals ? val : parseInt(val), withBounceDelay);
+	}
+
+	setMax(max?: number) {
+		this.refToInput.max = max as any;
+		this.max = max;
+	}
+
 	renderFieldEditable() {
 		let value = this.currentValue;
 		const field = this.props.fieldDesc;
 
 		if (isNaN(value)) {
 			value = 0;
-			this.valueListener(0, 5);
+			this.valueListener('0', 5);
 		}
 
 		let step = undefined as string | undefined;

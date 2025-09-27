@@ -15,7 +15,7 @@ window.addEventListener('message', (e) => {
 	}
 });
 
-class RichEditorField extends BaseField {
+export default class RichEditorField extends BaseField {
 	constructor(props: BaseFieldProps) {
 		super(props);
 		this.iframeId = idCounter++;

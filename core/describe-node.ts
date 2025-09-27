@@ -488,7 +488,7 @@ import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordD
 				let type = getFieldTypeSrc(field);
 				const jsDoc = '\t/** **' + (getEnumDesc(ENUM_ID.FIELD_TYPE)).namesByValue[field.fieldType] + '** ' + (field.description || '') + ' */';
 				src.push(jsDoc);
-				src.push('	' + field.fieldName + (field.requirement ? '' : '?') + ': ' + type + ';');
+				src.push('	' + field.fieldName + ((field.requirement && field.sendToServer ) ? '' : '?') + ': ' + type + ';');
 				if (field.forSearch) {
 					searchFields.push(jsDoc, '\t' + field.fieldName + ': ' + (field.fieldType === FIELD_TYPE.LOOKUP ? 'number' : type) + ';');
 				}
@@ -599,24 +599,34 @@ export class TypeGenerationHelper {`);
 
 	const CLIENT_HANDLER_RET = 'Promise<boolean | void> | boolean | void';
 
+	const importedTypes = {} as KeyedMap<true>;
+
 	nodesData.forEach((nodeData) => {
 
 		if (nodeData.nodeType === NODE_TYPE.DOCUMENT) {
 			const nodeName = snakeToCamel(nodeData.tableName!);
-			const methodNameGet = 'fieldValue';
-			const methodNameSet = 'setFieldValue';
 			const fieldsWithData = nodeData.fields!.filter(f => f.dataType !== FIELD_DATA_TYPE.NODATA);
 			const formInterfaceName = 'Form' + nodeName;
 
 			srcAdd.push(`export interface ${formInterfaceName} extends Form<T${nodeName}FieldsList> {`);
 			for (const field of fieldsWithData) {
 				let type = getFieldTypeSrc(field);
-				srcAdd.push(`	${methodNameGet}(fieldName: '${field.fieldName}'): ${type};`);
+				srcAdd.push(`	getFieldValue(fieldName: '${field.fieldName}'): ${type};`);
 			}
 			for (const field of fieldsWithData) {
 				let type = getFieldTypeSrc(field);
-				srcAdd.push(`	${methodNameSet}(fieldName: '${field.fieldName}', value: ${type}): void;`);
+				srcAdd.push(`	setFieldValue(fieldName: '${field.fieldName}', value: ${type}): void;`);
 			}
+
+			for (const field of nodeData.fields!) {
+				let type = fieldsTypesDescribers.get(field.fieldType)!;
+				if (!importedTypes[type.className]) {
+					importedTypes[type.className] = true;
+					src.unshift(`import type ${type.className} from '${type.importPath}';`);
+				}
+				srcAdd.push(`	getField(fieldName: '${field.fieldName}'): ${type.className};`);
+			}
+
 			srcAdd.push('}');
 			const formArg
 				= `form: ${formInterfaceName}`;
@@ -785,3 +795,14 @@ function getFieldTypeSrc(field: FieldDesc) {
 	}
 	return type;
 }
+
+const fieldsTypesDescribers = new Map() as Map<FIELD_TYPE, {
+	className: string;
+	importPath: string;
+}>;
+
+/** importPath - path relative to generated.ts file */
+export const registerServerSideFieldTypeDescriber = (type: FIELD_TYPE, className: string, importPath: string) => {
+	assert(importPath.startsWith('..'), 'importPath expected to be relative to generated.ts file');
+	fieldsTypesDescribers.set(type, { className, importPath });
+};

@@ -53,7 +53,7 @@ serverOn(E._fields.afterCreate, async (data, userSession) => {
 			selectFieldName: parentNode.tableName,
 			_usersId: userSession.id,
 			_organizationId: userSession.orgId
-		};
+		} as IFieldsRecordWrite;
 		await submitRecord(NODE_ID.FIELDS, linkerFieldData);
 	}
 
@@ -97,9 +97,9 @@ serverOn(E._fields.beforeUpdate, async (currentData, newData, userSession) => {
 
 			if (currentData.forSearch !== newData.forSearch) {
 				if (newData.forSearch) {
-					await mysqlExec(`CREATE INDEX "${node.tableName}${realFieldName}" ON ${node.tableName} USING btree (${realFieldName});`);
+					await mysqlExec(`CREATE INDEX IF NOT EXISTS "${node.tableName}${realFieldName}" ON "${node.tableName}" USING btree ("${realFieldName}");`);
 				} else {
-					await mysqlExec(`DROP INDEX IF EXISTS "${node.tableName}${realFieldName};`);
+					await mysqlExec(`DROP INDEX IF EXISTS "${node.tableName}${realFieldName}";`);
 				}
 			}
 
@@ -123,18 +123,18 @@ serverOn(E._fields.beforeUpdate, async (currentData, newData, userSession) => {
 							} else {
 								for (const l of langs) {
 									if (l.prefix) {
-										await mysqlExec('ALTER TABLE ' + node.tableName + ' DROP COLUMN ' + realFieldName + l.prefix);
+										await mysqlExec('ALTER TABLE "' + node.tableName + '" DROP COLUMN "' + realFieldName + l.prefix + '"');
 									}
 								}
 							}
 						} else if (currentData.multilingual) {
 							for (const l of langs) {
 								if (l.prefix) {
-									await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + l.prefix + ' ' + typeQ);
+									await mysqlExec('ALTER TABLE "' + node.tableName + '" ALTER COLUMN "' + realFieldName + l.prefix + '" TYPE ' + typeQ.split(' NOT NULL ')[0]);
 								}
 							}
 						}
-						await mysqlExec('ALTER TABLE ' + node.tableName + ' MODIFY COLUMN ' + realFieldName + ' ' + typeQ);
+						await mysqlExec('ALTER TABLE "' + node.tableName + '" ALTER COLUMN "' + realFieldName + '" TYPE ' + typeQ.split(' NOT NULL ')[0]);
 					}
 				}
 			}
@@ -231,15 +231,15 @@ async function createFieldInTable(data: IFieldsRecordWrite) {
 		const fld2 = linkedNodeName + 'Id';
 
 		await mysqlExec(`
-			CREATE TABLE ${fieldName} (
+			CREATE TABLE "${fieldName}" (
 				id serial8,
-				${fld1} int4,
-				${fld2} int4
-			);
+				"${fld1}" int4,
+				"${fld2}" int4
+			);`);
 
-			ALTER TABLE ${fieldName} ADD CONSTRAINT ${fieldName}_key PRIMARY KEY (${fld1}, ${fld2});
-			CREATE INDEX ON "_userRoles" USING hash (${fld1});
-			CREATE INDEX ON "_userRoles" USING hash (${fld2});
+		await mysqlExec(`ALTER TABLE "${fieldName}" ADD CONSTRAINT "${fieldName}_key" PRIMARY KEY ("${fld1}", "${fld2}");
+			CREATE INDEX ON "${fieldName}" USING hash ("${fld1}");
+			CREATE INDEX ON "${fieldName}" USING hash ("${fld2}");
 			`);
 	} else if (data.storeInDb) {
 		if (fieldType === FIELD_TYPE.LOOKUP) {

@@ -91,7 +91,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 			}
 		} else if (f.storeInDb) {
 			if (f.requirement) {
-				if ((!data.hasOwnProperty(fieldName) || !(data as KeyedMap<any>)[fieldName]) && (!currentData! || !(currentData as KeyedMap<any>)[fieldName])) {
+				if ((!data.hasOwnProperty(fieldName)) && !currentData!) {
 					throwError('Required field \'' + fieldName + '\' is empty.');
 				}
 			}
@@ -138,6 +138,8 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 			if (!isAdmin(userSession)) {
 				throwError('_usersId admin expected');
 			}
+			fieldsNames.push('"_usersId"');
+			values.push(D((data as any)._usersId));
 		} else {
 			assert(userSession, 'submitRecord without userSession requires _usersId to be defined.');
 
@@ -151,6 +153,8 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 			if (!isAdmin(userSession)) {
 				throwError('_organizationId admin expected');
 			}
+			fieldsNames.push('"_organizationId"');
+			values.push(D((data as any)._organizationId));
 		} else {
 			assert(userSession, 'submitRecord without userSession requires _organizationId to be defined.');
 
@@ -222,7 +226,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 						// continue to process as uploaded image
 					case FIELD_TYPE.IMAGE:
 						if (fieldVal) {
-							if (userSession!.uploaded && userSession!.uploaded[f.id!] === fieldVal) {
+							if (userSession!.uploaded && userSession!.uploaded[f.id!].endsWith('/' + fieldVal)) {
 								delete userSession!.uploaded[f.id];
 							} else {
 								throwError('Error. Couldn\'t link uploaded file to the record.');

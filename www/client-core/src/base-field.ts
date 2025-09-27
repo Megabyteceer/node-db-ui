@@ -60,7 +60,6 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 		/// #endif
 		this.fieldDisabled = !!props.fieldDisabled;
 		this.hidden = !!props.fieldHidden;
-
 		this.required = !!props.fieldDesc.requirement;
 		this.currentValue = props.initialValue;
 		if (!(this.props as BaseLookupFieldProps).isN2M) {
@@ -133,10 +132,10 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 			this.clearChangeTimeout();
 			this.onChangeTimeout = window.setTimeout(() => {
 				this.onChangeTimeout = 0;
-				this.sendCurrentValueToForm();
+				return this.sendCurrentValueToForm();
 			}, (typeof withBounceDelay === 'number') ? withBounceDelay : DEBOUNCING_DELAY);
 		} else {
-			this.sendCurrentValueToForm();
+			return this.sendCurrentValueToForm();
 		}
 	}
 
@@ -152,10 +151,6 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 	}
 
 	async beforeSave(): Promise<void> {
-		if (this.required && this.isEmpty()) {
-			this.alert(L('REQUIRED_FLD'), false, true, 'core-required');
-		}
-		return super.beforeSave();
 	}
 
 	async focus() {
@@ -376,6 +371,10 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 
 	isValid(): typeof SAVE_REJECTED | undefined {
 		if (super.isValid()) {
+			return SAVE_REJECTED;
+		}
+		if (this.required && this.isEmpty()) {
+			this.alert(L('REQUIRED_FLD'), false, true, 'core-required');
 			return SAVE_REJECTED;
 		}
 		if (this.state.alertText && !this.state.isSuccessAlert) {

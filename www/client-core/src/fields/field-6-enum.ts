@@ -6,7 +6,7 @@ import { R } from '../r';
 import { FIELD_TYPE } from '../types/generated';
 import { registerFieldClass } from '../utils';
 
-class EnumField extends BaseField {
+export default class EnumField extends BaseField {
 
 	enum?: EnumList;
 

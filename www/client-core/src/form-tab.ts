@@ -5,13 +5,6 @@ import { R } from './r';
 import { globals } from './types/globals';
 import { renderIcon } from './utils';
 
-const activeTabContentProps = {
-	className: 'form-tab'
-};
-const tabContentProps = {
-	className: 'form-tab hidden'
-};
-
 export interface TabFieldProps extends BaseFieldProps {
 	active: boolean;
 }
@@ -86,10 +79,12 @@ export class FormTabContent extends BaseField<TabFieldProps, BaseFieldState> {
 	}
 
 	render() {
-
-		return	R.div(this.props.active ? activeTabContentProps : tabContentProps,
+		let className = 'form-tab form-tab-' + this.props.fieldDesc.fieldName;
+		if (!this.props.active) {
+			className += ' hidden';
+		}
+		return	R.div({ className },
 			this.props.fieldDesc.tabFields!.map(i => this.parentForm.renderField(i, this)));
-
 	}
 }
 

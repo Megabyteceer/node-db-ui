@@ -8,7 +8,7 @@ import { FIELD_TYPE } from '../types/generated';
 import { checkFileSize, idToImgURL, L, registerFieldClass, renderIcon, serializeForm, submitData } from '../utils';
 import waitForCondition from '../wait-for-condition';
 
-class PictureField extends BaseField {
+export default class PictureField extends BaseField {
 	cropperBody!: CropperFieldBody;
 
 	setValue(value: string) {
@@ -26,6 +26,7 @@ class PictureField extends BaseField {
 			this.valueListener(newImageId); // just indicate field updated. Image path will be passed via userSession
 			await waitForCondition(() => this.parentForm.formData![this.props.fieldDesc.fieldName] === newImageId);
 		}
+		return super.beforeSave();
 	}
 
 	async afterSave() {

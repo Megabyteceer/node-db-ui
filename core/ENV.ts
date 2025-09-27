@@ -44,7 +44,7 @@ const ENV = {
 	TERMS_URL: '',
 	MAX_FILE_SIZE_TO_UPLOAD: 3000000,
 
-	ALLOWED_UPLOADS: ['gif', 'jpg', 'jpeg', 'jpe', 'png', 'zip', 'rar', 'doc', 'docx', 'xls', 'xlsx', 'pdf', 'ppt', 'pptx', 'txt', 'wav'],
+	ALLOWED_UPLOADS: ['gif', 'jpg', 'jpeg', 'jpe', 'png', 'zip', 'rar', 'doc', 'docx', 'xls', 'xlsx', 'pdf', 'ppt', 'pptx', 'txt', 'wav', 'json'],
 
 	BLOCK_RICH_EDITOR_TAGS: ['script'],
 
@@ -56,11 +56,11 @@ const ENV = {
 for (let fn of ['build-debug/ENV.js', 'ENV.js']) {
 	fn = path.join(process.cwd(), fn);
 	if (existsSync(fn)) {
-		const env = require(fn);
-		if(env.SERVER_ENV) {
+		const env = require(fn); // eslint-disable-line @typescript-eslint/no-require-imports
+		if (env.SERVER_ENV) {
 			Object.assign(SERVER_ENV, env.SERVER_ENV);
 		}
-		if(env.ENV) {
+		if (env.ENV) {
 			Object.assign(ENV, env.ENV);
 		}
 	}

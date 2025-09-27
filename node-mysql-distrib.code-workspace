@@ -155,6 +155,12 @@
 				"program": "${workspaceFolder}/build-debug/core/index.js"
 			},
 			{
+				"type": "node",
+				"request": "launch",
+				"name": "RESET DB!!!",
+				"program": "${workspaceFolder}/build-debug/core/admin/reset-bd-danger!.js"
+			},
+			{
 				"type": "chrome",
 				"request": "launch",
 				"name": "Client",
