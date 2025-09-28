@@ -3,6 +3,7 @@ import { assert, ESCAPE_BEGIN, ESCAPE_END, throwError } from '../www/client-core
 import type { BoolNum, RecId, UserLangEntry, UserRoles, UserSession } from '../www/client-core/src/bs-utils';
 import { ROLE_ID, USER_ID } from '../www/client-core/src/bs-utils';
 import { NODE_ID } from '../www/client-core/src/types/generated';
+import waitForCondition from '../www/client-core/src/wait-for-condition';
 import { DEFAULT_LANGUAGE, getGuestUserForBrowserLanguage, getLangs } from './describe-node';
 import { ENV, SERVER_ENV } from './ENV';
 import { L } from './locale';
@@ -32,15 +33,6 @@ function createSession(userSession: UserSession, sessionToken?: string) {
 
 // TODO: clear outdated sessions
 
-/// #if DEBUG
-const SESSION_START_REATTEMPT_DELAY = 100;
-const SESSION_START_MAINTAIN_REATTEMPT_DELAY = 500;
-/*
-/// #endif
-const SESSION_START_REATTEMPT_DELAY = 1000;
-const SESSION_START_MAINTAIN_REATTEMPT_DELAY = 5000;
-// */
-
 let maintenanceMode = 0;
 let startedSessionsCount = 0;
 const usersSessionsStartedCount = () => {
@@ -52,7 +44,7 @@ function setMaintenanceMode(val: boolean) {
 	console.log('setMaintenanceMode ' + val);
 	// console.log((new Error('')).stack.replace('Error', '').trim());
 	/// #endif
-	return; // TODO: Maintenance
+
 	if (val) {
 		maintenanceMode++;
 	} else {
@@ -65,6 +57,7 @@ function setMaintenanceMode(val: boolean) {
 }
 
 async function startSession(sessionToken: string, browserLanguageId?: string) {
+
 	if (!sessionToken) {
 		return getGuestUserForBrowserLanguage(browserLanguageId);
 	}
@@ -79,29 +72,15 @@ async function startSession(sessionToken: string, browserLanguageId?: string) {
 		userSession = sessions.get(sessionToken)!;
 	}
 
-	if (!userSession._isStarted && !maintenanceMode) {
-		userSession._isStarted = true;
-		startedSessionsCount++;
-		return Promise.resolve(userSession);
+	if (userSession._isStarted || maintenanceMode) {
+		await waitForCondition(() => !userSession._isStarted && !maintenanceMode);
 	}
-	return new Promise((resolve, rejects) => {
-		const i = setInterval(
-			() => {
-				if (!userSession._isStarted && !maintenanceMode) {
-					clearInterval(i);
-					if (userSession.id === 0) {
-						rejects(new Error('<auth> session expired'));
-					}
-					userSession._isStarted = true;
-					startedSessionsCount++;
-					resolve(userSession);
-				}
-			},
-			maintenanceMode
-				? SESSION_START_MAINTAIN_REATTEMPT_DELAY
-				: SESSION_START_REATTEMPT_DELAY
-		);
-	});
+	if (userSession.id === 0) {
+		throwError('<auth> session expired');
+	}
+	userSession._isStarted = true;
+	startedSessionsCount++;
+	return userSession;
 }
 
 function finishSession(sessionToken: string) {

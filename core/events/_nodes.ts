@@ -37,7 +37,7 @@ serverOn(E._nodes.afterCreate, async (data, userSession) => {
 	}
 
 	if (data.nodeType === NODE_TYPE.DOCUMENT && data.storeForms) {
-		const tblCrtQ = ESCAPE_BEGIN + `CREATE TABLE ${data.tableName} (
+		const tblCrtQ = ESCAPE_BEGIN + `CREATE TABLE "${data.tableName}" (
 			id serial4  NOT NULL,
 			"status" int2  NOT NULL,
 			name VARCHAR(64) NOT NULL,

@@ -88,6 +88,7 @@ class DebugPanel extends Component<DebugPanelProps, {
 			Notify.add('error');
 		} else if (ret) {
 			Notify.add('done');
+			location.reload();
 		}
 	}
 

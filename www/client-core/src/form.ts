@@ -765,7 +765,7 @@ export default class Form<
 						}
 					},
 					renderIcon('plus'),
-					' ' + node.creationName || (L('CREATE') + ' ' + node.singleName)
+					' ' + (node.creationName || (L('CREATE') + ' ' + node.singleName))
 				);
 			} else {
 				createButton = R.button(
@@ -776,7 +776,7 @@ export default class Form<
 						}
 					},
 					renderIcon('plus'),
-					' ' + node.creationName || (L('CREATE') + ' ' + node.singleName)
+					' ' + (node.creationName || (L('CREATE') + ' ' + node.singleName))
 				);
 			}
 		}
@@ -1156,7 +1156,7 @@ export default class Form<
 				null,
 				R.button(
 					{
-						title: L('ADD', node.creationName || node.singleName),
+						title: node.creationName || L('ADD', node.singleName),
 						className: 'clickable tool-btn create-btn',
 						onClick: () => {
 							(data as RecordsDataOrdered).items.push({ name: '', order: Number.MAX_SAFE_INTEGER });
@@ -1423,7 +1423,7 @@ export default class Form<
 						null,
 						nodeDesc.icon ? renderIcon(nodeDesc.icon) : undefined,
 						this.recId === NEW_RECORD
-							? (nodeDesc.storeForms ? L('CREATE') + ' ' : undefined, nodeDesc.creationName || nodeDesc.singleName)
+							? (nodeDesc.creationName || ((nodeDesc.storeForms ? L('CREATE') + ' ' : undefined, nodeDesc.singleName)))
 							: this.formData!.name
 					);
 				header = R.h4({ className: 'form-header' }, headerContent);

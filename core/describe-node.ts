@@ -13,12 +13,14 @@ import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, TreeItem, User
 import { FIELD_DATA_TYPE, isServer, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import { ENUM_ID, FIELD_TYPE, NODE_ID, NODE_TYPE, type IFiltersRecord } from '../www/client-core/src/types/generated';
 import { globals } from '../www/client-core/src/types/globals';
+import waitForCondition from '../www/client-core/src/wait-for-condition';
 import { recoveryDB } from './admin/admin';
 import type { UserSession /* , usersSessionsStartedCount */ } from './auth';
-import { authorizeUserByID, isUserHaveRole, setMaintenanceMode /* , usersSessionsStartedCount */ } from './auth';
+import {
+	authorizeUserByID, isUserHaveRole, setMaintenanceMode, /* , usersSessionsStartedCount */
+	usersSessionsStartedCount
+} from './auth';
 import { ENV, type ENV_TYPE } from './ENV';
-
-const METADATA_RELOADING_ATTEMPT_INTERVAl = 500;
 
 interface FilterRecord extends IFiltersRecord {
 	roles: number[];
@@ -51,6 +53,10 @@ function getFieldDesc(fieldId: number): FieldDesc {
 
 function getEnumDesc(enumId: RecId) {
 	return enumsById.get(enumId)!;
+}
+
+export function getRawNodeDesc(nodeId: NODE_ID): NodeDesc {
+	return nodesById.get(nodeId)!;
 }
 
 function getNodeDesc(nodeId: NODE_ID, userSession = ADMIN_USER_SESSION): NodeDesc {
@@ -241,24 +247,14 @@ function getNodesTree(userSession: UserSession) {
 	return nodesTreeCache.get(cacheKey);
 }
 
-let metadataReloadingInterval = 0;
-function reloadMetadataSchedule() {
-	if (!metadataReloadingInterval) {
-		setMaintenanceMode(true);
-		metadataReloadingInterval = setInterval(attemptToReloadMetadataSchedule, METADATA_RELOADING_ATTEMPT_INTERVAl) as any;
+async function reloadMetadataSchedule() {
+	setMaintenanceMode(true);
+	if (usersSessionsStartedCount()) {
+		await waitForCondition(() => usersSessionsStartedCount() === 0);
 	}
-}
+	await initNodesData();
+	setMaintenanceMode(false);
 
-function attemptToReloadMetadataSchedule() {
-	// if(usersSessionsStartedCount() === 0) { //TODO: disabled because of freezes
-	if (metadataReloadingInterval) {
-		clearInterval(metadataReloadingInterval);
-		metadataReloadingInterval = 0;
-	}
-	initNodesData().then(() => {
-		setMaintenanceMode(false);
-	});
-	//	}
 }
 
 async function initNodesData() {
@@ -397,7 +393,14 @@ async function initNodesData() {
 				filtersById.set(f.id!, f);
 				(filters)[f.id!] = f;
 			}
-			nodeData.filters = filters;
+			nodeData.fieldsById = {};
+			nodeData.fieldsByName = {};
+			if (nodeData.fields) {
+				nodeData.fields.forEach((f: FieldDesc) => {
+					nodeData.fieldsById![f.id] = f;
+					nodeData.fieldsByName![f.fieldName] = f;
+				});
+			}
 		}
 	}
 
@@ -488,7 +491,7 @@ import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordD
 				let type = getFieldTypeSrc(field);
 				const jsDoc = '\t/** **' + (getEnumDesc(ENUM_ID.FIELD_TYPE)).namesByValue[field.fieldType] + '** ' + (field.description || '') + ' */';
 				src.push(jsDoc);
-				src.push('	' + field.fieldName + ((field.requirement && field.sendToServer ) ? '' : '?') + ': ' + type + ';');
+				src.push('	' + field.fieldName + ((field.requirement && field.sendToServer) ? '' : '?') + ': ' + type + ';');
 				if (field.forSearch) {
 					searchFields.push(jsDoc, '\t' + field.fieldName + ': ' + (field.fieldType === FIELD_TYPE.LOOKUP ? 'number' : type) + ';');
 				}

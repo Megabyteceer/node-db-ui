@@ -164,7 +164,7 @@ clientOn(E._nodes.tableName.onChange, (form) => {
 	removeWrongCharactersInField(form, 'tableName');
 	checkTableExists(form);
 	const name = form.getFieldValue('tableName');
-	if (!form.isUpdateRecord) {
+	if (!form.isUpdateRecord && name) {
 		if (name.startsWith('_') || name.startsWith('pg_')) {
 			form.fieldAlert('tableName', 'Table name can not start with "_" or "pg_"', false, true, 'prohibited-system-name');
 		} else {

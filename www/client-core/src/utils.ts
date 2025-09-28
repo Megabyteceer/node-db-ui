@@ -1006,7 +1006,7 @@ async function deleteRecordClient(name: string | null, nodeId: RecId, recId: Rec
 		}
 	} else {
 		const node = await getNode(nodeId);
-		if (await showPrompt(L('SURE_DELETE', node.creationName || node.singleName) + ' "' + name + '"?', L('DELETE'), L('CANCEL'), 'times', 'caret-left', true)) {
+		if (await showPrompt(L('SURE_DELETE', node.singleName) + ' "' + name + '"?', L('DELETE'), L('CANCEL'), 'times', 'caret-left', true)) {
 			return deleteRecordClient(null, nodeId, recId, true, onYes);
 		}
 	}
