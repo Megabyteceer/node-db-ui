@@ -254,7 +254,7 @@ function handleAdditionalData(data: ApiResponse, url: string) {
 
 const INNER_DATE_TIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 const readableDateFormat = 'D MMMM YYYY';
-const readableTimeFormat = 'H:mm';
+const readableTimeFormat = 'HH:mm:ss';
 
 function toReadableDate(d: moment.Moment) {
 	if (d) {

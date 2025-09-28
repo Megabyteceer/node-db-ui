@@ -20,18 +20,25 @@ const showDecimalTips = (form: FormFields) => {
 	}
 };
 
-const check12nFieldName = (form: FormFields) => {
+const checkFieldName = (form: FormFields) => {
 	if (form.isNewRecord) {
-		const fn = form.getFieldValue('fieldName');
-		let nodeId = form.getFieldValue('nodeFieldsLinker')?.id;
-		let nodeRef = form.getFieldValue('nodeRef')?.id;
+		const fieldName = form.getFieldValue('fieldName');
 
-		if (nodeId && fn && fn.length >= 3) {
-			if (form.getFieldValue('fieldType') === FIELD_TYPE.LOOKUP_1_TO_N && nodeRef) {
-				checkFieldExists(form);
-			} else {
-				checkFieldExists(form);
-			}
+		if (fieldName && fieldName.length >= 3) {
+			checkFieldExists(form);
+			form.fieldHideAlert('fieldName', 'short-field-name');
+		} else {
+			form.fieldAlert('fieldName', 'Too short. 3 symbols at least', false, false, 'short-field-name');
+		}
+		if (fieldName === 'nodeId') {
+			form.fieldAlert('fieldName', 'Prohibited field name.', false, false, 'system-field-name');
+		} else {
+			form.fieldHideAlert('fieldName', 'system-field-name');
+		}
+		if (fieldName?.startsWith('_')) {
+			form.fieldAlert('fieldName', 'Field name can not start with "_".', false, false, 'lo-dash-field-name');
+		} else {
+			form.fieldHideAlert('fieldName', 'lo-dash-field-name');
 		}
 	}
 };
@@ -176,22 +183,14 @@ clientOn(E._fields.onSave, (form) => {
 		}
 	}
 
-	if (form.isNewRecord) {
-		if (form.isNewRecord && (!form.getFieldValue('fieldName') || form.getFieldValue('fieldName').length < 3)) {
-			form.fieldAlert('fieldName', L('MIN_NAMES_LEN', 3), false, true, 'field-required');
-		}
-	} else {
-		form.hideField('selectFieldName');
-	}
-
 	if (fieldType === FIELD_TYPE.STATIC_HTML_BLOCK || fieldType === FIELD_TYPE.TAB || fieldType === FIELD_TYPE.BUTTON || fieldType === FIELD_TYPE.SPLITTER) {
 		form.setFieldValue('storeInDb', 0);
 	}
 });
 
-clientOn(E._fields.name.onChange, (form) => {
+clientOn(E._fields.fieldName.onChange, (form) => {
 	removeWrongCharactersInField(form, 'fieldName');
-	check12nFieldName(form);
+	checkFieldName(form);
 });
 
 clientOn(E._fields.visibilityCreate.onChange, (form) => {
@@ -252,10 +251,6 @@ clientOn(E._fields.visibilitySubFormList.onChange, (form) => {
 	}
 
 	form.setFieldValue('show', shv);
-});
-
-clientOn(E._fields.nodeRef.onChange, (form) => {
-	check12nFieldName(form);
 });
 
 const _fields_recalculateFieldsVisibility = (form: FormFields) => {
@@ -354,8 +349,6 @@ const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 		form.hideField('multilingual');
 		form.setFieldValue('multilingual', 0);
 	}
-
-	check12nFieldName(form);
 
 	form.makeFieldRequired('maxLength', form.isFieldVisible('maxLength'));
 };
