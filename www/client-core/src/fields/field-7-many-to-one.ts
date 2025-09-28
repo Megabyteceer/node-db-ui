@@ -84,8 +84,8 @@ export default class LookupManyToOneFiled extends BaseLookupField {
 	}
 
 	renderLookupIcon(value: LookupValueIconic) {
-		if (value) {
-			if (this.props.fieldDesc.lookupIcon && value.icon) {
+		if (value && this.props.fieldDesc.lookupIcon) {
+			if (value.icon) {
 				return R.img({
 					className: 'field-lookup-icon-pic',
 					src: idToImgURL(value.icon, this.props.fieldDesc.lookupIcon) + IMAGE_THUMBNAIL_PREFIX
