@@ -66,6 +66,9 @@ export interface FormControlFilters {
 	/** form tab to show */
 	tab?: string;
 
+	/** number of item in parent 1toN lookup list */
+	_itemNum?:number;
+
 	/** render standard list view */
 	noCustomList?: BoolNum;
 

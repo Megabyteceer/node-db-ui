@@ -1322,19 +1322,6 @@ async function attachGoogleLoginAPI(enforces = false) {
 const getRecordsClient: TypeGenerationHelper['gcm'] = _getRecordsClient as any;
 const getRecordClient: TypeGenerationHelper['gc'] = _getRecordsClient as any;
 
-const resetAutofocus = () => {
-	autoFocusNow = true;
-};
-let autoFocusNow = true;
-export const isAutoFocus = () => {
-	const ret = autoFocusNow;
-	if (autoFocusNow) {
-		autoFocusNow = false;
-		setTimeout(resetAutofocus, 10);
-	}
-	return ret;
-};
-
 export {
 	__corePath,
 	assignFilters,

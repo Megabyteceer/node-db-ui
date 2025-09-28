@@ -21,7 +21,7 @@ import { LoadingIndicator } from './loading-indicator';
 import { R } from './r';
 import { renderItemsButtons } from './render-items-buttons';
 import { iAdmin, User } from './user';
-import { deleteRecordClient, getClassForField, getData, getItem, getListRenderer, getNodeIfPresentOnClient, getRecordsClient, goBack, isAutoFocus, isPresentListRenderer, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, showPrompt, sp, submitRecord, UID, updateHashLocation } from './utils';
+import { deleteRecordClient, getClassForField, getData, getItem, getListRenderer, getNodeIfPresentOnClient, getRecordsClient, goBack, isPresentListRenderer, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, showPrompt, sp, submitRecord, UID, updateHashLocation } from './utils';
 
 export interface FormProps extends FormNodeProps {
 	nodeId: NODE_ID;
@@ -189,8 +189,15 @@ export default class Form<
 		if (this.props.isRootForm) {
 			LeftBar.refreshLeftBarActive();
 		}
-		(this.getDomElement().querySelectorAll('[autofocus="true"]')[0] as HTMLInputElement)?.focus();
-
+		setTimeout(() => {
+			const a = Array.from(this.getDomElement().querySelectorAll('input, textarea')) as HTMLInputElement[];
+			for (const elem of a) {
+				if (!elem.closest('.field-wrap-disabled')) {
+					elem.focus();
+					break;
+				}
+			}
+		}, 10);
 	}
 
 	recoveryBackupIfNeed() {
@@ -318,11 +325,13 @@ export default class Form<
 				if (this.canProcessEvents()) {
 					await this.processFormEvent(CLIENT_SIDE_FORM_EVENTS.afterSave, submitResult);
 				}
+				globals.Stage.dataDidModified(this.formData);
 			} else {
 
 				await this.afterSave();
 
 				this.isDataModified = false;
+
 			}
 			if (!this.isPreventCloseFormAfterSave) {
 				if (this.props.parentForm) {
@@ -756,7 +765,7 @@ export default class Form<
 						}
 					},
 					renderIcon('plus'),
-					' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
+					' ' + node.creationName || (L('CREATE') + ' ' + node.singleName)
 				);
 			} else {
 				createButton = R.button(
@@ -767,7 +776,7 @@ export default class Form<
 						}
 					},
 					renderIcon('plus'),
-					' ' + L('CREATE') + ' ' + (node.creationName || node.singleName)
+					' ' + node.creationName || (L('CREATE') + ' ' + node.singleName)
 				);
 			}
 		}
@@ -785,7 +794,6 @@ export default class Form<
 					ref: (input: HTMLInputElement) => {
 						this.searchInput = input;
 					},
-					autoFocus: isAutoFocus(),
 					className: 'list-search-input',
 					placeholder: L('SEARCH_LIST'),
 					onInput: this.changeSearch,

@@ -1,7 +1,7 @@
 import BaseField from '../base-field';
 import { R } from '../r';
 import { FIELD_TYPE } from '../types/generated';
-import { isAutoFocus, registerFieldClass } from '../utils';
+import { registerFieldClass } from '../utils';
 
 export default class PasswordField extends BaseField {
 
@@ -18,7 +18,6 @@ export default class PasswordField extends BaseField {
 			const inputsProps = {
 				type: 'password',
 				name: field.fieldName,
-				autoFocus: isAutoFocus(),
 				defaultValue: value,
 				title: field.name,
 				maxLength: field.maxLength,

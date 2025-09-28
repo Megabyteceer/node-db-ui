@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import type { GetRecordsFilter, RecId, RecordData, RecordsData } from '../bs-utils';
+import type { FormFilters, GetRecordsFilter, RecId, RecordData, RecordsData } from '../bs-utils';
 import { VIEW_MASK } from '../bs-utils';
 import { NEW_RECORD } from '../consts';
 import Form, { type FormProps } from '../form';
@@ -28,13 +28,14 @@ export default class LookupOneToManyFiled extends BaseLookupField {
 	valueSelected(recordData?: RecordData, isNewCreated?: boolean, noToggleList?: boolean): void;
 	valueSelected() {}
 
-	currentEditItemNum?: number;
-
 	toggleCreateDialogue(recIdToEdit?: RecId | typeof NEW_RECORD) {
-		this.currentEditItemNum = (recIdToEdit === NEW_RECORD) ? (this.children.length - 1) : this.children.findIndex(f => (f as Form).formData?.id === recIdToEdit);
+		const subForms = this.getSubForms();
 		const filters = {
-			[this.getLinkerFieldName()]: { id: this.parentForm.recId }
-		};
+			[this.getLinkerFieldName()]: { id: this.parentForm.recId },
+			_itemNum: (recIdToEdit === NEW_RECORD) ? (subForms.length - 1)
+				:
+				subForms.findIndex(f => f.formData?.id === recIdToEdit)
+		} as FormFilters;
 		globals.Stage.showForm(this.props.fieldDesc.nodeRef!.id, recIdToEdit, filters, true, true, () => {
 			this.lookupListForm.refreshData();
 		});

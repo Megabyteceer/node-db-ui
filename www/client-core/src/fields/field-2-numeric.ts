@@ -1,7 +1,7 @@
 import BaseField from '../base-field';
 import { R } from '../r';
 import { FIELD_TYPE } from '../types/generated';
-import { isAutoFocus, registerFieldClass } from '../utils';
+import { registerFieldClass } from '../utils';
 
 export default class NumericField extends BaseField {
 
@@ -54,7 +54,6 @@ export default class NumericField extends BaseField {
 			type: 'number',
 			value: value,
 			title: field.name,
-			autoFocus: isAutoFocus(),
 			step,
 			maxLength: field.maxLength,
 			placeholder: field.name,

@@ -133,7 +133,6 @@ export default class LookupManyToManyFiled extends BaseLookupField {
 							title: L('EDIT'),
 							className: 'clickable tool-btn edit-btn',
 							onClick: () => {
-								debugger;
 								const recId = value.id;
 								const filters = {
 									[this.getLinkerFieldName()]: { id: recId }

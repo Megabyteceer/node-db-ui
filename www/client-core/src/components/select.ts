@@ -94,7 +94,6 @@ class Select extends Component<SelectProps, SelectState> {
 			if (options.length > 5) {
 				searchInput = R.input({
 					className: 'select-search-input',
-					autoFocus: true,
 					defaultValue: this.state.search || '',
 					placeholder: L('SEARCH'),
 					onInput: (ev: InputEvent) => {

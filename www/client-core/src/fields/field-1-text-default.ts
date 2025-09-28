@@ -2,7 +2,7 @@ import type { ComponentChild } from 'preact';
 import BaseField from '../base-field';
 import { R } from '../r';
 import { FIELD_TYPE } from '../types/generated';
-import { consoleDir, isAutoFocus, registerFieldClass } from '../utils';
+import { consoleDir, registerFieldClass } from '../utils';
 
 export default class TextField extends BaseField {
 
@@ -56,7 +56,6 @@ export default class TextField extends BaseField {
 
 		const inputsProps = {
 			className,
-			autoFocus: isAutoFocus(),
 			defaultValue: value,
 			maxLength: field.maxLength,
 			title: field.name,
