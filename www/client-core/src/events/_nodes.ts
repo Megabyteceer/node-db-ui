@@ -1,5 +1,5 @@
 import { clientOn } from '../../../../www/client-core/src/events-handle';
-import { makeIconSelectionField, makeReactClassSelectionField, removeReactClassSelectionField } from '../admin/admin-utils';
+import { makeIconSelectionField, makeReactClassSelectionField, onSystemRecordsModified, removeReactClassSelectionField } from '../admin/admin-utils';
 import type Form from '../form';
 import { E, NODE_TYPE, type FormNodes, type IFieldsFilter, type IFiltersFilter } from '../types/generated';
 import { L, submitData } from '../utils';
@@ -171,5 +171,9 @@ clientOn(E._nodes.tableName.onChange, (form) => {
 			form.fieldHideAlert('tableName', 'prohibited-system-name');
 		}
 	}
+});
+
+clientOn(E._nodes.afterSave, async () => {
+	onSystemRecordsModified();
 });
 /// #endif

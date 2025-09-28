@@ -1,4 +1,5 @@
 import { clientOn } from '../../../../www/client-core/src/events-handle';
+import { onSystemRecordsModified } from '../admin/admin-utils';
 import type { LookupOneToManyFiled } from '../fields/field-15-one-to-many';
 import { E, type FormEnumValues } from '../types/generated';
 import { L } from '../utils';
@@ -34,4 +35,8 @@ clientOn(E._enums.onSave, (form) => {
 		existsName[name] = true;
 	}
 	return ret;
+});
+
+clientOn(E._enums.afterSave, async () => {
+	onSystemRecordsModified();
 });

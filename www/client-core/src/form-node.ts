@@ -39,14 +39,14 @@ export default class FormNode<T1 extends FormNodeProps = FormNodeProps, T2 exten
 	}
 
 	async beforeSave(): Promise<void> {
-		if (this.children.length) {
-			return Promise.all(this.children.map(c => c.beforeSave())) as any;
+		for (const c of this.children) {
+			await c.beforeSave();
 		}
 	}
 
 	async afterSave(): Promise<void> {
-		if (this.children.length) {
-			return Promise.all(this.children.map(c => c.afterSave())) as any;
+		for (const c of this.children) {
+			await c.afterSave();
 		}
 	}
 
@@ -71,8 +71,8 @@ export default class FormNode<T1 extends FormNodeProps = FormNodeProps, T2 exten
 	}
 
 	async forceBouncingTimeout(): Promise<void> {
-		if (this.children.length) {
-			return Promise.all(this.children.map(c => c.forceBouncingTimeout())) as any;
+		for (const c of this.children) {
+			await c.forceBouncingTimeout();
 		}
 	}
 

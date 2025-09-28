@@ -287,6 +287,10 @@ function removeReactClassSelectionField(form: Form, fieldName: string) {
 	form.renderToField(fieldName, 'classes-selector', null);
 }
 
+export function onSystemRecordsModified() {
+	setTimeout(() => location.reload(), 10);
+}
+
 export {
 	admin,
 	makeIconSelectionField,
