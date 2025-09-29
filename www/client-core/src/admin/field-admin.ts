@@ -86,6 +86,8 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 			}
 			const isList = this.props.form?.isList;
 
+			const eventName = (field.fieldType === FIELD_TYPE.BUTTON) ? 'onClick' : 'onChange';
+
 			body = R.div(
 				{
 					ref: keepInWindow,
@@ -105,11 +107,11 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 						{
 							className: 'clickable tool-btn admin-form-btn' + border,
 							onClick: () => {
-								admin_editSource(CLIENT_SIDE_FORM_EVENTS.onChange, node, field);
+								admin_editSource(CLIENT_SIDE_FORM_EVENTS[eventName], node, field);
 							},
 							title: 'Edit client side script which execute on field value change.'
 						},
-						'onChange...'
+						eventName + '...'
 					),
 					R.button(
 						{

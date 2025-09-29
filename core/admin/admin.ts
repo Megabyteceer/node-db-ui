@@ -204,7 +204,10 @@ async function editEventHandler(
 	if (!fs.existsSync(fileName)) {
 		debugger;
 		fs.writeFileSync(fileName,
-			IS_PROJECT_MODE ? (isServerFileName ? 'import { server } from \'crud-js/server\';' : 'import { client } from \'crud-js/client\';') :
+			IS_PROJECT_MODE ? (isServerFileName ? `import { serverOn } from 'crud-js/core';
+import { E } from 'crud-js/www/client-core/src/types/generated';` : `import { clientOn } from 'crud-js/www/client-core/src';
+import { E } from 'crud-js/www/client-core/src/types/generated';
+`) :
 				`import { E } from '${importPath}/types/generated';
 import { clientOn } from '${importPath}/www/client-core/src/events-handle';`
 		);
