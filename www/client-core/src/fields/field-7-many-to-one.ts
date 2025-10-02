@@ -111,6 +111,7 @@ export default class LookupManyToOneFiled extends BaseLookupField {
 				isLookup: true,
 				isCompact: true,
 				hideControls: true,
+				excludeIDs: this.excludeIDs,
 				viewMask: VIEW_MASK.DROPDOWN_LIST,
 				parentForm: this.parentForm,
 				parent: this,

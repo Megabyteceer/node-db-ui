@@ -18,7 +18,7 @@ export default class LookupOneToManyFiled extends BaseLookupField {
 	}
 
 	getSubForms<FormType extends Form>() {
-		return this.children[0].children as FormType[];
+		return this.children[0]?.children as FormType[];
 	}
 
 	isEmpty(): boolean {
@@ -29,15 +29,11 @@ export default class LookupOneToManyFiled extends BaseLookupField {
 	valueSelected() {}
 
 	toggleCreateDialogue(recIdToEdit?: RecId | typeof NEW_RECORD) {
-		const subForms = this.getSubForms();
 		const filters = {
-			[this.getLinkerFieldName()]: { id: this.parentForm.recId },
-			_itemNum: (recIdToEdit === NEW_RECORD) ? (subForms.length - 1)
-				:
-				subForms.findIndex(f => f.formData?.id === recIdToEdit)
-		} as FormFilters;
-		globals.Stage.showForm(this.props.fieldDesc.nodeRef!.id, recIdToEdit, filters, true, true, () => {
-			this.lookupListForm.refreshData();
+			[this.getLinkerFieldName()]: { id: this.parentForm.recId } } as FormFilters;
+		globals.Stage.showForm(this.props.fieldDesc.nodeRef!.id, recIdToEdit, filters, true, true, async () => {
+			await this.lookupListForm.refreshData();
+			this.parentForm.processFieldEvent(this.props.fieldDesc, this.getSubForms());
 		});
 	}
 

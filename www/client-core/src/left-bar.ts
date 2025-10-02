@@ -286,7 +286,6 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 					(isActive === SELECTED_LIST)
 						? undefined
 						: () => {
-							// TODO: form tabs as menu items
 							globals.Stage.showForm(item.id);
 						};
 			}

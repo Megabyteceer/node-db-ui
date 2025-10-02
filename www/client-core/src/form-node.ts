@@ -1,4 +1,5 @@
 import { Component, type ComponentChildren } from 'preact';
+import { assert } from './assert';
 import { SAVE_REJECTED } from './consts';
 import type Form from './form';
 import { R } from './r';
@@ -88,6 +89,15 @@ export default class FormNode<T1 extends FormNodeProps = FormNodeProps, T2 exten
 
 	isAsyncInProgress(): boolean {
 		return (this.asyncOpsInProgress || this.children.some(c => c.isAsyncInProgress())) as any;
+	}
+
+	componentWillUnmount(): void {
+		const c = this.parent?.children;
+		if (c) {
+			const i = c.indexOf(this);
+			assert(i >= 0, 'Wrong child detected');
+			c.splice(i, 1);
+		}
 	}
 
 	getDomElement() {

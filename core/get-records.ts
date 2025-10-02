@@ -249,28 +249,35 @@ const _getRecords: TypeGenerationHelper['g'] = (async (
 				}
 			}
 
-			if (search && f.forSearch && (f.dataType !== FIELD_DATA_TYPE.BOOL)) {
-				const isNumericField = (f.dataType === FIELD_DATA_TYPE.NUMBER);
-				if ((isNumericSearch === isNumericField) || !isNumericField) {
-					if (!searchWHERE) {
-						searchWHERE = [];
-					} else {
-						searchWHERE.push(' OR ');
-					}
-					searchWHERE.push(' LOWER("', tableName, '"."', fieldName, isNumericField ? searchSQLNumeric! : searchSQL!);
-				}
-			}
+			if (f.forSearch && (f.dataType !== FIELD_DATA_TYPE.BOOL) && (f.dataType !== FIELD_DATA_TYPE.TIMESTAMP)) {
+				if (search) {
+					const isNumericField = (f.dataType === FIELD_DATA_TYPE.NUMBER);
+					if ((isNumericSearch === isNumericField) || !isNumericField) {
+						if (!searchWHERE) {
+							searchWHERE = [];
+						} else {
+							searchWHERE.push(' OR ');
+						}
+						if (isNumericField) {
+							searchWHERE.push(' "', tableName, '"."', fieldName, searchSQLNumeric!);
+						} else {
+							searchWHERE.push(' LOWER("', tableName, '"."', fieldName, searchSQL!);
+						}
 
-			if (filterFields.hasOwnProperty(fieldName)) {
-				if (f.forSearch) {
-					const fltVal = (filterFields as KeyedMap<any>)[fieldName];
-					if (f.fieldType === FIELD_TYPE.TEXT) {
-						wheres.push(' AND(LOWER("', tableName, '"."', fieldName, '")=LOWER(', escapeString(fltVal), '))');
-					} else {
-						wheres.push(' AND("', tableName, '"."', fieldName, '"=', D(fltVal), ')');
 					}
-				} else {
-					throwError('Attempt to filter records by un-indexed field ' + fieldName);
+				}
+
+				if (filterFields.hasOwnProperty(fieldName)) {
+					if (f.forSearch) {
+						const fltVal = (filterFields as KeyedMap<any>)[fieldName];
+						if (f.fieldType === FIELD_TYPE.TEXT) {
+							wheres.push(' AND(LOWER("', tableName, '"."', fieldName, '")=LOWER(', escapeString(fltVal), '))');
+						} else {
+							wheres.push(' AND("', tableName, '"."', fieldName, '"=', D(fltVal), ')');
+						}
+					} else {
+						throwError('Attempt to filter records by un-indexed field ' + fieldName);
+					}
 				}
 			}
 		}

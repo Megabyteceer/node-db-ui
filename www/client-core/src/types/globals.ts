@@ -1,6 +1,7 @@
 import type { ComponentType } from 'preact';
 import type { UserSession } from '../../../../core/auth';
-import type { FormTabContent, TabField } from '../form-tab';
+import type TabField from '../form-tab';
+import type { FormTabContent } from '../form-tab';
 import type { Stage } from '../stage';
 
 declare global {

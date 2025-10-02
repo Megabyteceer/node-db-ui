@@ -2,7 +2,7 @@ import { type FieldDesc, type NodeDesc } from '../bs-utils';
 
 import { Component, type ComponentChild } from 'preact';
 import type Form from '../form';
-import { FIELD_TYPE, NODE_ID, type FIELD_ID, type IFieldsRecord } from '../types/generated';
+import { FIELD_TYPE, NODE_ID, type IFieldsRecord } from '../types/generated';
 import { globals } from '../types/globals';
 
 import { NEW_RECORD } from '../consts';
@@ -11,8 +11,6 @@ import { R } from '../r';
 import { getRecordClient, keepInWindow, L, reloadLocation, renderIcon, sp } from '../utils';
 import { admin_editSource } from './admin-event-editor';
 import { admin } from './admin-utils';
-
-let showedFieldId: FIELD_ID;
 
 /// #if DEBUG
 /*
@@ -33,9 +31,6 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 
 	constructor(props: FieldAdminProps) {
 		super(props);
-		this.state = {
-			show: showedFieldId === this.props.field.id
-		};
 		this.onShow = this.onShow.bind(this);
 		this.hide = this.hide.bind(this);
 	}
@@ -48,12 +43,11 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 		}
 	}
 
-	hide() {
-		if (this.state.show) {
-			this.setState({
-				show: false
-			});
-		}
+	hide(ev: MouseEvent) {
+		sp(ev);
+		this.setState({
+			show: false
+		});
 	}
 
 	render() {
@@ -93,7 +87,9 @@ class FieldAdmin extends Component<FieldAdminProps, FieldAdminState> {
 					ref: keepInWindow,
 					className: 'admin-form-body admin-form-field-body',
 					onClick: () => {
-						showedFieldId = field.id;
+						this.setState({
+							show: true
+						});
 					}
 				},
 				L('FLD_SETTINGS'),

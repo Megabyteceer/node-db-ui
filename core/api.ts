@@ -13,7 +13,7 @@ import { uploadFile, uploadImage } from './upload';
 
 export type APIHandler = (any: any, UserSession: UserSession) => APIResult;
 
-const api: object = {
+const api = {
 	'api/': async (reqData: GetRecordsParams & GetRecordsFilter, userSession: UserSession) => {
 		const node = getNodeDesc(reqData.nodeId, userSession);
 		const data = (node.nodeType === NODE_TYPE.DOCUMENT && node.storeForms) ? await getRecords(

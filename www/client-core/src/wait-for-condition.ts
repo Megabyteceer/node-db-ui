@@ -15,6 +15,12 @@ const waitForCondition = (condition: () => any) => {
 	});
 };
 
+export const pause = (delay = 1000) => {
+	return new Promise((resolve) => {
+		setTimeout(resolve, delay);
+	});
+};
+
 setInterval(() => {
 	while (waits.length) {
 		if (waits[0].condition()) {

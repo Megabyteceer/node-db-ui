@@ -1,6 +1,6 @@
 import { Component, h, type ComponentChild, type ComponentChildren } from 'preact';
 import { FieldAdmin } from './admin/field-admin';
-import type { GetRecordsFilter } from './bs-utils';
+import { type GetRecordsFilter } from './bs-utils';
 import { SAVE_REJECTED } from './consts';
 import type { BaseLookupFieldProps } from './fields/base-lookup-field';
 import type Form from './form';
@@ -63,9 +63,13 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 		this.required = !!props.fieldDesc.requirement;
 		this.currentValue = props.initialValue;
 		if (!(this.props as BaseLookupFieldProps).isN2M) {
-			this.parentForm._registerField(this);
+			this._registerField();
 		}
 		this.refGetter = this.refGetter.bind(this);
+	}
+
+	_registerField() {
+		this.parentForm._registerField(this);
 	}
 
 	setValue(value: any) {
@@ -148,9 +152,6 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 			this.labelOverride = label;
 			this.forceUpdate();
 		}
-	}
-
-	async beforeSave(): Promise<void> {
 	}
 
 	async focus() {
@@ -275,6 +276,9 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 		if (!this.props.isEdit) {
 			className += ' field-wrap-readonly';
 		}
+		if (field.fieldType === FIELD_TYPE.LOOKUP && this.currentValue) {
+			className += ' field-wrap-value-' + this.currentValue.id || 0;
+		}
 
 		const fieldTypedBody = this.props.isEdit ? this.renderFieldEditable() : this.renderField();
 
@@ -303,7 +307,7 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 						{ className: 'field-wrap-tooltip-body' },
 						field.name,
 						field.lang ? ' (' + field.lang + ')' : undefined,
-						this.state && this.state.alertText ? ' (' + this.state.alertText + ')' : ''
+						this.state.alertText ? ' (' + this.state.alertText + ')' : ''
 					)
 				);
 			}

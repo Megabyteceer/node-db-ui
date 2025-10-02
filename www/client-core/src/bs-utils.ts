@@ -66,9 +66,6 @@ export interface FormControlFilters {
 	/** form tab to show */
 	tab?: string;
 
-	/** number of item in parent 1toN lookup list */
-	_itemNum?:number;
-
 	/** render standard list view */
 	noCustomList?: BoolNum;
 
@@ -377,7 +374,8 @@ const enum VIEW_MASK {
 	DROPDOWN_LIST = 8,
 	CUSTOM_LIST = 16,
 	SUB_FORM = 32,
-	ALL = 65535
+	ALL = 65535,
+	NEVER = 0
 }
 
 const enum PRIVILEGES_MASK {

@@ -161,7 +161,7 @@ if (require.main === module) {
 	startServer();
 }
 
-registerServerSideFieldTypeDescriber(FIELD_TYPE.TAB, 'BaseField', '../base-field');
+registerServerSideFieldTypeDescriber(FIELD_TYPE.TAB, 'TabField', '../form-tab');
 registerServerSideFieldTypeDescriber(FIELD_TYPE.TEXT, 'TextField', '../fields/field-1-text-default');
 registerServerSideFieldTypeDescriber(FIELD_TYPE.LOOKUP_N_TO_M, 'LookupManyToManyFiled', '../fields/field-14-many-to-many');
 registerServerSideFieldTypeDescriber(FIELD_TYPE.LOOKUP_1_TO_N, 'LookupOneToManyFiled', '../fields/field-15-one-to-many');

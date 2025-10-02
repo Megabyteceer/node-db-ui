@@ -66,8 +66,12 @@ serverOn(E._nodes.afterCreate, async (data, userSession) => {
 		// create default fields
 		const mainFieldQ = `INSERT INTO _fields
 				("nodeFieldsLinker", status, show,              prior,"fieldType",           "fieldName",   "selectFieldName",   name,        description,    "maxLength",     requirement,     "unique", "_usersId",    "forSearch",    "storeInDb",    "sendToServer", "_organizationId") VALUES
-				(${createdID},        1,     ${VIEW_MASK.ALL},  0,     ${FIELD_TYPE.TEXT},   'name',        '',                  'Name',      '',              64,             1,               0,         0,             1,             1,              1,              1);`;
+				(${createdID},        1,     ${VIEW_MASK.ALL},  5,     ${FIELD_TYPE.TEXT},   'name',        '',                  'Name',      '',              64,             1,               0,         0,             1,             1,              1,              1);`;
 		await mysqlExec(ESCAPE_BEGIN + mainFieldQ + ESCAPE_END);
+		const idFieldQ = `INSERT INTO _fields
+				("nodeFieldsLinker", status, show,               prior,"fieldType",           "fieldName",   "selectFieldName",   name,        description,    "maxLength",     requirement,     "unique", "_usersId",    "forSearch",    "storeInDb",    "sendToServer", "_organizationId") VALUES
+				(${createdID},        1,     ${VIEW_MASK.NEVER}, 0,     ${FIELD_TYPE.TEXT},   'id',          '',                  'ID',        '',              15,             0,               0,         0,             1,             1,              1,              1);`;
+		await mysqlExec(ESCAPE_BEGIN + idFieldQ + ESCAPE_END);
 
 		const createdOnQ = `INSERT INTO _fields
 			("nodeFieldsLinker",  status, show,                                    prior, "fieldType",               "fieldName",     "selectFieldName",   name,          description,    "maxLength",    requirement,     "unique",   "_usersId",  "forSearch",    "storeInDb",   "_organizationId") VALUES

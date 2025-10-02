@@ -24,11 +24,13 @@ const checkFieldName = (form: FormFields) => {
 	if (form.isNewRecord) {
 		const fieldName = form.getFieldValue('fieldName');
 
-		if (fieldName && fieldName.length >= 3) {
-			checkFieldExists(form);
-			form.fieldHideAlert('fieldName', 'short-field-name');
-		} else {
-			form.fieldAlert('fieldName', 'Too short. 3 symbols at least', false, false, 'short-field-name');
+		if (fieldName) {
+			if (fieldName.length >= 3) {
+				checkFieldExists(form);
+				form.fieldHideAlert('fieldName', 'short-field-name');
+			} else {
+				form.fieldAlert('fieldName', 'Too short. 3 symbols at least', false, false, 'short-field-name');
+			}
 		}
 		if (fieldName === 'nodeId') {
 			form.fieldAlert('fieldName', 'Prohibited field name.', false, false, 'system-field-name');
@@ -51,6 +53,8 @@ const checkFieldExists = async (form: FormFields) => {
 			const ret = await submitData('admin/isFiledExists', { fieldName, nodeId: parentNode.id });
 			if (!ret) {
 				form.fieldAlert('fieldName', L('FLD_EXISTS'), false, true, 'filed-name-exists');
+			} else {
+				form.fieldHideAlert('fieldName', 'filed-name-exists');
 			}
 		} else {
 			form.fieldHideAlert('fieldName', 'filed-name-exists');
@@ -351,6 +355,17 @@ const _fields_recalculateFieldsVisibility = (form: FormFields) => {
 	}
 
 	form.makeFieldRequired('maxLength', form.isFieldVisible('maxLength'));
+
+	if (fieldType === FIELD_TYPE.TAB || fieldType === FIELD_TYPE.SPLITTER) {
+		form.hideField('visibilityCustomList', 'visibilityDropdownList', 'visibilityList', 'visibilitySubFormList');
+		form.setFieldValue('visibilityCustomList', false);
+		form.setFieldValue('visibilityDropdownList', false);
+		form.setFieldValue('visibilityList', false);
+		form.setFieldValue('visibilitySubFormList', false);
+	} else {
+		form.showField('visibilityCustomList', 'visibilityDropdownList', 'visibilityList', 'visibilitySubFormList');
+	}
+
 };
 
 clientOn(E._fields.storageMode.onChange, async (form, value: FIELD_STORAGE_MODE) => {

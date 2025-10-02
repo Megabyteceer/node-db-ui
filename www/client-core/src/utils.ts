@@ -451,11 +451,10 @@ const SKIP_HISTORY_NODES = {
 
 async function goBack(isAfterDelete?: boolean) {
 	const currentForm = globals.Stage.currentForm;
-
-	if (isLitePage() && window.history.length < 2) {
+	if (isLitePage() && window.history.length <= initialHistoryLen) {
 		window.close();
 	} else if (!isAfterDelete && window.history.length) {
-		if (window.history.length > 0) {
+		if (window.history.length > initialHistoryLen) {
 			isHistoryChanging++;
 			goBackUntilValidNode = true;
 			window.history.back();
@@ -487,6 +486,8 @@ function assignFilters(desc: KeyedMap<any>, src: KeyedMap<any>): boolean {
 
 let isHistoryChanging = 0;
 let goBackUntilValidNode = false;
+
+const initialHistoryLen = history.length;
 
 function updateHashLocation(replaceState = false) {
 	if (isHistoryChanging) {

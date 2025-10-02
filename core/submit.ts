@@ -202,6 +202,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 				if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 					// will process later
 					needProcess_n2m = 1;
+					(data as KeyedMap<any>)[fieldName] = fieldVal.map((id:RecId) => {  return {id}});
 				} else if (fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 					throwError('children records addition/deletion is independent.');
 				} else {
@@ -351,11 +352,11 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 									n2miQ.push(',');
 								}
 
-								if (!isAdmin(userSession) && id) {
+								if (!isAdmin(userSession) && id.id) {
 									await getRecords(f.nodeRef!.id, 8, id, userSession); // check if you have read access to referenced item
 								}
 
-								n2miQ.push('(', D(recId!), ',', D(id), ')');
+								n2miQ.push('(', D(recId!), ',', D(id.id), ')');
 								isNotFirst = true;
 							}
 							await mysqlExec(n2miQ.join(''));

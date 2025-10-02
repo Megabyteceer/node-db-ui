@@ -8,7 +8,7 @@ import { normalizeCSSName, PRIVILEGES_MASK, STATUS, VIEW_MASK, type FormControlF
 import { HotkeyButton } from './components/hotkey-button';
 import { Select } from './components/select';
 import { NEW_RECORD, SAVE_REJECTED } from './consts';
-import { CLIENT_SIDE_FORM_EVENTS, clientHandlers, getEventsHandlers, getEventsHandlersField, type Handler } from './events-handle';
+import { CLIENT_SIDE_FORM_EVENTS, getEventsHandlers, getEventsHandlersField, type Handler } from './events-handle';
 import { FIELD_TYPE, type NODE_ID } from './types/generated';
 import { globals } from './types/globals';
 
@@ -22,6 +22,8 @@ import { R } from './r';
 import { renderItemsButtons } from './render-items-buttons';
 import { iAdmin, User } from './user';
 import { deleteRecordClient, getClassForField, getData, getItem, getListRenderer, getNodeIfPresentOnClient, getRecordsClient, goBack, isPresentListRenderer, isRecordRestrictedForDeletion, L, n2mValuesEqual, removeItem, renderIcon, setItem, showPrompt, sp, submitRecord, UID, updateHashLocation } from './utils';
+
+const formWrapProps = { className: 'form-wrap' };
 
 export interface FormProps extends FormNodeProps {
 	nodeId: NODE_ID;
@@ -39,6 +41,7 @@ export interface FormProps extends FormNodeProps {
 	inlineEditable?: boolean;
 	askToSaveParentBeforeCreation?: boolean;
 	editable?: boolean;
+	excludeIDs?: RecId[];
 	filters: FormFilters;
 	onDelete?: () => void;
 	overrideOrderData?: number;
@@ -371,10 +374,20 @@ export default class Form<
 		if (this.props.isCompact) {
 			className += ' form-compact';
 		}
+
+		const closeSubFormButton = this.state.isCancelButtonHidden ? undefined : R.div({ className: 'close-popup-wrap' }, R.button(
+			{
+				className: 'clickable tool-btn danger-btn close-popup-button',
+				title: L('CLOSE'),
+				onClick: this.cancelClick
+			},
+			renderIcon('times')
+		));
+
 		if (this.formData) {
-			return this.renderForm(className);
+			return R.div(formWrapProps, closeSubFormButton, this.renderForm(className));
 		} else if (this.listData) {
-			return this.renderList(className);
+			return R.div(formWrapProps, closeSubFormButton, this.renderList(className));
 		}
 		return R.div({ className }, renderIcon('cog fa-spin'));
 
@@ -432,7 +445,7 @@ export default class Form<
 		f.alert(text, isSuccess, focus, source);
 	}
 
-	fieldHideAlert(fieldName: FieldsNames, source: string) {
+	fieldHideAlert(fieldName: FieldsNames, source?: string) {
 		const f = this.getField(fieldName);
 		f.alert(undefined, true, false, source);
 	}
@@ -548,10 +561,6 @@ export default class Form<
 		return getEventsHandlersField(this.nodeDesc.tableName!, field.fieldName, field.fieldType);
 	}
 
-	_getEventHandlers(name: number): Handler[] | undefined {
-		return clientHandlers.get(name);
-	}
-
 	processFieldEvent(field: FieldDesc, value: any, isUserAction?: boolean, prev_val?: any) {
 		return this.processEvent(this._getFieldEventHandlers(field), value, isUserAction, prev_val);
 	}
@@ -643,7 +652,8 @@ export default class Form<
 			this.formFilters.p = '*';
 		}
 
-		// TODO: Понять почему рефреш листа дает другой вьюмаск. this.state.viewMask отличается от того что в кастом вью
+		this.formFilters.excludeIDs = this.props.excludeIDs;
+
 		const data = await getRecordsClient(
 			this.props.nodeId || this.nodeId,
 			undefined,
@@ -1336,7 +1346,6 @@ export default class Form<
 			}
 		}
 
-		let closeSubFormButton;
 		let closeButton;
 		let header;
 
@@ -1446,15 +1455,6 @@ export default class Form<
 						label: R.span(null, renderIcon('caret-left'), this.props.isCompact ? '' : L('BACK'))
 					});
 				}
-
-				closeSubFormButton = R.div({ className: 'close-popup-wrap' }, R.button(
-					{
-						className: 'clickable tool-btn danger-btn close-popup-button',
-						title: L('CLOSE'),
-						onClick: this.cancelClick
-					},
-					renderIcon('times')
-				));
 			}
 		}
 
@@ -1469,7 +1469,6 @@ export default class Form<
 			/// #if DEBUG
 			nodeAdmin,
 			/// #endif
-			closeSubFormButton,
 			header,
 			tabsHeader,
 			fields,

@@ -134,7 +134,7 @@ function escapeRegex(string: string) {
 function editFunction(fileName: string, eventName: string, nodeId: NODE_ID, fieldId: FIELD_ID, isServer?: boolean) {
 
 	const side = isServer ? 'server' : 'client';
-	let functionName = (IS_PROJECT_MODE ? (side + '.' + side + 'On(') : (side + 'On(')) + (IS_PROJECT_MODE ? (side + '.') : '') + 'E.' + getNodeDesc(nodeId).tableName;
+	let functionName = side + 'On(E.' + getNodeDesc(nodeId).tableName;
 
 	if (fieldId) {
 		functionName += '.' + getFieldDesc(fieldId).fieldName;
@@ -202,7 +202,6 @@ async function editEventHandler(
 	const importPath = dirName.split('/').map(_p => '..').join('/');
 
 	if (!fs.existsSync(fileName)) {
-		debugger;
 		fs.writeFileSync(fileName,
 			IS_PROJECT_MODE ? (isServerFileName ? `import { serverOn } from 'crud-js/core';
 import { E } from 'crud-js/www/client-core/src/types/generated';` : `import { clientOn } from 'crud-js/www/client-core/src';

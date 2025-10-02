@@ -13,7 +13,7 @@ import type { EnumList, EnumListItem, FieldDesc, NodeDesc, RecId, TreeItem, User
 import { FIELD_DATA_TYPE, isServer, normalizeEnumName, normalizeName, ROLE_ID, snakeToCamel, USER_ID, VIEW_MASK } from '../www/client-core/src/bs-utils';
 import { ENUM_ID, FIELD_TYPE, NODE_ID, NODE_TYPE, type IFiltersRecord } from '../www/client-core/src/types/generated';
 import { globals } from '../www/client-core/src/types/globals';
-import waitForCondition from '../www/client-core/src/wait-for-condition';
+import waitForCondition, { pause } from '../www/client-core/src/wait-for-condition';
 import { recoveryDB } from './admin/admin';
 import type { UserSession /* , usersSessionsStartedCount */ } from './auth';
 import {
@@ -247,14 +247,20 @@ function getNodesTree(userSession: UserSession) {
 	return nodesTreeCache.get(cacheKey);
 }
 
+let reloadingStarted = false;
 async function reloadMetadataSchedule() {
-	setMaintenanceMode(true);
-	if (usersSessionsStartedCount()) {
-		await waitForCondition(() => usersSessionsStartedCount() === 0);
-	}
-	await initNodesData();
-	setMaintenanceMode(false);
+	if (!reloadingStarted) {
+		reloadingStarted = true;
+		setMaintenanceMode(true);
 
+		if (usersSessionsStartedCount()) {
+			await waitForCondition(() => usersSessionsStartedCount() === 0);
+		}
+		await pause(200);
+		await initNodesData();
+		setMaintenanceMode(false);
+		reloadingStarted = false;
+	}
 }
 
 async function initNodesData() {
@@ -478,7 +484,7 @@ const eventName = (event: string): EventType => {
 	return eventCounter;
 };
 
-const generateTypings = async () => {
+const generateTypings = () => {
 	const srcAdd = [''];
 	const src = [`import type { Moment } from 'moment';
 import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../bs-utils';
@@ -795,6 +801,17 @@ function getFieldTypeSrc(field: FieldDesc) {
 
 			type = 'LookupValue';
 		}
+		break;
+	case FIELD_TYPE.LOOKUP_N_TO_M:
+		if (field.lookupIcon) {
+			type = 'LookupValueIconic[]';
+		} else {
+
+			type = 'LookupValue[]';
+		}
+		break;
+	case FIELD_TYPE.LOOKUP_1_TO_N:
+		type = 'RecId[]';
 	}
 	return type;
 }

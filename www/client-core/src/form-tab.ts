@@ -9,7 +9,7 @@ export interface TabFieldProps extends BaseFieldProps {
 	active: boolean;
 }
 
-export class TabField extends BaseField<TabFieldProps, BaseFieldState> {
+export default class TabField extends BaseField<TabFieldProps, BaseFieldState> {
 
 	activate() {
 		if (!this.props.active) {
@@ -33,12 +33,26 @@ export class TabField extends BaseField<TabFieldProps, BaseFieldState> {
 
 	render() {
 		const tabField = this.props.fieldDesc;
+		let alertBody;
+		if (this.state.alertText) {
+			if (this.state.isSuccessAlert) {
+				alertBody = R.div(
+					{ className: 'fade-in field-wrap-alert field-wrap-alert-success' },
+					this.state.alertText
+				);
+			} else {
+				alertBody = R.div({ className: 'fade-in field-wrap-alert' }, this.state.alertText);
+			}
+		}
+
+		let className = this.props.active ? 'tab-header-button tab-header-button-active not-clickable' : 'tab-header-button tab-header-button-inactive clickable';
+		className += ' tab-header-' + this.parentForm.nodeDesc.tableName + '--' + tabField.fieldName;
 
 		return R.span(
-			{ key: tabField.fieldName, className: 'header-tab-wrap' },
+			{ key: tabField.fieldName, className: this.parentForm.isFieldVisible(tabField.fieldName) ? 'header-tab-wrap' : 'header-tab-wrap hidden' },
 			R.span(
 				{
-					className: this.props.active ? 'tab-header-button tab-header-button-active not-clickable' : 'tab-header-button tab-header-button-inactive clickable',
+					className,
 					onClick: this.props.active
 						? undefined
 						: () => {
@@ -46,7 +60,8 @@ export class TabField extends BaseField<TabFieldProps, BaseFieldState> {
 						}
 				},
 				renderIcon(tabField.icon),
-				tabField.name
+				tabField.name,
+				alertBody
 			),
 			/// #if DEBUG
 			h(FieldAdmin, { field: tabField, form: this.parentForm })
@@ -62,6 +77,10 @@ export class FormTabContent extends BaseField<TabFieldProps, BaseFieldState> {
 		if (!this.props.active) {
 			this.parentForm.setFormFilter('tab', this.props.fieldDesc.fieldName);
 		}
+	}
+
+	_registerField(): void {
+		/** disabled.  register tab button instead */
 	}
 
 	async beforeFocus() {
