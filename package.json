@@ -60,7 +60,6 @@
     "babel-loader": "^8.2.2",
     "eslint": "^9.34.0",
     "rollup": "^2.60.0",
-    "selenium-webdriver": "^4.0.0-beta.4",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.41.0",
     "vite": "^7.1.3"
