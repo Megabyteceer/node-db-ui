@@ -264,6 +264,7 @@ async function reloadMetadataSchedule() {
 }
 
 async function initNodesData() {
+	setMaintenanceMode(true);
 	// load whole nodes data in to memory
 	options = Object.assign({}, ENV) as any;
 	fieldsById = new Map();
@@ -434,7 +435,7 @@ async function initNodesData() {
 	generateTypings();
 	await authorizeUserByID(3, undefined, 'dev-user-session-token');
 	/// #endif
-
+	setMaintenanceMode(false);
 }
 
 const GUEST_USER_SESSIONS = new Map();

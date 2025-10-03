@@ -60,9 +60,9 @@ class Stage extends Component<{}, {}> {
 	static refreshForm() {
 		if (Stage.currentForm) {
 			Stage.showForm(
-				Stage.currentForm!.nodeId,
-				Stage.currentForm!.recId,
-				Stage.currentForm!.formFilters,
+				Stage.currentForm!.props.nodeId,
+				Stage.currentForm!.props.recId,
+				Stage.currentForm!.props.filters,
 				Stage.currentForm!.props.editable
 			);
 		}
@@ -114,7 +114,7 @@ class Stage extends Component<{}, {}> {
 
 		assert(!isNaN(nodeId), 'Invalid NODE_ID');
 
-		if (this.currentForm?.isAsyncInProgress()) {
+		if (this.currentForm?.isAsyncInProgress?.()) {
 			await this.currentForm.waitForAsyncFinish();
 		}
 
@@ -152,6 +152,7 @@ class Stage extends Component<{}, {}> {
 		const ref = (form: Form) => {
 			if (form) {
 				formEntry.form = form;
+				LeftBar.refreshLeftBarActive();
 			}
 		};
 

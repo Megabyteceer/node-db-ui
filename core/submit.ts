@@ -202,7 +202,9 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 				if (fieldType === FIELD_TYPE.LOOKUP_N_TO_M) {
 					// will process later
 					needProcess_n2m = 1;
-					(data as KeyedMap<any>)[fieldName] = fieldVal.map((id:RecId) => {  return {id}});
+					(data as KeyedMap<any>)[fieldName] = fieldVal.map((id: RecId) => {
+						return { id };
+					});
 				} else if (fieldType === FIELD_TYPE.LOOKUP_1_TO_N) {
 					throwError('children records addition/deletion is independent.');
 				} else {
@@ -220,8 +222,8 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 						// continue to process as uploaded image
 					case FIELD_TYPE.IMAGE:
 						if (fieldVal) {
-							if (userSession!.uploaded && userSession!.uploaded[f.id!].endsWith('/' + fieldVal)) {
-								delete userSession!.uploaded[f.id];
+							if (userSession!.uploaded?.[f.id!] === fieldVal) {
+								delete userSession!.uploaded![f.id];
 							} else {
 								throwError('Error. Couldn\'t link uploaded file to the record.');
 							}
@@ -269,7 +271,7 @@ let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWr
 						values.push(escapeString(fieldVal));
 						break;
 					default:
-						if(f.decimals! > 0) {
+						if (f.decimals! > 0) {
 							values.push(escapeString(fieldVal));
 						} else {
 							if (typeof fieldVal !== 'number' || isNaN(fieldVal)) {

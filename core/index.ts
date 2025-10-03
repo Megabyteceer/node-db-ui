@@ -1,7 +1,7 @@
 import { ENV, SERVER_ENV } from './ENV';
 
 import api, { type APIHandler } from './api';
-import { finishSession, isUserHaveRole, startSession, type UserSession } from './auth';
+import { finishSession, isUserHaveRole, setMaintenanceMode, startSession, type UserSession } from './auth';
 import { initNodesData, registerServerSideFieldTypeDescriber } from './describe-node';
 
 import { ROLE_ID, type ApiResponse, type APIResult } from '../www/client-core/src/bs-utils';
@@ -154,6 +154,7 @@ async function startServer() {
 	await import('./events/index.js');
 	app.listen(SERVER_ENV.PORT);
 	console.log('HTTP listen ' + SERVER_ENV.PORT + '...');
+	setMaintenanceMode(false); // unlock initially started maintenance
 }
 
 export { app, E, serverOn, startServer };

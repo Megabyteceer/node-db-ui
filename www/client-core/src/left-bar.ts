@@ -44,8 +44,8 @@ function isCurrentlyShowedLeftBarItem(item: TreeItem): boolean | typeof SELECTED
 	}
 
 	if (item.nodeType !== NODE_TYPE.STATIC_LINK) {
-		if (currentFormParameters.nodeId === item.id) {
-			if (!currentFormParameters.recId) {
+		if (currentFormParameters.props.nodeId === item.id) {
+			if (!currentFormParameters.props.recId) {
 				return SELECTED_LIST;
 			}
 			return true;
@@ -209,7 +209,7 @@ class BarItem extends Component<BarItemProps, BarItemState> {
 
 		let className =
 			'left-bar-item ' +
-			(item.nodeType === NODE_TYPE.DOCUMENT ? 'left-bar-item-doc' : 'left-bar-group');
+			(item.nodeType !== NODE_TYPE.SECTION ? 'left-bar-item-doc' : 'left-bar-group');
 		if (item.id === User.currentUserData?.home) {
 			className += ' left-bar-item-home';
 		}

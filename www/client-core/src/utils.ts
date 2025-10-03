@@ -462,8 +462,8 @@ async function goBack(isAfterDelete?: boolean) {
 		} else {
 			globals.Stage.showForm(getHomeNode());
 		}
-	} else if (currentForm && currentForm.recId) {
-		globals.Stage.showForm(currentForm.nodeId, undefined, currentForm.formFilters);
+	} else if (currentForm?.props.recId) {
+		globals.Stage.showForm(currentForm.props.nodeId, undefined, currentForm.props.filters);
 	} else if (isAfterDelete) {
 		globals.Stage.refreshForm();
 	}
@@ -498,8 +498,8 @@ function updateHashLocation(replaceState = false) {
 		globals.Stage.allForms
 			.map((formEntry) => {
 				const form = formEntry.form!;
-				const filters = form.formFilters;
-				return locationToHash(form.nodeId, form.recId!, filters, form.props.editable);
+				const filters = form.props.filters;
+				return locationToHash(form.props.nodeId, form.recId!, filters, form.props.editable);
 			})
 			.join(HASH_DIVIDER);
 
@@ -919,7 +919,7 @@ function isAuthNeed(data: ApiResponse) {
 		globals.Stage.showForm(NODE_ID.LOGIN, NEW_RECORD, undefined, true);
 		return true;
 	} else if (data.error && (data.error.startsWith('Error: <access>') || data.error.startsWith('<access>'))) {
-		if (globals.Stage.currentForm?.nodeId !== NODE_ID.LOGIN) {
+		if (globals.Stage.currentForm?.props.nodeId !== NODE_ID.LOGIN) {
 			goToHome();
 		}
 		return true;

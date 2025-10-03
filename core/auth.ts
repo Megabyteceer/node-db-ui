@@ -55,6 +55,7 @@ function setMaintenanceMode(val: boolean) {
 		);
 	}
 }
+setMaintenanceMode(true); // will be unlocked after server listen start
 
 async function startSession(sessionToken: string, browserLanguageId?: string) {
 
@@ -81,6 +82,12 @@ async function startSession(sessionToken: string, browserLanguageId?: string) {
 	userSession._isStarted = true;
 	startedSessionsCount++;
 	return userSession;
+}
+
+export function waitForMaintenanceModeEnd() {
+	if (maintenanceMode) {
+		return waitForCondition(() => !maintenanceMode);
+	}
 }
 
 function finishSession(sessionToken: string) {
