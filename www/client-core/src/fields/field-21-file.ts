@@ -131,7 +131,7 @@ class FileFormBody extends Component<FileFormBodyProps, FileFormBodyState> {
 				field.props.parentForm.fieldAlert(field.props.fieldDesc.fieldName, L('UPLOAD_ERROR'));
 			}
 
-			await (this.props.parent as FileField)!.valueListener(this.file?.name, false);
+			await (this.props.parent as FileField)!.valueListener(fileId);
 
 			return fileId;
 		}
