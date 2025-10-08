@@ -70,6 +70,13 @@ let nodeDescByEventName: Map<number, { node: NodeDesc; eventName: string }>;
 
 const on = (eventName: number, handler: () => any) => {
 	/// #if DEBUG
+
+	if (typeof eventName === 'object') {
+		console.warn('Unknown event name');
+		debugger;
+		return;
+	}
+
 	const fileName = new Error('stack getter').stack!.split('\n')[3];
 	(handler as any as SourceMappedEventHandler).__sourceFile = fileName;
 

@@ -740,7 +740,20 @@ export class TypeGenerationHelper {`);
 	}
 
 }`);
-	src.push('export const E = ' + JSON.stringify(eventsEnum, undefined, '\t').replaceAll('"', '') + ' as const;');
+	src.push('const EBase = ' + JSON.stringify(eventsEnum, undefined, '\t').replaceAll('"', '') + ' as const;');
+	src.push(`
+const ANY_PROP_PROXY = new Proxy({}, {
+	get: () => {
+		return ANY_PROP_PROXY;
+	}
+});
+
+export const E = new Proxy(EBase, {
+	get(target: any, prop) {
+		return target[prop] || ANY_PROP_PROXY;
+	}
+});`);
+
 	src.push(...srcAdd);
 
 	for (const fn of ['./node_modules/crud-js/www/client-core/src/types/generated.ts', './www/client-core/src/types/generated.ts']) {
