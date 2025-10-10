@@ -2,7 +2,7 @@ import type { LANG_KEYS_CUSTOM } from '../../src/locales/en/lang';
 import { LITE_UI_PREFIX, NEW_RECORD } from './consts';
 import type { LANG_KEYS } from './locales/en/lang';
 
-import type { ApiResponse, FieldDesc, GetRecordsFilter, GetRecordsParams, IFormParameters, LookupValue, NodeDesc, RecId, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordsData, RecordSubmitResult, RecordSubmitResultNewRecord, UserSession } from './bs-utils';
+import type { ApiResponse, FieldDesc, GetRecordsFilter, GetRecordsParams, IFormParameters, LookupValue, NodeDesc, RecId, RecordData, RecordDataWriteDraftable, RecordsData, RecordSubmitResult, RecordSubmitResultNewRecord, UserSession } from './bs-utils';
 import { HASH_DIVIDER, ROLE_ID, STATUS, USER_ID, VIEW_MASK } from './bs-utils';
 import { LoadingIndicator } from './loading-indicator';
 import { Modal } from './modal';
@@ -773,7 +773,7 @@ function encodeData(data: KeyedMap<any>, node: NodeDesc): RecordData {
 	return ret as RecordData;
 }
 
-const submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId?: RecId): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
+const submitRecord = async (nodeId: NODE_ID, data: RecordDataWriteDraftable, recId?: RecId): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	if (Object.keys(data).length === 0) {
 		throw 'Tried to submit empty object';
 	}

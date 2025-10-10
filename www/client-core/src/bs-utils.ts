@@ -278,10 +278,6 @@ interface UserLangEntry extends ILanguagesRecord {
 	prefix: string;
 }
 
-export type RecordDataWrite = {
-
-};
-
 export interface TreeItem {
 	children: TreeItem[];
 	icon: string;
@@ -295,7 +291,7 @@ export interface TreeItem {
 	staticLink: string;
 }
 
-export type RecordDataWriteDraftable = RecordDataWrite & {
+export type RecordDataWriteDraftable = {
 	status?: STATUS;
 	id?: RecId;
 };

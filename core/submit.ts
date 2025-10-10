@@ -1,5 +1,5 @@
 import { assert, throwError } from '../www/client-core/src/assert';
-import type { LookupValue, RecId, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
+import type { LookupValue, RecId, RecordData, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../www/client-core/src/bs-utils';
 import { IMAGE_THUMBNAIL_PREFIX, PRIVILEGES_MASK, STATUS, VIEW_MASK } from '../www/client-core/src/bs-utils';
 
 import { unlink } from 'fs';
@@ -40,7 +40,7 @@ for (const tag of ENV.BLOCK_RICH_EDITOR_TAGS) {
 	);
 }
 
-let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWrite & RecordDataWriteDraftable, recId?: RecId, userSession?: UserSession): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
+let _submitRecord = async (nodeId: NODE_ID, data: RecordDataWriteDraftable, recId?: RecId, userSession?: UserSession): Promise<RecordSubmitResult | RecordSubmitResultNewRecord> => {
 	const node = getNodeDesc(nodeId);
 
 	let currentData: RecordData | undefined;

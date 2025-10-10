@@ -488,12 +488,13 @@ const eventName = (event: string): EventType => {
 const generateTypings = () => {
 	const srcAdd = [''];
 	const src = [`import type { Moment } from 'moment';
-import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordData, RecordDataWrite, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../bs-utils';
+import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordData, RecordDataWriteDraftable, RecordSubmitResult, RecordSubmitResultNewRecord } from '../bs-utils';
 `] as string[];
 	for (const node of nodes) {
 		if (node.nodeType === NODE_TYPE.DOCUMENT) {
 			const searchFields = [] as string[];
-			src.push('type ' + snakeToCamel(node.tableName!) + 'Base = {');
+
+			src.push(`export type I${snakeToCamel(node.tableName!)}RecordWrite = {`);
 			for (const field of node.fields!) {
 				let type = getFieldTypeSrc(field);
 				const jsDoc = '\t/** **' + (getEnumDesc(ENUM_ID.FIELD_TYPE)).namesByValue[field.fieldType] + '** ' + (field.description || '') + ' */';
@@ -517,8 +518,7 @@ import type { BoolNum, GetRecordsFilter, LookupValue, LookupValueIconic, RecordD
 	for (const node of nodes) {
 		if (node.nodeType === NODE_TYPE.DOCUMENT) {
 			const name = snakeToCamel(node.tableName!);
-			src.push(`export type I${name}Record = ${name}Base & RecordData;`);
-			src.push(`export type I${name}RecordWrite = ${name}Base & RecordDataWrite;`);
+			src.push(`export type I${name}Record = I${name}RecordWrite & RecordData;`);
 		}
 	}
 
@@ -732,8 +732,8 @@ export class TypeGenerationHelper {`);
 		}
 	});
 
-	src.push(`	async s(nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId: RecId, userSession?: UserSession): Promise<RecordSubmitResult>;
-	async s(nodeId: NODE_ID, data: RecordDataWrite | RecordDataWriteDraftable, recId?: undefined, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;
+	src.push(`	async s(nodeId: NODE_ID, data: RecordDataWriteDraftable, recId: RecId, userSession?: UserSession): Promise<RecordSubmitResult>;
+	async s(nodeId: NODE_ID, data: RecordDataWriteDraftable, recId?: undefined, userSession?: UserSession): Promise<RecordSubmitResultNewRecord>;
 
 	async s() {
 		return 1 as any;
@@ -748,7 +748,7 @@ const ANY_PROP_PROXY = new Proxy({}, {
 	}
 });
 
-export const E = new Proxy(EBase, {
+export const E: typeof EBase = new Proxy(EBase, {
 	get(target: any, prop) {
 		return target[prop] || ANY_PROP_PROXY;
 	}
