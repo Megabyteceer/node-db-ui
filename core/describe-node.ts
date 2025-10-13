@@ -788,8 +788,9 @@ function getFieldTypeSrc(field: FieldDesc) {
 		type = 'BoolNum | boolean';
 		break;
 	case FIELD_TYPE.COLOR:
-	case FIELD_TYPE.NUMBER:
 		type = 'number';
+	case FIELD_TYPE.NUMBER:
+		type = field.decimals ? 'string' : 'number';
 		break;
 	case FIELD_TYPE.DATE:
 	case FIELD_TYPE.DATE_TIME:
