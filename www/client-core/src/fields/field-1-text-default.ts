@@ -11,13 +11,12 @@ export default class TextField extends BaseField {
 		super.setValue(value);
 	}
 
+	getDefaultValue() {
+		return '';
+	}
+
 	renderFieldEditable() {
 		let value = this.currentValue;
-
-		if (typeof value === 'undefined') {
-			value = '';
-			this.valueListener('', 5);
-		}
 
 		const field = this.props.fieldDesc;
 

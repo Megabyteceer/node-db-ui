@@ -36,14 +36,13 @@ export default class NumericField extends BaseField {
 		this.max = max;
 	}
 
+	getDefaultValue() {
+		return 0;
+	}
+
 	renderFieldEditable() {
 		let value = this.currentValue;
 		const field = this.props.fieldDesc;
-
-		if (isNaN(value)) {
-			value = 0;
-			this.valueListener('0', 5);
-		}
 
 		let step = undefined as string | undefined;
 		if (field.decimals! > 0) {

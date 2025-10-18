@@ -409,7 +409,7 @@ export default class Form<
 	}
 
 	getFieldValue(fieldName: FieldsNames) {
-		return (this.formData as KeyedMap<any>)[fieldName];
+		return (this.formData as KeyedMap<any>)[fieldName] || this.getField(fieldName).getDefaultValue();
 	};
 
 	setFieldValue(fieldName: FieldsNames, val: any, isUserAction = false) {

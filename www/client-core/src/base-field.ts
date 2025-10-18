@@ -72,6 +72,10 @@ export default class BaseField<T1 extends BaseFieldProps = BaseFieldProps, T2 ex
 		this.parentForm._registerField(this);
 	}
 
+	getDefaultValue(): any {
+		return undefined;
+	}
+
 	setValue(value: any) {
 		this.clearChangeTimeout();
 		this.currentValue = value;
