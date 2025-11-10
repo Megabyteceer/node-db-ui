@@ -140,7 +140,7 @@ export default class FieldDateTime extends dateFieldMixins {
 		}
 
 		return R.input({
-			defaultValue: momentToInputValue(value as moment.Moment),
+			defaultValue: value && momentToInputValue(value as moment.Moment),
 			type: 'datetime-local',
 			placeholder: L('TIME'),
 			min: this.state.minDate && momentToInputValue(this.state.minDate),

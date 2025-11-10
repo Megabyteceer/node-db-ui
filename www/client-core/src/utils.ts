@@ -252,6 +252,7 @@ function handleAdditionalData(data: ApiResponse, url: string) {
 	}
 }
 
+const INNER_DATE_FORMAT = 'YYYY-MM-DD';
 const INNER_DATE_TIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 const readableDateFormat = 'D MMMM YYYY';
 const readableTimeFormat = 'HH:mm:ss';
@@ -1347,6 +1348,7 @@ export {
 	idToFileUrl,
 	idToImgURL,
 	initDictionary,
+	INNER_DATE_FORMAT,
 	INNER_DATE_TIME_FORMAT as innerDateTimeFormat,
 	isAdmin,
 	isLitePage,

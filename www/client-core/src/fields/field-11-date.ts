@@ -1,63 +1,73 @@
 import moment from 'moment';
+import type { ComponentChild } from 'preact';
 import { EMPTY_DATE } from '../consts';
 import { R } from '../r';
 import { FIELD_TYPE } from '../types/generated';
-import { innerDateTimeFormat, registerFieldClass, renderIcon, toReadableDate } from '../utils';
+import { INNER_DATE_FORMAT, L, registerFieldClass, toReadableDate } from '../utils';
 import { dateFieldMixins /* , ReactDateTimeClassHolder */ } from './field-4-date-time';
 
+const momentToInputValue = (val: moment.Moment): string => {
+	return (val as moment.Moment).toDate().toISOString().slice(0, 10);
+};
+
 export default class DateField extends dateFieldMixins {
+
+	setValue(val: moment.Moment | string) {
+		if (val) {
+			if (typeof val === 'string') {
+				val = moment(val);
+			} else {
+				val = val.clone();
+			}
+		}
+		this.refToInput.value = momentToInputValue(val as moment.Moment);
+		this.currentValue = val as moment.Moment;
+		this.forceUpdate();
+		this.valueListener(val);
+	}
 
 	static decodeValue(val: string) {
 		if (val === EMPTY_DATE) {
 			return null;
 		}
-		return moment(val, innerDateTimeFormat);
+		return moment(val, INNER_DATE_FORMAT);
 	}
 
 	static encodeValue(val: moment.Moment) {
 		if (!val) {
 			return (EMPTY_DATE);
 		}
-		return val.format(innerDateTimeFormat);
+		return val.format(INNER_DATE_FORMAT);
 	}
 
 	renderFieldEditable() {
 
-		// const field = this.props.field;
-		const value = toReadableDate(this.currentValue);
-		if (this.props.isEdit) {
-			/* if (!ReactDateTimeClassHolder.ReactDateTimeClass) {
-				ReactDateTimeClassHolder.importReactDateTime(); */
-			debugger; // TODO
-			return renderIcon('cog fa-spin');
-			/* }
-			const inputsProps = {
-				closeOnSelect: true,
-				defaultValue: value,
-				placeholder: field.name,
-				readOnly: this.props.fieldDisabled,
-				dateFormat: readableDateFormat,
-				title: field.name,
-				onFocus: this.focused,
-				isValidDate: this.state.focused ? this.validateDate : undefined,
-				timeFormat: false,
-				ref: this.refGetter,
-				onInput: (val) => {
-					if (!val._isAMomentObject) {
-						val = null;
-					}
-					this.props.wrapper.valueListener(val, true, this);
-				}
-			};
-			return R.div({
-				title: (this.props.isCompact ? field.name : '')
-			},
-			h(ReactDateTimeClassHolder.ReactDateTimeClass, inputsProps)
-			); */
+		let value = this.currentValue as moment.Moment | undefined;
 
-		} else {
-			return R.span(null, value);
+		if (value && isNaN(value.year())) {
+			value = undefined;
 		}
+
+		return R.input({
+			defaultValue: value && momentToInputValue(value as moment.Moment),
+			type: 'date',
+			placeholder: L('DATE'),
+			min: this.state.minDate && momentToInputValue(this.state.minDate),
+			max: this.state.maxDate && momentToInputValue(this.state.maxDate),
+			disable: this.props.fieldDisabled,
+			title: L('N_DATE', this.props.fieldDesc.name),
+			ref: this.refGetter,
+			onInput: (ev: InputEvent) => {
+				const val = moment.utc((ev.target as HTMLInputElement).value);
+				if (val.isValid()) {
+					this.setValue(val);
+				}
+			}
+		});
+	}
+
+	renderField(): ComponentChild {
+		return toReadableDate(this.currentValue);
 	}
 }
 
